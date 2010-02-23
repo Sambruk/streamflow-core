@@ -33,14 +33,19 @@ public @interface RequiresRoles
    Class<?>[] value();
 
    class RequiresRoleConstraint
-      implements Constraint<RequiresRoles, Context>
+      implements Constraint<RequiresRoles, InteractionContext>
    {
-      public boolean isValid( RequiresRoles requiresRoles, Context context )
+      public boolean isValid( RequiresRoles requiresRoles, InteractionContext context )
       {
          for (Class<?> roleClass : requiresRoles.value())
          {
-            if (context.context().role( roleClass ) == null)
+            try
+            {
+            context.role( roleClass );
+            } catch (IllegalArgumentException ex)
+            {
                return false;
+            }
          }
          return true;
       }

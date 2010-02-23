@@ -114,6 +114,13 @@
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.apache.velocity</groupId>
+            <artifactId>velocity</artifactId>
+            <version>1.6.3</version>
+        </dependency>
+
+
         <!-- Database -->
         <dependency>
             <groupId>mysql</groupId>

@@ -80,6 +80,11 @@ public interface Removable
          }
       }
 
+      public void changedRemoved( DomainEvent event, boolean isRemoved )
+      {
+         removed().set( isRemoved );
+      }
+
       public boolean reinstate()
       {
          if (state.removed().get())

@@ -36,7 +36,7 @@ public class SelectTaskTypesDialog
       extends JPanel
 {
    public FilteredList filteredList = new FilteredList();
-   public List<ListItemValue> selected;
+   public List<LinkValue> selected;
 
    public SelectTaskTypesDialog( @Service ApplicationContext context, @Uses EventList<LinkValue> list )
    {
@@ -48,7 +48,7 @@ public class SelectTaskTypesDialog
       add( filteredList, BorderLayout.CENTER );
    }
 
-   public Iterable<ListItemValue> getSelectedTaskTypes()
+   public Iterable<LinkValue> getSelectedTaskTypes()
    {
       return selected;
    }
@@ -56,10 +56,10 @@ public class SelectTaskTypesDialog
    @Action
    public void execute()
    {
-      selected = new ArrayList<ListItemValue>();
+      selected = new ArrayList<LinkValue>();
       for (Object item : filteredList.getList().getSelectedValues())
       {
-         selected.add( (ListItemValue) item );
+         selected.add( (LinkValue) item );
       }
 
       WindowUtils.findWindow( this ).dispose();

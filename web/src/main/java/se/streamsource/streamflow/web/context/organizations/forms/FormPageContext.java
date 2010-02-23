@@ -22,6 +22,7 @@ import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.streamflow.domain.form.PageDefinitionValue;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.resource.roles.StringDTO;
+import se.streamsource.streamflow.web.domain.structure.form.Fields;
 import se.streamsource.streamflow.web.domain.structure.form.Page;
 import se.streamsource.streamflow.web.domain.structure.form.Pages;
 import se.streamsource.streamflow.web.infrastructure.web.context.Context;
@@ -30,6 +31,8 @@ import se.streamsource.streamflow.web.infrastructure.web.context.DeleteContext;
 import se.streamsource.streamflow.web.infrastructure.web.context.SubContext;
 import se.streamsource.streamflow.web.context.structure.DescribableContext;
 import se.streamsource.streamflow.web.context.structure.NotableContext;
+import se.streamsource.streamflow.web.infrastructure.web.context.SubContext;
+import se.streamsource.streamflow.web.infrastructure.web.context.SubContexts;
 
 /**
  * JAVADOC
@@ -43,7 +46,7 @@ public interface FormPageContext
 
    @SubContext
    FormFieldsContext fields();
-
+   
    abstract class Mixin
       extends ContextMixin
       implements FormPageContext

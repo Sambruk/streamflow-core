@@ -58,7 +58,7 @@ public class SelectedTaskTypesModel
       try
       {
          // Get tasktype list
-         LinksValue newList = client.query( "selectedtasktypes", LinksValue.class );
+         LinksValue newList = client.query( "index", LinksValue.class );
 
          if (list == null || !newList.equals( list ))
          {
@@ -86,12 +86,12 @@ public class SelectedTaskTypesModel
       }
    }
 
-   public void addTaskType( EntityReference identity )
+   public void addTaskType( LinkValue identity )
    {
       try
       {
          ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
-         builder.prototype().entity().set( identity );
+         builder.prototype().entity().set( EntityReference.parseEntityReference( identity.id().get()) );
          client.postCommand( "addtasktype", builder.newInstance() );
       } catch (ResourceException e)
       {
@@ -103,7 +103,7 @@ public class SelectedTaskTypesModel
    {
       try
       {
-         client.getSubClient( identity.identity() ).deleteCommand();
+         client.getSubClient( identity.identity() ).delete();
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_remove_tasktype, e );

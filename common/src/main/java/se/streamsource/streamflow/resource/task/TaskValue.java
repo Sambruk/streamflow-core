@@ -37,6 +37,9 @@ public interface TaskValue
    @Optional
    Property<String> createdBy();
 
+   @Optional
+   Property<String> taskId();
+
    Property<States> status();
 
    Property<String> owner();

@@ -212,7 +212,7 @@ public class TaskGeneralModel extends Observable implements Refreshable,
 	{
 		try
 		{
-			general = (TaskGeneralDTO) client.query("general",
+			general = (TaskGeneralDTO) client.query("index",
 					TaskGeneralDTO.class).buildWith().prototype();
 
 			taskLabelsModel.setLabels(general.labels().get());

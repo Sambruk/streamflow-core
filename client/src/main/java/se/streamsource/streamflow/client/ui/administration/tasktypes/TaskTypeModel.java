@@ -84,7 +84,7 @@ public class TaskTypeModel
    {
       try
       {
-         client.deleteCommand();
+         client.delete();
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_remove_tasktype, e );

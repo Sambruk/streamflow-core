@@ -24,6 +24,8 @@ import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.StreamFlowResources;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.JListPopup;
+import se.streamsource.streamflow.client.infrastructure.ui.LinkComparator;
+import se.streamsource.streamflow.client.infrastructure.ui.LinkListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemComparator;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
@@ -33,6 +35,7 @@ import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 import se.streamsource.streamflow.client.ui.ConfirmationDialog;
 import se.streamsource.streamflow.client.ui.NameDialog;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.infrastructure.application.LinkValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.*;
@@ -69,10 +72,10 @@ public class LabelsView
       popup.add( am.get( "rename" ) );
 
       JScrollPane scrollPane = new JScrollPane();
-      EventList<ListItemValue> itemValueEventList = model.getLabelList();
-      itemValueEventList = new SortedList<ListItemValue>( itemValueEventList, new ListItemComparator() );
-      labelList = new JListPopup( new EventListModel<ListItemValue>( itemValueEventList ), popup );
-      labelList.setCellRenderer( new ListItemListCellRenderer() );
+      EventList<LinkValue> itemValueEventList = model.getLabelList();
+      itemValueEventList = new SortedList<LinkValue>( itemValueEventList, new LinkComparator() );
+      labelList = new JListPopup( new EventListModel<LinkValue>( itemValueEventList ), popup );
+      labelList.setCellRenderer( new LinkListCellRenderer() );
       scrollPane.setViewportView( labelList );
       add( scrollPane, BorderLayout.CENTER );
 
@@ -108,8 +111,8 @@ public class LabelsView
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamFlowResources.confirmation ) );
       if (dialog.isConfirmed())
       {
-         ListItemValue selected = (ListItemValue) labelList.getSelectedValue();
-         model.removeLabel( selected.entity().get().identity() );
+         LinkValue selected = (LinkValue) labelList.getSelectedValue();
+         model.removeLabel( selected );
          model.refresh();
       }
    }
@@ -122,7 +125,7 @@ public class LabelsView
 
       if (dialog.name() != null)
       {
-         model.changeDescription( labelList.getSelectedIndex(), dialog.name() );
+         model.changeDescription( (LinkValue)labelList.getSelectedValue(), dialog.name() );
          model.refresh();
       }
    }

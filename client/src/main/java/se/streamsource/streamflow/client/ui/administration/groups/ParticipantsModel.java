@@ -16,28 +16,39 @@ package se.streamsource.streamflow.client.ui.administration.groups;
 
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
+import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
 import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.infrastructure.application.LinkValue;
+import se.streamsource.streamflow.infrastructure.application.LinksValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
+import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 
 /**
  * JAVADOC
  */
-public class GroupModel
+public class ParticipantsModel
       implements EventListener
 {
+   @Structure
+   ValueBuilderFactory vbf;
+
    @Uses
    CommandQueryClient client;
 
-   private BasicEventList<ListItemValue> participants = new BasicEventList<ListItemValue>( );
+   private BasicEventList<LinkValue> participants = new BasicEventList<LinkValue>( );
 
-   public EventList<ListItemValue> getParticipants()
+   public EventList<LinkValue> getParticipants()
    {
       return participants;
    }
@@ -48,8 +59,9 @@ public class GroupModel
       {
          for (String value : participants)
          {
-            CommandQueryClient participant = client.getSubClient("participants" ).getSubClient( value );
-            participant.create();
+            ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
+            builder.prototype().entity().set( EntityReference.parseEntityReference( value ) );
+            client.postCommand( "addparticipant", builder.newInstance() );
          }
       } catch (ResourceException e)
       {
@@ -61,7 +73,7 @@ public class GroupModel
    {
       try
       {
-         client.getSubClient( "participants" ).getSubClient( participant ).deleteCommand();
+         client.getSubClient( participant ).delete();
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_remove_participant, e );
@@ -71,9 +83,8 @@ public class GroupModel
 
    public void refresh() throws ResourceException
    {
-      ListValue list = client.getSubClient( "participants" ).query( "participants", ListValue.class );
-      participants.clear();
-      participants.addAll( list.items().get() );
+      LinksValue list = client.query( "index", LinksValue.class );
+      EventListSynch.synchronize( list.links().get(), participants );
    }
 
    public void notifyEvent( DomainEvent event )
@@ -81,7 +92,7 @@ public class GroupModel
 
    }
 
-   public CommandQueryClient getFilterResource()
+   public CommandQueryClient getClient()
    {
       return client;
    }

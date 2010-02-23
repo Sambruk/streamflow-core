@@ -24,6 +24,7 @@ import se.streamsource.streamflow.web.domain.structure.tasktype.TaskType;
 import se.streamsource.streamflow.web.domain.structure.tasktype.TaskTypes;
 import se.streamsource.streamflow.web.infrastructure.web.context.Context;
 import se.streamsource.streamflow.web.infrastructure.web.context.ContextMixin;
+import se.streamsource.streamflow.web.infrastructure.web.context.IndexContext;
 import se.streamsource.streamflow.web.infrastructure.web.context.SubContexts;
 
 /**
@@ -31,10 +32,8 @@ import se.streamsource.streamflow.web.infrastructure.web.context.SubContexts;
  */
 @Mixins(SelectedTaskTypesContext.Mixin.class)
 public interface SelectedTaskTypesContext
-   extends SubContexts<SelectedTaskTypeContext>, Context
+   extends SubContexts<SelectedTaskTypeContext>, IndexContext<LinksValue>, Context
 {
-   public LinksValue selectedtasktypes();
-
    public LinksValue possibletasktypes();
 
    public void addtasktype( EntityReferenceDTO taskTypeDTO );
@@ -43,7 +42,7 @@ public interface SelectedTaskTypesContext
       extends ContextMixin
       implements SelectedTaskTypesContext
    {
-      public LinksValue selectedtasktypes()
+      public LinksValue index()
       {
          SelectedTaskTypes.Data taskTypes = context.role(SelectedTaskTypes.Data.class);
 

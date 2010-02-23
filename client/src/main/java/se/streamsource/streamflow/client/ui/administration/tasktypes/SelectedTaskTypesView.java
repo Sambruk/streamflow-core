@@ -19,11 +19,13 @@ import ca.odell.glazedlists.SortedList;
 import ca.odell.glazedlists.swing.EventListModel;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilder;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.LinkComparator;
+import se.streamsource.streamflow.client.infrastructure.ui.LinkListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemComparator;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
@@ -65,7 +67,7 @@ public class SelectedTaskTypesView
 
       taskTypeList = new JList( new EventListModel<LinkValue>( new SortedList<LinkValue>( modelSelected.getTaskTypeList(), new LinkComparator() ) ) );
 
-      taskTypeList.setCellRenderer( new ListItemListCellRenderer() );
+      taskTypeList.setCellRenderer( new LinkListCellRenderer() );
 
       add( new JScrollPane( taskTypeList ), BorderLayout.CENTER );
 
@@ -87,9 +89,9 @@ public class SelectedTaskTypesView
 
       if (dialog.getSelectedTaskTypes() != null)
       {
-         for (ListItemValue listItemValue : dialog.getSelectedTaskTypes())
+         for (LinkValue linkValue : dialog.getSelectedTaskTypes())
          {
-            modelSelected.addTaskType( listItemValue.entity().get() );
+            modelSelected.addTaskType( linkValue );
          }
          modelSelected.refresh();
       }
@@ -99,8 +101,8 @@ public class SelectedTaskTypesView
    @Action
    public void remove()
    {
-      ListItemValue selected = (ListItemValue) taskTypeList.getSelectedValue();
-      modelSelected.removeTaskType( selected.entity().get() );
+      LinkValue selected = (LinkValue) taskTypeList.getSelectedValue();
+      modelSelected.removeTaskType( EntityReference.parseEntityReference( selected.id().get()) );
       modelSelected.refresh();
    }
 }

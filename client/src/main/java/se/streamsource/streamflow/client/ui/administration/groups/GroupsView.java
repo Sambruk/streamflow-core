@@ -24,21 +24,23 @@ import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.StreamFlowResources;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.JListPopup;
-import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
+import se.streamsource.streamflow.client.infrastructure.ui.LinkListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 import se.streamsource.streamflow.client.ui.ConfirmationDialog;
 import se.streamsource.streamflow.client.ui.NameDialog;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
+import se.streamsource.streamflow.infrastructure.application.LinkValue;
 
 import javax.swing.ActionMap;
 import javax.swing.JButton;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
-import java.awt.BorderLayout;
+import javax.swing.ListSelectionModel;
+import java.awt.*;
+
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 
 /**
  * JAVADOC
@@ -73,9 +75,9 @@ public class GroupsView
       JPopupMenu popup = new JPopupMenu();
       popup.add( am.get( "rename" ) );
 
-      groupList = new JListPopup( new EventListModel(model.getGroups()), popup );
+      groupList = new JListPopup( new EventListModel<LinkValue>(model.getGroups()), popup );
 
-      groupList.setCellRenderer( new ListItemListCellRenderer() );
+      groupList.setCellRenderer( new LinkListCellRenderer() );
 
       add( groupList, BorderLayout.CENTER );
 
@@ -95,7 +97,7 @@ public class GroupsView
       String name = dialog.name();
       if (name != null)
       {
-         model.newGroup( name );
+         model.createGroup( name );
       }
    }
 
@@ -106,8 +108,8 @@ public class GroupsView
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamFlowResources.confirmation ) );
       if (dialog.isConfirmed())
       {
-         ListItemValue selected = (ListItemValue) groupList.getSelectedValue();
-         model.removeGroup( selected.entity().get().identity() );
+         LinkValue selected = (LinkValue) groupList.getSelectedValue();
+         model.removeGroup( selected.id().get() );
       }
    }
 

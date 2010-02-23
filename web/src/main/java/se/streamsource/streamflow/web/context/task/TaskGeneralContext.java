@@ -19,6 +19,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
+import org.qi4j.api.value.Value;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
@@ -37,6 +38,7 @@ import se.streamsource.streamflow.web.domain.structure.tasktype.TaskType;
 import se.streamsource.streamflow.web.domain.structure.tasktype.TypedTask;
 import se.streamsource.streamflow.web.infrastructure.web.context.Context;
 import se.streamsource.streamflow.web.infrastructure.web.context.ContextMixin;
+import se.streamsource.streamflow.web.infrastructure.web.context.IndexContext;
 import se.streamsource.streamflow.web.infrastructure.web.context.SubContext;
 import se.streamsource.streamflow.web.context.structure.DescribableContext;
 import se.streamsource.streamflow.web.context.structure.NotableContext;
@@ -49,9 +51,9 @@ import se.streamsource.streamflow.web.context.structure.labels.LabelableContext;
 public interface TaskGeneralContext
    extends DescribableContext,
       NotableContext,
+      IndexContext<TaskGeneralDTO>,
       Context
 {
-   TaskGeneralDTO general();
    void changedueon( DateDTO dueOnValue );
    LinksValue possibletasktypes();
    void tasktype( EntityReferenceDTO dto );
@@ -67,7 +69,7 @@ public interface TaskGeneralContext
       @Structure
       Module module;
 
-      public TaskGeneralDTO general()
+      public TaskGeneralDTO index()
       {
          ValueBuilderFactory vbf = module.valueBuilderFactory();
          ValueBuilder<TaskGeneralDTO> builder = vbf.newValueBuilder( TaskGeneralDTO.class );

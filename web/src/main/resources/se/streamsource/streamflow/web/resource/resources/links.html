@@ -1,12 +1,14 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <title>$title</title>
+    <title>${request.resourceRef.remainingPart}</title>
 </head>
 
 <body>
-<h3>Result for $title</h3>
+<h3>Result for ${request.resourceRef.remainingPart}</h3>
 <ul>
-    $content
+#foreach($link in $links.keys)
+<li><a href="${links.get($link).get("href")}">${links.get($link).get("text")}</a></li>
+#end
 </ul>
 </body>
 

@@ -75,6 +75,15 @@ public interface Groups
          addedGroup( DomainEvent.CREATE, group );
       }
 
+      public boolean removeGroup( Group group )
+      {
+         if (!groups().contains( group ))
+            return false;
+
+         removedGroup( DomainEvent.CREATE, group );
+         return true;
+      }
+
       public Group getGroupByName( String name )
       {
          return Describable.Mixin.getDescribable( groups(), name );

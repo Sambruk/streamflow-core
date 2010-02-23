@@ -33,8 +33,10 @@ import org.restlet.Context;
 import org.restlet.Response;
 import org.restlet.Uniform;
 import org.restlet.data.CharacterSet;
+import org.restlet.data.ClientInfo;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
+import org.restlet.data.Preference;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.representation.EmptyRepresentation;
@@ -50,6 +52,7 @@ import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
 
 /**
  * Base class for client-side Command/Query resources
@@ -174,8 +177,11 @@ public final class CommandQueryClient
    public void postCommand( String operation, Representation commandRepresentation )
          throws ResourceException
    {
-      Reference ref = new Reference( reference ).addQueryParameter( "command", operation );
+      Reference ref = new Reference( reference.toUri().toString()+operation );
       ClientResource client = new ClientResource( ref );
+      ClientInfo info = new ClientInfo();
+      info.setAcceptedMediaTypes( Collections.singletonList( new Preference<MediaType>( MediaType.APPLICATION_JSON ) ) );
+      client.setClientInfo( info );
       client.setNext( this.client );
       client.post( commandRepresentation );
       if (!client.getStatus().isSuccess())
@@ -224,12 +230,14 @@ public final class CommandQueryClient
    private ClientResource invokeQuery( String operation, ValueComposite queryValue )
          throws ResourceException
    {
-      Reference ref = new Reference( reference.toUri().toString() );
+      Reference ref = new Reference( reference.toUri().toString()+operation );
       if (queryValue != null)
          setQueryParameters( ref, queryValue );
-      ref.addQueryParameter( "query", operation );
 
       ClientResource client = new ClientResource( ref );
+      ClientInfo info = new ClientInfo();
+      info.setAcceptedMediaTypes( Collections.singletonList( new Preference<MediaType>( MediaType.APPLICATION_JSON ) ) );
+      client.setClientInfo( info );
       client.setNext( this.client );
 
       client.get( MediaType.APPLICATION_JSON );
@@ -255,13 +263,17 @@ public final class CommandQueryClient
       else
          commandRepresentation = new EmptyRepresentation();
 
-      Reference ref = new Reference( reference );
+      Reference ref = new Reference( reference.toUri().toString());
+
       if (operation != null)
       {
-         ref = ref.addQueryParameter( "command", operation );
+         ref = ref.addSegment( operation );
       }
 
       ClientResource client = new ClientResource( ref );
+      ClientInfo info = new ClientInfo();
+      info.setAcceptedMediaTypes( Collections.singletonList( new Preference<MediaType>( MediaType.APPLICATION_JSON ) ) );
+      client.setClientInfo( info );
       client.setNext( this.client );
       int tries = 3;
       while (true)
@@ -299,10 +311,13 @@ public final class CommandQueryClient
       }
    }
 
-   public void deleteCommand() throws ResourceException
+   public void delete() throws ResourceException
    {
 
       ClientResource client = new ClientResource( new Reference(reference.toUri()).toString(  ));
+      ClientInfo info = new ClientInfo();
+      info.setAcceptedMediaTypes( Collections.singletonList( new Preference<MediaType>( MediaType.APPLICATION_JSON ) ) );
+      client.setClientInfo( info );
       client.setNext( this.client );
 
       int tries = 3;
@@ -365,6 +380,11 @@ public final class CommandQueryClient
    {
       Reference reference = new Reference(this.reference, relativePath);
       return obf.newObjectBuilder( CommandQueryClient.class ).use( client, new Context(), reference ).newInstance();
+   }
+
+   public CommandQueryClient getClient( LinkValue link)
+   {
+      return getClient( link.href().get() );
    }
 
    private void processEvents( Response response )

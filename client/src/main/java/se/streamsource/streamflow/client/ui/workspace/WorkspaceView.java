@@ -442,6 +442,10 @@ public class WorkspaceView
          Point location = selectContextButton.getLocationOnScreen();
          popup = PopupFactory.getSharedInstance().getPopup( this, workspaceTree, (int) location.getX(), (int) location.getY() + selectContextButton.getHeight() );
          popup.show();
+      } else
+      {
+         popup.hide();
+         popup = null;
       }
    }
 
@@ -474,7 +478,6 @@ public class WorkspaceView
    public void search()
    {
       searchResultTableModel.search( searchField.getText() );
-      searchResultTableModel.refresh();
    }
 
    @Action

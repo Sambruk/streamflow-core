@@ -148,6 +148,6 @@ public class FieldValueEditModel
 
    public void remove() throws ResourceException
    {
-      client.deleteCommand();
+      client.delete();
    }
 }

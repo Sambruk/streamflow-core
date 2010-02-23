@@ -95,7 +95,7 @@ public class TaskContactsModel
    {
       try
       {
-         client.getSubClient( selectedIndex+"" ).deleteCommand();
+         client.getSubClient( selectedIndex+"" ).delete();
       } catch (ResourceException e)
       {
          throw new OperationException( TaskResources.could_not_remove_contact, e );

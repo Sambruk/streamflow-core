@@ -25,13 +25,14 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
+import se.streamsource.streamflow.client.infrastructure.ui.LinkComparator;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
-import se.streamsource.streamflow.client.infrastructure.ui.ListItemComparator;
 import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
-import se.streamsource.streamflow.infrastructure.application.ListValue;
+import se.streamsource.streamflow.infrastructure.application.LinkValue;
+import se.streamsource.streamflow.infrastructure.application.LinksValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.resource.roles.StringDTO;
@@ -51,29 +52,29 @@ public class GroupsModel
    @Structure
    ValueBuilderFactory vbf;
 
-   SortedList<ListItemValue> groups = new SortedList<ListItemValue>(new BasicEventList<ListItemValue>( ), new ListItemComparator() );
+   SortedList<LinkValue> groups = new SortedList<LinkValue>(new BasicEventList<LinkValue>( ), new LinkComparator() );
 
-   WeakModelMap<String, GroupModel> groupModels = new WeakModelMap<String, GroupModel>()
+   WeakModelMap<String, ParticipantsModel> groupModels = new WeakModelMap<String, ParticipantsModel>()
    {
       @Override
-      protected GroupModel newModel( String key )
+      protected ParticipantsModel newModel( String key )
       {
-         return obf.newObjectBuilder( GroupModel.class ).use( client.getSubClient( key ) ).newInstance();
+         return obf.newObjectBuilder( ParticipantsModel.class ).use( client.getSubClient( key ).getSubClient("participants" )).newInstance();
       }
    };
 
-   public EventList<ListItemValue> getGroups()
+   public EventList<LinkValue> getGroups()
    {
       return groups;
    }
 
-   public void newGroup( String description )
+   public void createGroup( String description )
    {
       try
       {
          ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
          builder.prototype().string().set( description );
-         client.postCommand( "createGroup",  builder.newInstance() );
+         client.postCommand( "creategroup",  builder.newInstance() );
          refresh();
       } catch (ResourceException e)
       {
@@ -89,7 +90,7 @@ public class GroupsModel
    {
       try
       {
-         client.getSubClient( id ).deleteCommand();
+         client.getSubClient( id ).delete();
          refresh();
       } catch (ResourceException e)
       {
@@ -101,9 +102,8 @@ public class GroupsModel
    {
       try
       {
-         ListValue groupsList = client.query( "groups", ListValue.class );
-         groups.clear();
-         groups.addAll( groupsList.items().get() );
+         LinksValue groupsList = client.query( "groups", LinksValue.class );
+         EventListSynch.synchronize( groupsList.links().get(), groups );
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_refresh, e );
@@ -111,7 +111,7 @@ public class GroupsModel
    }
 
 
-   public GroupModel getGroupModel( String id )
+   public ParticipantsModel getGroupModel( String id )
    {
       return groupModels.get( id );
    }
@@ -123,7 +123,7 @@ public class GroupsModel
 
       try
       {
-         client.getSubClient( groups.get( selectedIndex ).entity().get().identity() ).putCommand( "changedescription",  builder.newInstance() );
+         client.getSubClient( groups.get( selectedIndex ).id().get() ).putCommand( "changedescription",  builder.newInstance() );
       } catch (ResourceException e)
       {
          if (Status.CLIENT_ERROR_CONFLICT.equals( e.getStatus() ))
@@ -137,9 +137,9 @@ public class GroupsModel
 
    public void notifyEvent( DomainEvent event )
    {
-      for (GroupModel groupModel : groupModels)
+      for (ParticipantsModel participantsModel : groupModels)
       {
-         groupModel.notifyEvent( event );
+         participantsModel.notifyEvent( event );
       }
    }
 }

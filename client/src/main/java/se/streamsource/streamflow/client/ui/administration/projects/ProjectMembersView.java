@@ -25,6 +25,7 @@ import org.qi4j.api.object.ObjectBuilder;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.StreamFlowResources;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
+import se.streamsource.streamflow.client.infrastructure.ui.LinkListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
@@ -33,6 +34,7 @@ import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 import se.streamsource.streamflow.client.ui.ConfirmationDialog;
 import se.streamsource.streamflow.client.ui.SelectUsersAndGroupsDialog;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.infrastructure.application.LinkValue;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -68,9 +70,9 @@ public class ProjectMembersView
 
       setActionMap( context.getActionMap( this ) );
 
-      membersList = new JXList( new EventListModel(membersModel.getMembers()) );
+      membersList = new JXList( new EventListModel<LinkValue>(membersModel.getMembers()) );
 
-      membersList.setCellRenderer( new ListItemListCellRenderer() );
+      membersList.setCellRenderer( new LinkListCellRenderer() );
 
       add( membersList, BorderLayout.CENTER );
 
@@ -105,7 +107,7 @@ public class ProjectMembersView
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamFlowResources.confirmation ) );
       if (dialog.isConfirmed() && !membersList.isSelectionEmpty())
       {
-         membersModel.removeMember( membersList.getSelectedIndex() );
+         membersModel.removeMember( (LinkValue) membersList.getSelectedValue() );
          membersModel.refresh();
       }
    }

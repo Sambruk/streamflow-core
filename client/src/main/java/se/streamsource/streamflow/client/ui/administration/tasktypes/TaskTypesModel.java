@@ -77,7 +77,7 @@ public class TaskTypesModel
       {
          // Get TaskType list
          eventList.clear();
-         eventList.addAll( client.query( "tasktypes", LinksValue.class ).links().get() );
+         eventList.addAll( client.query( "index", LinksValue.class ).links().get() );
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_refresh, e );

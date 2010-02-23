@@ -22,13 +22,13 @@ import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.StreamFlowResources;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.JListPopup;
-import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
+import se.streamsource.streamflow.client.infrastructure.ui.LinkListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.ConfirmationDialog;
 import se.streamsource.streamflow.client.ui.NameDialog;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
+import se.streamsource.streamflow.infrastructure.application.LinkValue;
 
 import javax.swing.ActionMap;
 import javax.swing.JButton;
@@ -36,9 +36,9 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
-import java.awt.BorderLayout;
+import java.awt.*;
 
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 
 /**
  * JAVADOC
@@ -71,8 +71,8 @@ public class ProjectsView
       popup.add( am.get( "rename" ) );
 
       JScrollPane scrollPane = new JScrollPane();
-      projectList = new JListPopup( new EventListModel<ListItemValue>( model.getProjectList() ), popup );
-      projectList.setCellRenderer( new ListItemListCellRenderer() );
+      projectList = new JListPopup( new EventListModel<LinkValue>( model.getProjectList() ), popup );
+      projectList.setCellRenderer( new LinkListCellRenderer() );
       scrollPane.setViewportView( projectList );
       add( scrollPane, BorderLayout.CENTER );
 
@@ -104,8 +104,8 @@ public class ProjectsView
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamFlowResources.confirmation ) );
       if (dialog.isConfirmed())
       {
-         ListItemValue selected = (ListItemValue) projectList.getSelectedValue();
-         model.removeProject( selected.entity().get().identity() );
+         LinkValue selected = (LinkValue) projectList.getSelectedValue();
+         model.removeProject( selected.id().get() );
       }
    }
 

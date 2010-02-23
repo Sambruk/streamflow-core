@@ -34,6 +34,7 @@ import se.streamsource.streamflow.web.domain.structure.organization.OwningOrgani
 import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
 import se.streamsource.streamflow.web.infrastructure.web.context.Context;
 import se.streamsource.streamflow.web.infrastructure.web.context.ContextMixin;
+import se.streamsource.streamflow.web.infrastructure.web.context.IndexContext;
 import se.streamsource.streamflow.web.infrastructure.web.context.SubContexts;
 
 import static org.qi4j.api.query.QueryExpressions.orderBy;
@@ -44,10 +45,8 @@ import static org.qi4j.api.query.QueryExpressions.templateFor;
  */
 @Mixins(ParticipantsContext.Mixin.class)
 public interface ParticipantsContext
-   extends SubContexts<ParticipantContext>, Context
+   extends SubContexts<ParticipantContext>, IndexContext<LinksValue>, Context
 {
-   public LinksValue participants();
-
    public void addparticipant( EntityReferenceDTO participantId);
    public LinksValue possibleusers( StringDTO query );
    public LinksValue possiblegroups( StringDTO query );
@@ -59,7 +58,7 @@ public interface ParticipantsContext
       @Structure
       UnitOfWorkFactory uowf;
 
-      public LinksValue participants()
+      public LinksValue index()
       {
          return new LinksBuilder(module.valueBuilderFactory()).rel( "participant" ).addDescribables( context.role( Participants.Data.class ).participants()).newLinks();
       }

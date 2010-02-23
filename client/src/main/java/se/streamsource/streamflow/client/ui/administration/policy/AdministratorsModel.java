@@ -17,6 +17,7 @@ package se.streamsource.streamflow.client.ui.administration.policy;
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.SortedList;
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilder;
@@ -25,16 +26,13 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.LinkComparator;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
-import se.streamsource.streamflow.client.infrastructure.ui.ListItemComparator;
 import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.infrastructure.application.LinkValue;
 import se.streamsource.streamflow.infrastructure.application.LinksValue;
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
-import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
-import se.streamsource.streamflow.resource.roles.StringDTO;
+import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 
 /**
  * JAVADOC
@@ -59,8 +57,8 @@ public class AdministratorsModel
    {
       try
       {
-         ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
-         builder.prototype().string().set( description );
+         ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
+         builder.prototype().entity().set( EntityReference.parseEntityReference(description ));
          client.postCommand( "addadministrator", builder.newInstance() );
          refresh();
 
@@ -75,7 +73,7 @@ public class AdministratorsModel
    {
       try
       {
-         client.getClient( href ).deleteCommand();
+         client.getClient( href ).delete();
          refresh();
       } catch (ResourceException e)
       {

@@ -36,6 +36,11 @@ public class InteractionContext
    private Map<Class, Object> roles = new HashMap<Class, Object>( );
    private List<Object> objects = new ArrayList<Object>( );
 
+   public InteractionContext()
+   {
+      objects.add( this );
+   }
+
    public void playRoles(Object object, Class... roleClasses)
    {
       if (object == null)
@@ -49,7 +54,7 @@ public class InteractionContext
       objects.add( 0, object );
    }
 
-   public <T> T role(Class<T> roleClass)
+   public <T> T role(Class<T> roleClass) throws IllegalArgumentException
    {
       Object object = roles.get( roleClass );
 

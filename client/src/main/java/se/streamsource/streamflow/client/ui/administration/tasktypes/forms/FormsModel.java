@@ -14,7 +14,6 @@
 
 package se.streamsource.streamflow.client.ui.administration.tasktypes.forms;
 
-import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
@@ -26,15 +25,12 @@ import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
 import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
-import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.LinksValue;
 import se.streamsource.streamflow.infrastructure.application.LinkValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
 import se.streamsource.streamflow.infrastructure.event.source.EventVisitorFilter;
-import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 
 import javax.swing.AbstractListModel;
@@ -105,20 +101,18 @@ public class FormsModel
       builder.prototype().string().set( formName );
       try
       {
-         client.postCommand( "create", builder.newInstance() );
+         client.postCommand( "createform", builder.newInstance() );
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.description_cannot_be_more_than_50, e );
       }
    }
 
-   public void removeForm( EntityReference form )
+   public void removeForm( LinkValue form )
    {
-      ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
-      builder.prototype().entity().set( form );
       try
       {
-         client.postCommand( "remove", builder.newInstance() );
+         client.getClient( form ).delete();
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_remove_form_definition, e );

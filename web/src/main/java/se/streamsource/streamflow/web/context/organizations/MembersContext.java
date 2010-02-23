@@ -18,8 +18,11 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import se.streamsource.streamflow.domain.structure.Describable;
+import se.streamsource.streamflow.infrastructure.application.LinkValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.infrastructure.application.LinksValue;
+import se.streamsource.streamflow.infrastructure.application.ListValue;
+import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.web.domain.entity.organization.GroupEntity;
@@ -32,6 +35,7 @@ import se.streamsource.streamflow.web.domain.structure.project.Members;
 import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
 import se.streamsource.streamflow.web.infrastructure.web.context.Context;
 import se.streamsource.streamflow.web.infrastructure.web.context.ContextMixin;
+import se.streamsource.streamflow.web.infrastructure.web.context.IndexContext;
 import se.streamsource.streamflow.web.infrastructure.web.context.SubContexts;
 
 import static org.qi4j.api.query.QueryExpressions.orderBy;
@@ -42,7 +46,7 @@ import static org.qi4j.api.query.QueryExpressions.templateFor;
  */
 @Mixins(MembersContext.Mixin.class)
 public interface MembersContext
-   extends SubContexts<MemberContext>, Context
+   extends SubContexts<MemberContext>, IndexContext<LinksValue>, Context
 {
    public void addmember( EntityReferenceDTO memberId);
 
@@ -54,6 +58,13 @@ public interface MembersContext
       extends ContextMixin
       implements MembersContext
    {
+      public LinksValue index()
+      {
+         Members.Data members = context.role(Members.Data.class);
+
+         return new LinksBuilder( module.valueBuilderFactory() ).rel( "member" ).addDescribables( members.members() ).newLinks();
+      }
+
       public void addmember( EntityReferenceDTO memberId)
       {
          UnitOfWork unitOfWork = module.unitOfWorkFactory().currentUnitOfWork();

@@ -88,7 +88,7 @@ public class FormDefinitionsModel
    {
       try
       {
-         client.getSubClient( id ).deleteCommand();
+         client.getSubClient( id ).delete();
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_remove_form, e );

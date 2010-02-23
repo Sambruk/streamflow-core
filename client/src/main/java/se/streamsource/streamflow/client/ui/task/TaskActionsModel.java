@@ -27,8 +27,6 @@ import se.streamsource.streamflow.domain.interaction.gtd.Actions;
 import se.streamsource.streamflow.infrastructure.application.LinksValue;
 import se.streamsource.streamflow.infrastructure.application.TitledLinkValue;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
-import se.streamsource.streamflow.infrastructure.application.ListValue;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.BasicEventList;
 
@@ -139,7 +137,7 @@ public class TaskActionsModel
    {
       try
       {
-         client.deleteCommand();
+         client.delete();
       } catch (ResourceException e)
       {
          throw new OperationException(WorkspaceResources.could_not_perform_operation, e);

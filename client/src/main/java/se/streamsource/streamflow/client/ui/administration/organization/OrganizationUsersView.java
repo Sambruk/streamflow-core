@@ -26,7 +26,6 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.StreamFlowResources;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.LinkListCellRenderer;
-import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
@@ -35,8 +34,6 @@ import se.streamsource.streamflow.client.ui.administration.AdministrationResourc
 import se.streamsource.streamflow.client.ui.administration.SelectLinksDialog;
 import se.streamsource.streamflow.client.ui.administration.LinksQueryListModel;
 import se.streamsource.streamflow.infrastructure.application.LinkValue;
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
-import se.streamsource.streamflow.infrastructure.application.ListValueBuilder;
 
 import javax.swing.ActionMap;
 import javax.swing.JButton;
@@ -119,7 +116,7 @@ public class OrganizationUsersView
          for (int index : participantList.getSelectedIndices())
          {
             LinkValue user = model.getEventList().get( index );
-            model.getClient().getClient( user.href().get() ).deleteCommand();
+            model.getClient().getClient( user.href().get() ).delete();
          }
 
          model.refresh();

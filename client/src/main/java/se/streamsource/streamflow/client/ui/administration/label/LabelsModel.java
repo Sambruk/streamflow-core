@@ -22,11 +22,12 @@ import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
-import se.streamsource.streamflow.infrastructure.application.ListValue;
+import se.streamsource.streamflow.infrastructure.application.LinkValue;
+import se.streamsource.streamflow.infrastructure.application.LinksValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.resource.roles.StringDTO;
@@ -40,14 +41,12 @@ public class LabelsModel
    @Uses
    CommandQueryClient client;
 
-   BasicEventList<ListItemValue> eventList = new BasicEventList<ListItemValue>();
+   BasicEventList<LinkValue> eventList = new BasicEventList<LinkValue>();
 
    @Structure
    ValueBuilderFactory vbf;
 
-   private ListValue list;
-
-   public EventList<ListItemValue> getLabelList()
+   public EventList<LinkValue> getLabelList()
    {
       return eventList;
    }
@@ -57,14 +56,9 @@ public class LabelsModel
       try
       {
          // Get label list
-         ListValue newList = client.query( "labels", ListValue.class );
+         LinksValue newList = client.query( "labels", LinksValue.class );
 
-         if (list == null || !newList.equals( list ))
-         {
-            eventList.clear();
-            eventList.addAll( newList.items().get() );
-            list = newList;
-         }
+         EventListSynch.synchronize( newList.links().get(), eventList );
 
       } catch (ResourceException e)
       {
@@ -85,24 +79,24 @@ public class LabelsModel
       }
    }
 
-   public void removeLabel( String identity )
+   public void removeLabel( LinkValue label)
    {
       try
       {
-         client.getSubClient( identity ).deleteCommand();
+         client.getClient( label ).delete();
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_remove_label, e );
       }
    }
 
-   public void changeDescription( int selectedIndex, String name )
+   public void changeDescription( LinkValue label, String name )
    {
       try
       {
          ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
          builder.prototype().string().set( name );
-         client.getSubClient( list.items().get().get( selectedIndex ).entity().get().identity() ).putCommand( "changedescription", builder.newInstance() );
+         client.getClient( label ).putCommand( "changedescription", builder.newInstance() );
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_change_description, e );

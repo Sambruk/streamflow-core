@@ -32,6 +32,8 @@ public abstract class AbstractTaskTableFormatter
    protected String[] columnNames;
    protected Class[] columnClasses;
 
+   StringBuilder desc = new StringBuilder( );
+
    public int getColumnCount()
    {
       return columnNames.length;
@@ -58,7 +60,13 @@ public abstract class AbstractTaskTableFormatter
       {
          case 0:
          {
-            StringBuilder desc = new StringBuilder( taskValue.text().get() );
+            desc.setLength( 0 );
+
+            if (taskValue.taskId().get() != null)
+               desc.append( "#" ).append( taskValue.taskId()).append(" " );
+
+            desc.append( taskValue.text().get() );
+
             List<LinkValue> labels = taskValue.labels().get().links().get();
             if (labels.size() > 0)
             {

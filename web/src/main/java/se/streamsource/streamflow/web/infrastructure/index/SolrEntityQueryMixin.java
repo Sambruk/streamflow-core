@@ -51,6 +51,18 @@ public class SolrEntityQueryMixin
          list.add( "q", queryDescriptor.compose(variables, orderBySegments, firstResult, maxResults));
          list.add( "rows", maxResults != 0 ? maxResults : 10000 );
          list.add( "start", firstResult );
+
+         if (orderBySegments.length > 0)
+         {
+            for (OrderBy orderBySegment : orderBySegments)
+            {
+               String propName = orderBySegment.propertyReference().propertyName()+"_for_sort";
+               String order = orderBySegment.order() == OrderBy.Order.ASCENDING ? "asc" : "desc";
+               list.add( "sort", propName+" "+order );
+
+            }
+         }
+
          QueryResponse query = server.query( SolrParams.toSolrParams( list ) );
          SolrDocumentList results = query.getResults();
 

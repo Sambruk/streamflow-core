@@ -73,7 +73,7 @@ public class FormDefinitionModel
    {
       try
       {
-         client.getSubClient(""+idx ).deleteCommand();
+         client.getSubClient(""+idx ).delete();
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_remove_field, e );

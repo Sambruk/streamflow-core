@@ -23,11 +23,12 @@ import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
-import se.streamsource.streamflow.infrastructure.application.ListValue;
+import se.streamsource.streamflow.infrastructure.application.LinkValue;
+import se.streamsource.streamflow.infrastructure.application.LinksValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
@@ -42,14 +43,12 @@ public class SelectedLabelsModel
    @Uses
    CommandQueryClient client;
 
-   BasicEventList<ListItemValue> eventList = new BasicEventList<ListItemValue>();
+   BasicEventList<LinkValue> eventList = new BasicEventList<LinkValue>();
 
    @Structure
    ValueBuilderFactory vbf;
 
-   private ListValue list;
-
-   public EventList<ListItemValue> getLabelList()
+   public EventList<LinkValue> getLabelList()
    {
       return eventList;
    }
@@ -59,14 +58,8 @@ public class SelectedLabelsModel
       try
       {
          // Get label list
-         ListValue newList = client.query( "selectedlabels", ListValue.class );
-
-         if (list == null || !newList.equals( list ))
-         {
-            eventList.clear();
-            eventList.addAll( newList.items().get() );
-            list = newList;
-         }
+         LinksValue newList = client.query( "index", LinksValue.class );
+         EventListSynch.synchronize( newList.links().get(), eventList );
 
       } catch (ResourceException e)
       {
@@ -74,12 +67,12 @@ public class SelectedLabelsModel
       }
    }
 
-   public EventList<ListItemValue> getPossibleLabels()
+   public EventList<LinkValue> getPossibleLabels()
    {
       try
       {
-         BasicEventList<ListItemValue> possibleLabels = new BasicEventList<ListItemValue>();
-         possibleLabels.addAll( client.query( "possiblelabels", ListValue.class ).items().get() );
+         BasicEventList<LinkValue> possibleLabels = new BasicEventList<LinkValue>();
+         possibleLabels.addAll( client.query( "possiblelabels", LinksValue.class ).links().get() );
          return possibleLabels;
       } catch (ResourceException e)
       {
@@ -113,11 +106,11 @@ public class SelectedLabelsModel
       }
    }
 
-   public void removeLabel( EntityReference identity )
+   public void removeLabel( LinkValue identity )
    {
       try
       {
-         client.getSubClient( identity.identity() ).deleteCommand();
+         client.getClient( identity ).delete();
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_remove_label, e );

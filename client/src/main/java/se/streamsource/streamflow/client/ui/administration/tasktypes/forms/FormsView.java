@@ -16,6 +16,7 @@ package se.streamsource.streamflow.client.ui.administration.tasktypes.forms;
 
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
@@ -30,6 +31,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.LinkListCellRenderer;
 import se.streamsource.streamflow.client.ui.ConfirmationDialog;
 import se.streamsource.streamflow.client.ui.NameDialog;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.infrastructure.application.LinkValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.ActionMap;
@@ -104,10 +106,10 @@ public class FormsView
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamFlowResources.confirmation ) );
       if (dialog.isConfirmed())
       {
-         ListItemValue selected = (ListItemValue) formList.getSelectedValue();
+         LinkValue selected = (LinkValue) formList.getSelectedValue();
          if (selected != null)
          {
-            model.removeForm( selected.entity().get() );
+            model.removeForm( selected );
             model.formModels.clear();
             formList.clearSelection();
          }

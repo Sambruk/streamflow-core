@@ -21,7 +21,6 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.domain.form.CommentFieldValue;
 import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
 import se.streamsource.streamflow.domain.form.SelectionFieldValue;
 import se.streamsource.streamflow.domain.form.TextFieldValue;
@@ -29,6 +28,8 @@ import se.streamsource.streamflow.resource.roles.BooleanDTO;
 import se.streamsource.streamflow.resource.roles.IntegerDTO;
 import se.streamsource.streamflow.resource.roles.NamedIndexDTO;
 import se.streamsource.streamflow.resource.roles.StringDTO;
+import se.streamsource.streamflow.web.context.structure.DescribableContext;
+import se.streamsource.streamflow.web.context.structure.NotableContext;
 import se.streamsource.streamflow.web.domain.entity.form.FieldEntity;
 import se.streamsource.streamflow.web.domain.structure.form.Field;
 import se.streamsource.streamflow.web.domain.structure.form.FieldTemplate;
@@ -38,8 +39,6 @@ import se.streamsource.streamflow.web.infrastructure.web.context.Context;
 import se.streamsource.streamflow.web.infrastructure.web.context.ContextMixin;
 import se.streamsource.streamflow.web.infrastructure.web.context.DeleteContext;
 import se.streamsource.streamflow.web.infrastructure.web.context.RequiresRoles;
-import se.streamsource.streamflow.web.context.structure.DescribableContext;
-import se.streamsource.streamflow.web.context.structure.NotableContext;
 
 /**
  * JAVADOC
@@ -48,30 +47,30 @@ import se.streamsource.streamflow.web.context.structure.NotableContext;
 public interface FormFieldContext
       extends DeleteContext, DescribableContext, NotableContext, Context
 {
-   FieldDefinitionValue field();
+   public FieldDefinitionValue field();
 
-   void updatemandatory( BooleanDTO mandatory );
+   public void updatemandatory( BooleanDTO mandatory );
 
-   //@RequiresRoles(TextFieldValue.class)
-   void changewidth( IntegerDTO newWidth );
+   @RequiresRoles(TextFieldValue.class)
+   public void changewidth( IntegerDTO newWidth );
 
-   //@RequiresRoles(TextFieldValue.class)
-   void changerows( IntegerDTO newRows );
+   @RequiresRoles(TextFieldValue.class)
+   public void changerows( IntegerDTO newRows );
 
-   //@RequiresRoles(SelectionFieldValue.class)
-   void changemultiple( BooleanDTO multiple );
+   @RequiresRoles(SelectionFieldValue.class)
+   public void changemultiple( BooleanDTO multiple );
 
-   //@RequiresRoles(SelectionFieldValue.class)
-   void addselectionelement( StringDTO name );
+   @RequiresRoles(SelectionFieldValue.class)
+   public void addselectionelement( StringDTO name );
 
-   //@RequiresRoles(SelectionFieldValue.class)
-   void removeselectionelement( IntegerDTO index );
+   @RequiresRoles(SelectionFieldValue.class)
+   public void removeselectionelement( IntegerDTO index );
 
-   //@RequiresRoles(SelectionFieldValue.class)
-   void moveselectionelement( NamedIndexDTO moveElement );
+   @RequiresRoles(SelectionFieldValue.class)
+   public void moveselectionelement( NamedIndexDTO moveElement );
 
-   //@RequiresRoles(SelectionFieldValue.class)
-   void changeselectionelementname( NamedIndexDTO newNameDTO );
+   @RequiresRoles(SelectionFieldValue.class)
+   public void changeselectionelementname( NamedIndexDTO newNameDTO );
 
    public void move( StringDTO direction );
 
@@ -210,8 +209,8 @@ public interface FormFieldContext
 
       public void delete()
       {
-         Field field = context.role(Field.class);
-         Fields fields = context.role(Fields.class);
+         Field field = context.role( Field.class );
+         Fields fields = context.role( Fields.class );
 
          fields.removeField( field );
       }

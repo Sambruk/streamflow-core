@@ -20,7 +20,7 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
+import se.streamsource.streamflow.infrastructure.application.LinkValue;
 
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -36,7 +36,7 @@ public class GroupAdminView
       extends JSplitPane
 {
    @Uses
-   ObjectBuilder<GroupView> groupView;
+   ObjectBuilder<ParticipantsView> groupView;
 
    public GroupAdminView( @Uses GroupsView groupsView,
                           @Uses final GroupsModel groupsModel )
@@ -49,24 +49,38 @@ public class GroupAdminView
       setDividerLocation( 250 );
 
       final JList list = groupsView.getGroupList();
-      list.addListSelectionListener( new ListSelectionListener()
+      list.getSelectionModel().addListSelectionListener( new ListSelectionListener()
       {
          public void valueChanged( ListSelectionEvent e )
          {
-            ListItemValue groupValue = (ListItemValue) list.getSelectedValue();
-            if (groupValue == null)
+            if (!e.getValueIsAdjusting())
+            {
+               int idx = list.getSelectedIndex();
+               if (idx < list.getModel().getSize() && idx >= 0)
+               {
+                  LinkValue groupValue = (LinkValue) list.getModel().getElementAt( idx );
+                  ParticipantsModel participantsModel = groupsModel.getGroupModel( groupValue.id().get() );
+                  setRightComponent( groupView.use( participantsModel ).newInstance() );
+                  try
+                  {
+                     participantsModel.refresh();
+                  } catch (ResourceException e1)
+                  {
+                     throw new OperationException( AdministrationResources.could_not_refresh_list_of_groups, e1 );
+                  }
+               } else
+               {
+                  setRightComponent( new JPanel() );
+               }
+            }
+
+
+            if (list.isSelectionEmpty())
+            {
                setRightComponent( new JPanel() );
+            } 
             else
             {
-               GroupModel groupModel = groupsModel.getGroupModel( groupValue.entity().get().identity() );
-               setRightComponent( groupView.use( groupModel ).newInstance() );
-               try
-               {
-                  groupModel.refresh();
-               } catch (ResourceException e1)
-               {
-                  throw new OperationException( AdministrationResources.could_not_refresh_list_of_groups, e1 );
-               }
             }
          }
       } );

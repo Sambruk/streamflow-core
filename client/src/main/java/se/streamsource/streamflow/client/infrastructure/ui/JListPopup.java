@@ -17,6 +17,7 @@ package se.streamsource.streamflow.client.infrastructure.ui;
 import javax.swing.JList;
 import javax.swing.JPopupMenu;
 import javax.swing.ListModel;
+import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -30,6 +31,8 @@ public class JListPopup
    public JListPopup( ListModel dataModel, final JPopupMenu menu )
    {
       super( dataModel );
+
+      setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
 
       addMouseListener( new MouseAdapter()
       {

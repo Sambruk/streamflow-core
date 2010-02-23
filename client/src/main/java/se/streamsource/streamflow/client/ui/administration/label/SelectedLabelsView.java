@@ -24,6 +24,8 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilder;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
+import se.streamsource.streamflow.client.infrastructure.ui.LinkComparator;
+import se.streamsource.streamflow.client.infrastructure.ui.LinkListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemComparator;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
@@ -67,9 +69,9 @@ public class SelectedLabelsView
       ActionMap am = context.getActionMap( this );
       setActionMap( am );
 
-      labelList = new JList( new EventListModel<ListItemValue>( new SortedList<ListItemValue>( modelSelected.getLabelList(), new ListItemComparator() ) ) );
+      labelList = new JList( new EventListModel<LinkValue>( new SortedList<LinkValue>( modelSelected.getLabelList(), new LinkComparator() ) ) );
 
-      labelList.setCellRenderer( new ListItemListCellRenderer() );
+      labelList.setCellRenderer( new LinkListCellRenderer() );
 
       add( new JScrollPane( labelList ), BorderLayout.CENTER );
 
@@ -112,8 +114,8 @@ public class SelectedLabelsView
    @Action
    public void remove()
    {
-      ListItemValue selected = (ListItemValue) labelList.getSelectedValue();
-      modelSelected.removeLabel( selected.entity().get() );
+      LinkValue selected = (LinkValue) labelList.getSelectedValue();
+      modelSelected.removeLabel( selected );
       modelSelected.refresh();
    }
 }

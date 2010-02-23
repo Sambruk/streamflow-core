@@ -26,6 +26,7 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.web.domain.structure.group.Group;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 
 /**
@@ -107,10 +108,21 @@ public interface Projects
          addedProject( DomainEvent.CREATE, project );
       }
 
+      public boolean removeProject( Project project )
+      {
+         if (!projects().contains( project ))
+            return false;
+
+         removedProject( DomainEvent.CREATE, project );
+         
+         return true;
+      }
+
       public Project getProjectByName( String name )
       {
          return Describable.Mixin.getDescribable( projects(), name );
       }
+
    }
 
 

@@ -24,7 +24,6 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.resource.CommandQueryClient;
-import se.streamsource.streamflow.infrastructure.application.LinkValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
@@ -74,7 +73,7 @@ public class TaskLabelsModel
       {
          ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
          builder.prototype().entity().set( removeLabel );
-         client.getSubClient( removeLabel.identity() ).deleteCommand();;
+         client.getSubClient( removeLabel.identity() ).delete();;
       } catch (ResourceException e)
       {
          throw new OperationException( TaskResources.could_not_remove_label, e );

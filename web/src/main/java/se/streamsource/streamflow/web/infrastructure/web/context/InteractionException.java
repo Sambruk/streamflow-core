@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, Rickard Öberg. All Rights Reserved.
+ * Copyright (c) 2010, Rickard Öberg. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,17 +12,20 @@
  *
  */
 
-package se.streamsource.streamflow.web.resource.organizations;
-
-import org.qi4j.api.composite.TransientComposite;
-import se.streamsource.streamflow.web.resource.organizations.groups.GroupsResource;
+package se.streamsource.streamflow.web.infrastructure.web.context;
 
 /**
- * Mapped to /organizations/{root}
+ * JAVADOC
  */
-public interface OrganizationCompositeResource
-      extends DescribableResource,
-      OrganizationalUnitResource,
-      GroupsResource, TransientComposite
+public class InteractionException
+   extends RuntimeException
 {
+   private String status;
+   private Object result;
+
+   public InteractionException( String status, Object result )
+   {
+      this.status = status;
+      this.result = result;
+   }
 }

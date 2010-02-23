@@ -124,19 +124,16 @@ public interface EventSourceService
                {
                   if (status.equals( UnitOfWorkStatus.COMPLETED ))
                   {
-                     if (eventList.size() > 0)
-                     {
-                        ValueBuilder<TransactionEvents> builder = vbf.newValueBuilder( TransactionEvents.class );
-                        builder.prototype().timestamp().set( System.currentTimeMillis() );
-                        builder.prototype().events().set( eventList );
-                        final TransactionEvents transaction = builder.newInstance();
+                     ValueBuilder<TransactionEvents> builder = vbf.newValueBuilder( TransactionEvents.class );
+                     builder.prototype().timestamp().set( System.currentTimeMillis() );
+                     builder.prototype().events().set( eventList );
+                     final TransactionEvents transaction = builder.newInstance();
 
-                        synchronized (listeners)
+                     synchronized (listeners)
+                     {
+                        for (final TransactionVisitor listener : listeners)
                         {
-                           for (final TransactionVisitor listener : listeners)
-                           {
-                              listener.visit( transaction );
-                           }
+                           listener.visit( transaction );
                         }
                      }
                   }

@@ -17,16 +17,19 @@ package se.streamsource.streamflow.client.ui.administration.groups;
 import ca.odell.glazedlists.swing.EventListModel;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilder;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.StreamFlowResources;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
+import se.streamsource.streamflow.client.infrastructure.ui.LinkListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.ConfirmationDialog;
 import se.streamsource.streamflow.client.ui.SelectUsersAndGroupsDialog;
+import se.streamsource.streamflow.infrastructure.application.LinkValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.ActionMap;
@@ -39,7 +42,7 @@ import java.util.Set;
 /**
  * JAVADOC
  */
-public class GroupView
+public class ParticipantsView
       extends JPanel
 {
    @Service
@@ -53,9 +56,9 @@ public class GroupView
 
    public JList participantList;
 
-   private GroupModel model;
+   private ParticipantsModel model;
 
-   public GroupView( @Service ApplicationContext context, @Uses GroupModel model )
+   public ParticipantsView( @Service ApplicationContext context, @Uses ParticipantsModel model )
    {
       super( new BorderLayout() );
       this.model = model;
@@ -63,9 +66,9 @@ public class GroupView
       ActionMap am = context.getActionMap( this );
       setActionMap( am );
 
-      participantList = new JList( new EventListModel(model.getParticipants()) );
+      participantList = new JList( new EventListModel<LinkValue>(model.getParticipants()) );
 
-      participantList.setCellRenderer( new ListItemListCellRenderer() );
+      participantList.setCellRenderer( new LinkListCellRenderer() );
 
       add( participantList, BorderLayout.CENTER );
 
@@ -78,7 +81,7 @@ public class GroupView
    @Action
    public void add() throws ResourceException
    {
-      SelectUsersAndGroupsDialog dialog = selectUsersAndGroups.use( model.getFilterResource() ).newInstance();
+      SelectUsersAndGroupsDialog dialog = selectUsersAndGroups.use( model.getClient() ).newInstance();
       dialogs.showOkCancelHelpDialog( this, dialog );
       Set<String> participants = dialog.getUsersAndGroups();
       if (participants != null)
@@ -95,8 +98,8 @@ public class GroupView
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamFlowResources.confirmation ) );
       if (dialog.isConfirmed())
       {
-         ListItemValue value = (ListItemValue) participantList.getSelectedValue();
-         model.removeParticipant( value.entity().get().identity() );
+         LinkValue value = (LinkValue) participantList.getSelectedValue();
+         model.removeParticipant( value.id().get() );
          model.refresh();
       }
    }

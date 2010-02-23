@@ -15,6 +15,7 @@
 package se.streamsource.streamflow.web.context.organizations;
 
 import org.qi4j.api.mixin.Mixins;
+import se.streamsource.streamflow.web.context.structure.labels.SelectedLabelsContext;
 import se.streamsource.streamflow.web.domain.structure.organization.Projects;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.infrastructure.web.context.Context;
@@ -35,6 +36,12 @@ public interface ProjectContext
    @SubContext
    MembersContext members();
 
+   @SubContext
+   SelectedLabelsContext selectedlabels();
+
+   @SubContext
+   SelectedTaskTypesContext selectedtasktypes();
+
    abstract class Mixin
       extends ContextMixin
       implements ProjectContext
@@ -50,6 +57,16 @@ public interface ProjectContext
       public MembersContext members()
       {
          return subContext( MembersContext.class );
+      }
+
+      public SelectedLabelsContext selectedlabels()
+      {
+         return subContext( SelectedLabelsContext.class );
+      }
+
+      public SelectedTaskTypesContext selectedtasktypes()
+      {
+         return subContext( SelectedTaskTypesContext.class );
       }
    }
 }

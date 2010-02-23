@@ -22,7 +22,7 @@ import se.streamsource.streamflow.client.ui.administration.OrganizationalUnitAdm
 import se.streamsource.streamflow.client.ui.administration.label.SelectedLabelsModel;
 import se.streamsource.streamflow.client.ui.administration.tasktypes.SelectedTaskTypesModel;
 import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
+import se.streamsource.streamflow.infrastructure.application.LinkValue;
 
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -65,8 +65,8 @@ public class ProjectAdminView
                int idx = list.getSelectedIndex();
                if (idx < list.getModel().getSize() && idx >= 0)
                {
-                  ListItemValue projectValue = (ListItemValue) list.getModel().getElementAt( idx );
-                  ProjectModel projectModel = projectsModel.getProjectModel( projectValue.entity().get().identity() );
+                  LinkValue projectValue = (LinkValue) list.getModel().getElementAt( idx );
+                  ProjectModel projectModel = projectsModel.getProjectModel( projectValue.id().get() );
                   ProjectMembersModel membersModel = projectModel.getMembersModel();
                   SelectedLabelsModel labelsModel = projectModel.getSelectedLabelsModel();
                   SelectedTaskTypesModel selectedTaskTypes = projectModel.getSelectedTaskTypes();

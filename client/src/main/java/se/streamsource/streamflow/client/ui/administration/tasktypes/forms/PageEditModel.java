@@ -100,6 +100,6 @@ public class PageEditModel
 
    public void remove() throws ResourceException
    {
-      client.deleteCommand();
+      client.delete();
    }
 }

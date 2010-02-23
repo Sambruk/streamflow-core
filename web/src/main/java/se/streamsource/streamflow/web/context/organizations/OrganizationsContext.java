@@ -18,6 +18,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.value.Value;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.infrastructure.application.LinksValue;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
@@ -25,6 +26,7 @@ import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsQu
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 import se.streamsource.streamflow.web.infrastructure.web.context.Context;
 import se.streamsource.streamflow.web.infrastructure.web.context.ContextMixin;
+import se.streamsource.streamflow.web.infrastructure.web.context.IndexContext;
 import se.streamsource.streamflow.web.infrastructure.web.context.SubContexts;
 
 /**
@@ -32,10 +34,8 @@ import se.streamsource.streamflow.web.infrastructure.web.context.SubContexts;
  */
 @Mixins(OrganizationsContext.Mixin.class)
 public interface OrganizationsContext
-   extends SubContexts<OrganizationContext>, Context
+   extends SubContexts<OrganizationContext>, IndexContext<LinksValue>, Context
 {
-   public LinksValue organizations();
-
    abstract class Mixin
       extends ContextMixin
       implements OrganizationsContext
@@ -43,7 +43,7 @@ public interface OrganizationsContext
       @Structure
       UnitOfWorkFactory uowf;
 
-      public LinksValue organizations()
+      public LinksValue index()
       {
          UnitOfWork uow = uowf.currentUnitOfWork();
          OrganizationsQueries organizations = uow

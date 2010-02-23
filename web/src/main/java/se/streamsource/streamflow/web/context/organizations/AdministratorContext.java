@@ -19,6 +19,7 @@ import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEnt
 import se.streamsource.streamflow.web.domain.structure.group.Participant;
 import se.streamsource.streamflow.web.domain.structure.organization.RolePolicy;
 import se.streamsource.streamflow.web.domain.structure.role.Role;
+import se.streamsource.streamflow.web.domain.structure.role.Roles;
 import se.streamsource.streamflow.web.infrastructure.web.context.Context;
 import se.streamsource.streamflow.web.infrastructure.web.context.ContextMixin;
 import se.streamsource.streamflow.web.infrastructure.web.context.DeleteContext;
@@ -40,8 +41,8 @@ public interface AdministratorContext
 
          Participant participant = context.role(Participant.class);
 
-         OrganizationEntity organization = (OrganizationEntity)role;
-         Role adminRole = organization.getAdministratorRole();
+         Roles roles = context.role(Roles.class);
+         Role adminRole = roles.getAdministratorRole();
 
          role.revokeRole( participant, adminRole );
       }

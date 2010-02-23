@@ -41,7 +41,7 @@ public interface UserContext
    @SubContext
    UserAdministrationContext administration();
 
-   void changePassword( ChangePasswordCommand newPassword ) throws WrongPasswordException;
+   void changepassword( ChangePasswordCommand newPassword ) throws WrongPasswordException;
    
    public void resetpassword( StringDTO command );
    public void changedisabled();
@@ -50,7 +50,7 @@ public interface UserContext
          extends ContextMixin
          implements UserContext
    {
-      public void changePassword( ChangePasswordCommand newPassword ) throws WrongPasswordException
+      public void changepassword( ChangePasswordCommand newPassword ) throws WrongPasswordException
       {
          UserAuthentication user = context.role(UserAuthentication.class);
 

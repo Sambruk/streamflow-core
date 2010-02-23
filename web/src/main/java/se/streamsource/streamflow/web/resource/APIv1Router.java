@@ -42,12 +42,13 @@ public class APIv1Router
 {
    private ObjectBuilderFactory factory;
 
-   public APIv1Router( @Uses Context context, @Structure ObjectBuilderFactory factory )
+   public APIv1Router( @Uses Context context, @Structure ObjectBuilderFactory factory ) throws Exception
    {
       super( context );
       this.factory = factory;
 
-      attach(new ExtensionMediaTypeFilter( getContext(), createServerResourceFinder( DCICommandQueryServerResource.class )));
+      attach(new ExtensionMediaTypeFilter( getContext(), factory.newObjectBuilder( EventsFilter.class).use(getContext(), 
+            factory.newObjectBuilder( ViewFilter.class).use(getContext(), createServerResourceFinder( DCICommandQueryServerResource.class )).newInstance()).newInstance()));
 
 //      attach( createServerResourceFinder( StreamFlowServerResource.class ) );
 /*

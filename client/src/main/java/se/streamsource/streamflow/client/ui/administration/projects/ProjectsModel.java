@@ -24,16 +24,17 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
+import se.streamsource.streamflow.client.infrastructure.ui.LinkComparator;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
-import se.streamsource.streamflow.client.infrastructure.ui.ListItemComparator;
 import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.administration.OrganizationalUnitAdministrationModel;
 import se.streamsource.streamflow.client.ui.administration.label.SelectedLabelsModel;
 import se.streamsource.streamflow.client.ui.administration.tasktypes.SelectedTaskTypesModel;
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
-import se.streamsource.streamflow.infrastructure.application.ListValue;
+import se.streamsource.streamflow.infrastructure.application.LinkValue;
+import se.streamsource.streamflow.infrastructure.application.LinksValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 
@@ -55,7 +56,7 @@ public class ProjectsModel
    @Uses
    CommandQueryClient client;
 
-   SortedList<ListItemValue> eventList = new SortedList<ListItemValue>( new BasicEventList<ListItemValue>(), new ListItemComparator() );
+   SortedList<LinkValue> eventList = new SortedList<LinkValue>( new BasicEventList<LinkValue>(), new LinkComparator() );
 
    WeakModelMap<String, ProjectModel> projectModels = new WeakModelMap<String, ProjectModel>()
    {
@@ -63,7 +64,7 @@ public class ProjectsModel
       {
          CommandQueryClient projectClient = client.getSubClient( key );
          SelectedLabelsModel selectedLabelsModel = obf.newObjectBuilder( SelectedLabelsModel.class ).use( projectClient.getSubClient( "selectedlabels" ) ).newInstance();
-         SelectedTaskTypesModel selectedTaskTypesModel = obf.newObjectBuilder( SelectedTaskTypesModel.class ).use( projectClient.getSubClient( "tasktypes" ) ).newInstance();
+         SelectedTaskTypesModel selectedTaskTypesModel = obf.newObjectBuilder( SelectedTaskTypesModel.class ).use( projectClient.getSubClient( "selectedtasktypes" ) ).newInstance();
          ProjectMembersModel projectMembersModel = obf.newObjectBuilder(ProjectMembersModel.class).use( projectClient.getSubClient( "members" ) ).newInstance();
 
 
@@ -75,7 +76,7 @@ public class ProjectsModel
       }
    };
 
-   public SortedList<ListItemValue> getProjectList()
+   public SortedList<LinkValue> getProjectList()
    {
       return eventList;
    }
@@ -85,8 +86,8 @@ public class ProjectsModel
       try
       {
          // Get Project list
-         eventList.clear();
-         eventList.addAll( client.query( "projects", ListValue.class ).items().get() );
+         LinksValue projectsList = client.query( "index", LinksValue.class );
+         EventListSynch.synchronize( projectsList.links().get(), eventList );
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_refresh, e );
@@ -97,7 +98,7 @@ public class ProjectsModel
    {
       try
       {
-         client.getSubClient( id ).deleteCommand();
+         client.getSubClient( id ).delete();
          refresh();
       } catch (ResourceException e)
       {
@@ -111,7 +112,7 @@ public class ProjectsModel
       {
          ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
          builder.prototype().string().set( projectName );
-         client.postCommand( "createProject", builder.newInstance() );
+         client.postCommand( "createproject", builder.newInstance() );
          refresh();
       } catch (ResourceException e)
       {
@@ -130,7 +131,7 @@ public class ProjectsModel
 
       try
       {
-         client.getSubClient( eventList.get( selectedIndex ).entity().get().identity() ).putCommand( "changedescription", builder.newInstance() );
+         client.getSubClient( eventList.get( selectedIndex ).id().get() ).putCommand( "changedescription", builder.newInstance() );
       } catch (ResourceException e)
       {
          if (Status.CLIENT_ERROR_CONFLICT.equals( e.getStatus() ))

@@ -32,7 +32,7 @@ public class GroupAdministrationAssembler
       UIAssemblers.addMV( module, GroupsModel.class,
             GroupsView.class );
 
-      UIAssemblers.addMV( module, GroupModel.class,
-            GroupView.class );
+      UIAssemblers.addMV( module, ParticipantsModel.class,
+            ParticipantsView.class );
    }
 }

@@ -72,7 +72,7 @@ public class LinksBuilder
       linkBuilder.prototype().text().set( description );
       linkBuilder.prototype().id().set( ref.identity() );
       if (command != null)
-         linkBuilder.prototype().href().set( "?command="+command+"&entity="+ref.identity() );
+         linkBuilder.prototype().href().set( command+"?entity="+ref.identity() );
       else
          linkBuilder.prototype().href().set( (path == null ? "" : path+"/")+ref.identity()+"/" );
       linkBuilder.prototype().rel().set( rel );

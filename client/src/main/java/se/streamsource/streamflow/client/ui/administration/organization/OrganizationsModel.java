@@ -80,7 +80,7 @@ public class OrganizationsModel
    {
       try
       {
-         organizations = client.query("organizations", LinksValue.class).links().get();
+         organizations = client.query("index", LinksValue.class).links().get();
          fireContentsChanged( this, 0, organizations.size() );
       } catch (ResourceException e)
       {

@@ -107,8 +107,8 @@ public class TaskTypesView
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamFlowResources.confirmation ) );
       if (dialog.isConfirmed())
       {
-         ListItemValue selected = (ListItemValue) projectList.getSelectedValue();
-         model.removeTaskType( selected.entity().get().identity() );
+         LinkValue selected = (LinkValue) projectList.getSelectedValue();
+         model.removeTaskType( selected.id().get() );
          model.refresh();
       }
    }
@@ -121,8 +121,8 @@ public class TaskTypesView
 
       if (dialog.name() != null)
       {
-         ListItemValue item = (ListItemValue) projectList.getSelectedValue();
-         model.getTaskTypeModel( item.entity().get().identity() ).changeDescription( dialog.name() );
+         LinkValue item = (LinkValue) projectList.getSelectedValue();
+         model.getTaskTypeModel( item.id().get() ).changeDescription( dialog.name() );
          model.refresh();
       }
    }

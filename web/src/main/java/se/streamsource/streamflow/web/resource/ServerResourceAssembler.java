@@ -30,13 +30,11 @@ import se.streamsource.streamflow.web.resource.labels.LabelServerResource;
 import se.streamsource.streamflow.web.resource.labels.LabelsServerResource;
 import se.streamsource.streamflow.web.resource.labels.SelectedLabelServerResource;
 import se.streamsource.streamflow.web.resource.labels.SelectedLabelsServerResource;
-import se.streamsource.streamflow.web.resource.organizations.OrganizationCompositeResource;
 import se.streamsource.streamflow.web.resource.organizations.OrganizationServerResource;
 import se.streamsource.streamflow.web.resource.organizations.OrganizationalUnitServerResource;
 import se.streamsource.streamflow.web.resource.organizations.OrganizationsServerResource;
 import se.streamsource.streamflow.web.resource.organizations.forms.FormTemplateServerResource;
 import se.streamsource.streamflow.web.resource.organizations.forms.FormTemplatesServerResource;
-import se.streamsource.streamflow.web.resource.organizations.groups.GroupResource;
 import se.streamsource.streamflow.web.resource.organizations.groups.GroupServerResource;
 import se.streamsource.streamflow.web.resource.organizations.groups.GroupsServerResource;
 import se.streamsource.streamflow.web.resource.organizations.groups.participants.ParticipantServerResource;
@@ -100,7 +98,7 @@ public class ServerResourceAssembler
 {
    public void assemble( ModuleAssembly module ) throws AssemblyException
    {
-      module.addTransients( OrganizationCompositeResource.class, GroupResource.class );
+      module.addObjects( EventsFilter.class, ViewFilter.class );
 
       // Resources
       module.addObjects(

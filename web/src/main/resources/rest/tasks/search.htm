@@ -1,0 +1,16 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>${request.resourceRef.remainingPart}</title>
+</head>
+
+<body>
+<h3>Search result</h3>
+
+<ul>
+#foreach($link in $result.links)
+<li><a href="${link.href}">${link.text} ${link.status}</a></li>
+#end
+</ul>
+</body>
+
+</html>

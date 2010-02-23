@@ -36,6 +36,7 @@ public class TaskInfoView extends JPanel implements Observer
 
 	TaskInfoModel model;
 
+   private JLabel taskId = new JLabel();
    private JLabel description = new JLabel();
    private JLabel created = new JLabel();
    private JLabel owner = new JLabel();
@@ -49,9 +50,11 @@ public class TaskInfoView extends JPanel implements Observer
 	{
       super(new FlowLayout(FlowLayout.LEFT));
 
-      description.setFont( description.getFont().deriveFont(Font.BOLD ));
-      created.setFont( description.getFont().deriveFont(Font.BOLD ));
-      owner.setFont( description.getFont().deriveFont(Font.BOLD ));
+      Font boldFont = description.getFont().deriveFont( Font.BOLD );
+      description.setFont( boldFont );
+      taskId.setFont( boldFont );
+      created.setFont( boldFont );
+      owner.setFont( boldFont );
 
       setFont( getFont().deriveFont(getFont().getSize()-2 ));
 
@@ -59,6 +62,7 @@ public class TaskInfoView extends JPanel implements Observer
       statusRenderer = new TaskStatusTableCellRenderer();
       add(statusPanel);
       add(description);
+      add(taskId);
       add(new JLabel(i18n.text( WorkspaceResources.created_column_header )+":"));
       add(created);
       add(new JLabel(i18n.text( WorkspaceResources.owner )+":"));
@@ -91,6 +95,10 @@ public class TaskInfoView extends JPanel implements Observer
       statusPanel.add( comp );
 
       description.setText( task.text().get());
+
+      taskId.setText( task.taskId().get() != null ? "("+task.taskId().get()+")" : "" );
+
+
       created.setText(format.format( task.creationDate().get())+(task.createdBy().get() != null ? "("+task.createdBy().get()+")":""));
       owner.setText( task.owner().get() );
 

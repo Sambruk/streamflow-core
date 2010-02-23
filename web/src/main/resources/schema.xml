@@ -432,6 +432,8 @@
    <field name="type" type="string" indexed="true" stored="true" required="true" />
 
    <field name="description" type="text" indexed="true" stored="true" />
+   <field name="description_for_sort" type="string"/>
+
    <field name="note" type="text" indexed="true" stored="true" multiValued="true"/>
    <field name="taskId" type="string" indexed="true" stored="true" />
 
@@ -563,9 +565,10 @@
         or to add multiple fields to the same field for easier/faster searching.  -->
 
    <copyField source="description" dest="text"/>
+   <copyField source="description" dest="description_for_sort"/>
    <copyField source="note" dest="text"/>
    <copyField source="taskId" dest="text" />
-   
+
    <!--
    <copyField source="manu" dest="text"/>
    <copyField source="features" dest="text"/>

@@ -16,20 +16,28 @@ package se.streamsource.streamflow.client.ui.administration.projects;
 
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.SortedList;
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
+import se.streamsource.streamflow.client.infrastructure.ui.LinkComparator;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemComparator;
 import se.streamsource.streamflow.client.resource.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.administration.OrganizationalUnitAdministrationModel;
+import se.streamsource.streamflow.infrastructure.application.LinkValue;
+import se.streamsource.streamflow.infrastructure.application.LinksValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
+import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 
 import java.util.Set;
 
@@ -49,9 +57,12 @@ public class ProjectMembersModel
    @Structure
    ObjectBuilderFactory obf;
 
-   private SortedList<ListItemValue> members = new SortedList( new BasicEventList<ListItemValue>( ), new ListItemComparator() );
+   @Structure
+   ValueBuilderFactory vbf;
 
-   public SortedList<ListItemValue> getMembers()
+   private SortedList<LinkValue> members = new SortedList<LinkValue>( new BasicEventList<LinkValue>( ), new LinkComparator() );
+
+   public SortedList<LinkValue> getMembers()
    {
       return members;
    }
@@ -60,9 +71,8 @@ public class ProjectMembersModel
    {
       try
       {
-         ListValue membersList = client.query( "members", ListValue.class);
-         members.clear();
-         members.addAll( membersList.items().get() );
+         LinksValue membersList = client.query( "index", LinksValue.class);
+         EventListSynch.synchronize( membersList.links().get(), members );
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_refresh_list_of_members, e );
@@ -75,7 +85,10 @@ public class ProjectMembersModel
       {
          for (String value : newMembers)
          {
-            client.getSubClient( value ).create();
+
+            ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
+            builder.prototype().entity().set( EntityReference.parseEntityReference(value ));
+            client.postCommand( "addmember", builder.newInstance() );
          }
       } catch (ResourceException e)
       {
@@ -83,13 +96,11 @@ public class ProjectMembersModel
       }
    }
 
-   public void removeMember( int index )
+   public void removeMember( LinkValue member)
    {
       try
       {
-         String id = members.get( index ).entity().get().identity();
-
-         client.getSubClient( id ).deleteCommand();
+         client.getClient( member ).delete();
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_remove_member, e );

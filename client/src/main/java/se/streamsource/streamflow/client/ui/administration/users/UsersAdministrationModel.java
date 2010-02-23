@@ -31,6 +31,7 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
 import se.streamsource.streamflow.infrastructure.event.source.EventVisitorFilter;
+import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.resource.user.NewUserCommand;
 import se.streamsource.streamflow.resource.user.ResetPasswordCommand;
 import se.streamsource.streamflow.resource.user.UserEntityDTO;
@@ -192,11 +193,10 @@ public class UsersAdministrationModel
    {
       try
       {
-         ValueBuilder<ResetPasswordCommand> builder = vbf.newValueBuilder( ResetPasswordCommand.class );
-         builder.prototype().entity().set(  users.get( index ).entity().get() );
-         builder.prototype().password().set( password );
+         ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
+         builder.prototype().string().set( password );
 
-         client.putCommand( "resetpassword", builder.newInstance() );
+         client.getSubClient( users.get( index ).entity().get().identity() ).putCommand( "resetpassword", builder.newInstance() );
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.reset_password_failed, e );

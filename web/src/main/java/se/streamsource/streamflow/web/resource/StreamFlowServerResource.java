@@ -26,6 +26,6 @@ public class StreamFlowServerResource
    @Override
    protected Representation get() throws ResourceException
    {
-      return getHtml( "resources/index.html" );
+      return getHtml( "resources/index.htm" );
    }
 }
