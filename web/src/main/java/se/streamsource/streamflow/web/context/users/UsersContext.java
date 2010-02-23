@@ -58,8 +58,6 @@ public interface UsersContext
    // Queries
    UserEntityListDTO users();
    
-   EntityReference findbyusername( StringDTO name) throws ResourceException;
-
    // Commands
    UserContext createuser( NewUserCommand command);
 
@@ -72,21 +70,6 @@ public interface UsersContext
          UsersQueries orgs = module.unitOfWorkFactory().currentUnitOfWork().get( UsersQueries.class, UsersEntity.USERS_ID );
 
          return orgs.users();
-      }
-
-      public EntityReference findbyusername( StringDTO name ) throws ResourceException
-      {
-         UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
-         UsersEntity users = uow.get( UsersEntity.class, UsersEntity.USERS_ID );
-         try
-         {
-            UserEntity user = users.getUserByName( name.string().get() );
-
-            return EntityReference.getEntityReference( user );
-         } catch (NoSuchEntityException e)
-         {
-            throw new ResourceException( Status.CLIENT_ERROR_NOT_FOUND );
-         }
       }
 
       public UserContext createuser( NewUserCommand command )
