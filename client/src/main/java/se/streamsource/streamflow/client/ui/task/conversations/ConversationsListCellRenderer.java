@@ -8,6 +8,7 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.text.SimpleDateFormat;
 
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -15,6 +16,9 @@ import javax.swing.ListCellRenderer;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+
+import org.jdesktop.swingx.JXList;
+import org.jdesktop.swingx.decorator.HighlighterFactory;
 
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.infrastructure.ui.ModifiedFlowLayout;
@@ -27,6 +31,8 @@ import com.jgoodies.forms.layout.FormLayout;
 
 public class ConversationsListCellRenderer implements ListCellRenderer
 {
+	DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
+	
 	public Component getListCellRendererComponent(final JList list,
 			Object value, int index, boolean isSelected, boolean cellHasFocus)
 	{
@@ -39,15 +45,21 @@ public class ConversationsListCellRenderer implements ListCellRenderer
 					list.setCellRenderer(new ConversationsListCellRenderer());
 			}
 		});
-
+		
+		if (list instanceof JXList)
+		{
+			((JXList)list).addHighlighter( HighlighterFactory.createAlternateStriping() );
+		}
+		
 		ConversationDTO conversations = (ConversationDTO) value;
 
 		JPanel renderer = new JPanel(new BorderLayout());
+		renderer.setLayout(new BorderLayout());
 		renderer.setBorder(new EmptyBorder(3, 3, 3, 3));
 
 		// Layout and form for the header panel
 		FormLayout headerLayout = new FormLayout(
-				"100dlu:grow, 5dlu, pref:grow, pref:grow", "pref");
+				"40dlu:grow, pref, 3dlu, pref", "pref");
 		JPanel headerPanel = new JPanel(headerLayout);
 		headerPanel.setFocusable(false);
 		DefaultFormBuilder headerBuilder = new DefaultFormBuilder(headerLayout,
@@ -57,14 +69,14 @@ public class ConversationsListCellRenderer implements ListCellRenderer
 		JLabel title = new JLabel(conversations.description().get());
 		title.setFont(title.getFont().deriveFont(Font.BOLD));
 		headerBuilder.add(title);
-		headerBuilder.nextColumn(2);
+		headerBuilder.nextColumn();
 
 		// Participants
 		JLabel participants = new JLabel(String.valueOf(conversations
 				.participants().get()), i18n.icon(Icons.participants, 16),
 				JLabel.LEADING);
 		headerBuilder.add(participants);
-		headerBuilder.nextColumn();
+		headerBuilder.nextColumn(2);
 
 		// Conversations
 		JLabel conversationsLabel = new JLabel(String.valueOf(conversations
@@ -92,52 +104,24 @@ public class ConversationsListCellRenderer implements ListCellRenderer
 
 			// Creator
 			JLabel labelCreator = new JLabel(conversations.creator().get().toString());
-			ingressPanel.add(labelCreator);
+			ingressPanel.add(labelCreator);			
 			contentPanel.add(ingressPanel, BorderLayout.NORTH);
-
-			// JPanel internalsPanel = new JPanel(new
-			// ModifiedFlowLayout(FlowLayout.LEFT));
-			// JLabel labelInternal = new JLabel(i18n
-			// .text(ConversationsResources.internal_participants_label));
-			// labelInternal
-			// .setFont(labelInternal.getFont().deriveFont(Font.BOLD));
-			// StringBuilder internals = new StringBuilder();
-			// internals.append(array.get(5)).append(",").append(array.get(6))
-			// .append(",").append(array.get(7)).append(",").append(
-			// array.get(8));
-			// internalsPanel.add(labelInternal, FlowLayout.LEFT);
-			// internalsPanel.add(new JLabel(internals.toString()));
-			// contentPanel.add(internalsPanel, BorderLayout.CENTER);
-			//
-			// // contentPanel.add(internals);
-			//
-			// JPanel externalsPanel = new JPanel(new
-			// ModifiedFlowLayout(FlowLayout.LEFT));
-			// JLabel labelExternal = new JLabel(i18n
-			// .text(ConversationsResources.external_participants_label));
-			// labelExternal
-			// .setFont(labelInternal.getFont().deriveFont(Font.BOLD));
-			// externalsPanel.add(labelExternal, FlowLayout.LEFT);
-			// externalsPanel.add(new JLabel(internals.toString()));
-			// contentPanel.add(externalsPanel, BorderLayout.SOUTH);
-
 			renderer.add(contentPanel, BorderLayout.CENTER);
-			renderer.revalidate();
-			renderer.repaint();
 		} else
 		{
 			renderer.setPreferredSize(headerPanel.getPreferredSize());
 			renderer.setBackground(Color.WHITE);
 			headerPanel.setBackground(Color.WHITE);
 		}
-
+		
 		if (list.getSelectedIndex() == index)
 		{
-			renderer.setPreferredSize(new Dimension(300, 40));
+			renderer.setPreferredSize(new Dimension(200, 40));
 		} else
 		{
-			renderer.setPreferredSize(new Dimension(300, 20));
+			renderer.setPreferredSize(new Dimension(200, 20));
 		}
+		
 		return renderer;
 	}
 }
