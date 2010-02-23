@@ -134,7 +134,7 @@ public class ViewFilter
                         {
                            if (object.opt( "links" ) != null)
                            {
-                              template = velocity.getTemplate( "se/streamsource/streamflow/web/resource/resources/links.html" );
+                              template = velocity.getTemplate( "se/streamsource/streamflow/dci/resource/resources/links.html" );
                               VelocityContext context = new VelocityContext( new JSONObjectContext( object ) );
                               context.put( "request", request );
                               context.put( "response", response );
