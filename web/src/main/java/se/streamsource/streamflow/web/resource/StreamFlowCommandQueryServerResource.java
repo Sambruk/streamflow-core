@@ -14,11 +14,13 @@
 
 package se.streamsource.streamflow.web.resource;
 
+import org.apache.velocity.app.VelocityEngine;
+import org.qi4j.api.injection.scope.Service;
 import org.restlet.data.Reference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.composite.TransientBuilderFactory;
-import se.streamsource.streamflow.dci.infrastructure.web.context.InteractionContext;
-import se.streamsource.streamflow.dci.resource.DCICommandQueryServerResource;
+import se.streamsource.dci.context.InteractionContext;
+import se.streamsource.dci.restlet.server.CommandQueryServerResource;
 import se.streamsource.streamflow.web.context.RootContext;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Actor;
 
@@ -32,15 +34,20 @@ import java.security.Principal;
  * root of the application
  */
 public class StreamFlowCommandQueryServerResource
-      extends DCICommandQueryServerResource
+      extends CommandQueryServerResource
 {
 
    @Structure
    TransientBuilderFactory tbf;
 
-   protected RootContext getRoot()
+   public StreamFlowCommandQueryServerResource( @Service VelocityEngine templates)
+         throws Exception
    {
-      InteractionContext interactionContext = new InteractionContext();
+      super( templates );
+   }
+
+   protected RootContext getRoot(InteractionContext interactionContext)
+   {
       interactionContext.playRoles( getActor(), Actor.class );
       interactionContext.playRoles( resolveRequestLocale(), Locale.class );
       interactionContext.playRoles( getRequest().getResourceRef(), Reference.class );

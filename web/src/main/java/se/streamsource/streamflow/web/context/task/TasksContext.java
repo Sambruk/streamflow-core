@@ -27,9 +27,9 @@ import se.streamsource.streamflow.web.domain.entity.task.TaskEntity;
 import se.streamsource.streamflow.web.domain.entity.user.SearchTaskQueries;
 import se.streamsource.streamflow.web.domain.structure.task.Task;
 import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
-import se.streamsource.streamflow.dci.infrastructure.web.context.Context;
-import se.streamsource.streamflow.dci.infrastructure.web.context.ContextMixin;
-import se.streamsource.streamflow.dci.infrastructure.web.context.SubContexts;
+import se.streamsource.dci.context.Context;
+import se.streamsource.dci.context.ContextMixin;
+import se.streamsource.dci.context.SubContexts;
 
 /**
  * JAVADOC

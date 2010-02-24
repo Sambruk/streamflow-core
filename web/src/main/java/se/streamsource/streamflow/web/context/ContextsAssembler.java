@@ -18,6 +18,8 @@ import org.qi4j.api.common.Visibility;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
+import org.qi4j.spi.service.importer.NewObjectImporter;
+import se.streamsource.dci.context.InteractionConstraintsService;
 import se.streamsource.streamflow.web.context.gtd.AssignmentsContext;
 import se.streamsource.streamflow.web.context.gtd.DelegationsContext;
 import se.streamsource.streamflow.web.context.gtd.InboxContext;
@@ -84,6 +86,11 @@ public class ContextsAssembler
 {
    public void assemble( ModuleAssembly moduleAssembly ) throws AssemblyException
    {
+      moduleAssembly.importServices( InteractionConstraintsService.class ).
+            importedBy( NewObjectImporter.class ).
+            visibleIn( Visibility.application );
+      moduleAssembly.addObjects( InteractionConstraintsService.class );
+
       // Only expose the root the upper layers
       moduleAssembly.addTransients(
             RootContext.class).visibleIn( Visibility.application);

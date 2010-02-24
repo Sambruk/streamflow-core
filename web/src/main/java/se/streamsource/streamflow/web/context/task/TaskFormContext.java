@@ -21,8 +21,8 @@ import se.streamsource.streamflow.domain.form.FieldValueDTO;
 import se.streamsource.streamflow.domain.form.FormSubmissionValue;
 import se.streamsource.streamflow.domain.form.SubmittedPageValue;
 import se.streamsource.streamflow.web.domain.structure.form.FormSubmission;
-import se.streamsource.streamflow.dci.infrastructure.web.context.Context;
-import se.streamsource.streamflow.dci.infrastructure.web.context.ContextMixin;
+import se.streamsource.dci.context.Context;
+import se.streamsource.dci.context.ContextMixin;
 
 /**
  * JAVADOC

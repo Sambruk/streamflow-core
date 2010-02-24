@@ -20,9 +20,9 @@ import se.streamsource.streamflow.infrastructure.application.LinksValue;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.web.domain.structure.role.Role;
 import se.streamsource.streamflow.web.domain.structure.role.Roles;
-import se.streamsource.streamflow.dci.infrastructure.web.context.Context;
-import se.streamsource.streamflow.dci.infrastructure.web.context.ContextMixin;
-import se.streamsource.streamflow.dci.infrastructure.web.context.SubContexts;
+import se.streamsource.dci.context.Context;
+import se.streamsource.dci.context.ContextMixin;
+import se.streamsource.dci.context.SubContexts;
 
 /**
  * JAVADOC

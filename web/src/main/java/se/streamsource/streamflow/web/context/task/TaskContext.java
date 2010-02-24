@@ -22,9 +22,9 @@ import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.resource.task.TaskValue;
 import se.streamsource.streamflow.web.domain.entity.task.TaskEntity;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
-import se.streamsource.streamflow.dci.infrastructure.web.context.Context;
-import se.streamsource.streamflow.dci.infrastructure.web.context.ContextMixin;
-import se.streamsource.streamflow.dci.infrastructure.web.context.SubContext;
+import se.streamsource.dci.context.Context;
+import se.streamsource.dci.context.ContextMixin;
+import se.streamsource.dci.context.SubContext;
 
 /**
  * JAVADOC

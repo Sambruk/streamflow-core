@@ -15,9 +15,9 @@
 package se.streamsource.streamflow.web.context.users.workspace;
 
 import org.qi4j.api.mixin.Mixins;
-import se.streamsource.streamflow.dci.infrastructure.web.context.Context;
-import se.streamsource.streamflow.dci.infrastructure.web.context.ContextMixin;
-import se.streamsource.streamflow.dci.infrastructure.web.context.SubContext;
+import se.streamsource.dci.context.Context;
+import se.streamsource.dci.context.ContextMixin;
+import se.streamsource.dci.context.SubContext;
 import se.streamsource.streamflow.web.context.gtd.AssignmentsContext;
 import se.streamsource.streamflow.web.context.gtd.DelegationsContext;
 import se.streamsource.streamflow.web.context.gtd.InboxContext;

@@ -14,6 +14,9 @@
 
 package se.streamsource.streamflow.web.resource;
 
+import org.apache.velocity.Template;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.VelocityEngine;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
@@ -36,7 +39,6 @@ import se.streamsource.streamflow.infrastructure.event.source.AllEventsSpecifica
 import se.streamsource.streamflow.infrastructure.event.source.EventFilter;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
-import se.streamsource.streamflow.dci.infrastructure.web.TemplateUtil;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -57,11 +59,15 @@ public class EventsFilter
 
    public ThreadLocal<TransactionEvents> transactions = new ThreadLocal<TransactionEvents>();
 
-   public EventsFilter( @Uses Context context, @Uses Restlet next, @Service EventSource source )
+   private Template eventsTemplate;
+
+   public EventsFilter( @Uses Context context, @Uses Restlet next, @Service EventSource source, @Service VelocityEngine templates) throws Exception
    {
       super( context, next );
 
       source.registerListener( this );
+
+      eventsTemplate = templates.getTemplate( "se/streamsource/streamflow/web/resource/resources/events.html" );
    }
 
    @Override
@@ -105,7 +111,6 @@ public class EventsFilter
                {
                   public void write( Writer writer ) throws IOException
                   {
-                     String template = TemplateUtil.getTemplate( "resources/events.html", getClass() );
                      StringWriter string = new StringWriter();
                      for (DomainEvent event : filter.events( Collections.singletonList( transactions.get()) ))
                      {
@@ -118,7 +123,9 @@ public class EventsFilter
                               "<td>" + event.by().get() + "</td></tr>" );
                      }
 
-                     writer.write( TemplateUtil.eval( template, "$events", string.toString() ) );
+                     VelocityContext context = new VelocityContext();
+                     context.put("events", string.toString());
+                     eventsTemplate.merge( context, writer );;
                   }
                };
             } else

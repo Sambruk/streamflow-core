@@ -17,9 +17,9 @@ package se.streamsource.streamflow.web.context.structure.labels;
 import org.qi4j.api.mixin.Mixins;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.label.Labels;
-import se.streamsource.streamflow.dci.infrastructure.web.context.Context;
-import se.streamsource.streamflow.dci.infrastructure.web.context.ContextMixin;
-import se.streamsource.streamflow.dci.infrastructure.web.context.DeleteContext;
+import se.streamsource.dci.context.Context;
+import se.streamsource.dci.context.ContextMixin;
+import se.streamsource.dci.context.DeleteContext;
 import se.streamsource.streamflow.web.context.structure.DescribableContext;
 
 /**

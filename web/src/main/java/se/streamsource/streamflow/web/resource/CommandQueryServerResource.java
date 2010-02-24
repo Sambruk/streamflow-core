@@ -49,8 +49,7 @@ import org.restlet.resource.ResourceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.streamsource.streamflow.web.infrastructure.event.CommandEvents;
-import se.streamsource.streamflow.dci.infrastructure.web.TemplateUtil;
-import se.streamsource.streamflow.dci.resource.DCICommandQueryServerResource;
+import se.streamsource.dci.infrastructure.web.TemplateUtil;
 
 import javax.security.auth.Subject;
 import java.io.BufferedReader;
@@ -280,7 +279,7 @@ public class CommandQueryServerResource
       try
       {
          String template = TemplateUtil.getTemplate( "resources/links.html",
-               DCICommandQueryServerResource.class );
+               se.streamsource.dci.restlet.server.CommandQueryServerResource.class );
          String content = TemplateUtil.eval( template,
                "$queries", queries.toString(),
                "$commands", commands.toString(),
@@ -305,7 +304,7 @@ public class CommandQueryServerResource
             {
                try
                {
-                  String template = TemplateUtil.getTemplate( "resources/value.html", DCICommandQueryServerResource.class );
+                  String template = TemplateUtil.getTemplate( "resources/value.html", se.streamsource.dci.restlet.server.CommandQueryServerResource.class );
                   String content = TemplateUtil.eval( template, "$content", ((Value) returnValue).toJSON() );
                   return new StringRepresentation( content, MediaType.TEXT_HTML, null, CharacterSet.UTF_8 );
                } catch (IOException e)

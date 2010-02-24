@@ -35,19 +35,19 @@ import static se.streamsource.streamflow.domain.interaction.gtd.States.*;
 @Mixins(Status.Mixin.class)
 public interface Status
 {
-   @HasStatus({ACTIVE, DONE})
+   @RequiresStatus({ACTIVE, DONE})
    void complete();
 
-   @HasStatus(ACTIVE)
+   @RequiresStatus(ACTIVE)
    void done();
 
-   @HasStatus({ACTIVE, DONE})
+   @RequiresStatus({ACTIVE, DONE})
    void drop();
 
-   @HasStatus({COMPLETED, DROPPED})
+   @RequiresStatus({COMPLETED, DROPPED})
    void reactivate();
 
-   @HasStatus(DONE)
+   @RequiresStatus(DONE)
    void redo();
 
    boolean isStatus( States status );

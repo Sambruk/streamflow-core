@@ -25,17 +25,17 @@ import java.lang.annotation.RetentionPolicy;
  */
 @ConstraintDeclaration
 @Retention(RetentionPolicy.RUNTIME)
-@Constraints(Assigned.Constraint.class)
-public @interface Assigned
+@Constraints(RequiresDelegated.Constraint.class)
+public @interface RequiresDelegated
 {
    public abstract boolean value() default true;
 
    public class Constraint
-         implements org.qi4j.api.constraint.Constraint<Assigned, Assignable>
+         implements org.qi4j.api.constraint.Constraint<RequiresDelegated, Delegatable>
    {
-      public boolean isValid( Assigned assigned, Assignable value )
+      public boolean isValid( RequiresDelegated delegated, Delegatable value )
       {
-         return assigned.value() == value.isAssigned();
+         return delegated.value() == value.isDelegated();
       }
    }
 }

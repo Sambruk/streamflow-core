@@ -19,9 +19,9 @@ import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.resource.user.ChangePasswordCommand;
 import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
 import se.streamsource.streamflow.web.domain.structure.user.WrongPasswordException;
-import se.streamsource.streamflow.dci.infrastructure.web.context.Context;
-import se.streamsource.streamflow.dci.infrastructure.web.context.ContextMixin;
-import se.streamsource.streamflow.dci.infrastructure.web.context.SubContext;
+import se.streamsource.dci.context.Context;
+import se.streamsource.dci.context.ContextMixin;
+import se.streamsource.dci.context.SubContext;
 import se.streamsource.streamflow.web.context.users.overview.OverviewContext;
 import se.streamsource.streamflow.web.context.users.workspace.WorkspaceContext;
 

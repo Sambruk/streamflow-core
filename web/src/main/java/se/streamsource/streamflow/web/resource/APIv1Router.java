@@ -33,7 +33,6 @@ import org.restlet.security.ChallengeAuthenticator;
 import se.streamsource.streamflow.web.resource.admin.ConsoleServerResource;
 import se.streamsource.streamflow.web.resource.events.EventsServerResource;
 import se.streamsource.streamflow.web.rest.ResourceFinder;
-import se.streamsource.streamflow.dci.resource.DCICommandQueryServerResource;
 
 /**
  * Router for v1 of the StreamFlow REST API.
@@ -63,7 +62,7 @@ public class APIv1Router
       attach( "/users/{labels}/workspace/user/labels", createServerResourceFinder( LabelsServerResource.class ) );
       attach( "/users/{labels}/workspace/user/labels/{label}", createServerResourceFinder( LabelServerResource.class ) );
 
-//      attach ("/users", createServerResourceFinder( DCICommandQueryServerResource.class ));
+//      attach ("/users", createServerResourceFinder( CommandQueryServerResource.class ));
 
       // Organizations
       attach( "/organizations", createServerResourceFinder( OrganizationsServerResource.class ) );

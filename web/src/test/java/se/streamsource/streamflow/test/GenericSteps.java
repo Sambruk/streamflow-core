@@ -34,9 +34,9 @@ import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.MemoryEventStoreService;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionEventAdapter;
 import se.streamsource.streamflow.web.context.RootContext;
-import se.streamsource.streamflow.dci.infrastructure.web.context.Context;
-import se.streamsource.streamflow.dci.infrastructure.web.context.InteractionContext;
-import se.streamsource.streamflow.dci.infrastructure.web.context.SubContexts;
+import se.streamsource.dci.context.Context;
+import se.streamsource.dci.context.InteractionContext;
+import se.streamsource.dci.context.SubContexts;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

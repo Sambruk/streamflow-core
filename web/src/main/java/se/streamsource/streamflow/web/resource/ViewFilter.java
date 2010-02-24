@@ -23,6 +23,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
+import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Context;
 import org.restlet.Request;
@@ -53,11 +54,12 @@ import java.util.List;
 public class ViewFilter
       extends Filter
 {
-   VelocityEngine velocity = new VelocityEngine();
+   VelocityEngine velocity;
 
-   public ViewFilter( @Uses Context context, @Uses Restlet next ) throws Exception
+   public ViewFilter( @Uses Context context, @Uses Restlet next, @Service VelocityEngine velocity ) throws Exception
    {
       super( context, next );
+      this.velocity = velocity;
 
       velocity.init( getClass().getResource( "/velocity.properties" ).getPath() );
    }

@@ -27,19 +27,19 @@ import java.lang.annotation.RetentionPolicy;
  */
 @ConstraintDeclaration
 @Retention(RetentionPolicy.RUNTIME)
-@Constraints(HasStatus.HasStatusConstraint.class)
-public @interface HasStatus
+@Constraints(RequiresStatus.RequiresStatusConstraint.class)
+public @interface RequiresStatus
 {
    States[] value();
 
-   public class HasStatusConstraint
-         implements Constraint<HasStatus, Status>
+   public class RequiresStatusConstraint
+         implements Constraint<RequiresStatus, Status>
    {
-      public boolean isValid( HasStatus hasStatus, Status value )
+      public boolean isValid( RequiresStatus requiresStatus, Status value )
       {
          States status = ((Status.Data) value).status().get();
 
-         for (States states : hasStatus.value())
+         for (States states : requiresStatus.value())
          {
             if (states.equals( status ))
                return true;

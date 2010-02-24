@@ -14,6 +14,7 @@
 
 package se.streamsource.streamflow.web.resource;
 
+import org.apache.velocity.app.VelocityEngine;
 import org.qi4j.api.common.Visibility;
 import org.qi4j.api.service.ServiceSelector;
 import org.qi4j.bootstrap.Assembler;
@@ -22,6 +23,7 @@ import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.spi.query.NamedEntityFinder;
 import org.qi4j.spi.query.NamedQueries;
 import org.qi4j.spi.query.NamedQueryDescriptor;
+import org.qi4j.spi.service.importer.NewObjectImporter;
 import org.qi4j.spi.service.importer.ServiceSelectorImporter;
 import se.streamsource.streamflow.web.infrastructure.index.NamedSolrDescriptor;
 import se.streamsource.streamflow.web.resource.admin.ConsoleServerResource;
@@ -89,7 +91,6 @@ import se.streamsource.streamflow.web.resource.users.workspace.user.assignments.
 import se.streamsource.streamflow.web.resource.users.workspace.user.delegations.WorkspaceUserDelegationsServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.inbox.WorkspaceUserInboxServerResource;
 import se.streamsource.streamflow.web.resource.users.workspace.user.waitingfor.WorkspaceUserWaitingForServerResource;
-import se.streamsource.streamflow.dci.resource.DCICommandQueryServerResource;
 
 /**
  * Assembler for API resources
@@ -99,7 +100,9 @@ public class ServerResourceAssembler
 {
    public void assemble( ModuleAssembly module ) throws AssemblyException
    {
-      module.addObjects( EventsFilter.class, ViewFilter.class );
+      module.importServices( VelocityEngine.class ).importedBy( NewObjectImporter.class );
+
+      module.addObjects( VelocityEngine.class, EventsFilter.class, ViewFilter.class );
 
       // Resources
       module.addObjects(

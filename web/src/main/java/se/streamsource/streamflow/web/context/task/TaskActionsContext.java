@@ -20,6 +20,7 @@ import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.domain.interaction.gtd.Actions;
+import se.streamsource.streamflow.domain.interaction.gtd.States;
 import se.streamsource.streamflow.domain.structure.Removable;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.infrastructure.application.LinksValue;
@@ -29,23 +30,24 @@ import se.streamsource.streamflow.web.domain.entity.task.TaskEntity;
 import se.streamsource.streamflow.web.domain.entity.task.TaskTypeQueries;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Actor;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
+import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresAssigned;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Delegatable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Delegatee;
-import se.streamsource.streamflow.web.domain.interaction.gtd.HasStatus;
+import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresDelegated;
+import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresStatus;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.user.User;
-import se.streamsource.streamflow.dci.infrastructure.web.context.ContextMixin;
-import se.streamsource.streamflow.dci.infrastructure.web.context.DeleteContext;
+import se.streamsource.dci.context.ContextMixin;
+import se.streamsource.dci.context.DeleteContext;
 
 import java.util.List;
 
-import static se.streamsource.streamflow.domain.interaction.gtd.States.ACTIVE;
-import static se.streamsource.streamflow.domain.interaction.gtd.States.DONE;
+import static se.streamsource.streamflow.domain.interaction.gtd.States.*;
 
 /**
  * JAVADOC
@@ -64,27 +66,36 @@ public interface TaskActionsContext
    public LinksValue possibledelegateusers();
 
    // Commands
+   @RequiresDelegated(true)
    public void accept();
 
+   @RequiresAssigned(false)
    public void assign();
 
-   @HasStatus({ACTIVE, DONE})
+   @RequiresStatus({ACTIVE, DONE})
    public void complete();
 
+   @RequiresStatus({ACTIVE})
    public void done();
 
    public void sendto( EntityReferenceDTO entity );
 
+   @RequiresDelegated(false)
    public void delegate( EntityReferenceDTO entity );
 
+   @RequiresStatus({ACTIVE, DONE})
    public void drop();
 
+   @RequiresStatus({COMPLETED, DROPPED})
    public void reactivate();
 
+   @RequiresStatus({DONE})
    public void redo();
 
+   @RequiresDelegated(true)
    public void reject();
 
+   @RequiresAssigned(true)
    public void unassign();
 
    public void delete();
