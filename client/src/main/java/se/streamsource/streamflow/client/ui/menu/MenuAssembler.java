@@ -30,7 +30,6 @@ public class MenuAssembler
       UIAssemblers.addViews( module,
             WorkspaceMenuBar.class,
             OverviewMenuBar.class,
-            SearchMenuBar.class,
             AdministrationMenuBar.class );
       UIAssemblers.addViews( module,
             FileMenu.class,

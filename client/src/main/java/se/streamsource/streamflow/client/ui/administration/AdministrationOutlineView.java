@@ -46,6 +46,8 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
 import javax.swing.JTree;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.MutableTreeNode;
 import java.awt.BorderLayout;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -83,7 +85,6 @@ public class AdministrationOutlineView
 
       tree.setRootVisible( false );
       tree.setShowsRootHandles( true );
-      tree.setEditable( true );
 
       if (model.getRoot().accountsModel.organizations().roots().get().isEmpty())
       {
@@ -137,6 +138,7 @@ public class AdministrationOutlineView
       //Organization Popup
       {
          JPopupMenu orgPopup = new JPopupMenu();
+         orgPopup.add( am.get( "changeDescription" ) );
          orgPopup.add( am.get( "createOrganizationalUnit" ) );
          orgPopup.add( am.get( "removeOrganizationalUnit" ) );
 
@@ -158,6 +160,7 @@ public class AdministrationOutlineView
       //OU Popup
       {
          JPopupMenu ouPopup = new JPopupMenu();
+         ouPopup.add( am.get( "changeDescription" ) );
          ouPopup.add( am.get( "createOrganizationalUnit" ) );
          ouPopup.add( am.get( "removeOrganizationalUnit" ) );
          ouPopup.add( new JSeparator() );
@@ -188,6 +191,24 @@ public class AdministrationOutlineView
    public JTree getTree()
    {
       return tree;
+   }
+
+   @Action
+   public void changeDescription()
+   {
+      Object node = tree.getSelectionPath().getLastPathComponent();
+
+      NameDialog dialog = nameDialogs.iterator().next();
+      dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.create_ou_title ) );
+      if (dialog.name() != null)
+      {
+         if (node instanceof MutableTreeNode)
+         {
+            MutableTreeNode orgNode = (MutableTreeNode) node;
+            orgNode.setUserObject( dialog.name() );
+            model.refresh();
+         }
+      }
    }
 
    @Action
@@ -278,7 +299,6 @@ public class AdministrationOutlineView
          moved.model().mergeOrganizationalUnit( mergeDialog.target() );
       }
    }
-
 
    public void removeRefreshWhenVisible()
    {

@@ -103,7 +103,7 @@ public class AdministrationView
                   try
                   {
                      // check if permissions are sufficient
-                     accountAdminNode.accountModel().serverResource().getSubClient( "organizations" ).query( "users", UserEntityListDTO.class);
+                     accountAdminNode.accountModel().serverResource().getSubClient( "users" ).query( "users", UserEntityListDTO.class);
                   } catch (ResourceException re)
                   {
                      if (Status.CLIENT_ERROR_FORBIDDEN.equals( re.getStatus() ))
