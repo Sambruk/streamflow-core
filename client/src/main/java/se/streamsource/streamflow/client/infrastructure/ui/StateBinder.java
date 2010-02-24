@@ -456,17 +456,14 @@ public class StateBinder
 
       public void updateComponent( Component component, Object value )
       {
-         if (value == null)
-            return;
-
          if (component instanceof JPasswordField)
          {
             JPasswordField passwordField = (JPasswordField) component;
-            passwordField.setText( value.toString() );
+            passwordField.setText( value == null ? "" : value.toString() );
          } else if (component instanceof JTextComponent)
          {
             JTextComponent textField = (JTextComponent) component;
-            String text = value.toString();
+            String text = value == null ? "" : value.toString();
             textField.setText( text );
             textField.setCaretPosition( 0 );
 
@@ -477,10 +474,11 @@ public class StateBinder
          } else if (component instanceof JLabel)
          {
             JLabel label = (JLabel) component;
-            label.setText( (String) value );
+            label.setText( (String) value == null ? "" : value.toString() );
          } else if (component instanceof JXDatePicker)
          {
             JXDatePicker datePicker = (JXDatePicker) component;
+
             if ( value instanceof String)
             {
                datePicker.setDate( DateFunctions.fromString( (String) value ));
