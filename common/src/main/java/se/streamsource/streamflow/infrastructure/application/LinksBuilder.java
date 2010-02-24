@@ -69,12 +69,17 @@ public class LinksBuilder
 
    public LinksBuilder addLink( String description, EntityReference ref )
    {
+      return addLink(description, ref.identity());
+   }
+
+   public LinksBuilder addLink( String description, String id )
+   {
       linkBuilder.prototype().text().set( description );
-      linkBuilder.prototype().id().set( ref.identity() );
+      linkBuilder.prototype().id().set( id );
       if (command != null)
-         linkBuilder.prototype().href().set( command+"?entity="+ref.identity() );
+         linkBuilder.prototype().href().set( command+"?entity="+id );
       else
-         linkBuilder.prototype().href().set( (path == null ? "" : path+"/")+ref.identity()+"/" );
+         linkBuilder.prototype().href().set( (path == null ? "" : path+"/")+id+"/" );
       linkBuilder.prototype().rel().set( rel );
 
       addLink(linkBuilder.newInstance());

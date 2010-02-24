@@ -30,6 +30,7 @@ import org.restlet.resource.ServerResource;
 import org.restlet.routing.Router;
 import org.restlet.security.Authenticator;
 import org.restlet.security.ChallengeAuthenticator;
+import se.streamsource.dci.restlet.server.ViewFilter;
 import se.streamsource.streamflow.web.resource.admin.ConsoleServerResource;
 import se.streamsource.streamflow.web.resource.events.EventsServerResource;
 import se.streamsource.streamflow.web.rest.ResourceFinder;

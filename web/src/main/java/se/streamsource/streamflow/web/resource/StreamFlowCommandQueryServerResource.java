@@ -36,10 +36,6 @@ import java.security.Principal;
 public class StreamFlowCommandQueryServerResource
       extends CommandQueryServerResource
 {
-
-   @Structure
-   TransientBuilderFactory tbf;
-
    public StreamFlowCommandQueryServerResource( @Service VelocityEngine templates)
          throws Exception
    {
@@ -49,8 +45,6 @@ public class StreamFlowCommandQueryServerResource
    protected RootContext getRoot(InteractionContext interactionContext)
    {
       interactionContext.playRoles( getActor(), Actor.class );
-      interactionContext.playRoles( resolveRequestLocale(), Locale.class );
-      interactionContext.playRoles( getRequest().getResourceRef(), Reference.class );
       return tbf.newTransientBuilder( RootContext.class ).use( interactionContext ).newInstance();
    }
 

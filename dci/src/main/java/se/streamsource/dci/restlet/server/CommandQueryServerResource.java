@@ -20,6 +20,7 @@ import org.apache.velocity.app.VelocityEngine;
 import org.json.JSONException;
 import org.json.JSONWriter;
 import org.qi4j.api.common.QualifiedName;
+import org.qi4j.api.composite.TransientBuilderFactory;
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
@@ -113,6 +114,9 @@ public abstract class CommandQueryServerResource
    protected ValueBuilderFactory vbf;
 
    @Structure
+   protected TransientBuilderFactory tbf;
+
+   @Structure
    protected ModuleSPI module;
 
    @Service
@@ -151,6 +155,8 @@ public abstract class CommandQueryServerResource
          try
          {
             InteractionContext interactionContext = new InteractionContext();
+            interactionContext.playRoles( resolveRequestLocale(), Locale.class );
+            interactionContext.playRoles( getRequest().getResourceRef(), Reference.class );
             Object resource = getRoot(interactionContext);
 
             // Find the resource first
@@ -167,6 +173,7 @@ public abstract class CommandQueryServerResource
          } catch (ResourceException e)
          {
             uow.discard();
+            throw e;
          }
       }
 
@@ -207,6 +214,8 @@ public abstract class CommandQueryServerResource
       try
       {
          InteractionContext context = new InteractionContext();
+         context.playRoles( resolveRequestLocale(), Locale.class );
+         context.playRoles( getRequest().getResourceRef(), Reference.class );
          Object resource = getRoot(context);
 
          // Find the resource first
@@ -526,6 +535,8 @@ public abstract class CommandQueryServerResource
          try
          {
             InteractionContext context = new InteractionContext();
+            context.playRoles( resolveRequestLocale(), Locale.class );
+            context.playRoles( getRequest().getResourceRef(), Reference.class );
             Object resource = getRoot(context);
 
             resource = getResource( resource, segments );

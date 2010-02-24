@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.web.resource;
+package se.streamsource.dci.restlet.server;
 
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
@@ -123,7 +123,8 @@ public class ViewFilter
                         JSONTokener tokener = new JSONTokener( reader );
                         final JSONObject object = (JSONObject) tokener.nextValue();
 
-                        Template template = resolveTemplate( new File( templateName(response) ) );
+                        String tn = templateName( response );
+                        Template template = resolveTemplate( new File( tn ) );
                         
                         if (template != null)
                         {

@@ -1,0 +1,61 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>${request.resourceRef.remainingPart}</title>
+<!--    <link rel="stylesheet" type="text/css" href="/streamflow/streamflow/v1/static/rest.css" /> -->
+</head>
+
+<body>
+
+<h1>${request.resourceRef.remainingPart}</h1>
+
+#if ($result.queries)
+<div class="block">
+<h2>Queries</h2>
+<ul>
+#foreach($query in $result.queries)
+<li><a href="$query">$query</a></li>
+#end
+</ul>
+</div>
+#end
+
+#if($result.commands)
+<div class="block">
+<h2>Commands</h2>
+<ul>
+#foreach($command in $result.commands)
+<li><a href="$command">$command</a></li>
+#end
+</ul>
+</div>
+#end
+
+#if($result.contexts)
+<div class="block">
+<h2>Sub-contexts</h2>
+<ul>
+#foreach($context in $result.contexts)
+<li><a href="$context">$context</a></li>
+#end
+</ul>
+</div>
+#end
+
+#if ($result.index)
+
+#if ($result.index.links)
+<div class="block">
+<h2>Index</h2>
+<ul>
+#foreach($link in $result.index.links)
+<li><a href="$link.href" rel="$!link.rel" title="$!link.title">$link.text</a></li>
+#end
+</ul>
+</div>
+#else
+<h2>Index</h2>
+<pre>$result.index</pre>
+#end
+#end
+
+</html>
