@@ -194,14 +194,9 @@ public class WorkspaceView
             {
                Object node = path.getLastPathComponent();
 
-               JComponent view = new JPanel();
+               JComponent view = null;
 
-               if (node instanceof WorkspaceUserNode)
-                  view = new JPanel();
-               else if (node instanceof WorkspaceProjectsNode)
-               {
-                  view = new JPanel();
-               } else if (node instanceof WorkspaceUserInboxNode)
+               if (node instanceof WorkspaceUserInboxNode)
                {
                   WorkspaceUserInboxNode userInboxNode = (WorkspaceUserInboxNode) node;
                   final TaskTableModel inboxModel = userInboxNode.taskTableModel();
@@ -360,7 +355,21 @@ public class WorkspaceView
                   String selectedContextText = ((TreeNode) node).getParent() + " : " + node.toString();
 
                   selectedContext.setText( selectedContextText );
+
+                  SwingUtilities.invokeLater( new Runnable()
+                  {
+                     public void run()
+                     {
+                        if (popup != null)
+                        {
+                           popup.hide();
+                           popup = null;
+                        }
+                     }
+                  } );
                }
+
+
             } else
             {
                selectedContext.setText( "" );
@@ -369,17 +378,6 @@ public class WorkspaceView
                add( currentSelection, BorderLayout.CENTER );
             }
 
-            SwingUtilities.invokeLater( new Runnable()
-            {
-               public void run()
-               {
-                  if (popup != null)
-                  {
-                     popup.hide();
-                     popup = null;
-                  }
-               }
-            } );
          }
       } );
 
@@ -403,24 +401,6 @@ public class WorkspaceView
 
          public void treeWillCollapse( TreeExpansionEvent event ) throws ExpandVetoException
          {
-         }
-      } );
-
-      workspaceTree.addMouseListener( new MouseAdapter()
-      {
-         public void mouseExited( MouseEvent e )
-         {
-            SwingUtilities.invokeLater( new Runnable()
-            {
-               public void run()
-               {
-                  if (popup != null)
-                  {
-                     popup.hide();
-                     popup = null;
-                  }
-               }
-            } );
          }
       } );
    }
@@ -459,14 +439,16 @@ public class WorkspaceView
    {
       if (popup == null)
       {
-         workspaceTree.clearSelection();
-
          contextPanel.remove( searchField );
          contextPanel.add( selectedContext, BorderLayout.CENTER );
 
          Point location = selectContextButton.getLocationOnScreen();
          popup = PopupFactory.getSharedInstance().getPopup( this, workspaceTree, (int) location.getX(), (int) location.getY() + selectContextButton.getHeight() );
          popup.show();
+      } else
+      {
+         popup.hide();
+         popup = null;
       }
    }
 
