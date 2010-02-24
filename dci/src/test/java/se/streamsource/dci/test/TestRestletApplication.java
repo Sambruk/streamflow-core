@@ -30,6 +30,7 @@ import org.restlet.Restlet;
 import org.restlet.data.MediaType;
 import org.restlet.security.Verifier;
 import org.slf4j.LoggerFactory;
+import se.streamsource.dci.restlet.server.ExtensionMediaTypeFilter;
 import se.streamsource.dci.restlet.server.ResourceFinder;
 import se.streamsource.dci.restlet.server.ViewFilter;
 
@@ -86,7 +87,7 @@ public class TestRestletApplication
       ResourceFinder finder = factory.newObject( ResourceFinder.class );
       finder.setTargetClass( TestApplication.class );
 
-      return factory.newObjectBuilder( ViewFilter.class).use(getContext(), finder).newInstance();
+      return new ExtensionMediaTypeFilter(getContext(), factory.newObjectBuilder( ViewFilter.class).use(getContext(), finder).newInstance());
    }
 
    @Override
