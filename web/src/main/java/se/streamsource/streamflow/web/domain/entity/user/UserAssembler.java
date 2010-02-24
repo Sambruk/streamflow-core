@@ -24,7 +24,6 @@ import org.qi4j.spi.query.NamedQueries;
 import org.qi4j.spi.query.NamedQueryDescriptor;
 import org.qi4j.spi.service.importer.ServiceSelectorImporter;
 import se.streamsource.streamflow.web.infrastructure.index.NamedSolrDescriptor;
-import se.streamsource.streamflow.web.resource.users.search.SearchTasksServerResource;
 
 import static org.qi4j.api.common.Visibility.application;
 

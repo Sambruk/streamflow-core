@@ -17,7 +17,6 @@ package se.streamsource.streamflow.web.rest;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
-import org.qi4j.index.rdf.RdfIndexingEngineService;
 import org.qi4j.library.rdf.entity.EntityStateSerializer;
 import org.qi4j.library.rdf.entity.EntityTypeSerializer;
 import org.qi4j.rest.entity.EntitiesResource;
@@ -25,6 +24,7 @@ import org.qi4j.rest.entity.EntityResource;
 import org.qi4j.rest.query.IndexResource;
 import org.qi4j.rest.query.SPARQLResource;
 import org.restlet.security.ChallengeAuthenticator;
+import se.streamsource.dci.restlet.server.ResourceFinder;
 
 /**
  * JAVADOC
@@ -36,7 +36,6 @@ public class StreamFlowRestAssembler
    {
       module.addObjects( StreamFlowRestApplication.class,
             ResourceFinder.class,
-            CompositeFinder.class,
             EntityStateSerializer.class,
             EntityTypeSerializer.class );
 

@@ -35,7 +35,6 @@ import se.streamsource.streamflow.web.domain.structure.user.Users;
 import se.streamsource.dci.context.Context;
 import se.streamsource.dci.context.ContextMixin;
 import se.streamsource.dci.context.SubContexts;
-import se.streamsource.streamflow.web.resource.organizations.OrganizationsServerResource;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -86,7 +85,7 @@ public interface UsersContext
          Locale locale = context.role(Locale.class);
 
          ResourceBundle bundle = ResourceBundle.getBundle(
-               OrganizationsServerResource.class.getName(), locale );
+               UsersContext.class.getName(), locale );
 
          UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
 
