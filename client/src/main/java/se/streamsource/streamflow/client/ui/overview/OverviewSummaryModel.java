@@ -19,7 +19,7 @@ import ca.odell.glazedlists.EventList;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.dci.resource.CommandQueryClient;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.resource.overview.ProjectSummaryDTO;
 import se.streamsource.streamflow.resource.overview.ProjectSummaryListDTO;
 

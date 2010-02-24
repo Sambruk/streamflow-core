@@ -17,7 +17,7 @@ package se.streamsource.streamflow.client.ui.administration;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.dci.resource.CommandQueryClient;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 

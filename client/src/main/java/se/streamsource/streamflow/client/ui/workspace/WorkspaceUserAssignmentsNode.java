@@ -20,7 +20,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.task.TaskCreationNode;
 import se.streamsource.streamflow.client.ui.task.TaskTableModel;
 import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.dci.resource.CommandQueryClient;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 

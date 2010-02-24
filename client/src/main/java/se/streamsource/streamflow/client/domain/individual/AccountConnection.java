@@ -16,7 +16,7 @@ package se.streamsource.streamflow.client.domain.individual;
 
 import org.restlet.Uniform;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.dci.resource.CommandQueryClient;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
 
 import java.io.IOException;
 

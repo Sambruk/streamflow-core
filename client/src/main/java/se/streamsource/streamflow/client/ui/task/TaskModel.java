@@ -15,7 +15,7 @@
 package se.streamsource.streamflow.client.ui.task;
 
 import org.qi4j.api.injection.scope.Uses;
-import se.streamsource.streamflow.dci.resource.CommandQueryClient;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 
