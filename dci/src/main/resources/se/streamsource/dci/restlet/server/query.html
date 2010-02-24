@@ -4,8 +4,11 @@
 </head>
 
 <body>
+<h1>$name</h1>
 <form action="" method="GET">
-    $content
+#foreach ($property in $properties)
+    ${property.qualifiedName().name()}: <input type="text" name="${property.qualifiedName().name()}"><br/>
+#end
     <input value="Query" type="submit"/>
 </form>
 </body>

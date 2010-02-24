@@ -118,7 +118,7 @@ public abstract class CommandQueryServerResource
    @Service
    private InteractionConstraintsService constraints;
 
-   public Template queryTemplate;
+   private Template queryTemplate;
    private Template selectResourceTemplate;
    private Template commandTemplate;
    private Template linksTemplate;
