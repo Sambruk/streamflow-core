@@ -21,6 +21,8 @@ import ca.odell.glazedlists.swing.EventListModel;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilder;
+import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
@@ -28,8 +30,10 @@ import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
+import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.domain.contact.ContactValue;
+import se.streamsource.streamflow.infrastructure.application.LinkValue;
 import se.streamsource.streamflow.infrastructure.application.LinksValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
@@ -56,6 +60,18 @@ public class TaskConversationsModel
 
    @Structure
    ValueBuilderFactory vbf;
+
+   @Structure
+   ObjectBuilderFactory obf;
+
+   WeakModelMap<String,TaskConversationModel> conversationModels = new WeakModelMap<String,TaskConversationModel>(){
+
+      @Override
+      protected TaskConversationModel newModel( String key )
+      {
+         return obf.newObjectBuilder( TaskConversationModel.class ).use( client.getSubClient( key ) ).newInstance();
+      }
+   };
 
    TransactionList<ConversationDTO> conversations = new TransactionList<ConversationDTO>(new BasicEventList<ConversationDTO>( ));
 
@@ -95,6 +111,10 @@ public class TaskConversationsModel
     public void notifyEvent( DomainEvent event )
    {
       eventFilter.visit( event );
+      for(TaskConversationModel conversationModel : conversationModels)
+      {
+         conversationModel.notifyEvent( event );
+      }
    }
 
    public boolean visit( DomainEvent event )
@@ -109,7 +129,7 @@ public class TaskConversationsModel
          {
             if(conversation.id().get().equals( event.entity().get() ))
             {
-               refresh();
+               //refresh();
             }
          }
       }

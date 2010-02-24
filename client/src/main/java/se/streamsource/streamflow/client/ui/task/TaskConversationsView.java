@@ -60,9 +60,6 @@ public class TaskConversationsView
       implements ListEventListener
 {
 
-   @Structure
-   ObjectBuilderFactory obf;
-
    @Uses
    Iterable<NameDialog> topicDialogs;
 
@@ -79,7 +76,7 @@ public class TaskConversationsView
 
 
 
-   public TaskConversationsView( @Service final ApplicationContext context )
+   public TaskConversationsView( @Service final ApplicationContext context, @Structure ObjectBuilderFactory obf )
    {
 
       am = context.getActionMap( this );
@@ -100,6 +97,7 @@ public class TaskConversationsView
       list.getSelectionModel().setSelectionMode(
             ListSelectionModel.SINGLE_SELECTION );
 
+      final TaskConversationView conversationView = obf.newObjectBuilder( TaskConversationView.class ).use( context, obf ).newInstance();
       list.addListSelectionListener( new ListSelectionListener()
       {
 
@@ -107,10 +105,7 @@ public class TaskConversationsView
          {
             if (list.getSelectedIndex() != -1)
             {
-               TaskConversationModel conversationModel = obf.newObjectBuilder( TaskConversationModel.class ).use( model.client.getSubClient( ((LinkValue) list.getSelectedValue()).href().get() ) ).newInstance();
-               TaskConversationView conversationView = obf.newObjectBuilder( TaskConversationView.class ).use( context, obf ).newInstance();
-               conversationView.setModel( conversationModel );
-
+               conversationView.setModel( model.conversationModels.get( ((LinkValue) list.getSelectedValue()).href().get() ) );
                setRightComponent( conversationView );
             } else
             {

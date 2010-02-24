@@ -25,6 +25,7 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.domain.ListValueBuilder;
 import se.streamsource.streamflow.infrastructure.application.LinkValue;
@@ -66,10 +67,9 @@ public class TaskConversationModel
       try
       {
          conversationDetail = client.query( "index", ConversationDetailDTO.class );
-         messages.clear();
-         messages.addAll(conversationDetail.messages().get().links().get());
-         participants.clear();
-         participants.addAll( conversationDetail.participants().get().links().get() );
+         EventListSynch.synchronize( conversationDetail.messages().get().links().get(), messages );
+         EventListSynch.synchronize( conversationDetail.participants().get().links().get(), participants );
+
          participantsModel.setParticipants( conversationDetail.participants().get() );
       } catch (Exception e)
       {
@@ -117,7 +117,7 @@ public class TaskConversationModel
 
    public boolean visit( DomainEvent event )
    {
-      if (client.getReference().getParentRef().getLastSegment().equals( event.entity().get() ))
+      if (client.getReference().getLastSegment().equals( event.entity().get() ))
       {
          Logger.getLogger( "workspace" ).info( "Refresh conversation" );
          refresh();
