@@ -36,7 +36,6 @@ public class MenuAssembler
             EditMenu.class,
             ViewMenu.class,
             AccountMenu.class,
-            TaskMenu.class,
             WindowMenu.class,
             HelpMenu.class
       );
