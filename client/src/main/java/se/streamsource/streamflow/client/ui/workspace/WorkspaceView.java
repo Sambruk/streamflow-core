@@ -25,7 +25,6 @@ import org.jdesktop.swingx.renderer.WrappingIconPanel;
 import org.jdesktop.swingx.renderer.WrappingProvider;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.OperationException;
@@ -42,20 +41,18 @@ import se.streamsource.streamflow.client.ui.task.TasksModel;
 import se.streamsource.streamflow.client.ui.task.TasksView;
 import se.streamsource.streamflow.client.ui.task.WaitingForTaskTableFormatter;
 
-import javax.swing.AbstractAction;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
 import javax.swing.JTextField;
 import javax.swing.JTree;
 import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 import javax.swing.Popup;
 import javax.swing.PopupFactory;
+import javax.swing.SwingUtilities;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
@@ -64,8 +61,9 @@ import javax.swing.tree.ExpandVetoException;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 /**
  * JAVADOC
@@ -73,7 +71,8 @@ import java.awt.event.KeyEvent;
 public class WorkspaceView
       extends JPanel
 {
-   @Structure ObjectBuilderFactory obf;
+   @Structure
+   ObjectBuilderFactory obf;
 
    SearchResultTableModel searchResultTableModel;
 
@@ -84,7 +83,7 @@ public class WorkspaceView
    private JButton selectContextButton;
    private JTextField searchField;
 
-   private Component currentSelection = new JLabel("<html><h1>Welcome to StreamFlow</h1>Begin by selecting a context by using the blue button</html>", JLabel.CENTER);
+   private Component currentSelection = new JLabel( "<html><h1>Welcome to StreamFlow</h1>Begin by selecting a context by using the blue button</html>", JLabel.CENTER );
    public Popup popup;
    public JPanel contextPanel;
    public TasksDetailView2 detailView;
@@ -105,13 +104,13 @@ public class WorkspaceView
       selectContextButton = new JButton( getActionMap().get( "selectContext" ) );
       contextPanel.add( selectContextButton, BorderLayout.WEST );
       selectedContext = new JLabel();
-      selectedContext.setFont( selectedContext.getFont().deriveFont(Font.ITALIC ));
+      selectedContext.setFont( selectedContext.getFont().deriveFont( Font.ITALIC ) );
       contextPanel.add( selectedContext, BorderLayout.CENTER );
-      contextPanel.add( new JButton(getActionMap().get("showSearch")), BorderLayout.EAST );
+      contextPanel.add( new JButton( getActionMap().get( "showSearch" ) ), BorderLayout.EAST );
       searchField = new JTextField();
-      searchField.setAction( getActionMap().get("search" ));
+      searchField.setAction( getActionMap().get( "search" ) );
 
-      add( contextPanel, BorderLayout.NORTH);
+      add( contextPanel, BorderLayout.NORTH );
       add( currentSelection, BorderLayout.CENTER );
 
       workspaceTree = new JXTree();
@@ -356,24 +355,31 @@ public class WorkspaceView
 
                   remove( currentSelection );
                   currentSelection = tasksView;
-                  add(currentSelection, BorderLayout.CENTER);
+                  add( currentSelection, BorderLayout.CENTER );
 
-                  String selectedContextText = ((TreeNode)node).getParent()+" : "+node.toString();
+                  String selectedContextText = ((TreeNode) node).getParent() + " : " + node.toString();
 
                   selectedContext.setText( selectedContextText );
                }
             } else
             {
+               selectedContext.setText( "" );
                remove( currentSelection );
                currentSelection = new JLabel();
-               add(currentSelection, BorderLayout.CENTER);
+               add( currentSelection, BorderLayout.CENTER );
             }
 
-            if (popup != null)
+            SwingUtilities.invokeLater( new Runnable()
             {
-               popup.hide();
-               popup = null;
-            }
+               public void run()
+               {
+                  if (popup != null)
+                  {
+                     popup.hide();
+                     popup = null;
+                  }
+               }
+            } );
          }
       } );
 
@@ -399,11 +405,30 @@ public class WorkspaceView
          {
          }
       } );
+
+      workspaceTree.addMouseListener( new MouseAdapter()
+      {
+         public void mouseExited( MouseEvent e )
+         {
+            SwingUtilities.invokeLater( new Runnable()
+            {
+               public void run()
+               {
+                  if (popup != null)
+                  {
+                     popup.hide();
+                     popup = null;
+                  }
+               }
+            } );
+         }
+      } );
    }
 
    public void setModel( AccountModel model )
    {
       this.model = model.workspace();
+      workspaceTree.clearSelection();
       workspaceTree.setModel( model.workspace() );
       accountName = model.workspace().getRoot().getUserObject().settings().name().get();
 
@@ -442,10 +467,6 @@ public class WorkspaceView
          Point location = selectContextButton.getLocationOnScreen();
          popup = PopupFactory.getSharedInstance().getPopup( this, workspaceTree, (int) location.getX(), (int) location.getY() + selectContextButton.getHeight() );
          popup.show();
-      } else
-      {
-         popup.hide();
-         popup = null;
       }
    }
 
@@ -458,20 +479,20 @@ public class WorkspaceView
       contextPanel.repaint();
       searchField.requestFocusInWindow();
 
-      TaskTableView view = obf.newObjectBuilder(TaskTableView.class ).
+      TaskTableView view = obf.newObjectBuilder( TaskTableView.class ).
             use( searchResultTableModel,
                   detailView,
                   tasksModel,
-                  new InboxTaskTableFormatter()).newInstance();
+                  new InboxTaskTableFormatter() ).newInstance();
 
       TasksView tasksView = obf.newObjectBuilder( TasksView.class ).use( view, detailView ).newInstance();
 
       remove( currentSelection );
       currentSelection = tasksView;
-      add(currentSelection, BorderLayout.CENTER);
+      add( currentSelection, BorderLayout.CENTER );
 
 
-      add(currentSelection, BorderLayout.CENTER);
+      add( currentSelection, BorderLayout.CENTER );
    }
 
    @Action
