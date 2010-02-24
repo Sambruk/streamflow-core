@@ -59,9 +59,9 @@ public class UsersAdministrationView
 
       this.model = model;
       usersTable = new JXTable( model );
-      usersTable.getColumn( 0 ).setCellRenderer( new DefaultTableRenderer( new CheckBoxProvider() ) );
-      usersTable.getColumn( 0 ).setMaxWidth( 30 );
-      usersTable.getColumn( 0 ).setResizable( false );
+      //usersTable.getColumn( 0 ).setCellRenderer( new DefaultTableRenderer( new CheckBoxProvider() ) );
+      //usersTable.getColumn( 0 ).setMaxWidth( 30 );
+      //usersTable.getColumn( 0 ).setResizable( false );
       usersTable.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "resetPassword" ) ) );
 
       JPanel usersPanel = new JPanel( new BorderLayout() );

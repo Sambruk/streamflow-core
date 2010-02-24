@@ -62,9 +62,12 @@ public class UsersAdministrationModel
    public UsersAdministrationModel( @Uses CommandQueryClient client ) throws ResourceException
    {
       this.client = client;
-      columnNames = new String[]{text( AdministrationResources.user_enabled_label ), text( AdministrationResources.username_label )};
-      columnClasses = new Class[]{Boolean.class, String.class};
-      columnEditable = new boolean[]{true, false};
+      //columnNames = new String[]{text( AdministrationResources.user_enabled_label ), text( AdministrationResources.username_label )};
+      columnNames = new String[]{text( AdministrationResources.username_label )};
+      //columnClasses = new Class[]{Boolean.class, String.class};
+      columnClasses = new Class[]{String.class};
+      //columnEditable = new boolean[]{true, false};
+      columnEditable = new boolean[]{false};
       refresh();
    }
 
@@ -87,29 +90,32 @@ public class UsersAdministrationModel
 
    public int getColumnCount()
    {
-      return 2;
+      //return 2;
+      return 1;
    }
 
    public Object getValueAt( int row, int column )
    {
-      switch (column)
+      return users == null ? "" : users.get( row ).username().get();
+      /*switch (column)
       {
          case 0:
             return users != null && !users.get( row ).disabled().get();
          default:
             return users == null ? "" : users.get( row ).username().get();
-      }
+      }*/
    }
 
    @Override
    public void setValueAt( Object aValue, int rowIndex, int column )
    {
+      /*
       switch (column)
       {
          case 0:
             UserEntityDTO user = users.get( rowIndex );
             changeDisabled( user );
-      }
+      }*/
    }
 
    @Override
