@@ -12,14 +12,20 @@
  *
  */
 
-package se.streamsource.streamflow.dci.infrastructure.web.context;
-
-import org.qi4j.api.value.Value;
+package se.streamsource.dci.context;
 
 /**
  * JAVADOC
  */
-public interface IndexContext<T extends Value>
+public class InteractionException
+   extends RuntimeException
 {
-   public T index();
+   private String status;
+   private Object result;
+
+   public InteractionException( String status, Object result )
+   {
+      this.status = status;
+      this.result = result;
+   }
 }

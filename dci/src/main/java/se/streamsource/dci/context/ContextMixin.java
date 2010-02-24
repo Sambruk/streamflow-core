@@ -12,12 +12,12 @@
  *
  */
 
-package se.streamsource.streamflow.dci.infrastructure.web.context;
+package se.streamsource.dci.context;
 
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
-import se.streamsource.streamflow.dci.infrastructure.web.context.Context;
+import se.streamsource.dci.context.Context;
 
 /**
  * JAVADOC

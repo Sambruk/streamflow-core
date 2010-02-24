@@ -12,13 +12,17 @@
  *
  */
 
-package se.streamsource.streamflow.dci.resource;
+package se.streamsource.dci.restlet.server;
 
+import org.apache.velocity.Template;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.VelocityEngine;
 import org.json.JSONException;
 import org.json.JSONWriter;
 import org.qi4j.api.common.QualifiedName;
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.property.StateHolder;
@@ -36,6 +40,7 @@ import org.qi4j.spi.property.PropertyType;
 import org.qi4j.spi.structure.ModuleSPI;
 import org.qi4j.spi.util.Annotations;
 import org.qi4j.spi.value.ValueDescriptor;
+import org.restlet.data.CharacterSet;
 import org.restlet.data.Form;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
@@ -51,11 +56,12 @@ import org.restlet.representation.WriterRepresentation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
 import org.slf4j.LoggerFactory;
-import se.streamsource.streamflow.dci.infrastructure.web.TemplateUtil;
-import se.streamsource.streamflow.dci.infrastructure.web.context.Context;
-import se.streamsource.streamflow.dci.infrastructure.web.context.IndexContext;
-import se.streamsource.streamflow.dci.infrastructure.web.context.SubContext;
-import se.streamsource.streamflow.dci.infrastructure.web.context.SubContexts;
+import se.streamsource.dci.context.Context;
+import se.streamsource.dci.context.IndexContext;
+import se.streamsource.dci.context.InteractionConstraintsService;
+import se.streamsource.dci.context.InteractionContext;
+import se.streamsource.dci.context.SubContext;
+import se.streamsource.dci.context.SubContexts;
 import se.streamsource.streamflow.infrastructure.application.LinkValue;
 import se.streamsource.streamflow.infrastructure.application.LinksValue;
 
@@ -92,7 +98,7 @@ import java.util.Locale;
  * <p/>
  * DELETE: this translates into a call on DeleteContext.delete() on the given resource.
  */
-public abstract class DCICommandQueryServerResource
+public abstract class CommandQueryServerResource
       extends ServerResource
 {
    protected
@@ -109,11 +115,26 @@ public abstract class DCICommandQueryServerResource
    @Structure
    protected ModuleSPI module;
 
-   public DCICommandQueryServerResource()
+   @Service
+   private InteractionConstraintsService constraints;
+
+   public Template queryTemplate;
+   private Template selectResourceTemplate;
+   private Template commandTemplate;
+   private Template linksTemplate;
+   private Template valueTemplate;
+
+   public CommandQueryServerResource(@Service VelocityEngine templates) throws Exception
    {
       getVariants().addAll( Arrays.asList( new Variant( MediaType.TEXT_HTML ), new Variant( MediaType.APPLICATION_JSON ) ) );
 
       setNegotiated( true );
+
+      queryTemplate = templates.getTemplate( "/se/streamsource/dci/restlet/server/query.html" );
+      selectResourceTemplate = templates.getTemplate( "se/streamsource/dci/restlet/server/selectresource.html" );
+      commandTemplate = templates.getTemplate( "se/streamsource/dci/restlet/server/command.html" );
+      linksTemplate = templates.getTemplate( "se/streamsource/dci/restlet/server/links.html" );
+      valueTemplate = templates.getTemplate( "se/streamsource/dci/restlet/server/value.html" );
    }
 
    @Override
@@ -129,7 +150,8 @@ public abstract class DCICommandQueryServerResource
          UnitOfWork uow = uowf.newUnitOfWork( UsecaseBuilder.newUsecase( getRequest().getResourceRef().getRemainingPart() ) );
          try
          {
-            Object resource = getRoot();
+            InteractionContext interactionContext = new InteractionContext();
+            Object resource = getRoot(interactionContext);
 
             // Find the resource first
             try
@@ -137,7 +159,7 @@ public abstract class DCICommandQueryServerResource
                resource = getResource( resource, segments );
                getResponse().getAttributes().put( "segments", segments );
 
-               return resourceInfo( resource );
+               return resourceInfo( resource, interactionContext );
             } catch (Exception e)
             {
                throw new ResourceException( e );
@@ -153,16 +175,23 @@ public abstract class DCICommandQueryServerResource
          String resource = getRequest().getResourceRef().getQueryAsForm().getFirstValue( "resource" );
          if (resource == null)
          {
-            try
+            // Show resource selection form
+            Representation rep = new WriterRepresentation(MediaType.TEXT_HTML)
             {
-               String template = TemplateUtil.getTemplate( "resources/selectresource.html", DCICommandQueryServerResource.class );
-
-               // Show resource selection form
-               return new StringRepresentation( template, MediaType.TEXT_HTML );
-            } catch (IOException e)
-            {
-               throw new ResourceException( e );
-            }
+               @Override
+               public void write( Writer writer ) throws IOException
+               {
+                  try
+                  {
+                     selectResourceTemplate.merge( new VelocityContext(), writer );
+                  } catch (Exception e)
+                  {
+                     throw (IOException) new IOException().initCause( e );
+                  }
+               }
+            };
+            rep.setCharacterSet( CharacterSet.UTF_8 );
+            return rep;
          } else
          {
             Reference userRef = getRequest().getResourceRef().getParentRef().clone().addSegment( resource ).addSegment( "" );
@@ -177,7 +206,8 @@ public abstract class DCICommandQueryServerResource
       // GET on operation
       try
       {
-         Object resource = getRoot();
+         InteractionContext context = new InteractionContext();
+         Object resource = getRoot(context);
 
          // Find the resource first
          try
@@ -186,6 +216,9 @@ public abstract class DCICommandQueryServerResource
             getResponse().getAttributes().put( "segments", segments );
 
             Method method = getMethod( resource, lastSegment );
+
+            if (!constraints.isValid( method, context ))
+               throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "Interaction not valid");
 
             if (isCommandMethod( method ))
             {
@@ -210,7 +243,7 @@ public abstract class DCICommandQueryServerResource
 
    private Method getMethod( Object resource, String lastSegment ) throws ResourceException
    {
-      for (Method method : resource.getClass().getMethods())
+      for (Method method : resource.getClass().getInterfaces()[0].getMethods())
       {
          if (method.getName().equals( lastSegment ))
             return method;
@@ -219,9 +252,9 @@ public abstract class DCICommandQueryServerResource
       throw new ResourceException( Status.CLIENT_ERROR_NOT_FOUND );
    }
 
-   protected abstract Object getRoot();
+   protected abstract Object getRoot( InteractionContext context);
 
-   private Representation resourceInfo( final Object resource ) throws IOException
+   private Representation resourceInfo( final Object resource, InteractionContext interactionContext ) throws IOException
    {
       MediaType responseType = getRequest().getClientInfo().getPreferredMediaType( Arrays.asList( MediaType.APPLICATION_JSON, MediaType.TEXT_HTML ) );
 
@@ -234,6 +267,8 @@ public abstract class DCICommandQueryServerResource
       {
          if (!method.getDeclaringClass().isAssignableFrom( Context.class ))
          {
+            if (constraints.isValid( method, interactionContext ))
+
             if (method.getAnnotation( SubContext.class ) != null || SubContexts.class.equals( method.getDeclaringClass() ))
             {
                subResources.add( method );
@@ -250,7 +285,7 @@ public abstract class DCICommandQueryServerResource
       final Value index = resource instanceof IndexContext ? ((IndexContext)resource).index() : null;
 
       // JSON
-      return new WriterRepresentation( MediaType.APPLICATION_JSON )
+      Representation rep = new WriterRepresentation( MediaType.APPLICATION_JSON )
       {
          @Override
          public void write( Writer writer ) throws IOException
@@ -308,6 +343,8 @@ public abstract class DCICommandQueryServerResource
             }
          }
       };
+      rep.setCharacterSet( CharacterSet.UTF_8 );
+      return rep;
    }
 
    private Representation query( Object resource, String query, Variant variant ) throws ResourceException
@@ -344,19 +381,20 @@ public abstract class DCICommandQueryServerResource
                formHtml += propertyInput;
             }
 
-            try
-            {
-               String template = TemplateUtil.getTemplate( "resources/query.html", DCICommandQueryServerResource.class );
-               String html = TemplateUtil.eval( template,
-                     "$name", queryMethod.getName(),
-                     "$content", formHtml );
+            final VelocityContext context = new VelocityContext();
+            context.put( "name", queryMethod.getName() );
+            context.put( "properties", valueDescriptor.state().properties() );
 
-               // Show query form
-               return new StringRepresentation( html, MediaType.TEXT_HTML );
-            } catch (IOException e)
+            Representation rep = new WriterRepresentation( MediaType.TEXT_HTML)
             {
-               throw new ResourceException( e );
-            }
+               @Override
+               public void write( Writer writer ) throws IOException
+               {
+                  queryTemplate.merge( context, writer );
+               }
+            };
+            rep.setCharacterSet( CharacterSet.UTF_8 );
+            return rep;
          } else
          {
             // Invoke form with parameters
@@ -411,19 +449,19 @@ public abstract class DCICommandQueryServerResource
          }
       }
 
-      try
+      final VelocityContext context = new VelocityContext( );
+      context.put( "name", commandMethod.getName() );
+      context.put( "content", formHtml );
+      Representation rep = new WriterRepresentation(MediaType.TEXT_HTML)
       {
-         String template = TemplateUtil.getTemplate( "resources/command.html", DCICommandQueryServerResource.class );
-         String html = TemplateUtil.eval( template,
-               "$name", commandMethod.getName(),
-               "$content", formHtml );
-
-         // Show query form
-         return new StringRepresentation( html, MediaType.TEXT_HTML );
-      } catch (IOException e)
-      {
-         throw new ResourceException( e );
-      }
+         @Override
+         public void write( Writer writer ) throws IOException
+         {
+            commandTemplate.merge(context, writer);
+         }
+      };
+      rep.setCharacterSet( CharacterSet.UTF_8 );
+      return rep;
    }
 
    private Object getResource( Object resource, List<String> segments ) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, ResourceException
@@ -487,7 +525,8 @@ public abstract class DCICommandQueryServerResource
          // Find the resource first
          try
          {
-            Object resource = getRoot();
+            InteractionContext context = new InteractionContext();
+            Object resource = getRoot(context);
 
             resource = getResource( resource, segments );
             getResponse().getAttributes().put( "segments", segments );
@@ -534,55 +573,62 @@ public abstract class DCICommandQueryServerResource
          {
             if (variant.getMediaType().equals( MediaType.APPLICATION_JSON ))
             {
-               return new StringRepresentation( ((Value) returnValue).toJSON(), MediaType.APPLICATION_JSON );
+               return new StringRepresentation( ((Value) returnValue).toJSON(), MediaType.APPLICATION_JSON, getRequest().getClientInfo().getAcceptedLanguages().get(0).getMetadata(), CharacterSet.UTF_8 );
             } else if (variant.getMediaType().equals( MediaType.TEXT_HTML ))
             {
                if (returnValue instanceof LinksValue)
                {
-                  try
+                  LinksValue links = (LinksValue) returnValue;
+                  StringBuilder linksHtml = new StringBuilder();
+                  for (LinkValue linkValue : links.links().get())
                   {
-                     String template = TemplateUtil.getTemplate( "resources/links.html", DCICommandQueryServerResource.class );
+                     linksHtml.append( "<li><a " );
 
-                     LinksValue links = (LinksValue) returnValue;
-                     StringBuilder linksHtml = new StringBuilder();
-                     for (LinkValue linkValue : links.links().get())
+                     if (linkValue.rel().get() != null)
                      {
-                        linksHtml.append( "<li><a " );
-
-                        if (linkValue.rel().get() != null)
-                        {
-                           linksHtml.append( "rel=\"" ).
-                                 append( linkValue.rel().get() ).
-                                 append( "\" " );
-                        }
-                        linksHtml.append( "href=\"" ).
-                              append( linkValue.href().get() ).
-                              append( "\">" ).
-                              append( linkValue.text().get() ).
-                              append( "</a>" );
-                        linksHtml.append( "</li>" );
+                        linksHtml.append( "rel=\"" ).
+                              append( linkValue.rel().get() ).
+                              append( "\" " );
                      }
-
-                     String content = TemplateUtil.eval( template,
-                           "$content", linksHtml.toString(),
-                           "$title", getRequest().getResourceRef().getRemainingPart() );
-                     return new StringRepresentation( content, MediaType.TEXT_HTML );
-                  } catch (IOException e)
-                  {
-                     throw new ResourceException( e );
+                     linksHtml.append( "href=\"" ).
+                           append( linkValue.href().get() ).
+                           append( "\">" ).
+                           append( linkValue.text().get() ).
+                           append( "</a>" );
+                     linksHtml.append( "</li>" );
                   }
+
+                  final VelocityContext context = new VelocityContext( );
+                  context.put("content", linksHtml.toString());
+                  context.put("title", getRequest().getResourceRef().getRemainingPart());
+
+                  Representation rep = new WriterRepresentation(MediaType.TEXT_HTML)
+                  {
+                     @Override
+                     public void write( Writer writer ) throws IOException
+                     {
+                        linksTemplate.merge(context, writer);
+                     }
+                  };
+                  rep.setCharacterSet( CharacterSet.UTF_8 );
+                  return rep;
 
                } else
                {
-                  try
+                  final VelocityContext context = new VelocityContext( );
+                  context.put("content", ((Value) returnValue).toJSON());
+                  context.put("title", getRequest().getResourceRef().getRemainingPart());
+
+                  Representation rep = new WriterRepresentation(MediaType.TEXT_HTML)
                   {
-                     String template = TemplateUtil.getTemplate( "resources/value.html", DCICommandQueryServerResource.class );
-                     String content = TemplateUtil.eval( template, "$content", ((Value) returnValue).toJSON() );
-                     return new StringRepresentation( content, MediaType.TEXT_HTML );
-                  } catch (IOException e)
-                  {
-                     throw new ResourceException( e );
-                  }
+                     @Override
+                     public void write( Writer writer ) throws IOException
+                     {
+                        valueTemplate.merge(context, writer);
+                     }
+                  };
+                  rep.setCharacterSet( CharacterSet.UTF_8 );
+                  return rep;
                }
             } else
             {

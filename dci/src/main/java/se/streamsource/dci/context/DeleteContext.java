@@ -12,18 +12,15 @@
  *
  */
 
-package se.streamsource.streamflow.dci.infrastructure.web.context;
+package se.streamsource.dci.context;
 
-import org.qi4j.api.composite.TransientComposite;
-import org.qi4j.api.concern.Concerns;
-import se.streamsource.streamflow.dci.infrastructure.web.context.InteractionConstraintsConcern;
+import org.restlet.resource.ResourceException;
 
 /**
- * Base interface for interactions
+ * JAVADOC
  */
-@Concerns(InteractionConstraintsConcern.class)
-public interface Context
-   extends TransientComposite
+public interface DeleteContext
 {
-   InteractionContext context();
+   void delete()
+      throws ResourceException;
 }

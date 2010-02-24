@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.dci.resource;
+package se.streamsource.dci.restlet.client;
 
 import org.qi4j.api.common.QualifiedName;
 import org.qi4j.api.entity.EntityReference;

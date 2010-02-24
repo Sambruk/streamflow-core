@@ -12,9 +12,9 @@
  *
  */
 
-package se.streamsource.streamflow.dci.infrastructure.web.context;
+package se.streamsource.dci.context;
 
-import se.streamsource.streamflow.dci.infrastructure.web.context.Context;
+import se.streamsource.dci.context.Context;
 
 /**
  * JAVADOC

@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.dci.infrastructure.web;
+package se.streamsource.dci.infrastructure.web;
 
 import java.io.BufferedReader;
 import java.io.IOException;

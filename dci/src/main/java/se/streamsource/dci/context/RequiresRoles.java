@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.dci.infrastructure.web.context;
+package se.streamsource.dci.context;
 
 import org.qi4j.api.constraint.Constraint;
 import org.qi4j.api.constraint.ConstraintDeclaration;

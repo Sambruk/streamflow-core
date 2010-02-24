@@ -12,20 +12,18 @@
  *
  */
 
-package se.streamsource.streamflow.dci.infrastructure.web.context;
+package se.streamsource.dci.context;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.qi4j.api.composite.TransientComposite;
+import org.qi4j.api.concern.Concerns;
+import se.streamsource.dci.context.InteractionConstraintsConcern;
 
 /**
- * JAVADOC
+ * Base interface for interactions
  */
-@Retention( RetentionPolicy.RUNTIME )
-@Target( { ElementType.METHOD } )
-@Documented
-public @interface SubContext
+@Concerns(InteractionConstraintsConcern.class)
+public interface Context
+   extends TransientComposite
 {
+   InteractionContext context();
 }

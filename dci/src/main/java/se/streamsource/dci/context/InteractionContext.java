@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.dci.infrastructure.web.context;
+package se.streamsource.dci.context;
 
 import java.util.ArrayList;
 import java.util.HashMap;
