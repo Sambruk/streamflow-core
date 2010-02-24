@@ -59,37 +59,26 @@ public class TasksDetailView2
 
       this.current = current;
 
-/*
-      subscriber = new ForEvents( new EventQuery().withNames( "changedDescription" ), new EventVisitor()
+      subscriber = new ForEvents( new EventQuery().withNames( "deletedEntity" ), new EventVisitor()
       {
          public boolean visit( DomainEvent event )
          {
-            String id = event.entity().get();
-            for (int i = 0; i < getComponentCount(); i++)
-            {
-               TaskDetailView detailView = (TaskDetailView) getComponentAt( i );
-               TaskModel taskModel = detailView.getTaskModel();
-
-               if (taskModel.taskId().equals( id ))
-               {
-                  setTitleAt( i, getTaskDescription( taskModel ) );
-                  break;
-               }
-            }
+            removeAll();
+            revalidate();
+            repaint(  );
 
             return false;
          }
       } );
 
       events.registerListener( subscriber );
-*/
    }
 
    public void show( final TaskModel task )
    {
+      current.setTaskModel( task );
+
       if (getComponents().length == 0)
          add(current, BorderLayout.CENTER);
-
-      current.setTaskModel( task );
    }
 }

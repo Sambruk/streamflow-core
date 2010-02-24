@@ -106,7 +106,6 @@ public class TaskDetailView
       this.model = model;
       infoView.setModel( model.info() );
       generalView.setModel( model.general() );
-      //commentsView.setModel( model.comments() );
       conversationsView.setModel( model.conversations() );
       contactsView.setModel( model.contacts() );
       formsView.setModel( model.forms() );
