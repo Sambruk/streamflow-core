@@ -14,7 +14,7 @@ public class ToolTipTableCellRenderer extends DefaultTableCellRenderer
    {
       String s = value.toString();
       JComponent component = (JComponent) super.getTableCellRendererComponent( table, value, isSelected, hasFocus, row, column );
-      if (s.contains( "\n" ))
+      if (s.contains( "\n" ) || s.length() > 25 )
       {
          StringBuilder sb = new StringBuilder( "<html>" );
          for (String line : s.split( "\n" ))
