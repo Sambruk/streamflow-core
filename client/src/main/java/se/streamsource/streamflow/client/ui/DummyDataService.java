@@ -32,6 +32,7 @@ import se.streamsource.streamflow.client.domain.individual.Account;
 import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
 import se.streamsource.streamflow.client.domain.individual.Individual;
 import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
+import se.streamsource.streamflow.infrastructure.application.LinksValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.resource.task.TasksQuery;
 
@@ -94,8 +95,7 @@ public interface DummyDataService
             String response = account.version( client );
             System.out.println( response );
             CommandQueryClient user = account.server( client ).getSubClient( "users" ).getSubClient( "administrator" );
-            TasksQuery query = vbf.newValue( TasksQuery.class );
-            System.out.println( user.getSubClient( "workspace").getSubClient( "user" ).getSubClient( "inbox" ).query("tasks", query, ListValue.class ).items().get().size() );
+            System.out.println( user.getSubClient( "workspace").getSubClient( "user" ).getSubClient( "inbox" ).query("tasks", LinksValue.class ).links().get().size() );
 
             uow.complete();
 

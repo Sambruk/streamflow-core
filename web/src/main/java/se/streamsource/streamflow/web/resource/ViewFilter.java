@@ -67,9 +67,9 @@ public class ViewFilter
    @Override
    protected int doHandle( final Request request, final Response response )
    {
-      List<MediaType> possibleMediaTypes = Arrays.asList( MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN, MediaType.TEXT_HTML, MediaType.APPLICATION_ATOM );
+      List<MediaType> possibleMediaTypes = Arrays.asList( MediaType.TEXT_PLAIN, MediaType.TEXT_HTML, MediaType.APPLICATION_ATOM );
       MediaType responseType = request.getClientInfo().getPreferredMediaType( possibleMediaTypes );
-      if (responseType != null && possibleMediaTypes.contains( MediaType.TEXT_HTML ))
+      if (responseType != null && possibleMediaTypes.contains( responseType ))
       {
          List<Preference<MediaType>> mediaTypes = request.getClientInfo().getAcceptedMediaTypes();
          request.getClientInfo().setAcceptedMediaTypes( Collections.singletonList( new Preference<MediaType>( MediaType.APPLICATION_JSON ) ) );
@@ -136,7 +136,7 @@ public class ViewFilter
                         {
                            if (object.opt( "links" ) != null)
                            {
-                              template = velocity.getTemplate( "se/streamsource/streamflow/dci/resource/resources/links.html" );
+                              template = velocity.getTemplate( "se/streamsource/dci/restlet/server/links.html" );
                               VelocityContext context = new VelocityContext( new JSONObjectContext( object ) );
                               context.put( "request", request );
                               context.put( "response", response );
