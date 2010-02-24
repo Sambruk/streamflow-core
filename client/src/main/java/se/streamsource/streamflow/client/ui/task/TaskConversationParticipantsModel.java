@@ -25,7 +25,10 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.infrastructure.ui.LinkComparator;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemComparator;
+import se.streamsource.streamflow.infrastructure.application.LinkValue;
+import se.streamsource.streamflow.infrastructure.application.LinksValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
@@ -41,17 +44,17 @@ public class TaskConversationParticipantsModel
    @Structure
    ValueBuilderFactory vbf;
 
-   SortedList<ListItemValue> participants = new SortedList<ListItemValue>(new BasicEventList<ListItemValue>( ), new ListItemComparator());
+   SortedList<LinkValue> participants = new SortedList<LinkValue>(new BasicEventList<LinkValue>( ), new LinkComparator());
 
-   public EventList<ListItemValue> getParticipants()
+   public EventList<LinkValue> getParticipants()
    {
       return participants;
    }
 
-   public void setParticipants( ListValue participants )
+   public void setParticipants( LinksValue participants )
    {
       this.participants.clear();
-      this.participants.addAll( participants.items().get() );
+      this.participants.addAll( participants.links().get() );
    }
    public void addParticipant( EntityReference participant )
    {
@@ -68,7 +71,7 @@ public class TaskConversationParticipantsModel
 
    public void removeParticipant( EntityReference participant )
    {
-      int idx = -1;
+      /*int idx = -1;
       for (int i = 0; i < participants.size(); i++)
       {
          ListItemValue listItemValue = participants.get( i );
@@ -84,7 +87,7 @@ public class TaskConversationParticipantsModel
       } catch (ResourceException e)
       {
          throw new OperationException( TaskResources.could_not_remove_conversation_participant, e );
-      }
+      } */
    }
 
    public void notifyEvent( DomainEvent event )

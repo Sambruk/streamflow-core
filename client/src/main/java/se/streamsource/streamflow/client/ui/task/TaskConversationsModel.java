@@ -16,6 +16,8 @@ package se.streamsource.streamflow.client.ui.task;
 
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.TransactionList;
+import ca.odell.glazedlists.swing.EventListModel;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
@@ -24,20 +26,27 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.domain.contact.ContactValue;
+import se.streamsource.streamflow.infrastructure.application.LinksValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
+import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
+import se.streamsource.streamflow.infrastructure.event.source.EventVisitorFilter;
 import se.streamsource.streamflow.resource.conversation.ConversationDTO;
-import se.streamsource.streamflow.resource.conversation.ConversationsDTO;
 import se.streamsource.streamflow.resource.conversation.MessageDTO;
 import se.streamsource.streamflow.resource.conversation.NewConversationCommand;
+import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.resource.user.UserEntityDTO;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.logging.Logger;
 
 public class TaskConversationsModel
-   implements EventListener, Refreshable
+   implements EventListener, Refreshable, EventVisitor
 {
    @Uses
    CommandQueryClient client;
@@ -48,15 +57,16 @@ public class TaskConversationsModel
    @Structure
    ValueBuilderFactory vbf;
 
-   BasicEventList<ConversationDTO> conversations = new BasicEventList<ConversationDTO>();
+   TransactionList<ConversationDTO> conversations = new TransactionList<ConversationDTO>(new BasicEventList<ConversationDTO>( ));
+
+   EventVisitorFilter eventFilter = new EventVisitorFilter( this, "conversationCreated", "addedParticipant", "messageCreated" );
 
    public void refresh()
    {
       try
       {
-         ConversationsDTO newConversations = testData();//client.query( "conversations", ConversationsDTO.class );
-         conversations.clear();
-         conversations.addAll(newConversations.conversations().get() );
+         LinksValue newConversations = client.query( "index", LinksValue.class );
+         EventListSynch.synchronize( newConversations.links().get(), conversations );
       } catch (Exception e)
       {
          throw new OperationException( TaskResources.could_not_refresh, e );
@@ -68,70 +78,42 @@ public class TaskConversationsModel
       return  conversations;
    }
 
-   public void addConversation( NewConversationCommand command )
+   public void createConversation( String topic )
    {
       try
       {
-         client.postCommand( "addconversation", command );
+         ValueBuilder<StringDTO> newTopic = vbf.newValue( StringDTO.class ).buildWith();
+         newTopic.prototype().string().set( topic );
+         client.postCommand( "create", newTopic.newInstance() );
+         
       } catch (ResourceException e)
       {
-         throw new OperationException( TaskResources.could_not_add_comment, e );
+         throw new OperationException( TaskResources.could_not_create_conversation, e );
       }
    }
 
-   public TaskConversationModel detail()
+    public void notifyEvent( DomainEvent event )
    {
-      return conversationDetail;
-   }
-   
-   public void notifyEvent( DomainEvent event )
-   {
-
+      eventFilter.visit( event );
    }
 
-   private ConversationsDTO testData()
+   public boolean visit( DomainEvent event )
    {
-      ValueBuilder<MessageDTO> messageBuilder = vbf.newValueBuilder( MessageDTO.class );
-      ValueBuilder<UserEntityDTO> usrBuilder = vbf.newValueBuilder( UserEntityDTO.class );
-      ValueBuilder<ConversationDTO> cvBuilder = vbf.newValueBuilder( ConversationDTO.class );
-      ValueBuilder<ConversationsDTO> cvsBuilder = vbf.newValueBuilder( ConversationsDTO.class );
-
-      MessageDTO message = messageBuilder.prototype();
-      message.body().set( "This is a new Message" );
-      message.sender().set( EntityReference.parseEntityReference( "administrator" ));
-      message.createdOn().set( new Date() );
-
-      ArrayList<MessageDTO> msgs = new ArrayList<MessageDTO>(5);
-      msgs.add( messageBuilder.newInstance() );
-
-      UserEntityDTO user = usrBuilder.prototype();
-      user.disabled().set( new Boolean(false) );
-      user.entity().set( EntityReference.parseEntityReference( "administrator" ));
-      user.username().set( "administrator" );
-
-      ArrayList<UserEntityDTO> participants = new ArrayList<UserEntityDTO>(5);
-      participants.add( usrBuilder.newInstance() );
-
-      ConversationDTO cv = cvBuilder.prototype();
-      cv.id().set(EntityReference.parseEntityReference( "99" ));
-      cv.creationDate().set( new Date() );
-      cv.creator().set( EntityReference.parseEntityReference( "administrator" ));
-      cv.description().set( "Some konversation" );
-      cv.messages().set( msgs.size() );
-
-      cv.participants().set( participants.size() );
-
-      ArrayList<ConversationDTO> cvList = new ArrayList<ConversationDTO>(5);
-      cvList.add( cvBuilder.newInstance() );
-
-      for(int i = 0; i< 50; i++)
+      if (client.getReference().getParentRef().getLastSegment().equals( event.entity().get() ))
       {
-         cv.description().set( "Some serious conversation " + i );
-         cv.id().set(EntityReference.parseEntityReference( "" + i ));
-         cvList.add( cvBuilder.newInstance() );
+         Logger.getLogger( "workspace" ).info( "Refresh task conversations" );
+         refresh();
+      } else if( event.name().get().equals("messageCreated"))
+      {
+         for (ConversationDTO conversation : conversations)
+         {
+            if(conversation.id().get().equals( event.entity().get() ))
+            {
+               refresh();
+            }
+         }
       }
-      cvsBuilder.prototype().conversations().set( cvList );
 
-      return cvsBuilder.newInstance();
+      return false;
    }
 }

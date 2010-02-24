@@ -61,6 +61,8 @@ import se.streamsource.streamflow.web.context.structure.labels.SelectedLabelsCon
 import se.streamsource.streamflow.web.context.task.TaskContactContext;
 import se.streamsource.streamflow.web.context.task.TaskContactsContext;
 import se.streamsource.streamflow.web.context.task.TaskContext;
+import se.streamsource.streamflow.web.context.task.TaskConversationContext;
+import se.streamsource.streamflow.web.context.task.TaskConversationsContext;
 import se.streamsource.streamflow.web.context.task.TaskFormContext;
 import se.streamsource.streamflow.web.context.task.TaskFormsContext;
 import se.streamsource.streamflow.web.context.task.TaskGeneralContext;
@@ -156,6 +158,8 @@ public class ContextsAssembler
             TaskContactContext.class,
             TaskContactsContext.class,
             TaskContext.class,
+            TaskConversationContext.class,
+            TaskConversationsContext.class,
             TaskFormsContext.class,
             TaskFormContext.class,
             TaskGeneralContext.class,

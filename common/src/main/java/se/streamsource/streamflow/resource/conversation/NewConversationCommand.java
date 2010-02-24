@@ -25,11 +25,6 @@ public interface NewConversationCommand
 {
    Property<EntityReference> creator();
 
-   Property<Date> creationDate();
-
    Property<String> description();
 
-   Property<String> message();
-
-   Property<List<EntityReference>> participants();
 }

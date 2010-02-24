@@ -34,15 +34,26 @@ import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.JXList;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.restlet.resource.ResourceException;
 
+import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.ui.CreateUserDialog;
+import se.streamsource.streamflow.client.ui.NameDialog;
+import se.streamsource.streamflow.client.ui.ResetPasswordDialog;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.task.conversations.ConversationsListCellRenderer;
+import se.streamsource.streamflow.infrastructure.application.LinkValue;
+import se.streamsource.streamflow.infrastructure.application.LinksValue;
 import se.streamsource.streamflow.resource.conversation.ConversationDTO;
 import ca.odell.glazedlists.event.ListEvent;
 import ca.odell.glazedlists.event.ListEventListener;
 import ca.odell.glazedlists.swing.EventListModel;
+
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 
 public class TaskConversationsView
       extends JSplitPane
@@ -52,6 +63,12 @@ public class TaskConversationsView
    @Structure
    ObjectBuilderFactory obf;
 
+   @Uses
+   Iterable<NameDialog> topicDialogs;
+
+   @Service
+   DialogService dialogs;
+
    private TaskConversationsModel model;
    private RefreshWhenVisible refresher;
 
@@ -59,6 +76,8 @@ public class TaskConversationsView
 
    private ActionMap am;
    private ApplicationContext context;
+
+
 
    public TaskConversationsView( @Service final ApplicationContext context )
    {
@@ -77,26 +96,31 @@ public class TaskConversationsView
 
       list = new JList();
       list.setCellRenderer( new ConversationsListCellRenderer() );
-      list.setFixedCellHeight(-1);
+      list.setFixedCellHeight( -1 );
       list.getSelectionModel().setSelectionMode(
-				ListSelectionModel.SINGLE_SELECTION);
-      
+            ListSelectionModel.SINGLE_SELECTION );
+
       list.addListSelectionListener( new ListSelectionListener()
       {
 
          public void valueChanged( ListSelectionEvent e )
          {
-            TaskConversationModel conversationModel = obf.newObjectBuilder( TaskConversationModel.class ).use( model.client.getSubClient( "tobechangedToEntityRef" ) ).newInstance();
-            TaskConversationView conversationView = obf.newObjectBuilder( TaskConversationView.class ).use( context, obf ).newInstance();
-            conversationView.setModel( conversationModel );
+            if (list.getSelectedIndex() != -1)
+            {
+               TaskConversationModel conversationModel = obf.newObjectBuilder( TaskConversationModel.class ).use( model.client.getSubClient( ((LinkValue) list.getSelectedValue()).href().get() ) ).newInstance();
+               TaskConversationView conversationView = obf.newObjectBuilder( TaskConversationView.class ).use( context, obf ).newInstance();
+               conversationView.setModel( conversationModel );
 
-            setRightComponent( conversationView );
-
-            ((CardLayout) conversationView.getLayout()).show( conversationView, "VIEW" );
+               setRightComponent( conversationView );
+            } else
+            {
+               setRightComponent( right );
+               cards.show( right, "EMPTY" );
+            }
          }
       } );
 
-      JScrollPane scroll = new JScrollPane( list );
+      JScrollPane scroll = new JScrollPane( list, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER );
       left.add( scroll, BorderLayout.CENTER );
 
       JPanel addPanel = new JPanel();
@@ -105,7 +129,7 @@ public class TaskConversationsView
       left.add( addPanel, BorderLayout.SOUTH );
 
       setLeftComponent( left );
-
+      this.setDividerLocation( 200 );
 
       refresher = new RefreshWhenVisible( this );
       addAncestorListener( refresher );
@@ -114,14 +138,14 @@ public class TaskConversationsView
    @Action
    public void add() throws ResourceException, IOException
    {
-      //Todo Add a new conversation
-      TaskConversationModel conversationModel = obf.newObjectBuilder( TaskConversationModel.class ).use( model.client.getSubClient( "tobechangedToEntityRef" ) ).newInstance();
-      TaskConversationView conversationView = obf.newObjectBuilder( TaskConversationView.class ).use( context, obf ).newInstance();
-      conversationView.setModel( conversationModel );
+      NameDialog dialog = topicDialogs.iterator().next();
+      dialogs.showOkCancelHelpDialog( this, dialog, text( TaskResources.new_conversation_topic ) );
 
-      setRightComponent( conversationView );
-
-      ((CardLayout) conversationView.getLayout()).show( conversationView, "NEW" );
+      if (dialog.name() != null )
+      {
+         model.createConversation( dialog.name() );
+         list.setSelectedIndex( model.conversations().size() - 1 );
+      }
    }
 
    public void setModel( TaskConversationsModel taskConversationsModel )
@@ -145,9 +169,8 @@ public class TaskConversationsView
 
    public void listChanged( ListEvent listEvent )
    {
-      list.removeAll();
-//      list.setModel(model)
-      list.setModel( new EventListModel<ConversationDTO>(model.conversations()) );
-      list.revalidate();
+      list.setModel( new EventListModel<ConversationDTO>( model.conversations() ) );
+
+      list.repaint();
    }
 }

@@ -63,7 +63,11 @@ public interface Conversations
          EntityBuilder<Conversation> builder = uowf.currentUnitOfWork().newEntityBuilder( Conversation.class, id );
          builder.instanceFor( CreatedOn.class).createdOn().set( event.on().get() );
          builder.instanceFor( CreatedOn.class).createdBy().set( creator );
-         return builder.newInstance();
+
+         Conversation conversation = builder.newInstance();
+         conversations().add( conversation );
+         
+         return conversation;
       }
    }
 }

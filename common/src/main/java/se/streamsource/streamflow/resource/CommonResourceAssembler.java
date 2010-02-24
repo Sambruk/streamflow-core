@@ -33,7 +33,6 @@ import se.streamsource.streamflow.resource.comment.CommentsDTO;
 import se.streamsource.streamflow.resource.comment.NewCommentCommand;
 import se.streamsource.streamflow.resource.conversation.ConversationDTO;
 import se.streamsource.streamflow.resource.conversation.ConversationDetailDTO;
-import se.streamsource.streamflow.resource.conversation.ConversationsDTO;
 import se.streamsource.streamflow.resource.conversation.MessageDTO;
 import se.streamsource.streamflow.resource.conversation.NewConversationCommand;
 import se.streamsource.streamflow.resource.conversation.NewMessageCommand;
@@ -103,7 +102,6 @@ public class CommonResourceAssembler
             TaskContactsDTO.class,
             CommentsDTO.class,
             CommentDTO.class,
-            ConversationsDTO.class,
             ConversationDTO.class,
             ConversationDetailDTO.class,
             MessageDTO.class,

@@ -16,6 +16,7 @@ package se.streamsource.streamflow.client.ui.task;
 
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.SortedList;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
@@ -26,17 +27,24 @@ import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.domain.ListValueBuilder;
+import se.streamsource.streamflow.infrastructure.application.LinkValue;
+import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
+import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
+import se.streamsource.streamflow.infrastructure.event.source.EventVisitorFilter;
 import se.streamsource.streamflow.resource.conversation.ConversationDetailDTO;
 import se.streamsource.streamflow.resource.conversation.MessageDTO;
 import se.streamsource.streamflow.resource.conversation.NewMessageCommand;
+import se.streamsource.streamflow.resource.roles.StringDTO;
 
+import java.awt.List;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.logging.Logger;
 
 public class TaskConversationModel
-   implements EventListener, Refreshable
+   implements EventListener, Refreshable, EventVisitor
 {
    @Uses
    CommandQueryClient client;
@@ -48,15 +56,20 @@ public class TaskConversationModel
    ValueBuilderFactory vbf;
 
    private ConversationDetailDTO conversationDetail;
-   BasicEventList<MessageDTO> messages = new BasicEventList<MessageDTO>();
+   BasicEventList<LinkValue> messages = new BasicEventList<LinkValue>();
+   BasicEventList<LinkValue> participants = new BasicEventList<LinkValue>();
+
+   EventVisitorFilter eventFilter = new EventVisitorFilter( this, "messageCreated" );
 
    public void refresh()
    {
       try
       {
-         conversationDetail = testData();//client.query( "conversation", ConversationDetailDTO.class );
+         conversationDetail = client.query( "index", ConversationDetailDTO.class );
          messages.clear();
-         messages.addAll(conversationDetail.messages().get() );
+         messages.addAll(conversationDetail.messages().get().links().get());
+         participants.clear();
+         participants.addAll( conversationDetail.participants().get().links().get() );
          participantsModel.setParticipants( conversationDetail.participants().get() );
       } catch (Exception e)
       {
@@ -64,9 +77,14 @@ public class TaskConversationModel
       }
    }
 
-   public EventList<MessageDTO> messages()
+   public EventList messages()
    {
       return messages;
+   }
+
+   public EventList participants()
+   {
+      return participants;     
    }
 
    public String getDescription()
@@ -79,56 +97,32 @@ public class TaskConversationModel
       return participantsModel;
    }
 
-   public void addMessage( NewMessageCommand command )
+   public void addMessage( String message )
    {
       try
       {
-         client.postCommand( "addmessage", command );
+         ValueBuilder<StringDTO> stringBuilder = vbf.newValueBuilder( StringDTO.class );
+         stringBuilder.prototype().string().set( message );
+         client.postCommand( "addmessage", stringBuilder.newInstance() );
       } catch (ResourceException e)
       {
-         throw new OperationException( TaskResources.could_not_add_comment, e );
+         throw new OperationException( TaskResources.could_not_add_message, e );
       }
-   }
-
-   public CommandQueryClient getTaskConversationDetailClientResource()
-   {
-      return client;
    }
 
    public void notifyEvent( DomainEvent event )
    {
-
+       eventFilter.visit( event );
    }
 
-   private ConversationDetailDTO testData()
+   public boolean visit( DomainEvent event )
    {
-      ValueBuilder<MessageDTO> messageBuilder = vbf.newValueBuilder( MessageDTO.class );
-      ValueBuilder<ConversationDetailDTO> cvBuilder = vbf.newValueBuilder( ConversationDetailDTO.class );
-      ListValueBuilder listValueBuilder = new ListValueBuilder(vbf);
+      if (client.getReference().getParentRef().getLastSegment().equals( event.entity().get() ))
+      {
+         Logger.getLogger( "workspace" ).info( "Refresh conversation" );
+         refresh();
+      }
 
-      MessageDTO message = messageBuilder.prototype();
-      message.body().set( "Tables are defined with the table tag. A table is divided into rows (with the tr tag), and each row is divided into data cells (with the td tag). The letters td stands for table data, which is the content of a data cell. A data cell can contain text, images, lists, paragraphs, forms, horizontal rules, tables, etc. " );
-      message.sender().set( EntityReference.parseEntityReference( "administrator" ));
-      message.createdOn().set( new Date() );
-
-      ArrayList<MessageDTO> msgs = new ArrayList<MessageDTO>(5);
-      msgs.add( messageBuilder.newInstance() );
-
-      message.body().set("This is another new Message" );
-      msgs.add( messageBuilder.newInstance() );
-
-      listValueBuilder.addListItem( "someuser1", EntityReference.parseEntityReference( "someuser1" ));
-      listValueBuilder.addListItem( "someuser2", EntityReference.parseEntityReference( "someuser2" ));
-      listValueBuilder.addListItem( "someuser3", EntityReference.parseEntityReference( "someuser3" ));
-
-      ConversationDetailDTO cv = cvBuilder.prototype();
-      cv.creationDate().set( new Date() );
-      cv.creator().set( "administrator" );
-      cv.description().set( "Some konversation" );
-      cv.messages().set( msgs );
-
-      cv.participants().set( listValueBuilder.newList() );
-
-      return cvBuilder.newInstance();
+      return false;
    }
 }

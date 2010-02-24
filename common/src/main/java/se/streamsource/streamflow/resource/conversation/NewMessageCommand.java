@@ -23,9 +23,5 @@ import java.util.Date;
 public interface NewMessageCommand
       extends ValueComposite
 {
-   Property<EntityReference> sender();
-
-   Property<Date> createdOn();
-
    Property<String> body();
 }

@@ -145,10 +145,13 @@ public interface TestDataService
             {
                task.assignTo( user );
 
-               Conversation conversation = task.createConversation( "Questions", testUser );
+               Conversation conversation = task.createConversation( "Questions " + i , testUser );
                ConversationEntity conversationEntity = (ConversationEntity) conversation;
                conversationEntity.addParticipant( testUser );
-               conversation.createMessage( "Test message", testUser );
+               conversationEntity.addParticipant( someUser );
+               conversationEntity.addParticipant( someUser2 );
+               conversation.createMessage( "Test message " + i, testUser );
+               conversation.createMessage( "In reply " + i , someUser );
             }
          }
 

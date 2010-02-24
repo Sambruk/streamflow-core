@@ -17,16 +17,13 @@ package se.streamsource.streamflow.resource.conversation;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
+import se.streamsource.streamflow.infrastructure.application.LinkValue;
 
 import java.util.Date;
 
 public interface ConversationDTO
-   extends ValueComposite
+   extends LinkValue
 {
-   Property<EntityReference> id();
-   
-   Property<String> description();
-
    Property<EntityReference> creator();
 
    Property<Date> creationDate();

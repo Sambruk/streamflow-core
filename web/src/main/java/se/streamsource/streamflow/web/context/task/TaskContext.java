@@ -39,6 +39,9 @@ public interface TaskContext
    TaskGeneralContext general();
 
    @SubContext
+   TaskConversationsContext conversations();
+
+   @SubContext
    TaskContactsContext contacts();
 
    @SubContext
@@ -99,6 +102,11 @@ public interface TaskContext
       public TaskGeneralContext general()
       {
          return subContext( TaskGeneralContext.class );
+      }
+
+      public TaskConversationsContext conversations()
+      {
+         return subContext( TaskConversationsContext.class );
       }
 
       public TaskContactsContext contacts()

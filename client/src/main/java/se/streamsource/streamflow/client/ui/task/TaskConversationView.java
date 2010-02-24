@@ -17,59 +17,31 @@ package se.streamsource.streamflow.client.ui.task;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.event.ListEvent;
 import ca.odell.glazedlists.event.ListEventListener;
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.factories.Borders;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.Sizes;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
-import org.jdesktop.swingx.JXDatePicker;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.object.ObjectBuilderFactory;
-import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.MacOsUIExtension;
-import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
-import se.streamsource.streamflow.client.infrastructure.ui.NotificationGlassPane;
 import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
-import se.streamsource.streamflow.domain.contact.ContactValue;
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
-import se.streamsource.streamflow.resource.conversation.ConversationDetailDTO;
+import se.streamsource.streamflow.infrastructure.application.LinkValue;
 import se.streamsource.streamflow.resource.conversation.MessageDTO;
-import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
 
 import javax.swing.ActionMap;
 import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
-import javax.swing.KeyStroke;
-import javax.swing.SwingConstants;
-import javax.swing.event.HyperlinkEvent;
-import javax.swing.event.HyperlinkListener;
-import javax.swing.text.html.FormSubmitEvent;
 import javax.swing.text.html.HTMLEditorKit;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Observable;
-import java.util.Observer;
-
-import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.*;
 
 public class TaskConversationView
       extends JPanel
@@ -80,171 +52,96 @@ public class TaskConversationView
 
    private TaskConversationModel model;
    private RefreshWhenVisible refresher;
-   private JTextPane messageArea;
+   private JTextPane messages;
+   private JTextPane newMessage;
+   private JTextField topic;
    private ApplicationContext context;
    private JPanel bottomPanel;
    private TaskConversationParticipantsView participantView;
    private ActionMap am;
    private StateBinder newConversationBinder;
    private JTextField defaultFocusField;
+   private JPanel sendPanel;
 
    public TaskConversationView( @Service ApplicationContext context, @Structure ObjectBuilderFactory obf )
    {
-      super( new CardLayout() );
+      super( new BorderLayout() );
       this.context = context;
       this.obf = obf;
       am = context.getActionMap( this );
       MacOsUIExtension.convertAccelerators( am );
 
-      add( new JPanel(), "EMPTY" );
-      add( initView(), "VIEW" );
-      add( initNew(), "NEW" );
+      messages = new JTextPane();
+      messages.setContentType( "text/html" );
+      ((HTMLEditorKit) messages.getEditorKit()).setAutoFormSubmission( false );
+      messages.setEditable( false );
+
+      JScrollPane scroll = new JScrollPane();
+      scroll.getViewport().add( messages );
+      add( scroll, BorderLayout.CENTER );
+
+      add(initBottom(), BorderLayout.SOUTH);
 
       refresher = new RefreshWhenVisible( this );
       addAncestorListener( refresher );
    }
 
-   private JPanel initView()
+   private JPanel initBottom()
    {
-      JPanel view = new JPanel( new BorderLayout() );
-      messageArea = new JTextPane();
-      messageArea.setContentType( "text/html" );
-      ((HTMLEditorKit) messageArea.getEditorKit()).setAutoFormSubmission( false );
-      messageArea.setEditable( false );
-
-      view.add( messageArea, BorderLayout.CENTER );
-
       bottomPanel = new JPanel( new CardLayout() );
 
       // INITIAL
-      JPanel buttonPanel = new JPanel( new FlowLayout( FlowLayout.RIGHT ) );
+      JPanel createPanel = new JPanel( new FlowLayout( FlowLayout.RIGHT ) );
+      createPanel.setPreferredSize( new Dimension(100, 40) );
       // with a button for add message and add participant
       JButton newMsg = new JButton( am.get( "showNewMessage" ) );
-      JButton newParticipants = new JButton( am.get( "showParticipants" ) );
-      buttonPanel.add( newMsg );
-      buttonPanel.add( newParticipants );
-
-      bottomPanel.add( buttonPanel, "INITIAL" );
-
-      // NEWPARTICIPANT
-
-      participantView = obf.newObjectBuilder( TaskConversationParticipantsView.class ).use( context ).newInstance();
-      //participantView.setModel( model.getParticipantsModel() );
-      bottomPanel.add( participantView, "NEW_PARTICIPANT" );
-
+      createPanel.add( newMsg );
 
       // NEWMESSAGE
-      JPanel messagePanel = new JPanel();
+      sendPanel = new JPanel(new BorderLayout());
+      sendPanel.setPreferredSize( new Dimension( 100, 100) );
+      JScrollPane messageScroll = new JScrollPane();
+      newMessage = new JTextPane( );
+      newMessage.setEditable( true );
+      messageScroll.getViewport().add( newMessage );
+
+      JPanel sendMessagePanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
       JButton addMessage = new JButton( am.get( "addMessage" ) );
+      JButton cancel = new JButton( am.get( "cancel" ) );
+      sendMessagePanel.add( addMessage );
+      sendMessagePanel.add( cancel );
 
-      messagePanel.add( addMessage );
+      sendPanel.add( messageScroll, BorderLayout.CENTER );
+      sendPanel.add( sendMessagePanel, BorderLayout.SOUTH );
 
-      bottomPanel.add( messagePanel, "NEW_MESSAGE" );
-
-      view.add( bottomPanel, BorderLayout.SOUTH );
+      bottomPanel.add( createPanel, "INITIAL" );
+      //bottomPanel.add( sendPanel, "NEW_MESSAGE" );
 
       ((CardLayout) bottomPanel.getLayout()).show( bottomPanel, "INITIAL" );
 
-      return view;
-   }
-
-   private JPanel initNew()
-   {
-
-      // Layout and form for the left panel
-      JPanel newConversation = new JPanel( new BorderLayout() );
-
-      FormLayout leftLayout = new FormLayout( "pref", "pref,pref,pref,pref:grow" );
-
-      JPanel leftForm = new JPanel();
-      leftForm.setFocusable( false );
-      DefaultFormBuilder leftBuilder = new DefaultFormBuilder( leftLayout,
-            leftForm );
-      leftBuilder.setBorder( Borders.createEmptyBorder( Sizes.DLUY8,
-            Sizes.DLUX8, Sizes.DLUY2, Sizes.DLUX4 ) );
-
-      StateBinder conversationBinder = new StateBinder();
-      conversationBinder.addConverter( new StateBinder.Converter()
-      {
-         public Object toComponent( Object value )
-         {
-            if (value instanceof ListItemValue)
-            {
-               return ((ListItemValue) value).description().get();
-            } else
-               return value;
-         }
-
-         public Object fromComponent( Object value )
-         {
-            return value;
-         }
-      } );
-      conversationBinder.setResourceMap( context.getResourceMap( getClass() ) );
-      ConversationDetailDTO template = conversationBinder
-            .bindingTemplate( ConversationDetailDTO.class );
-
-      BindingFormBuilder leftBindingBuilder = new BindingFormBuilder(
-            leftBuilder, conversationBinder );
-      JLabel participation = new JLabel();
-      participation.setFont( participation.getFont().deriveFont(
-            Font.BOLD ) );
-      conversationBinder.bind( participation, template.participants() );
-
-      // Title
-      leftBuilder.addLabel( i18n.text( TaskResources.heading_label ) );
-      leftBuilder.nextLine();
-      leftBuilder.add( conversationBinder.bind( (JTextField) TEXTFIELD.newField(), template.description() ) );
-      leftBuilder.nextLine();
-
-      leftBuilder.addLabel( i18n.text( TaskResources.message_label ) );
-      leftBuilder.nextLine();
-
-      JScrollPane msgPane = (JScrollPane) TEXTAREA.newField();
-      msgPane.setMinimumSize( new Dimension( 10, 50 ) );
-      leftBuilder.add( conversationBinder.bind( (JScrollPane) TEXTAREA.newField(), template.messages() ));
-      leftBuilder.nextLine();
-
-
-      // Layout and form for the right panel
-      FormLayout rightLayout = new FormLayout( "70dlu, 5dlu, 150:grow", "pref,pref" );
-
-      JPanel rightForm = new JPanel( rightLayout );
-      rightForm.setFocusable( false );
-      DefaultFormBuilder rightBuilder = new DefaultFormBuilder( rightLayout,
-            rightForm );
-      rightBuilder.setBorder( Borders.createEmptyBorder( Sizes.DLUY8,
-            Sizes.DLUX4, Sizes.DLUY2, Sizes.DLUX8 ) );
-
-      // Select participants
-      javax.swing.Action participantsAction = am.get( "participants" );
-      JButton participantButton = new JButton( participantsAction );
-      participantButton.registerKeyboardAction( participantsAction, (KeyStroke) participantsAction
-            .getValue( javax.swing.Action.ACCELERATOR_KEY ),
-            JComponent.WHEN_IN_FOCUSED_WINDOW );
-      NotificationGlassPane.registerButton( participantButton );
-      participantButton.setHorizontalAlignment( SwingConstants.LEFT );
-      rightBuilder.setExtent( 1, 1 );
-      rightBuilder.add( participantButton );
-      rightBuilder.nextLine();
-      rightBuilder.setExtent(3,1);
-      rightBuilder.add( participation );
-      rightBuilder.nextLine();
-
-      JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-      bottomPanel.add( new JButton( am.get( "create" ) ) );
-
-      newConversation.add( leftForm, BorderLayout.CENTER );
-      newConversation.add( rightForm, BorderLayout.EAST );
-      newConversation.add( bottomPanel, BorderLayout.SOUTH );
-
-      return newConversation;
+      return bottomPanel;
    }
 
    @Action
    public void showNewMessage()
    {
+      bottomPanel.add( sendPanel, "NEW_MESSAGE" );
       ((CardLayout) bottomPanel.getLayout()).show( bottomPanel, "NEW_MESSAGE" );
+   }
+
+   @Action
+   public void addMessage()
+   {
+      model.addMessage( newMessage.getText() );
+      bottomPanel.remove( sendPanel );
+      ((CardLayout) bottomPanel.getLayout()).show( bottomPanel, "INITIAL" );
+   }
+
+   @Action
+   public void cancel()
+   {
+      bottomPanel.remove( sendPanel );
+      ((CardLayout) bottomPanel.getLayout()).show( bottomPanel, "INITIAL" );
    }
 
    @Action
@@ -255,19 +152,7 @@ public class TaskConversationView
    }
 
    @Action
-   public void addMessage()
-   {
-
-   }
-
-   @Action
    public void participants()
-   {
-
-   }
-
-   @Action
-   public void create()
    {
 
    }
@@ -297,7 +182,13 @@ public class TaskConversationView
       EventList<MessageDTO> list = model.messages();
       StringBuffer buf = new StringBuffer();
 
-      buf.append( "<h2>" + model.getDescription() + "</h2>" );
+      buf.append( "<strong>" + model.getDescription() + "</strong>" );
+      buf.append( "  ( " );
+      for(Object participant : model.participants() )
+      {
+         buf.append( ((LinkValue)participant).text() + " " );  
+      }
+      buf.append( ")<br/>" );
 
       buf.append( "<table border='NONE' cellpadding='10'" );
       int size = list.size();
@@ -311,7 +202,7 @@ public class TaskConversationView
          buf.append( "<br>" );
          buf.append( new SimpleDateFormat( i18n.text( WorkspaceResources.date_time_format ) ).format( messageDTO.createdOn().get() ) );
          buf.append( "</td><td width='" + getMessageTableLastColSize() + "' style='WORD-BREAK:BREAK-ALL'>" );
-         buf.append( messageDTO.body().get() );
+         buf.append( messageDTO.text().get() );
          buf.append( "<hr width='100%' style='border:1px solid #cccccc; padding-top: 15px;'>" );
          buf.append( "</td>" );
          buf.append( "</tr>" );
@@ -319,13 +210,13 @@ public class TaskConversationView
 
       }
       buf.append( "</table>" );
-      messageArea.setText( buf.toString() );
+      messages.setText( buf.toString() );
 
    }
 
    private int getMessageTableLastColSize()
    {
-      return (int) (messageArea.getVisibleRect().getWidth() < 600 ? 450 : (messageArea.getVisibleRect().getWidth() - 150));
+      return (int) (messages.getVisibleRect().getWidth() < 600 ? 450 : (messages.getVisibleRect().getWidth() - 150));
    }
 
 }

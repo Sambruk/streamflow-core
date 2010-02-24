@@ -66,7 +66,7 @@ public class ConversationsListCellRenderer implements ListCellRenderer
 				headerPanel);
 
 		// Title
-		JLabel title = new JLabel(conversations.description().get());
+		JLabel title = new JLabel(conversations.text().get());
 		title.setFont(title.getFont().deriveFont(Font.BOLD));
 		headerBuilder.add(title);
 		headerBuilder.nextColumn();

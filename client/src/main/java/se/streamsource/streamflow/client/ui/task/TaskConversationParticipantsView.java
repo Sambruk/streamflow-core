@@ -20,6 +20,7 @@ import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import se.streamsource.streamflow.client.infrastructure.ui.ModifiedFlowLayout;
+import se.streamsource.streamflow.infrastructure.application.LinkValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.ActionMap;
@@ -60,11 +61,11 @@ public class TaskConversationParticipantsView extends JPanel implements ListEven
 
    private void initComponents()
    {
-      labelPanel.removeAll();
+      /*labelPanel.removeAll();
 
       for (int i = 0; i < model.getParticipants().size(); i++)
       {
-         ListItemValue itemValue = model.getParticipants().get( i );
+         LinkValue itemValue = model.getParticipants().get( i );
          RemovableLabel label = new RemovableLabel( itemValue );
          label.addActionListener( this );
          labelPanel.add( label );
@@ -72,7 +73,7 @@ public class TaskConversationParticipantsView extends JPanel implements ListEven
 
       labelPanel.revalidate();
       labelPanel.repaint();
-
+      */
    }
 
    public void listChanged( ListEvent listEvent )

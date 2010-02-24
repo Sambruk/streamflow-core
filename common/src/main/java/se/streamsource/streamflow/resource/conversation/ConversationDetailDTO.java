@@ -14,8 +14,10 @@
 
 package se.streamsource.streamflow.resource.conversation;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
+import se.streamsource.streamflow.infrastructure.application.LinksValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 
 import java.util.Date;
@@ -30,8 +32,8 @@ public interface ConversationDetailDTO
 
    Property<Date> creationDate();
 
-   Property<List<MessageDTO>> messages();
+   Property<LinksValue> messages();
 
-   Property<ListValue> participants();
+   Property<LinksValue> participants();
 
 }
