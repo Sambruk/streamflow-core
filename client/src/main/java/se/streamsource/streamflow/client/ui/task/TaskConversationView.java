@@ -144,6 +144,7 @@ public class TaskConversationView extends JPanel implements ListEventListener
    {
       bottomPanel.remove(sendPanel);
       ((CardLayout) bottomPanel.getLayout()).show(bottomPanel, "INITIAL");
+      newMessage.setText(null);
    }
 
    @Action
