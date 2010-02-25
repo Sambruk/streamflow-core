@@ -98,7 +98,7 @@ public class TaskTypesModel
       {
          if (Status.CLIENT_ERROR_CONFLICT.equals( e.getStatus() ))
          {
-            throw new OperationException( AdministrationResources.could_not_create_project_name_already_exists, e );
+            throw new OperationException( AdministrationResources.description_cannot_be_more_than_50, e );
          }
          throw new OperationException( AdministrationResources.could_not_create_project, e );
       }
