@@ -120,7 +120,7 @@ public class TaskTableView
       taskTable.getColumn( 1 ).setMaxWidth( 150 );
       taskTable.getColumn( 2 ).setPreferredWidth( 150 );
       taskTable.getColumn( 2 ).setMaxWidth( 150 );
-      taskTable.getColumn( taskTable.getColumnCount() - 1 ).setMaxWidth( 40 );
+      taskTable.getColumn( taskTable.getColumnCount() - 1 ).setMaxWidth( 50 );
       taskTable.getColumn( taskTable.getColumnCount() - 1 ).setResizable( false );
 
       taskTable.setAutoCreateColumnsFromModel( false );
