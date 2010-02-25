@@ -104,7 +104,7 @@ public class TaskConversationsView
 
          public void valueChanged( ListSelectionEvent e )
          {
-            if (list.getSelectedIndex() != -1)
+            if (list.getSelectedIndex() != -1 && !e.getValueIsAdjusting())
             {
                conversationView.setModel( model.conversationModels.get( ((LinkValue) list.getSelectedValue()).href().get() ) );
                setRightComponent( conversationView );
