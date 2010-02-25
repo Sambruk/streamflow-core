@@ -164,8 +164,9 @@ public class TaskConversationsView
 
    public void listChanged( ListEvent listEvent )
    {
+      int prevSelected = list.getSelectedIndex();
       list.setModel( new EventListModel<ConversationDTO>( model.conversations() ) );
-
       list.repaint();
+      list.setSelectedIndex( prevSelected );
    }
 }

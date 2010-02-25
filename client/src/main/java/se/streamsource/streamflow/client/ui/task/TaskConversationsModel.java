@@ -129,7 +129,20 @@ public class TaskConversationsModel
          {
             if(conversation.id().get().equals( event.entity().get() ))
             {
-               //refresh();
+               ConversationDTO updated = conversation.<ConversationDTO>buildWith().prototype();
+               updated.messages().set( conversation.messages().get() + 1 );
+               conversations.set( conversations.indexOf(conversation), updated );
+            }
+         }
+      } else if( event.name().get().equals("participantAdded"))
+      {
+         for (ConversationDTO conversation : conversations)
+         {
+            if(conversation.id().get().equals( event.entity().get() ))
+            {
+               ConversationDTO updated = conversation.<ConversationDTO>buildWith().prototype();
+               updated.participants().set( conversation.participants().get() + 1 );
+               conversations.set( conversations.indexOf(conversation), updated );
             }
          }
       }
