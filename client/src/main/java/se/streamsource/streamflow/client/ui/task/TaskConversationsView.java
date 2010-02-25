@@ -14,12 +14,13 @@
 
 package se.streamsource.streamflow.client.ui.task;
 
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
+
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.FlowLayout;
 import java.io.IOException;
 
-import javax.swing.ActionMap;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JList;
@@ -33,7 +34,6 @@ import javax.swing.event.ListSelectionListener;
 
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
-import org.jdesktop.swingx.JXList;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
@@ -41,23 +41,17 @@ import org.qi4j.api.object.ObjectBuilderFactory;
 import org.restlet.resource.ResourceException;
 
 import se.streamsource.streamflow.client.MacOsUIExtension;
+import se.streamsource.streamflow.client.MacOsUIWrapper;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.NotificationGlassPane;
 import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
-import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import se.streamsource.streamflow.client.ui.CreateUserDialog;
 import se.streamsource.streamflow.client.ui.NameDialog;
-import se.streamsource.streamflow.client.ui.ResetPasswordDialog;
-import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.task.conversations.ConversationsListCellRenderer;
 import se.streamsource.streamflow.infrastructure.application.LinkValue;
-import se.streamsource.streamflow.infrastructure.application.LinksValue;
 import se.streamsource.streamflow.resource.conversation.ConversationDTO;
 import ca.odell.glazedlists.event.ListEvent;
 import ca.odell.glazedlists.event.ListEventListener;
 import ca.odell.glazedlists.swing.EventListModel;
-
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 
 public class TaskConversationsView
       extends JSplitPane
@@ -80,7 +74,7 @@ public class TaskConversationsView
    {
 
       setActionMap(context.getActionMap( this ));
-      MacOsUIExtension.convertAccelerators(getActionMap());
+      MacOsUIWrapper.convertAccelerators( getActionMap() );
       this.context = context;
       JPanel left = new JPanel( new BorderLayout() );
       final CardLayout cards = new CardLayout();
