@@ -66,15 +66,28 @@ public interface TaskActionsContext
    public LinksValue possibledelegateusers();
 
    // Commands
+
+   /**
+    * Accept a delegated task.
+    */
    @RequiresDelegated(true)
    public void accept();
 
+   /**
+    * Assign the task to the user invoking the method
+    */
    @RequiresAssigned(false)
    public void assign();
 
+   /**
+    * Mark the task as completed
+    */
    @RequiresStatus({ACTIVE, DONE})
    public void complete();
 
+   /**
+    * Mark the task as done.
+    */
    @RequiresStatus({ACTIVE})
    public void done();
 

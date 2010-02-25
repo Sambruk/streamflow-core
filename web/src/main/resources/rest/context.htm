@@ -13,7 +13,13 @@
 <h2>Queries</h2>
 <ul>
 #foreach($query in $result.queries)
-<li><a href="$query">$query</a></li>
+    #set($desc = $api.method($query))
+    <li>
+        <a href="$query">$query</a>
+        #if($desc)
+        <p>$desc</p>
+        #end
+    </li>
 #end
 </ul>
 </div>
@@ -24,7 +30,13 @@
 <h2>Commands</h2>
 <ul>
 #foreach($command in $result.commands)
-<li><a href="$command">$command</a></li>
+    #set($desc = $api.method($command))
+    <li>
+        <a href="$command">$command</a>
+        #if($desc)
+        <p>$desc</p>
+        #end
+    </li>
 #end
 </ul>
 </div>
@@ -35,19 +47,19 @@
 <h2>Sub-contexts</h2>
 <ul>
 #foreach($context in $result.contexts)
-    #set($desc = $api.method($context))
-    <li>
-        <a href="$context">$context</a>
-        #if($desc)
-        <p>$desc</p>
-        #end
-    </li>
+#set($desc = $api.method($context))
+<li>
+    <a href="$context">$context</a>
+    #if($desc)
+    <p>$desc</p>
+    #end
+</li>
 #end
 </ul>
 </div>
 #end
 
-#if ($result.index)
+#if ($result.index != "null")
 
 #if ($result.index.links)
 <div class="block">

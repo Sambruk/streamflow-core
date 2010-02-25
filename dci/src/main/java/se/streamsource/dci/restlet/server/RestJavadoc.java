@@ -18,22 +18,18 @@ import com.sun.org.apache.xalan.internal.xsltc.trax.SAX2DOM;
 import com.sun.org.apache.xpath.internal.XPathAPI;
 import com.sun.org.apache.xpath.internal.objects.XObject;
 import org.ccil.cowan.tagsoup.Parser;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.File;
 import java.io.FileReader;
-import java.io.IOException;
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * JAVADOC
@@ -41,46 +37,34 @@ import java.io.IOException;
 public class RestJavadoc
 {
    private Class context;
-   public Node doc;
+
+   private Map<Class, Node> documents = new HashMap<Class, Node>();
 
    public RestJavadoc( Class context )
    {
-
       this.context = context;
-
-      File target = new File( context.getProtectionDomain().getCodeSource().getLocation().getPath() ).getParentFile();
-      File apiDocs = new File( target, "site/apidocs" );
-      File classDocs = new File( apiDocs, context.getName().replace( '.', '/' ) + ".html" );
-
-      try
-      {
-         Parser p = new Parser();
-         p.setFeature( "http://xml.org/sax/features/namespace-prefixes", true );
-         // to define the html: prefix (off by default)
-         SAX2DOM sax2dom = new SAX2DOM();
-         p.setContentHandler( sax2dom );
-         p.parse( new InputSource( new FileReader(classDocs) ) );
-         doc = sax2dom.getDOM();
-
-         TransformerFactory.newInstance().newTransformer().transform(new DOMSource( doc ), new StreamResult(System.out));
-      } catch (Exception e)
-      {
-         throw new IllegalArgumentException( "Could not parse HTML for class", e );
-      }
    }
 
    public String method( String name )
    {
+      if (name.endsWith( "/" ))
+         name = name.substring( 0, name.length() - 1 );
+
+      Method method = getMethod( name );
+
+      Node doc = getDocument( method );
+
+      if (doc == null)
+         return null;
+
       String result;
 
       try
       {
-         if (name.endsWith( "/" ))
-            name = name.substring( 0, name.length()-1 );
 
-         String titlePath = "//html:pre/b['"+name+"()']/following-sibling::html:dl[0]";
+         String titlePath = "//html:h3[contains(text(),'" + name + "')]/following-sibling::html:dl/html:dd/text()";
          XObject title = XPathAPI.eval( doc, titlePath );
-         result =  title.toString();
+         result = title.toString().trim();
 
 
       } catch (TransformerException e)
@@ -88,9 +72,58 @@ public class RestJavadoc
          result = "";
       }
 
-      if (result.equals(""))
+      if (result.equals( "" ))
          result = null;
 
       return result;
+   }
+
+   private Node getDocument( Method method )
+   {
+      Class clazz = method.getDeclaringClass();
+
+      Node doc = documents.get( clazz );
+
+      if (doc == null)
+      {
+
+         File target = new File( clazz.getProtectionDomain().getCodeSource().getLocation().getPath() ).getParentFile();
+         File apiDocs = new File( target, "site/apidocs" );
+         File classDocs = new File( apiDocs, clazz.getName().replace( '.', '/' ) + ".html" );
+
+         if (!classDocs.exists())
+            return null;
+
+         try
+         {
+            Parser p = new Parser();
+            p.setFeature( "http://xml.org/sax/features/namespace-prefixes", true );
+            // to define the html: prefix (off by default)
+            SAX2DOM sax2dom = new SAX2DOM();
+            p.setContentHandler( sax2dom );
+            p.parse( new InputSource( new FileReader( classDocs ) ) );
+            doc = sax2dom.getDOM();
+
+//         TransformerFactory.newInstance().newTransformer().transform(new DOMSource( doc ), new StreamResult(System.out));
+
+            documents.put( clazz, doc );
+         } catch (Exception e)
+         {
+            throw new IllegalArgumentException( "Could not parse HTML for class", e );
+         }
+      }
+
+      return doc;
+   }
+
+   private Method getMethod( String name )
+   {
+      for (Method method : context.getMethods())
+      {
+         if (method.getName().equals( name ))
+            return method;
+      }
+
+      throw new IllegalArgumentException( "Method not found:" + name );
    }
 }

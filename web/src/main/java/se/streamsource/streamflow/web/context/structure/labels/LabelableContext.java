@@ -18,6 +18,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import se.streamsource.dci.context.IndexContext;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.infrastructure.application.LinksValue;
@@ -37,7 +38,7 @@ import java.util.Map;
  */
 @Mixins(LabelableContext.Mixin.class)
 public interface LabelableContext
-   extends SubContexts<LabeledContext>, Context
+   extends SubContexts<LabeledContext>, IndexContext<LinksValue>, Context
 {
    LinksValue possiblelabels();
    void addlabel( EntityReferenceDTO reference );
@@ -49,11 +50,16 @@ public interface LabelableContext
       @Structure
       UnitOfWorkFactory uowf;
 
+      public LinksValue index()
+      {
+         return new LinksBuilder(module.valueBuilderFactory()).addDescribables( context.role(Labelable.Data.class).labels() ).newLinks();
+      }
+
       public LinksValue possiblelabels()
       {
          TaskLabelsQueries labels = context.role(TaskLabelsQueries.class);
 
-         LinksBuilder builder = new LinksBuilder(module.valueBuilderFactory()).command( "label" );
+         LinksBuilder builder = new LinksBuilder(module.valueBuilderFactory()).command( "addlabel" );
          for (Map.Entry<Label, SelectedLabels> labelSelectedLabelsEntry : labels.possibleLabels().entrySet())
          {
             builder.addDescribable( labelSelectedLabelsEntry.getKey(), (Describable) labelSelectedLabelsEntry.getValue() );

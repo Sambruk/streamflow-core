@@ -94,7 +94,11 @@ public class LinksBuilder
 
       titledLinkBuilder.prototype().text().set( description );
       titledLinkBuilder.prototype().id().set( ref.identity() );
-      titledLinkBuilder.prototype().href().set( (path == null ? "" : path+"/")+ref.identity()+"/" );
+
+      if (command != null)
+         titledLinkBuilder.prototype().href().set( command+"?entity="+ref.identity() );
+      else
+         titledLinkBuilder.prototype().href().set( (path == null ? "" : path+"/")+ref.identity()+"/" );
       titledLinkBuilder.prototype().rel().set( rel );
 
       titledLinkBuilder.prototype().title().set( title );
