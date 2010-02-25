@@ -29,9 +29,15 @@ import se.streamsource.streamflow.web.context.users.UsersContext;
 public interface RootContext
    extends Context
 {
+   /**
+    * Users context. Here is where you access all users, and methods to create users.
+    */
    @SubContext
    UsersContext users();
 
+   /**
+    * Here is where you access all tasks, including search
+    */
    @SubContext
    TasksContext tasks();
 

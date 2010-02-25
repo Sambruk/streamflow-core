@@ -59,6 +59,12 @@
             <version>1.6.3</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.ccil.cowan.tagsoup</groupId>
+            <artifactId>tagsoup</artifactId>
+            <version>1.2</version>
+        </dependency>
+        
         <!-- Logging -->
         <dependency>
             <groupId>org.slf4j</groupId>

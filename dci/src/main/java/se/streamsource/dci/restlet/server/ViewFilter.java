@@ -131,6 +131,7 @@ public class ViewFilter
                            VelocityContext context = new VelocityContext();
                            context.put( "request", request );
                            context.put( "response", response );
+                           context.put("api", response.getAttributes().get( RestJavadoc.class.getName() ));
                            context.put( "result", new JSONObjectContext( object ) );
                            template.merge( context, writer );
                         } else

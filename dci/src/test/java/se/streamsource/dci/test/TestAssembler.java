@@ -29,6 +29,7 @@ import se.streamsource.dci.restlet.server.ViewFilter;
 import se.streamsource.dci.test.context.file.FileContext;
 import se.streamsource.dci.test.context.file.FilesContext;
 import se.streamsource.dci.test.context.RootContext;
+import se.streamsource.dci.value.IndexValue;
 import se.streamsource.streamflow.infrastructure.application.LinkValue;
 import se.streamsource.streamflow.infrastructure.application.LinksValue;
 import se.streamsource.streamflow.resource.roles.StringDTO;
@@ -67,6 +68,6 @@ public class TestAssembler
             ResourceFinder.class,
             TestApplication.class );
       
-      module.addValues( LinksValue.class, LinkValue.class, StringDTO.class );
+      module.addValues( IndexValue.class, LinksValue.class, LinkValue.class, StringDTO.class );
    }
 }

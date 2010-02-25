@@ -65,6 +65,7 @@ import se.streamsource.dci.context.InteractionConstraintsService;
 import se.streamsource.dci.context.InteractionContext;
 import se.streamsource.dci.context.SubContext;
 import se.streamsource.dci.context.SubContexts;
+import se.streamsource.dci.value.IndexValue;
 import se.streamsource.streamflow.infrastructure.application.LinkValue;
 import se.streamsource.streamflow.infrastructure.application.LinksValue;
 
@@ -295,63 +296,52 @@ public abstract class CommandQueryServerResource
 
       final Value index = resource instanceof IndexContext ? ((IndexContext)resource).index() : null;
 
+//      getResponse().getAttributes().put( RestJavadoc.class.getName(), new RestJavadoc(resource.getClass().getInterfaces()[0]) );
+
       // JSON
       Representation rep = new WriterRepresentation( MediaType.APPLICATION_JSON )
       {
          @Override
          public void write( Writer writer ) throws IOException
          {
-            try
+            ValueBuilder<IndexValue> builder = vbf.newValueBuilder( IndexValue.class );
+
+            if (queries.size() > 0)
             {
-               JSONWriter info = new JSONWriter( writer );
-               info = info.object();
-               if (queries.size() > 0)
+               List<String> queriesProperty = builder.prototype().queries().get();
+               for (Method query : queries)
                {
-                  JSONWriter jsonWriter = info.key( "queries" ).array();
-                  for (Method query : queries)
-                  {
-                     jsonWriter.value( query.getName() );
-                  }
-                  jsonWriter.endArray();
+                  queriesProperty.add( query.getName() );
                }
-
-               if (commands.size() > 0)
-               {
-                  JSONWriter jsonWriter = info.key( "commands" ).array();
-                  for (Method command : commands)
-                  {
-                     jsonWriter.value( command.getName() );
-                  }
-                  jsonWriter.endArray();
-               }
-
-               if (subResources.size() > 0)
-               {
-                  JSONWriter jsonWriter = info.key( "contexts" ).array();
-                  for (Method subResource : subResources)
-                  {
-                     if (subResource.getDeclaringClass().equals(SubContexts.class))
-                        jsonWriter.value( subResource.getName() );
-                     else
-                        jsonWriter.value( subResource.getName()+"/" );
-                  }
-                  jsonWriter.endArray();
-               }
-
-               if (index != null)
-               {
-                  JSONWriter jsonWriter = info.key( "index" );
-
-                  ValueDescriptor valueDescriptor = spi.getValueDescriptor( (ValueComposite) index );
-                  valueDescriptor.valueType().toJSON( index, jsonWriter );
-               }
-
-               info.endObject();
-
-            } catch (JSONException e)
-            {
-               throw (IOException) new IOException( "Could not write JSON" ).initCause( e );
             }
+
+            if (commands.size() > 0)
+            {
+               List<String> commandsProperty = builder.prototype().commands().get();
+               for (Method command : commands)
+               {
+                  commandsProperty.add( command.getName() );
+               }
+            }
+
+            if (subResources.size() > 0)
+            {
+               List<String> contextsProperty = builder.prototype().contexts().get();
+               for (Method subResource : subResources)
+               {
+                  if (subResource.getDeclaringClass().equals(SubContexts.class))
+                     contextsProperty.add( subResource.getName() );
+                  else
+                     contextsProperty.add( subResource.getName()+"/" );
+               }
+            }
+
+            if (index != null)
+            {
+               builder.prototype().index().set( (ValueComposite) index );
+            }
+            
+            writer.write( builder.newInstance().toJSON() );
          }
       };
       rep.setCharacterSet( CharacterSet.UTF_8 );

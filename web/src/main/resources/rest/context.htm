@@ -35,7 +35,13 @@
 <h2>Sub-contexts</h2>
 <ul>
 #foreach($context in $result.contexts)
-<li><a href="$context">$context</a></li>
+    #set($desc = $api.method($context))
+    <li>
+        <a href="$context">$context</a>
+        #if($desc)
+        <p>$desc</p>
+        #end
+    </li>
 #end
 </ul>
 </div>
