@@ -296,7 +296,7 @@ public abstract class CommandQueryServerResource
 
       final Value index = resource instanceof IndexContext ? ((IndexContext)resource).index() : null;
 
-//      getResponse().getAttributes().put( RestJavadoc.class.getName(), new RestJavadoc(resource.getClass().getInterfaces()[0]) );
+      getResponse().getAttributes().put( RestJavadoc.class.getName(), new RestJavadoc(resource.getClass().getInterfaces()[0]) );
 
       // JSON
       Representation rep = new WriterRepresentation( MediaType.APPLICATION_JSON )

@@ -20,6 +20,7 @@ import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.spi.service.importer.NewObjectImporter;
 import se.streamsource.dci.restlet.server.ViewFilter;
+import se.streamsource.dci.value.IndexValue;
 import se.streamsource.streamflow.web.resource.admin.ConsoleServerResource;
 import se.streamsource.streamflow.web.resource.events.EventsServerResource;
 
@@ -33,6 +34,8 @@ public class ServerResourceAssembler
    {
       module.importServices( VelocityEngine.class ).importedBy( NewObjectImporter.class );
       module.addObjects( VelocityEngine.class, EventsFilter.class, ViewFilter.class );
+
+      module.addValues( IndexValue.class );
 
       // Resources
       module.addObjects(

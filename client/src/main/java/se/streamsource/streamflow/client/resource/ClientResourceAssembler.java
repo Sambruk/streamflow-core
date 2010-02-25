@@ -19,6 +19,7 @@ import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.dci.value.IndexValue;
 
 /**
  * JAVADOC
@@ -31,5 +32,7 @@ public class ClientResourceAssembler
       // /users
       module.addObjects( CommandQueryClient.class
       ).visibleIn( Visibility.application );
+
+      module.addValues( IndexValue.class );
    }
 }
