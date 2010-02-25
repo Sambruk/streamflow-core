@@ -21,10 +21,12 @@ import java.io.IOException;
 
 import javax.swing.ActionMap;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -38,7 +40,9 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.restlet.resource.ResourceException;
 
+import se.streamsource.streamflow.client.MacOsUIExtension;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
+import se.streamsource.streamflow.client.infrastructure.ui.NotificationGlassPane;
 import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.CreateUserDialog;
@@ -59,7 +63,6 @@ public class TaskConversationsView
       extends JSplitPane
       implements ListEventListener
 {
-
    @Uses
    Iterable<NameDialog> topicDialogs;
 
@@ -71,15 +74,13 @@ public class TaskConversationsView
 
    private JList list;
 
-   private ActionMap am;
    private ApplicationContext context;
-
-
 
    public TaskConversationsView( @Service final ApplicationContext context, @Structure ObjectBuilderFactory obf )
    {
 
-      am = context.getActionMap( this );
+      setActionMap(context.getActionMap( this ));
+      MacOsUIExtension.convertAccelerators(getActionMap());
       this.context = context;
       JPanel left = new JPanel( new BorderLayout() );
       final CardLayout cards = new CardLayout();
@@ -119,7 +120,12 @@ public class TaskConversationsView
       left.add( scroll, BorderLayout.CENTER );
 
       JPanel addPanel = new JPanel();
-      JButton addConversation = new JButton( am.get( "add" ) );
+      javax.swing.Action addConversationAction = getActionMap().get( "addConversation" );
+      JButton addConversation = new JButton( addConversationAction );
+      addConversation.registerKeyboardAction( addConversationAction, (KeyStroke) addConversationAction
+            .getValue( javax.swing.Action.ACCELERATOR_KEY ),
+            JComponent.WHEN_IN_FOCUSED_WINDOW );
+      NotificationGlassPane.registerButton( addConversation );
       addPanel.add( addConversation, FlowLayout.LEFT );
       left.add( addPanel, BorderLayout.SOUTH );
 
@@ -131,7 +137,7 @@ public class TaskConversationsView
    }
 
    @Action
-   public void add() throws ResourceException, IOException
+   public void addConversation() throws ResourceException, IOException
    {
       NameDialog dialog = topicDialogs.iterator().next();
       dialogs.showOkCancelHelpDialog( this, dialog, text( TaskResources.new_conversation_topic ) );

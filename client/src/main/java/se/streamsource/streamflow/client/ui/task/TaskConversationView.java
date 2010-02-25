@@ -22,10 +22,12 @@ import java.text.SimpleDateFormat;
 
 import javax.swing.ActionMap;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
+import javax.swing.KeyStroke;
 import javax.swing.text.html.HTMLEditorKit;
 
 import org.jdesktop.application.Action;
@@ -35,6 +37,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.object.ObjectBuilderFactory;
 
 import se.streamsource.streamflow.client.MacOsUIExtension;
+import se.streamsource.streamflow.client.infrastructure.ui.NotificationGlassPane;
 import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
@@ -92,9 +95,14 @@ public class TaskConversationView extends JPanel implements ListEventListener
 
       // INITIAL
       JPanel createPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-      createPanel.setPreferredSize(new Dimension(100, 40));
+//      createPanel.setPreferredSize(new Dimension(100, 40));
       // with a button for add message and add participant
-      JButton newMsg = new JButton(am.get("showNewMessage"));
+      javax.swing.Action writeMessageAction = am.get("writeMessage");
+      JButton newMsg = new JButton(writeMessageAction);
+      newMsg.registerKeyboardAction( writeMessageAction, (KeyStroke) writeMessageAction
+            .getValue( javax.swing.Action.ACCELERATOR_KEY ),
+            JComponent.WHEN_IN_FOCUSED_WINDOW );
+      NotificationGlassPane.registerButton( newMsg );
       createPanel.add(newMsg);
 
       // NEWMESSAGE
@@ -104,12 +112,23 @@ public class TaskConversationView extends JPanel implements ListEventListener
       newMessage = new JTextPane();
       newMessage.setContentType("text/html");
       newMessage.setEditable(true);
+//      newMessage.setPreferredSize(new Dimension(100,100));
       messageScroll.getViewport().add(newMessage);
 
       JPanel sendMessagePanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-      JButton addMessage = new JButton(am.get("addMessage"));
-      JButton cancel = new JButton(am.get("cancel"));
-      sendMessagePanel.add(addMessage);
+      javax.swing.Action sendMessageAction = am.get( "sendMessage" );
+      JButton sendMessage = new JButton(sendMessageAction);
+      sendMessage.registerKeyboardAction( sendMessageAction, (KeyStroke) sendMessageAction
+            .getValue( javax.swing.Action.ACCELERATOR_KEY ),
+            JComponent.WHEN_IN_FOCUSED_WINDOW );
+      NotificationGlassPane.registerButton( sendMessage );
+      javax.swing.Action cancelAction = am.get( "cancelNewMessage" );
+      JButton cancel = new JButton(cancelAction);
+//      cancel.registerKeyboardAction( cancelAction, (KeyStroke) cancelAction
+//            .getValue( javax.swing.Action.ACCELERATOR_KEY ),
+//            JComponent.WHEN_IN_FOCUSED_WINDOW );
+//      NotificationGlassPane.registerButton( cancel );
+      sendMessagePanel.add(sendMessage);
       sendMessagePanel.add(cancel);
 
       sendPanel.add(messageScroll, BorderLayout.CENTER);
@@ -124,14 +143,14 @@ public class TaskConversationView extends JPanel implements ListEventListener
    }
 
    @Action
-   public void showNewMessage()
+   public void writeMessage()
    {
       bottomPanel.add(sendPanel, "NEW_MESSAGE");
       ((CardLayout) bottomPanel.getLayout()).show(bottomPanel, "NEW_MESSAGE");
    }
 
    @Action
-   public void addMessage()
+   public void sendMessage()
    {
       model.addMessage(newMessage.getText());
       bottomPanel.remove(sendPanel);
@@ -140,7 +159,7 @@ public class TaskConversationView extends JPanel implements ListEventListener
    }
 
    @Action
-   public void cancel()
+   public void cancelNewMessage()
    {
       bottomPanel.remove(sendPanel);
       ((CardLayout) bottomPanel.getLayout()).show(bottomPanel, "INITIAL");
