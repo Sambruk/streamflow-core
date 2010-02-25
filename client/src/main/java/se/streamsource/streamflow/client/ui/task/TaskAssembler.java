@@ -19,6 +19,12 @@ import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import se.streamsource.streamflow.client.infrastructure.ui.UIAssemblers;
 import se.streamsource.streamflow.client.ui.administration.projects.members.TableSelectionView;
+import se.streamsource.streamflow.client.ui.task.conversations.TaskConversationModel;
+import se.streamsource.streamflow.client.ui.task.conversations.TaskConversationParticipantsModel;
+import se.streamsource.streamflow.client.ui.task.conversations.TaskConversationParticipantsView;
+import se.streamsource.streamflow.client.ui.task.conversations.TaskConversationView;
+import se.streamsource.streamflow.client.ui.task.conversations.TaskConversationsModel;
+import se.streamsource.streamflow.client.ui.task.conversations.TaskConversationsView;
 
 /**
  * JAVADOC

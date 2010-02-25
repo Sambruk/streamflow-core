@@ -21,6 +21,7 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.ui.task.conversations.TaskConversationsView;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 
 import javax.swing.JLabel;

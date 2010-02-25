@@ -52,7 +52,7 @@ public class TaskConversationView extends JPanel implements ListEventListener
    private ObjectBuilderFactory obf;
 
    private TaskConversationModel model;
-   private RefreshWhenVisible refresher;
+   //private RefreshWhenVisible refresher;
    private JTextPane messages;
    private JTextPane newMessage;
    private JTextField topic;
@@ -88,8 +88,8 @@ public class TaskConversationView extends JPanel implements ListEventListener
 
       add(initBottom(), BorderLayout.SOUTH);
 
-      refresher = new RefreshWhenVisible(this);
-      addAncestorListener(refresher);
+      //refresher = new RefreshWhenVisible(this);
+      //addAncestorListener(refresher);
    }
 
    private JPanel initTop()
@@ -244,7 +244,7 @@ public class TaskConversationView extends JPanel implements ListEventListener
 
       model = taskConversationDetailModel;
       model.refresh();
-      refresher.setRefreshable(model);
+      //refresher.setRefreshable(model);
 
       if (model != null)
       {

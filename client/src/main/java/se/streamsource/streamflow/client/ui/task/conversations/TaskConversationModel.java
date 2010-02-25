@@ -118,11 +118,11 @@ public class TaskConversationModel
 
    public boolean visit( DomainEvent event )
    {
-      if (client.getReference().getLastSegment().equals( event.entity().get() ))
+      /*if (client.getReference().getLastSegment().equals( event.entity().get() ))
       {
          Logger.getLogger( "workspace" ).info( "Refresh conversation" );
          refresh();
-      }
+      } */
 
       return false;
    }

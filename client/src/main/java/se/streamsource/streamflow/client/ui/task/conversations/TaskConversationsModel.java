@@ -141,9 +141,9 @@ public class TaskConversationsModel
          {
             if(conversation.id().get().equals( event.entity().get() ))
             {
-               ConversationDTO updated = conversation.<ConversationDTO>buildWith().prototype();
+               /*ConversationDTO updated = conversation.<ConversationDTO>buildWith().prototype();
                updated.participants().set( conversation.participants().get() + 1 );
-               conversations.set( conversations.indexOf(conversation), updated );
+               conversations.set( conversations.indexOf(conversation), updated );*/
             }
          }
       }
