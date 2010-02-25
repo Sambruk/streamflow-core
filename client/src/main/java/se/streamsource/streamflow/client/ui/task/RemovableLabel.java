@@ -48,6 +48,13 @@ public class RemovableLabel extends JPanel
       addMouseListener( this );
    }
 
+   @Override
+   public void setEnabled( boolean enabled )
+   {
+      button.setEnabled( enabled );
+      super.setEnabled( enabled );
+   }
+
    public ListItemValue item()
    {
       return itemValue;

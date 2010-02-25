@@ -16,21 +16,26 @@ package se.streamsource.streamflow.web.context.task;
 
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
+import se.streamsource.streamflow.domain.structure.Describable;
+import se.streamsource.streamflow.domain.structure.Notable;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.infrastructure.application.LinksValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.resource.roles.DateDTO;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
+import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
 import se.streamsource.streamflow.web.domain.entity.task.TaskEntity;
 import se.streamsource.streamflow.web.domain.entity.task.TaskTypeQueries;
 import se.streamsource.streamflow.web.domain.interaction.gtd.DueOn;
+import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresStatus;
 import se.streamsource.streamflow.web.domain.structure.form.Forms;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.tasktype.TaskType;
@@ -43,19 +48,30 @@ import se.streamsource.streamflow.web.context.structure.DescribableContext;
 import se.streamsource.streamflow.web.context.structure.NotableContext;
 import se.streamsource.streamflow.web.context.structure.labels.LabelableContext;
 
+import static se.streamsource.streamflow.domain.interaction.gtd.States.*;
+
 /**
  * JAVADOC
  */
 @Mixins(TaskGeneralContext.Mixin.class)
 public interface TaskGeneralContext
-   extends DescribableContext,
-      NotableContext,
+   extends 
       IndexContext<TaskGeneralDTO>,
       Context
 {
+   @RequiresStatus(ACTIVE)
    void changedueon( DateDTO dueOnValue );
-   LinksValue possibletasktypes();
+
+   @RequiresStatus( ACTIVE )
    void tasktype( EntityReferenceDTO dto );
+
+   @RequiresStatus(ACTIVE)
+   void changedescription( StringDTO stringValue );
+
+   @RequiresStatus(ACTIVE)
+   void changenote( StringDTO noteValue );
+
+   LinksValue possibletasktypes();
    LinksValue possibleforms();
 
    @SubContext
@@ -67,6 +83,18 @@ public interface TaskGeneralContext
    {
       @Structure
       Module module;
+
+      public void changedescription( StringDTO stringValue )
+      {
+         Describable describable = context.role( Describable.class );
+         describable.changeDescription( stringValue.string().get() );
+      }
+
+      public void changenote( StringDTO noteValue )
+      {
+         Notable notable = context.role( Notable.class );
+         notable.changeNote( noteValue.string().get() );
+      }
 
       public TaskGeneralDTO index()
       {

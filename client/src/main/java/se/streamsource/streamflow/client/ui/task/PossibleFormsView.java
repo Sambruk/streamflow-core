@@ -77,6 +77,16 @@ public class PossibleFormsView extends JPanel implements ListEventListener, Acti
 
    }
 
+   @Override
+   public void setEnabled( boolean enabled )
+   {
+      for (Component component : formPanel.getComponents())
+      {
+         component.setEnabled( enabled );
+      }
+      super.setEnabled( enabled );
+   }
+
    public void listChanged( ListEvent listEvent )
    {
       initComponents();

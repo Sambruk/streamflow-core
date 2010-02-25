@@ -200,6 +200,7 @@ public class TaskGeneralView extends JScrollPane implements Observer
       dueOnField.getMonthView().setLowerBound( calendar.getTime() );
 
 
+
       // Layout and form for the bottom panel
       FormLayout bottomLayout = new FormLayout( "250dlu:grow",
             "15dlu,fill:pref:grow" );
@@ -282,10 +283,22 @@ public class TaskGeneralView extends JScrollPane implements Observer
             .setText( value == null ? "" : value.description().get() );
 
       taskGeneralModel.addObserver( this );
+
+      updateEnabled();
+   }
+
+   private void updateEnabled()
+   {
+      dueOnField.setEnabled( model.getCommandEnabled( "changedueon" ) );
+      descriptionField.setEnabled( model.getCommandEnabled( "changedescription" ));
+      notePane.getViewport().getView().setEnabled( model.getCommandEnabled( "changenote" ));
+      taskTypeButton.setEnabled( model.getCommandEnabled( "tasktype" ));
    }
 
    public void update( Observable o, Object arg )
    {
+      updateEnabled();
+
       if (o == taskBinder)
       {
          Property property = (Property) arg;

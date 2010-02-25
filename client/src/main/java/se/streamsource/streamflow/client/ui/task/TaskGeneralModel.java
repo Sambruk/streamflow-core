@@ -26,6 +26,7 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 
 import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.dci.value.IndexValue;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
@@ -47,228 +48,237 @@ import ca.odell.glazedlists.EventList;
  * Model for the general info about a task.
  */
 public class TaskGeneralModel extends Observable implements Refreshable,
-		EventListener, EventVisitor
+      EventListener, EventVisitor
 
 {
-	@Structure
-	ValueBuilderFactory vbf;
+   @Structure
+   ValueBuilderFactory vbf;
 
-	@Structure
-	ObjectBuilderFactory obf;
+   @Structure
+   ObjectBuilderFactory obf;
 
-	EventVisitorFilter eventFilter;
+   EventVisitorFilter eventFilter;
 
-	private CommandQueryClient client;
+   private CommandQueryClient client;
 
-	TaskGeneralDTO general;
+   TaskGeneralDTO general;
 
-	@Uses
-	TaskLabelsModel taskLabelsModel;
+   @Uses
+   TaskLabelsModel taskLabelsModel;
 
    @Uses
    PossibleFormsModel possibleFormsModel;
+   private IndexValue indexValue;
 
    public TaskGeneralModel(@Uses CommandQueryClient client)
-	{
-		this.client = client;
-		eventFilter = new EventVisitorFilter(client.getReference()
-				.getParentRef().getLastSegment(), this, "addedLabel",
-				"removedLabel", "changedOwner", "changedTaskType");
-	}
+   {
+      this.client = client;
+      eventFilter = new EventVisitorFilter(client.getReference()
+            .getParentRef().getLastSegment(), this, "addedLabel",
+            "removedLabel", "changedOwner", "changedTaskType", "changedStatus");
+   }
 
-	public TaskGeneralDTO getGeneral()
-	{
-		if (general == null)
-			refresh();
+   public TaskGeneralDTO getGeneral()
+   {
+      if (general == null)
+         refresh();
 
-		return general;
-	}
+      return general;
+   }
 
-	public void changeDescription(String newDescription)
-	{
-		try
-		{
-			ValueBuilder<StringDTO> builder = vbf
-					.newValueBuilder(StringDTO.class);
-			builder.prototype().string().set(newDescription);
-			client.putCommand("changedescription", builder.newInstance());
-		} catch (ResourceException e)
-		{
-			throw new OperationException(
-					TaskResources.could_not_change_description, e);
-		}
-	}
+   public void changeDescription(String newDescription)
+   {
+      try
+      {
+         ValueBuilder<StringDTO> builder = vbf
+               .newValueBuilder(StringDTO.class);
+         builder.prototype().string().set(newDescription);
+         client.putCommand("changedescription", builder.newInstance());
+      } catch (ResourceException e)
+      {
+         throw new OperationException(
+               TaskResources.could_not_change_description, e);
+      }
+   }
 
-	public void changeNote(String newNote)
-	{
-		try
-		{
-			ValueBuilder<StringDTO> builder = vbf
-					.newValueBuilder(StringDTO.class);
-			builder.prototype().string().set(newNote);
-			client.putCommand("changenote", builder.newInstance());
-		} catch (ResourceException e)
-		{
-			throw new OperationException(TaskResources.could_not_change_note, e);
-		}
-	}
+   public void changeNote(String newNote)
+   {
+      try
+      {
+         ValueBuilder<StringDTO> builder = vbf
+               .newValueBuilder(StringDTO.class);
+         builder.prototype().string().set(newNote);
+         client.putCommand("changenote", builder.newInstance());
+      } catch (ResourceException e)
+      {
+         throw new OperationException(TaskResources.could_not_change_note, e);
+      }
+   }
 
-	public void changeDueOn(Date newDueOn)
-	{
-		try
-		{
-			ValueBuilder<DateDTO> builder = vbf.newValueBuilder(DateDTO.class);
-			builder.prototype().date().set(newDueOn);
-			client.putCommand("changedueon", builder.newInstance());
-		} catch (ResourceException e)
-		{
-			throw new OperationException(TaskResources.could_not_change_due_on,
-					e);
-		}
-	}
+   public void changeDueOn(Date newDueOn)
+   {
+      try
+      {
+         ValueBuilder<DateDTO> builder = vbf.newValueBuilder(DateDTO.class);
+         builder.prototype().date().set(newDueOn);
+         client.putCommand("changedueon", builder.newInstance());
+      } catch (ResourceException e)
+      {
+         throw new OperationException(TaskResources.could_not_change_due_on,
+               e);
+      }
+   }
 
-	public void changeTaskType(EntityReference taskType)
-	{
-		try
-		{
-			ValueBuilder<EntityReferenceDTO> builder = vbf
-					.newValueBuilder(EntityReferenceDTO.class);
-			builder.prototype().entity().set(taskType);
-			client.postCommand("changetasktype", builder.newInstance());
-		} catch (ResourceException e)
-		{
-			throw new OperationException(TaskResources.could_not_remove_label,
-					e);
-		}
-	}
+   public void changeTaskType(EntityReference taskType)
+   {
+      try
+      {
+         ValueBuilder<EntityReferenceDTO> builder = vbf
+               .newValueBuilder(EntityReferenceDTO.class);
+         builder.prototype().entity().set(taskType);
+         client.postCommand("changetasktype", builder.newInstance());
+      } catch (ResourceException e)
+      {
+         throw new OperationException(TaskResources.could_not_remove_label,
+               e);
+      }
+   }
 
-	public TaskLabelsModel labelsModel()
-	{
-		return taskLabelsModel;
-	}
+   public TaskLabelsModel labelsModel()
+   {
+      return taskLabelsModel;
+   }
 
-	public PossibleFormsModel formsModel()
-	{
+   public PossibleFormsModel formsModel()
+   {
       return possibleFormsModel;
-	}
+   }
 
-	public EventList<LinkValue> getPossibleTaskTypes()
-	{
-		try
-		{
-			BasicEventList<LinkValue> list = new BasicEventList<LinkValue>();
+   public EventList<LinkValue> getPossibleTaskTypes()
+   {
+      try
+      {
+         BasicEventList<LinkValue> list = new BasicEventList<LinkValue>();
 
-			LinksValue listValue = client.query("possibletasktypes",
-					LinksValue.class);
-			list.addAll(listValue.links().get());
+         LinksValue listValue = client.query("possibletasktypes",
+               LinksValue.class);
+         list.addAll(listValue.links().get());
 
-			return list;
-		} catch (ResourceException e)
-		{
-			throw new OperationException(WorkspaceResources.could_not_refresh,
-					e);
-		}
-	}
+         return list;
+      } catch (ResourceException e)
+      {
+         throw new OperationException(WorkspaceResources.could_not_refresh,
+               e);
+      }
+   }
 
-	public EventList<LinkValue> getPossibleLabels()
-	{
-		try
-		{
-			BasicEventList<LinkValue> list = new BasicEventList<LinkValue>();
+   public EventList<LinkValue> getPossibleLabels()
+   {
+      try
+      {
+         BasicEventList<LinkValue> list = new BasicEventList<LinkValue>();
 
-			LinksValue listValue = client.getSubClient( "labels" ).query("possiblelabels",
-					LinksValue.class);
-			list.addAll(listValue.links().get());
+         LinksValue listValue = client.getSubClient( "labels" ).query("possiblelabels",
+               LinksValue.class);
+         list.addAll(listValue.links().get());
 
-			return list;
-		} catch (ResourceException e)
-		{
-			throw new OperationException(WorkspaceResources.could_not_refresh,
-					e);
-		}
-	}
+         return list;
+      } catch (ResourceException e)
+      {
+         throw new OperationException(WorkspaceResources.could_not_refresh,
+               e);
+      }
+   }
 
-	public EventList<LinkValue> getPossibleForms()
-	{
-		try
-		{
-			BasicEventList<LinkValue> list = new BasicEventList<LinkValue>();
+   public EventList<LinkValue> getPossibleForms()
+   {
+      try
+      {
+         BasicEventList<LinkValue> list = new BasicEventList<LinkValue>();
 
-			LinksValue listValue = client
-					.query("possibleforms", LinksValue.class);
-			list.addAll(listValue.links().get());
+         LinksValue listValue = client
+               .query("possibleforms", LinksValue.class);
+         list.addAll(listValue.links().get());
 
-			return list;
-		} catch (ResourceException e)
-		{
-			throw new OperationException(WorkspaceResources.could_not_refresh,
-					e);
-		}
-	}
+         return list;
+      } catch (ResourceException e)
+      {
+         throw new OperationException(WorkspaceResources.could_not_refresh,
+               e);
+      }
+   }
 
-	public void refresh()
-	{
-		try
-		{
-			general = (TaskGeneralDTO) client.query("index",
-					TaskGeneralDTO.class).buildWith().prototype();
+   public void refresh()
+   {
+      try
+      {
+         indexValue = client.query("", IndexValue.class);
 
-			taskLabelsModel.setLabels(general.labels().get());
+         general = (TaskGeneralDTO) indexValue.index().get().buildWith().prototype();
 
-			possibleFormsModel.setForms( getPossibleForms() );
+         taskLabelsModel.setLabels(general.labels().get());
 
-			setChanged();
-			notifyObservers();
+         possibleFormsModel.setForms( getPossibleForms() );
 
-		} catch (Exception e)
-		{
-			throw new OperationException(TaskResources.could_not_refresh, e);
-		}
-	}
+         setChanged();
+         notifyObservers();
 
-	public void notifyEvent(DomainEvent event)
-	{
-		eventFilter.visit(event);
+      } catch (Exception e)
+      {
+         throw new OperationException(TaskResources.could_not_refresh, e);
+      }
+   }
 
-		taskLabelsModel.notifyEvent(event);
-	}
+   public void notifyEvent(DomainEvent event)
+   {
+      eventFilter.visit(event);
 
-	public boolean visit(DomainEvent event)
-	{
-		refresh();
-		return true;
-	}
+      taskLabelsModel.notifyEvent(event);
+   }
 
-	public void taskType(EntityReference selected)
-	{
-		try
-		{
-			ValueBuilder<EntityReferenceDTO> builder = vbf
-					.newValueBuilder(EntityReferenceDTO.class);
-			builder.prototype().entity().set(selected);
-			client.putCommand("tasktype", builder.newInstance());
-		} catch (ResourceException e)
-		{
-			throw new OperationException(
-					WorkspaceResources.could_not_perform_operation, e);
-		}
-	}
+   public boolean visit(DomainEvent event)
+   {
+      refresh();
+      return true;
+   }
 
-	public void addLabel(EntityReference entityReference)
-	{
+   public void taskType(EntityReference selected)
+   {
+      try
+      {
+         ValueBuilder<EntityReferenceDTO> builder = vbf
+               .newValueBuilder(EntityReferenceDTO.class);
+         builder.prototype().entity().set(selected);
+         client.putCommand("tasktype", builder.newInstance());
+      } catch (ResourceException e)
+      {
+         throw new OperationException(
+               WorkspaceResources.could_not_perform_operation, e);
+      }
+   }
+
+   public void addLabel(EntityReference entityReference)
+   {
       taskLabelsModel.addLabel( entityReference );
-	}
+   }
 
-	public Actions actions()
-	{
-		try
-		{
-			return client.query("actions", Actions.class);
-		} catch (ResourceException e)
-		{
-			throw new OperationException(
-					WorkspaceResources.could_not_perform_operation, e);
-		}
-	}
+   public Actions actions()
+   {
+      try
+      {
+         return client.query("actions", Actions.class);
+      } catch (ResourceException e)
+      {
+         throw new OperationException(
+               WorkspaceResources.could_not_perform_operation, e);
+      }
+   }
 
+   public boolean getCommandEnabled( String commandName ) 
+   {
+      for (String command : indexValue.commands().get()) {
+         if ( command.equals( commandName ) ) return true;
+      }
+      return false;
+   }
 }

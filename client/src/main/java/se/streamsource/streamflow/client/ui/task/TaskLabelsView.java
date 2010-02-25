@@ -53,6 +53,14 @@ public class TaskLabelsView extends JPanel implements ListEventListener, ActionL
 
    }
 
+   public void setEnabled( boolean enabled )
+   {
+      for (Component component : labelPanel.getComponents())
+      {
+         component.setEnabled( enabled );
+      }
+   }
+
    public void listChanged( ListEvent listEvent )
    {
       initComponents();

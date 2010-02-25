@@ -46,6 +46,13 @@ public class PossibleFormView extends JPanel
       return itemValue;
    }
 
+   @Override
+   public void setEnabled( boolean enabled )
+   {
+      button.setEnabled( enabled );
+      super.setEnabled( enabled );
+   }
+
    public void addActionListener( ActionListener listener )
    {
       button.addActionListener( listener );
