@@ -15,15 +15,11 @@
 package se.streamsource.dci.context;
 
 import org.qi4j.api.composite.TransientComposite;
-import org.qi4j.api.concern.Concerns;
-import se.streamsource.dci.context.InteractionConstraintsConcern;
 
 /**
  * Base interface for interactions
  */
-@Concerns(InteractionConstraintsConcern.class)
 public interface Context
    extends TransientComposite
 {
-   InteractionContext context();
 }

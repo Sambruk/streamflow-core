@@ -43,7 +43,8 @@ public class WorkspaceAssembler
             WorkspaceProjectInboxNode.class,
             WorkspaceProjectAssignmentsNode.class,
             WorkspaceProjectDelegationsNode.class,
-            WorkspaceProjectWaitingForNode.class ).visibleIn( Visibility.layer );
+            WorkspaceProjectWaitingForNode.class,
+            RefreshTaskCountTask.class).visibleIn( Visibility.layer );
 
       UIAssemblers.addMV( module,
             WorkspaceModel.class,

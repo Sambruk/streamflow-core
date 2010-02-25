@@ -21,6 +21,7 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreeNode;
 
 /**
  * JAVADOC
@@ -53,6 +54,12 @@ public class WorkspaceUserNode
          EventListener listener = (EventListener) child;
          listener.notifyEvent( event );
       }
+   }
+
+   @Override
+   public WorkspaceNode getParent()
+   {
+      return (WorkspaceNode) super.getParent();
    }
 
    @Override

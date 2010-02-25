@@ -34,6 +34,8 @@ import static org.qi4j.api.query.QueryExpressions.templateFor;
 public interface OverviewProjectWaitingForContext
    extends Context
 {
+   public LinksValue tasks();
+
    abstract class Mixin
       extends ContextMixin
       implements OverviewProjectWaitingForContext

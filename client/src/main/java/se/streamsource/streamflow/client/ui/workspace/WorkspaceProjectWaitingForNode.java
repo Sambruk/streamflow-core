@@ -15,6 +15,7 @@
 package se.streamsource.streamflow.client.ui.workspace;
 
 import org.qi4j.api.injection.scope.Uses;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.task.TaskTableModel;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
@@ -30,6 +31,9 @@ public class WorkspaceProjectWaitingForNode
       implements EventListener
 {
    @Uses
+   private CommandQueryClient client;
+
+   @Uses
    private TaskTableModel model;
 
    @Override
@@ -41,7 +45,18 @@ public class WorkspaceProjectWaitingForNode
    @Override
    public String toString()
    {
-      return i18n.text( WorkspaceResources.waitingfor_node );
+      String text = i18n.text( WorkspaceResources.waitingfor_node );
+
+      String count = getParent().getParent().getParent().getTaskCount( client.getReference().getSegments().get(0)+"/waitingfor" );
+      if (!count.equals(""))
+      {
+         text += " (" + count + ")";
+      } else
+      {
+         text += "                ";
+      }
+
+      return text;
    }
 
    public TaskTableModel taskTableModel()

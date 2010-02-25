@@ -41,7 +41,17 @@ public class WorkspaceUserWaitingForNode
    @Override
    public String toString()
    {
-      return i18n.text( WorkspaceResources.waitingfor_node );
+      String text = i18n.text( WorkspaceResources.waitingfor_node );
+      String count = getParent().getParent().getTaskCount( "waitingfor" );
+      if (!count.equals(""))
+      {
+         text += " (" + count + ")";
+      } else
+      {
+         text += "                ";
+      }
+
+      return text;
    }
 
    public TaskTableModel taskTableModel()

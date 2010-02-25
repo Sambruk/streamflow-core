@@ -54,7 +54,7 @@ public class GenericSteps
 
    InteractionContext context = new InteractionContext();
 
-   Context current;
+   Object current;
 
    Object result;
 

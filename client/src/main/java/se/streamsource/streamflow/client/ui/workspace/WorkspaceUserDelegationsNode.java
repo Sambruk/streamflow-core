@@ -42,10 +42,10 @@ public class WorkspaceUserDelegationsNode
    public String toString()
    {
       String text = i18n.text( WorkspaceResources.delegations_node );
-      int unread = model.getEventList().size();
-      if (unread > 0)
+      String count = getParent().getParent().getTaskCount( "delegations" );
+      if (!count.equals(""))
       {
-         text += " (" + unread + ")";
+         text += " (" + count + ")";
       } else
       {
          text += "                ";

@@ -23,6 +23,8 @@ import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.ui.administration.AccountModel;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.infrastructure.application.LinkValue;
+import se.streamsource.streamflow.infrastructure.application.LinksValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
@@ -73,13 +75,13 @@ public class OverviewProjectsNode
    {
       try
       {
-         ListValue projects = client.query( "projects", ListValue.class );
+         LinksValue projects = client.query( "projects", LinksValue.class );
 
          super.removeAllChildren();
 
-         for (ListItemValue project : projects.items().get())
+         for (LinkValue project : projects.links().get())
          {
-            CommandQueryClient projectClientResource = client.getSubClient( project.entity().get().identity() );
+            CommandQueryClient projectClientResource = client.getSubClient( project.id().get() );
             CommandQueryClient projectAssignmentsClientResource = projectClientResource.getSubClient( "assignments" );
             CommandQueryClient projectWaitingforClientResource = projectClientResource.getSubClient( "waitingfor" );
 
@@ -89,8 +91,7 @@ public class OverviewProjectsNode
             add( obf.newObjectBuilder( OverviewProjectNode.class ).use( projectClientResource,
                   assignmentsNode,
                   waitingForNode,
-//                  account.tasks(),
-                  project.description().get() ).newInstance() );
+                  project.text().get() ).newInstance() );
          }
       } catch (ResourceException e)
       {

@@ -15,10 +15,17 @@
 package se.streamsource.streamflow.client.ui.workspace;
 
 import org.qi4j.api.injection.scope.Uses;
+import org.restlet.resource.ResourceException;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.ui.administration.AccountModel;
+import se.streamsource.streamflow.infrastructure.application.LinkValue;
+import se.streamsource.streamflow.infrastructure.application.LinksValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 
+import javax.swing.SwingUtilities;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 /**
@@ -26,10 +33,11 @@ import javax.swing.tree.DefaultMutableTreeNode;
  */
 public class WorkspaceNode
       extends DefaultMutableTreeNode
-      implements EventListener
+      implements EventListener, Refreshable
 {
    private WorkspaceUserNode userNode;
    private WorkspaceProjectsNode projectsNode;
+   public LinksValue taskCounts;
 
    public WorkspaceNode( @Uses WorkspaceUserNode userNode,
                          @Uses WorkspaceProjectsNode projectsNode,
@@ -59,10 +67,37 @@ public class WorkspaceNode
       return projectsNode;
    }
 
+   public String getTaskCount(String id)
+   {
+      if (taskCounts == null)
+         return "";
+
+      for (LinkValue linkValue : taskCounts.links().get())
+      {
+         if (linkValue.id().get().equals(id))
+            return linkValue.text().get();
+      }
+
+      return "";
+   }
+
    public void notifyEvent( DomainEvent event )
    {
       userNode.notifyEvent( event );
       projectsNode.notifyEvent( event );
+   }
+
+   public void refresh() throws OperationException
+   {
+      try
+      {
+         CommandQueryClient user = getUserObject().userResource();
+         CommandQueryClient projectsClient = user.getSubClient( "workspace" );
+         taskCounts = projectsClient.query( "taskcounts", LinksValue.class ).<LinksValue>buildWith().prototype();
+      } catch (ResourceException e)
+      {
+         e.printStackTrace();
+      }
    }
 
    @Override

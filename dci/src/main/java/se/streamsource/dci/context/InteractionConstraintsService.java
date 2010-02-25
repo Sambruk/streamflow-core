@@ -50,18 +50,6 @@ public class InteractionConstraintsService
       return true;
    }
 
-   public void checkValid(Method method, Context object)
-   {
-      InteractionContext context = object.context();
-
-      for (InteractionConstraint constraint : getConstraints( method ))
-      {
-         Object role = context.role( constraint.roleClass );
-         if (!constraint.constraint.isValid( constraint.annotation, role ))
-            throw new ConstraintViolationException((Composite) object, method, Collections.singleton( new ConstraintViolation(constraint.annotation.annotationType().getSimpleName(), constraint.annotation, object) ));
-      }
-   }
-
    public boolean hasConstraints(Method method)
    {
       return !getConstraints( method ).isEmpty();

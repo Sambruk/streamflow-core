@@ -39,7 +39,7 @@ public interface FilesContext
       {
          File file = new File("").getAbsoluteFile();
 
-         LinksBuilder builder = new LinksBuilder(module.valueBuilderFactory()).rel( "page" );
+         LinksBuilder builder = new LinksBuilder(module.valueBuilderFactory()).rel( "file" );
 
          for (String fileName : file.list())
          {

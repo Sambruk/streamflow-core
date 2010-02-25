@@ -15,6 +15,7 @@
 package se.streamsource.streamflow.client.ui.workspace;
 
 import org.qi4j.api.injection.scope.Uses;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.task.TaskTableModel;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
@@ -30,6 +31,9 @@ public class WorkspaceProjectDelegationsNode
       implements EventListener
 {
    @Uses
+   private CommandQueryClient client;
+
+   @Uses
    private TaskTableModel model;
 
    @Override
@@ -42,10 +46,11 @@ public class WorkspaceProjectDelegationsNode
    public String toString()
    {
       String text = i18n.text( WorkspaceResources.delegations_node );
-      int unread = model.getEventList().size();
-      if (unread > 0)
+
+      String count = getParent().getParent().getParent().getTaskCount( client.getReference().getSegments().get(0)+"/inbox" );
+      if (!count.equals(""))
       {
-         text += " (" + unread + ")";
+         text += " (" + count + ")";
       } else
       {
          text += "                ";

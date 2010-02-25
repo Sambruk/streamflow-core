@@ -29,8 +29,8 @@ import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
+import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
-import org.restlet.data.Metadata;
 import org.restlet.data.Preference;
 import org.restlet.data.Status;
 import org.restlet.representation.EmptyRepresentation;
@@ -113,7 +113,7 @@ public class ViewFilter
             try
             {
                final Reader reader = response.getEntity().getReader();
-               response.setEntity( new WriterRepresentation( MediaType.TEXT_HTML )
+               WriterRepresentation rep = new WriterRepresentation( MediaType.TEXT_HTML )
                {
                   @Override
                   public void write( Writer writer ) throws IOException
@@ -125,7 +125,7 @@ public class ViewFilter
 
                         String tn = templateName( response );
                         Template template = resolveTemplate( new File( tn ) );
-                        
+
                         if (template != null)
                         {
                            VelocityContext context = new VelocityContext();
@@ -159,16 +159,19 @@ public class ViewFilter
                      String templateName = "";
                      for (String segment : segments)
                      {
-                        if (!(segment.equals( "" ) || segment.equals(".")))
+                        if (!(segment.equals( "" ) || segment.equals( "." )))
                            templateName += "/" + segment;
                         else
                            templateName += "/context";
                      }
-                     templateName += "."+extension;
+                     templateName += "." + extension;
 
                      return templateName;
                   }
-               } );
+               };
+
+               rep.setCharacterSet( CharacterSet.UTF_8 );
+               response.setEntity( rep );
 
                return result;
             } catch (Exception e)

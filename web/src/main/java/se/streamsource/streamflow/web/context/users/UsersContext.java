@@ -56,7 +56,7 @@ public interface UsersContext
    UserEntityListDTO users();
    
    // Commands
-   UserContext createuser( NewUserCommand command);
+   void createuser( NewUserCommand command);
 
    abstract class Mixin
       extends ContextMixin
@@ -69,13 +69,12 @@ public interface UsersContext
          return orgs.users();
       }
 
-      public UserContext createuser( NewUserCommand command )
+      public void createuser( NewUserCommand command )
       {
          UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
 
          Users users = uow.get( UsersEntity.class, UsersEntity.USERS_ID );
          User user = users.createUser( command.username().get(), command.password().get() );
-         return context( user.toString() );
       }
 
       public void importusers( Representation representation ) throws ResourceException

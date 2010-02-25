@@ -42,8 +42,9 @@ public class WorkspaceUserInboxNode
    public String toString()
    {
       String text = i18n.text( WorkspaceResources.inboxes_node );
-      int count = model.getEventList().size();
-      if (count > 0)
+
+      String count = getParent().getParent().getTaskCount( "inbox" );
+      if (!count.equals(""))
       {
          text += " (" + count + ")";
       } else

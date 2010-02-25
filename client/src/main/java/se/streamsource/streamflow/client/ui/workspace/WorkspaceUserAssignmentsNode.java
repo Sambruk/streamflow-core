@@ -43,10 +43,10 @@ public class WorkspaceUserAssignmentsNode
    public String toString()
    {
       String text = i18n.text( WorkspaceResources.assignments_node );
-      int unread = model.getEventList().size();
-      if (unread > 0)
+      String count = getParent().getParent().getTaskCount( "assignments" );
+      if (!count.equals(""))
       {
-         text += " (" + unread + ")";
+         text += " (" + count + ")";
       } else
       {
          text += "                ";

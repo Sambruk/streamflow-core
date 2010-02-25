@@ -21,6 +21,7 @@ import org.json.JSONException;
 import org.json.JSONWriter;
 import org.qi4j.api.common.QualifiedName;
 import org.qi4j.api.composite.TransientBuilderFactory;
+import org.qi4j.api.composite.TransientComposite;
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
@@ -275,7 +276,7 @@ public abstract class CommandQueryServerResource
 
       for (Method method : methods)
       {
-         if (!method.getDeclaringClass().isAssignableFrom( Context.class ))
+         if (!(method.getDeclaringClass().isAssignableFrom( TransientComposite.class )))
          {
             if (constraints.isValid( method, interactionContext ))
 
@@ -655,6 +656,9 @@ public abstract class CommandQueryServerResource
             getResponse().redirectPermanent( userRef );
 
             return new EmptyRepresentation();
+         } else if (returnValue instanceof Representation)
+         {
+            return (Representation) returnValue;
          } else
          {
             LoggerFactory.getLogger( getClass().getName() ).warn( "Unknown result type:" + returnValue.getClass().getName() );
@@ -680,7 +684,7 @@ public abstract class CommandQueryServerResource
     */
    private boolean isCommandMethod( Method method )
    {
-      if (!(method.getReturnType().equals( Void.TYPE ) || Context.class.isAssignableFrom( method.getReturnType())))
+      if (!method.getReturnType().equals( Void.TYPE ))
          return false;
 
       if (method.getParameterTypes().length == 0 || (method.getParameterTypes().length == 1 && Value.class.isAssignableFrom( method.getParameterTypes()[0])))

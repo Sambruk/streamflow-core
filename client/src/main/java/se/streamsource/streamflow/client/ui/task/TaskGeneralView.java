@@ -14,33 +14,11 @@
 
 package se.streamsource.streamflow.client.ui.task;
 
-import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.DATEPICKER;
-import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.LABEL;
-import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.TEXTAREA;
-import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.TEXTFIELD;
-
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Observable;
-import java.util.Observer;
-
-import javax.swing.ActionMap;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import javax.swing.KeyStroke;
-import javax.swing.LayoutFocusTraversalPolicy;
-import javax.swing.SwingConstants;
-
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.factories.Borders;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.Sizes;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.JXDatePicker;
@@ -50,7 +28,6 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilder;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueBuilder;
-
 import se.streamsource.streamflow.client.MacOsUIWrapper;
 import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
@@ -65,11 +42,27 @@ import se.streamsource.streamflow.infrastructure.application.LinkValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.factories.Borders;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.Sizes;
+import javax.swing.AbstractAction;
+import javax.swing.ActionMap;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.KeyStroke;
+import javax.swing.LayoutFocusTraversalPolicy;
+import javax.swing.SwingConstants;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Observable;
+import java.util.Observer;
+
+import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.*;
 
 /**
  * JAVADOC
@@ -88,8 +81,6 @@ public class TaskGeneralView extends JScrollPane implements Observer
    @Uses
    protected ObjectBuilder<TaskLabelsDialog> labelSelectionDialog;
 
-   // TaskLabelSelectionView labelSelection;
-
    private StateBinder taskBinder;
 
    TaskGeneralModel model;
@@ -98,8 +89,6 @@ public class TaskGeneralView extends JScrollPane implements Observer
    public JTextField descriptionField;
    private JScrollPane notePane;
    public JXDatePicker dueOnField;
-   private JLabel issueLabel;
-   public JPanel leftForm;
    public JPanel rightForm;
    public JPanel bottomForm;
    public TaskLabelsView labels;
@@ -116,20 +105,9 @@ public class TaskGeneralView extends JScrollPane implements Observer
       this.forms = forms;
       getVerticalScrollBar().setUnitIncrement( 30 );
 
-      // this.labelSelection = labels.labelSelection();
       setActionMap( appContext.getActionMap( this ) );
       MacOsUIWrapper.convertAccelerators( appContext.getActionMap(
             TaskGeneralView.class, this ) );
-
-      // Layout and form for the left panel
-      FormLayout leftLayout = new FormLayout( "165dlu", "" );
-
-      leftForm = new JPanel();
-      leftForm.setFocusable( false );
-      DefaultFormBuilder leftBuilder = new DefaultFormBuilder( leftLayout,
-            leftForm );
-      leftBuilder.setBorder( Borders.createEmptyBorder( Sizes.DLUY8,
-            Sizes.DLUX8, Sizes.DLUY2, Sizes.DLUX4 ) );
 
       taskBinder = new StateBinder();
       taskBinder.addConverter( new StateBinder.Converter()
@@ -152,13 +130,8 @@ public class TaskGeneralView extends JScrollPane implements Observer
       TaskGeneralDTO template = taskBinder
             .bindingTemplate( TaskGeneralDTO.class );
 
-      BindingFormBuilder leftBindingBuilder = new BindingFormBuilder(
-            leftBuilder, taskBinder );
-      leftBindingBuilder.appendLine( WorkspaceResources.id_label,
-            issueLabel = (JLabel) LABEL.newField(), template.taskId() );
-
       // Layout and form for the right panel
-      FormLayout rightLayout = new FormLayout( "70dlu, 5dlu, 150:grow", "pref, pref, pref, pref, pref, pref, pref, pref");
+      FormLayout rightLayout = new FormLayout( "70dlu, 5dlu, 150:grow", "pref, pref, pref, pref, pref, pref, pref, pref" );
 
       rightForm = new JPanel( rightLayout );
       rightForm.setFocusable( false );
@@ -174,8 +147,8 @@ public class TaskGeneralView extends JScrollPane implements Observer
       ActionMap am = getActionMap();
 
       // Description
-      rightBuilder.setExtent( 3,1 );
-      rightBuilder.add( taskBinder.bind( descriptionField = (JTextField) TEXTFIELD.newField(), template.description() ));
+      rightBuilder.setExtent( 3, 1 );
+      rightBuilder.add( taskBinder.bind( descriptionField = (JTextField) TEXTFIELD.newField(), template.description() ) );
       rightBuilder.nextLine();
 
       // Select task type
@@ -186,11 +159,11 @@ public class TaskGeneralView extends JScrollPane implements Observer
             JComponent.WHEN_IN_FOCUSED_WINDOW );
       NotificationGlassPane.registerButton( taskTypeButton );
       taskTypeButton.setHorizontalAlignment( SwingConstants.LEFT );
-      rightBuilder.setExtent( 1,1 );
-      rightBuilder.add( taskTypeButton);
+      rightBuilder.setExtent( 1, 1 );
+      rightBuilder.add( taskTypeButton );
       rightBuilder.nextColumn();
       rightBuilder.nextColumn();
-      rightBuilder.add( selectedTaskType);
+      rightBuilder.add( selectedTaskType );
       rightBuilder.nextLine();
 
       // Select labels
@@ -202,22 +175,22 @@ public class TaskGeneralView extends JScrollPane implements Observer
             JComponent.WHEN_IN_FOCUSED_WINDOW );
 
       labelButton.setHorizontalAlignment( SwingConstants.LEFT );
-      rightBuilder.add( labelButton);
+      rightBuilder.add( labelButton );
       rightBuilder.nextLine();
-      rightBuilder.setExtent( 3,1 );
-      rightBuilder.add( labels);
+      rightBuilder.setExtent( 3, 1 );
+      rightBuilder.add( labels );
       rightBuilder.nextLine();
 
       // Due date
-      rightBuilder.add( new JLabel( i18n.text( WorkspaceResources.due_on_label ) ));
+      rightBuilder.add( new JLabel( i18n.text( WorkspaceResources.due_on_label ) ) );
       rightBuilder.nextLine();
-      rightBuilder.add( taskBinder.bind(dueOnField = (JXDatePicker) DATEPICKER.newField(), template.dueOn() ));
+      rightBuilder.add( taskBinder.bind( dueOnField = (JXDatePicker) DATEPICKER.newField(), template.dueOn() ) );
       rightBuilder.nextLine();
 
       // Forms
-      rightBuilder.add( new JLabel( i18n.text( WorkspaceResources.forms_label ) ));
+      rightBuilder.add( new JLabel( i18n.text( WorkspaceResources.forms_label ) ) );
       rightBuilder.nextLine();
-      rightBuilder.add( forms);
+      rightBuilder.add( forms );
       rightBuilder.nextLine();
 
       // Limit pickable dates to future
@@ -269,7 +242,7 @@ public class TaskGeneralView extends JScrollPane implements Observer
          public void focusGained( FocusEvent e )
          {
             Component defaultComp = getFocusTraversalPolicy()
-                  .getDefaultComponent( leftForm );
+                  .getDefaultComponent( notePane );
             if (defaultComp != null)
             {
                defaultComp.requestFocusInWindow();
@@ -280,6 +253,9 @@ public class TaskGeneralView extends JScrollPane implements Observer
          {
          }
       } );
+
+      notePane.getViewport().getView().setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, null);
+      notePane.getViewport().getView().setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, null);
 
       refresher = new RefreshWhenVisible( this );
       addAncestorListener( refresher );
@@ -297,12 +273,6 @@ public class TaskGeneralView extends JScrollPane implements Observer
       TaskGeneralDTO general = model.getGeneral();
       valueBuilder = general.buildWith();
       taskBinder.updateWith( general );
-
-      // Check if issue id should be visible
-      boolean issueVisible = model.getGeneral().taskId().get() != null;
-      issueLabel.setVisible( issueVisible );
-      ((JLabel) issueLabel.getClientProperty( "labeledBy" ))
-            .setVisible( issueVisible );
 
       labels.setLabelsModel( model.labelsModel() );
       forms.setFormsModel( model.formsModel() );

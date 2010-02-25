@@ -25,6 +25,8 @@ import org.jdesktop.swingx.renderer.WrappingIconPanel;
 import org.jdesktop.swingx.renderer.WrappingProvider;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilder;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.OperationException;
@@ -62,8 +64,6 @@ import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 /**
  * JAVADOC
@@ -88,6 +88,9 @@ public class WorkspaceView
    public JPanel contextPanel;
    public TasksDetailView2 detailView;
    public TasksModel tasksModel;
+
+   @Uses
+   private ObjectBuilder<RefreshTaskCountTask> taskCountTask;
 
    public WorkspaceView( final @Service ApplicationContext context,
                          final @Structure ObjectBuilderFactory obf )
@@ -352,7 +355,8 @@ public class WorkspaceView
                   currentSelection = tasksView;
                   add( currentSelection, BorderLayout.CENTER );
 
-                  String selectedContextText = ((TreeNode) node).getParent() + " : " + node.toString();
+                  String nodeString = node.toString().split( "\\(" )[0];
+                  String selectedContextText = ((TreeNode) node).getParent() + " : " + nodeString;
 
                   selectedContext.setText( selectedContextText );
 
@@ -435,7 +439,7 @@ public class WorkspaceView
    }
 
    @Action
-   public void selectContext()
+   public Task selectContext()
    {
       if (popup == null)
       {
@@ -445,10 +449,11 @@ public class WorkspaceView
          Point location = selectContextButton.getLocationOnScreen();
          popup = PopupFactory.getSharedInstance().getPopup( this, workspaceTree, (int) location.getX(), (int) location.getY() + selectContextButton.getHeight() );
          popup.show();
+
+         return taskCountTask.use( workspaceTree, model.getRoot() ).newInstance();
       } else
       {
-         popup.hide();
-         popup = null;
+         return null;
       }
    }
 

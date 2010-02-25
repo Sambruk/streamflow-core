@@ -35,6 +35,8 @@ import static org.qi4j.api.query.QueryExpressions.templateFor;
 public interface OverviewProjectAssignmentsContext
    extends Context
 {
+   public LinksValue tasks();
+
    abstract class Mixin
       extends ContextMixin
       implements OverviewProjectAssignmentsContext
