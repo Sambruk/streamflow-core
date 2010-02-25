@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.client.ui.task;
+package se.streamsource.streamflow.client.ui.task.conversations;
 
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 
@@ -46,7 +46,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.NotificationGlassPane;
 import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.ui.NameDialog;
-import se.streamsource.streamflow.client.ui.task.conversations.ConversationsListCellRenderer;
+import se.streamsource.streamflow.client.ui.task.TaskResources;
 import se.streamsource.streamflow.infrastructure.application.LinkValue;
 import se.streamsource.streamflow.resource.conversation.ConversationDTO;
 import ca.odell.glazedlists.event.ListEvent;

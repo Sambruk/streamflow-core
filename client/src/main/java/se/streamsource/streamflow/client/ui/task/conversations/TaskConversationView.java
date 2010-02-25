@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.client.ui.task;
+package se.streamsource.streamflow.client.ui.task.conversations;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
@@ -20,7 +20,6 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.text.SimpleDateFormat;
 
-import javax.swing.ActionMap;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
@@ -36,7 +35,6 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.object.ObjectBuilderFactory;
 
-import se.streamsource.streamflow.client.MacOsUIExtension;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
 import se.streamsource.streamflow.client.infrastructure.ui.NotificationGlassPane;
 import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
@@ -65,15 +63,19 @@ public class TaskConversationView extends JPanel implements ListEventListener
    private StateBinder newConversationBinder;
    private JTextField defaultFocusField;
    private JPanel sendPanel;
+   private JPanel implodedPanel;
 
-   public TaskConversationView(@Service ApplicationContext context,
+   public TaskConversationView(@Service final ApplicationContext context,
          @Structure ObjectBuilderFactory obf)
    {
       super(new BorderLayout());
       this.context = context;
       this.obf = obf;
+
       setActionMap(context.getActionMap(this));
-      MacOsUIWrapper.convertAccelerators( getActionMap() );
+      MacOsUIWrapper.convertAccelerators(getActionMap());
+
+      add(initTop(), BorderLayout.NORTH);
 
       messages = new JTextPane();
       messages.setContentType("text/html");
@@ -85,11 +87,9 @@ public class TaskConversationView extends JPanel implements ListEventListener
       add(scroll, BorderLayout.CENTER);
 
       add(initBottom(), BorderLayout.SOUTH);
-//      add(initTop(), BorderLayout.NORTH);
 
       refresher = new RefreshWhenVisible(this);
       addAncestorListener(refresher);
-      repaint();
    }
 
    private JPanel initTop()
@@ -115,18 +115,19 @@ public class TaskConversationView extends JPanel implements ListEventListener
       NotificationGlassPane.registerButton(addParticipants);
 
       // IMPLODED
-      JPanel implodedPanel = new JPanel(new BorderLayout());
-      implodedPanel.add(allParticipants, BorderLayout.EAST);
-      implodedPanel.setPreferredSize(new Dimension(100, 100));
-      // implodedPanel.add(addParticipants, BorderLayout.EAST);
+      implodedPanel = new JPanel(new BorderLayout());
+//      implodedPanel.setPreferredSize(new Dimension(100,40));
+      implodedPanel.add(allParticipants, BorderLayout.CENTER);
+      implodedPanel.add(addParticipants, BorderLayout.EAST);
 
       // EXPLODED
-      // JPanel explodedPanel = new JPanel(new BorderLayout());
-      // explodedPanel.add(allParticipants, BorderLayout.EAST);
-      // explodedPanel.add(addParticipants, BorderLayout.EAST);
+//      JPanel explodedPanel = new JPanel(new BorderLayout());
+//      explodedPanel.setPreferredSize(new Dimension(100,100));
+//      explodedPanel.add(allParticipants, BorderLayout.CENTER);
+//      explodedPanel.add(addParticipants, BorderLayout.EAST);
 
       topPanel.add(implodedPanel, "IMPLODED");
-      // topPanel.add(explodedPanel, "EXPLODED");
+//      topPanel.add(explodedPanel, "EXPLODED");
 
       ((CardLayout) topPanel.getLayout()).show(topPanel, "IMPLODED");
       return topPanel;
@@ -155,7 +156,6 @@ public class TaskConversationView extends JPanel implements ListEventListener
       newMessage = new JTextPane();
       newMessage.setContentType("text/html");
       newMessage.setEditable(true);
-      // newMessage.setPreferredSize(new Dimension(100,100));
       messageScroll.getViewport().add(newMessage);
 
       JPanel sendMessagePanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -168,10 +168,10 @@ public class TaskConversationView extends JPanel implements ListEventListener
       NotificationGlassPane.registerButton(sendMessage);
       javax.swing.Action cancelAction = getActionMap().get("cancelNewMessage");
       JButton cancel = new JButton(cancelAction);
-      // cancel.registerKeyboardAction( cancelAction, (KeyStroke) cancelAction
-      // .getValue( javax.swing.Action.ACCELERATOR_KEY ),
-      // JComponent.WHEN_IN_FOCUSED_WINDOW );
-      // NotificationGlassPane.registerButton( cancel );
+//      cancel.registerKeyboardAction(cancelAction, (KeyStroke) cancelAction
+//            .getValue(javax.swing.Action.ACCELERATOR_KEY),
+//            JComponent.WHEN_IN_FOCUSED_WINDOW);
+//      NotificationGlassPane.registerButton(cancel);
       sendMessagePanel.add(sendMessage);
       sendMessagePanel.add(cancel);
 
@@ -219,8 +219,10 @@ public class TaskConversationView extends JPanel implements ListEventListener
    }
 
    @Action
-   public void participants()
+   public void allParticipants()
    {
+      implodedPanel.setPreferredSize(new Dimension(100,100));
+      repaint();
       // buf.append( "<strong>" + model.getDescription() + "</strong>" );
       // buf.append( "  ( " );
       // for(Object participant : model.participants() )
@@ -228,7 +230,11 @@ public class TaskConversationView extends JPanel implements ListEventListener
       // buf.append( ((LinkValue)participant).text() + " " );
       // }
       // buf.append( ")<br/>" );
+   }
 
+   @Action
+   public void addParticipants()
+   {
    }
 
    public void setModel(TaskConversationModel taskConversationDetailModel)

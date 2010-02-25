@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.client.ui.task;
+package se.streamsource.streamflow.client.ui.task.conversations;
 
 import ca.odell.glazedlists.event.ListEvent;
 import ca.odell.glazedlists.event.ListEventListener;
@@ -20,6 +20,7 @@ import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import se.streamsource.streamflow.client.infrastructure.ui.ModifiedFlowLayout;
+import se.streamsource.streamflow.client.ui.task.RemovableLabel;
 import se.streamsource.streamflow.infrastructure.application.LinkValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 

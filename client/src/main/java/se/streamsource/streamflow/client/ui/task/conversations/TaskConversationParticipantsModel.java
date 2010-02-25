@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.client.ui.task;
+package se.streamsource.streamflow.client.ui.task.conversations;
 
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
@@ -27,6 +27,7 @@ import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.LinkComparator;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemComparator;
+import se.streamsource.streamflow.client.ui.task.TaskResources;
 import se.streamsource.streamflow.infrastructure.application.LinkValue;
 import se.streamsource.streamflow.infrastructure.application.LinksValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;

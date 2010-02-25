@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.client.ui.task;
+package se.streamsource.streamflow.client.ui.task.conversations;
 
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
@@ -32,6 +32,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.ui.task.TaskResources;
 import se.streamsource.streamflow.domain.contact.ContactValue;
 import se.streamsource.streamflow.infrastructure.application.LinkValue;
 import se.streamsource.streamflow.infrastructure.application.LinksValue;
