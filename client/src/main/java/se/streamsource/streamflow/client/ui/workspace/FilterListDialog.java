@@ -23,40 +23,38 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
-import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.infrastructure.ui.FilteredList;
 import se.streamsource.streamflow.infrastructure.application.LinkValue;
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 
 /**
  * JAVADOC
  */
-public class SelectTaskTypeDialog
+public class FilterListDialog
       extends JPanel
 {
    Dimension dialogSize = new Dimension( 600, 300 );
 
    public LinkValue selected;
-   public FilteredList taskTypesList;
+   public FilteredList itemList;
 
-   public SelectTaskTypeDialog( final @Uses EventList<LinkValue> taskTypes,
+   public FilterListDialog( @Uses String caption,
+                                      final @Uses EventList<LinkValue> items,
                                       @Service ApplicationContext context,
                                       @Structure ObjectBuilderFactory obf )
    {
       super( new GridLayout(1, 1) );
 
-      setName( i18n.text( WorkspaceResources.chose_tasktype ) );
+      setName( caption );
       setActionMap( context.getActionMap( this ) );
 
-      taskTypesList = new FilteredList();
-      taskTypesList.setEventList( taskTypes );
+      itemList = new FilteredList();
+      itemList.setEventList( items );
 
-      add( taskTypesList);
+      add( itemList );
    }
 
    public EntityReference getSelected()
@@ -67,7 +65,7 @@ public class SelectTaskTypeDialog
    @Action
    public void execute()
    {
-      selected = (LinkValue) taskTypesList.getList().getSelectedValue();
+      selected = (LinkValue) itemList.getList().getSelectedValue();
 
       WindowUtils.findWindow( this ).dispose();
    }

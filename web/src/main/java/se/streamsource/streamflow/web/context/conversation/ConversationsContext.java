@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.web.context.task;
+package se.streamsource.streamflow.web.context.conversation;
 
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
@@ -23,39 +23,32 @@ import se.streamsource.dci.context.Context;
 import se.streamsource.dci.context.ContextMixin;
 import se.streamsource.dci.context.IndexContext;
 import se.streamsource.dci.context.SubContexts;
-import se.streamsource.streamflow.domain.contact.ContactValue;
-import se.streamsource.streamflow.infrastructure.application.LinkValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.infrastructure.application.LinksValue;
 import se.streamsource.streamflow.resource.conversation.ConversationDTO;
-import se.streamsource.streamflow.resource.conversation.NewConversationCommand;
 import se.streamsource.streamflow.resource.roles.StringDTO;
+import se.streamsource.streamflow.web.context.conversation.ConversationContext;
 import se.streamsource.streamflow.web.domain.entity.conversation.ConversationEntity;
-import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversation;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipant;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipants;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversations;
 import se.streamsource.streamflow.web.domain.structure.conversation.Messages;
 import se.streamsource.streamflow.web.domain.structure.created.Creator;
-import se.streamsource.streamflow.web.domain.structure.task.Contacts;
-
-
-import java.util.List;
 
 /**
  * JAVADOC
  */
-@Mixins(TaskConversationsContext.Mixin.class)
-public interface TaskConversationsContext
+@Mixins(ConversationsContext.Mixin.class)
+public interface ConversationsContext
    extends
-      SubContexts<TaskConversationContext>, IndexContext<LinksValue>, Context
+      SubContexts<ConversationContext>, IndexContext<LinksValue>, Context
 {
    public void create( StringDTO topic );
 
    abstract class Mixin
       extends ContextMixin
-      implements TaskConversationsContext
+      implements ConversationsContext
    {
       @Structure
       Module module;
@@ -90,11 +83,11 @@ public interface TaskConversationsContext
 
       }
 
-      public TaskConversationContext context( String id )
+      public ConversationContext context( String id )
       {
          context.playRoles( module.unitOfWorkFactory().currentUnitOfWork().get( Conversation.class, id ) );
 
-         return subContext( TaskConversationContext.class );
+         return subContext( ConversationContext.class );
       }
    }
 }

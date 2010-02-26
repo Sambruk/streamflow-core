@@ -20,6 +20,7 @@ import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.resource.task.TaskValue;
+import se.streamsource.streamflow.web.context.conversation.ConversationsContext;
 import se.streamsource.streamflow.web.domain.entity.task.TaskEntity;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.dci.context.Context;
@@ -39,7 +40,7 @@ public interface TaskContext
    TaskGeneralContext general();
 
    @SubContext
-   TaskConversationsContext conversations();
+   ConversationsContext conversations();
 
    @SubContext
    TaskContactsContext contacts();
@@ -104,9 +105,9 @@ public interface TaskContext
          return subContext( TaskGeneralContext.class );
       }
 
-      public TaskConversationsContext conversations()
+      public ConversationsContext conversations()
       {
-         return subContext( TaskConversationsContext.class );
+         return subContext( ConversationsContext.class );
       }
 
       public TaskContactsContext contacts()

@@ -28,8 +28,10 @@ import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.ui.task.TaskResources;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.domain.ListValueBuilder;
 import se.streamsource.streamflow.infrastructure.application.LinkValue;
+import se.streamsource.streamflow.infrastructure.application.LinksValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
@@ -38,6 +40,7 @@ import se.streamsource.streamflow.infrastructure.event.source.EventVisitorFilter
 import se.streamsource.streamflow.resource.conversation.ConversationDetailDTO;
 import se.streamsource.streamflow.resource.conversation.MessageDTO;
 import se.streamsource.streamflow.resource.conversation.NewMessageCommand;
+import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 
 import java.awt.List;
@@ -104,7 +107,7 @@ public class TaskConversationModel
       {
          ValueBuilder<StringDTO> stringBuilder = vbf.newValueBuilder( StringDTO.class );
          stringBuilder.prototype().string().set( message );
-         client.postCommand( "addmessage", stringBuilder.newInstance() );
+         client.getSubClient("messages").postCommand( "addmessage", stringBuilder.newInstance() );
       } catch (ResourceException e)
       {
          throw new OperationException( TaskResources.could_not_add_message, e );
@@ -125,5 +128,38 @@ public class TaskConversationModel
       } */
 
       return false;
+   }
+
+   public EventList<LinkValue> possibleParticipants()
+   {
+      try
+      {
+         BasicEventList<LinkValue> list = new BasicEventList<LinkValue>();
+
+         LinksValue listValue = client.getSubClient("participants").query("possibleparticipants",
+               LinksValue.class);
+         list.addAll(listValue.links().get());
+
+         return list;
+      } catch (ResourceException e)
+      {
+         throw new OperationException(WorkspaceResources.could_not_refresh,
+               e);
+      }
+   }
+
+   public void addParticipant( EntityReference selected )
+   {
+      try
+      {
+         ValueBuilder<EntityReferenceDTO> builder = vbf
+               .newValueBuilder(EntityReferenceDTO.class);
+         builder.prototype().entity().set(selected);
+         client.getSubClient("participants").putCommand("addparticipant", builder.newInstance());
+      } catch (ResourceException e)
+      {
+         throw new OperationException(
+               WorkspaceResources.could_not_perform_operation, e);
+      }
    }
 }

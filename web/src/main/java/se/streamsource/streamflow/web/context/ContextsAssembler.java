@@ -20,6 +20,11 @@ import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.spi.service.importer.NewObjectImporter;
 import se.streamsource.dci.context.InteractionConstraintsService;
+import se.streamsource.streamflow.web.context.conversation.ConversationParticipantContext;
+import se.streamsource.streamflow.web.context.conversation.ConversationParticipantsContext;
+import se.streamsource.streamflow.web.context.conversation.ConversationsContext;
+import se.streamsource.streamflow.web.context.conversation.MessageContext;
+import se.streamsource.streamflow.web.context.conversation.MessagesContext;
 import se.streamsource.streamflow.web.context.gtd.AssignmentsContext;
 import se.streamsource.streamflow.web.context.gtd.DelegationsContext;
 import se.streamsource.streamflow.web.context.gtd.InboxContext;
@@ -61,8 +66,7 @@ import se.streamsource.streamflow.web.context.structure.labels.SelectedLabelsCon
 import se.streamsource.streamflow.web.context.task.TaskContactContext;
 import se.streamsource.streamflow.web.context.task.TaskContactsContext;
 import se.streamsource.streamflow.web.context.task.TaskContext;
-import se.streamsource.streamflow.web.context.task.TaskConversationContext;
-import se.streamsource.streamflow.web.context.task.TaskConversationsContext;
+import se.streamsource.streamflow.web.context.conversation.ConversationContext;
 import se.streamsource.streamflow.web.context.task.TaskFormContext;
 import se.streamsource.streamflow.web.context.task.TaskFormsContext;
 import se.streamsource.streamflow.web.context.task.TaskGeneralContext;
@@ -158,12 +162,17 @@ public class ContextsAssembler
             TaskContactContext.class,
             TaskContactsContext.class,
             TaskContext.class,
-            TaskConversationContext.class,
-            TaskConversationsContext.class,
             TaskFormsContext.class,
             TaskFormContext.class,
             TaskGeneralContext.class,
-            TasksContext.class
+            TasksContext.class,
+
+            ConversationContext.class,
+            ConversationParticipantContext.class,
+            ConversationParticipantsContext.class,
+            ConversationsContext.class,
+            MessageContext.class,
+            MessagesContext.class
             );
    }
 }

@@ -31,19 +31,16 @@ import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
 import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
-import se.streamsource.streamflow.client.infrastructure.ui.NotificationGlassPane;
 import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
 import se.streamsource.streamflow.client.infrastructure.ui.UncaughtExceptionHandler;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import se.streamsource.streamflow.client.ui.workspace.SelectTaskTypeDialog;
+import se.streamsource.streamflow.client.ui.workspace.FilterListDialog;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
-import se.streamsource.streamflow.domain.interaction.gtd.States;
 import se.streamsource.streamflow.infrastructure.application.LinkValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
 
-import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -55,7 +52,6 @@ import javax.swing.KeyStroke;
 import javax.swing.LayoutFocusTraversalPolicy;
 import javax.swing.SwingConstants;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.util.Calendar;
@@ -78,7 +74,7 @@ public class TaskGeneralView extends JScrollPane implements Observer
    UncaughtExceptionHandler exception;
 
    @Uses
-   protected ObjectBuilder<SelectTaskTypeDialog> taskTypeDialog;
+   protected ObjectBuilder<FilterListDialog> taskTypeDialog;
 
    @Uses
    protected ObjectBuilder<TaskLabelsDialog> labelSelectionDialog;
@@ -329,7 +325,8 @@ public class TaskGeneralView extends JScrollPane implements Observer
    @Action
    public void tasktype()
    {
-      SelectTaskTypeDialog dialog = taskTypeDialog.use(
+      FilterListDialog dialog = taskTypeDialog.use(
+            i18n.text( WorkspaceResources.chose_tasktype ),
             model.getPossibleTaskTypes() ).newInstance();
       dialogs.showOkCancelHelpDialog( taskTypeButton, dialog );
 
