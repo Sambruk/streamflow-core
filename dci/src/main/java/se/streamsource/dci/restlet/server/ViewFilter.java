@@ -42,11 +42,13 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * JAVADOC
@@ -61,7 +63,15 @@ public class ViewFilter
       super( context, next );
       this.velocity = velocity;
 
-      velocity.init( getClass().getResource( "/velocity.properties" ).getPath() );
+      URL inputStream = getClass().getResource( "/velocity.properties" );
+
+      if (inputStream == null)
+         throw new IllegalStateException("Could not find velocity.properties in classpath");
+
+      Properties properties = new Properties();
+      properties.load( inputStream.openStream() );
+
+      velocity.init( properties );
    }
 
    @Override
