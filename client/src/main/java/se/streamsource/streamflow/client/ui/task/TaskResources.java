@@ -52,9 +52,20 @@ public enum TaskResources
    task_status_completed_icon,
    task_status_done_icon,
    task_status_dropped_icon,
+   task_status_dropped_text, 
    task_status_active_text,
    task_status_archived_text,
    task_status_completed_text,
    task_status_done_text,
-   could_not_remove_conversation_participant, could_not_add_conversation_participant, heading_label, message_label, new_conversation_topic, could_not_add_message, could_not_create_conversation, task_status_dropped_text
+   
+   // Conversation
+   could_not_remove_conversation_participant, 
+   could_not_add_conversation_participant, 
+   heading_label, 
+   message_label, 
+   new_conversation_topic, 
+   could_not_add_message, 
+   could_not_create_conversation, 
+   could_not_add_participant, 
+   could_not_remove_participant
 }

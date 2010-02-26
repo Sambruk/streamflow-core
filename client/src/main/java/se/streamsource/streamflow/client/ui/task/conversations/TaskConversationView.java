@@ -14,6 +14,8 @@
 
 package se.streamsource.streamflow.client.ui.task.conversations;
 
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
+
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Dimension;
@@ -32,14 +34,23 @@ import javax.swing.text.html.HTMLEditorKit;
 
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilder;
 import org.qi4j.api.object.ObjectBuilderFactory;
 
 import se.streamsource.streamflow.client.MacOsUIWrapper;
+import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.ui.NameDialog;
+import se.streamsource.streamflow.client.ui.task.TaskLabelsDialog;
+import se.streamsource.streamflow.client.ui.task.TaskLabelsView;
+import se.streamsource.streamflow.client.ui.task.TaskResources;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.infrastructure.application.LinkValue;
 import se.streamsource.streamflow.resource.conversation.MessageDTO;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.event.ListEvent;
@@ -51,7 +62,7 @@ public class TaskConversationView extends JPanel implements ListEventListener
    private ObjectBuilderFactory obf;
 
    private TaskConversationModel model;
-   //private RefreshWhenVisible refresher;
+   // private RefreshWhenVisible refresher;
    private JTextPane messages;
    private JTextPane newMessage;
    private ApplicationContext context;
@@ -62,7 +73,13 @@ public class TaskConversationView extends JPanel implements ListEventListener
    private JTextField defaultFocusField;
    private JPanel sendPanel;
    private JPanel participantsButtonPanel;
-   private JLabel topic;
+   private AllParticipantsView participants;
+
+   public TaskConversationView(@Service final ApplicationContext context,
+         @Structure ObjectBuilderFactory obf,
+         @Uses AllParticipantsView participants)
+   {
+   }
 
    public TaskConversationView(@Service final ApplicationContext context,
          @Structure ObjectBuilderFactory obf)
@@ -70,6 +87,7 @@ public class TaskConversationView extends JPanel implements ListEventListener
       super(new BorderLayout());
       this.context = context;
       this.obf = obf;
+      this.participants = participants;
 
       setActionMap(context.getActionMap(this));
       MacOsUIWrapper.convertAccelerators(getActionMap());
@@ -87,24 +105,21 @@ public class TaskConversationView extends JPanel implements ListEventListener
 
       add(initBottom(), BorderLayout.SOUTH);
 
-      //refresher = new RefreshWhenVisible(this);
-      //addAncestorListener(refresher);
+      // refresher = new RefreshWhenVisible(this);
+      // addAncestorListener(refresher);
    }
 
    private JPanel initTop()
    {
       topPanel = new JPanel(new BorderLayout());
-      
-      topic = new JLabel("");
-      topPanel.add(topic, BorderLayout.CENTER);
 
-      javax.swing.Action allParticipantsAction = getActionMap().get(
-            "allParticipants");
-      JButton allParticipants = new JButton(allParticipantsAction);
-      allParticipants.registerKeyboardAction(allParticipantsAction,
-            (KeyStroke) allParticipantsAction
-                  .getValue(javax.swing.Action.ACCELERATOR_KEY),
-            JComponent.WHEN_IN_FOCUSED_WINDOW);
+      // javax.swing.Action allParticipantsAction = getActionMap().get(
+      // "allParticipants");
+      // JButton allParticipants = new JButton(allParticipantsAction);
+      // allParticipants.registerKeyboardAction(allParticipantsAction,
+      // (KeyStroke) allParticipantsAction
+      // .getValue(javax.swing.Action.ACCELERATOR_KEY),
+      // JComponent.WHEN_IN_FOCUSED_WINDOW);
 
       javax.swing.Action addParticipantsAction = getActionMap().get(
             "addParticipants");
@@ -116,7 +131,7 @@ public class TaskConversationView extends JPanel implements ListEventListener
 
       // IMPLODED
       participantsButtonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-      participantsButtonPanel.add(allParticipants);
+      // participantsButtonPanel.add(allParticipants);
       participantsButtonPanel.add(addParticipants);
 
       topPanel.add(participantsButtonPanel, BorderLayout.EAST);
@@ -156,10 +171,10 @@ public class TaskConversationView extends JPanel implements ListEventListener
             JComponent.WHEN_IN_FOCUSED_WINDOW);
       javax.swing.Action cancelAction = getActionMap().get("cancelNewMessage");
       JButton cancel = new JButton(cancelAction);
-//      cancel.registerKeyboardAction(cancelAction, (KeyStroke) cancelAction
-//            .getValue(javax.swing.Action.ACCELERATOR_KEY),
-//            JComponent.WHEN_IN_FOCUSED_WINDOW);
-//      NotificationGlassPane.registerButton(cancel);
+      // cancel.registerKeyboardAction(cancelAction, (KeyStroke) cancelAction
+      // .getValue(javax.swing.Action.ACCELERATOR_KEY),
+      // JComponent.WHEN_IN_FOCUSED_WINDOW);
+      // NotificationGlassPane.registerButton(cancel);
       sendMessagePanel.add(sendMessage);
       sendMessagePanel.add(cancel);
 
@@ -206,21 +221,26 @@ public class TaskConversationView extends JPanel implements ListEventListener
             "NEW_PARTICIPANT");
    }
 
-   @Action
-   public void allParticipants()
-   {
-      // buf.append( "<strong>" + model.getDescription() + "</strong>" );
-      // buf.append( "  ( " );
-      // for(Object participant : model.participants() )
-      // {
-      // buf.append( ((LinkValue)participant).text() + " " );
-      // }
-      // buf.append( ")<br/>" );
-   }
+   // @Action
+   // public void allParticipants()
+   // {
+   // }
 
    @Action
    public void addParticipants()
    {
+      // TaskLabelsDialog dialog = labelSelectionDialog.use(
+      // model.getPossibleLabels() ).newInstance();
+      // dialogs.showOkCancelHelpDialog( labelButton, dialog );
+      //
+      // if (dialog.getSelectedLabels() != null)
+      // {
+      // for (LinkValue listItemValue : dialog.getSelectedLabels())
+      // {
+      // model.addLabel( EntityReference.parseEntityReference(
+      // listItemValue.id().get() ) );
+      // }
+      // }
    }
 
    public void setModel(TaskConversationModel taskConversationDetailModel)
@@ -230,7 +250,7 @@ public class TaskConversationView extends JPanel implements ListEventListener
 
       model = taskConversationDetailModel;
       model.refresh();
-      //refresher.setRefreshable(model);
+      // refresher.setRefreshable(model);
 
       if (model != null)
       {
@@ -244,11 +264,11 @@ public class TaskConversationView extends JPanel implements ListEventListener
 
    public void listChanged(ListEvent listEvent)
    {
-      topic.setText(model.getDescription());
       EventList<MessageDTO> list = model.messages();
       StringBuffer buf = new StringBuffer();
 
       buf.append("<html><head></head><body>");
+      buf.append("<strong>" + model.getDescription() + "</strong>");
 
       int size = list.size();
       if (size > 0)
