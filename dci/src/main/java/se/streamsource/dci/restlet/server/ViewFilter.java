@@ -77,7 +77,7 @@ public class ViewFilter
    @Override
    protected int doHandle( final Request request, final Response response )
    {
-      List<MediaType> possibleMediaTypes = Arrays.asList( MediaType.TEXT_PLAIN, MediaType.TEXT_HTML, MediaType.APPLICATION_ATOM );
+      List<MediaType> possibleMediaTypes = Arrays.asList( MediaType.TEXT_HTML, MediaType.APPLICATION_ATOM );
       MediaType responseType = request.getClientInfo().getPreferredMediaType( possibleMediaTypes );
       if (responseType != null && possibleMediaTypes.contains( responseType ))
       {
