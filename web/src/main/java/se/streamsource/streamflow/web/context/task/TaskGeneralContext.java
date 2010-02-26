@@ -126,6 +126,7 @@ public interface TaskGeneralContext
          builder.prototype().creationDate().set( task.createdOn().get() );
          builder.prototype().taskId().set( task.taskId().get() );
          builder.prototype().dueOn().set( task.dueOn().get() );
+         builder.prototype().status().set( task.status().get() );
 
          return builder.newInstance();
       }

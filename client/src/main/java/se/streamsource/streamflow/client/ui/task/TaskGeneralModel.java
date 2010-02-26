@@ -31,6 +31,7 @@ import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.domain.interaction.gtd.Actions;
+import se.streamsource.streamflow.domain.interaction.gtd.States;
 import se.streamsource.streamflow.infrastructure.application.LinkValue;
 import se.streamsource.streamflow.infrastructure.application.LinksValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
@@ -280,5 +281,10 @@ public class TaskGeneralModel extends Observable implements Refreshable,
          if ( command.equals( commandName ) ) return true;
       }
       return false;
+   }
+
+   public States getTaskStatus()
+   {
+      return general.status().get();
    }
 }

@@ -38,6 +38,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.UncaughtExceptionHand
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.workspace.SelectTaskTypeDialog;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.domain.interaction.gtd.States;
 import se.streamsource.streamflow.infrastructure.application.LinkValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
@@ -63,6 +64,7 @@ import java.util.Observable;
 import java.util.Observer;
 
 import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.*;
+import static se.streamsource.streamflow.domain.interaction.gtd.States.ACTIVE;
 
 /**
  * JAVADOC
@@ -292,6 +294,10 @@ public class TaskGeneralView extends JScrollPane implements Observer
       descriptionField.setEnabled( model.getCommandEnabled( "changedescription" ));
       notePane.getViewport().getView().setEnabled( model.getCommandEnabled( "changenote" ));
       taskTypeButton.setEnabled( model.getCommandEnabled( "tasktype" ));
+
+      labelButton.setEnabled( model.getTaskStatus().equals( ACTIVE ));
+      labels.setEnabled( model.getTaskStatus().equals( ACTIVE ));
+      forms.setEnabled( model.getTaskStatus().equals( ACTIVE ));
    }
 
    public void update( Observable o, Object arg )

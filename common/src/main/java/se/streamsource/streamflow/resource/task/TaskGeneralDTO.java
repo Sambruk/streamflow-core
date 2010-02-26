@@ -18,6 +18,7 @@ import org.qi4j.api.common.Optional;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
 import org.qi4j.library.constraints.annotation.MaxLength;
+import se.streamsource.streamflow.domain.interaction.gtd.States;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 
@@ -43,6 +44,8 @@ public interface TaskGeneralDTO
    Property<String> note();
 
    Property<Date> creationDate();
+
+   Property<States> status();
 
    @Optional
    Property<Date> dueOn();
