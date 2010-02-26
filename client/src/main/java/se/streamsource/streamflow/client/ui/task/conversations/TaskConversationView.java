@@ -22,6 +22,7 @@ import java.text.SimpleDateFormat;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
@@ -36,8 +37,6 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.object.ObjectBuilderFactory;
 
 import se.streamsource.streamflow.client.MacOsUIWrapper;
-import se.streamsource.streamflow.client.infrastructure.ui.NotificationGlassPane;
-import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
@@ -55,7 +54,6 @@ public class TaskConversationView extends JPanel implements ListEventListener
    //private RefreshWhenVisible refresher;
    private JTextPane messages;
    private JTextPane newMessage;
-   private JTextField topic;
    private ApplicationContext context;
    private JPanel bottomPanel;
    private JPanel topPanel;
@@ -63,7 +61,8 @@ public class TaskConversationView extends JPanel implements ListEventListener
    private StateBinder newConversationBinder;
    private JTextField defaultFocusField;
    private JPanel sendPanel;
-   private JPanel implodedPanel;
+   private JPanel participantsButtonPanel;
+   private JLabel topic;
 
    public TaskConversationView(@Service final ApplicationContext context,
          @Structure ObjectBuilderFactory obf)
@@ -94,7 +93,10 @@ public class TaskConversationView extends JPanel implements ListEventListener
 
    private JPanel initTop()
    {
-      topPanel = new JPanel(new CardLayout());
+      topPanel = new JPanel(new BorderLayout());
+      
+      topic = new JLabel("");
+      topPanel.add(topic, BorderLayout.CENTER);
 
       javax.swing.Action allParticipantsAction = getActionMap().get(
             "allParticipants");
@@ -113,21 +115,11 @@ public class TaskConversationView extends JPanel implements ListEventListener
             JComponent.WHEN_IN_FOCUSED_WINDOW);
 
       // IMPLODED
-      implodedPanel = new JPanel(new BorderLayout());
-//      implodedPanel.setPreferredSize(new Dimension(100,40));
-      implodedPanel.add(allParticipants, BorderLayout.CENTER);
-      implodedPanel.add(addParticipants, BorderLayout.EAST);
+      participantsButtonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+      participantsButtonPanel.add(allParticipants);
+      participantsButtonPanel.add(addParticipants);
 
-      // EXPLODED
-//      JPanel explodedPanel = new JPanel(new BorderLayout());
-//      explodedPanel.setPreferredSize(new Dimension(100,100));
-//      explodedPanel.add(allParticipants, BorderLayout.CENTER);
-//      explodedPanel.add(addParticipants, BorderLayout.EAST);
-
-      topPanel.add(implodedPanel, "IMPLODED");
-//      topPanel.add(explodedPanel, "EXPLODED");
-
-      ((CardLayout) topPanel.getLayout()).show(topPanel, "IMPLODED");
+      topPanel.add(participantsButtonPanel, BorderLayout.EAST);
       return topPanel;
    }
 
@@ -217,8 +209,6 @@ public class TaskConversationView extends JPanel implements ListEventListener
    @Action
    public void allParticipants()
    {
-      implodedPanel.setPreferredSize(new Dimension(100,100));
-      repaint();
       // buf.append( "<strong>" + model.getDescription() + "</strong>" );
       // buf.append( "  ( " );
       // for(Object participant : model.participants() )
@@ -254,6 +244,7 @@ public class TaskConversationView extends JPanel implements ListEventListener
 
    public void listChanged(ListEvent listEvent)
    {
+      topic.setText(model.getDescription());
       EventList<MessageDTO> list = model.messages();
       StringBuffer buf = new StringBuffer();
 
