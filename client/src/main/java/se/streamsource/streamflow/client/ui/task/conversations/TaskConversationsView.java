@@ -119,7 +119,6 @@ public class TaskConversationsView
       addConversation.registerKeyboardAction( addConversationAction, (KeyStroke) addConversationAction
             .getValue( javax.swing.Action.ACCELERATOR_KEY ),
             JComponent.WHEN_IN_FOCUSED_WINDOW );
-      NotificationGlassPane.registerButton( addConversation );
       addPanel.add( addConversation, FlowLayout.LEFT );
       left.add( addPanel, BorderLayout.SOUTH );
 

@@ -103,7 +103,6 @@ public class TaskConversationView extends JPanel implements ListEventListener
             (KeyStroke) allParticipantsAction
                   .getValue(javax.swing.Action.ACCELERATOR_KEY),
             JComponent.WHEN_IN_FOCUSED_WINDOW);
-      NotificationGlassPane.registerButton(allParticipants);
 
       javax.swing.Action addParticipantsAction = getActionMap().get(
             "addParticipants");
@@ -112,7 +111,6 @@ public class TaskConversationView extends JPanel implements ListEventListener
             (KeyStroke) addParticipantsAction
                   .getValue(javax.swing.Action.ACCELERATOR_KEY),
             JComponent.WHEN_IN_FOCUSED_WINDOW);
-      NotificationGlassPane.registerButton(addParticipants);
 
       // IMPLODED
       implodedPanel = new JPanel(new BorderLayout());
@@ -146,7 +144,6 @@ public class TaskConversationView extends JPanel implements ListEventListener
             (KeyStroke) writeMessageAction
                   .getValue(javax.swing.Action.ACCELERATOR_KEY),
             JComponent.WHEN_IN_FOCUSED_WINDOW);
-      NotificationGlassPane.registerButton(writeMessage);
       createPanel.add(writeMessage);
 
       // NEWMESSAGE
@@ -165,7 +162,6 @@ public class TaskConversationView extends JPanel implements ListEventListener
             (KeyStroke) sendMessageAction
                   .getValue(javax.swing.Action.ACCELERATOR_KEY),
             JComponent.WHEN_IN_FOCUSED_WINDOW);
-      NotificationGlassPane.registerButton(sendMessage);
       javax.swing.Action cancelAction = getActionMap().get("cancelNewMessage");
       JButton cancel = new JButton(cancelAction);
 //      cancel.registerKeyboardAction(cancelAction, (KeyStroke) cancelAction

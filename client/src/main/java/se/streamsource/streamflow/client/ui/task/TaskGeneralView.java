@@ -157,7 +157,6 @@ public class TaskGeneralView extends JScrollPane implements Observer
       taskTypeButton.registerKeyboardAction( taskTypeAction, (KeyStroke) taskTypeAction
             .getValue( javax.swing.Action.ACCELERATOR_KEY ),
             JComponent.WHEN_IN_FOCUSED_WINDOW );
-      NotificationGlassPane.registerButton( taskTypeButton );
       taskTypeButton.setHorizontalAlignment( SwingConstants.LEFT );
       rightBuilder.setExtent( 1, 1 );
       rightBuilder.add( taskTypeButton );
