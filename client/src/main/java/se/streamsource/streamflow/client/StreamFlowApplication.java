@@ -134,7 +134,7 @@ public class StreamFlowApplication
    {
       DOMAIN_EVENT_TYPE = module.valueDescriptor( DomainEvent.class.getName() ).valueType();
 
-      NotificationGlassPane.install();
+//      NotificationGlassPane.install();
 
       try
       {
