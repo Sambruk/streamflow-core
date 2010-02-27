@@ -21,20 +21,11 @@ import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.dci.context.Context;
 import se.streamsource.dci.context.ContextMixin;
-import se.streamsource.dci.context.DeleteContext;
 import se.streamsource.dci.context.IndexContext;
 import se.streamsource.dci.context.SubContext;
-import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.infrastructure.application.LinksValue;
-import se.streamsource.streamflow.resource.conversation.ConversationDetailDTO;
-import se.streamsource.streamflow.resource.conversation.MessageDTO;
-import se.streamsource.streamflow.resource.roles.StringDTO;
+import se.streamsource.streamflow.resource.conversation.ConversationDTO;
 import se.streamsource.streamflow.web.domain.entity.conversation.ConversationEntity;
-import se.streamsource.streamflow.web.domain.entity.conversation.MessageEntity;
-import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipant;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipants;
-import se.streamsource.streamflow.web.domain.structure.conversation.Conversations;
-import se.streamsource.streamflow.web.domain.structure.conversation.Message;
 import se.streamsource.streamflow.web.domain.structure.conversation.Messages;
 
 /**
@@ -42,7 +33,7 @@ import se.streamsource.streamflow.web.domain.structure.conversation.Messages;
  */
 @Mixins(ConversationContext.Mixin.class)
 public interface ConversationContext
-      extends /*DeleteContext,*/ Context, IndexContext<ConversationDetailDTO>
+      extends /*DeleteContext,*/ Context, IndexContext<ConversationDTO>
 {
    @SubContext
    MessagesContext messages();
@@ -57,16 +48,18 @@ public interface ConversationContext
       @Structure
       Module module;
 
-      public ConversationDetailDTO index()
+      public ConversationDTO index()
       {
-         ValueBuilder<ConversationDetailDTO> builder = module.valueBuilderFactory().newValueBuilder( ConversationDetailDTO.class );
+         ValueBuilder<ConversationDTO> builder = module.valueBuilderFactory().newValueBuilder( ConversationDTO.class );
          ConversationEntity conversation = context.role( ConversationEntity.class );
 
-         builder.prototype().description().set( conversation.getDescription() );
+         builder.prototype().id().set( conversation.identity().get() );
+         builder.prototype().href().set( conversation.identity().get() );                           
+         builder.prototype().text().set( conversation.getDescription() );
          builder.prototype().creationDate().set( conversation.createdOn().get() );
-         builder.prototype().creator().set( conversation.createdBy().get().toString() );
-         builder.prototype().messages().set( messages().index() );
-         builder.prototype().participants().set( participants().index() );
+         builder.prototype().creator().set( EntityReference.getEntityReference( conversation.createdBy().get() ));
+         builder.prototype().messages().set( ((Messages.Data)conversation).messages().count() );
+         builder.prototype().participants().set( ((ConversationParticipants.Data)conversation).participants().count() );
 
          return builder.newInstance();
       }

@@ -17,11 +17,8 @@ package se.streamsource.streamflow.client.ui.task.conversations;
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.TransactionList;
-import ca.odell.glazedlists.swing.EventListModel;
-import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilder;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
@@ -31,23 +28,15 @@ import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
-import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.task.TaskResources;
-import se.streamsource.streamflow.domain.contact.ContactValue;
-import se.streamsource.streamflow.infrastructure.application.LinkValue;
 import se.streamsource.streamflow.infrastructure.application.LinksValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
 import se.streamsource.streamflow.infrastructure.event.source.EventVisitorFilter;
 import se.streamsource.streamflow.resource.conversation.ConversationDTO;
-import se.streamsource.streamflow.resource.conversation.MessageDTO;
-import se.streamsource.streamflow.resource.conversation.NewConversationCommand;
 import se.streamsource.streamflow.resource.roles.StringDTO;
-import se.streamsource.streamflow.resource.user.UserEntityDTO;
 
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.logging.Logger;
 
 public class TaskConversationsModel
@@ -70,13 +59,18 @@ public class TaskConversationsModel
       @Override
       protected TaskConversationModel newModel( String key )
       {
-         return obf.newObjectBuilder( TaskConversationModel.class ).use( client.getSubClient( key ) ).newInstance();
+         return obf.newObjectBuilder( TaskConversationModel.class ).use(
+               client.getSubClient( key ),
+               obf.newObjectBuilder( TaskConversationParticipantsModel.class ).
+                     use(client.getSubClient( key ).getSubClient( "participants" )).newInstance(),
+               obf.newObjectBuilder( MessagesModel.class ).
+                     use( client.getSubClient(key).getSubClient( "messages" )).newInstance()).newInstance();
       }
    };
 
    TransactionList<ConversationDTO> conversations = new TransactionList<ConversationDTO>(new BasicEventList<ConversationDTO>( ));
 
-   EventVisitorFilter eventFilter = new EventVisitorFilter( this, "conversationCreated", "addedParticipant", "messageCreated" );
+   EventVisitorFilter eventFilter = new EventVisitorFilter( this, "createdConversation", "addedParticipant", "createdMessage" );
 
    public void refresh()
    {
@@ -124,7 +118,7 @@ public class TaskConversationsModel
       {
          Logger.getLogger( "workspace" ).info( "Refresh task conversations" );
          refresh();
-      } else if( event.name().get().equals("messageCreated"))
+      } else if( event.name().get().equals("createdMessage"))
       {
          for (ConversationDTO conversation : conversations)
          {
@@ -135,15 +129,15 @@ public class TaskConversationsModel
                conversations.set( conversations.indexOf(conversation), updated );
             }
          }
-      } else if( event.name().get().equals("participantAdded"))
+      } else if( event.name().get().equals("addedParticipant"))
       {
          for (ConversationDTO conversation : conversations)
          {
             if(conversation.id().get().equals( event.entity().get() ))
             {
-               /*ConversationDTO updated = conversation.<ConversationDTO>buildWith().prototype();
+               ConversationDTO updated = conversation.<ConversationDTO>buildWith().prototype();
                updated.participants().set( conversation.participants().get() + 1 );
-               conversations.set( conversations.indexOf(conversation), updated );*/
+               conversations.set( conversations.indexOf(conversation), updated );
             }
          }
       }

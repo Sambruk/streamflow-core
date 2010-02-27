@@ -3,6 +3,7 @@ package se.streamsource.streamflow.client.ui.task;
 import org.jdesktop.swingx.JXLabel;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.infrastructure.application.LinkValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.BorderFactory;
@@ -25,22 +26,58 @@ public class RemovableLabel extends JPanel
 {
    ListItemValue itemValue;
    JButton button;
+   private LinkValue link;
+
+   /** Button orientation left*/
+   public static final int LEFT = 0;
+   /** Button orientation right*/
+   public static final int RIGHT = 1;
+
 
    public RemovableLabel( ListItemValue itemValue )
    {
       super( new FlowLayout( FlowLayout.LEFT, 2, 1 ) );
       this.itemValue = itemValue;
 
+      initComponents(RemovableLabel.RIGHT);
+   }
+
+   public RemovableLabel( LinkValue link)
+   {
+      this( link, new FlowLayout( FlowLayout.LEFT, 2, 1 ), RIGHT );
+
+   }
+
+   public RemovableLabel( LinkValue link, FlowLayout layout , int buttonOrientation)
+   {
+      super( layout );
+      this.link = link;
+      initComponents(buttonOrientation);
+   }
+
+
+   private void initComponents( int buttonOrientation)
+   {
       setFocusable( true );
       this.setRequestFocusEnabled( true );
 
-      JXLabel label = new JXLabel( itemValue.description().get() );
+      JXLabel label = new JXLabel(  itemValue != null ? itemValue.description().get() : link.text().get() );
       button = new JButton( i18n.icon( Icons.deleteLabel, 16 ) );
       button.setBorder( new EmptyBorder( new Insets( 0, 0, 0, 0 ) ) );
       button.setFocusable( false );
 
-      this.add( label );
-      this.add( button );
+      switch (buttonOrientation) {
+
+         case RIGHT:
+            this.add( label );
+            this.add( button );
+            break;
+
+         case LEFT:
+            this.add( button );
+            this.add( label );
+            break;
+      }
       setBorder( BorderFactory.createEtchedBorder() );
 
       addFocusListener( this );
@@ -58,6 +95,11 @@ public class RemovableLabel extends JPanel
    public ListItemValue item()
    {
       return itemValue;
+   }
+
+   public LinkValue link()
+   {
+      return link;
    }
 
    public void addActionListener( ActionListener listener )

@@ -38,7 +38,7 @@ public interface Conversations
    {
       ManyAssociation<Conversation> conversations();
 
-      Conversation conversationCreated( DomainEvent event, String id, Creator creator );
+      Conversation createdConversation( DomainEvent event, String id, Creator creator );
    }
 
    abstract class Mixin
@@ -52,13 +52,13 @@ public interface Conversations
 
       public Conversation createConversation( String topic, Creator creator )
       {
-         Conversation conversation = conversationCreated( DomainEvent.CREATE, idGen.generate( Identity.class ), creator);
+         Conversation conversation = createdConversation( DomainEvent.CREATE, idGen.generate( Identity.class ), creator);
          conversation.changeDescription( topic );
 
          return conversation;
       }
 
-      public Conversation conversationCreated( DomainEvent event, String id, Creator creator )
+      public Conversation createdConversation( DomainEvent event, String id, Creator creator )
       {
          EntityBuilder<Conversation> builder = uowf.currentUnitOfWork().newEntityBuilder( Conversation.class, id );
          builder.instanceFor( CreatedOn.class).createdOn().set( event.on().get() );

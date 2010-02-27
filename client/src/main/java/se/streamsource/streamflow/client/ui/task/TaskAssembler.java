@@ -19,6 +19,10 @@ import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import se.streamsource.streamflow.client.infrastructure.ui.UIAssemblers;
 import se.streamsource.streamflow.client.ui.administration.projects.members.TableSelectionView;
+import se.streamsource.streamflow.client.ui.task.conversations.AllParticipantsModel;
+import se.streamsource.streamflow.client.ui.task.conversations.AllParticipantsView;
+import se.streamsource.streamflow.client.ui.task.conversations.MessagesModel;
+import se.streamsource.streamflow.client.ui.task.conversations.MessagesView;
 import se.streamsource.streamflow.client.ui.task.conversations.TaskConversationModel;
 import se.streamsource.streamflow.client.ui.task.conversations.TaskConversationParticipantsModel;
 import se.streamsource.streamflow.client.ui.task.conversations.TaskConversationParticipantsView;
@@ -53,18 +57,6 @@ public class TaskAssembler
             TaskCommentsModel.class,
             TaskCommentsView.class );
       
-      UIAssemblers.addMV( module,
-            TaskConversationsModel.class,
-            TaskConversationsView.class );
-
-      UIAssemblers.addMV( module,
-            TaskConversationModel.class,
-            TaskConversationView.class );
-
-      UIAssemblers.addMV( module,
-            TaskConversationParticipantsModel.class,
-            TaskConversationParticipantsView.class );
-
       UIAssemblers.addMV( module,
             TaskContactsModel.class,
             TaskContactsView.class );
@@ -112,6 +104,27 @@ public class TaskAssembler
       UIAssemblers.addMV( module, 
     		  TaskActionsModel.class, 
     		  TaskActionsView.class );
+
+      // conversations
+      UIAssemblers.addMV( module,
+            AllParticipantsModel.class,
+            AllParticipantsView.class );
+
+      UIAssemblers.addMV( module,
+            MessagesModel.class,
+            MessagesView.class );
+
+      UIAssemblers.addMV( module,
+            TaskConversationModel.class,
+            TaskConversationView.class );
+
+      UIAssemblers.addMV( module,
+            TaskConversationsModel.class,
+            TaskConversationsView.class );
+
+      UIAssemblers.addMV( module,
+            TaskConversationParticipantsModel.class,
+            TaskConversationParticipantsView.class );
 
    }
 }

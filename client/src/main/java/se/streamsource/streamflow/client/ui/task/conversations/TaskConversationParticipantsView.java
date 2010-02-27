@@ -17,15 +17,9 @@ package se.streamsource.streamflow.client.ui.task.conversations;
 import ca.odell.glazedlists.event.ListEvent;
 import ca.odell.glazedlists.event.ListEventListener;
 import org.jdesktop.application.Action;
-import org.jdesktop.application.ApplicationContext;
-import org.qi4j.api.injection.scope.Service;
-import se.streamsource.streamflow.client.infrastructure.ui.ModifiedFlowLayout;
 import se.streamsource.streamflow.client.ui.task.RemovableLabel;
 import se.streamsource.streamflow.infrastructure.application.LinkValue;
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
-import javax.swing.ActionMap;
-import javax.swing.JButton;
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -35,46 +29,47 @@ import java.awt.event.ActionListener;
 
 public class TaskConversationParticipantsView extends JPanel implements ListEventListener, ActionListener
 {
-   private TaskConversationParticipantsModel model;
+   
+   TaskConversationParticipantsModel model;
 
    private JPanel labelPanel;
 
 
-   public TaskConversationParticipantsView(@Service ApplicationContext context)
+   public TaskConversationParticipantsView()
    {
       setLayout( new BorderLayout() );
 
-      ActionMap am = context.getActionMap( this );
       labelPanel = new JPanel();
 
       add( labelPanel, BorderLayout.WEST );
 
-      JButton openParticipantDialog = new JButton(am.get( "openParticipantDialog" ));
-      add( openParticipantDialog, BorderLayout.EAST);
+      //JButton openParticipantDialog = new JButton(am.get( "openParticipantDialog" ));
+      //add( openParticipantDialog, BorderLayout.EAST);
    }
 
    public void setModel( TaskConversationParticipantsModel model )
    {
       this.model = model;
-      model.getParticipants().addListEventListener( this );
+      this.model.refresh();
+      model.participants().addListEventListener( this );
       initComponents();
    }
 
    private void initComponents()
    {
-      /*labelPanel.removeAll();
+      labelPanel.removeAll();
 
-      for (int i = 0; i < model.getParticipants().size(); i++)
+      for (int i = 0; i < model.participants().size(); i++)
       {
-         LinkValue itemValue = model.getParticipants().get( i );
-         RemovableLabel label = new RemovableLabel( itemValue );
+         LinkValue link = model.participants().get( i );
+         RemovableLabel label = new RemovableLabel( link, new FlowLayout( FlowLayout.LEFT, 2, 1 ), RemovableLabel.LEFT );
          label.addActionListener( this );
          labelPanel.add( label );
       }
 
       labelPanel.revalidate();
       labelPanel.repaint();
-      */
+
    }
 
    public void listChanged( ListEvent listEvent )
@@ -86,7 +81,7 @@ public class TaskConversationParticipantsView extends JPanel implements ListEven
    {
       Component component = ((Component) e.getSource());
       RemovableLabel label = (RemovableLabel) component.getParent();
-      model.removeParticipant( label.item().entity().get() );
+      model.removeParticipant( label.link() );
    }
 
    @Action

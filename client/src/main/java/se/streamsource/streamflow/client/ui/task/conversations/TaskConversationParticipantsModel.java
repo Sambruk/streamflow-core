@@ -25,19 +25,21 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
 import se.streamsource.streamflow.client.infrastructure.ui.LinkComparator;
-import se.streamsource.streamflow.client.infrastructure.ui.ListItemComparator;
+import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.ui.task.TaskResources;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.infrastructure.application.LinkValue;
 import se.streamsource.streamflow.infrastructure.application.LinksValue;
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
-import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
+import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
+import se.streamsource.streamflow.infrastructure.event.source.EventVisitorFilter;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 
 public class TaskConversationParticipantsModel
-   implements EventListener
+   implements EventListener, EventVisitor, Refreshable
 {
    @Uses
    CommandQueryClient client;
@@ -46,17 +48,30 @@ public class TaskConversationParticipantsModel
    ValueBuilderFactory vbf;
 
    SortedList<LinkValue> participants = new SortedList<LinkValue>(new BasicEventList<LinkValue>( ), new LinkComparator());
+   EventVisitorFilter eventFilter = new EventVisitorFilter( this,"removedParticipant", "addedParticipant" );
 
-   public EventList<LinkValue> getParticipants()
+   public EventList<LinkValue> participants()
    {
       return participants;
    }
 
-   public void setParticipants( LinksValue participants )
+   public EventList<LinkValue> possibleParticipants()
    {
-      this.participants.clear();
-      this.participants.addAll( participants.links().get() );
+      try
+      {
+         BasicEventList<LinkValue> list = new BasicEventList<LinkValue>();
+
+         LinksValue listValue = client.query("possibleparticipants", LinksValue.class);
+         list.addAll(listValue.links().get());
+
+         return list;
+      } catch (ResourceException e)
+      {
+         throw new OperationException( WorkspaceResources.could_not_refresh,
+               e);
+      }
    }
+
    public void addParticipant( EntityReference participant )
    {
       try
@@ -70,28 +85,39 @@ public class TaskConversationParticipantsModel
       }
    }
 
-   public void removeParticipant( EntityReference participant )
+   public void removeParticipant( LinkValue link )
    {
-      /*int idx = -1;
-      for (int i = 0; i < participants.size(); i++)
-      {
-         ListItemValue listItemValue = participants.get( i );
-         if (listItemValue.entity().get().equals( participant ))
-            idx = i;
-      }
-
       try
       {
-         ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
-         builder.prototype().entity().set( participant );
-         client.putCommand( "removeparticipant", builder.newInstance() );
+         client.getSubClient( link.id().get() ).delete();
       } catch (ResourceException e)
       {
          throw new OperationException( TaskResources.could_not_remove_conversation_participant, e );
-      } */
+      }
    }
 
    public void notifyEvent( DomainEvent event )
    {
+      eventFilter.visit( event );
+   }
+
+   public boolean visit( DomainEvent event )
+   {
+      refresh();
+      
+      return false;
+   }
+
+   public void refresh() throws OperationException
+   {
+     try
+      {
+         LinksValue participants = client.query( "index", LinksValue.class );
+         EventListSynch.synchronize( participants.links().get(), this.participants );
+
+      } catch (Exception e)
+      {
+         throw new OperationException( TaskResources.could_not_refresh, e );
+      }
    }
 }

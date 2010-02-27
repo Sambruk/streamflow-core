@@ -39,7 +39,7 @@ public interface Messages
    {
       ManyAssociation<Message> messages();
 
-      Message messageCreated( DomainEvent create, String id, String body, ConversationParticipant participant );
+      Message createdMessage( DomainEvent create, String id, String body, ConversationParticipant participant );
    }
 
    abstract class Mixin
@@ -58,7 +58,7 @@ public interface Messages
       {
          if (participants.isParticipant(participant))
          {
-            Message message = messageCreated( CREATE, idGen.generate( Identity.class ), body, participant);
+            Message message = createdMessage( CREATE, idGen.generate( Identity.class ), body, participant);
 
             participants.receiveMessage(message);
 
@@ -69,7 +69,7 @@ public interface Messages
          }
       }
 
-      public Message messageCreated( DomainEvent event, String id, String body, ConversationParticipant participant )
+      public Message createdMessage( DomainEvent event, String id, String body, ConversationParticipant participant )
       {
          EntityBuilder<Message> builder = uowf.currentUnitOfWork().newEntityBuilder( Message.class, id );
          builder.instanceFor( Message.Data.class ).body().set( body );
