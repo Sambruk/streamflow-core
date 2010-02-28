@@ -34,8 +34,6 @@ import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
 import se.streamsource.streamflow.infrastructure.event.source.EventVisitorFilter;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 
-import java.util.logging.Logger;
-
 public class MessagesModel
    implements EventListener, Refreshable, EventVisitor
 {
@@ -88,11 +86,11 @@ public class MessagesModel
 
    public boolean visit( DomainEvent event )
    {
-      if (client.getReference().getParentRef().getLastSegment().equals( event.entity().get() ))
+      /*if (client.getReference().getParentRef().getLastSegment().equals( event.entity().get() ))
       {
          Logger.getLogger( "workspace" ).info( "Refresh messages" );
          refresh();
-      }
+      }*/
 
       return false;
    }

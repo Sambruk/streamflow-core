@@ -103,7 +103,7 @@ public class TaskConversationParticipantsModel
 
    public boolean visit( DomainEvent event )
    {
-      refresh();
+      //refresh();
       
       return false;
    }

@@ -70,7 +70,7 @@ public class TaskConversationsModel
 
    TransactionList<ConversationDTO> conversations = new TransactionList<ConversationDTO>(new BasicEventList<ConversationDTO>( ));
 
-   EventVisitorFilter eventFilter = new EventVisitorFilter( this, "createdConversation", "addedParticipant", "createdMessage" );
+   EventVisitorFilter eventFilter = new EventVisitorFilter( this, "createdConversation", "addedParticipant", "removedParticipant", "createdMessage" );
 
    public void refresh()
    {
@@ -114,7 +114,7 @@ public class TaskConversationsModel
 
    public boolean visit( DomainEvent event )
    {
-      if (client.getReference().getParentRef().getLastSegment().equals( event.entity().get() ))
+      /*if (client.getReference().getParentRef().getLastSegment().equals( event.entity().get() ))
       {
          Logger.getLogger( "workspace" ).info( "Refresh task conversations" );
          refresh();
@@ -129,7 +129,7 @@ public class TaskConversationsModel
                conversations.set( conversations.indexOf(conversation), updated );
             }
          }
-      } else if( event.name().get().equals("addedParticipant"))
+      } else if( event.name().get().equals("addedParticipant") )
       {
          for (ConversationDTO conversation : conversations)
          {
@@ -140,7 +140,27 @@ public class TaskConversationsModel
                conversations.set( conversations.indexOf(conversation), updated );
             }
          }
-      }
+      }  else if( event.name().get().equals("removedParticipant") )
+      {
+         for (ConversationDTO conversation : conversations)
+         {
+            if(conversation.id().get().equals( event.entity().get() ))
+            {
+               ConversationDTO updated = conversation.<ConversationDTO>buildWith().prototype();
+               updated.participants().set( conversation.participants().get() - 1 );
+               conversations.set( conversations.indexOf(conversation), updated );
+            }
+         }
+      }*/
+
+      if (client.getReference().getParentRef().getLastSegment().equals( event.entity().get() )
+            || event.name().get().equals("createdMessage")
+            || event.name().get().equals("addedParticipant")
+            || event.name().get().equals("removedParticipant") )
+      {
+         Logger.getLogger( "workspace" ).info( "Refresh task conversations" );
+         refresh();
+      } 
 
       return false;
    }

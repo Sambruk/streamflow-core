@@ -14,12 +14,23 @@
 
 package se.streamsource.streamflow.client.ui.task.conversations;
 
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
-
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import java.awt.FlowLayout;
-import java.io.IOException;
+import ca.odell.glazedlists.event.ListEvent;
+import ca.odell.glazedlists.event.ListEventListener;
+import ca.odell.glazedlists.swing.EventListModel;
+import org.jdesktop.application.Action;
+import org.jdesktop.application.ApplicationContext;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.client.MacOsUIWrapper;
+import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
+import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
+import se.streamsource.streamflow.client.ui.NameDialog;
+import se.streamsource.streamflow.client.ui.task.TaskResources;
+import se.streamsource.streamflow.infrastructure.application.LinkValue;
+import se.streamsource.streamflow.resource.conversation.ConversationDTO;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -31,25 +42,12 @@ import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.FlowLayout;
+import java.io.IOException;
 
-import org.jdesktop.application.Action;
-import org.jdesktop.application.ApplicationContext;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import org.restlet.resource.ResourceException;
-
-import se.streamsource.streamflow.client.MacOsUIWrapper;
-import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
-import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
-import se.streamsource.streamflow.client.ui.NameDialog;
-import se.streamsource.streamflow.client.ui.task.TaskResources;
-import se.streamsource.streamflow.infrastructure.application.LinkValue;
-import se.streamsource.streamflow.resource.conversation.ConversationDTO;
-import ca.odell.glazedlists.event.ListEvent;
-import ca.odell.glazedlists.event.ListEventListener;
-import ca.odell.glazedlists.swing.EventListModel;
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 
 public class TaskConversationsView
       extends JSplitPane
@@ -146,12 +144,12 @@ public class TaskConversationsView
          model.conversations().removeListEventListener( this );
 
       model = taskConversationsModel;
-      //model.refresh();
+      model.refresh();
       refresher.setRefreshable( model );
 
       if (model != null)
       {
-         taskConversationsModel.conversations().addListEventListener( this );
+         //taskConversationsModel.conversations().addListEventListener( this );
 
          model.conversations().addListEventListener( this );
          listChanged( null );
