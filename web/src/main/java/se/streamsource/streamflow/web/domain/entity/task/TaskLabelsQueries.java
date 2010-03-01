@@ -23,12 +23,17 @@ import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.label.Labelable;
 import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
+import se.streamsource.streamflow.web.domain.structure.organization.OrganizationParticipations;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganization;
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganizationalUnit;
+import se.streamsource.streamflow.web.domain.structure.tasktype.TaskType;
+import se.streamsource.streamflow.web.domain.structure.tasktype.TaskTypes;
 import se.streamsource.streamflow.web.domain.structure.tasktype.TypedTask;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 @Mixins(TaskLabelsQueries.Mixin.class)
@@ -76,6 +81,15 @@ public interface TaskLabelsQueries
             OwningOrganization ownerOrg = (OwningOrganization) ou;
             Organization org = ownerOrg.organization().get();
             addLabels( labels, org );
+         } else if (ownable.owner().get() instanceof OrganizationParticipations.Data)
+         {
+            // Add labels from Organizations that user is member of
+            OrganizationParticipations.Data orgs = (OrganizationParticipations.Data) ownable.owner().get();
+
+            for (Organization organization : orgs.organizations())
+            {
+               addLabels(labels, organization);
+            }
          }
 
          return labels;
