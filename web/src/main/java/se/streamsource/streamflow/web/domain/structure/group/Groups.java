@@ -18,8 +18,10 @@ import org.qi4j.api.concern.ConcernOf;
 import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.entity.Aggregated;
 import org.qi4j.api.entity.association.ManyAssociation;
+import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import se.streamsource.streamflow.domain.structure.Describable;
+import se.streamsource.streamflow.domain.structure.Removable;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 /**
@@ -81,6 +83,7 @@ public interface Groups
             return false;
 
          removedGroup( DomainEvent.CREATE, group );
+         group.removeEntity();
          return true;
       }
 
