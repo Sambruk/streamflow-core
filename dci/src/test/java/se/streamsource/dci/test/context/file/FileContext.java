@@ -16,15 +16,30 @@ package se.streamsource.dci.test.context.file;
 
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.value.ValueBuilder;
+import org.restlet.Application;
+import org.restlet.Request;
+import org.restlet.data.MediaType;
+import org.restlet.data.Status;
+import org.restlet.representation.InputRepresentation;
+import org.restlet.representation.OutputRepresentation;
+import org.restlet.representation.Representation;
+import org.restlet.resource.ResourceException;
+import org.restlet.service.MetadataService;
 import se.streamsource.dci.context.Context;
 import se.streamsource.dci.context.ContextMixin;
+import se.streamsource.dci.context.ContextNotFoundException;
 import se.streamsource.dci.context.IndexContext;
+import se.streamsource.dci.context.InteractionException;
 import se.streamsource.dci.context.SubContexts;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.infrastructure.application.LinksValue;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.OutputStream;
 
 /**
  * JAVADOC
@@ -36,6 +51,9 @@ public interface FileContext
    @RequiresFile
    StringDTO lastModified();
 
+   @RequiresFile
+   Representation content() throws FileNotFoundException;
+
    abstract class Mixin
       extends ContextMixin
       implements FileContext
@@ -45,6 +63,16 @@ public interface FileContext
          ValueBuilder<StringDTO> builder = module.valueBuilderFactory().newValueBuilder( StringDTO.class );
          builder.prototype().string().set( context.role( File.class ).lastModified()+"" );
          return builder.newInstance();
+      }
+
+      public Representation content() throws FileNotFoundException
+      {
+         File file = context.role( File.class );
+
+         MetadataService metadataService = context.role( Application.class ).getMetadataService();
+         String ext = file.getName().split( "\\." )[1];
+         MediaType mediaType = metadataService.getMediaType(ext );
+         return new InputRepresentation(new FileInputStream(file), mediaType);
       }
 
       public LinksValue index()
@@ -67,7 +95,12 @@ public interface FileContext
 
       public FileContext context( String id )
       {
-         context.playRoles( new File(context.role( File.class ), id) );
+         File file = new File( context.role( File.class ), id );
+
+         if (!file.exists())
+            throw new ContextNotFoundException();
+
+         context.playRoles( file );
 
          return subContext( FileContext.class );
       }

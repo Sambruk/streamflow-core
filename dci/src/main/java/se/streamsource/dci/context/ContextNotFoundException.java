@@ -17,8 +17,7 @@ package se.streamsource.dci.context;
 /**
  * JAVADOC
  */
-public interface SubContexts<T extends Context>
+public class ContextNotFoundException
+   extends RuntimeException
 {
-   T context(String id)
-      throws ContextNotFoundException;
 }

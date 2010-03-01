@@ -43,11 +43,13 @@ import org.qi4j.spi.property.PropertyType;
 import org.qi4j.spi.structure.ModuleSPI;
 import org.qi4j.spi.util.Annotations;
 import org.qi4j.spi.value.ValueDescriptor;
+import org.restlet.Application;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Form;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Parameter;
+import org.restlet.data.Preference;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.representation.EmptyRepresentation;
@@ -60,6 +62,7 @@ import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
 import org.slf4j.LoggerFactory;
 import se.streamsource.dci.context.Context;
+import se.streamsource.dci.context.ContextNotFoundException;
 import se.streamsource.dci.context.IndexContext;
 import se.streamsource.dci.context.InteractionConstraintsService;
 import se.streamsource.dci.context.InteractionContext;
@@ -147,7 +150,8 @@ public abstract class CommandQueryServerResource
    @Override
    protected Representation get( Variant variant ) throws ResourceException
    {
-      List<String> segments = getRequest().getResourceRef().getRelativeRef().getSegments();
+      Reference ref = getRequest().getResourceRef();
+      List<String> segments = ref.getScheme().equals("riap") ? ref.getRelativeRef(new Reference("riap://application/")).getSegments() : ref.getRelativeRef().getSegments();
 
       String lastSegment = segments.get( segments.size() - 1 );
 
@@ -158,8 +162,7 @@ public abstract class CommandQueryServerResource
          try
          {
             InteractionContext interactionContext = new InteractionContext();
-            interactionContext.playRoles( resolveRequestLocale(), Locale.class );
-            interactionContext.playRoles( getRequest().getResourceRef(), Reference.class );
+            initContext( interactionContext );
             Object resource = getRoot(interactionContext);
 
             // Find the resource first
@@ -217,8 +220,7 @@ public abstract class CommandQueryServerResource
       try
       {
          InteractionContext context = new InteractionContext();
-         context.playRoles( resolveRequestLocale(), Locale.class );
-         context.playRoles( getRequest().getResourceRef(), Reference.class );
+         initContext( context );
          Object resource = getRoot(context);
 
          // Find the resource first
@@ -251,6 +253,13 @@ public abstract class CommandQueryServerResource
       {
          uow.discard();
       }
+   }
+
+   private void initContext( InteractionContext context )
+   {
+      context.playRoles( resolveRequestLocale(), Locale.class );
+      context.playRoles( getRequest().getResourceRef(), Reference.class );
+      context.playRoles( getApplication(), Application.class );
    }
 
    private Method getMethod( Object resource, String lastSegment ) throws ResourceException
@@ -473,8 +482,14 @@ public abstract class CommandQueryServerResource
 
          if (resource instanceof SubContexts)
          {
-            resource = ((SubContexts) resource).context( segment );
-            segments.set( i, "context" );
+            try
+            {
+               resource = ((SubContexts) resource).context( segment );
+               segments.set( i, "context" );
+            } catch (ContextNotFoundException e)
+            {
+               throw new ResourceException( Status.CLIENT_ERROR_NOT_FOUND );
+            }
          } else
          {
             try
@@ -527,8 +542,7 @@ public abstract class CommandQueryServerResource
          try
          {
             InteractionContext context = new InteractionContext();
-            context.playRoles( resolveRequestLocale(), Locale.class );
-            context.playRoles( getRequest().getResourceRef(), Reference.class );
+            initContext( context );
             Object resource = getRoot(context);
 
             resource = getResource( resource, segments );
@@ -845,7 +859,12 @@ public abstract class CommandQueryServerResource
 
    protected Locale resolveRequestLocale()
    {
-      Language language = getRequest().getClientInfo().getAcceptedLanguages()
+      List<Preference<Language>> preferenceList = getRequest().getClientInfo().getAcceptedLanguages();
+
+      if (preferenceList.isEmpty())
+         return Locale.getDefault();
+      
+      Language language = preferenceList
             .get( 0 ).getMetadata();
       String[] localeStr = language.getName().split( "_" );
 

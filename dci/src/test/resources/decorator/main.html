@@ -1,0 +1,16 @@
+<html>
+<head>
+    <title>
+        <sitemesh:write property='title'/>
+    </title>
+    <sitemesh:write property='head'/>
+</head>
+<body>
+Decorated!
+<sitemesh:write property='body'/>
+
+Menu:
+<sitemesh:decorate decorator="riap://application/files/"/>
+</body>
+</html>
+        

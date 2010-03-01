@@ -64,6 +64,12 @@
             <artifactId>tagsoup</artifactId>
             <version>1.2</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.sitemesh</groupId>
+            <artifactId>sitemesh</artifactId>
+            <version>3.0-alpha-1</version>
+        </dependency>
         
         <!-- Logging -->
         <dependency>

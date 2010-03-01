@@ -25,6 +25,7 @@ import org.restlet.routing.Filter;
 import org.restlet.service.MetadataService;
 
 import java.util.Collections;
+import java.util.List;
 
 /**
  * JAVADOC
@@ -50,6 +51,10 @@ public class ExtensionMediaTypeFilter
     @Override
     protected int beforeHandle( Request request, Response response )
     {
+       List<String> segments = request.getResourceRef().getSegments();
+       if (segments.get( segments.size()-1 ).equals(""))
+         return Filter.CONTINUE;
+
         String extensions = request.getResourceRef().getExtensions();
         if( extensions != null )
         {

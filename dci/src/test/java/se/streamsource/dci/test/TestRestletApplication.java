@@ -28,11 +28,18 @@ import org.restlet.Application;
 import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.data.MediaType;
+import org.restlet.data.Protocol;
+import org.restlet.routing.Filter;
 import org.restlet.security.Verifier;
+import org.sitemesh.content.tagrules.html.CoreHtmlTagRuleBundle;
 import org.slf4j.LoggerFactory;
 import se.streamsource.dci.restlet.server.ExtensionMediaTypeFilter;
 import se.streamsource.dci.restlet.server.ResourceFinder;
 import se.streamsource.dci.restlet.server.ViewFilter;
+import se.streamsource.dci.restlet.server.sitemesh.RestletFilterBuilder;
+import se.streamsource.dci.restlet.server.sitemesh.SiteMeshRestletFilter;
+
+import java.util.Arrays;
 
 /**
  * JAVADOC
@@ -87,7 +94,16 @@ public class TestRestletApplication
       ResourceFinder finder = factory.newObject( ResourceFinder.class );
       finder.setTargetClass( TestApplication.class );
 
-      return new ExtensionMediaTypeFilter(getContext(), factory.newObjectBuilder( ViewFilter.class).use(getContext(), finder).newInstance());
+      ViewFilter viewFilter = factory.newObjectBuilder( ViewFilter.class ).use( getContext(), finder ).newInstance();
+
+      RestletFilterBuilder builder = new RestletFilterBuilder().
+            setContext( getContext() ).
+            setNext( viewFilter ).
+            addDecoratorPath( "/files*", "clap://class/decorator/menu.html" ).
+            addDecoratorPath( "/", "clap://class/decorator/main.html" );
+      Filter siteMeshFilter = builder.create();
+      getContext().getClientDispatcher().setProtocols( Arrays.asList( Protocol.CLAP ));
+      return new ExtensionMediaTypeFilter(getContext(), siteMeshFilter );
    }
 
    @Override
