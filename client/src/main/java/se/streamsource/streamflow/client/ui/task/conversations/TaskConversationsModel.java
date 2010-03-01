@@ -53,6 +53,8 @@ public class TaskConversationsModel
    @Structure
    ObjectBuilderFactory obf;
 
+   private TaskConversationsView viewReference;
+
    WeakModelMap<String,TaskConversationModel> conversationModels = new WeakModelMap<String,TaskConversationModel>(){
 
       @Override
@@ -93,6 +95,10 @@ public class TaskConversationsModel
       return  conversations;
    }
 
+   public void setViewReference( TaskConversationsView view )
+   {
+      viewReference = view;
+   }
    public void createConversation( String topic )
    {
       try
@@ -115,6 +121,7 @@ public class TaskConversationsModel
       {
          conversationModel.notifyEvent( event );
       }
+      viewReference.notifyEvent( event );
    }
 
    public boolean visit( DomainEvent event )
