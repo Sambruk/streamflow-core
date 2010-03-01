@@ -24,6 +24,7 @@ import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.web.domain.entity.tasktype.TaskTypesQueries;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
@@ -32,6 +33,7 @@ import se.streamsource.streamflow.web.domain.structure.organization.Organization
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganization;
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
+import se.streamsource.streamflow.web.domain.structure.tasktype.SelectedTaskTypes;
 import se.streamsource.streamflow.web.domain.structure.tasktype.TaskType;
 import se.streamsource.streamflow.web.domain.structure.tasktype.TaskTypes;
 import se.streamsource.streamflow.web.domain.structure.tasktype.TypedTask;
@@ -72,6 +74,9 @@ public interface TaskTypeQueries
       @This
       TypedTask.Data typedTask;
 
+      @This
+      Assignable assignable;
+
       public List<TaskType> taskTypes()
       {
          Owner owner = ownable.owner().get();
@@ -93,16 +98,27 @@ public interface TaskTypeQueries
             return taskTypes;
          } else if (owner instanceof OwningOrganizationalUnit.Data)
          {
-            OwningOrganizationalUnit.Data ouOwner = (OwningOrganizationalUnit.Data) owner;
-            OrganizationalUnit ou = ouOwner.organizationalUnit().get();
-            Organization org = ((OwningOrganization) ou).organization().get();
-
             List<TaskType> taskTypes = new ArrayList<TaskType>( );
 
-            TaskTypes.Data taskTypesList = (TaskTypes.Data) org;
-            for (TaskType taskType : taskTypesList.taskTypes())
+            if (assignable.isAssigned())
             {
-               taskTypes.add( taskType );
+               // Show only task types from project
+               SelectedTaskTypes.Data selectedTaskTypes = (SelectedTaskTypes.Data) owner;
+               for (TaskType taskType : selectedTaskTypes.selectedTaskTypes())
+               {
+                  taskTypes.add( taskType );
+               }
+            } else
+            {
+               OwningOrganizationalUnit.Data ouOwner = (OwningOrganizationalUnit.Data) owner;
+               OrganizationalUnit ou = ouOwner.organizationalUnit().get();
+               Organization org = ((OwningOrganization) ou).organization().get();
+
+               TaskTypes.Data taskTypesList = (TaskTypes.Data) org;
+               for (TaskType taskType : taskTypesList.taskTypes())
+               {
+                  taskTypes.add( taskType );
+               }
             }
 
             return taskTypes;
