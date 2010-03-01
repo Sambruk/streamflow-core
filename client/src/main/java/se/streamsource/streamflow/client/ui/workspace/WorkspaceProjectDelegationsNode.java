@@ -47,7 +47,7 @@ public class WorkspaceProjectDelegationsNode
    {
       String text = i18n.text( WorkspaceResources.delegations_node );
 
-      String count = getParent().getParent().getParent().getTaskCount( client.getReference().getSegments().get(0)+"/inbox" );
+      String count = getParent().getParent().getParent().getTaskCount( client.getReference().getSegments().get(0)+"/delegations" );
       if (!count.equals(""))
       {
          text += " (" + count + ")";
