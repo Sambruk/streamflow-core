@@ -59,16 +59,24 @@ public class SelectUserOrProjectDialog
       setActionMap( context.getActionMap( this ) );
 
       EventList<TitledLinkValue> projects = taskModel.getPossibleProjects();
-      EventList<TitledLinkValue> users = taskModel.getPossibleUsers();
 
       projectList = new GroupedFilteredList();
       projectList.setEventList( projects );
 
-      userList = new GroupedFilteredList();
-      userList.setEventList(users);
-
       add( new JScrollPane( projectList ));
-      add( new JScrollPane( userList ));
+
+      userList = new GroupedFilteredList();
+      try
+      {
+         EventList<TitledLinkValue> users = taskModel.getPossibleUsers();
+
+         userList.setEventList(users);
+
+         add( new JScrollPane( userList ));
+      } catch (Exception e)
+      {
+         // Ignore. It is ok that you can't select user sometimes
+      }
 
       projectList.getList().addListSelectionListener( new ListSelectionListener()
       {

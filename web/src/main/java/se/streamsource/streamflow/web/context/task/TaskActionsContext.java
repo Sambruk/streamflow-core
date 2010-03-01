@@ -35,6 +35,7 @@ import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Delegatable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Delegatee;
 import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresDelegated;
+import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresOwner;
 import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresStatus;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
@@ -60,9 +61,13 @@ public interface TaskActionsContext
    public Actions actions();
 
    public LinksValue possiblesendtoprojects();
+
+   @RequiresOwner(User.class)
    public LinksValue possiblesendtousers();
 
    public LinksValue possibledelegateprojects();
+
+   @RequiresOwner(User.class)
    public LinksValue possibledelegateusers();
 
    // Commands
