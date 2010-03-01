@@ -114,7 +114,7 @@ public interface Projects
             return false;
 
          removedProject( DomainEvent.CREATE, project );
-         
+         project.removeEntity();              
          return true;
       }
 

@@ -15,6 +15,7 @@
 package se.streamsource.streamflow.web.domain.structure.project;
 
 import se.streamsource.streamflow.domain.structure.Describable;
+import se.streamsource.streamflow.domain.structure.Removable;
 import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
 import se.streamsource.streamflow.web.domain.structure.tasktype.SelectedTaskTypes;
 
@@ -22,6 +23,6 @@ import se.streamsource.streamflow.web.domain.structure.tasktype.SelectedTaskType
  * JAVADOC
  */
 public interface Project
-   extends Members, SelectedTaskTypes, SelectedLabels, Describable
+   extends Members, SelectedTaskTypes, SelectedLabels, Describable, Removable
 {
 }
