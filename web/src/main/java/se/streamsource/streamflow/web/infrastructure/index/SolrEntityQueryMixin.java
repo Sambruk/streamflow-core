@@ -52,7 +52,7 @@ public class SolrEntityQueryMixin
          list.add( "rows", maxResults != 0 ? maxResults : 10000 );
          list.add( "start", firstResult );
 
-         if (orderBySegments.length > 0)
+         if (orderBySegments != null && orderBySegments.length > 0)
          {
             for (OrderBy orderBySegment : orderBySegments)
             {
