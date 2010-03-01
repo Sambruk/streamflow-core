@@ -16,7 +16,7 @@ package se.streamsource.streamflow.client.ui.task.conversations;
 
 import ca.odell.glazedlists.event.ListEvent;
 import ca.odell.glazedlists.event.ListEventListener;
-import org.jdesktop.application.Action;
+import se.streamsource.streamflow.client.infrastructure.ui.ModifiedFlowLayout;
 import se.streamsource.streamflow.client.ui.task.RemovableLabel;
 import se.streamsource.streamflow.infrastructure.application.LinkValue;
 
@@ -39,12 +39,10 @@ public class TaskConversationParticipantsView extends JPanel implements ListEven
    {
       setLayout( new BorderLayout() );
 
-      labelPanel = new JPanel();
+      labelPanel = new JPanel( new ModifiedFlowLayout(FlowLayout.LEFT) );
 
-      add( labelPanel, BorderLayout.WEST );
+      add( labelPanel, BorderLayout.CENTER );
 
-      //JButton openParticipantDialog = new JButton(am.get( "openParticipantDialog" ));
-      //add( openParticipantDialog, BorderLayout.EAST);
    }
 
    public void setModel( TaskConversationParticipantsModel model )
@@ -82,11 +80,5 @@ public class TaskConversationParticipantsView extends JPanel implements ListEven
       Component component = ((Component) e.getSource());
       RemovableLabel label = (RemovableLabel) component.getParent();
       model.removeParticipant( label.link() );
-   }
-
-   @Action
-   public void openParticipantDialog()
-   {
-
    }
 }

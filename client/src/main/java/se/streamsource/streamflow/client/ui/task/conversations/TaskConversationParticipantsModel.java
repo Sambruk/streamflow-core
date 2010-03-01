@@ -32,14 +32,10 @@ import se.streamsource.streamflow.client.ui.task.TaskResources;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.infrastructure.application.LinkValue;
 import se.streamsource.streamflow.infrastructure.application.LinksValue;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.EventListener;
-import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
-import se.streamsource.streamflow.infrastructure.event.source.EventVisitorFilter;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 
 public class TaskConversationParticipantsModel
-   implements EventListener, EventVisitor, Refreshable
+   implements Refreshable
 {
    @Uses
    CommandQueryClient client;
@@ -48,7 +44,6 @@ public class TaskConversationParticipantsModel
    ValueBuilderFactory vbf;
 
    SortedList<LinkValue> participants = new SortedList<LinkValue>(new BasicEventList<LinkValue>( ), new LinkComparator());
-   EventVisitorFilter eventFilter = new EventVisitorFilter( this,"removedParticipant", "addedParticipant" );
 
    public EventList<LinkValue> participants()
    {
@@ -79,6 +74,7 @@ public class TaskConversationParticipantsModel
          ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
          builder.prototype().entity().set( participant );
          client.postCommand( "addparticipant", builder.newInstance() );
+         refresh();
       } catch (ResourceException e)
       {
          throw new OperationException( TaskResources.could_not_add_conversation_participant, e );
@@ -90,22 +86,11 @@ public class TaskConversationParticipantsModel
       try
       {
          client.getSubClient( link.id().get() ).delete();
+         refresh();
       } catch (ResourceException e)
       {
          throw new OperationException( TaskResources.could_not_remove_conversation_participant, e );
       }
-   }
-
-   public void notifyEvent( DomainEvent event )
-   {
-      eventFilter.visit( event );
-   }
-
-   public boolean visit( DomainEvent event )
-   {
-      //refresh();
-      
-      return false;
    }
 
    public void refresh() throws OperationException

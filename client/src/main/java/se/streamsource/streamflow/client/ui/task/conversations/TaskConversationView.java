@@ -83,22 +83,11 @@ public class TaskConversationView extends JPanel
 
       add( initBottom(), BorderLayout.SOUTH );
 
-      // refresher = new RefreshWhenVisible(this);
-      // addAncestorListener(refresher);
    }
 
    private JPanel initTop()
    {
       topPanel = new JPanel( new BorderLayout() );
-
-      // javax.swing.Action allParticipantsAction = getActionMap().get(
-      // "allParticipants");
-      // JButton allParticipants = new JButton(allParticipantsAction);
-      // allParticipants.registerKeyboardAction(allParticipantsAction,
-      // (KeyStroke) allParticipantsAction
-      // .getValue(javax.swing.Action.ACCELERATOR_KEY),
-      // JComponent.WHEN_IN_FOCUSED_WINDOW);
-
 
       participantsView = obf.newObjectBuilder( TaskConversationParticipantsView.class ).newInstance();
 
@@ -112,10 +101,10 @@ public class TaskConversationView extends JPanel
 
       // IMPLODED
       participantsButtonPanel = new JPanel( new FlowLayout( FlowLayout.RIGHT ) );
-      // participantsButtonPanel.add(allParticipants);
-      participantsButtonPanel.add( participantsView );
+
       participantsButtonPanel.add( addParticipants );
 
+      topPanel.add(participantsView, BorderLayout.CENTER );
       topPanel.add( participantsButtonPanel, BorderLayout.EAST );
       return topPanel;
    }
@@ -190,11 +179,6 @@ public class TaskConversationView extends JPanel
       ((CardLayout) bottomPanel.getLayout()).show( bottomPanel, "INITIAL" );
       newMessage.setText( null );
    }
-
-   // @Action
-   // public void allParticipant's()
-   // {
-   // }
 
    @Action
    public void addParticipants()

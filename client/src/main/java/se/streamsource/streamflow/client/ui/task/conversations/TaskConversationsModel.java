@@ -29,6 +29,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
 import se.streamsource.streamflow.client.ui.task.TaskResources;
+import se.streamsource.streamflow.infrastructure.application.LinkValue;
 import se.streamsource.streamflow.infrastructure.application.LinksValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
@@ -36,8 +37,6 @@ import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
 import se.streamsource.streamflow.infrastructure.event.source.EventVisitorFilter;
 import se.streamsource.streamflow.resource.conversation.ConversationDTO;
 import se.streamsource.streamflow.resource.roles.StringDTO;
-
-import java.util.logging.Logger;
 
 public class TaskConversationsModel
    implements EventListener, Refreshable, EventVisitor
@@ -70,14 +69,19 @@ public class TaskConversationsModel
 
    TransactionList<ConversationDTO> conversations = new TransactionList<ConversationDTO>(new BasicEventList<ConversationDTO>( ));
 
-   EventVisitorFilter eventFilter = new EventVisitorFilter( this, "createdConversation", "addedParticipant", "removedParticipant", "createdMessage" );
+   EventVisitorFilter eventFilter = new EventVisitorFilter( this, "addedParticipant", "removedParticipant", "createdMessage" );
 
    public void refresh()
    {
       try
       {
          LinksValue newConversations = client.query( "index", LinksValue.class );
-         EventListSynch.synchronize( newConversations.links().get(), conversations );
+         BasicEventList<ConversationDTO> mutable = new BasicEventList<ConversationDTO>();
+         for( LinkValue link : newConversations.links().get())
+         {
+            mutable.add( ((ConversationDTO)link).<ConversationDTO>buildWith().prototype() );
+         }
+         EventListSynch.synchronize( mutable, conversations );
       } catch (Exception e)
       {
          throw new OperationException( TaskResources.could_not_refresh, e );
@@ -96,6 +100,7 @@ public class TaskConversationsModel
          ValueBuilder<StringDTO> newTopic = vbf.newValue( StringDTO.class ).buildWith();
          newTopic.prototype().string().set( topic );
          client.postCommand( "create", newTopic.newInstance() );
+         refresh();
          
       } catch (ResourceException e)
       {
@@ -114,30 +119,22 @@ public class TaskConversationsModel
 
    public boolean visit( DomainEvent event )
    {
-      /*if (client.getReference().getParentRef().getLastSegment().equals( event.entity().get() ))
-      {
-         Logger.getLogger( "workspace" ).info( "Refresh task conversations" );
-         refresh();
-      } else if( event.name().get().equals("createdMessage"))
+      if( event.name().get().equals("createdMessage"))
       {
          for (ConversationDTO conversation : conversations)
          {
             if(conversation.id().get().equals( event.entity().get() ))
             {
-               ConversationDTO updated = conversation.<ConversationDTO>buildWith().prototype();
-               updated.messages().set( conversation.messages().get() + 1 );
-               conversations.set( conversations.indexOf(conversation), updated );
+               conversation.messages().set( conversation.messages().get() + 1 );
             }
          }
       } else if( event.name().get().equals("addedParticipant") )
       {
          for (ConversationDTO conversation : conversations)
          {
-            if(conversation.id().get().equals( event.entity().get() ))
+            if(conversation.id().get().equals( event.entity().get() ) )
             {
-               ConversationDTO updated = conversation.<ConversationDTO>buildWith().prototype();
-               updated.participants().set( conversation.participants().get() + 1 );
-               conversations.set( conversations.indexOf(conversation), updated );
+               conversation.participants().set( conversation.participants().get() + 1 );
             }
          }
       }  else if( event.name().get().equals("removedParticipant") )
@@ -146,21 +143,10 @@ public class TaskConversationsModel
          {
             if(conversation.id().get().equals( event.entity().get() ))
             {
-               ConversationDTO updated = conversation.<ConversationDTO>buildWith().prototype();
-               updated.participants().set( conversation.participants().get() - 1 );
-               conversations.set( conversations.indexOf(conversation), updated );
+               conversation.participants().set( conversation.participants().get() - 1 );
             }
          }
-      }*/
-
-      if (client.getReference().getParentRef().getLastSegment().equals( event.entity().get() )
-            || event.name().get().equals("createdMessage")
-            || event.name().get().equals("addedParticipant")
-            || event.name().get().equals("removedParticipant") )
-      {
-         Logger.getLogger( "workspace" ).info( "Refresh task conversations" );
-         refresh();
-      } 
+      }
 
       return false;
    }

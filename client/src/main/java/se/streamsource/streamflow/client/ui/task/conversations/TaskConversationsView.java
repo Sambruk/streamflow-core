@@ -149,8 +149,6 @@ public class TaskConversationsView
 
       if (model != null)
       {
-         //taskConversationsModel.conversations().addListEventListener( this );
-
          model.conversations().addListEventListener( this );
          listChanged( null );
       }

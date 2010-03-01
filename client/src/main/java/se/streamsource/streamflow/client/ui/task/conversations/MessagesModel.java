@@ -28,14 +28,10 @@ import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.ui.task.TaskResources;
 import se.streamsource.streamflow.infrastructure.application.LinkValue;
 import se.streamsource.streamflow.infrastructure.application.LinksValue;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.EventListener;
-import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
-import se.streamsource.streamflow.infrastructure.event.source.EventVisitorFilter;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 
 public class MessagesModel
-   implements EventListener, Refreshable, EventVisitor
+   implements Refreshable
 {
    @Uses
    CommandQueryClient client;
@@ -45,8 +41,6 @@ public class MessagesModel
 
    private LinksValue messagesLinks;
    BasicEventList<LinkValue> messages = new BasicEventList<LinkValue>();
-
-   EventVisitorFilter eventFilter = new EventVisitorFilter( this, "createdMessage" );
 
    public void refresh()
    {
@@ -73,25 +67,10 @@ public class MessagesModel
          ValueBuilder<StringDTO> stringBuilder = vbf.newValueBuilder( StringDTO.class );
          stringBuilder.prototype().string().set( message );
          client.postCommand( "addmessage", stringBuilder.newInstance() );
+         refresh();
       } catch (ResourceException e)
       {
          throw new OperationException( TaskResources.could_not_add_message, e );
       }
-   }
-
-   public void notifyEvent( DomainEvent event )
-   {
-       eventFilter.visit( event );
-   }
-
-   public boolean visit( DomainEvent event )
-   {
-      /*if (client.getReference().getParentRef().getLastSegment().equals( event.entity().get() ))
-      {
-         Logger.getLogger( "workspace" ).info( "Refresh messages" );
-         refresh();
-      }*/
-
-      return false;
    }
 }

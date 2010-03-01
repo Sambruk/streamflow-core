@@ -72,7 +72,5 @@ public class TaskConversationModel
 
    public void notifyEvent( DomainEvent event )
    {
-      participantsModel.notifyEvent( event );
-      messagesModel.notifyEvent( event );
    }
 }

@@ -1,12 +1,14 @@
 package se.streamsource.streamflow.client.ui.task.conversations;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.text.SimpleDateFormat;
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
+import org.jdesktop.swingx.JXList;
+import org.jdesktop.swingx.decorator.HighlighterFactory;
+import se.streamsource.streamflow.client.Icons;
+import se.streamsource.streamflow.client.infrastructure.ui.ModifiedFlowLayout;
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.resource.conversation.ConversationDTO;
 
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JLabel;
@@ -16,18 +18,13 @@ import javax.swing.ListCellRenderer;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-
-import org.jdesktop.swingx.JXList;
-import org.jdesktop.swingx.decorator.HighlighterFactory;
-
-import se.streamsource.streamflow.client.Icons;
-import se.streamsource.streamflow.client.infrastructure.ui.ModifiedFlowLayout;
-import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
-import se.streamsource.streamflow.resource.conversation.ConversationDTO;
-
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.text.SimpleDateFormat;
 
 public class ConversationsListCellRenderer implements ListCellRenderer
 {
