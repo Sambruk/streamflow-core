@@ -67,5 +67,6 @@ public enum TaskResources
    could_not_add_message, 
    could_not_create_conversation, 
    could_not_add_participant, 
-   could_not_remove_participant
+   could_not_remove_participant, 
+   choose_participant
 }

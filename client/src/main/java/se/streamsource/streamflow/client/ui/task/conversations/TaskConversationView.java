@@ -14,18 +14,10 @@
 
 package se.streamsource.streamflow.client.ui.task.conversations;
 
-import org.jdesktop.application.Action;
-import org.jdesktop.application.ApplicationContext;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilder;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import se.streamsource.streamflow.client.MacOsUIWrapper;
-import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
-import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import se.streamsource.streamflow.client.ui.workspace.FilterListDialog;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -34,10 +26,20 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.KeyStroke;
 import javax.swing.text.html.HTMLEditorKit;
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
+
+import org.jdesktop.application.Action;
+import org.jdesktop.application.ApplicationContext;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilder;
+import org.qi4j.api.object.ObjectBuilderFactory;
+
+import se.streamsource.streamflow.client.MacOsUIWrapper;
+import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.ui.task.TaskResources;
+import se.streamsource.streamflow.client.ui.workspace.FilterListDialog;
 
 public class TaskConversationView extends JPanel
 {
@@ -184,7 +186,7 @@ public class TaskConversationView extends JPanel
    public void addParticipants()
    {
       FilterListDialog dialog = participantsDialog.use(
-            i18n.text( WorkspaceResources.choose_participant ),
+            i18n.text( TaskResources.choose_participant ),
             model.getParticipantsModel().possibleParticipants() ).newInstance();
       dialogs.showOkCancelHelpDialog( addParticipants, dialog );
 
