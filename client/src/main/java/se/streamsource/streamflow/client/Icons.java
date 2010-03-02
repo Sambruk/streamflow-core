@@ -35,6 +35,8 @@ public enum Icons
 
    details,
    inbox,
+   
+   calendar,
 
    // Tabs
    general,

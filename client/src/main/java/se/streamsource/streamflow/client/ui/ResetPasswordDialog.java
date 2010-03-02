@@ -18,6 +18,10 @@ import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
+
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
+
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
@@ -47,18 +51,25 @@ public class ResetPasswordDialog
 
       setActionMap( context.getActionMap( this ) );
 
-      JPanel passwordDialog = new JPanel( new BorderLayout() );
-      passwordDialog.add( new JLabel( i18n.text( AdministrationResources.new_password ) ), BorderLayout.NORTH );
+      FormLayout layout = new FormLayout( "70dlu, 5dlu, 120dlu:grow", "pref, pref" );
+
+      JPanel form = new JPanel( layout );
+      form.setFocusable( false );
+      DefaultFormBuilder builder = new DefaultFormBuilder( layout,
+            form );
+
       passwordField = new JPasswordField();
-      passwordDialog.add( passwordField, BorderLayout.CENTER );
-
-      JPanel confirmPasswordDialog = new JPanel( new BorderLayout() );
-      confirmPasswordDialog.add( new JLabel( i18n.text( AdministrationResources.confirm_password ) ), BorderLayout.NORTH );
       confirmPasswordField = new JPasswordField();
-      confirmPasswordDialog.add( confirmPasswordField, BorderLayout.CENTER );
 
-      add( passwordDialog, BorderLayout.CENTER );
-      add( confirmPasswordDialog, BorderLayout.SOUTH );
+      builder.add(new JLabel( i18n.text( AdministrationResources.new_password ) ));
+      builder.nextColumn(2);
+      builder.add(passwordField);
+      builder.nextLine();
+      builder.add(new JLabel( i18n.text( AdministrationResources.confirm_password ) ));
+      builder.nextColumn(2);
+      builder.add(confirmPasswordField);
+      
+      add(form, BorderLayout.CENTER);
    }
 
    public String password()

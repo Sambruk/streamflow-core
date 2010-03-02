@@ -55,13 +55,13 @@ public class TaskContactsView
 
       ActionMap am = context.getActionMap( this );
       setActionMap( am );
-      setMinimumSize( new Dimension( 150, 0 ) );
-      setMaximumSize( new Dimension(150,1000) );
+      setMinimumSize( new Dimension( 200, 0 ) );
+      setMaximumSize( new Dimension(200,1000) );
 
       contactView = obf.newObject( TaskContactView.class );
 
       contacts = new JList();
-      contacts.setPreferredSize( new Dimension(150,1000) );
+      contacts.setPreferredSize( new Dimension(200,1000) );
       contacts.setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
       JScrollPane contactsScrollPane = new JScrollPane();
       contactsScrollPane.setViewportView( contacts );

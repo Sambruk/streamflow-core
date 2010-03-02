@@ -47,6 +47,8 @@ public enum AdministrationResources
    could_not_get_user,
    could_not_refresh_list_of_organizations,
    name_label,
+   email_label,
+   phone_label,
    connection_is_ok,
    could_not_register_user,
    could_not_rename_organization,

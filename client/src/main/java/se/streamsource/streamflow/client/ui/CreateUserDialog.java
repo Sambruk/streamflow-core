@@ -14,20 +14,26 @@
 
 package se.streamsource.streamflow.client.ui;
 
-import org.jdesktop.application.Action;
-import org.jdesktop.application.ApplicationContext;
-import org.jdesktop.swingx.util.WindowUtils;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Uses;
-import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
-import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import java.awt.BorderLayout;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
-import java.awt.BorderLayout;
+
+import org.jdesktop.application.Action;
+import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.swingx.util.WindowUtils;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Uses;
+
+import se.streamsource.streamflow.client.StreamFlowResources;
+import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
 
 /**
  * Select a name for something.
@@ -35,12 +41,18 @@ import java.awt.BorderLayout;
 public class CreateUserDialog
       extends JPanel
 {
-   public JTextField nameField;
+   public JTextField usernameField;
    public JPasswordField passwordField;
    public JPasswordField confirmPasswordField;
-
+   public JTextField nameField;
+   public JTextField phoneField;
+   public JTextField emailField;
+   
    String username;
    String password;
+   String name;
+   String phone;
+   String email;
 
    @Uses
    DialogService dialogs;
@@ -48,27 +60,54 @@ public class CreateUserDialog
    public CreateUserDialog( @Service ApplicationContext context )
    {
       super( new BorderLayout() );
+      
+      FormLayout layout = new FormLayout( "60dlu, 5dlu, 120dlu:grow", "pref, pref, pref, pref, 10dlu, pref, pref, pref, pref" );
+
+      JPanel form = new JPanel( layout );
+      form.setFocusable( false );
+      DefaultFormBuilder builder = new DefaultFormBuilder( layout,
+            form );
+
+      nameField = new JTextField();
+      emailField = new JTextField();
+      phoneField = new JTextField();
+      usernameField = new JTextField();
+      passwordField = new JPasswordField();
+      confirmPasswordField = new JPasswordField();
+      
+      builder.appendSeparator(i18n.text(StreamFlowResources.user_info_separator));
+      builder.nextLine();
+      builder.add(new JLabel( i18n.text( AdministrationResources.username_label ) ));
+      builder.nextColumn(2);
+      builder.add(usernameField);
+      builder.nextLine();
+      builder.add(new JLabel( i18n.text( AdministrationResources.password_label ) ));
+      builder.nextColumn(2);
+      builder.add(passwordField);
+      builder.nextLine();
+      builder.add(new JLabel( i18n.text( AdministrationResources.confirm_password_label ) ));
+      builder.nextColumn(2);
+      builder.add(confirmPasswordField);
+      builder.nextLine(2);
+      
+//      builder.appendSeparator(i18n.text(StreamFlowResources.contact_info_separator));
+//      builder.nextLine();
+//      builder.add(new JLabel( i18n.text( AdministrationResources.name_label ) ));
+//      builder.nextColumn(2);
+//      builder.add(nameField);
+//      builder.nextLine();
+//      builder.add(new JLabel( i18n.text( AdministrationResources.email_label ) ));
+//      builder.nextColumn(2);
+//      builder.add(emailField);
+//      builder.nextLine();
+//      builder.add(new JLabel( i18n.text( AdministrationResources.phone_label ) ));
+//      builder.nextColumn(2);
+//      builder.add(phoneField);
+//      builder.nextLine();
 
       setActionMap( context.getActionMap( this ) );
 
-      JPanel userDialog = new JPanel( new BorderLayout() );
-      userDialog.add( new JLabel( i18n.text( AdministrationResources.username_label ) ), BorderLayout.NORTH );
-      nameField = new JTextField();
-      userDialog.add( nameField, BorderLayout.CENTER );
-
-      JPanel passwordDialog = new JPanel( new BorderLayout() );
-      passwordDialog.add( new JLabel( i18n.text( AdministrationResources.password_label ) ), BorderLayout.NORTH );
-      passwordField = new JPasswordField();
-      passwordDialog.add( passwordField, BorderLayout.CENTER );
-
-      JPanel confirmPasswordDialog = new JPanel( new BorderLayout() );
-      confirmPasswordDialog.add( new JLabel( i18n.text( AdministrationResources.confirm_password_label ) ), BorderLayout.NORTH );
-      confirmPasswordField = new JPasswordField();
-      confirmPasswordDialog.add( confirmPasswordField, BorderLayout.CENTER );
-
-      add( userDialog, BorderLayout.NORTH );
-      add( passwordDialog, BorderLayout.CENTER );
-      add( confirmPasswordDialog, BorderLayout.SOUTH );
+      add(form, BorderLayout.CENTER);
    }
 
    public String username()
@@ -84,10 +123,10 @@ public class CreateUserDialog
    @Action
    public void execute()
    {
-      if (new String( passwordField.getPassword() ).equals( new String( confirmPasswordField.getPassword() ) ))
+      if ( String.valueOf( passwordField.getPassword() ).equals( String.valueOf( confirmPasswordField.getPassword() ) ))
       {
-         username = nameField.getText();
-         password = new String( passwordField.getPassword() );
+         username = usernameField.getText();
+         password = String.valueOf( passwordField.getPassword() );
       } else
       {
          passwordField.setText( "" );

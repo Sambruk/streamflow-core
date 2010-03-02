@@ -31,5 +31,8 @@ public enum StreamFlowResources
    could_not_extract_response,
    tooltip_delay_initial,
    tooltip_delay_dismiss,
-   tooltip_delay_reshow;
+   tooltip_delay_reshow, 
+   contact_info_separator,
+   account_settings_separator, 
+   user_info_separator;
 }

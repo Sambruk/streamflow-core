@@ -14,30 +14,36 @@
 
 package se.streamsource.streamflow.client.ui.task;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
+import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.TEXTAREA;
+import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.TEXTFIELD;
+
+import java.awt.CardLayout;
+import java.util.Observable;
+import java.util.Observer;
+
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueBuilder;
 import org.restlet.resource.ResourceException;
+
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.domain.contact.ContactAddressValue;
 import se.streamsource.streamflow.domain.contact.ContactEmailValue;
 import se.streamsource.streamflow.domain.contact.ContactPhoneValue;
 import se.streamsource.streamflow.domain.contact.ContactValue;
 
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import java.awt.CardLayout;
-import java.util.Observable;
-import java.util.Observer;
-
-import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.*;
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
 
 /**
  * JAVADOC
@@ -64,8 +70,8 @@ public class TaskContactView
 
       setActionMap( appContext.getActionMap( this ) );
       FormLayout formLayout = new FormLayout(
-            "200dlu",
-            "" );
+            "70dlu, 5dlu, 150dlu:grow",
+            "pref, pref, pref, pref, pref, pref, 5dlu, top:70dlu:grow" );
       form = new JPanel();
       JScrollPane scrollPane = new JScrollPane( form );
       scrollPane.getVerticalScrollBar().setUnitIncrement(30);
@@ -88,17 +94,34 @@ public class TaskContactView
       emailBinder.setResourceMap( appContext.getResourceMap( getClass() ) );
       ContactEmailValue emailTemplate = emailBinder.bindingTemplate( ContactEmailValue.class );
 
-      BindingFormBuilder bb = new BindingFormBuilder( builder, contactBinder );
-      bb
-            .appendLine( WorkspaceResources.name_label, defaultFocusField = (JTextField) TEXTFIELD.newField(), template.name() )
-            .appendLine( WorkspaceResources.phone_label, TEXTFIELD, phoneTemplate.phoneNumber(), phoneNumberBinder )
-            .appendLine( WorkspaceResources.address_label, TEXTFIELD, addressTemplate.address(), addressBinder )
-            .appendLine( WorkspaceResources.email_label, TEXTFIELD, emailTemplate.emailAddress(), emailBinder )
-            .appendLine( WorkspaceResources.contact_id_label, TEXTFIELD, template.contactId() )
-            .appendLine( WorkspaceResources.company_label, TEXTFIELD, template.company() )
-            .appendLine( WorkspaceResources.note_label, TEXTAREA, template.note() );
-
-
+      builder.add(new JLabel(i18n.text(WorkspaceResources.name_label)));
+      builder.nextColumn(2);
+      builder.add(contactBinder.bind( defaultFocusField = (JTextField) TEXTFIELD.newField(), template.name() ) );
+      builder.nextLine();
+      builder.add(new JLabel(i18n.text(WorkspaceResources.phone_label)));
+      builder.nextColumn(2);
+      builder.add(phoneNumberBinder.bind( TEXTFIELD.newField(), phoneTemplate.phoneNumber() ) );
+      builder.nextLine();
+      builder.add(new JLabel(i18n.text(WorkspaceResources.address_label)));
+      builder.nextColumn(2);
+      builder.add(addressBinder.bind( TEXTFIELD.newField(), addressTemplate.address() ) );
+      builder.nextLine();
+      builder.add(new JLabel(i18n.text(WorkspaceResources.email_label)));
+      builder.nextColumn(2);
+      builder.add(emailBinder.bind( TEXTFIELD.newField(), emailTemplate.emailAddress() ) );
+      builder.nextLine();
+      builder.add(new JLabel(i18n.text(WorkspaceResources.contact_id_label)));
+      builder.nextColumn(2);
+      builder.add(contactBinder.bind( TEXTFIELD.newField(), template.contactId() ) );
+      builder.nextLine();
+      builder.add(new JLabel(i18n.text(WorkspaceResources.company_label)));
+      builder.nextColumn(2);
+      builder.add(contactBinder.bind( TEXTFIELD.newField(), template.company() ) );
+      builder.nextLine(2);
+      builder.add(new JLabel(i18n.text(WorkspaceResources.note_label)));
+      builder.nextColumn(2);
+      builder.add(contactBinder.bind( TEXTAREA.newField(), template.note() ) );
+      
       contactBinder.addObserver( this );
       phoneNumberBinder.addObserver( this );
       addressBinder.addObserver( this );

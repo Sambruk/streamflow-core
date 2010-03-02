@@ -18,7 +18,7 @@ import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
 
 /**
- * Command for changing password
+ * Command for creating a user
  */
 public interface NewUserCommand
       extends ValueComposite

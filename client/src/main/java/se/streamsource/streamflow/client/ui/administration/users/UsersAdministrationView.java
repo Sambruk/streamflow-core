@@ -37,7 +37,7 @@ import java.awt.BorderLayout;
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 
 public class UsersAdministrationView
-      extends JScrollPane
+      extends JPanel
 {
    private UsersAdministrationModel model;
 
@@ -64,16 +64,17 @@ public class UsersAdministrationView
       //usersTable.getColumn( 0 ).setResizable( false );
       usersTable.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "resetPassword" ) ) );
 
-      JPanel usersPanel = new JPanel( new BorderLayout() );
-      usersPanel.add( usersTable, BorderLayout.CENTER );
+      JScrollPane scroll = new JScrollPane();
+      scroll.setViewportView( usersTable );
+      
+      super.setLayout(new BorderLayout());
+      super.add( scroll, BorderLayout.CENTER );
 
       JPanel toolbar = new JPanel();
       toolbar.add( new JButton( am.get( "createUser" ) ) );
       toolbar.add( new JButton( am.get( "resetPassword" ) ) );
       toolbar.add( new JButton( am.get( "importUserList" ) ) );
-      usersPanel.add( toolbar, BorderLayout.NORTH );
-
-      setViewportView( usersPanel );
+      super.add( toolbar, BorderLayout.SOUTH );
    }
 
 
