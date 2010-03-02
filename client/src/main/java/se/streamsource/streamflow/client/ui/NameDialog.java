@@ -18,6 +18,10 @@ import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
+
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
+
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 
@@ -42,11 +46,20 @@ public class NameDialog
 
       setActionMap( context.getActionMap( this ) );
 
-      JPanel dialog = new JPanel( new BorderLayout() );
-      dialog.add( new JLabel( i18n.text( AdministrationResources.name_label ) ), BorderLayout.WEST );
+      FormLayout layout = new FormLayout( "40dlu, 5dlu, 120dlu:grow", "pref" );
+
+      JPanel form = new JPanel( layout );
+      form.setFocusable( false );
+      DefaultFormBuilder builder = new DefaultFormBuilder( layout,
+            form );
+
       nameField = new JTextField();
-      dialog.add( nameField, BorderLayout.CENTER );
-      add( dialog, BorderLayout.NORTH );
+
+      builder.add(new JLabel( i18n.text( AdministrationResources.name_label ) ));
+      builder.nextColumn(2);
+      builder.add(nameField);
+
+      add(form, BorderLayout.CENTER);
    }
 
    public String name()
