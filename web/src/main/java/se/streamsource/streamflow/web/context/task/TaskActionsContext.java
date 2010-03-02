@@ -146,9 +146,11 @@ public interface TaskActionsContext
       {
          LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() ).command( "sendto" );
          List<Project> projects = context.role( TaskTypeQueries.class ).possibleProjects();
+         Ownable ownable = context.role(Ownable.class);
          for (Project project : projects)
          {
-            builder.addDescribable( project, ((OwningOrganizationalUnit.Data)project).organizationalUnit().get() );
+            if (!ownable.isOwnedBy( (Owner) project ))
+               builder.addDescribable( project, ((OwningOrganizationalUnit.Data)project).organizationalUnit().get() );
          }
          return builder.newLinks();
       }
@@ -158,11 +160,15 @@ public interface TaskActionsContext
          List<User> users = context.role( TaskTypeQueries.class ).possibleUsers();
 
          LinksBuilder links = new LinksBuilder(module.valueBuilderFactory()).command( "sendto" );
+         Ownable ownable = context.role(Ownable.class);
 
          for (User user : users)
          {
-            String group = "" + Character.toUpperCase( user.getDescription().charAt( 0 ) );
-            links.addDescribable( user, group );
+            if (!ownable.isOwnedBy( (Owner) user ))
+            {
+               String group = "" + Character.toUpperCase( user.getDescription().charAt( 0 ) );
+               links.addDescribable( user, group );
+            }
          }
 
          return links.newLinks();
@@ -172,9 +178,11 @@ public interface TaskActionsContext
       {
          LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() ).command( "delegate" );
          List<Project> projects = context.role( TaskTypeQueries.class ).possibleProjects();
+         Ownable ownable = context.role(Ownable.class);
          for (Project project : projects)
          {
-            builder.addDescribable( project, ((OwningOrganizationalUnit.Data)project).organizationalUnit().get() );
+            if (!ownable.isOwnedBy( (Owner) project ))
+               builder.addDescribable( project, ((OwningOrganizationalUnit.Data)project).organizationalUnit().get() );
          }
          return builder.newLinks();
       }
@@ -185,10 +193,14 @@ public interface TaskActionsContext
 
          LinksBuilder links = new LinksBuilder(module.valueBuilderFactory()).command( "delegate" );
 
+         Ownable ownable = context.role(Ownable.class);
          for (User user : users)
          {
-            String group = "" + Character.toUpperCase( user.getDescription().charAt( 0 ) );
-            links.addDescribable( user, group );
+            if (!ownable.isOwnedBy( (Owner) user ))
+            {
+               String group = "" + Character.toUpperCase( user.getDescription().charAt( 0 ) );
+               links.addDescribable( user, group );
+            }
          }
 
          return links.newLinks();
