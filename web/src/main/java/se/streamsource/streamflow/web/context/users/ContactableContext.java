@@ -12,28 +12,30 @@
  *
  */
 
-package se.streamsource.streamflow.web.context.task;
+package se.streamsource.streamflow.web.context.users;
 
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
+import se.streamsource.dci.context.Context;
+import se.streamsource.dci.context.ContextMixin;
+import se.streamsource.dci.context.DeleteContext;
+import se.streamsource.dci.context.IndexContext;
 import se.streamsource.streamflow.domain.contact.ContactAddressValue;
 import se.streamsource.streamflow.domain.contact.ContactEmailValue;
 import se.streamsource.streamflow.domain.contact.ContactPhoneValue;
 import se.streamsource.streamflow.domain.contact.ContactValue;
+import se.streamsource.streamflow.domain.contact.Contactable;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.web.domain.structure.task.Contacts;
-import se.streamsource.dci.context.Context;
-import se.streamsource.dci.context.ContextMixin;
-import se.streamsource.dci.context.DeleteContext;
 
 /**
  * JAVADOC
  */
-@Mixins(TaskContactContext.Mixin.class)
-public interface TaskContactContext
-   extends DeleteContext, Context
+@Mixins(ContactableContext.Mixin.class)
+public interface ContactableContext
+   extends IndexContext<ContactValue>, Context
 {
    public void changename( StringDTO name );
    public void changenote( StringDTO note );
@@ -45,68 +47,66 @@ public interface TaskContactContext
 
    abstract class Mixin
       extends ContextMixin
-      implements TaskContactContext
+      implements ContactableContext
    {
       @Structure
       ValueBuilderFactory vbf;
 
-      public void delete()
+      public ContactValue index()
       {
-         Contacts contacts = context.role(Contacts.class);
-         Integer index = context.role(Integer.class);
-
-         contacts.deleteContact( index );
+         Contactable contactable = context.role(Contactable.class);
+         ContactValue contact = contactable.getContact();
+         return contact;
       }
 
       public void changename( StringDTO name )
       {
-         Contacts contacts = context.role(Contacts.class);
-         Integer index = context.role(Integer.class);
-         ContactValue contact = context.role(ContactValue.class);
+         Contactable contactable = context.role(Contactable.class);
+         ContactValue contact = contactable.getContact();
 
          ValueBuilder<ContactValue> builder = contact.buildWith();
          builder.prototype().name().set( name.string().get() );
-         contacts.updateContact( index, builder.newInstance() );
+
+         contactable.updateContact( builder.newInstance() );
       }
 
       public void changenote( StringDTO note )
       {
-         Contacts contacts = context.role(Contacts.class);
-         Integer index = context.role(Integer.class);
-         ContactValue contact = context.role(ContactValue.class);
+         Contactable contactable = context.role(Contactable.class);
+         ContactValue contact = contactable.getContact();
 
          ValueBuilder<ContactValue> builder = contact.buildWith();
          builder.prototype().note().set( note.string().get() );
-         contacts.updateContact( index, builder.newInstance() );
+
+         contactable.updateContact( builder.newInstance() );
       }
 
       public void changecontactid( StringDTO contactId )
       {
-         Contacts contacts = context.role(Contacts.class);
-         Integer index = context.role(Integer.class);
-         ContactValue contact = context.role(ContactValue.class);
+         Contactable contactable = context.role(Contactable.class);
+         ContactValue contact = contactable.getContact();
 
          ValueBuilder<ContactValue> builder = contact.buildWith();
          builder.prototype().contactId().set( contactId.string().get() );
-         contacts.updateContact( index, builder.newInstance() );
+
+         contactable.updateContact( builder.newInstance() );
       }
 
       public void changecompany( StringDTO company )
       {
-         Contacts contacts = context.role(Contacts.class);
-         Integer index = context.role(Integer.class);
-         ContactValue contact = context.role(ContactValue.class);
+         Contactable contactable = context.role(Contactable.class);
+         ContactValue contact = contactable.getContact();
 
          ValueBuilder<ContactValue> builder = contact.buildWith();
          builder.prototype().company().set( company.string().get() );
-         contacts.updateContact( index, builder.newInstance() );
+
+         contactable.updateContact( builder.newInstance() );
       }
 
       public void changephonenumber( ContactPhoneValue phoneValue )
       {
-         Contacts contacts = context.role(Contacts.class);
-         Integer index = context.role(Integer.class);
-         ContactValue contact = context.role(ContactValue.class);
+         Contactable contactable = context.role(Contactable.class);
+         ContactValue contact = contactable.getContact();
 
          ValueBuilder<ContactValue> builder = contact.buildWith();
 
@@ -121,14 +121,13 @@ public interface TaskContactContext
             builder.prototype().phoneNumbers().get().get( 0 ).phoneNumber().set( phoneValue.phoneNumber().get() );
          }
 
-         contacts.updateContact( index, builder.newInstance() );
+         contactable.updateContact( builder.newInstance() );
       }
 
       public void changeaddress( ContactAddressValue addressValue )
       {
-         Contacts contacts = context.role(Contacts.class);
-         Integer index = context.role(Integer.class);
-         ContactValue contact = context.role(ContactValue.class);
+         Contactable contactable = context.role(Contactable.class);
+         ContactValue contact = contactable.getContact();
 
          ValueBuilder<ContactValue> builder = contact.buildWith();
 
@@ -143,14 +142,13 @@ public interface TaskContactContext
             builder.prototype().addresses().get().get( 0 ).address().set( addressValue.address().get() );
          }
 
-         contacts.updateContact( index, builder.newInstance() );
+         contactable.updateContact( builder.newInstance() );
       }
 
       public void changeemailaddress( ContactEmailValue emailValue )
       {
-         Contacts contacts = context.role(Contacts.class);
-         Integer index = context.role(Integer.class);
-         ContactValue contact = context.role(ContactValue.class);
+         Contactable contactable = context.role(Contactable.class);
+         ContactValue contact = contactable.getContact();
 
          ValueBuilder<ContactValue> builder = contact.buildWith();
 
@@ -165,8 +163,7 @@ public interface TaskContactContext
             builder.prototype().emailAddresses().get().get( 0 ).emailAddress().set( emailValue.emailAddress().get() );
          }
 
-
-         contacts.updateContact( index, builder.newInstance() );
+         contactable.updateContact( builder.newInstance() );
       }
    }
 }

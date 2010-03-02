@@ -17,6 +17,7 @@ package se.streamsource.streamflow.domain.contact;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
+import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 /**
@@ -42,6 +43,9 @@ public interface Contactable
       @This
       Data state;
 
+      @This
+      Describable describable;
+
       public void updateContact( ContactValue newContact )
       {
          updatedContact( DomainEvent.CREATE, newContact );
@@ -55,6 +59,12 @@ public interface Contactable
       public void updatedContact( DomainEvent event, ContactValue contact )
       {
          state.contact().set( contact );
+
+         // Change description
+         if (!contact.name().get().equals(""))
+         {
+            describable.changeDescription( contact.name().get() );
+         }
       }
    }
 }

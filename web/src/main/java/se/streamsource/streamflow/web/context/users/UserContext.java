@@ -17,6 +17,7 @@ package se.streamsource.streamflow.web.context.users;
 import org.qi4j.api.mixin.Mixins;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.resource.user.ChangePasswordCommand;
+import se.streamsource.streamflow.web.context.task.ContactContext;
 import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
 import se.streamsource.streamflow.web.domain.structure.user.WrongPasswordException;
 import se.streamsource.dci.context.Context;
@@ -37,6 +38,9 @@ public interface UserContext
 
    @SubContext
    OverviewContext overview();
+
+   @SubContext
+   ContactableContext contact();
 
    @SubContext
    UserAdministrationContext administration();
@@ -80,6 +84,11 @@ public interface UserContext
       public OverviewContext overview()
       {
          return subContext( OverviewContext.class );
+      }
+
+      public ContactableContext contact()
+      {
+         return subContext( ContactableContext.class );
       }
 
       public UserAdministrationContext administration()

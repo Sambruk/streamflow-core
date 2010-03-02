@@ -43,23 +43,9 @@ public interface Organizations
 {
    Organization createOrganization( String name );
 
-   /**
-    * Create user with the given password. Username has a constraint that allows the
-    * username only to be a whole word, because it will be used as part of the REST url.
-    *
-    * @param username of the new user
-    * @param password of the new user
-    * @return the created user
-    * @throws IllegalArgumentException if user with given name already exists
-    */
-   User createUser( @Username String username, @Password String password )
-         throws IllegalArgumentException;
-
    interface Data
    {
       Organization createdOrganization( DomainEvent event, String id );
-
-      User createdUser( DomainEvent event, String username, String password );
    }
 
    abstract class Mixin
@@ -88,40 +74,11 @@ public interface Organizations
          return ou;
       }
 
-      public User createUser( String username, String password )
-            throws IllegalArgumentException
-      {
-         // Check if user already exist
-         try
-         {
-            uowf.currentUnitOfWork().get( User.class, username );
-
-            throw new IllegalArgumentException( "user_already_exists" );
-         } catch (NoSuchEntityException e)
-         {
-            // Ok!
-         }
-
-         User user = createdUser( CREATE, username, password );
-         return user;
-      }
-
       public Organization createdOrganization( DomainEvent event, String id )
       {
          EntityBuilder<Organization> entityBuilder = uowf.currentUnitOfWork().newEntityBuilder( Organization.class, id );
          entityBuilder.instanceFor( OwningOrganization.class ).organization().set( entityBuilder.instance() );
          return entityBuilder.newInstance();
-      }
-
-      public User createdUser( DomainEvent event, String username, String password )
-      {
-         EntityBuilder<User> builder = uowf.currentUnitOfWork().newEntityBuilder( User.class, username );
-         UserAuthentication.Data userEntity = builder.instanceFor( UserAuthentication.Data.class );
-         userEntity.userName().set( username );
-         userEntity.hashedPassword().set( userEntity.hashPassword( password ) );
-         Contactable.Data contacts = builder.instanceFor( Contactable.Data.class );
-         contacts.contact().set( vbf.newValue( ContactValue.class ) );
-         return builder.newInstance();
       }
    }
 }

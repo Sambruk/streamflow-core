@@ -44,7 +44,7 @@ public interface TaskContext
    ConversationsContext conversations();
 
    @SubContext
-   TaskContactsContext contacts();
+   ContactsContext contacts();
 
    @SubContext
    TaskFormsContext forms();
@@ -111,9 +111,9 @@ public interface TaskContext
          return subContext( ConversationsContext.class );
       }
 
-      public TaskContactsContext contacts()
+      public ContactsContext contacts()
       {
-         return subContext( TaskContactsContext.class );
+         return subContext( ContactsContext.class );
       }
 
       public TaskFormsContext forms()

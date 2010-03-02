@@ -30,10 +30,10 @@ import java.util.List;
 /**
  * JAVADOC
  */
-@Mixins(TaskContactsContext.Mixin.class)
-public interface TaskContactsContext
+@Mixins(ContactsContext.Mixin.class)
+public interface ContactsContext
    extends
-      SubContexts<TaskContactContext>, Context
+      SubContexts<ContactContext>, Context
 {
    public void add( ContactValue newContact );
 
@@ -41,7 +41,7 @@ public interface TaskContactsContext
 
    abstract class Mixin
       extends ContextMixin
-      implements TaskContactsContext
+      implements ContactsContext
    {
       @Structure
       Module module;
@@ -76,7 +76,7 @@ public interface TaskContactsContext
          contacts.addContact( newContact );
       }
 
-      public TaskContactContext context( String id )
+      public ContactContext context( String id )
       {
          Integer index = Integer.decode( id );
          context.playRoles( index, Integer.class);
@@ -84,7 +84,7 @@ public interface TaskContactsContext
          ContactValue contact = context.role( Contacts.Data.class ).contacts().get().get( index );
          context.playRoles(contact, ContactValue.class);
 
-         return subContext( TaskContactContext.class );
+         return subContext( ContactContext.class );
       }
    }
 }

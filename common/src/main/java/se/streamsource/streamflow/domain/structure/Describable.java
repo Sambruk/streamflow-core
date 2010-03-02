@@ -56,7 +56,8 @@ public interface Describable
 
       public void changeDescription( String newDescription )
       {
-         changedDescription( CREATE, newDescription );
+         if (!newDescription.equals( description().get() ))
+            changedDescription( CREATE, newDescription );
       }
 
       public String getDescription()

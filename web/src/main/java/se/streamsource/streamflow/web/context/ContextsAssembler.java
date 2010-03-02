@@ -63,14 +63,15 @@ import se.streamsource.streamflow.web.context.structure.labels.LabeledContext;
 import se.streamsource.streamflow.web.context.structure.labels.LabelsContext;
 import se.streamsource.streamflow.web.context.structure.labels.SelectedLabelContext;
 import se.streamsource.streamflow.web.context.structure.labels.SelectedLabelsContext;
-import se.streamsource.streamflow.web.context.task.TaskContactContext;
-import se.streamsource.streamflow.web.context.task.TaskContactsContext;
+import se.streamsource.streamflow.web.context.task.ContactContext;
+import se.streamsource.streamflow.web.context.task.ContactsContext;
 import se.streamsource.streamflow.web.context.task.TaskContext;
 import se.streamsource.streamflow.web.context.conversation.ConversationContext;
 import se.streamsource.streamflow.web.context.task.TaskFormContext;
 import se.streamsource.streamflow.web.context.task.TaskFormsContext;
 import se.streamsource.streamflow.web.context.task.TaskGeneralContext;
 import se.streamsource.streamflow.web.context.task.TasksContext;
+import se.streamsource.streamflow.web.context.users.ContactableContext;
 import se.streamsource.streamflow.web.context.users.UserAdministrationContext;
 import se.streamsource.streamflow.web.context.users.UserContext;
 import se.streamsource.streamflow.web.context.users.UsersContext;
@@ -139,6 +140,7 @@ public class ContextsAssembler
             SelectedLabelContext.class,
             SelectedLabelsContext.class,
 
+            ContactableContext.class,
             UsersContext.class,
             UserContext.class,
 
@@ -159,8 +161,8 @@ public class ContextsAssembler
             DelegationsContext.class,
             WaitingForContext.class,
 
-            TaskContactContext.class,
-            TaskContactsContext.class,
+            ContactContext.class,
+            ContactsContext.class,
             TaskContext.class,
             TaskFormsContext.class,
             TaskFormContext.class,
