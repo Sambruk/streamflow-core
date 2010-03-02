@@ -47,7 +47,7 @@ public interface OverviewProjectAssignmentsContext
 
          QueryBuilder<Assignable> builder = assignmentsQueries.assignments( null );
          Query query = builder.newQuery( module.unitOfWorkFactory().currentUnitOfWork() ).orderBy( orderBy( templateFor( CreatedOn.class ).createdOn() ) );
-         return TasksContext.Mixin.buildTaskList( query, module);
+         return TasksContext.Mixin.buildTaskList( query, module, null);
       }
 
    }

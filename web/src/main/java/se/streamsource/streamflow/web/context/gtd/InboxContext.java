@@ -19,6 +19,7 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
+import org.restlet.data.Reference;
 import se.streamsource.streamflow.infrastructure.application.LinksValue;
 import se.streamsource.streamflow.web.context.task.TasksContext;
 import se.streamsource.streamflow.web.domain.entity.gtd.Inbox;
@@ -56,7 +57,7 @@ public interface InboxContext
          QueryBuilder<Task> builder = inbox.inbox();
          Query<Task> query = builder.newQuery( module.unitOfWorkFactory().currentUnitOfWork() ).orderBy( orderBy( templateFor( CreatedOn.class ).createdOn() ) );
          
-         return TasksContext.Mixin.buildTaskList(query, module);
+         return TasksContext.Mixin.buildTaskList(query, module, context.role( Reference.class).getBaseRef().getPath());
       }
 
       public void createtask()

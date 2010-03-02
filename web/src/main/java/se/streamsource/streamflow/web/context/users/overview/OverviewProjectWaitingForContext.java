@@ -47,7 +47,7 @@ public interface OverviewProjectWaitingForContext
          QueryBuilder<Delegatable> builder = waitingForQueries.waitingFor( null );
          Query query = builder.newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
          query = query.orderBy( orderBy( templateFor( Delegatable.Data.class ).delegatedOn() ) );
-         return TasksContext.Mixin.buildTaskList(query, module);
+         return TasksContext.Mixin.buildTaskList(query, module, null);
       }
 
    }

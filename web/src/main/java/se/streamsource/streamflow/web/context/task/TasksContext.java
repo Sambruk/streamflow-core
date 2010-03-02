@@ -19,6 +19,7 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.structure.Module;
+import org.restlet.data.Reference;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.infrastructure.application.LinksValue;
@@ -44,12 +45,12 @@ public interface TasksContext
       extends ContextMixin
       implements TasksContext
    {
-      public static LinksValue buildTaskList(Query<Task> query, Module module)
+      public static LinksValue buildTaskList(Query<Task> query, Module module, String basePath)
       {
-         LinksBuilder linksBuilder = new LinksBuilder(module.valueBuilderFactory());
+         LinksBuilder linksBuilder = new LinksBuilder(module.valueBuilderFactory()).path( basePath );
          for (Task task : query)
          {
-            linksBuilder.addLink( TaskContext.Mixin.taskDTO( (TaskEntity) task, module));
+            linksBuilder.addLink( TaskContext.Mixin.taskDTO( (TaskEntity) task, module, basePath ));
          }
          return linksBuilder.newLinks();
       }
@@ -63,7 +64,7 @@ public interface TasksContext
          String name = context.role( UserAuthentication.Data.class ).userName().get();
          Query<Task> taskQuery = taskQueries.search( query, name );
          taskQuery.orderBy( QueryExpressions.orderBy(QueryExpressions.templateFor( Describable.Data.class ).description()) );
-         return buildTaskList( taskQuery, module);
+         return buildTaskList( taskQuery, module, context.role(Reference.class).getBaseRef().getPath());
       }
 
       public TaskContext context( String id )

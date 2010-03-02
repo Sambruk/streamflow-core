@@ -17,6 +17,7 @@ package se.streamsource.streamflow.web.context.task;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
+import org.restlet.data.Reference;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.resource.task.TaskValue;
@@ -52,7 +53,7 @@ public interface TaskContext
       extends ContextMixin
       implements TaskContext
    {
-      public static TaskValue taskDTO(TaskEntity task, Module module)
+      public static TaskValue taskDTO( TaskEntity task, Module module, String basePath )
       {
          ValueBuilder<TaskValue> builder = module.valueBuilderFactory().newValueBuilder( TaskValue.class );
 
@@ -64,7 +65,7 @@ public interface TaskContext
             prototype.createdBy().set( ((Describable)task.createdBy().get()).getDescription() );
          if (task.taskId().get() != null)
             prototype.taskId().set( task.taskId().get() );
-         prototype.href().set( task.identity().get()+"/" );
+         prototype.href().set( basePath+"/tasks/"+task.identity().get()+"/" );
          prototype.rel().set( "task" );
          prototype.owner().set( ((Describable)task.owner().get()).getDescription() );
          prototype.status().set( task.status().get() );
@@ -97,7 +98,7 @@ public interface TaskContext
 
       public TaskValue info()
       {
-         return taskDTO(context.role( TaskEntity.class ), module);
+         return taskDTO(context.role( TaskEntity.class ), module, context.role( Reference.class ).getBaseRef().getPath());
       }
 
       public TaskGeneralContext general()
