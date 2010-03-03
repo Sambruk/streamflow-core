@@ -35,8 +35,8 @@
     </modules>
 
     <scm>
-        <connection>scm:svn:https://source.waygroup.se/svn/streamsource/streamflow/trunk</connection>
-        <developerConnection>scm:svn:https://source.waygroup.se/svn/streamsource/streamflow/trunk</developerConnection>
+        <connection>scm:svn:https://source.waygroup.se/svn/streamsource/streamflow/branches/0.5</connection>
+        <developerConnection>scm:svn:https://source.waygroup.se/svn/streamsource/streamflow/branches/0.5</developerConnection>
     </scm>
 
     <distributionManagement>
