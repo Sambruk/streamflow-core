@@ -59,6 +59,7 @@ public class ServerEntityStoreAssembler
          // <major-version>.<minor-version>.<sprint>.<Svn-revision>
          // This way we can control how migrations are done from one
          // revision to the next.
+         // ATTENTION: it is not possible to add toVersion without any rules!!
          MigrationBuilder migrationBuilder = new MigrationBuilder( "0.0" );
          migrationBuilder.
                toVersion( "0.1.14.357" ).
@@ -96,8 +97,7 @@ public class ServerEntityStoreAssembler
                   renamePackage( "se.streamsource.streamflow.web.domain.user", "se.streamsource.streamflow.web.domain.entity.user" ).
                      withEntities( "UserEntity").
                   end().
-               toVersion( "0.4.0" ).
-               toVersion( "0.5" ).forEntities( "se.streamsource.streamflow.web.domain.entity.form.FieldEntity" ).
+               toVersion( "0.5.23.1349" ).forEntities( "se.streamsource.streamflow.web.domain.entity.form.FieldEntity" ).
                   custom( new EntityMigrationOperation()
                   {
                      public boolean upgrade( JSONObject state, StateStore stateStore, Migrator migrator ) throws JSONException

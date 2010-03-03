@@ -60,7 +60,7 @@ public class StreamFlowWebAssembler
    {
       ApplicationAssembly assembly = applicationFactory.newApplicationAssembly();
       assembly.setName( "StreamFlowServer" );
-      assembly.setVersion( "0.3.20.962" );
+      assembly.setVersion( "0.5.23.1349" );
       LayerAssembly configurationLayer = assembly.layerAssembly( "Configuration" );
       LayerAssembly domainInfrastructureLayer = assembly.layerAssembly( "Domain infrastructure" );
       LayerAssembly domainLayer = assembly.layerAssembly( "Domain" );
