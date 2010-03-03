@@ -14,14 +14,19 @@
 
 package se.streamsource.streamflow.web.infrastructure.domain;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.qi4j.api.common.Visibility;
 import org.qi4j.api.structure.Application;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.entitystore.jdbm.JdbmEntityStoreService;
+import org.qi4j.entitystore.map.StateStore;
 import org.qi4j.entitystore.memory.MemoryEntityStoreService;
 import org.qi4j.migration.MigrationService;
+import org.qi4j.migration.Migrator;
+import org.qi4j.migration.assembly.EntityMigrationOperation;
 import org.qi4j.migration.assembly.MigrationBuilder;
 import org.qi4j.spi.uuid.UuidIdentityGeneratorService;
 
@@ -90,7 +95,29 @@ public class ServerEntityStoreAssembler
                   end().
                   renamePackage( "se.streamsource.streamflow.web.domain.user", "se.streamsource.streamflow.web.domain.entity.user" ).
                      withEntities( "UserEntity").
-                  end()
+                  end().
+               toVersion( "0.4.0" ).
+               toVersion( "0.5" ).forEntities( "se.streamsource.streamflow.web.domain.entity.form.FieldEntity" ).
+                  custom( new EntityMigrationOperation()
+                  {
+                     public boolean upgrade( JSONObject state, StateStore stateStore, Migrator migrator ) throws JSONException
+                     {
+                        JSONObject fieldValue = state.getJSONObject( "properties" ).getJSONObject( "fieldValue" );
+                        if (fieldValue.get( "_type" ).equals("se.streamsource.streamflow.domain.form.PageBreakFieldValue"))
+                        {
+                           fieldValue.put( "_type", "se.streamsource.streamflow.domain.form.CommentFieldValue" );
+                           return true;
+                        }
+
+                        return false;
+                     }
+
+                     public boolean downgrade( JSONObject state, StateStore stateStore, Migrator migrator ) throws JSONException
+                     {
+                        return false;
+                     }
+                  })
+
                   ;
 
          module.addServices( MigrationService.class ).setMetaInfo( migrationBuilder );

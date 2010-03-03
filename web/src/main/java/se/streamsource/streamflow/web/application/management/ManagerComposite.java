@@ -325,9 +325,9 @@ public interface ManagerComposite
 
             for (File eventFile : eventFiles)
             {
-               // Check if this file contains events after backup was made
+               // Check if this file is a diff file that contains events after backup was made
                Date eventBackupDate = getEventBackupDate( eventFile );
-               if (eventBackupDate.after( latestBackupDate ) && eventReplayDate == null)
+               if (!isCompleteEventBackup( eventFile ) && eventBackupDate.after( latestBackupDate ) && eventReplayDate == null)
                   eventReplayDate = new Date(); // Only replay events from here on
 
                InputStream in = new FileInputStream( eventFile );
@@ -398,7 +398,7 @@ public interface ManagerComposite
       private Date getEventBackupDate( File eventBackup ) throws ParseException
       {
          String name = eventBackup.getName().substring( "streamflow_events_".length() );
-         if (name.contains( "-" ))
+         if (isCompleteEventBackup( eventBackup ))
          {
             // Range
             name = name.substring( name.indexOf( "-" ) + 1, name.indexOf( "." ) );
@@ -412,6 +412,11 @@ public interface ManagerComposite
          Date backupDate = format.parse( name );
 
          return backupDate;
+      }
+
+      private boolean isCompleteEventBackup(File eventBackup)
+      {
+         return eventBackup.getName().substring( "streamflow_events_".length() ).contains( "-" );
       }
 
       // Backup the database if no backups exist yet,
