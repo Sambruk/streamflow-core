@@ -42,6 +42,8 @@ import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
+import se.streamsource.streamflow.web.domain.structure.tasktype.TaskType;
+import se.streamsource.streamflow.web.domain.structure.tasktype.TypedTask;
 import se.streamsource.streamflow.web.domain.structure.user.User;
 import se.streamsource.dci.context.ContextMixin;
 import se.streamsource.dci.context.DeleteContext;
@@ -147,10 +149,14 @@ public interface TaskActionsContext
          LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() ).command( "sendto" );
          List<Project> projects = context.role( TaskTypeQueries.class ).possibleProjects();
          Ownable ownable = context.role(Ownable.class);
+         TaskType taskType = context.role( TypedTask.Data.class).taskType().get();
          for (Project project : projects)
          {
             if (!ownable.isOwnedBy( (Owner) project ))
-               builder.addDescribable( project, ((OwningOrganizationalUnit.Data)project).organizationalUnit().get() );
+            {
+               if (taskType == null || project.hasSelectedTaskType( taskType ))
+                  builder.addDescribable( project, ((OwningOrganizationalUnit.Data)project).organizationalUnit().get() );
+            }
          }
          return builder.newLinks();
       }
@@ -178,11 +184,15 @@ public interface TaskActionsContext
       {
          LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() ).command( "delegate" );
          List<Project> projects = context.role( TaskTypeQueries.class ).possibleProjects();
+         TaskType taskType = context.role( TypedTask.Data.class).taskType().get();
          Ownable ownable = context.role(Ownable.class);
          for (Project project : projects)
          {
             if (!ownable.isOwnedBy( (Owner) project ))
-               builder.addDescribable( project, ((OwningOrganizationalUnit.Data)project).organizationalUnit().get() );
+            {
+               if (taskType == null || project.hasSelectedTaskType( taskType ))
+                  builder.addDescribable( project, ((OwningOrganizationalUnit.Data)project).organizationalUnit().get() );
+            }
          }
          return builder.newLinks();
       }

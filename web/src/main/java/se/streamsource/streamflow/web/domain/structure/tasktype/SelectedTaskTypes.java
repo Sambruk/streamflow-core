@@ -33,6 +33,8 @@ public interface SelectedTaskTypes
 
    void removeSelectedTaskType( TaskType taskType );
 
+   boolean hasSelectedTaskType(TaskType taskType);
+
    interface Data
    {
       ManyAssociation<TaskType> selectedTaskTypes();
@@ -58,6 +60,11 @@ public interface SelectedTaskTypes
       public void removeSelectedTaskType( TaskType taskType )
       {
          selectedTaskTypeRemoved( DomainEvent.CREATE, taskType );
+      }
+
+      public boolean hasSelectedTaskType( TaskType taskType )
+      {
+         return selectedTaskTypes().contains( taskType );
       }
 
       public void selectedTaskTypeAdded( DomainEvent event, TaskType taskType )

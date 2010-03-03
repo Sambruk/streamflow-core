@@ -76,7 +76,7 @@ public class TaskGeneralModel extends Observable implements Refreshable,
       this.client = client;
       eventFilter = new EventVisitorFilter(client.getReference()
             .getParentRef().getLastSegment(), this, "addedLabel",
-            "removedLabel", "changedOwner", "changedTaskType", "changedStatus");
+            "removedLabel", "sentTo", "changedTaskType", "changedStatus");
    }
 
    public TaskGeneralDTO getGeneral()

@@ -55,7 +55,7 @@ import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 
 public class TaskConversationsView
       extends JSplitPane
-      implements ListEventListener, EventVisitor, EventListener
+      implements ListEventListener
 {
    @Uses
    Iterable<NameDialog> topicDialogs;
@@ -69,7 +69,6 @@ public class TaskConversationsView
    private JList list;
 
    private ApplicationContext context;
-   EventVisitorFilter eventFilter = new EventVisitorFilter( this, "removedParticipant", "createdMessage" );
 
    public TaskConversationsView( @Service final ApplicationContext context, @Structure ObjectBuilderFactory obf )
    {
@@ -151,7 +150,6 @@ public class TaskConversationsView
       model = taskConversationsModel;
       model.refresh();
       refresher.setRefreshable( model );
-      model.setViewReference( this );
 
       if (model != null)
       {
@@ -167,16 +165,5 @@ public class TaskConversationsView
       list.setModel( new EventListModel<ConversationDTO>( model.conversations() ) );
       list.repaint();
       list.setSelectedIndex( prevSelected );
-   }
-
-   public boolean visit( DomainEvent event )
-   {
-      list.repaint();
-      return false;  
-   }
-
-   public void notifyEvent( DomainEvent event )
-   {
-     eventFilter.visit( event );
    }
 }

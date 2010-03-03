@@ -59,7 +59,7 @@ public class TaskTableModel
    public TaskTableModel()
    {
       eventFilter = new EventVisitorFilter( this, "addedLabel", "removedLabel", "changedDescription", "changedTaskType", "changedStatus",
-            "changedOwner","assignedTo","delegatedTo", "deletedEntity");
+            "sentTo","assignedTo","delegatedTo", "deletedEntity");
    }
 
    public void notifyEvent( DomainEvent event )
@@ -102,7 +102,7 @@ public class TaskTableModel
                }
             }
             eventList.set( idx, valueBuilder.newInstance() );
-         } else if ("addedLabel,changedTaskType,changedOwner,assignedTo,delegatedTo,deletedEntity".indexOf(eventName) != -1)
+         } else if ("addedLabel,changedTaskType,sentTo,assignedTo,delegatedTo,deletedEntity".indexOf(eventName) != -1)
          {
             refresh();
          } else if (eventName.equals("changedStatus"))

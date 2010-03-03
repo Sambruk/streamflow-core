@@ -117,6 +117,7 @@ public class ServerEntityStoreAssembler
                         return false;
                      }
                   })
+               .end()
 
                   ;
 

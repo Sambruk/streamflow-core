@@ -16,7 +16,6 @@ package se.streamsource.streamflow.web.context.conversation;
 
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.query.Query;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.dci.context.Context;
@@ -26,18 +25,13 @@ import se.streamsource.dci.context.SubContexts;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.infrastructure.application.LinksValue;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
-import se.streamsource.streamflow.resource.roles.StringDTO;
-import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
-import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
-import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsQueries;
-import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
+import se.streamsource.streamflow.web.domain.entity.conversation.ConversationParticipantsQueries;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipant;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipants;
-import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganization;
-import se.streamsource.streamflow.web.domain.structure.user.User;
-import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
 
-import static org.qi4j.api.query.QueryExpressions.*;
+import java.util.List;
 
 /**
  * JAVADOC
@@ -74,29 +68,11 @@ public interface ConversationParticipantsContext
 
       public LinksValue possibleparticipants()
       {
-
-         //OwningOrganization org = context.role(OwningOrganization.class);
-         //TODO how to get from one context tree to another?
-         OrganizationsQueries org = uowf.currentUnitOfWork().get( OrganizationsQueries.class, OrganizationsEntity.ORGANIZATIONS_ID );
-         Query<OrganizationEntity> query = org.organizations().newQuery( uowf.currentUnitOfWork() );
-
-         OrganizationEntity organization = query.find();
-
-         ConversationParticipants.Data participants = context.role(ConversationParticipants.Data.class);
-
-         Query<User> users = organization.users( ).newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
-         users = users.orderBy( orderBy( templateFor( UserAuthentication.Data.class ).userName() ) );
-
-         LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
-         linksBuilder.command("addparticipant");
-
-         for (User user : users)
-         {
-            if (!participants.participants().contains( user ))
-            {
-               linksBuilder.addDescribable( user );
-            }
-         }
+         Ownable.Data ownable = context.role(Ownable.Data.class);
+         Owner owner = ownable.owner().get();
+         List<ConversationParticipant> possibleParticipants = context.role( ConversationParticipantsQueries.class).possibleParticipants(owner);
+         LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() ).command( "addparticipant" );
+         linksBuilder.addDescribables( possibleParticipants );
 
          return linksBuilder.newLinks();
       }

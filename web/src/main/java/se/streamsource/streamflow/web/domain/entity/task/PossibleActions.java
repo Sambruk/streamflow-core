@@ -20,6 +20,7 @@ import se.streamsource.streamflow.domain.interaction.gtd.States;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Actor;
 import se.streamsource.streamflow.web.domain.structure.project.Member;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
+import se.streamsource.streamflow.web.domain.structure.tasktype.TaskType;
 
 import java.util.Collection;
 
@@ -101,7 +102,13 @@ public interface PossibleActions
                      if (task.isStatus( States.ACTIVE ))
                      {
                         actions.add( "complete" );
-                        actions.add( "assign" );
+
+                        TaskType type = task.taskType().get();
+                        if (type == null || project.hasSelectedTaskType( type ))
+                        {
+                           actions.add( "assign" );
+                        }
+                        
                         actions.add( "sendto" );
                         actions.add( "delegate" );
                         actions.add( "drop" );

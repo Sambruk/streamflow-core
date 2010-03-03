@@ -16,6 +16,7 @@ package se.streamsource.streamflow.web.domain.entity.conversation;
 
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
+import se.streamsource.streamflow.web.domain.entity.conversation.ConversationParticipantsQueries;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversation;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipants;
 import se.streamsource.streamflow.web.domain.structure.conversation.Messages;
@@ -29,6 +30,9 @@ public interface ConversationEntity
       Conversation,
       Describable.Data,
       Messages.Data,
+
+      ConversationParticipantsQueries,
+
       DomainEntity
 {
 }

@@ -38,6 +38,9 @@ import se.streamsource.streamflow.infrastructure.event.source.EventVisitorFilter
 import se.streamsource.streamflow.resource.conversation.ConversationDTO;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class TaskConversationsModel
    implements EventListener, Refreshable, EventVisitor
 {
@@ -52,8 +55,6 @@ public class TaskConversationsModel
 
    @Structure
    ObjectBuilderFactory obf;
-
-   private TaskConversationsView viewReference;
 
    WeakModelMap<String,TaskConversationModel> conversationModels = new WeakModelMap<String,TaskConversationModel>(){
 
@@ -78,7 +79,7 @@ public class TaskConversationsModel
       try
       {
          LinksValue newConversations = client.query( "index", LinksValue.class );
-         BasicEventList<ConversationDTO> mutable = new BasicEventList<ConversationDTO>();
+         List<ConversationDTO> mutable = new ArrayList<ConversationDTO>();
          for( LinkValue link : newConversations.links().get())
          {
             mutable.add( ((ConversationDTO)link).<ConversationDTO>buildWith().prototype() );
@@ -95,10 +96,6 @@ public class TaskConversationsModel
       return  conversations;
    }
 
-   public void setViewReference( TaskConversationsView view )
-   {
-      viewReference = view;
-   }
    public void createConversation( String topic )
    {
       try
@@ -121,36 +118,41 @@ public class TaskConversationsModel
       {
          conversationModel.notifyEvent( event );
       }
-      viewReference.notifyEvent( event );
    }
 
    public boolean visit( DomainEvent event )
    {
       if( event.name().get().equals("createdMessage"))
       {
-         for (ConversationDTO conversation : conversations)
+         for (int idx = 0; idx < conversations.size(); idx++)
          {
+            ConversationDTO conversation = conversations.get( idx );
             if(conversation.id().get().equals( event.entity().get() ))
             {
                conversation.messages().set( conversation.messages().get() + 1 );
+               conversations.set( idx, conversation );
             }
          }
       } else if( event.name().get().equals("addedParticipant") )
       {
-         for (ConversationDTO conversation : conversations)
+         for (int idx = 0; idx < conversations.size(); idx++)
          {
+            ConversationDTO conversation = conversations.get( idx );
             if(conversation.id().get().equals( event.entity().get() ) )
             {
                conversation.participants().set( conversation.participants().get() + 1 );
+               conversations.set( idx, conversation );
             }
          }
       }  else if( event.name().get().equals("removedParticipant") )
       {
-         for (ConversationDTO conversation : conversations)
+         for (int idx = 0; idx < conversations.size(); idx++)
          {
+            ConversationDTO conversation = conversations.get( idx );
             if(conversation.id().get().equals( event.entity().get() ))
             {
                conversation.participants().set( conversation.participants().get() - 1 );
+               conversations.set( idx, conversation );
             }
          }
       }
