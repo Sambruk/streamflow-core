@@ -24,7 +24,9 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 public class ConversationsListCellRenderer implements ListCellRenderer
 {
@@ -90,11 +92,9 @@ public class ConversationsListCellRenderer implements ListCellRenderer
 
 			JPanel ingressPanel = new JPanel(new ModifiedFlowLayout(
 					FlowLayout.LEFT));
-			SimpleDateFormat sdf = new SimpleDateFormat(i18n
-					.text(WorkspaceResources.date_format));
 			
 			// Conversation creation date
-			JLabel labelDate = new JLabel(sdf.format(conversations
+			JLabel labelDate = new JLabel(DateFormat.getDateInstance( DateFormat.MEDIUM ).format(conversations
 					.creationDate().get()));
 			labelDate.setFont(labelDate.getFont().deriveFont(Font.ITALIC));
 			ingressPanel.add(labelDate);

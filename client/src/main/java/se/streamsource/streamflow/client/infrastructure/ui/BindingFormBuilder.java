@@ -33,9 +33,11 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import java.awt.Component;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 /**
  * JAVADOC
@@ -104,7 +106,7 @@ public class BindingFormBuilder
             {
                public Component newField()
                {
-                  return new JXDatePicker();
+                  return new JXDatePicker( Locale.getDefault());
                }
             };
 
@@ -183,7 +185,7 @@ public class BindingFormBuilder
       if (component instanceof JXDatePicker)
       {
          // Set date format
-         ((JXDatePicker) component).setFormats( new SimpleDateFormat( getResource( WorkspaceResources.date_format ) ) );
+         ((JXDatePicker) component).setFormats( DateFormat.getDateInstance( DateFormat.MEDIUM, Locale.getDefault() ) );
       }
       return this;
    }

@@ -104,17 +104,20 @@ public class TaskDetailView
 
    public void setTaskModel( TaskModel model )
    {
-      this.model = model;
-      infoView.setModel( model.info() );
-      generalView.setModel( model.general() );
-      conversationsView.setModel( model.conversations() );
-      contactsView.setModel( model.contacts() );
-      formsView.setModel( model.forms() );
+      if (model != this.model)
+      {
+         this.model = model;
+         infoView.setModel( model.info() );
+         generalView.setModel( model.general() );
+         conversationsView.setModel( model.conversations() );
+         contactsView.setModel( model.contacts() );
+         formsView.setModel( model.forms() );
 
-      actionsView.setModel(model.actions());
-      actionsView.refresh();
+         actionsView.setModel(model.actions());
+         actionsView.refresh();
 
-      validateTree();
+         validateTree();
+      }
    }
 
    public TaskModel getTaskModel()

@@ -18,6 +18,8 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.source.EventQuery;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
@@ -51,9 +53,16 @@ public class TasksDetailView2
 
    private TransactionVisitor subscriber;
 
+   private CardLayout layout = new CardLayout();
+
    public TasksDetailView2(  @Uses TaskDetailView current, @Service EventSource events )
    {
-      super(new BorderLayout());
+      setLayout(layout );
+
+      add( new JLabel( i18n.text( WorkspaceResources.choose_task ), JLabel.CENTER), "blank" );
+      add( current, "detail" );
+
+      layout.show( this, "blank" );
 
       setPreferredSize( new Dimension( getWidth(), 500 ) );
 
@@ -63,9 +72,7 @@ public class TasksDetailView2
       {
          public boolean visit( DomainEvent event )
          {
-            removeAll();
-            revalidate();
-            repaint(  );
+            layout.show(TasksDetailView2.this, "blank");
 
             return false;
          }
@@ -78,7 +85,6 @@ public class TasksDetailView2
    {
       current.setTaskModel( task );
 
-      if (getComponents().length == 0)
-         add(current, BorderLayout.CENTER);
+      layout.show( this, "detail" );
    }
 }

@@ -54,8 +54,11 @@ import javax.swing.SwingConstants;
 import java.awt.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -129,7 +132,7 @@ public class TaskGeneralView extends JScrollPane implements Observer
             .bindingTemplate( TaskGeneralDTO.class );
 
       // Layout and form for the right panel
-      FormLayout rightLayout = new FormLayout( "70dlu, 5dlu, 150:grow", "pref, pref, pref, pref, pref, pref, pref, pref" );
+      FormLayout rightLayout = new FormLayout( "80dlu, 5dlu, 150:grow", "pref, pref, pref, pref, pref, pref, pref, pref" );
 
       rightForm = new JPanel( rightLayout );
       rightForm.setFocusable( false );
@@ -179,12 +182,16 @@ public class TaskGeneralView extends JScrollPane implements Observer
       rightBuilder.nextLine();
 
       // Due date
+      rightBuilder.setExtent( 1, 1 );
       rightBuilder.add( new JLabel( i18n.text( WorkspaceResources.due_on_label ) ) );
-      rightBuilder.nextLine();
+      rightBuilder.nextColumn();
+      rightBuilder.nextColumn();
       rightBuilder.add( taskBinder.bind( dueOnField = (JXDatePicker) DATEPICKER.newField(), template.dueOn() ) );
+      dueOnField.setFormats( DateFormat.getDateInstance( DateFormat.MEDIUM, Locale.getDefault() ) );
       rightBuilder.nextLine();
 
       // Forms
+      rightBuilder.setExtent( 3, 1 );
       rightBuilder.add( new JLabel( i18n.text( WorkspaceResources.forms_label ) ) );
       rightBuilder.nextLine();
       rightBuilder.add( forms );

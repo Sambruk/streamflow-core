@@ -32,7 +32,9 @@ import se.streamsource.streamflow.resource.task.SubmittedFormListDTO;
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 /**
  * JAVADOC
@@ -54,7 +56,6 @@ public class TaskSubmittedFormsView
    StreamFlowApplication main;
 
 
-   private SimpleDateFormat formatter = new SimpleDateFormat( i18n.text( WorkspaceResources.date_format ) );
    public EventListModel eventListModel;
 
    public TaskSubmittedFormsView( @Service ApplicationContext context )
@@ -73,7 +74,7 @@ public class TaskSubmittedFormsView
          public Component getListCellRendererComponent( JList jList, Object o, int i, boolean b, boolean b1 )
          {
             SubmittedFormListDTO listDTO = (SubmittedFormListDTO) o;
-            String dateString = formatter.format( listDTO.submissionDate().get() );
+            String dateString = DateFormat.getDateInstance( DateFormat.MEDIUM ).format( listDTO.submissionDate().get() );
             String listItem = dateString + ":" + listDTO.form().get() + " (" + listDTO.submitter().get() + ")";
             JLabel component =  (JLabel) super.getListCellRendererComponent( jList, listDTO.form().get(), i, b, b1 );
             component.setToolTipText( listItem );
