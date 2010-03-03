@@ -1,0 +1,65 @@
+/*
+ * Copyright (c) 2010, Mads Enevoldsen. All Rights Reserved.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package se.streamsource.streamflow.web.context.access.organizations;
+
+import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
+import se.streamsource.dci.context.Context;
+import se.streamsource.dci.context.ContextMixin;
+import se.streamsource.dci.context.IndexContext;
+import se.streamsource.streamflow.domain.structure.Describable;
+import se.streamsource.streamflow.infrastructure.application.AccessPointValue;
+import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
+import se.streamsource.streamflow.web.domain.structure.label.Label;
+import se.streamsource.streamflow.web.domain.structure.organization.AccessPoint;
+
+/**
+ * JAVADOC
+ */
+@Mixins(AccessPointContext.Mixin.class)
+public interface AccessPointContext
+   extends IndexContext<AccessPointValue>, Context
+{
+   abstract class Mixin
+      extends ContextMixin
+      implements AccessPointContext
+   {
+      @Structure
+      ValueBuilderFactory vbf;
+
+
+      public AccessPointValue index()
+      {
+         AccessPoint.Data data = context.role( AccessPoint.Data.class );
+         Describable describable = context.role( Describable.class );
+
+         ValueBuilder<AccessPointValue> builder = vbf.newValueBuilder( AccessPointValue.class );
+
+         builder.prototype().entity().set( EntityReference.getEntityReference( data ));
+         builder.prototype().name().set( describable.getDescription() );
+         builder.prototype().project().set( data.project().get().getDescription() );
+         builder.prototype().taskType().set( data.taskType().get().getDescription() );
+
+         for (Label label : data.labels().get())
+         {
+            builder.prototype().labels().get().add( label.getDescription() );
+         }
+
+         return builder.newInstance();
+      }
+
+   }
+}

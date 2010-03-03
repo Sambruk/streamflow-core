@@ -20,6 +20,9 @@ import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.spi.service.importer.NewObjectImporter;
 import se.streamsource.dci.context.InteractionConstraintsService;
+import se.streamsource.streamflow.web.context.access.AccessContext;
+import se.streamsource.streamflow.web.context.access.organizations.AccessPointContext;
+import se.streamsource.streamflow.web.context.access.organizations.AccessPointsContext;
 import se.streamsource.streamflow.web.context.conversation.ConversationParticipantContext;
 import se.streamsource.streamflow.web.context.conversation.ConversationParticipantsContext;
 import se.streamsource.streamflow.web.context.conversation.ConversationsContext;
@@ -174,7 +177,17 @@ public class ContextsAssembler
             ConversationParticipantsContext.class,
             ConversationsContext.class,
             MessageContext.class,
-            MessagesContext.class
+            MessagesContext.class,
+
+            // ACCESS
+            AccessContext.class,
+            se.streamsource.streamflow.web.context.access.projects.ProjectsContext.class,
+            se.streamsource.streamflow.web.context.access.projects.ProjectContext.class,
+            se.streamsource.streamflow.web.context.access.projects.TaskTypesContext.class,
+            se.streamsource.streamflow.web.context.access.projects.LabelsContext.class,
+            se.streamsource.streamflow.web.context.access.organizations.OrganizationsContext.class,
+            AccessPointsContext.class,
+            AccessPointContext.class
             );
    }
 }

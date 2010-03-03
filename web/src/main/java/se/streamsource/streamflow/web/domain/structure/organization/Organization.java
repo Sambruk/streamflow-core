@@ -39,6 +39,7 @@ public interface Organization
       Roles,
       SelectedLabels,
       TaskTypes,
-      Removable
+      Removable,
+      AccessPoints
 {
 }

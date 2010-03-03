@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2009, Rickard Öberg. All Rights Reserved.
- *
+ * Copyright (c) 2010, Mads Enevoldsen. All Rights Reserved.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -9,7 +8,6 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package se.streamsource.streamflow.web.domain.entity.organization;
@@ -28,7 +26,7 @@ import se.streamsource.streamflow.web.domain.structure.form.FieldTemplates;
 import se.streamsource.streamflow.web.domain.structure.form.FormTemplates;
 import se.streamsource.streamflow.web.domain.structure.label.Labels;
 import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
-import se.streamsource.streamflow.web.domain.structure.organization.AccessPoints;
+import se.streamsource.streamflow.web.domain.structure.organization.AccessPoint;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnitRefactoring;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnits;
@@ -39,56 +37,18 @@ import se.streamsource.streamflow.web.domain.structure.role.Roles;
 import se.streamsource.streamflow.web.domain.structure.tasktype.TaskTypes;
 
 /**
- * A root organization.
+ * an Access Point
  */
-@Mixins(OrganizationEntity.LifecycleConcern.class)
-public interface OrganizationEntity
+public interface AccessPointEntity
       extends DomainEntity,
+      AccessPoint,
 
       // Interactions
       IdGenerator,
       IdGenerator.Data,
-
-      // Structure
-      Organization,
+      AccessPoint.Data,
 
       // Data
-      Describable.Data,
-      FieldTemplates.Data,
-      FormTemplates.Data,
-      Labels.Data,
-      OrganizationalUnits.Data,
-      OwningOrganization,
-      ProjectRoles.Data,
-      Removable.Data,
-      RolePolicy.Data,
-      Roles.Data,
-      PermissionQueries,
-      SelectedLabels.Data,
-      TaskTypes.Data,
-      AccessPoints.Data,
-
-      //Queries
-      OrganizationParticipationsQueries,
-      OrganizationQueries,
-      OrganizationalUnitsQueries,
-      PossibleLabelsQueries,
-      TaskTypesQueries
+      Describable.Data
 {
-   abstract class LifecycleConcern
-         extends OrganizationalUnitRefactoring.Mixin
-         implements Lifecycle, OwningOrganization
-   {
-      @This
-      Organization org;
-
-      public void create() throws LifecycleException
-      {
-         organization().set( org );
-      }
-
-      public void remove() throws LifecycleException
-      {
-      }
-   }
 }

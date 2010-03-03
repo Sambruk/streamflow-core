@@ -18,6 +18,7 @@ import org.qi4j.api.common.Visibility;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
+import se.streamsource.streamflow.infrastructure.application.AccessPointValue;
 import se.streamsource.streamflow.infrastructure.application.GroupedListItemValue;
 import se.streamsource.streamflow.infrastructure.application.LinkValue;
 import se.streamsource.streamflow.infrastructure.application.LinksValue;
@@ -84,6 +85,7 @@ public class CommonResourceAssembler
 
       // Result values
       module.addValues(
+            AccessPointValue.class,
             ResourceValue.class,
             LinkValue.class,
             LinksValue.class,

@@ -18,6 +18,7 @@ import org.qi4j.api.mixin.Mixins;
 import se.streamsource.dci.context.Context;
 import se.streamsource.dci.context.ContextMixin;
 import se.streamsource.dci.context.SubContext;
+import se.streamsource.streamflow.web.context.access.AccessContext;
 import se.streamsource.streamflow.web.context.organizations.OrganizationsContext;
 import se.streamsource.streamflow.web.context.task.TasksContext;
 import se.streamsource.streamflow.web.context.users.UsersContext;
@@ -44,6 +45,9 @@ public interface RootContext
    @SubContext
    OrganizationsContext organizations();
 
+   @SubContext
+   AccessContext access();
+
    abstract class Mixin
       extends ContextMixin
       implements RootContext
@@ -61,6 +65,11 @@ public interface RootContext
       public OrganizationsContext organizations()
       {
          return subContext( OrganizationsContext.class );
+      }
+
+      public AccessContext access()
+      {
+         return subContext( AccessContext.class );
       }
    }
 }

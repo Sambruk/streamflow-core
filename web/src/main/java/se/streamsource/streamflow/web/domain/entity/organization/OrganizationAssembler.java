@@ -31,7 +31,7 @@ public class OrganizationAssembler
    public void assemble( ModuleAssembly module ) throws AssemblyException
    {
       module.addEntities( OrganizationsEntity.class, OrganizationEntity.class,
-            OrganizationalUnitEntity.class ).visibleIn( application );
+            OrganizationalUnitEntity.class, AccessPointEntity.class ).visibleIn( application );
       module.addValues( ParticipantRolesValue.class ).visibleIn( Visibility.application );
    }
 }

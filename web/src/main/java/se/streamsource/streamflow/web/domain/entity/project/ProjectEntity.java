@@ -90,7 +90,8 @@ public interface ProjectEntity
       DelegationsQueries,
       InboxQueries,
       WaitingForQueries,
-      PossibleLabelsQueries
+      PossibleLabelsQueries,
+      ProjectLabelsQueries
 {
    class ProjectIdGeneratorMixin
          implements IdGenerator
