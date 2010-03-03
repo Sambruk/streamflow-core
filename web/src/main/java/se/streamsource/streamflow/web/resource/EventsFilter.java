@@ -26,6 +26,7 @@ import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
+import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
@@ -139,6 +140,7 @@ public class EventsFilter
                };
             }
 
+            rep.setCharacterSet( CharacterSet.UTF_8 );
             response.setStatus( Status.SUCCESS_OK );
             response.setEntity( rep );
          }
