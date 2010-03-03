@@ -38,9 +38,7 @@ public class SearchResultTableModel
 
    public void search( String text )
    {
-      // due to certain limitations for case insensitive search with wildcards
-      // in solr - make the search text lowercase
-      searchString = text.toLowerCase();
+      searchString = text;
 
       refresh();
    }
