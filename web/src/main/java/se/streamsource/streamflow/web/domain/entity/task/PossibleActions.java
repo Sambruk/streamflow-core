@@ -50,7 +50,7 @@ public interface PossibleActions
                if (task.isAssignedTo( actor ))
                {
                   if (task.isDelegated())
-                  {
+                  {                     
                      // Assignments (delegated)
                      if (task.isStatus( States.ACTIVE ))
                      {
