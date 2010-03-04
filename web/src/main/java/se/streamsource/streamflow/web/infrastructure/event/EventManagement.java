@@ -40,12 +40,10 @@ public interface EventManagement
    void removeTo( Date date ) throws IOException;
 
    /**
-    * Import events from the given reader. Note that the transaction dates
-    * of the imported events will be updated to the current date. The actual
-    * events will retain their dates though.
+    * Does restore events from the given reader. 
     *
     * @param in
     * @throws IOException
     */
-   void importEvents( Reader in ) throws IOException;
+   void restoreEvents( Reader in ) throws IOException;
 }

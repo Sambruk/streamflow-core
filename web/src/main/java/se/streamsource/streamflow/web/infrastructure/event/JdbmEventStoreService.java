@@ -33,11 +33,10 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
-import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
-import se.streamsource.streamflow.infrastructure.event.source.AbstractEventStoreMixin;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
+import se.streamsource.streamflow.infrastructure.event.source.AbstractEventStoreMixin;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
 
@@ -48,7 +47,6 @@ import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.Properties;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 /**
@@ -137,7 +135,7 @@ public interface JdbmEventStoreService
          }
       }
 
-      public void importEvents( Reader in ) throws IOException
+      public void restoreEvents( Reader in ) throws IOException
       {
          try
          {
@@ -145,26 +143,24 @@ public interface JdbmEventStoreService
             String valueJson;
             BufferedReader reader = new BufferedReader( in );
             int count = 0;
-            logger.info( "Import events" );
+            logger.info( "Restore events" );
             while ((valueJson = reader.readLine()) != null)
             {
                JSONObject json = (JSONObject) new JSONTokener( valueJson ).nextValue();
                TransactionEvents transaction = (TransactionEvents) transactionEventsType.fromJSON( json, module );
-               ValueBuilder<TransactionEvents> builder = transaction.buildWith();
-               builder.prototype().timestamp().set( getCurrentTimestamp() );
-               transaction = builder.newInstance();
+
                storeEvents( transaction );
 
                count++;
                if (count % 1000 == 0)
                {
-                  logger.info( "Imported " + count + " events" );
+                  logger.info( "Restored " + count + " events" );
                   commit(); // Commit every 1000 transactions to avoid OutOfMemory issues
                }
 
             }
             commit();
-            logger.info( "Import events done, " + count + " events imported" );
+            logger.info( "Restore events done, " + count + " events restored" );
          } catch (JSONException e)
          {
             rollback();

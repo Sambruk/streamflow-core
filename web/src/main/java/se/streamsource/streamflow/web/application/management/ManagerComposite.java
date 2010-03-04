@@ -228,7 +228,7 @@ public interface ManagerComposite
          return "Data imported successfully";
       }
 
-      public String importEvents( @Name("Filename") String name ) throws IOException
+     /* public String importEvents( @Name("Filename") String name ) throws IOException
       {
          File importFile = new File( exports, name );
 
@@ -250,7 +250,7 @@ public interface ManagerComposite
          }
 
          return "Data imported successfully";
-      }
+      }*/
 
       public String exportEvents( @Name("Compress") boolean compress ) throws IOException
       {
@@ -337,7 +337,7 @@ public interface ManagerComposite
                }
 
                Reader reader = new InputStreamReader( in, "UTF-8" );
-               eventManagement.importEvents( reader );
+               eventManagement.restoreEvents( reader );
             }
 
             if (eventReplayDate == null)
