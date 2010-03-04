@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, Rickard Öberg. All Rights Reserved.
+ * Copyright (c) 2010, Rickard Öberg. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,17 +12,12 @@
  *
  */
 
-package se.streamsource.streamflow.web.application.security;
-
-import java.security.AccessControlContext;
-import java.security.Principal;
-import java.util.List;
+package se.streamsource.streamflow.web.domain.structure.role;
 
 /**
- * Used to check if a particular user has
- * a particular permission on a particular object
+ * Possible permissions
  */
-public interface AccessPolicy
+public enum PermissionsEnum
 {
-   AccessControlContext getAccessControlContext( List<Principal> subject, Object securedObject );
+   administrator
 }

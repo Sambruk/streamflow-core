@@ -16,42 +16,28 @@ package se.streamsource.streamflow.web.domain.entity.user;
 
 import org.qi4j.api.mixin.Mixins;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
-import se.streamsource.streamflow.web.domain.entity.organization.PermissionQueries;
-import se.streamsource.streamflow.web.domain.interaction.authentication.Authentication;
-import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
+import se.streamsource.streamflow.web.domain.interaction.security.Authorization;
 import se.streamsource.streamflow.web.domain.structure.user.Users;
-
-import java.security.AllPermission;
-import java.security.PermissionCollection;
 
 /**
  * JAVADOC
  */
-@Mixins(UsersEntity.UserPermissionsMixin.class)
+@Mixins(UsersEntity.OrganizationsAuthorizationMixin.class)
 public interface UsersEntity
       extends Users,
       UsersQueries,
+      Authorization,
       Users.Data,
-      PermissionQueries,
       DomainEntity
 {
    public static final String USERS_ID = "users";
 
-   class UserPermissionsMixin
-         implements PermissionQueries
+   class OrganizationsAuthorizationMixin
+         implements Authorization
    {
-      public PermissionCollection getPermissions( Authentication user )
+      public boolean hasPermission( String userId, String permission )
       {
-         PermissionCollection permissions = null;
-
-         // If user is administrator
-         if (((UserAuthentication.Data) user).isAdministrator())
-         {
-            permissions = new AllPermission().newPermissionCollection();
-            permissions.add( new AllPermission() );
-         }
-
-         return permissions;
+         return userId.equals( UserEntity.ADMINISTRATOR_USERNAME );
       }
    }
 }

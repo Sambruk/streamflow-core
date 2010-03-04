@@ -12,26 +12,14 @@
  *
  */
 
-package se.streamsource.streamflow.web.application.security;
+package se.streamsource.streamflow.web.domain.interaction.security;
 
-import java.io.Serializable;
-import java.security.Principal;
+import se.streamsource.streamflow.domain.user.Password;
 
 /**
  * JAVADOC
  */
-public class StreamFlowPrincipal
-      implements Principal, Serializable
+public interface Authentication
 {
-   private String name;
-
-   public StreamFlowPrincipal( String name )
-   {
-      this.name = name;
-   }
-
-   public String getName()
-   {
-      return name;
-   }
+   boolean login( @Password String password );
 }

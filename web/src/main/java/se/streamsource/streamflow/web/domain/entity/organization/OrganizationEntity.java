@@ -23,6 +23,7 @@ import se.streamsource.streamflow.domain.structure.Removable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
 import se.streamsource.streamflow.web.domain.entity.label.PossibleLabelsQueries;
 import se.streamsource.streamflow.web.domain.entity.tasktype.TaskTypesQueries;
+import se.streamsource.streamflow.web.domain.interaction.security.Authorization;
 import se.streamsource.streamflow.web.domain.interaction.gtd.IdGenerator;
 import se.streamsource.streamflow.web.domain.structure.form.FieldTemplates;
 import se.streamsource.streamflow.web.domain.structure.form.FormTemplates;
@@ -41,11 +42,12 @@ import se.streamsource.streamflow.web.domain.structure.tasktype.TaskTypes;
 /**
  * A root organization.
  */
-@Mixins(OrganizationEntity.LifecycleConcern.class)
+@Mixins({OrganizationEntity.LifecycleMixin.class, RolePolicyAuthorization.class})
 public interface OrganizationEntity
       extends DomainEntity,
 
       // Interactions
+      Authorization,
       IdGenerator,
       IdGenerator.Data,
 
@@ -63,7 +65,6 @@ public interface OrganizationEntity
       Removable.Data,
       RolePolicy.Data,
       Roles.Data,
-      PermissionQueries,
       SelectedLabels.Data,
       TaskTypes.Data,
       AccessPoints.Data,
@@ -75,7 +76,7 @@ public interface OrganizationEntity
       PossibleLabelsQueries,
       TaskTypesQueries
 {
-   abstract class LifecycleConcern
+   abstract class LifecycleMixin
          extends OrganizationalUnitRefactoring.Mixin
          implements Lifecycle, OwningOrganization
    {

@@ -53,7 +53,6 @@ public interface UserAuthentication
 
       boolean isAdministrator();
 
-
       void changedPassword( DomainEvent event, String hashedPassword );
 
       void changedEnabled( DomainEvent event, boolean enabled );

@@ -22,7 +22,7 @@ import org.qi4j.api.usecase.UsecaseBuilder;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.security.SecretVerifier;
-import se.streamsource.streamflow.web.domain.interaction.authentication.Authentication;
+import se.streamsource.streamflow.web.domain.interaction.security.Authentication;
 
 /**
  * Accept login if user with the given username has the given password

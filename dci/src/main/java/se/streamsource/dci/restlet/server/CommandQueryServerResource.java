@@ -260,6 +260,13 @@ public abstract class CommandQueryServerResource
       context.playRoles( resolveRequestLocale(), Locale.class );
       context.playRoles( getRequest().getResourceRef(), Reference.class );
       context.playRoles( getApplication(), Application.class );
+
+      Subject subject = new Subject();
+      subject.getPrincipals().addAll( getRequest().getClientInfo().getPrincipals() );
+      subject.getPrivateCredentials().add( getRequest().getClientInfo().getUser().getSecret() );
+      subject.setReadOnly();
+
+      context.playRoles( subject );
    }
 
    private Method getMethod( Object resource, String lastSegment ) throws ResourceException

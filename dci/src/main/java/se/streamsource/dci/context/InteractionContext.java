@@ -79,6 +79,25 @@ public class InteractionContext
       return roleClass.cast( object );
    }
 
+   public <T> List<T> roleList(Class<T> roleClass)
+   {
+      List<T> list = new ArrayList<T>( );
+      Object object = roles.get( roleClass );
+
+      if (object != null)
+         list.add( roleClass.cast(object) );
+
+      for (Object possibleObject : objects)
+      {
+         if (roleClass.isInstance( possibleObject))
+         {
+            list.add(roleClass.cast( possibleObject ));
+         }
+      }
+
+      return list;
+   }
+
    public void map(Class fromRoleClass, Class... toRoleClasses)
    {
       Object object = roles.get(fromRoleClass);

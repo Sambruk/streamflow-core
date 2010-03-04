@@ -31,6 +31,7 @@ import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEn
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.entity.user.UsersEntity;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
+import se.streamsource.streamflow.web.domain.structure.role.PermissionsEnum;
 import se.streamsource.streamflow.web.domain.structure.role.Role;
 
 import java.util.logging.Logger;
@@ -120,6 +121,8 @@ public interface BootstrapDataService
                {
                   administrator = org.roles().get( 0 );
                }
+
+               administrator.addPermission( PermissionsEnum.administrator.name() );
 
                // Administrator should be member of all organizations
                if (!admin.organizations().contains( org ))

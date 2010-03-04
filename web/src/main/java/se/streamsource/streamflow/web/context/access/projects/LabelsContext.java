@@ -68,7 +68,7 @@ public interface LabelsContext
 
          try
          {
-            List<Label> labels = context.role( List.class );
+            List<Label> labels = context.roleList( Label.class );
             for (Label label : map.keySet())
             {
                if ( !labels.contains( label ) )
@@ -88,14 +88,7 @@ public interface LabelsContext
       {
          Project project = context.role( Project.class );
          TaskType taskType = context.role( TaskType.class );
-         List<Label> labels = null;
-         try
-         {
-            labels = context.role( List.class );
-         } catch (IllegalArgumentException e)
-         {
-
-         }
+         List<Label> labels = context.roleList( Label.class );
 
          AccessPoints accessPoints = context.role( AccessPoints.class );
          accessPoints.createAccessPoint( name.string().get(), project, taskType, labels );
@@ -103,18 +96,7 @@ public interface LabelsContext
 
       public LabelsContext context( String id )
       {
-         List<Label> labels;
-         try
-         {
-            labels = context.role( List.class );
-         } catch (IllegalArgumentException e)
-         {
-            labels = new ArrayList<Label>();
-         }
-
-         labels.add( module.unitOfWorkFactory().currentUnitOfWork().get( Label.class, id ) );
-
-         context.playRoles( labels );
+         context.playRoles( module.unitOfWorkFactory().currentUnitOfWork().get( Label.class, id ) );
 
          return subContext( LabelsContext.class);
       }

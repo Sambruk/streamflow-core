@@ -51,6 +51,14 @@ public interface RolePolicy
 
    void grantAdministratorToCurrentUser();
 
+   boolean participantHasRole( Participant participant, Role role );
+
+   boolean participantHasPermission( String participant, String permission);
+
+   List<Participant> participantsWithRole( Role role );
+
+   boolean hasRoles( Participant participant );
+
    interface Data
    {
       @UseDefaults
@@ -59,12 +67,6 @@ public interface RolePolicy
       void grantedRole( DomainEvent event, Participant participant, Role role );
 
       void revokedRole( DomainEvent event, Participant participant, Role role );
-
-      boolean participantHasRole( Participant participant, Role role );
-
-      List<Participant> participantsWithRole( Role role );
-
-      boolean hasRoles( Participant participant );
    }
 
    abstract class Mixin
@@ -182,6 +184,28 @@ public interface RolePolicy
             for (EntityReference participantRole : participantRolesValue.roles().get())
             {
                if (participantRole.equals( roleRef ))
+                  return true;
+            }
+         }
+         return false;
+      }
+
+      public boolean participantHasPermission( String participantId, String permission )
+      {
+         UnitOfWork uow = uowf.currentUnitOfWork();
+
+         Participant participant = uow.get( Participant.class, participantId );
+
+         // Check if user already has role
+         ParticipantRolesValue participantRolesValue = getRoles( participant );
+         if (participantRolesValue != null)
+         {
+
+            for (EntityReference participantRole : participantRolesValue.roles().get())
+            {
+               Role role = uow.get( Role.class, participantRole.identity() );
+
+               if (role.hasPermission( permission ))
                   return true;
             }
          }

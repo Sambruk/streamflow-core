@@ -20,6 +20,6 @@ import se.streamsource.streamflow.domain.structure.Describable;
  * JAVADOC
  */
 public interface Role
-   extends Describable
+   extends Describable, Permissions
 {
 }

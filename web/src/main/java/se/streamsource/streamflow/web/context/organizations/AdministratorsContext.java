@@ -63,7 +63,7 @@ public interface AdministratorsContext
 
       public LinksValue administrators()
       {
-         RolePolicy.Data policy = context.role(RolePolicy.Data.class );
+         RolePolicy policy = context.role(RolePolicy.class );
 
          OwningOrganization org = context.role(OwningOrganization.class);
          Roles organization = org.organization().get();
@@ -97,7 +97,7 @@ public interface AdministratorsContext
          LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
          linksBuilder.command("addadministrator");
 
-         RolePolicy.Data policy = context.role(RolePolicy.Data.class);
+         RolePolicy policy = context.role(RolePolicy.class);
 
          for (UserEntity user : users)
          {
@@ -123,7 +123,7 @@ public interface AdministratorsContext
          LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
          linksBuilder.command("addadministrator");
 
-         RolePolicy.Data policy = context.role(RolePolicy.Data.class);
+         RolePolicy policy = context.role(RolePolicy.class);
 
          for (GroupEntity grp : groups)
          {
@@ -141,7 +141,7 @@ public interface AdministratorsContext
          Participant participant = module.unitOfWorkFactory().currentUnitOfWork().get( Participant.class, id );
          context.playRoles( participant, Participant.class);
 
-         if(!context.role( RolePolicy.Data.class ).hasRoles( participant ))
+         if(!context.role( RolePolicy.class ).hasRoles( participant ))
          {
             throw new IllegalArgumentException(id+" is not an administrator");
          }

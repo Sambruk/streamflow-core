@@ -22,6 +22,10 @@ import se.streamsource.streamflow.web.context.access.AccessContext;
 import se.streamsource.streamflow.web.context.organizations.OrganizationsContext;
 import se.streamsource.streamflow.web.context.task.TasksContext;
 import se.streamsource.streamflow.web.context.users.UsersContext;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
+import se.streamsource.streamflow.web.domain.entity.user.UsersEntity;
+import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
+import se.streamsource.streamflow.web.domain.structure.user.Users;
 
 /**
  * JAVADOC
@@ -54,6 +58,7 @@ public interface RootContext
    {
       public UsersContext users()
       {
+         context.playRoles(module.unitOfWorkFactory().currentUnitOfWork().get( Users.class, UsersEntity.USERS_ID ));
          return subContext( UsersContext.class );
       }
 
@@ -64,6 +69,7 @@ public interface RootContext
 
       public OrganizationsContext organizations()
       {
+         context.playRoles(module.unitOfWorkFactory().currentUnitOfWork().get( Organizations.class, OrganizationsEntity.ORGANIZATIONS_ID ));
          return subContext( OrganizationsContext.class );
       }
 

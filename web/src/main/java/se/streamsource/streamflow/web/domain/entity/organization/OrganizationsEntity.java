@@ -18,7 +18,9 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.sideeffect.SideEffectOf;
 import org.qi4j.api.sideeffect.SideEffects;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
-import se.streamsource.streamflow.web.domain.interaction.authentication.Authentication;
+import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
+import se.streamsource.streamflow.web.domain.interaction.security.Authentication;
+import se.streamsource.streamflow.web.domain.interaction.security.Authorization;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
 import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
@@ -30,31 +32,22 @@ import java.security.PermissionCollection;
  * JAVADOC
  */
 @SideEffects(OrganizationsEntity.CreateAdminRoleSideEffect.class)
-@Mixins(OrganizationsEntity.UserPermissionsMixin.class)
+@Mixins(OrganizationsEntity.OrganizationsAuthorizationMixin.class)
 public interface OrganizationsEntity
       extends Organizations,
       OrganizationsQueries,
       Organizations.Data,
-      PermissionQueries,
+      Authorization,
       DomainEntity
 {
    public static final String ORGANIZATIONS_ID = "organizations";
 
-   class UserPermissionsMixin
-         implements PermissionQueries
+   class OrganizationsAuthorizationMixin
+         implements Authorization
    {
-      public PermissionCollection getPermissions( Authentication user )
+      public boolean hasPermission( String userId, String permission )
       {
-         PermissionCollection permissions = null;
-
-         // If user is administrator
-         if (((UserAuthentication.Data) user).isAdministrator())
-         {
-            permissions = new AllPermission().newPermissionCollection();
-            permissions.add( new AllPermission() );
-         }
-
-         return permissions;
+         return userId.equals( UserEntity.ADMINISTRATOR_USERNAME );
       }
    }
 

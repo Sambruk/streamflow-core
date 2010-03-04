@@ -32,6 +32,5 @@ public class SecurityAssembler
    {
       module.addObjects( PasswordVerifierService.class );
       module.importServices( Verifier.class ).importedBy( NewObjectImporter.class ).visibleIn( application );
-      module.addServices( PolicyService.class ).visibleIn( application );
    }
 }

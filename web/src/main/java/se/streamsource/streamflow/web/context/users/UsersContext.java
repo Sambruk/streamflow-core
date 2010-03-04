@@ -27,8 +27,8 @@ import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.resource.user.NewUserCommand;
 import se.streamsource.streamflow.resource.user.UserEntityListDTO;
+import se.streamsource.streamflow.web.context.RequiresPermission;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
-import se.streamsource.streamflow.web.domain.entity.user.UsersEntity;
 import se.streamsource.streamflow.web.domain.entity.user.UsersQueries;
 import se.streamsource.streamflow.web.domain.structure.user.User;
 import se.streamsource.streamflow.web.domain.structure.user.Users;
@@ -53,9 +53,11 @@ public interface UsersContext
    extends SubContexts<UserContext>, Context
 {
    // Queries
+   @RequiresPermission("administrator")
    UserEntityListDTO users();
    
    // Commands
+   @RequiresPermission("administrator")
    void createuser( NewUserCommand command);
 
    abstract class Mixin
@@ -64,7 +66,7 @@ public interface UsersContext
    {
       public UserEntityListDTO users()
       {
-         UsersQueries orgs = module.unitOfWorkFactory().currentUnitOfWork().get( UsersQueries.class, UsersEntity.USERS_ID );
+         UsersQueries orgs = context.role(UsersQueries.class);
 
          return orgs.users();
       }
@@ -73,7 +75,7 @@ public interface UsersContext
       {
          UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
 
-         Users users = uow.get( UsersEntity.class, UsersEntity.USERS_ID );
+         Users users = context.role(Users.class);
          User user = users.createUser( command.username().get(), command.password().get() );
       }
 
@@ -88,7 +90,7 @@ public interface UsersContext
 
          UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
 
-         Users organizations = uow.get( Users.class, UsersEntity.USERS_ID );
+         Users organizations = context.role(Users.class);
 
          try
          {

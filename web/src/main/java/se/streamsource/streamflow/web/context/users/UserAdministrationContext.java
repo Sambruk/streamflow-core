@@ -73,7 +73,7 @@ public interface UserAdministrationContext
             itemValue.nodeType().set( organization instanceof OrganizationEntity ? AdministrationType.organization.name() : AdministrationType.organizationalunit.name() );
             List<TreeNodeValue> subOrgs = itemValue.children().get();
 
-            RolePolicy.Data rolePolicy = (RolePolicy.Data) ou;
+            RolePolicy rolePolicy = (RolePolicy) ou;
 
             if (rolePolicy.hasRoles( participant ) || participant.toString().equals( UserEntity.ADMINISTRATOR_USERNAME ))
             {

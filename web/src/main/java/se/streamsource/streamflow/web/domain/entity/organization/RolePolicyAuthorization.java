@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, Rickard Öberg. All Rights Reserved.
+ * Copyright (c) 2010, Rickard Öberg. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,14 +12,23 @@
  *
  */
 
-package se.streamsource.streamflow.web.domain.interaction.authentication;
+package se.streamsource.streamflow.web.domain.entity.organization;
 
-import se.streamsource.streamflow.domain.user.Password;
+import org.qi4j.api.injection.scope.This;
+import se.streamsource.streamflow.web.domain.interaction.security.Authorization;
+import se.streamsource.streamflow.web.domain.structure.organization.RolePolicy;
 
 /**
  * JAVADOC
  */
-public interface Authentication
+public class RolePolicyAuthorization
+   implements Authorization
 {
-   boolean login( @Password String password );
+   @This
+   RolePolicy policy;
+
+   public boolean hasPermission( String userId, String permission )
+   {
+      return policy.participantHasPermission( userId, permission );
+   }
 }

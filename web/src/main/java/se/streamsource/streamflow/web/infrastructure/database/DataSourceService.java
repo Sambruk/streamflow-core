@@ -50,8 +50,6 @@ public interface DataSourceService
    class Mixin
          implements Activatable, ServiceImporter
    {
-      ComboPooledDataSource pool;
-
       @Structure
       Module module;
 

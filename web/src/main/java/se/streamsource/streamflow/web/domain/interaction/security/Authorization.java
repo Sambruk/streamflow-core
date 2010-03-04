@@ -12,27 +12,13 @@
  *
  */
 
-package se.streamsource.streamflow.web.application.security;
-
-import java.security.BasicPermission;
+package se.streamsource.streamflow.web.domain.interaction.security;
 
 /**
- * Permission implementation for StreamFlow. The name has a two-level structure:
- * the first part is what kind of object is being invoked, and the second is the operation to be performed.
- * <p/>
- * Example:
- * organizationalUnits.createOrganizationalUnit
+ * Used to check if a particular user has
+ * a particular permission.
  */
-public class OperationPermission
-      extends BasicPermission
+public interface Authorization
 {
-   public OperationPermission( String object, String operation )
-   {
-      super( object + "." + operation );
-   }
-
-   public OperationPermission( String name )
-   {
-      super( name );
-   }
+   boolean hasPermission( String userId, String permission );
 }

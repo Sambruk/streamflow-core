@@ -14,10 +14,12 @@
 
 package se.streamsource.streamflow.web.domain.entity.organization;
 
+import org.qi4j.api.mixin.Mixins;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.domain.structure.Removable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
 import se.streamsource.streamflow.web.domain.entity.label.PossibleLabelsQueries;
+import se.streamsource.streamflow.web.domain.interaction.security.Authorization;
 import se.streamsource.streamflow.web.domain.structure.group.Groups;
 import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
@@ -30,13 +32,14 @@ import se.streamsource.streamflow.web.domain.structure.organization.RolePolicy;
 /**
  * JAVADOC
  */
+@Mixins(RolePolicyAuthorization.class)
 public interface OrganizationalUnitEntity
       extends DomainEntity,
 
       // Interactions
+      Authorization,
       Describable,
       Describable.Data,
-      PermissionQueries,
 
       // Structure
       OrganizationalUnit,
