@@ -64,6 +64,7 @@ import org.slf4j.LoggerFactory;
 import se.streamsource.dci.context.Context;
 import se.streamsource.dci.context.ContextNotFoundException;
 import se.streamsource.dci.context.IndexContext;
+import se.streamsource.dci.context.InteractionConstraints;
 import se.streamsource.dci.context.InteractionConstraintsService;
 import se.streamsource.dci.context.InteractionContext;
 import se.streamsource.dci.context.SubContext;
@@ -126,7 +127,7 @@ public abstract class CommandQueryServerResource
    protected ModuleSPI module;
 
    @Service
-   private InteractionConstraintsService constraints;
+   private InteractionConstraints constraints;
 
    private Template queryTemplate;
    private Template selectResourceTemplate;

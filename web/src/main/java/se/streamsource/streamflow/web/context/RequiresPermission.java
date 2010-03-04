@@ -17,6 +17,8 @@ package se.streamsource.streamflow.web.context;
 import org.qi4j.api.constraint.Constraint;
 import org.qi4j.api.constraint.ConstraintDeclaration;
 import org.qi4j.api.constraint.Constraints;
+import se.streamsource.dci.context.InteractionConstraint;
+import se.streamsource.dci.context.InteractionConstraintDeclaration;
 import se.streamsource.dci.context.InteractionContext;
 import se.streamsource.streamflow.web.application.security.StreamFlowPrincipal;
 import se.streamsource.streamflow.web.domain.interaction.security.Authorization;
@@ -29,15 +31,14 @@ import java.security.Principal;
 /**
  * JAVADOC
  */
-@ConstraintDeclaration
+@InteractionConstraintDeclaration(RequiresPermission.RequiresPermissionConstraint.class)
 @Retention(RetentionPolicy.RUNTIME)
-@Constraints(RequiresPermission.RequiresPermissionConstraint.class)
 public @interface RequiresPermission
 {
    String value();
 
    class RequiresPermissionConstraint
-      implements Constraint<RequiresPermission, InteractionContext>
+      implements InteractionConstraint<RequiresPermission>
    {
       public boolean isValid( RequiresPermission requiresPermission, InteractionContext context )
       {

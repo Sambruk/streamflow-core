@@ -101,6 +101,8 @@ public class ContextsAssembler
             visibleIn( Visibility.application );
       moduleAssembly.addObjects( InteractionConstraintsService.class );
 
+      moduleAssembly.addObjects( RequiresPermission.RequiresPermissionConstraint.class );
+
       // Only expose the root the upper layers
       moduleAssembly.addTransients(
             RootContext.class).visibleIn( Visibility.application);

@@ -6,7 +6,16 @@
 
 <body>
 
-<h1>${request.resourceRef.remainingPart}</h1>
+<h1>
+    #set($path=$request.resourceRef.baseRef.path)
+    <a href="${path}/">Root</a>
+    #foreach ($segment in $request.resourceRef.relativeRef.segments)
+      #if($segment != ".")
+        #set($path=$path+"/"+$segment)
+        / <a href="${path}/">$segment</a>
+      #end
+    #end
+</h1>
 
 #if ($result.queries)
 <div class="block">
