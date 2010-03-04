@@ -58,6 +58,7 @@ import org.restlet.representation.Variant;
 import org.restlet.representation.WriterRepresentation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
+import org.restlet.security.User;
 import org.slf4j.LoggerFactory;
 import se.streamsource.dci.context.ContextNotFoundException;
 import se.streamsource.dci.context.IndexContext;
@@ -260,7 +261,13 @@ public abstract class CommandQueryServerResource
 
       Subject subject = new Subject();
       subject.getPrincipals().addAll( getRequest().getClientInfo().getPrincipals() );
-      subject.getPrivateCredentials().add( getRequest().getClientInfo().getUser().getSecret() );
+
+
+      User user = getRequest().getClientInfo().getUser();
+      if (user != null)
+      {
+         subject.getPrivateCredentials().add( user.getSecret() );
+      }
       subject.setReadOnly();
 
       context.playRoles( subject );
