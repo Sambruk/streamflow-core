@@ -45,6 +45,7 @@ import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.resource.task.EffectiveFieldDTO;
 import se.streamsource.streamflow.resource.task.EffectiveFieldsDTO;
 import se.streamsource.streamflow.resource.task.FieldDTO;
+import se.streamsource.streamflow.resource.task.ProxyUserTaskDTO;
 import se.streamsource.streamflow.resource.task.SubmittedFormDTO;
 import se.streamsource.streamflow.resource.task.SubmittedFormListDTO;
 import se.streamsource.streamflow.resource.task.SubmittedFormsListDTO;
@@ -53,6 +54,7 @@ import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
 import se.streamsource.streamflow.resource.task.TaskValue;
 import se.streamsource.streamflow.resource.task.TasksQuery;
 import se.streamsource.streamflow.resource.user.ChangePasswordCommand;
+import se.streamsource.streamflow.resource.user.NewProxyUserCommand;
 import se.streamsource.streamflow.resource.user.NewUserCommand;
 import se.streamsource.streamflow.resource.user.RegisterUserCommand;
 import se.streamsource.streamflow.resource.user.ResetPasswordCommand;
@@ -78,6 +80,7 @@ public class CommonResourceAssembler
             EntityReferenceDTO.class,
             NewCommentCommand.class,
             NewUserCommand.class,
+            NewProxyUserCommand.class,
             ResetPasswordCommand.class ).visibleIn( Visibility.application );
 
       // Queries
@@ -97,6 +100,7 @@ public class CommonResourceAssembler
             TaskValue.class,
             TaskGeneralDTO.class,
             TaskContactsDTO.class,
+            ProxyUserTaskDTO.class,
             CommentsDTO.class,
             CommentDTO.class,
             ConversationDTO.class,

@@ -36,7 +36,7 @@ public class UserAssembler
    public void assemble( ModuleAssembly module )
          throws AssemblyException
    {
-      module.addEntities( UsersEntity.class, UserEntity.class ).visibleIn( application );
+      module.addEntities( UsersEntity.class, UserEntity.class, ProxyUserEntity.class ).visibleIn( application );
 
       NamedQueries namedQueries = new NamedQueries();
       NamedQueryDescriptor queryDescriptor = new NamedSolrDescriptor( "solrquery", "" );

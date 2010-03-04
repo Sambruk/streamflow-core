@@ -15,6 +15,8 @@
 package se.streamsource.streamflow.web.domain.entity.user;
 
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
+import se.streamsource.streamflow.web.domain.entity.gtd.InboxQueries;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Actor;
 import se.streamsource.streamflow.web.domain.structure.user.ProxyUser;
 import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
 
@@ -24,6 +26,10 @@ import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
 public interface ProxyUserEntity
    extends ProxyUser,
       UserAuthentication.Data,
-      DomainEntity
+      DomainEntity,
+      Actor,
+
+      //Queries
+      InboxQueries
 {
 }

@@ -14,22 +14,15 @@ package se.streamsource.streamflow.web.context.access.projects;
 
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
-import org.qi4j.api.query.QueryBuilder;
-import org.qi4j.api.unitofwork.UnitOfWork;
 import se.streamsource.dci.context.Context;
 import se.streamsource.dci.context.ContextMixin;
 import se.streamsource.dci.context.IndexContext;
-import se.streamsource.dci.context.SubContext;
 import se.streamsource.dci.context.SubContexts;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.infrastructure.application.LinksValue;
-import se.streamsource.streamflow.web.context.access.organizations.AccessPointsContext;
-import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationQueries;
-import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
 import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
-import se.streamsource.streamflow.web.domain.structure.organization.AccessPoints;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 
 import static org.qi4j.api.query.QueryExpressions.*;
@@ -39,27 +32,30 @@ import static org.qi4j.api.query.QueryExpressions.*;
  */
 @Mixins(ProjectsContext.Mixin.class)
 public interface ProjectsContext
-   extends Context
+   extends SubContexts<TaskTypesContext>, IndexContext<LinksValue>, Context
 {
-   @SubContext
-   ProjectContext projects();
-
-   @SubContext
-   AccessPointsContext accesspoints();
-
    abstract class Mixin
       extends ContextMixin
       implements ProjectsContext
    {
-
-      public AccessPointsContext accesspoints()
+      public LinksValue index()
       {
-         return subContext( AccessPointsContext.class );
+         OrganizationQueries organizationQueries = context.role( OrganizationQueries.class );
+         Query<ProjectEntity> projects = organizationQueries.findProjects( "*" );
+         projects = projects.orderBy( orderBy( templateFor( Describable.Data.class ).description() ) );
+
+         LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
+
+         linksBuilder.addDescribables( projects );
+
+         return linksBuilder.newLinks();
       }
 
-      public ProjectContext projects( )
+      public TaskTypesContext context( String id )
       {
-         return subContext( ProjectContext.class);
+         context.playRoles( module.unitOfWorkFactory().currentUnitOfWork().get( Project.class, id ) );
+
+         return subContext( TaskTypesContext.class);
       }
    }
 }

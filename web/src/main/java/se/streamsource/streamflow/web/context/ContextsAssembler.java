@@ -23,6 +23,8 @@ import se.streamsource.dci.context.InteractionConstraintsService;
 import se.streamsource.streamflow.web.context.access.AccessContext;
 import se.streamsource.streamflow.web.context.access.organizations.AccessPointContext;
 import se.streamsource.streamflow.web.context.access.organizations.AccessPointsContext;
+import se.streamsource.streamflow.web.context.access.organizations.ProxyUserContext;
+import se.streamsource.streamflow.web.context.access.organizations.ProxyUsersContext;
 import se.streamsource.streamflow.web.context.conversation.ConversationParticipantContext;
 import se.streamsource.streamflow.web.context.conversation.ConversationParticipantsContext;
 import se.streamsource.streamflow.web.context.conversation.ConversationsContext;
@@ -183,13 +185,16 @@ public class ContextsAssembler
 
             // ACCESS
             AccessContext.class,
+            se.streamsource.streamflow.web.context.access.organizations.OrganizationContext.class,
             se.streamsource.streamflow.web.context.access.projects.ProjectsContext.class,
-            se.streamsource.streamflow.web.context.access.projects.ProjectContext.class,
             se.streamsource.streamflow.web.context.access.projects.TaskTypesContext.class,
             se.streamsource.streamflow.web.context.access.projects.LabelsContext.class,
             se.streamsource.streamflow.web.context.access.organizations.OrganizationsContext.class,
+            se.streamsource.streamflow.web.context.access.organizations.TaskContext.class,
             AccessPointsContext.class,
-            AccessPointContext.class
+            AccessPointContext.class,
+            ProxyUserContext.class,
+            ProxyUsersContext.class
             );
    }
 }

@@ -38,6 +38,7 @@ import se.streamsource.streamflow.web.domain.structure.organization.RolePolicy;
 import se.streamsource.streamflow.web.domain.structure.project.ProjectRoles;
 import se.streamsource.streamflow.web.domain.structure.role.Roles;
 import se.streamsource.streamflow.web.domain.structure.tasktype.TaskTypes;
+import se.streamsource.streamflow.web.domain.structure.user.ProxyUsers;
 
 /**
  * A root organization.
@@ -68,6 +69,7 @@ public interface OrganizationEntity
       SelectedLabels.Data,
       TaskTypes.Data,
       AccessPoints.Data,
+      ProxyUsers.Data,
 
       //Queries
       OrganizationParticipationsQueries,

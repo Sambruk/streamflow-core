@@ -12,54 +12,53 @@
 
 package se.streamsource.streamflow.web.context.access.organizations;
 
-import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.dci.context.Context;
 import se.streamsource.dci.context.ContextMixin;
 import se.streamsource.dci.context.IndexContext;
-import se.streamsource.streamflow.domain.structure.Describable;
-import se.streamsource.streamflow.infrastructure.application.AccessPointValue;
+import se.streamsource.dci.context.SubContexts;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.web.domain.structure.label.Label;
-import se.streamsource.streamflow.web.domain.structure.organization.AccessPoint;
+import se.streamsource.streamflow.infrastructure.application.LinksValue;
+import se.streamsource.streamflow.web.domain.entity.user.ProxyUserEntity;
+import se.streamsource.streamflow.web.domain.structure.user.ProxyUser;
+import se.streamsource.streamflow.web.domain.structure.user.ProxyUsers;
 
 /**
  * JAVADOC
  */
 @Mixins(AccessPointContext.Mixin.class)
 public interface AccessPointContext
-   extends IndexContext<AccessPointValue>, Context
+   extends SubContexts<ProxyUserContext>, IndexContext<LinksValue>, Context
 {
    abstract class Mixin
       extends ContextMixin
       implements AccessPointContext
    {
-      @Structure
-      ValueBuilderFactory vbf;
-
-
-      public AccessPointValue index()
+      public LinksValue index()
       {
-         AccessPoint.Data data = context.role( AccessPoint.Data.class );
-         Describable describable = context.role( Describable.class );
+         ProxyUsers.Data data = context.role( ProxyUsers.Data.class );
 
-         ValueBuilder<AccessPointValue> builder = vbf.newValueBuilder( AccessPointValue.class );
+         LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
 
-         builder.prototype().entity().set( EntityReference.getEntityReference( data ));
-         builder.prototype().name().set( describable.getDescription() );
-         builder.prototype().project().set( data.project().get().getDescription() );
-         builder.prototype().taskType().set( data.taskType().get().getDescription() );
+         linksBuilder.addDescribables( data.proxyUsers() );
 
-         for (Label label : data.labels().get())
-         {
-            builder.prototype().labels().get().add( label.getDescription() );
-         }
-
-         return builder.newInstance();
+         return linksBuilder.newLinks();
       }
 
+      public ProxyUserContext context( String id )
+      {
+         ProxyUsers.Data data = context.role( ProxyUsers.Data.class );
+         for (ProxyUser proxyUser : data.proxyUsers() )
+         {
+            ProxyUserEntity entity = (ProxyUserEntity) proxyUser;
+            if ( entity.identity().get().equals( id ) )
+            {
+               context.playRoles( proxyUser );
+            }
+         }
+         return subContext( ProxyUserContext.class);
+      }
    }
 }

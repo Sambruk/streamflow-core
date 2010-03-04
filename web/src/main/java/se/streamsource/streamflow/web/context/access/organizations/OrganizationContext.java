@@ -10,33 +10,49 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.context.access;
+package se.streamsource.streamflow.web.context.access.organizations;
 
 import org.qi4j.api.mixin.Mixins;
 import se.streamsource.dci.context.Context;
 import se.streamsource.dci.context.ContextMixin;
 import se.streamsource.dci.context.SubContext;
-import se.streamsource.streamflow.web.context.access.organizations.OrganizationsContext;
+import se.streamsource.streamflow.web.context.access.organizations.AccessPointsContext;
+import se.streamsource.streamflow.web.context.access.projects.ProjectsContext;
 
 /**
  * JAVADOC
  */
-@Mixins(AccessContext.Mixin.class)
-public interface AccessContext
+@Mixins(OrganizationContext.Mixin.class)
+public interface OrganizationContext
    extends Context
 {
    @SubContext
-   OrganizationsContext organizations();
+   ProjectsContext projects();
+
+   @SubContext
+   AccessPointsContext accesspoints();
+
+   @SubContext
+   ProxyUsersContext proxyusers();
 
    abstract class Mixin
       extends ContextMixin
-      implements AccessContext
+      implements OrganizationContext
    {
 
-      public OrganizationsContext organizations()
+      public AccessPointsContext accesspoints()
       {
+         return subContext( AccessPointsContext.class );
+      }
 
-         return subContext( OrganizationsContext.class );
+      public ProjectsContext projects( )
+      {
+         return subContext( ProjectsContext.class);
+      }
+
+      public ProxyUsersContext proxyusers()
+      {
+         return subContext( ProxyUsersContext.class );
       }
    }
 }

@@ -23,6 +23,7 @@ import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
 import se.streamsource.streamflow.web.domain.structure.project.ProjectRoles;
 import se.streamsource.streamflow.web.domain.structure.role.Roles;
 import se.streamsource.streamflow.web.domain.structure.tasktype.TaskTypes;
+import se.streamsource.streamflow.web.domain.structure.user.ProxyUsers;
 
 /**
  * JAVADOC
@@ -40,6 +41,7 @@ public interface Organization
       SelectedLabels,
       TaskTypes,
       Removable,
-      AccessPoints
+      AccessPoints,
+      ProxyUsers
 {
 }

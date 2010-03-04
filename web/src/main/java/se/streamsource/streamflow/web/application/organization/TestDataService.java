@@ -263,6 +263,14 @@ public interface TestDataService
             user.createLabel( "Label " + i );
 
 
+         // Access test data
+         ArrayList<Label> labels = new ArrayList<Label>();
+         labels.add( question );
+         organization.createAccessPoint( "AccessPoint", project, bug, labels );
+
+         organization.createProxyUser( "Charles Xavier", "professorx", "professorx" );
+
+
          uow.complete();
       }
 

@@ -13,47 +13,39 @@
 package se.streamsource.streamflow.web.context.access.organizations;
 
 import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.query.Query;
-import org.qi4j.api.unitofwork.UnitOfWork;
 import se.streamsource.dci.context.Context;
 import se.streamsource.dci.context.ContextMixin;
 import se.streamsource.dci.context.IndexContext;
 import se.streamsource.dci.context.SubContexts;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.infrastructure.application.LinksValue;
-import se.streamsource.streamflow.web.context.access.organizations.OrganizationContext;
-import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
-import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
+import se.streamsource.streamflow.resource.user.NewProxyUserCommand;
+import se.streamsource.streamflow.web.domain.entity.organization.AccessPointEntity;
+import se.streamsource.streamflow.web.domain.entity.user.ProxyUserEntity;
+import se.streamsource.streamflow.web.domain.structure.organization.AccessPoint;
+import se.streamsource.streamflow.web.domain.structure.organization.AccessPoints;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
+import se.streamsource.streamflow.web.domain.structure.user.ProxyUser;
+import se.streamsource.streamflow.web.domain.structure.user.ProxyUsers;
 
 /**
  * JAVADOC
  */
-@Mixins(OrganizationsContext.Mixin.class)
-public interface OrganizationsContext
-   extends SubContexts<OrganizationContext>, IndexContext<LinksValue>, Context
+@Mixins(ProxyUsersContext.Mixin.class)
+public interface ProxyUsersContext
+   extends Context
 {
+   // commands
+   void createproxyuser( NewProxyUserCommand proxyUser );
+
    abstract class Mixin
       extends ContextMixin
-      implements OrganizationsContext
+      implements ProxyUsersContext
    {
-      public LinksValue index()
+      public void createproxyuser( NewProxyUserCommand proxyUser )
       {
-         UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
-
-         Query<OrganizationEntity> entityQuery = uow.get( OrganizationsEntity.class, OrganizationsEntity.ORGANIZATIONS_ID ).organizations().newQuery( uow );
-
-         LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
-         linksBuilder.addDescribables( entityQuery );
-
-         return linksBuilder.newLinks();
-      }
-
-      public OrganizationContext context( String id )
-      {
-         context.playRoles( module.unitOfWorkFactory().currentUnitOfWork().get( Organization.class, id ) );
-
-         return subContext( OrganizationContext.class);
+         Organization organization = context.role( Organization.class );
+         organization.createProxyUser( proxyUser.name().get(), proxyUser.username().get(), proxyUser.password().get() );
       }
    }
 }
