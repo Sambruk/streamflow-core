@@ -15,6 +15,9 @@
 package se.streamsource.streamflow.web.context.users;
 
 import org.qi4j.api.mixin.Mixins;
+import se.streamsource.dci.context.IndexContext;
+import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
+import se.streamsource.streamflow.infrastructure.application.LinksValue;
 import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.resource.user.ChangePasswordCommand;
 import se.streamsource.streamflow.web.context.task.ContactContext;
@@ -31,7 +34,7 @@ import se.streamsource.streamflow.web.context.users.workspace.WorkspaceContext;
  */
 @Mixins(UserContext.Mixin.class)
 public interface UserContext
-      extends Context
+      extends Context, IndexContext<LinksValue>
 {
    @SubContext
    WorkspaceContext workspace();
@@ -54,6 +57,16 @@ public interface UserContext
          extends ContextMixin
          implements UserContext
    {
+      public LinksValue index()
+      {
+         return new LinksBuilder( module.valueBuilderFactory()).
+               addLink( "Inbox", "inbox", "inbox", "workspace/user/inbox/tasks" ).
+               addLink( "Assignments", "assignments", "assignments", "workspace/user/assignments/tasks" ).
+               addLink( "Delegations", "delegations", "delegations", "workspace/user/delegations/tasks" ).
+               addLink( "Waiting for", "waitingfor", "waitingfor", "workspace/user/waitingfor/tasks" ).
+               newLinks();
+      }
+
       public void changepassword( ChangePasswordCommand newPassword ) throws WrongPasswordException
       {
          UserAuthentication user = context.role(UserAuthentication.class);

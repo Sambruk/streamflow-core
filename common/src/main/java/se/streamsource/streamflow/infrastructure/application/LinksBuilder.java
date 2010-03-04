@@ -87,6 +87,18 @@ public class LinksBuilder
       return this;
    }
 
+   public LinksBuilder addLink( String description, String id, String rel, String href )
+   {
+      linkBuilder.prototype().text().set( description );
+      linkBuilder.prototype().id().set( id );
+      linkBuilder.prototype().rel().set( rel );
+      linkBuilder.prototype().href().set( href );
+
+      addLink(linkBuilder.newInstance());
+
+      return this;
+   }
+
    public LinksBuilder addLink( String description, EntityReference ref, String title )
    {
       if (titledLinkBuilder == null)

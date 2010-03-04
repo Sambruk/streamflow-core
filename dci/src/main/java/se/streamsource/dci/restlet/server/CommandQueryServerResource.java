@@ -18,7 +18,6 @@ import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.json.JSONException;
-import org.json.JSONWriter;
 import org.qi4j.api.common.QualifiedName;
 import org.qi4j.api.composite.TransientBuilderFactory;
 import org.qi4j.api.composite.TransientComposite;
@@ -26,7 +25,6 @@ import org.qi4j.api.constraint.Name;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.property.StateHolder;
 import org.qi4j.api.unitofwork.ConcurrentEntityModificationException;
@@ -61,11 +59,9 @@ import org.restlet.representation.WriterRepresentation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
 import org.slf4j.LoggerFactory;
-import se.streamsource.dci.context.Context;
 import se.streamsource.dci.context.ContextNotFoundException;
 import se.streamsource.dci.context.IndexContext;
 import se.streamsource.dci.context.InteractionConstraints;
-import se.streamsource.dci.context.InteractionConstraintsService;
 import se.streamsource.dci.context.InteractionContext;
 import se.streamsource.dci.context.SubContext;
 import se.streamsource.dci.context.SubContexts;
@@ -144,7 +140,7 @@ public abstract class CommandQueryServerResource
       queryTemplate = templates.getTemplate( "/se/streamsource/dci/restlet/server/query.html" );
       selectResourceTemplate = templates.getTemplate( "se/streamsource/dci/restlet/server/selectresource.html" );
       commandTemplate = templates.getTemplate( "se/streamsource/dci/restlet/server/command.html" );
-      linksTemplate = templates.getTemplate( "se/streamsource/dci/restlet/server/links.html" );
+      linksTemplate = templates.getTemplate( "se/streamsource/dci/restlet/server/links.htm" );
       valueTemplate = templates.getTemplate( "se/streamsource/dci/restlet/server/value.html" );
    }
 

@@ -76,9 +76,9 @@ public class ViewFilter
 
    @Override
    protected int doHandle( final Request request, final Response response )
-   {
+   { 
       List<MediaType> possibleMediaTypes = Arrays.asList( MediaType.TEXT_HTML, MediaType.APPLICATION_ATOM );
-      MediaType responseType = request.getClientInfo().getPreferredMediaType( possibleMediaTypes );
+      final MediaType responseType = request.getClientInfo().getPreferredMediaType( possibleMediaTypes );
       if (responseType != null && possibleMediaTypes.contains( responseType ))
       {
          List<Preference<MediaType>> mediaTypes = request.getClientInfo().getAcceptedMediaTypes();
@@ -123,7 +123,7 @@ public class ViewFilter
             try
             {
                final Reader reader = response.getEntity().getReader();
-               WriterRepresentation rep = new WriterRepresentation( MediaType.TEXT_HTML )
+               WriterRepresentation rep = new WriterRepresentation( responseType )
                {
                   @Override
                   public void write( Writer writer ) throws IOException
@@ -148,11 +148,12 @@ public class ViewFilter
                         {
                            if (object.opt( "links" ) != null)
                            {
-                              template = velocity.getTemplate( "se/streamsource/dci/restlet/server/links.html" );
-                              VelocityContext context = new VelocityContext( new JSONObjectContext( object ) );
+                              template = velocity.getTemplate( "se/streamsource/dci/restlet/server/links."+extension );
+
+                              VelocityContext context = new VelocityContext(  );
                               context.put( "request", request );
                               context.put( "response", response );
-                              context.put( "result", object.toString() );
+                              context.put( "result", new JSONObjectContext( object ) );
                               template.merge( context, writer );
                            } else
                               writer.write( object.toString() );
