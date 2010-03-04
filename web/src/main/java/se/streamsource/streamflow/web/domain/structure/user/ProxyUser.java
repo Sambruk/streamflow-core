@@ -15,6 +15,7 @@
 package se.streamsource.streamflow.web.domain.structure.user;
 
 import se.streamsource.streamflow.domain.structure.Describable;
+import se.streamsource.streamflow.web.domain.entity.gtd.Inbox;
 
 /**
  * A ProxyUser represents an entire external system. Actual users
@@ -24,6 +25,6 @@ import se.streamsource.streamflow.domain.structure.Describable;
  * in this system.
  */
 public interface ProxyUser
-   extends Describable
+   extends Describable, UserAuthentication, Inbox
 {
 }
