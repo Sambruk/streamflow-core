@@ -25,12 +25,12 @@ import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.dci.value.LinksValue;
+import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.administration.projects.members.TableMultipleSelectionModel;
 import se.streamsource.streamflow.client.ui.administration.projects.members.TableSelectionView;
-import se.streamsource.streamflow.infrastructure.application.LinksValue;
-import se.streamsource.streamflow.resource.roles.StringDTO;
 
 import javax.swing.*;
 import java.awt.*;
@@ -74,7 +74,7 @@ public class SelectUsersAndGroupsDialog
          {
             try
             {
-               ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
+               ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
                builder.prototype().string().set( addUsersView.searchText() );
                LinksValue list = client.query( "possibleusers", builder.newInstance(), LinksValue.class );
                addUsersView.getModel().setModel( list );
@@ -92,7 +92,7 @@ public class SelectUsersAndGroupsDialog
          {
             try
             {
-               ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
+               ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
                builder.prototype().string().set( addGroupsView.searchText() );
                LinksValue list = client.query( "possiblegroups", builder.newInstance(), LinksValue.class );
                addGroupsView.getModel().setModel( list );

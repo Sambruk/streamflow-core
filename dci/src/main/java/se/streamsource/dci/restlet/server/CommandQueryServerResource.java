@@ -67,8 +67,8 @@ import se.streamsource.dci.context.InteractionContext;
 import se.streamsource.dci.context.SubContext;
 import se.streamsource.dci.context.SubContexts;
 import se.streamsource.dci.value.IndexValue;
-import se.streamsource.streamflow.infrastructure.application.LinkValue;
-import se.streamsource.streamflow.infrastructure.application.LinksValue;
+import se.streamsource.dci.value.LinkValue;
+import se.streamsource.dci.value.LinksValue;
 
 import javax.security.auth.Subject;
 import java.io.IOException;

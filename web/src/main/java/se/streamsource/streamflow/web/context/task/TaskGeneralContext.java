@@ -16,21 +16,20 @@ package se.streamsource.streamflow.web.context.task;
 
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
+import se.streamsource.dci.value.*;
+import se.streamsource.dci.value.StringValue;
+import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.domain.structure.Notable;
-import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.infrastructure.application.LinksValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.resource.roles.DateDTO;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
-import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
 import se.streamsource.streamflow.web.domain.entity.task.TaskEntity;
 import se.streamsource.streamflow.web.domain.entity.task.TaskTypeQueries;
@@ -44,8 +43,6 @@ import se.streamsource.dci.context.Context;
 import se.streamsource.dci.context.ContextMixin;
 import se.streamsource.dci.context.IndexContext;
 import se.streamsource.dci.context.SubContext;
-import se.streamsource.streamflow.web.context.structure.DescribableContext;
-import se.streamsource.streamflow.web.context.structure.NotableContext;
 import se.streamsource.streamflow.web.context.structure.labels.LabelableContext;
 
 import static se.streamsource.streamflow.domain.interaction.gtd.States.*;
@@ -66,10 +63,10 @@ public interface TaskGeneralContext
    void tasktype( EntityReferenceDTO dto );
 
    @RequiresStatus(ACTIVE)
-   void changedescription( StringDTO stringValue );
+   void changedescription( StringValue stringValue );
 
    @RequiresStatus(ACTIVE)
-   void changenote( StringDTO noteValue );
+   void changenote( StringValue noteValue );
 
    LinksValue possibletasktypes();
    LinksValue possibleforms();
@@ -84,13 +81,13 @@ public interface TaskGeneralContext
       @Structure
       Module module;
 
-      public void changedescription( StringDTO stringValue )
+      public void changedescription( StringValue stringValue )
       {
          Describable describable = context.role( Describable.class );
          describable.changeDescription( stringValue.string().get() );
       }
 
-      public void changenote( StringDTO noteValue )
+      public void changenote( StringValue noteValue )
       {
          Notable notable = context.role( Notable.class );
          notable.changeNote( noteValue.string().get() );

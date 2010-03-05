@@ -22,7 +22,7 @@ import se.streamsource.dci.context.Context;
 import se.streamsource.dci.context.ContextMixin;
 import se.streamsource.dci.context.SubContext;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.infrastructure.application.LinksValue;
+import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.web.domain.entity.gtd.AssignmentsQueries;
 import se.streamsource.streamflow.web.domain.entity.gtd.DelegationsQueries;
 import se.streamsource.streamflow.web.domain.entity.gtd.InboxQueries;

@@ -1,4 +1,4 @@
-Scenario: Create, list and find user
+Scenario: Create and list user
 
 GivenScenarios: usersetup.scenario
 
@@ -11,8 +11,3 @@ Then events createdUser occurred
 
 When query users without parameters
 Then result contains "username":"test"
-
-When query findbyusername with
-{"string":"test"}
-Then result contains test
-

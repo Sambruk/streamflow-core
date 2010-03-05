@@ -15,18 +15,8 @@ package se.streamsource.streamflow.web.context.access.organizations;
 import org.qi4j.api.mixin.Mixins;
 import se.streamsource.dci.context.Context;
 import se.streamsource.dci.context.ContextMixin;
-import se.streamsource.dci.context.IndexContext;
-import se.streamsource.dci.context.SubContexts;
-import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.infrastructure.application.LinksValue;
 import se.streamsource.streamflow.resource.user.NewProxyUserCommand;
-import se.streamsource.streamflow.web.domain.entity.organization.AccessPointEntity;
-import se.streamsource.streamflow.web.domain.entity.user.ProxyUserEntity;
-import se.streamsource.streamflow.web.domain.structure.organization.AccessPoint;
-import se.streamsource.streamflow.web.domain.structure.organization.AccessPoints;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
-import se.streamsource.streamflow.web.domain.structure.user.ProxyUser;
-import se.streamsource.streamflow.web.domain.structure.user.ProxyUsers;
 
 /**
  * JAVADOC

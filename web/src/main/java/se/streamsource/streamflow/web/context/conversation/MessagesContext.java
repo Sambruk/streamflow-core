@@ -21,18 +21,15 @@ import se.streamsource.dci.context.Context;
 import se.streamsource.dci.context.ContextMixin;
 import se.streamsource.dci.context.IndexContext;
 import se.streamsource.dci.context.SubContexts;
+import se.streamsource.dci.value.*;
+import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.infrastructure.application.LinksValue;
 import se.streamsource.streamflow.resource.conversation.MessageDTO;
-import se.streamsource.streamflow.resource.roles.StringDTO;
-import se.streamsource.streamflow.web.context.organizations.MemberContext;
 import se.streamsource.streamflow.web.domain.entity.conversation.ConversationEntity;
 import se.streamsource.streamflow.web.domain.entity.conversation.MessageEntity;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipant;
 import se.streamsource.streamflow.web.domain.structure.conversation.Message;
 import se.streamsource.streamflow.web.domain.structure.conversation.Messages;
-import se.streamsource.streamflow.web.domain.structure.project.Member;
-import se.streamsource.streamflow.web.domain.structure.project.Members;
 
 /**
  * JAVADOC
@@ -41,7 +38,7 @@ import se.streamsource.streamflow.web.domain.structure.project.Members;
 public interface MessagesContext
    extends SubContexts<MessageContext>, IndexContext<LinksValue>, Context
 {
-   public void addmessage( StringDTO message);
+   public void addmessage( StringValue message);
 
    abstract class Mixin
       extends ContextMixin
@@ -66,7 +63,7 @@ public interface MessagesContext
          return links.newLinks();
       }
 
-      public void addmessage( StringDTO message )
+      public void addmessage( StringValue message )
       {
          Messages messages = context.role( Messages.class );
          messages.createMessage( message.string().get(), context.role( ConversationParticipant.class ) );

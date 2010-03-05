@@ -16,8 +16,7 @@ package se.streamsource.streamflow.client.ui.task;
 
 import ca.odell.glazedlists.gui.AdvancedTableFormat;
 import ca.odell.glazedlists.gui.WritableTableFormat;
-import se.streamsource.streamflow.infrastructure.application.LinkValue;
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
+import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.resource.task.TaskValue;
 
 import java.util.Comparator;

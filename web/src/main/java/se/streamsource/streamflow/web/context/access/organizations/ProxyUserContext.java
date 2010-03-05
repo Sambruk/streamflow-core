@@ -16,12 +16,10 @@ import org.qi4j.api.mixin.Mixins;
 import se.streamsource.dci.context.Context;
 import se.streamsource.dci.context.ContextMixin;
 import se.streamsource.dci.context.IndexContext;
-import se.streamsource.dci.context.SubContext;
 import se.streamsource.dci.context.SubContexts;
+import se.streamsource.dci.value.LinksValue;
+import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.infrastructure.application.LinksValue;
-import se.streamsource.streamflow.resource.roles.StringDTO;
-import se.streamsource.streamflow.web.context.access.projects.ProjectsContext;
 import se.streamsource.streamflow.web.domain.entity.gtd.Inbox;
 import se.streamsource.streamflow.web.domain.entity.gtd.InboxQueries;
 import se.streamsource.streamflow.web.domain.entity.task.TaskEntity;
@@ -36,7 +34,7 @@ public interface ProxyUserContext
    extends SubContexts<TaskContext>, Context, IndexContext<LinksValue>
 {
    // command
-   void createtask( StringDTO description );
+   void createtask( StringValue description );
 
 
    abstract class Mixin
@@ -55,7 +53,7 @@ public interface ProxyUserContext
          return linksBuilder.newLinks();
       }
 
-      public void createtask( StringDTO description )
+      public void createtask( StringValue description )
       {
          Inbox inbox = context.role( Inbox.class );
          AccessPoint.Data data = context.role( AccessPoint.Data.class );

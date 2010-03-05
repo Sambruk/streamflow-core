@@ -15,9 +15,9 @@
 package se.streamsource.streamflow.web.context.organizations.forms;
 
 import org.qi4j.api.mixin.Mixins;
+import se.streamsource.dci.value.*;
+import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.infrastructure.application.LinksValue;
-import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
 import se.streamsource.streamflow.web.domain.structure.form.Forms;
 import se.streamsource.dci.context.Context;
@@ -33,7 +33,7 @@ public interface FormsContext
 {
    LinksValue forms();
 
-   void createform( StringDTO formName );
+   void createform( StringValue formName );
 
    abstract class Mixin
       extends ContextMixin
@@ -46,7 +46,7 @@ public interface FormsContext
          return new LinksBuilder( module.valueBuilderFactory() ).rel("form").addDescribables( forms.forms() ).newLinks();
       }
 
-      public void createform( StringDTO formName )
+      public void createform( StringValue formName )
       {
          Forms forms = context.role(Forms.class);
          Form form = forms.createForm();

@@ -17,106 +17,75 @@ package se.streamsource.streamflow.infrastructure.application;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
+import se.streamsource.dci.value.LinkValue;
+import se.streamsource.dci.value.LinksValue;
+import se.streamsource.dci.value.TitledLinkValue;
 import se.streamsource.streamflow.domain.structure.Describable;
 
 /**
- * Builder for making it easier to create LinksValue/LinkValue
+ * Builder for making it easier to create LinksValue/LinkValue in a StreamFlow context
  */
 public class LinksBuilder
+   extends se.streamsource.dci.value.LinksBuilder
 {
-   private ValueBuilder<LinksValue> linksBuilder;
-   private ValueBuilder<LinkValue> linkBuilder;
-   private ValueBuilder<TitledLinkValue> titledLinkBuilder;
-   private ValueBuilderFactory vbf;
-
-   private String path;
-   private String rel;
-   private String command;
-
    public LinksBuilder( ValueBuilderFactory vbf )
    {
-      this.vbf = vbf;
-      linksBuilder = vbf.newValueBuilder( LinksValue.class );
-      linkBuilder = vbf.newValueBuilder( LinkValue.class );
+      super(vbf);
    }
 
-   public LinksBuilder path(String subPath)
+   @Override
+   public LinksBuilder path( String subPath )
    {
-      path = subPath;
-
+      super.path( subPath );
       return this;
    }
 
-   public LinksBuilder rel(String rel)
+   @Override
+   public LinksBuilder rel( String rel )
    {
-      this.rel = rel;
-
+      super.rel( rel );
       return this;
    }
 
+   @Override
    public LinksBuilder command( String commandName )
    {
-      this.command = commandName;
-      this.rel = commandName;
+      super.command( commandName );
       return this;
    }
 
+   @Override
    public LinksBuilder addLink( LinkValue linkValue )
    {
-      linksBuilder.prototype().links().get().add( linkValue  );
+      super.addLink( linkValue );
       return this;
    }
 
+   @Override
    public LinksBuilder addLink( String description, EntityReference ref )
    {
-      return addLink(description, ref.identity());
+      super.addLink( description, ref );
+      return this;
    }
 
+   @Override
    public LinksBuilder addLink( String description, String id )
    {
-      linkBuilder.prototype().text().set( description );
-      linkBuilder.prototype().id().set( id );
-      if (command != null)
-         linkBuilder.prototype().href().set( command+"?entity="+id );
-      else
-         linkBuilder.prototype().href().set( (path == null ? "" : path+"/")+id+"/" );
-      linkBuilder.prototype().rel().set( rel );
-
-      addLink(linkBuilder.newInstance());
-
+      super.addLink( description, id );
       return this;
    }
 
+   @Override
    public LinksBuilder addLink( String description, String id, String rel, String href )
    {
-      linkBuilder.prototype().text().set( description );
-      linkBuilder.prototype().id().set( id );
-      linkBuilder.prototype().rel().set( rel );
-      linkBuilder.prototype().href().set( href );
-
-      addLink(linkBuilder.newInstance());
-
+      super.addLink( description, id, rel, href );
       return this;
    }
 
+   @Override
    public LinksBuilder addLink( String description, EntityReference ref, String title )
    {
-      if (titledLinkBuilder == null)
-         titledLinkBuilder = vbf.newValueBuilder( TitledLinkValue.class );
-
-      titledLinkBuilder.prototype().text().set( description );
-      titledLinkBuilder.prototype().id().set( ref.identity() );
-
-      if (command != null)
-         titledLinkBuilder.prototype().href().set( command+"?entity="+ref.identity() );
-      else
-         titledLinkBuilder.prototype().href().set( (path == null ? "" : path+"/")+ref.identity()+"/" );
-      titledLinkBuilder.prototype().rel().set( rel );
-
-      titledLinkBuilder.prototype().title().set( title );
-
-      linksBuilder.prototype().links().get().add( titledLinkBuilder.newInstance() );
-
+      super.addLink( description, ref, title );
       return this;
    }
 
@@ -132,7 +101,8 @@ public class LinksBuilder
 
    public LinksBuilder addDescribable( Describable item )
    {
-      return addLink( item.getDescription(), EntityReference.getEntityReference( item ) );
+      addLink( item.getDescription(), EntityReference.getEntityReference( item ) );
+      return this;
    }
 
    public LinksBuilder addDescribable( Describable item, Describable group )
@@ -142,7 +112,8 @@ public class LinksBuilder
 
    public LinksBuilder addDescribable( Describable item, String group )
    {
-      return addLink( item.getDescription(), EntityReference.getEntityReference( item ), group );
+      addLink( item.getDescription(), EntityReference.getEntityReference( item ), group );
+      return this;
    }
 
    public LinksValue newLinks()

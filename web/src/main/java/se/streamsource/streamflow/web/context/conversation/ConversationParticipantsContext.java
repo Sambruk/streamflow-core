@@ -23,7 +23,7 @@ import se.streamsource.dci.context.ContextMixin;
 import se.streamsource.dci.context.IndexContext;
 import se.streamsource.dci.context.SubContexts;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.infrastructure.application.LinksValue;
+import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.web.domain.entity.conversation.ConversationParticipantsQueries;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;

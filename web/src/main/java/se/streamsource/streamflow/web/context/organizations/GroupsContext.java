@@ -17,9 +17,9 @@ package se.streamsource.streamflow.web.context.organizations;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
+import se.streamsource.dci.value.*;
+import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.infrastructure.application.LinksValue;
-import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.web.domain.entity.organization.GroupEntity;
 import se.streamsource.streamflow.web.domain.structure.group.Group;
 import se.streamsource.streamflow.web.domain.structure.group.Groups;
@@ -35,7 +35,7 @@ public interface GroupsContext
    extends SubContexts<GroupContext>, Context
 {
    public LinksValue groups();
-   public void creategroup( StringDTO name );
+   public void creategroup( StringValue name );
 
    abstract class Mixin
       extends ContextMixin
@@ -51,7 +51,7 @@ public interface GroupsContext
          return new LinksBuilder( module.valueBuilderFactory() ).rel( "group" ).addDescribables( groups.groups() ).newLinks();
       }
 
-      public void creategroup( StringDTO name )
+      public void creategroup( StringValue name )
       {
          Groups groups = context.role(Groups.class);
          groups.createGroup( name.string().get() );

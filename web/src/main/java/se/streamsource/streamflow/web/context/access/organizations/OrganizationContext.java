@@ -16,7 +16,6 @@ import org.qi4j.api.mixin.Mixins;
 import se.streamsource.dci.context.Context;
 import se.streamsource.dci.context.ContextMixin;
 import se.streamsource.dci.context.SubContext;
-import se.streamsource.streamflow.web.context.access.organizations.AccessPointsContext;
 import se.streamsource.streamflow.web.context.access.projects.ProjectsContext;
 
 /**

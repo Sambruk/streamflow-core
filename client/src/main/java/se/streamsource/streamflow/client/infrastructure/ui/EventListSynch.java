@@ -16,7 +16,6 @@ package se.streamsource.streamflow.client.infrastructure.ui;
 
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.TransactionList;
-import se.streamsource.streamflow.infrastructure.application.LinkValue;
 
 import java.util.Collection;
 

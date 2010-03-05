@@ -15,15 +15,12 @@
 package se.streamsource.dci.restlet.client;
 
 import org.qi4j.api.common.QualifiedName;
-import org.qi4j.api.entity.EntityReference;
-import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.property.StateHolder;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.api.value.ValueComposite;
 import org.qi4j.spi.Qi4jSPI;
@@ -35,7 +32,6 @@ import org.restlet.Uniform;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.MediaType;
-import org.restlet.data.Method;
 import org.restlet.data.Preference;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
@@ -45,10 +41,7 @@ import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.infrastructure.application.LinkValue;
-import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
-import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
-import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
+import se.streamsource.dci.value.LinkValue;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -66,16 +59,10 @@ public final class CommandQueryClient
    private  ObjectBuilderFactory obf;
 
    @Structure
-   private  UnitOfWorkFactory uowf;
-
-   @Structure
    private  Qi4jSPI spi;
 
-   @Structure
-   private  Module module;
-
-   @Service
-   private TransactionVisitor transactionVisitor;
+   @Uses
+   private ResponseHandler responseHandler;
 
    @Uses
    private Uniform client;
@@ -153,12 +140,9 @@ public final class CommandQueryClient
       } );
    }
 
-   public void postEntityCommand( LinkValue link) throws ResourceException
+   public void postLink( LinkValue link) throws ResourceException
    {
-      ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
-      builder.prototype().entity().set( EntityReference.parseEntityReference( link.id().get() ));
-
-      postCommand(link.rel().get(), builder.newInstance());
+      postCommand(link.rel().get(), new EmptyRepresentation());
    }
 
    public void postCommand( String operation ) throws ResourceException
@@ -189,7 +173,7 @@ public final class CommandQueryClient
          throw new ResourceException( client.getStatus() );
       } else
       {
-         processEvents( client.getResponse() );
+         responseHandler.handleResponse( client.getResponse() );
       }
    }
 
@@ -286,7 +270,7 @@ public final class CommandQueryClient
                throw new ResourceException( client.getStatus() );
             } else
             {
-               processEvents( client.getResponse() );
+               responseHandler.handleResponse( client.getResponse() );
             }
             break;
          } catch (ResourceException e)
@@ -331,7 +315,7 @@ public final class CommandQueryClient
                throw new ResourceException( client.getStatus() );
             } else
             {
-               processEvents( client.getResponse() );
+               responseHandler.handleResponse( client.getResponse() );
             }
 
             break;
@@ -357,58 +341,20 @@ public final class CommandQueryClient
       }
    }
 
-   public <T extends ClientResource> T getSubResource( String pathSegment, Class<T> clientResource )
-   {
-      T resource = getResource( reference.clone().addSegment( pathSegment ), clientResource );
-      resource.setNext( client );
-      return resource;
-   }
-
-   public <T extends ClientResource> T getResource( Reference ref, Class<T> clientResource )
-   {
-      T resource = obf.newObjectBuilder( clientResource ).use( client, new Context(), ref ).newInstance();
-      return resource;
-   }
-
    public CommandQueryClient getSubClient( String pathSegment )
    {
       Reference subReference = reference.clone().addSegment( pathSegment ).addSegment( "" );
-      return obf.newObjectBuilder( CommandQueryClient.class ).use( client, new Context(), subReference ).newInstance();
+      return obf.newObjectBuilder( CommandQueryClient.class ).use( client, new Context(), subReference, responseHandler ).newInstance();
    }
 
    public CommandQueryClient getClient( String relativePath )
    {
       Reference reference = new Reference(this.reference, relativePath);
-      return obf.newObjectBuilder( CommandQueryClient.class ).use( client, new Context(), reference ).newInstance();
+      return obf.newObjectBuilder( CommandQueryClient.class ).use( client, new Context(), reference, responseHandler ).newInstance();
    }
 
    public CommandQueryClient getClient( LinkValue link)
    {
       return getClient( link.href().get() );
-   }
-
-   private void processEvents( Response response )
-   {
-      if (response.getStatus().isSuccess() &&
-            (response.getRequest().getMethod().equals( Method.POST ) ||
-                  response.getRequest().getMethod().equals( Method.DELETE ) ||
-                  response.getRequest().getMethod().equals( Method.PUT )))
-      {
-         try
-         {
-            Representation entity = response.getEntity();
-            if (entity != null && !(entity instanceof EmptyRepresentation))
-            {
-               String source = entity.getText();
-
-               final TransactionEvents transactionEvents = vbf.newValueFromJSON( TransactionEvents.class, source );
-
-               transactionVisitor.visit( transactionEvents );
-            }
-         } catch (Exception e)
-         {
-            throw new RuntimeException( "Could not process events", e );
-         }
-      }
    }
 }

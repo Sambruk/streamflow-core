@@ -12,38 +12,23 @@
 
 package se.streamsource.streamflow.web.context.access.projects;
 
-import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.query.Query;
-import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.dci.context.Context;
 import se.streamsource.dci.context.ContextMixin;
 import se.streamsource.dci.context.IndexContext;
 import se.streamsource.dci.context.SubContexts;
-import se.streamsource.streamflow.domain.structure.Describable;
-import se.streamsource.streamflow.infrastructure.application.LinkValue;
+import se.streamsource.dci.value.LinksValue;
+import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.infrastructure.application.LinksValue;
-import se.streamsource.streamflow.resource.roles.StringDTO;
-import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
-import se.streamsource.streamflow.web.domain.entity.organization.OrganizationQueries;
-import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
-import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
 import se.streamsource.streamflow.web.domain.entity.project.ProjectLabelsQueries;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
 import se.streamsource.streamflow.web.domain.structure.organization.AccessPoints;
-import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.tasktype.TaskType;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import static org.qi4j.api.query.QueryExpressions.*;
 
 /**
  * JAVADOC
@@ -52,7 +37,7 @@ import static org.qi4j.api.query.QueryExpressions.*;
 public interface LabelsContext
    extends SubContexts<LabelsContext>, IndexContext<LinksValue>, Context
 {
-   void createaccesspoint( StringDTO name );
+   void createaccesspoint( StringValue name );
 
    abstract class Mixin
       extends ContextMixin
@@ -84,7 +69,7 @@ public interface LabelsContext
          return linksBuilder.newLinks();
       }
 
-      public void createaccesspoint( StringDTO name )
+      public void createaccesspoint( StringValue name )
       {
          Project project = context.role( Project.class );
          TaskType taskType = context.role( TaskType.class );

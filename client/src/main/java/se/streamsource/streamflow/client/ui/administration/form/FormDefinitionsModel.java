@@ -28,7 +28,7 @@ import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
-import se.streamsource.streamflow.resource.roles.StringDTO;
+import se.streamsource.dci.value.StringValue;
 
 import javax.swing.AbstractListModel;
 import java.util.List;
@@ -73,7 +73,7 @@ public class FormDefinitionsModel
    {
       try
       {
-         ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
+         ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
          builder.prototype().string().set( description );
 
          client.postCommand( "createForm", builder.newInstance() );

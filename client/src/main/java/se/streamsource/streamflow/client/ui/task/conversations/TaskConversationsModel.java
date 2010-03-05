@@ -24,19 +24,18 @@ import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.dci.value.*;
+import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
 import se.streamsource.streamflow.client.ui.task.TaskResources;
-import se.streamsource.streamflow.infrastructure.application.LinkValue;
-import se.streamsource.streamflow.infrastructure.application.LinksValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
 import se.streamsource.streamflow.infrastructure.event.source.EventVisitorFilter;
 import se.streamsource.streamflow.resource.conversation.ConversationDTO;
-import se.streamsource.streamflow.resource.roles.StringDTO;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -100,7 +99,7 @@ public class TaskConversationsModel
    {
       try
       {
-         ValueBuilder<StringDTO> newTopic = vbf.newValue( StringDTO.class ).buildWith();
+         ValueBuilder<StringValue> newTopic = vbf.newValue( StringValue.class ).buildWith();
          newTopic.prototype().string().set( topic );
          client.postCommand( "create", newTopic.newInstance() );
          refresh();

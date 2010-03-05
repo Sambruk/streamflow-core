@@ -14,8 +14,7 @@
 
 package se.streamsource.streamflow.client.ui.administration.projects.members;
 
-import se.streamsource.streamflow.infrastructure.application.LinkValue;
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
+import se.streamsource.dci.value.LinkValue;
 
 import javax.swing.event.TableModelEvent;
 import java.util.HashMap;

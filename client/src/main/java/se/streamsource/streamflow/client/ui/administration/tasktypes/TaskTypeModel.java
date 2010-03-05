@@ -26,7 +26,7 @@ import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.Forms
 import se.streamsource.streamflow.client.ui.administration.label.SelectedLabelsModel;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
-import se.streamsource.streamflow.resource.roles.StringDTO;
+import se.streamsource.dci.value.StringValue;
 
 /**
  * JAVADOC
@@ -52,7 +52,7 @@ public class TaskTypeModel
 
    public void changeDescription( String newName )
    {
-      ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
+      ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
       builder.prototype().string().set( newName );
 
       try

@@ -3,7 +3,7 @@ package se.streamsource.streamflow.client.ui.task;
 import org.jdesktop.swingx.JXLabel;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import se.streamsource.streamflow.infrastructure.application.LinkValue;
+import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.BorderFactory;

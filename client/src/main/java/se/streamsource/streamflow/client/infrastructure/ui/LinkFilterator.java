@@ -15,10 +15,8 @@
 package se.streamsource.streamflow.client.infrastructure.ui;
 
 import ca.odell.glazedlists.TextFilterator;
-import se.streamsource.streamflow.infrastructure.application.GroupedListItemValue;
-import se.streamsource.streamflow.infrastructure.application.LinkValue;
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
-import se.streamsource.streamflow.infrastructure.application.TitledLinkValue;
+import se.streamsource.dci.value.LinkValue;
+import se.streamsource.dci.value.TitledLinkValue;
 
 import java.util.List;
 

@@ -19,11 +19,11 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
-import se.streamsource.streamflow.domain.structure.Describable;
+import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.infrastructure.application.LinksValue;
+import se.streamsource.dci.value.LinksValue;
+import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
-import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.web.domain.entity.organization.GroupEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationQueries;
@@ -51,8 +51,8 @@ public interface AdministratorsContext
    public LinksValue administrators();
 
    public void addadministrator( EntityReferenceDTO participantId );
-   public LinksValue possibleusers( StringDTO query );
-   public LinksValue possiblegroups( StringDTO query );
+   public LinksValue possibleusers( StringValue query );
+   public LinksValue possiblegroups( StringValue query );
 
    abstract class Mixin
       extends ContextMixin
@@ -85,7 +85,7 @@ public interface AdministratorsContext
          role.grantRole( participant, adminRole );
       }
 
-      public LinksValue possibleusers( StringDTO query )
+      public LinksValue possibleusers( StringValue query )
       {
          OrganizationQueries organization = context.role(OrganizationQueries.class);
 
@@ -111,7 +111,7 @@ public interface AdministratorsContext
       }
 
 
-      public LinksValue possiblegroups( StringDTO query )
+      public LinksValue possiblegroups( StringValue query )
       {
          OrganizationQueries organization = context.role(OrganizationQueries.class);
 

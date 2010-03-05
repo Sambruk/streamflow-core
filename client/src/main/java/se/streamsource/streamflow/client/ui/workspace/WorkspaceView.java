@@ -85,12 +85,16 @@ public class WorkspaceView
 
    private Component currentSelection = new JLabel( "<html><h1>Welcome to StreamFlow</h1>Begin by selecting a context by using the blue button</html>", JLabel.CENTER );
    public Popup popup;
+
+
    public JPanel contextPanel;
+   private JPanel searchPanel;
+
+   private JPanel topPanel;
+   private CardLayout topLayout = new CardLayout();
+
    public TasksDetailView2 detailView;
    public TasksModel tasksModel;
-
-   @Uses
-   private ObjectBuilder<RefreshTaskCountTask> taskCountTask;
 
    public WorkspaceView( final @Service ApplicationContext context,
                          final @Structure ObjectBuilderFactory obf )
@@ -110,10 +114,18 @@ public class WorkspaceView
       selectedContext.setFont( selectedContext.getFont().deriveFont( Font.ITALIC ) );
       contextPanel.add( selectedContext, BorderLayout.CENTER );
       contextPanel.add( new JButton( getActionMap().get( "showSearch" ) ), BorderLayout.EAST );
+
+      searchPanel = new JPanel(new BorderLayout());
       searchField = new JTextField();
       searchField.setAction( getActionMap().get( "search" ) );
+      searchPanel.add( searchField, BorderLayout.CENTER );
+      searchPanel.add(new JButton(getActionMap().get( "hideSearch" )), BorderLayout.EAST );
 
-      add( contextPanel, BorderLayout.NORTH );
+      topPanel = new JPanel(topLayout);
+      topPanel.add( contextPanel, "context" );
+      topPanel.add(searchPanel, "search");
+
+      add( topPanel, BorderLayout.NORTH );
       add( currentSelection, BorderLayout.CENTER );
 
       workspaceTree = new JXTree();
@@ -443,16 +455,15 @@ public class WorkspaceView
    {
       if (popup == null)
       {
-         contextPanel.remove( searchField );
-         contextPanel.add( selectedContext, BorderLayout.CENTER );
-
          Point location = selectContextButton.getLocationOnScreen();
          popup = PopupFactory.getSharedInstance().getPopup( this, workspaceTree, (int) location.getX(), (int) location.getY() + selectContextButton.getHeight() );
          popup.show();
 
-         return taskCountTask.use( workspaceTree, model.getRoot() ).newInstance();
+         return obf.newObjectBuilder( RefreshTaskCountTask.class ).use( workspaceTree, model.getRoot() ).newInstance();
       } else
       {
+         popup.hide();
+         popup = null;
          return null;
       }
    }
@@ -460,10 +471,7 @@ public class WorkspaceView
    @Action
    public void showSearch()
    {
-      contextPanel.remove( selectedContext );
-      contextPanel.add( searchField, BorderLayout.CENTER );
-      contextPanel.revalidate();
-      contextPanel.repaint();
+      topLayout.show( topPanel, "search" );
       searchField.requestFocusInWindow();
 
       TaskTableView view = obf.newObjectBuilder( TaskTableView.class ).
@@ -480,6 +488,16 @@ public class WorkspaceView
 
 
       add( currentSelection, BorderLayout.CENTER );
+   }
+
+   @Action
+   public void hideSearch()
+   {
+      topLayout.show( topPanel, "context" );
+
+      TreePath[] selection = workspaceTree.getSelectionPaths();
+      workspaceTree.clearSelection();
+      workspaceTree.setSelectionPaths( selection );
    }
 
    @Action

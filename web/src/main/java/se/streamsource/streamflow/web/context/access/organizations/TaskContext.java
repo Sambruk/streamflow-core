@@ -19,26 +19,14 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.dci.context.Context;
 import se.streamsource.dci.context.ContextMixin;
 import se.streamsource.dci.context.IndexContext;
-import se.streamsource.dci.context.SubContexts;
+import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.domain.structure.Describable;
-import se.streamsource.streamflow.domain.structure.Notable;
-import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.infrastructure.application.LinksValue;
-import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.resource.task.ProxyUserTaskDTO;
 import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
 import se.streamsource.streamflow.web.domain.entity.task.TaskEntity;
-import se.streamsource.streamflow.web.domain.entity.user.ProxyUserEntity;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.organization.AccessPoint;
-import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.task.Task;
-import se.streamsource.streamflow.web.domain.structure.tasktype.TaskType;
-import se.streamsource.streamflow.web.domain.structure.user.ProxyUser;
-import se.streamsource.streamflow.web.domain.structure.user.ProxyUsers;
-
-import java.util.List;
 
 /**
  * JAVADOC
@@ -47,7 +35,7 @@ import java.util.List;
 public interface TaskContext
       extends IndexContext<ProxyUserTaskDTO>, Context
 {
-   void changedescription( StringDTO newDescription );
+   void changedescription( StringValue newDescription );
 
    void sendtofunction();
 
@@ -77,7 +65,7 @@ public interface TaskContext
          return builder.newInstance();
       }
 
-      public void changedescription( StringDTO newDescription )
+      public void changedescription( StringValue newDescription )
       {
          Describable describable = context.role( Describable.class );
          describable.changeDescription( newDescription.string().get() );

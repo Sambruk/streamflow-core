@@ -18,7 +18,7 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
 import org.restlet.data.Reference;
-import se.streamsource.streamflow.infrastructure.application.LinksValue;
+import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.web.context.task.TasksContext;
 import se.streamsource.streamflow.web.domain.entity.gtd.DelegationsQueries;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Delegatable;

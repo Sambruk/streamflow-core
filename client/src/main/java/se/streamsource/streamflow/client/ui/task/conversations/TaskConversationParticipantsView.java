@@ -16,9 +16,9 @@ package se.streamsource.streamflow.client.ui.task.conversations;
 
 import ca.odell.glazedlists.event.ListEvent;
 import ca.odell.glazedlists.event.ListEventListener;
+import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.client.infrastructure.ui.ModifiedFlowLayout;
 import se.streamsource.streamflow.client.ui.task.RemovableLabel;
-import se.streamsource.streamflow.infrastructure.application.LinkValue;
 
 import javax.swing.JPanel;
 import java.awt.BorderLayout;

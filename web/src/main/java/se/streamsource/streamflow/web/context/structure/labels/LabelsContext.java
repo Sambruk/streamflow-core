@@ -17,9 +17,9 @@ package se.streamsource.streamflow.web.context.structure.labels;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
+import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.infrastructure.application.LinksValue;
-import se.streamsource.streamflow.resource.roles.StringDTO;
+import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.label.Labels;
 import se.streamsource.dci.context.Context;
@@ -34,7 +34,7 @@ public interface LabelsContext
    extends Context, SubContexts<LabelContext>
 {
    LinksValue labels();
-   void createlabel( StringDTO name );
+   void createlabel( StringValue name );
 
    abstract class Mixin
       extends ContextMixin
@@ -48,7 +48,7 @@ public interface LabelsContext
          return new LinksBuilder(module.valueBuilderFactory()).rel( "label" ).addDescribables( context.role(Labels.class).getLabels()).newLinks();
       }
 
-      public void createlabel( StringDTO name )
+      public void createlabel( StringValue name )
       {
          Labels labels = context.role(Labels.class);
 

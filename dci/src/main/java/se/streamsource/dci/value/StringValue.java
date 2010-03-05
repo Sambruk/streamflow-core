@@ -12,15 +12,18 @@
  *
  */
 
-package se.streamsource.streamflow.infrastructure.application;
+package se.streamsource.dci.value;
 
+import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueComposite;
 
 /**
- * JAVADOC
+ * Simple value that represents a single string.
  */
-public interface TitledLinkValue
-   extends LinkValue
+public interface StringValue
+      extends ValueComposite
 {
-   Property<String> title();
+   @UseDefaults
+   Property<String> string();
 }

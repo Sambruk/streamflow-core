@@ -22,6 +22,9 @@ import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
+import se.streamsource.dci.value.LinkValue;
+import se.streamsource.dci.value.LinksValue;
+import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
@@ -29,11 +32,8 @@ import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FormsModel;
 import se.streamsource.streamflow.client.ui.administration.label.SelectedLabelsModel;
-import se.streamsource.streamflow.infrastructure.application.LinksValue;
-import se.streamsource.streamflow.infrastructure.application.LinkValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
-import se.streamsource.streamflow.resource.roles.StringDTO;
 
 /**
  * List of tasktypes in an Organization
@@ -91,7 +91,7 @@ public class TaskTypesModel
    {
       try
       {
-         ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
+         ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
          builder.prototype().string().set( taskTypeName );
          client.postCommand( "createtasktype", builder.newInstance() );
       } catch (ResourceException e)

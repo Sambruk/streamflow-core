@@ -18,8 +18,7 @@ import org.jdesktop.swingx.JXTable;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.infrastructure.application.LinksValue;
-import se.streamsource.streamflow.infrastructure.application.ListValue;
+import se.streamsource.dci.value.LinksValue;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;

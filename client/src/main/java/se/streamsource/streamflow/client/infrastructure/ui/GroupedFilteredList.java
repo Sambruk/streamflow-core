@@ -22,8 +22,8 @@ import ca.odell.glazedlists.event.ListEvent;
 import ca.odell.glazedlists.event.ListEventListener;
 import ca.odell.glazedlists.swing.EventListModel;
 import ca.odell.glazedlists.swing.TextComponentMatcherEditor;
-import se.streamsource.streamflow.infrastructure.application.LinkValue;
-import se.streamsource.streamflow.infrastructure.application.TitledLinkValue;
+import se.streamsource.dci.value.LinkValue;
+import se.streamsource.dci.value.TitledLinkValue;
 
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -32,7 +32,6 @@ import javax.swing.JTextField;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.ListSelectionEvent;
 import java.awt.BorderLayout;
-import java.util.Comparator;
 
 /**
  * JAVADOC

@@ -26,8 +26,8 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.infrastructure.application.LinkValue;
-import se.streamsource.streamflow.infrastructure.application.LinksValue;
+import se.streamsource.dci.value.LinkValue;
+import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.source.EventCollector;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
@@ -169,11 +169,26 @@ public class GenericSteps
       current = (Context) previous;
    }
 
-   @Given("context for link $index")
-   public void givenLink(int index)
+   @Given("context for link nr $index")
+   public void givenLinkWithIndex(int index)
    {
       LinkValue link = ((LinksValue)result).links().get().get( index );
       current = ((SubContexts)current).context( link.id().get() );
+   }
+
+   @Given("context for link named $name")
+   public void givenLinkNamed(String name)
+   {
+      for (LinkValue linkValue : ((LinksValue) result).links().get())
+      {
+         if (linkValue.text().get().equals(name))
+         {
+            current = linkValue;
+            break;
+         }
+      }
+
+      throw new IllegalArgumentException("No link found named "+name);
    }
 
    @When("query $name with $parameters")

@@ -96,7 +96,7 @@ public class TaskInfoView extends JPanel implements Observer
 
       description.setText( task.text().get());
 
-      taskId.setText( task.taskId().get() != null ? "("+task.taskId().get()+")" : "" );
+      taskId.setText( task.taskId().get() != null ? "(#"+task.taskId().get()+")" : "" );
 
 
       created.setText(format.format( task.creationDate().get())+(task.createdBy().get() != null ? "("+task.createdBy().get()+")":""));

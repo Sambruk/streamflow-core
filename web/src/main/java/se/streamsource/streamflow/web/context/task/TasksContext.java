@@ -20,10 +20,10 @@ import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.structure.Module;
 import org.restlet.data.Reference;
-import se.streamsource.streamflow.domain.structure.Describable;
+import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.infrastructure.application.LinksValue;
-import se.streamsource.streamflow.resource.roles.StringDTO;
+import se.streamsource.dci.value.LinksValue;
+import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.web.domain.entity.task.TaskEntity;
 import se.streamsource.streamflow.web.domain.entity.user.SearchTaskQueries;
 import se.streamsource.streamflow.web.domain.structure.task.Task;
@@ -39,7 +39,7 @@ import se.streamsource.dci.context.SubContexts;
 public interface TasksContext
    extends SubContexts<TaskContext>, Context
 {
-   LinksValue search( StringDTO query);
+   LinksValue search( StringValue query);
 
    abstract class Mixin
       extends ContextMixin
@@ -58,7 +58,7 @@ public interface TasksContext
       @Structure
       Module module;
 
-      public LinksValue search( StringDTO query )
+      public LinksValue search( StringValue query )
       {
          SearchTaskQueries taskQueries = context.role( SearchTaskQueries.class );
          String name = context.role( UserAuthentication.Data.class ).userName().get();

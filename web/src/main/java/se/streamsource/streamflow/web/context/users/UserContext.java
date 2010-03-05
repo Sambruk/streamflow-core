@@ -16,11 +16,10 @@ package se.streamsource.streamflow.web.context.users;
 
 import org.qi4j.api.mixin.Mixins;
 import se.streamsource.dci.context.IndexContext;
+import se.streamsource.dci.value.*;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.infrastructure.application.LinksValue;
-import se.streamsource.streamflow.resource.roles.StringDTO;
+import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.resource.user.ChangePasswordCommand;
-import se.streamsource.streamflow.web.context.task.ContactContext;
 import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
 import se.streamsource.streamflow.web.domain.structure.user.WrongPasswordException;
 import se.streamsource.dci.context.Context;
@@ -50,7 +49,7 @@ public interface UserContext
 
    void changepassword( ChangePasswordCommand newPassword ) throws WrongPasswordException;
    
-   public void resetpassword( StringDTO command );
+   public void resetpassword( StringValue command );
    public void changedisabled();
 
    abstract class Mixin
@@ -74,7 +73,7 @@ public interface UserContext
          user.changePassword( newPassword.oldPassword().get(), newPassword.newPassword().get() );
       }
 
-      public void resetpassword( StringDTO command )
+      public void resetpassword( StringValue command )
       {
          UserAuthentication user = context.role(UserAuthentication.class);
 

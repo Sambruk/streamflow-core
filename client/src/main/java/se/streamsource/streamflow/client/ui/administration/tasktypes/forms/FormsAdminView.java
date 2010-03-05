@@ -18,8 +18,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.ui.administration.AdministrationView;
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
-import se.streamsource.streamflow.infrastructure.application.LinkValue;
+import se.streamsource.dci.value.LinkValue;
 
 import javax.swing.JList;
 import javax.swing.JPanel;

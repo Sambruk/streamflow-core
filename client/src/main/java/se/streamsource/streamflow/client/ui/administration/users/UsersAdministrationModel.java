@@ -23,6 +23,7 @@ import org.restlet.representation.FileRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.application.error.ErrorResources;
 import se.streamsource.streamflow.client.OperationException;
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
@@ -32,7 +33,6 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
 import se.streamsource.streamflow.infrastructure.event.source.EventVisitorFilter;
-import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.resource.user.NewUserCommand;
 import se.streamsource.streamflow.resource.user.UserEntityDTO;
 import se.streamsource.streamflow.resource.user.UserEntityListDTO;
@@ -199,7 +199,7 @@ public class UsersAdministrationModel
    {
       try
       {
-         ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
+         ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
          builder.prototype().string().set( password );
 
          client.getSubClient( users.get( index ).entity().get().identity() ).putCommand( "resetpassword", builder.newInstance() );

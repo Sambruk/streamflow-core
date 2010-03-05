@@ -28,6 +28,7 @@ import org.qi4j.api.entity.EntityReference;
 import org.restlet.resource.ResourceException;
 
 import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
@@ -42,7 +43,6 @@ import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
 import se.streamsource.streamflow.infrastructure.event.source.EventVisitorFilter;
 import se.streamsource.streamflow.infrastructure.event.source.EventParameters;
-import se.streamsource.streamflow.resource.roles.StringDTO;
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 
@@ -151,7 +151,7 @@ public class FieldsModel
 
    public void addPage( String pageName )
    {
-      ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
+      ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
       builder.prototype().string().set( pageName );
 
       try

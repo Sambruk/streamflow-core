@@ -20,11 +20,11 @@ import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.domain.contact.ContactAddressValue;
 import se.streamsource.streamflow.domain.contact.ContactEmailValue;
 import se.streamsource.streamflow.domain.contact.ContactPhoneValue;
 import se.streamsource.streamflow.domain.contact.ContactValue;
-import se.streamsource.streamflow.resource.roles.StringDTO;
 
 /**
  * Model for a contact of a task
@@ -63,28 +63,28 @@ public class TaskContactModel
 
    public void changeName( String newName ) throws ResourceException
    {
-      ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
+      ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
       builder.prototype().string().set( newName );
       client.putCommand( "changename", builder.newInstance() );
    }
 
    public void changeNote( String newNote ) throws ResourceException
    {
-      ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
+      ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
       builder.prototype().string().set( newNote );
       client.putCommand( "changenote", builder.newInstance() );
    }
 
    public void changeContactId( String newId ) throws ResourceException
    {
-      ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
+      ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
       builder.prototype().string().set( newId );
       client.putCommand("changecontactid", builder.newInstance() );
    }
 
    public void changeCompany( String newCompany ) throws ResourceException
    {
-      ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
+      ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
       builder.prototype().string().set( newCompany );
       client.putCommand( "changecompany", builder.newInstance() );
    }

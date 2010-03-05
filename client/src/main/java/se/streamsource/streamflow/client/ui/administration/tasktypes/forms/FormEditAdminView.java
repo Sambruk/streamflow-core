@@ -39,7 +39,7 @@ import se.streamsource.streamflow.domain.form.SelectionFieldValue;
 import se.streamsource.streamflow.domain.form.CommentFieldValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.PageListItemValue;
-import se.streamsource.streamflow.resource.roles.StringDTO;
+import se.streamsource.dci.value.StringValue;
 
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -173,7 +173,7 @@ public class FormEditAdminView
       {
          try
          {
-            ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
+            ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
             builder.prototype().string().set( (String) property.get() );
             model.changeDescription( builder.newInstance() );
          } catch (ResourceException e)
@@ -184,7 +184,7 @@ public class FormEditAdminView
       {
          try
          {
-            ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
+            ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
             builder.prototype().string().set( (String) property.get() );
             model.changeNote( builder.newInstance() );
          } catch (ResourceException e)

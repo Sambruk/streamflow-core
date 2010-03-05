@@ -16,8 +16,7 @@ package se.streamsource.streamflow.resource.conversation;
 
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.property.Property;
-import org.qi4j.api.value.ValueComposite;
-import se.streamsource.streamflow.infrastructure.application.LinkValue;
+import se.streamsource.dci.value.LinkValue;
 
 import java.util.Date;
 

@@ -17,10 +17,10 @@ package se.streamsource.streamflow.web.context.structure.labels;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
+import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.infrastructure.application.LinksValue;
+import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
-import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.web.domain.entity.label.PossibleLabelsQueries;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.label.Labels;
@@ -38,7 +38,7 @@ public interface SelectedLabelsContext
    extends SubContexts<SelectedLabelContext>, IndexContext<LinksValue>, Context
 {
    public LinksValue possiblelabels();
-   public void createlabel( StringDTO name );
+   public void createlabel( StringValue name );
    public void addlabel( EntityReferenceDTO labelDTO );
 
    abstract class Mixin
@@ -63,7 +63,7 @@ public interface SelectedLabelsContext
          return new LinksBuilder(module.valueBuilderFactory()).command( "addlabel" ).addDescribables( possibleLabelsQueries.possibleLabels( labels.labels() )).newLinks();
       }
 
-      public void createlabel( StringDTO name )
+      public void createlabel( StringValue name )
       {
          Labels labels = context.role(Labels.class);
          SelectedLabels selectedLabels = context.role(SelectedLabels.class);

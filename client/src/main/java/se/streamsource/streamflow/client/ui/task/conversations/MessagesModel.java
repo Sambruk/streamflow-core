@@ -22,13 +22,12 @@ import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.dci.value.*;
+import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.ui.task.TaskResources;
-import se.streamsource.streamflow.infrastructure.application.LinkValue;
-import se.streamsource.streamflow.infrastructure.application.LinksValue;
-import se.streamsource.streamflow.resource.roles.StringDTO;
 
 public class MessagesModel
    implements Refreshable
@@ -64,7 +63,7 @@ public class MessagesModel
    {
       try
       {
-         ValueBuilder<StringDTO> stringBuilder = vbf.newValueBuilder( StringDTO.class );
+         ValueBuilder<StringValue> stringBuilder = vbf.newValueBuilder( StringValue.class );
          stringBuilder.prototype().string().set( message );
          client.postCommand( "addmessage", stringBuilder.newInstance() );
          refresh();

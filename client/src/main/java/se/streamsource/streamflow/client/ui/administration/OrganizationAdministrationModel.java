@@ -22,6 +22,7 @@ import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
+import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.administration.form.FormDefinitionsModel;
@@ -33,7 +34,6 @@ import se.streamsource.streamflow.client.ui.administration.tasktypes.TaskTypesMo
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
-import se.streamsource.streamflow.resource.roles.StringDTO;
 
 /**
  * JAVADOC
@@ -100,7 +100,7 @@ public class OrganizationAdministrationModel
    {
       try
       {
-         ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
+         ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
          builder.prototype().string().set( newDescription );
          client.putCommand( "changedescription", builder.newInstance() );
       } catch (ResourceException e)
@@ -113,7 +113,7 @@ public class OrganizationAdministrationModel
    {
       try
       {
-         ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
+         ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
          builder.prototype().string().set( name );
          client.getSubClient("organizationalunits").postCommand( "createorganizationalunit", builder.newInstance() );
       } catch (ResourceException e)

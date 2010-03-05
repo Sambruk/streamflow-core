@@ -19,6 +19,7 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
+import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
@@ -29,7 +30,6 @@ import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
 import se.streamsource.streamflow.infrastructure.event.source.EventVisitorFilter;
 import se.streamsource.streamflow.resource.roles.BooleanDTO;
-import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.resource.roles.IntegerDTO;
 
 import java.util.logging.Logger;
@@ -68,14 +68,14 @@ public class FieldValueEditModel
 
    public void changeDescription( String newDescription ) throws ResourceException
    {
-      ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
+      ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
       builder.prototype().string().set( newDescription );
       client.putCommand( "changedescription", builder.newInstance() );
    }
 
    public void changeNote( String newNote ) throws ResourceException
    {
-      ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
+      ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
       builder.prototype().string().set( newNote );
       client.putCommand( "changenote", builder.newInstance() );
    }
@@ -103,14 +103,14 @@ public class FieldValueEditModel
 
    public void changeComment( String comment ) throws ResourceException
    {
-      ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
+      ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
       builder.prototype().string().set( comment );
       client.putCommand( "changecomment", builder.newInstance() );
    }
 
    public void move( String direction ) throws ResourceException
    {
-      ValueBuilder<StringDTO> builder = vbf.newValueBuilder( StringDTO.class );
+      ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
       builder.prototype().string().set( direction );
       client.putCommand( "move", builder.newInstance() );
    }

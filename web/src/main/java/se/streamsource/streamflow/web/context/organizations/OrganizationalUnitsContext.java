@@ -17,9 +17,9 @@ package se.streamsource.streamflow.web.context.organizations;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
+import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.infrastructure.application.LinksValue;
-import se.streamsource.streamflow.resource.roles.StringDTO;
+import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnits;
 import se.streamsource.dci.context.Context;
@@ -34,7 +34,7 @@ import se.streamsource.dci.context.SubContexts;
 public interface OrganizationalUnitsContext
    extends SubContexts<OrganizationalUnitContext>, IndexContext<LinksValue>, Context
 {
-   public void createorganizationalunit( StringDTO value );
+   public void createorganizationalunit( StringValue value );
 
    abstract class Mixin
       extends ContextMixin
@@ -50,7 +50,7 @@ public interface OrganizationalUnitsContext
          return new LinksBuilder(module.valueBuilderFactory()).rel( "organizationalunit" ).addDescribables( ous.organizationalUnits() ).newLinks();
       }
 
-      public void createorganizationalunit( StringDTO value )
+      public void createorganizationalunit( StringValue value )
       {
          OrganizationalUnits ous = context.role(OrganizationalUnits.class);
 

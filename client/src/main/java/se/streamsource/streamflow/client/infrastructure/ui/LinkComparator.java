@@ -14,8 +14,7 @@
 
 package se.streamsource.streamflow.client.infrastructure.ui;
 
-import se.streamsource.streamflow.infrastructure.application.LinkValue;
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
+import se.streamsource.dci.value.LinkValue;
 
 import java.util.Comparator;
 

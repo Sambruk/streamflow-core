@@ -12,20 +12,15 @@
  *
  */
 
-package se.streamsource.streamflow.infrastructure.application;
+package se.streamsource.dci.value;
 
-import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.property.Property;
-import org.qi4j.api.value.ValueComposite;
-
-import java.util.List;
 
 /**
- * A list of links
+ * JAVADOC
  */
-public interface LinksValue
-      extends ValueComposite
+public interface TitledLinkValue
+   extends LinkValue
 {
-   @UseDefaults
-   Property<List<LinkValue>> links();
+   Property<String> title();
 }

@@ -37,7 +37,9 @@ public class RefreshTaskCountTask extends Task<Void, Void>
    @Uses
    Component tree;
 
-   public RefreshTaskCountTask( @Service Application app )
+
+
+   public RefreshTaskCountTask( @Service Application app, @Uses Component tree )
    {
       super( app );
    }

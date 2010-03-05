@@ -20,13 +20,13 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
+import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
 import se.streamsource.streamflow.domain.form.SelectionFieldValue;
 import se.streamsource.streamflow.domain.form.TextFieldValue;
 import se.streamsource.streamflow.resource.roles.BooleanDTO;
 import se.streamsource.streamflow.resource.roles.IntegerDTO;
 import se.streamsource.streamflow.resource.roles.NamedIndexDTO;
-import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.web.context.structure.DescribableContext;
 import se.streamsource.streamflow.web.context.structure.NotableContext;
 import se.streamsource.streamflow.web.domain.entity.form.FieldEntity;
@@ -60,7 +60,7 @@ public interface FormFieldContext
    public void changemultiple( BooleanDTO multiple );
 
    @RequiresRoles(SelectionFieldValue.class)
-   public void addselectionelement( StringDTO name );
+   public void addselectionelement( StringValue name );
 
    @RequiresRoles(SelectionFieldValue.class)
    public void removeselectionelement( IntegerDTO index );
@@ -71,7 +71,7 @@ public interface FormFieldContext
    @RequiresRoles(SelectionFieldValue.class)
    public void changeselectionelementname( NamedIndexDTO newNameDTO );
 
-   public void move( StringDTO direction );
+   public void move( StringValue direction );
 
    abstract class Mixin
          extends ContextMixin
@@ -134,7 +134,7 @@ public interface FormFieldContext
          fieldValueDefinition.changeFieldValue( builder.newInstance() );
       }
 
-      public void addselectionelement( StringDTO name )
+      public void addselectionelement( StringValue name )
       {
          FieldValueDefinition fieldValueDefinition = context.role( FieldValueDefinition.class );
          SelectionFieldValue value = context.role( SelectionFieldValue.class );
@@ -185,7 +185,7 @@ public interface FormFieldContext
          fieldValueDefinition.changeFieldValue( builder.newInstance() );
       }
 
-      public void move( StringDTO direction )
+      public void move( StringValue direction )
       {
          Field field = context.role( Field.class );
          Fields fields = context.role( Fields.class );

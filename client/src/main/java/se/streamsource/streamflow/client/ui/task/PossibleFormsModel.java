@@ -24,7 +24,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
-import se.streamsource.streamflow.infrastructure.application.LinkValue;
+import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;

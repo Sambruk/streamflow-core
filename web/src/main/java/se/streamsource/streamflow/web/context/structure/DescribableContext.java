@@ -15,8 +15,8 @@
 package se.streamsource.streamflow.web.context.structure;
 
 import org.qi4j.api.mixin.Mixins;
+import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.domain.structure.Describable;
-import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.dci.context.ContextMixin;
 
 /**
@@ -25,13 +25,13 @@ import se.streamsource.dci.context.ContextMixin;
 @Mixins(DescribableContext.Mixin.class)
 public interface DescribableContext
 {
-   public void changedescription( StringDTO stringValue );
+   public void changedescription( StringValue stringValue );
 
    abstract class Mixin
       extends ContextMixin
       implements DescribableContext
    {
-      public void changedescription( StringDTO stringValue )
+      public void changedescription( StringValue stringValue )
       {
          Describable describable = context.role( Describable.class );
          describable.changeDescription( stringValue.string().get() );

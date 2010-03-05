@@ -14,8 +14,8 @@ And command createuser with
 Given root context
 Given subcontext organizations
 
-When query organizations
-Given context for link 1
+When query index without parameters
+Given context for link nr 0
 Given subcontext users
 
 When command join with

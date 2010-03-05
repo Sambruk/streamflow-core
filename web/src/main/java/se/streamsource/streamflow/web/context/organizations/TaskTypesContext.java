@@ -17,9 +17,9 @@ package se.streamsource.streamflow.web.context.organizations;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
+import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.infrastructure.application.LinksValue;
-import se.streamsource.streamflow.resource.roles.StringDTO;
+import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.web.domain.structure.tasktype.TaskType;
 import se.streamsource.streamflow.web.domain.structure.tasktype.TaskTypes;
 import se.streamsource.dci.context.Context;
@@ -34,7 +34,7 @@ import se.streamsource.dci.context.SubContexts;
 public interface TaskTypesContext
    extends SubContexts<TaskTypeContext>, IndexContext<LinksValue>, Context
 {
-   public void createtasktype( StringDTO name );
+   public void createtasktype( StringValue name );
 
    abstract class Mixin
       extends ContextMixin
@@ -49,7 +49,7 @@ public interface TaskTypesContext
          return new LinksBuilder(module.valueBuilderFactory()).rel( "tasktype" ).addDescribables( taskTypes.taskTypes()).newLinks();
       }
 
-      public void createtasktype( StringDTO name )
+      public void createtasktype( StringValue name )
       {
          TaskTypes taskTypes = context.role(TaskTypes.class);
          taskTypes.createTaskType( name.string().get() );

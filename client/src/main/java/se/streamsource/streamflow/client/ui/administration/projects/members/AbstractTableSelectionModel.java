@@ -14,8 +14,7 @@
 
 package se.streamsource.streamflow.client.ui.administration.projects.members;
 
-import se.streamsource.streamflow.infrastructure.application.LinksValue;
-import se.streamsource.streamflow.infrastructure.application.ListValue;
+import se.streamsource.dci.value.LinksValue;
 
 import javax.swing.table.AbstractTableModel;
 

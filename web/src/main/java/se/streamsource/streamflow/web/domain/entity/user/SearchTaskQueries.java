@@ -17,15 +17,12 @@ package se.streamsource.streamflow.web.domain.entity.user;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
-import org.qi4j.api.query.QueryExpressions;
-import org.qi4j.api.query.grammar.OrderBy;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.util.DateFunctions;
-import se.streamsource.streamflow.domain.structure.Describable;
+import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.resource.organization.search.DateSearchKeyword;
 import se.streamsource.streamflow.resource.organization.search.UserSearchKeyword;
-import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.web.domain.entity.label.LabelEntity;
 import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
 import se.streamsource.streamflow.web.domain.entity.tasktype.TaskTypeEntity;
@@ -49,7 +46,7 @@ import java.util.regex.PatternSyntaxException;
 @Mixins(SearchTaskQueries.Mixin.class)
 public interface SearchTaskQueries
 {
-   Query<Task> search( StringDTO query, String userName );
+   Query<Task> search( StringValue query, String userName );
 
    abstract class Mixin
       implements SearchTaskQueries
@@ -57,7 +54,7 @@ public interface SearchTaskQueries
       @Structure
       Module module;
 
-      public Query<Task> search( StringDTO query, String userName )
+      public Query<Task> search( StringValue query, String userName )
       {
          UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
 

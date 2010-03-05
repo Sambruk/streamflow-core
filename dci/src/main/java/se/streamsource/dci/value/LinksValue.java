@@ -12,44 +12,20 @@
  *
  */
 
-package se.streamsource.streamflow.infrastructure.application;
+package se.streamsource.dci.value;
 
-import org.qi4j.api.common.Optional;
+import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
 
+import java.util.List;
+
 /**
- * Link value
+ * A list of links
  */
-public interface LinkValue
+public interface LinksValue
       extends ValueComposite
 {
-   /**
-    * This is typically the description of the entity
-    *
-    * @return
-    */
-   Property<String> text();
-
-   /**
-    * This is typically the id of the entity
-    *
-    * @return
-    */
-   Property<String> id();
-
-   /**
-    * This is the href of the entity, relative to the producer of the LinkValue
-    * @return
-    */
-   Property<String> href();
-
-   /**
-    * This is the type of the link, typically to help differentiate between
-    * different types of resources.
-    *
-    * @return
-    */
-   @Optional
-   Property<String> rel();
+   @UseDefaults
+   Property<List<LinkValue>> links();
 }

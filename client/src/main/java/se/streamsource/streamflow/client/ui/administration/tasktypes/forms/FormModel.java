@@ -19,6 +19,7 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
@@ -28,7 +29,6 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
 import se.streamsource.streamflow.infrastructure.event.source.EventVisitorFilter;
-import se.streamsource.streamflow.resource.roles.StringDTO;
 
 import java.util.Observable;
 import java.util.logging.Logger;
@@ -110,12 +110,12 @@ public class FormModel
       return formValue;
    }
 
-   public void changeDescription( StringDTO description ) throws ResourceException
+   public void changeDescription( StringValue description ) throws ResourceException
    {
       client.putCommand( "changedescription", description );
    }
 
-   public void changeNote( StringDTO note ) throws ResourceException
+   public void changeNote( StringValue note ) throws ResourceException
    {
       client.putCommand( "changenote", note );
    }

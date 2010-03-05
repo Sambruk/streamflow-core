@@ -14,9 +14,7 @@
 
 package se.streamsource.streamflow.client.infrastructure.ui;
 
-import se.streamsource.streamflow.infrastructure.application.GroupedListItemValue;
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
-import se.streamsource.streamflow.infrastructure.application.TitledLinkValue;
+import se.streamsource.dci.value.TitledLinkValue;
 
 import java.util.Comparator;
 

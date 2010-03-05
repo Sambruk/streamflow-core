@@ -24,6 +24,7 @@ import org.qi4j.api.object.ObjectBuilder;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.Energy4Java;
 import org.qi4j.spi.Qi4jSPI;
 import org.qi4j.spi.structure.ApplicationSPI;
@@ -52,22 +53,7 @@ public class BeforeAndAfterWebDomainApplicationSteps
       this.genericSteps = new GenericSteps();
       theSteps[steps.length] = genericSteps;
       this.steps = theSteps;
-   }
 
-   @Structure
-   protected UnitOfWorkFactory uowf;
-
-   @Structure
-   protected Qi4jSPI spi;
-
-   protected ApplicationSPI app;
-   protected UnitOfWork uow;
-
-   private GenericSteps genericSteps;
-
-   @BeforeScenario
-   public void activateApplication() throws Exception
-   {
       try
       {
          Energy4Java is = new Energy4Java();
@@ -93,16 +79,30 @@ public class BeforeAndAfterWebDomainApplicationSteps
             builder.injectTo( step );
          }
 
-         app.activate();
          genericSteps.clearEvents();
          module.objectBuilderFactory().newObjectBuilder( BeforeAndAfterWebDomainApplicationSteps.class ).injectTo( this );
-
-         uow = uowf.newUnitOfWork();
-      } catch (Exception e)
+      } catch (AssemblyException e)
       {
          e.printStackTrace();
-         throw e;
       }
+   }
+
+   @Structure
+   protected UnitOfWorkFactory uowf;
+
+   @Structure
+   protected Qi4jSPI spi;
+
+   protected ApplicationSPI app;
+   protected UnitOfWork uow;
+
+   private GenericSteps genericSteps;
+
+   @BeforeScenario
+   public void newUnitOfWork() throws Exception
+   {
+      app.activate();
+      uow = uowf.newUnitOfWork();
    }
 
    @Override
@@ -120,7 +120,7 @@ public class BeforeAndAfterWebDomainApplicationSteps
    @AfterScenario
    public void passivateApplication() throws Exception
    {
-      uow.discard();
+      uow.complete();
 
       app.passivate();
    }

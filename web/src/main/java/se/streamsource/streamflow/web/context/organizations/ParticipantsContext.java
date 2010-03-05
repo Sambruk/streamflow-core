@@ -19,11 +19,11 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import se.streamsource.dci.value.*;
+import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.infrastructure.application.LinksValue;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
-import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.web.domain.entity.organization.GroupEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationQueries;
@@ -48,8 +48,8 @@ public interface ParticipantsContext
    extends SubContexts<ParticipantContext>, IndexContext<LinksValue>, Context
 {
    public void addparticipant( EntityReferenceDTO participantId);
-   public LinksValue possibleusers( StringDTO query );
-   public LinksValue possiblegroups( StringDTO query );
+   public LinksValue possibleusers( StringValue query );
+   public LinksValue possiblegroups( StringValue query );
 
    abstract class Mixin
       extends ContextMixin
@@ -74,7 +74,7 @@ public interface ParticipantsContext
          participants.addParticipant( participant );
       }
 
-      public LinksValue possibleusers( StringDTO query )
+      public LinksValue possibleusers( StringValue query )
       {
          OwningOrganization org = context.role(OwningOrganization.class);
          OrganizationEntity organization = (OrganizationEntity) org.organization().get();
@@ -97,7 +97,7 @@ public interface ParticipantsContext
          return linksBuilder.newLinks();
       }
 
-      public LinksValue possiblegroups( StringDTO query )
+      public LinksValue possiblegroups( StringValue query )
       {
          OwningOrganization org = context.role(OwningOrganization.class);
 

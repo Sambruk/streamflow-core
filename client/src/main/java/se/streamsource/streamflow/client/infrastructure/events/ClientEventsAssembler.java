@@ -18,6 +18,8 @@ import org.qi4j.api.common.Visibility;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
+import org.qi4j.spi.service.importer.NewObjectImporter;
+import se.streamsource.dci.restlet.client.ResponseHandler;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 
@@ -32,5 +34,8 @@ public class ClientEventsAssembler
       moduleAssembly.addValues( TransactionEvents.class, DomainEvent.class ).visibleIn( Visibility.application );
 
       moduleAssembly.addServices( ClientEventSourceService.class ).visibleIn( Visibility.application );
+
+      moduleAssembly.importServices( ResponseHandler.class ).importedBy( NewObjectImporter.class ).visibleIn( Visibility.application );
+      moduleAssembly.addObjects( ClientResponseHandler.class );
    }
 }

@@ -23,10 +23,10 @@ import se.streamsource.dci.context.Context;
 import se.streamsource.dci.context.ContextMixin;
 import se.streamsource.dci.context.IndexContext;
 import se.streamsource.dci.context.SubContexts;
+import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.infrastructure.application.LinksValue;
+import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.resource.conversation.ConversationDTO;
-import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.web.context.conversation.ConversationContext;
 import se.streamsource.streamflow.web.domain.entity.conversation.ConversationEntity;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversation;
@@ -44,7 +44,7 @@ public interface ConversationsContext
    extends
       SubContexts<ConversationContext>, IndexContext<LinksValue>, Context
 {
-   public void create( StringDTO topic );
+   public void create( StringValue topic );
 
    abstract class Mixin
       extends ContextMixin
@@ -75,7 +75,7 @@ public interface ConversationsContext
          return links.newLinks();
       }
 
-      public void create( StringDTO topic )
+      public void create( StringValue topic )
       {
          Conversations conversations = context.role(Conversations.class);
          Conversation conversation = conversations.createConversation( topic.string().get(), context.role( Creator.class) );

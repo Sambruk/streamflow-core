@@ -20,15 +20,13 @@ import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.dci.context.Context;
 import se.streamsource.dci.context.ContextMixin;
-import se.streamsource.dci.context.DeleteContext;
 import se.streamsource.dci.context.IndexContext;
+import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.domain.contact.ContactAddressValue;
 import se.streamsource.streamflow.domain.contact.ContactEmailValue;
 import se.streamsource.streamflow.domain.contact.ContactPhoneValue;
 import se.streamsource.streamflow.domain.contact.ContactValue;
 import se.streamsource.streamflow.domain.contact.Contactable;
-import se.streamsource.streamflow.resource.roles.StringDTO;
-import se.streamsource.streamflow.web.domain.structure.task.Contacts;
 
 /**
  * JAVADOC
@@ -37,10 +35,10 @@ import se.streamsource.streamflow.web.domain.structure.task.Contacts;
 public interface ContactableContext
    extends IndexContext<ContactValue>, Context
 {
-   public void changename( StringDTO name );
-   public void changenote( StringDTO note );
-   public void changecontactid( StringDTO contactId );
-   public void changecompany( StringDTO company );
+   public void changename( StringValue name );
+   public void changenote( StringValue note );
+   public void changecontactid( StringValue contactId );
+   public void changecompany( StringValue company );
    public void changephonenumber( ContactPhoneValue phoneValue );
    public void changeaddress( ContactAddressValue addressValue );
    public void changeemailaddress( ContactEmailValue emailValue );
@@ -59,7 +57,7 @@ public interface ContactableContext
          return contact;
       }
 
-      public void changename( StringDTO name )
+      public void changename( StringValue name )
       {
          Contactable contactable = context.role(Contactable.class);
          ContactValue contact = contactable.getContact();
@@ -70,7 +68,7 @@ public interface ContactableContext
          contactable.updateContact( builder.newInstance() );
       }
 
-      public void changenote( StringDTO note )
+      public void changenote( StringValue note )
       {
          Contactable contactable = context.role(Contactable.class);
          ContactValue contact = contactable.getContact();
@@ -81,7 +79,7 @@ public interface ContactableContext
          contactable.updateContact( builder.newInstance() );
       }
 
-      public void changecontactid( StringDTO contactId )
+      public void changecontactid( StringValue contactId )
       {
          Contactable contactable = context.role(Contactable.class);
          ContactValue contact = contactable.getContact();
@@ -92,7 +90,7 @@ public interface ContactableContext
          contactable.updateContact( builder.newInstance() );
       }
 
-      public void changecompany( StringDTO company )
+      public void changecompany( StringValue company )
       {
          Contactable contactable = context.role(Contactable.class);
          ContactValue contact = contactable.getContact();

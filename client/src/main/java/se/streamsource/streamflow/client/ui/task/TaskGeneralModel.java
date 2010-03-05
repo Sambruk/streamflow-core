@@ -26,21 +26,19 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 
 import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.dci.value.IndexValue;
+import se.streamsource.dci.value.*;
+import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.domain.interaction.gtd.Actions;
 import se.streamsource.streamflow.domain.interaction.gtd.States;
-import se.streamsource.streamflow.infrastructure.application.LinkValue;
-import se.streamsource.streamflow.infrastructure.application.LinksValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
 import se.streamsource.streamflow.infrastructure.event.source.EventVisitorFilter;
 import se.streamsource.streamflow.resource.roles.DateDTO;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
-import se.streamsource.streamflow.resource.roles.StringDTO;
 import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
@@ -91,8 +89,8 @@ public class TaskGeneralModel extends Observable implements Refreshable,
    {
       try
       {
-         ValueBuilder<StringDTO> builder = vbf
-               .newValueBuilder(StringDTO.class);
+         ValueBuilder<StringValue> builder = vbf
+               .newValueBuilder( StringValue.class);
          builder.prototype().string().set(newDescription);
          client.putCommand("changedescription", builder.newInstance());
       } catch (ResourceException e)
@@ -106,8 +104,8 @@ public class TaskGeneralModel extends Observable implements Refreshable,
    {
       try
       {
-         ValueBuilder<StringDTO> builder = vbf
-               .newValueBuilder(StringDTO.class);
+         ValueBuilder<StringValue> builder = vbf
+               .newValueBuilder( StringValue.class);
          builder.prototype().string().set(newNote);
          client.putCommand("changenote", builder.newInstance());
       } catch (ResourceException e)

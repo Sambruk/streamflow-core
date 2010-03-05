@@ -2,8 +2,7 @@ package se.streamsource.streamflow.client.ui.task;
 
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import se.streamsource.streamflow.infrastructure.application.LinkValue;
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
+import se.streamsource.dci.value.LinkValue;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;

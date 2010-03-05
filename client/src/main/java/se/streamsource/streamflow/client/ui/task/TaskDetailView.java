@@ -72,13 +72,13 @@ public class TaskDetailView
       tabs.addTab( i18n.text( WorkspaceResources.contacts_tab ), i18n.icon( Icons.projects ), contactsView, i18n.text( WorkspaceResources.contacts_tab ) );
       tabs.addTab( i18n.text( WorkspaceResources.conversations_tab ), i18n.icon( Icons.comments ), conversationsView, i18n.text( WorkspaceResources.conversations_tab ) );
       tabs.addTab( i18n.text( WorkspaceResources.metadata_tab ), i18n.icon( Icons.metadata ), formsAdminView, i18n.text( WorkspaceResources.metadata_tab ) );
-      tabs.addTab( i18n.text( WorkspaceResources.attachments_tab ), i18n.icon( Icons.attachments ), new JLabel( "Attachments" ), i18n.text( WorkspaceResources.attachments_tab ) );
+//      tabs.addTab( i18n.text( WorkspaceResources.attachments_tab ), i18n.icon( Icons.attachments ), new JLabel( "Attachments" ), i18n.text( WorkspaceResources.attachments_tab ) );
 
       tabs.setMnemonicAt( 0, KeyEvent.VK_1 );
       tabs.setMnemonicAt( 1, KeyEvent.VK_2 );
       tabs.setMnemonicAt( 2, KeyEvent.VK_3 );
       tabs.setMnemonicAt( 3, KeyEvent.VK_4 );
-      tabs.setMnemonicAt( 4, KeyEvent.VK_5 );
+//      tabs.setMnemonicAt( 4, KeyEvent.VK_5 );
 
       tabs.setFocusable( true );
       tabs.setFocusCycleRoot( true );

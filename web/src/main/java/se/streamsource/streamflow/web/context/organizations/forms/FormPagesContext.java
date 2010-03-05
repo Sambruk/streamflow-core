@@ -16,9 +16,9 @@ package se.streamsource.streamflow.web.context.organizations.forms;
 
 import org.qi4j.api.mixin.Mixins;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.infrastructure.application.LinksValue;
+import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
-import se.streamsource.streamflow.resource.roles.StringDTO;
+import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.web.domain.entity.form.PageQueries;
 import se.streamsource.streamflow.web.domain.structure.form.Page;
 import se.streamsource.streamflow.web.domain.structure.form.Pages;
@@ -35,7 +35,7 @@ public interface FormPagesContext
 {
    public LinksValue pages();
    public ListValue pagessummary();
-   public void add( StringDTO name );
+   public void add( StringValue name );
 
    abstract class Mixin
       extends ContextMixin
@@ -55,7 +55,7 @@ public interface FormPagesContext
          return pageQueries.getPagesSummary();
       }
 
-      public void add( StringDTO name )
+      public void add( StringValue name )
       {
          Pages pages = context.role(Pages.class);;
 

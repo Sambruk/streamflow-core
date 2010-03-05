@@ -15,9 +15,9 @@
 package se.streamsource.streamflow.web.context.organizations;
 
 import org.qi4j.api.mixin.Mixins;
+import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.infrastructure.application.LinksValue;
-import se.streamsource.streamflow.resource.roles.StringDTO;
+import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.web.domain.structure.role.Role;
 import se.streamsource.streamflow.web.domain.structure.role.Roles;
 import se.streamsource.dci.context.Context;
@@ -32,7 +32,7 @@ public interface RolesContext
    extends SubContexts<RoleContext>, Context
 {
    LinksValue roles();
-   void createrole( StringDTO name );
+   void createrole( StringValue name );
 
    abstract class Mixin
       extends ContextMixin
@@ -45,7 +45,7 @@ public interface RolesContext
          return new LinksBuilder( module.valueBuilderFactory() ).rel( "role" ).addDescribables( roles.roles() ).newLinks();
       }
 
-      public void createrole( StringDTO name )
+      public void createrole( StringValue name )
       {
          Roles roles = context.role(Roles.class);
 
