@@ -20,11 +20,19 @@ package se.streamsource.streamflow.client.ui.administration;
 public enum AccountResources
 {
    account_separator,
-   name_label,
+   account_name_label,
    server_label,
    username_label,
    password_label,
+   name_label,
+   email_label,
+   phone_label,
    testconnection_separator,
    connected_separator,
-   create_account_title, account_title, registration_separator
+   create_account_title, 
+   account_title, 
+   registration_separator,
+   user_settings_separator,
+   contact_info_separator, 
+   contact_info_for_user_separator
 }

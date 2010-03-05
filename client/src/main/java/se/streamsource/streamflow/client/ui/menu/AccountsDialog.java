@@ -14,7 +14,20 @@
 
 package se.streamsource.streamflow.client.ui.menu;
 
-import ca.odell.glazedlists.swing.EventListModel;
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
+
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Insets;
+
+import javax.swing.JButton;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.border.EmptyBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.util.WindowUtils;
@@ -26,26 +39,24 @@ import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
+
+import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.StreamFlowResources;
 import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 import se.streamsource.streamflow.client.ui.ConfirmationDialog;
 import se.streamsource.streamflow.client.ui.administration.AccountModel;
 import se.streamsource.streamflow.client.ui.administration.AccountResources;
 import se.streamsource.streamflow.client.ui.administration.AccountView;
-
-import javax.swing.JButton;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
+import se.streamsource.streamflow.client.ui.task.TaskContactModel;
+import se.streamsource.streamflow.domain.contact.ContactAddressValue;
+import se.streamsource.streamflow.domain.contact.ContactEmailValue;
+import se.streamsource.streamflow.domain.contact.ContactPhoneValue;
+import se.streamsource.streamflow.domain.contact.ContactValue;
+import ca.odell.glazedlists.swing.EventListModel;
 
 /**
  * JAVADOC
@@ -84,6 +95,7 @@ public class AccountsDialog
                           @Uses final AccountsModel model )
    {
       super( new BorderLayout() );
+//      super.setBorder(new EmptyBorder(new Insets(10, 10, 10, 10)));
 
       setPreferredSize( new Dimension( 700, 500 ) );
 
@@ -94,15 +106,18 @@ public class AccountsDialog
       accountList = new JList( new EventListModel(model.getAccounts()) );
       accountList.setCellRenderer( new ListItemListCellRenderer() );
 
+      JPanel listPanel = new JPanel(new BorderLayout());
       JScrollPane scroll = new JScrollPane( accountList );
       scroll.setMinimumSize( new Dimension( 200, 300 ) );
       scroll.setPreferredSize( new Dimension( 200, 300 ) );
-      add( scroll, BorderLayout.WEST );
+      listPanel.add(scroll, BorderLayout.CENTER);
 
       JPanel toolbar = new JPanel();
       toolbar.add( new JButton( getActionMap().get( "add" ) ) );
       toolbar.add( new JButton( getActionMap().get( "remove" ) ) );
-      add( toolbar, BorderLayout.SOUTH );
+      listPanel.add( toolbar, BorderLayout.SOUTH );
+
+      add( listPanel, BorderLayout.WEST );
 
       accountList.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( getActionMap().get( "remove" ) ) );
 
@@ -112,6 +127,7 @@ public class AccountsDialog
          {
             if (!e.getValueIsAdjusting())
             {
+               // Account
                if (accountView != null)
                   remove( accountView );
 
@@ -121,7 +137,6 @@ public class AccountsDialog
                   accountView = obf.newObjectBuilder( AccountView.class ).use( account ).newInstance();
                   add( accountView, BorderLayout.CENTER );
                }
-
                revalidate();
             }
          }

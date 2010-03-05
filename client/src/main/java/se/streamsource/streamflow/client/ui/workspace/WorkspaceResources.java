@@ -120,5 +120,6 @@ public enum WorkspaceResources
    could_not_discard_form_submission,
    owner,
    choose_task, 
-   search_user
+   search_user,
+   change_password_title
 }

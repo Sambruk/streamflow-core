@@ -14,23 +14,28 @@
 
 package se.streamsource.streamflow.client.ui.administration;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
+import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.PASSWORD;
+
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.value.ValueBuilderFactory;
+
+import se.streamsource.streamflow.client.StreamFlowResources;
 import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.resource.user.ChangePasswordCommand;
 
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
 
 /**
  * Dialog for changing password
@@ -56,27 +61,38 @@ public class ChangePasswordDialog
       binder.bindingTemplate( ChangePasswordCommand.class );
 
       FormLayout layout = new FormLayout(
-            "200dlu",
-//                "right:max(40dlu;p), 4dlu, 80dlu, 7dlu, " // 1st major column
-//                        + "right:max(40dlu;p), 4dlu, 80dlu",        // 2nd major column
-            "" );                                      // add rows dynamically
+            "75dlu, 5dlu, 120dlu", "pref, pref, pref" );
       DefaultFormBuilder builder = new DefaultFormBuilder( layout, this );
-      builder.setDefaultDialogBorder();
+//      builder.setDefaultDialogBorder();
 
       passwordBinder = new StateBinder();
       passwordBinder.setResourceMap( context.getResourceMap( getClass() ) );
 
       command = vbf.newValue( ChangePasswordCommand.class ).<ChangePasswordCommand>buildWith().prototype();
-
-      BindingFormBuilder bb = new BindingFormBuilder( builder, passwordBinder );
-
-      bb.appendLine( AdministrationResources.old_password, BindingFormBuilder.Fields.PASSWORD, command.oldPassword() );
-      bb.appendLine( AdministrationResources.new_password, newPassword = (JPasswordField) BindingFormBuilder.Fields.PASSWORD.newField(), command.newPassword() );
-      JLabel label = builder.append( bb.getResource( AdministrationResources.confirm_password ) );
+      
+      JLabel confirmPasswordLabel = null;
+      builder.add(new JLabel( i18n.text( AdministrationResources.old_password ) ));
+      builder.nextColumn(2);
+      builder.add(passwordBinder.bind(PASSWORD.newField(), command.oldPassword()));
       builder.nextLine();
-      builder.append( confirmPassword = new JPasswordField() );
-      label.setLabelFor( confirmPassword );
+      builder.add(new JLabel( i18n.text( AdministrationResources.new_password ) ));
+      builder.nextColumn(2);
+      builder.add(passwordBinder.bind(newPassword = (JPasswordField) PASSWORD.newField(), command.newPassword()));
       builder.nextLine();
+      builder.add(confirmPasswordLabel = new JLabel( i18n.text( AdministrationResources.confirm_password ) ));
+      builder.nextColumn(2);
+      builder.add(confirmPassword = (JPasswordField) PASSWORD.newField());
+      builder.nextLine();
+      confirmPasswordLabel.setLabelFor(confirmPassword);
+      
+//      BindingFormBuilder bb = new BindingFormBuilder( builder, passwordBinder );
+//      bb.appendLine( AdministrationResources.old_password, BindingFormBuilder.Fields.PASSWORD, command.oldPassword() );
+//      bb.appendLine( AdministrationResources.new_password, newPassword = (JPasswordField) BindingFormBuilder.Fields.PASSWORD.newField(), command.newPassword() );
+//      JLabel label = builder.append( bb.getResource( AdministrationResources.confirm_password ) );
+//      builder.nextLine();
+//      builder.append( confirmPassword = new JPasswordField() );
+//      label.setLabelFor( confirmPassword );
+//      builder.nextLine();
    }
 
    @Action

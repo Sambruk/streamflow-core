@@ -30,8 +30,11 @@ import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
 import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
 import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.ui.administration.AccountResources;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.*;
@@ -39,8 +42,7 @@ import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBui
 /**
  * JAVADOC
  */
-public class CreateAccountDialog
-      extends JPanel
+public class CreateAccountDialog extends JPanel
 {
    private AccountSettingsValue settings;
 
@@ -61,49 +63,84 @@ public class CreateAccountDialog
    private StateBinder accountBinder;
    private ValueBuilder<AccountSettingsValue> accountBuilder;
 
-   public CreateAccountDialog( @Service ApplicationContext context,
-                               @Structure ValueBuilderFactory vbf )
+   public CreateAccountDialog(@Service ApplicationContext context,
+         @Structure ValueBuilderFactory vbf)
    {
-      setActionMap( context.getActionMap( this ) );
+      setActionMap(context.getActionMap(this));
       this.vbf = vbf;
 
-      FormLayout layout = new FormLayout(
-            "200dlu",
-            "" );                                      // add rows dynamically
-      DefaultFormBuilder builder = new DefaultFormBuilder( layout, this );
-      builder.setDefaultDialogBorder();
+      FormLayout layout = new FormLayout("50dlu, 5dlu, 175dlu",
+            "pref, pref, pref, pref");
+      DefaultFormBuilder builder = new DefaultFormBuilder(layout, this);
+//      builder.setDefaultDialogBorder();
 
       accountBinder = new StateBinder();
-      accountBinder.setResourceMap( context.getResourceMap( getClass() ) );
-      AccountSettingsValue template = accountBinder.bindingTemplate( AccountSettingsValue.class );
+      accountBinder.setResourceMap(context.getResourceMap(getClass()));
+      AccountSettingsValue template = accountBinder
+            .bindingTemplate(AccountSettingsValue.class);
 
-      BindingFormBuilder bb = new BindingFormBuilder( builder, accountBinder );
+//      builder.appendSeparator(i18n
+//            .text(AccountResources.account_separator));
+//      builder.nextLine();
 
-      bb.appendLine( AdministrationResources.create_account_name, TEXTFIELD, template.name() )
-            .appendLine( AdministrationResources.create_account_server, TEXTFIELD, template.server() )
-            .appendLine( AdministrationResources.create_account_username, TEXTFIELD, template.userName() )
-            .appendLine( AdministrationResources.create_account_password, PASSWORD, template.password() );
+      builder.add(new JLabel(i18n
+            .text(AdministrationResources.create_account_name)));
+      builder.nextColumn(2);
+      builder.add(accountBinder.bind(TEXTFIELD.newField(),
+            template.name()));
+      builder.nextLine();
 
+      builder.add(new JLabel(i18n.text(AdministrationResources.create_account_server)));
+      builder.nextColumn(2);
+      builder.add(accountBinder.bind(TEXTFIELD.newField(),
+            template.server()));
+      builder.nextLine();
 
-      accountBuilder = vbf.newValueBuilder( AccountSettingsValue.class );
+      builder
+            .add(new JLabel(i18n.text(AdministrationResources.create_account_username)));
+      builder.nextColumn(2);
+      builder.add(accountBinder.bind(TEXTFIELD.newField(),
+            template.userName()));
+      builder.nextLine();
+
+      builder
+            .add(new JLabel(i18n.text(AdministrationResources.create_account_password)));
+      builder.nextColumn(2);
+      builder.add(accountBinder.bind(PASSWORD.newField(),
+            template.password()));
+      builder.nextLine();
+
+//      BindingFormBuilder bb = new BindingFormBuilder(builder, accountBinder);
+//
+//      bb.appendLine(AdministrationResources.create_account_name, TEXTFIELD,
+//            template.name()).appendLine(
+//            AdministrationResources.create_account_server, TEXTFIELD,
+//            template.server()).appendLine(
+//            AdministrationResources.create_account_username, TEXTFIELD,
+//            template.userName()).appendLine(
+//            AdministrationResources.create_account_password, PASSWORD,
+//            template.password());
+
+      accountBuilder = vbf.newValueBuilder(AccountSettingsValue.class);
 
       // for the demo this has been pre-filled
-      accountBuilder.prototype().server().set( "http://streamflow.doesntexist.com/streamflow" );
+      accountBuilder.prototype().server().set(
+            "http://streamflow.doesntexist.com/streamflow");
 
-      accountBinder.updateWith( accountBuilder.prototype() );
+      accountBinder.updateWith(accountBuilder.prototype());
    }
 
    @Action
    public void execute()
    {
       settings = accountBuilder.newInstance();
-      WindowUtils.findWindow( this ).dispose();
+      WindowUtils.findWindow(this).dispose();
    }
 
    @Action
    public void close()
    {
-      WindowUtils.findWindow( this ).dispose();
+      WindowUtils.findWindow(this).dispose();
    }
 
    public AccountSettingsValue settings()

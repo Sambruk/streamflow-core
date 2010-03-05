@@ -75,8 +75,8 @@ public class CreateUserDialog
       passwordField = new JPasswordField();
       confirmPasswordField = new JPasswordField();
       
-      builder.appendSeparator(i18n.text(StreamFlowResources.user_info_separator));
-      builder.nextLine();
+//      builder.appendSeparator(i18n.text(StreamFlowResources.user_info_separator));
+//      builder.nextLine();
       builder.add(new JLabel( i18n.text( AdministrationResources.username_label ) ));
       builder.nextColumn(2);
       builder.add(usernameField);
