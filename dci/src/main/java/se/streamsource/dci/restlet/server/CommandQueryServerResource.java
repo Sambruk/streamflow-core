@@ -714,30 +714,38 @@ public abstract class CommandQueryServerResource
       {
          Object[] args = new Object[method.getParameterTypes().length];
 
-         Class<? extends Value> commandType = (Class<? extends Value>) method.getParameterTypes()[0];
+         Class<? extends ValueComposite> commandType = (Class<? extends ValueComposite>) method.getParameterTypes()[0];
 
-         if (getRequest().getEntity().getMediaType().equals( MediaType.APPLICATION_JSON ))
+         if (getRequest().getEntity().getMediaType() == null)
          {
-            String json = getRequest().getEntityAsText();
-
-            Object command = vbf.newValueFromJSON( commandType, json );
-            args[0] = command;
-            return args;
-         } else if (getRequest().getEntity().getMediaType().equals( MediaType.TEXT_PLAIN ))
-         {
-            String text = getRequest().getEntityAsText();
-            if (text == null)
-               throw new ResourceException( Status.SERVER_ERROR_INTERNAL, "Bug in Tomcat encountered; notify developers!" );
-            args[0] = text;
-            return args;
-         } else if (getRequest().getEntity().getMediaType().equals( (MediaType.APPLICATION_WWW_FORM) ))
-         {
-            Form asForm = getRequest().getEntityAsForm();
-            Class<?> valueType = method.getParameterTypes()[0];
-            args[0] = getValueFromForm( (Class<ValueComposite>) valueType, asForm );
+            Form form = getRequest().getResourceRef().getQueryAsForm( CharacterSet.UTF_8 );
+            args[0] = getValueFromForm( commandType, form );
             return args;
          } else
-            throw new ResourceException( Status.CLIENT_ERROR_BAD_REQUEST, "Command has to be in JSON format" );
+         {
+            if (getRequest().getEntity().getMediaType().equals( MediaType.APPLICATION_JSON ))
+            {
+               String json = getRequest().getEntityAsText();
+
+               Object command = vbf.newValueFromJSON( commandType, json );
+               args[0] = command;
+               return args;
+            } else if (getRequest().getEntity().getMediaType().equals( MediaType.TEXT_PLAIN ))
+            {
+               String text = getRequest().getEntityAsText();
+               if (text == null)
+                  throw new ResourceException( Status.SERVER_ERROR_INTERNAL, "Bug in Tomcat encountered; notify developers!" );
+               args[0] = text;
+               return args;
+            } else if (getRequest().getEntity().getMediaType().equals( (MediaType.APPLICATION_WWW_FORM) ))
+            {
+               Form asForm = getRequest().getEntityAsForm();
+               Class<?> valueType = method.getParameterTypes()[0];
+               args[0] = getValueFromForm( (Class<ValueComposite>) valueType, asForm );
+               return args;
+            } else
+               throw new ResourceException( Status.CLIENT_ERROR_BAD_REQUEST, "Command has to be in JSON format" );
+         }
       } else
       {
          return new Object[0];
@@ -827,9 +835,9 @@ public abstract class CommandQueryServerResource
       }
    }
 
-   private ValueComposite getValueFromForm( Class<ValueComposite> valueType, final Form asForm )
+   private ValueComposite getValueFromForm( Class<? extends ValueComposite> valueType, final Form asForm )
    {
-      ValueBuilder<ValueComposite> builder = vbf.newValueBuilder( valueType );
+      ValueBuilder<? extends ValueComposite> builder = vbf.newValueBuilder( valueType );
       final ValueDescriptor descriptor = spi.getValueDescriptor( builder.prototype() );
       builder.withState( new StateHolder()
       {

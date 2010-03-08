@@ -31,7 +31,7 @@ public abstract class ContextMixin
    protected @Structure
    Module module;
 
-   public InteractionContext context()
+   protected InteractionContext context()
    {
       return context;
    }

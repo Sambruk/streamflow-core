@@ -142,7 +142,7 @@ public final class CommandQueryClient
 
    public void postLink( LinkValue link) throws ResourceException
    {
-      postCommand(link.rel().get(), new EmptyRepresentation());
+      postCommand(link.href().get(), new EmptyRepresentation());
    }
 
    public void postCommand( String operation ) throws ResourceException
