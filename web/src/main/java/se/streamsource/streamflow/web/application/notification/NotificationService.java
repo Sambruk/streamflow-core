@@ -26,8 +26,6 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.usecase.Usecase;
 import org.qi4j.api.usecase.UsecaseBuilder;
-import se.streamsource.streamflow.domain.contact.ContactEmailValue;
-import se.streamsource.streamflow.domain.contact.Contactable;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.EventCollector;
@@ -39,12 +37,10 @@ import se.streamsource.streamflow.infrastructure.event.source.EventVisitorFilter
 import se.streamsource.streamflow.infrastructure.event.source.TransactionEventAdapter;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionTimestampFilter;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
-import se.streamsource.streamflow.infrastructure.json.JSONObject;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.interaction.profile.MessageRecipient;
-import se.streamsource.streamflow.web.infrastructure.mail.MailService;
+import se.streamsource.streamflow.web.application.mail.MailService;
 
-import java.util.ListIterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -133,19 +129,10 @@ public interface NotificationService
                   for (DomainEvent domainEvent : eventCollector.events())
                   {
                      UserEntity user = uow.get( UserEntity.class, domainEvent.entity().get());
-                     ListIterator<ContactEmailValue> listIter =((Contactable)user).getContact().emailAddresses().get().listIterator();
-                     String emailAddress = "";
-                     if(listIter.hasNext())
-                     {
-                        emailAddress = listIter.next().emailAddress().get();   
-                     }
 
-                     String message = new JSONObject( domainEvent.parameters().get() ).getString( "param1" );
-
-                     if( emailAddress != null && emailAddress.length() != 0
-                           && ((MessageRecipient.Data)user).delivery().get().equals( MessageRecipient.MessageDeliveryTypes.email))
+                     if( ((MessageRecipient.Data)user).delivery().get().equals( MessageRecipient.MessageDeliveryTypes.email))
                      {
-                        mail.sendNotification( emailAddress, message );
+                        mail.sendNotification( domainEvent );
                      }
                   }
 
