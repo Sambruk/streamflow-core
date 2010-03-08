@@ -23,6 +23,7 @@ import org.qi4j.bootstrap.ModuleAssembly;
 import se.streamsource.streamflow.domain.CommonDomainAssembler;
 import se.streamsource.streamflow.resource.CommonResourceAssembler;
 import se.streamsource.streamflow.web.application.console.ConsoleAssembler;
+import se.streamsource.streamflow.web.application.mail.MailAssembler;
 import se.streamsource.streamflow.web.application.management.ManagementAssembler;
 import se.streamsource.streamflow.web.application.migration.MigrationAssembler;
 import se.streamsource.streamflow.web.application.notification.NotificationAssembler;
@@ -47,7 +48,6 @@ import se.streamsource.streamflow.web.infrastructure.domain.EntityFinderAssemble
 import se.streamsource.streamflow.web.infrastructure.domain.ServerEntityStoreAssembler;
 import se.streamsource.streamflow.web.infrastructure.event.EventAssembler;
 import se.streamsource.streamflow.web.infrastructure.index.EmbeddedSolrAssembler;
-import se.streamsource.streamflow.web.infrastructure.mail.MailAssembler;
 import se.streamsource.streamflow.web.resource.ServerResourceAssembler;
 import se.streamsource.streamflow.web.rest.StreamFlowRestAssembler;
 
@@ -114,7 +114,7 @@ public class StreamFlowWebAssembler
       new EntityFinderAssembler().assemble( domainInfrastructureLayer.moduleAssembly( "Entity Finder" ) );
       new EventAssembler().assemble( domainInfrastructureLayer.moduleAssembly( "Events" ) );
       new EmbeddedSolrAssembler().assemble( domainInfrastructureLayer.moduleAssembly( "Search Engine" ));
-      new MailAssembler().assemble( domainInfrastructureLayer.moduleAssembly( "Mail" ));
+      //new MailAssembler().assemble( domainInfrastructureLayer.moduleAssembly( "Mail" ));
    }
 
 
@@ -134,6 +134,7 @@ public class StreamFlowWebAssembler
       new BootstrapAssembler().assemble( appLayer.moduleAssembly( "Organization" ) );
       new StatisticsAssembler().assemble( appLayer.moduleAssembly( "Statistics" ) );
       new NotificationAssembler().assemble( appLayer.moduleAssembly( "Notification" ));
+      new MailAssembler().assemble( appLayer.moduleAssembly( "Mail" ));
    }
 
    protected void assembleContextLayer( LayerAssembly contextLayer ) throws AssemblyException

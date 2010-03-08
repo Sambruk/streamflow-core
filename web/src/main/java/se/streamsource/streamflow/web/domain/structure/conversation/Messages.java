@@ -54,6 +54,9 @@ public interface Messages
       @This
       ConversationParticipants participants;
 
+      @This
+      Conversation conversation;
+
       public Message createMessage( String body, ConversationParticipant participant ) throws IllegalArgumentException
       {
          if (participants.isParticipant(participant))
@@ -75,6 +78,7 @@ public interface Messages
          builder.instanceFor( Message.Data.class ).body().set( body );
          builder.instanceFor( Message.Data.class ).createdOn().set( event.on().get() );
          builder.instanceFor( Message.Data.class ).sender().set( participant );
+         builder.instanceFor( Message.Data.class ).conversation().set( conversation );
 
          Message message = builder.newInstance();
          messages().add( message );

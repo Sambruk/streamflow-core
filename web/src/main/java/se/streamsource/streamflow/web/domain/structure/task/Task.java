@@ -16,6 +16,7 @@ package se.streamsource.streamflow.web.domain.structure.task;
 
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.domain.structure.Removable;
+import se.streamsource.streamflow.web.domain.structure.conversation.ConversationOwner;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversations;
 import se.streamsource.streamflow.web.domain.structure.form.FormSubmissions;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedForms;
@@ -29,6 +30,7 @@ public interface Task
       extends
       Contacts,
       Conversations,
+      ConversationOwner,
       Describable,
       Labelable,
       Removable,

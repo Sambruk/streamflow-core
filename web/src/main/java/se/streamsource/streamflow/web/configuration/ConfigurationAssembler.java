@@ -30,7 +30,7 @@ import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration
 import se.streamsource.streamflow.web.application.management.jmxconnector.JmxConnectorConfiguration;
 import se.streamsource.streamflow.web.application.migration.StartupMigrationConfiguration;
 import se.streamsource.streamflow.web.application.notification.NotificationConfiguration;
-import se.streamsource.streamflow.web.infrastructure.mail.MailConfiguration;
+import se.streamsource.streamflow.web.application.mail.MailConfiguration;
 import se.streamsource.streamflow.web.application.statistics.StatisticsConfiguration;
 import se.streamsource.streamflow.web.infrastructure.database.DataSourceConfiguration;
 import se.streamsource.streamflow.web.infrastructure.database.LiquibaseConfiguration;

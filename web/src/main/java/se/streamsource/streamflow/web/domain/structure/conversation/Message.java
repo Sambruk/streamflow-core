@@ -28,6 +28,9 @@ public interface Message
    interface Data
    {
       @Immutable
+      Association<Conversation> conversation();
+
+      @Immutable
       Association<ConversationParticipant> sender();
 
       @Immutable

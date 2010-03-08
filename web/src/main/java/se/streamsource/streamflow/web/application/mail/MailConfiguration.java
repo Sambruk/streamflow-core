@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.web.infrastructure.mail;
+package se.streamsource.streamflow.web.application.mail;
 
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.configuration.ConfigurationComposite;

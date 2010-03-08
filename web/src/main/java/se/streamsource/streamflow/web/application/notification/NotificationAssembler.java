@@ -15,6 +15,7 @@
 package se.streamsource.streamflow.web.application.notification;
 
 import org.qi4j.api.common.Visibility;
+import org.qi4j.api.structure.Application;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
@@ -27,13 +28,13 @@ public class NotificationAssembler
 {
    public void assemble( ModuleAssembly module ) throws AssemblyException
    {
-      /*Application.Mode mode = module.layerAssembly().applicationAssembly().mode();
+      Application.Mode mode = module.layerAssembly().applicationAssembly().mode();
       if (mode.equals( Application.Mode.production ))
-      {*/
+      {
          module.addServices( NotificationService.class )
                .identifiedBy( "notification" )
                .instantiateOnStartup()
                .visibleIn( Visibility.layer );
-      //}
+      }
    }
 }

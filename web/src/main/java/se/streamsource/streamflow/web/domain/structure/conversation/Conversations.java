@@ -20,6 +20,7 @@ import org.qi4j.api.entity.IdentityGenerator;
 import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
@@ -50,6 +51,9 @@ public interface Conversations
       @Structure
       UnitOfWorkFactory uowf;
 
+      @This
+      ConversationOwner conversationOwner;
+
       public Conversation createConversation( String topic, Creator creator )
       {
          Conversation conversation = createdConversation( DomainEvent.CREATE, idGen.generate( Identity.class ), creator);
@@ -63,6 +67,7 @@ public interface Conversations
          EntityBuilder<Conversation> builder = uowf.currentUnitOfWork().newEntityBuilder( Conversation.class, id );
          builder.instanceFor( CreatedOn.class).createdOn().set( event.on().get() );
          builder.instanceFor( CreatedOn.class).createdBy().set( creator );
+         builder.instance().conversationOwner().set( conversationOwner );
 
          Conversation conversation = builder.newInstance();
          conversations().add( conversation );
