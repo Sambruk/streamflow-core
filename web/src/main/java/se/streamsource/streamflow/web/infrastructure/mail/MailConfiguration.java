@@ -44,6 +44,7 @@ public interface MailConfiguration
     * SSL enabled
     * @return
     */
+   @UseDefaults
    Property<Boolean> useSSL();
 
    /**
@@ -57,6 +58,7 @@ public interface MailConfiguration
     * Mail debug enabled
     * @return
     */
+   @UseDefaults
    Property<Boolean> debug();
    
    /**
