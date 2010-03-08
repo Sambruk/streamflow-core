@@ -14,16 +14,16 @@
 
 package se.streamsource.streamflow.client.infrastructure.ui;
 
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.text.JTextComponent;
 import java.awt.Component;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.JTextComponent;
 
 /**
  * JAVADOC
@@ -33,65 +33,64 @@ public class FormEditor
    Component[] components;
    boolean editing = false;
 
-   public FormEditor( Component... components )
+   public FormEditor(Component... components)
    {
       this.components = components;
-      init( components );
+      init(components);
       view();
    }
 
-   private void init( Component... components )
+   private void init(Component... components)
    {
       for (Component component : components)
       {
          if (component instanceof JPanel)
          {
-            init( ((JPanel) component).getComponents() );
+            init(((JPanel) component).getComponents());
          } else if (component instanceof JLabel)
          {
             final JLabel label = (JLabel) component;
-            label.addPropertyChangeListener( "text", new PropertyChangeListener()
-            {
-               public void propertyChange( PropertyChangeEvent evt )
-               {
-                  setVisible( label, !(evt.getNewValue() == null || evt.getNewValue().equals( "" )) );
-               }
-            } );
-         } else if (component instanceof JPasswordField)
-         {
-            setVisible( component, false );
+            label.addPropertyChangeListener("text",
+                  new PropertyChangeListener()
+                  {
+                     public void propertyChange(PropertyChangeEvent evt)
+                     {
+                        setVisible(label, !(evt.getNewValue() == null || evt
+                              .getNewValue().equals("")));
+                     }
+                  });
          } else if (component instanceof JTextComponent)
          {
             final JTextComponent text = (JTextComponent) component;
-            text.getDocument().addDocumentListener( new DocumentListener()
+            text.getDocument().addDocumentListener(new DocumentListener()
             {
-               public void insertUpdate( DocumentEvent e )
+               public void insertUpdate(DocumentEvent e)
                {
-                  changedUpdate( e );
+                  changedUpdate(e);
                }
 
-               public void removeUpdate( DocumentEvent e )
+               public void removeUpdate(DocumentEvent e)
                {
-                  changedUpdate( e );
+                  changedUpdate(e);
                }
 
-               public void changedUpdate( DocumentEvent e )
+               public void changedUpdate(DocumentEvent e)
                {
                   if (!isEditing())
                   {
-                     if (text.getText().equals( "" ))
+                     if (text.getText().equals(""))
                      {
-                        setVisible( text, false );
+                        setVisible(text, false);
                      } else
                      {
                         if (!text.isVisible())
                         {
-                           setVisible( text, true );
+                           setVisible(text, true);
                         }
                      }
                   }
                }
-            } );
+            });
          }
       }
    }
@@ -104,26 +103,23 @@ public class FormEditor
    public void view()
    {
       editing = false;
-      view( components );
+      view(components);
    }
 
-   private void view( Component... components )
+   private void view(Component... components)
    {
       for (Component component : components)
       {
          if (component instanceof JPanel)
          {
-            view( ((JPanel) component).getComponents() );
+            view(((JPanel) component).getComponents());
          } else if (component instanceof JLabel)
          {
             // Do nothing
-         } else if (component instanceof JPasswordField)
-         {
-            setVisible( component, false );
          } else if (component instanceof JComponent)
          {
             final JComponent text = (JComponent) component;
-            text.setEnabled( false );
+            text.setEnabled(false);
          }
          component.doLayout();
       }
@@ -132,37 +128,34 @@ public class FormEditor
    public void edit()
    {
       editing = true;
-      edit( components );
+      edit(components);
    }
 
-   private void edit( Component... components )
+   private void edit(Component... components)
    {
       for (Component component : components)
       {
          if (component instanceof JPanel)
          {
-            edit( ((JPanel) component).getComponents() );
+            edit(((JPanel) component).getComponents());
          } else if (component instanceof JLabel)
          {
             // Do nothing
-         } else if (component instanceof JPasswordField)
-         {
-            final JPasswordField passwordField = (JPasswordField) component;
-            setVisible( component, true );
          } else if (component instanceof JComponent)
          {
             final JComponent text = (JComponent) component;
-            text.setEnabled( true );
-            setVisible( component, true );
+            text.setEnabled(true);
+            setVisible(component, true);
          }
       }
    }
 
-   private void setVisible( Component component, boolean b )
+   private void setVisible(Component component, boolean b)
    {
-      component.setVisible( b );
-      JLabel label = (JLabel) ((JComponent) component).getClientProperty( "labeledBy" );
+      component.setVisible(b);
+      JLabel label = (JLabel) ((JComponent) component)
+            .getClientProperty("labeledBy");
       if (label != null)
-         label.setVisible( b );
+         label.setVisible(b);
    }
 }

@@ -18,6 +18,7 @@ import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBui
 import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.TEXTFIELD;
 
 import java.awt.BorderLayout;
+import java.awt.Insets;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -26,6 +27,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JToggleButton;
+import javax.swing.border.EmptyBorder;
 
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationActionMap;
@@ -104,7 +106,7 @@ public class AccountView extends JScrollPane implements Observer
       setActionMap(am);
 
       JPanel panel = new JPanel(new BorderLayout());
-      // panel.setBorder(new EmptyBorder(new Insets(5, 5, 5, 5)));
+      panel.setBorder(new EmptyBorder(new Insets(10, 10, 10, 10)));
 
       accountForm = new JPanel();
       panel.add(accountForm, BorderLayout.NORTH);
@@ -113,7 +115,7 @@ public class AccountView extends JScrollPane implements Observer
 
       DefaultFormBuilder accountBuilder = new DefaultFormBuilder(accountLayout,
             accountForm);
-      accountBuilder.setDefaultDialogBorder();
+//      accountBuilder.setDefaultDialogBorder();
 
       accountBinder = new StateBinder();
       accountBinder.setResourceMap(context.getResourceMap(getClass()));
@@ -169,11 +171,6 @@ public class AccountView extends JScrollPane implements Observer
       ContactPhoneValue phoneTemplate = phoneNumberBinder
             .bindingTemplate(ContactPhoneValue.class);
 
-      // addressBinder = new StateBinder();
-      // addressBinder.setResourceMap(context.getResourceMap(getClass()));
-      // ContactAddressValue addressTemplate = addressBinder
-      // .bindingTemplate(ContactAddressValue.class);
-
       emailBinder = new StateBinder();
       emailBinder.setResourceMap(context.getResourceMap(getClass()));
       ContactEmailValue emailTemplate = emailBinder
@@ -181,7 +178,7 @@ public class AccountView extends JScrollPane implements Observer
 
       DefaultFormBuilder contactBuilder = new DefaultFormBuilder(contactLayout,
             contactForm);
-      contactBuilder.setDefaultDialogBorder();
+//      contactBuilder.setDefaultDialogBorder();
 
       contactBuilder.nextColumn(2);
       contactBuilder.add(new JToggleButton(am.get("edit")));
@@ -216,27 +213,6 @@ public class AccountView extends JScrollPane implements Observer
 
       contactBuilder.nextColumn(2);
       contactBuilder.add(new JButton(am.get("changePassword")));
-
-      // defaultBuilder
-      // .add(new JLabel(i18n.text(WorkspaceResources.address_label)));
-      // defaultBuilder.nextColumn(2);
-      // defaultBuilder.add(addressBinder.bind(TEXTFIELD.newField(),
-      // addressTemplate.address()));
-      // defaultBuilder.nextLine();
-
-//      JPanel buttonForm = new JPanel();
-//      panel.add(buttonForm, BorderLayout.SOUTH);
-//      FormLayout userLayout = new FormLayout("75dlu, 5dlu, 120dlu:grow",
-//            "pref, pref");
-//      DefaultFormBuilder userBuilder = new DefaultFormBuilder(userLayout,
-//            buttonForm);
-//      userBuilder.setDefaultDialogBorder();
-//
-//      userBuilder.appendSeparator(i18n
-//            .text(AccountResources.user_settings_separator));
-//      userBuilder.nextLine();
-//      userBuilder.nextColumn(2);
-//      userBuilder.add(new JButton(am.get("changePassword")));
 
       contactBinder.addObserver( this );
       phoneNumberBinder.addObserver( this );
