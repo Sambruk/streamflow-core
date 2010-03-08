@@ -21,9 +21,11 @@ import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.structure.Application;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import static org.qi4j.api.usecase.UsecaseBuilder.newUsecase;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
+import se.streamsource.streamflow.domain.contact.ContactEmailValue;
+import se.streamsource.streamflow.domain.contact.ContactValue;
+import se.streamsource.streamflow.domain.contact.Contactable;
 import se.streamsource.streamflow.domain.form.DateFieldValue;
 import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
 import se.streamsource.streamflow.domain.form.FormSubmissionValue;
@@ -59,6 +61,8 @@ import se.streamsource.streamflow.web.domain.structure.user.Users;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.qi4j.api.usecase.UsecaseBuilder.*;
+
 /**
  * Generates test data
  */
@@ -90,6 +94,18 @@ public interface TestDataService
          User testUser = users.createUser( "testuser", "testuser" );
          User someUser = users.createUser( "someuser", "someuser" );
          User someUser2 = users.createUser( "someuser2", "someuser2" );
+
+         // contact info on someuser
+         ValueBuilder<ContactValue> contact = vbf.newValueBuilder( ContactValue.class );
+         ValueBuilder<ContactEmailValue> email = vbf.newValueBuilder( ContactEmailValue.class );
+         email.prototype().emailAddress().set( "streamsourceflow@gmail.com" );
+         email.prototype().contactType().set( ContactEmailValue.ContactType.WORK );
+         List<ContactEmailValue> list = new ArrayList<ContactEmailValue>();
+         list.add(email.newInstance());
+         contact.prototype().emailAddresses().set( list );
+
+         ((Contactable)someUser).updateContact( contact.newInstance() );
+
 
          OrganizationEntity organization = (OrganizationEntity) user.organizations().iterator().next();
          organization.changeDescription( "WayGroup" );

@@ -21,20 +21,21 @@ import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.structure.Module;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationParticipationsQueries;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationalUnitEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipant;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipants;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationParticipations;
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganization;
+import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.user.User;
 import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.qi4j.api.query.QueryExpressions.orderBy;
-import static org.qi4j.api.query.QueryExpressions.templateFor;
+import static org.qi4j.api.query.QueryExpressions.*;
 
 /**
  * JAVADOC
@@ -42,10 +43,10 @@ import static org.qi4j.api.query.QueryExpressions.templateFor;
 @Mixins(ConversationParticipantsQueries.Mixin.class)
 public interface ConversationParticipantsQueries
 {
-   List<ConversationParticipant> possibleParticipants(Owner owner);
+   List<ConversationParticipant> possibleParticipants( Owner owner );
 
    class Mixin
-      implements ConversationParticipantsQueries
+         implements ConversationParticipantsQueries
    {
       @This
       ConversationParticipants.Data participants;
@@ -53,15 +54,15 @@ public interface ConversationParticipantsQueries
       @Structure
       Module module;
 
-      public List<ConversationParticipant> possibleParticipants(Owner owner)
+      public List<ConversationParticipant> possibleParticipants( Owner owner )
       {
-         List<ConversationParticipant> list = new ArrayList<ConversationParticipant>( );
+         List<ConversationParticipant> list = new ArrayList<ConversationParticipant>();
          if (owner instanceof OwningOrganization)
          {
             OwningOrganization owningOrg = (OwningOrganization) owner;
             OrganizationParticipationsQueries organization = (OrganizationParticipationsQueries) owningOrg.organization().get();
 
-            Query<User> users = organization.users( ).newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
+            Query<User> users = organization.users().newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
             users = users.orderBy( orderBy( templateFor( UserAuthentication.Data.class ).userName() ) );
 
             for (User user : users)
@@ -73,24 +74,24 @@ public interface ConversationParticipantsQueries
             }
          } else
          {
-            OrganizationParticipations.Data orgs = (OrganizationParticipations.Data) owner;
+            OrganizationalUnitEntity oue = (OrganizationalUnitEntity) ((OwningOrganizationalUnit.Data) owner).organizationalUnit().get();
+            Organization org = oue.organization().get();
 
-            for (Organization organization : orgs.organizations())
+
+            OrganizationParticipations.Data userOrgs = QueryExpressions.templateFor( OrganizationParticipations.Data.class );
+            Query<User> query = module.queryBuilderFactory().
+                  newQueryBuilder( User.class ).
+                  where( QueryExpressions.contains( userOrgs.organizations(), org ) ).
+                  newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
+
+            for (User user : query)
             {
-               OrganizationParticipations.Data userOrgs = QueryExpressions.templateFor(OrganizationParticipations.Data.class);
-               Query<User> query = module.queryBuilderFactory().
-                     newQueryBuilder( User.class ).
-                     where( QueryExpressions.contains(userOrgs.organizations(), organization )).
-                     newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
-
-               for (User user : query)
+               if (!participants.participants().contains( user ))
                {
-                  if (!participants.participants().contains( user ))
-                  {
-                     list.add( user );
-                  }
+                  list.add( user );
                }
             }
+
          }
          return list;
       }

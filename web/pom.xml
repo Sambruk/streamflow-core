@@ -175,6 +175,13 @@
             <version>1.2.15</version>
         </dependency>
 
+        <!-- Mail -->
+        <dependency>
+            <groupId>sun-javamail</groupId>
+            <artifactId>mail</artifactId>
+            <version>1.4</version>
+        </dependency>
+        
         <!-- Testing -->
         <dependency>
             <groupId>junit</groupId>

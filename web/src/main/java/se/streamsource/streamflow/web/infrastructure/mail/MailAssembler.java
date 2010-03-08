@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, Rickard Öberg. All Rights Reserved.
+ * Copyright (c) 2009, Rickard Öberg. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,25 +12,21 @@
  *
  */
 
-package se.streamsource.streamflow.web.domain.interaction.profile;
+package se.streamsource.streamflow.web.infrastructure.mail;
 
-import org.qi4j.api.common.UseDefaults;
-import org.qi4j.api.property.Property;
+import org.qi4j.api.common.Visibility;
+import org.qi4j.bootstrap.Assembler;
+import org.qi4j.bootstrap.AssemblyException;
+import org.qi4j.bootstrap.ModuleAssembly;
 
 /**
- * JAVADOC
+ * Assembler for mail module
  */
-public interface MessageRecipient
+public class MailAssembler
+      implements Assembler
 {
-   public enum MessageDeliveryTypes
+   public void assemble( ModuleAssembly module ) throws AssemblyException
    {
-      email,
-      none
-   }
-
-   interface Data
-   {
-      @UseDefaults
-      Property<MessageDeliveryTypes> delivery();
+      module.addServices( MailService.class ).identifiedBy( "mail" ).instantiateOnStartup().visibleIn( Visibility.application );
    }
 }

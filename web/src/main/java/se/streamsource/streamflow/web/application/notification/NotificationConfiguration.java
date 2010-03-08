@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, Rickard Öberg. All Rights Reserved.
+ * Copyright (c) 2009, Rickard Öberg. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,25 +12,30 @@
  *
  */
 
-package se.streamsource.streamflow.web.domain.interaction.profile;
+package se.streamsource.streamflow.web.application.notification;
 
 import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.configuration.ConfigurationComposite;
 import org.qi4j.api.property.Property;
 
 /**
- * JAVADOC
+ * Configuration for the NotificationService.
  */
-public interface MessageRecipient
+public interface NotificationConfiguration
+      extends ConfigurationComposite
 {
-   public enum MessageDeliveryTypes
-   {
-      email,
-      none
-   }
+   /**
+    * Determine whether notifications should be sent or not.
+    *
+    * @return
+    */
+   @UseDefaults
+   Property<Boolean> enabled();
 
-   interface Data
-   {
-      @UseDefaults
-      Property<MessageDeliveryTypes> delivery();
-   }
+   /**
+    * A timestamp when the last event was fetched.
+    * @return
+    */
+   @UseDefaults
+   Property<Long> lastEventDate();
 }

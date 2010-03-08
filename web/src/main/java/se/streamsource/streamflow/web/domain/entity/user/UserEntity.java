@@ -27,9 +27,10 @@ import se.streamsource.streamflow.web.domain.entity.gtd.DelegationsQueries;
 import se.streamsource.streamflow.web.domain.entity.gtd.Inbox;
 import se.streamsource.streamflow.web.domain.entity.gtd.InboxQueries;
 import se.streamsource.streamflow.web.domain.entity.gtd.WaitingForQueries;
-import se.streamsource.streamflow.web.domain.interaction.security.Authentication;
 import se.streamsource.streamflow.web.domain.interaction.comment.Commenter;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Actor;
+import se.streamsource.streamflow.web.domain.interaction.profile.MessageRecipient;
+import se.streamsource.streamflow.web.domain.interaction.security.Authentication;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipant;
 import se.streamsource.streamflow.web.domain.structure.form.Submitter;
 import se.streamsource.streamflow.web.domain.structure.group.Participation;
@@ -49,6 +50,7 @@ public interface UserEntity
       Actor,
       Inbox,
       Authentication,
+      MessageRecipient,
 
       // Structure
       User,
@@ -75,7 +77,8 @@ public interface UserEntity
       Describable.Data,
       Labels.Data,
       Participation.Data,
-      UserAuthentication.Data
+      UserAuthentication.Data,
+      MessageRecipient.Data
 {
    public static final String ADMINISTRATOR_USERNAME = "administrator";
 

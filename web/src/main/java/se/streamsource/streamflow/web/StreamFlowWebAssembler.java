@@ -14,32 +14,40 @@
 
 package se.streamsource.streamflow.web;
 
-import org.qi4j.bootstrap.*;
+import org.qi4j.bootstrap.ApplicationAssembler;
+import org.qi4j.bootstrap.ApplicationAssembly;
+import org.qi4j.bootstrap.ApplicationAssemblyFactory;
+import org.qi4j.bootstrap.AssemblyException;
+import org.qi4j.bootstrap.LayerAssembly;
+import org.qi4j.bootstrap.ModuleAssembly;
 import se.streamsource.streamflow.domain.CommonDomainAssembler;
 import se.streamsource.streamflow.resource.CommonResourceAssembler;
 import se.streamsource.streamflow.web.application.console.ConsoleAssembler;
 import se.streamsource.streamflow.web.application.management.ManagementAssembler;
 import se.streamsource.streamflow.web.application.migration.MigrationAssembler;
+import se.streamsource.streamflow.web.application.notification.NotificationAssembler;
 import se.streamsource.streamflow.web.application.organization.BootstrapAssembler;
 import se.streamsource.streamflow.web.application.security.SecurityAssembler;
 import se.streamsource.streamflow.web.application.statistics.StatisticsAssembler;
 import se.streamsource.streamflow.web.configuration.ConfigurationAssembler;
 import se.streamsource.streamflow.web.context.ContextsAssembler;
-import se.streamsource.streamflow.web.domain.interaction.comment.CommentAssembler;
+import se.streamsource.streamflow.web.domain.entity.conversation.ConversationAssembler;
 import se.streamsource.streamflow.web.domain.entity.form.FormAssembler;
-import se.streamsource.streamflow.web.domain.entity.organization.*;
+import se.streamsource.streamflow.web.domain.entity.label.LabelAssembler;
+import se.streamsource.streamflow.web.domain.entity.organization.GroupAssembler;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationAssembler;
 import se.streamsource.streamflow.web.domain.entity.organization.RoleAssembler;
+import se.streamsource.streamflow.web.domain.entity.project.ProjectAssembler;
 import se.streamsource.streamflow.web.domain.entity.task.TaskAssembler;
 import se.streamsource.streamflow.web.domain.entity.tasktype.TaskTypeAssembler;
 import se.streamsource.streamflow.web.domain.entity.user.UserAssembler;
-import se.streamsource.streamflow.web.domain.entity.project.ProjectAssembler;
-import se.streamsource.streamflow.web.domain.entity.label.LabelAssembler;
-import se.streamsource.streamflow.web.domain.entity.conversation.ConversationAssembler;
+import se.streamsource.streamflow.web.domain.interaction.comment.CommentAssembler;
 import se.streamsource.streamflow.web.infrastructure.database.DatabaseAssembler;
 import se.streamsource.streamflow.web.infrastructure.domain.EntityFinderAssembler;
 import se.streamsource.streamflow.web.infrastructure.domain.ServerEntityStoreAssembler;
 import se.streamsource.streamflow.web.infrastructure.event.EventAssembler;
 import se.streamsource.streamflow.web.infrastructure.index.EmbeddedSolrAssembler;
+import se.streamsource.streamflow.web.infrastructure.mail.MailAssembler;
 import se.streamsource.streamflow.web.resource.ServerResourceAssembler;
 import se.streamsource.streamflow.web.rest.StreamFlowRestAssembler;
 
@@ -106,6 +114,7 @@ public class StreamFlowWebAssembler
       new EntityFinderAssembler().assemble( domainInfrastructureLayer.moduleAssembly( "Entity Finder" ) );
       new EventAssembler().assemble( domainInfrastructureLayer.moduleAssembly( "Events" ) );
       new EmbeddedSolrAssembler().assemble( domainInfrastructureLayer.moduleAssembly( "Search Engine" ));
+      new MailAssembler().assemble( domainInfrastructureLayer.moduleAssembly( "Mail" ));
    }
 
 
@@ -124,6 +133,7 @@ public class StreamFlowWebAssembler
       new SecurityAssembler().assemble( appLayer.moduleAssembly( "Security" ) );
       new BootstrapAssembler().assemble( appLayer.moduleAssembly( "Organization" ) );
       new StatisticsAssembler().assemble( appLayer.moduleAssembly( "Statistics" ) );
+      new NotificationAssembler().assemble( appLayer.moduleAssembly( "Notification" ));
    }
 
    protected void assembleContextLayer( LayerAssembly contextLayer ) throws AssemblyException

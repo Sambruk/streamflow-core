@@ -29,9 +29,11 @@ import org.qi4j.migration.MigrationConfiguration;
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
 import se.streamsource.streamflow.web.application.management.jmxconnector.JmxConnectorConfiguration;
 import se.streamsource.streamflow.web.application.migration.StartupMigrationConfiguration;
+import se.streamsource.streamflow.web.application.notification.NotificationConfiguration;
+import se.streamsource.streamflow.web.infrastructure.mail.MailConfiguration;
 import se.streamsource.streamflow.web.application.statistics.StatisticsConfiguration;
-import se.streamsource.streamflow.web.infrastructure.database.LiquibaseConfiguration;
 import se.streamsource.streamflow.web.infrastructure.database.DataSourceConfiguration;
+import se.streamsource.streamflow.web.infrastructure.database.LiquibaseConfiguration;
 
 import java.util.prefs.Preferences;
 
@@ -52,16 +54,19 @@ public class ConfigurationAssembler
       module.addEntities( NativeConfiguration.class ).visibleIn( Visibility.application );
       module.addEntities( ReindexerConfiguration.class ).visibleIn( Visibility.application );
       module.addEntities( StatisticsConfiguration.class ).visibleIn( Visibility.application );
+      module.addEntities( NotificationConfiguration.class ).visibleIn( Visibility.application );
       module.addEntities( DataSourceConfiguration.class ).visibleIn( Visibility.application );
       module.addEntities( LiquibaseConfiguration.class ).visibleIn( Visibility.application );
       module.addEntities( StartupMigrationConfiguration.class ).visibleIn( Visibility.application );
       module.addEntities( JmxConnectorConfiguration.class ).visibleIn( Visibility.application );
       module.addEntities( MigrationConfiguration.class ).visibleIn( Visibility.application );
+      module.addEntities( MailConfiguration.class ).visibleIn( Visibility.application );
 
       module.forMixin( ReindexerConfiguration.class ).declareDefaults().loadValue().set( 50 );
       module.forMixin( DataSourceConfiguration.class ).declareDefaults().properties().set("");
       module.forMixin( LiquibaseConfiguration.class ).declareDefaults().enabled().set(true);
       module.forMixin( LiquibaseConfiguration.class ).declareDefaults().changeLog().set("changelog.xml");
+      module.forMixin( NotificationConfiguration.class ).declareDefaults().enabled().set( true );
 
       // Configuration store
       Application.Mode mode = module.layerAssembly().applicationAssembly().mode();
