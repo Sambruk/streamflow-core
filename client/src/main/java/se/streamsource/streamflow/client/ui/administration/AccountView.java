@@ -16,15 +16,20 @@ package se.streamsource.streamflow.client.ui.administration;
 
 import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.PASSWORD;
 import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.TEXTFIELD;
+import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.RADIOBUTTON;
 
 import java.awt.BorderLayout;
 import java.awt.Insets;
+import java.awt.event.KeyEvent;
 import java.util.Observable;
 import java.util.Observer;
 
+import javax.swing.ButtonGroup;
+import javax.swing.ButtonModel;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JToggleButton;
 import javax.swing.border.EmptyBorder;
@@ -46,6 +51,7 @@ import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 
+import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
 import se.streamsource.streamflow.client.domain.individual.ConnectionException;
@@ -99,6 +105,8 @@ public class AccountView extends JScrollPane implements Observer
    public FormEditor accountEditor;
    public JPanel accountForm;
    public JPanel contactForm;
+   public JRadioButton noneButton;
+   public JRadioButton emailButton;
 
    public AccountView(@Service ApplicationContext context)
    {
@@ -115,7 +123,7 @@ public class AccountView extends JScrollPane implements Observer
 
       DefaultFormBuilder accountBuilder = new DefaultFormBuilder(accountLayout,
             accountForm);
-//      accountBuilder.setDefaultDialogBorder();
+      // accountBuilder.setDefaultDialogBorder();
 
       accountBinder = new StateBinder();
       accountBinder.setResourceMap(context.getResourceMap(getClass()));
@@ -159,7 +167,7 @@ public class AccountView extends JScrollPane implements Observer
       contactForm = new JPanel();
       panel.add(contactForm, BorderLayout.CENTER);
       FormLayout contactLayout = new FormLayout("75dlu, 5dlu, 120dlu:grow",
-            "pref, pref, pref, pref, pref, pref, pref");
+            "pref, pref, pref, pref, pref, pref, pref, pref, pref, pref, pref, pref");
 
       contactBinder = new StateBinder();
       contactBinder.setResourceMap(context.getResourceMap(getClass()));
@@ -178,19 +186,19 @@ public class AccountView extends JScrollPane implements Observer
 
       DefaultFormBuilder contactBuilder = new DefaultFormBuilder(contactLayout,
             contactForm);
-//      contactBuilder.setDefaultDialogBorder();
+      // contactBuilder.setDefaultDialogBorder();
 
       contactBuilder.nextColumn(2);
       contactBuilder.add(new JToggleButton(am.get("edit")));
       contactBuilder.nextLine();
       contactBuilder.nextColumn(2);
       contactBuilder.add(new JButton(am.get("test")));
-      contactBuilder.nextLine();
+      contactBuilder.nextLine(2);
 
       contactBuilder.appendSeparator(i18n
             .text(AccountResources.contact_info_for_user_separator));
-//      contactBuilder.appendSeparator(i18n
-//            .text(AccountResources.contact_info_separator));
+      // contactBuilder.appendSeparator(i18n
+      // .text(AccountResources.contact_info_separator));
       contactBuilder.nextLine();
 
       contactBuilder.add(new JLabel(i18n.text(WorkspaceResources.name_label)));
@@ -209,14 +217,34 @@ public class AccountView extends JScrollPane implements Observer
       contactBuilder.nextColumn(2);
       contactBuilder.add(phoneNumberBinder.bind(TEXTFIELD.newField(),
             phoneTemplate.phoneNumber()));
+      contactBuilder.nextLine(2);
+
+      contactBuilder.add(new JLabel(i18n
+            .text(WorkspaceResources.choose_message_delivery_type)));
+      noneButton = (JRadioButton) RADIOBUTTON.newField();
+      noneButton.setAction(am.get("messageDeliveryTypeNone"));
+      noneButton.setSelected(true);
+      contactBuilder.nextColumn(2);
+      contactBuilder.add(noneButton);
       contactBuilder.nextLine();
+      contactBuilder.nextColumn(2);
+      emailButton = (JRadioButton) RADIOBUTTON.newField();
+      emailButton.setAction(am.get("messageDeliveryTypeEmail"));
+      contactBuilder.add(emailButton);
+
+      // Group the radio buttons.
+      ButtonGroup group = new ButtonGroup();
+      group.add(noneButton);
+      group.add(emailButton);
+
+      contactBuilder.nextLine(2);
 
       contactBuilder.nextColumn(2);
       contactBuilder.add(new JButton(am.get("changePassword")));
 
-      contactBinder.addObserver( this );
-      phoneNumberBinder.addObserver( this );
-      emailBinder.addObserver( this );
+      contactBinder.addObserver(this);
+      phoneNumberBinder.addObserver(this);
+      emailBinder.addObserver(this);
       setViewportView(panel);
    }
 
@@ -279,6 +307,18 @@ public class AccountView extends JScrollPane implements Observer
    }
 
    @Action
+   public void messageDeliveryTypeNone() throws Exception
+   {
+      model.changeMessageDeliveryType("none");
+   }
+
+   @Action
+   public void messageDeliveryTypeEmail() throws Exception
+   {
+      model.changeMessageDeliveryType("email");
+   }
+
+   @Action
    public void edit() throws UnitOfWorkCompletionException
    {
       if (!accountEditor.isEditing())
@@ -307,6 +347,15 @@ public class AccountView extends JScrollPane implements Observer
       phoneNumberBinder.updateWith(model.getPhoneNumber());
       emailBinder.updateWith(model.getEmailAddress());
       connectedBinder.update();
+
+      String messageDeliveryType = model.getMessageDeliveryType();
+      if ("email".equalsIgnoreCase(messageDeliveryType))
+      {
+         emailButton.setSelected(true);
+      } else
+      {
+         noneButton.setSelected(true);
+      }
    }
 
    public void update(Observable observable, Object arg)

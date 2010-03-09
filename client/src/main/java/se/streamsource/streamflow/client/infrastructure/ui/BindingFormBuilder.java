@@ -28,6 +28,7 @@ import javax.swing.JComboBox;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JPasswordField;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -93,6 +94,13 @@ public class BindingFormBuilder
                public Component newField()
                {
                   return new JCheckBox();
+               }
+            },
+      RADIOBUTTON
+            {
+               public Component newField()
+               {
+                  return new JRadioButton();
                }
             },
       COMBOBOX

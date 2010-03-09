@@ -121,5 +121,6 @@ public enum WorkspaceResources
    owner,
    choose_task, 
    search_user,
-   change_password_title
+   change_password_title, 
+   choose_message_delivery_type
 }

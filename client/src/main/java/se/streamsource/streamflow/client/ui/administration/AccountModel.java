@@ -54,6 +54,7 @@ import se.streamsource.streamflow.infrastructure.application.TreeValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.resource.user.ChangePasswordCommand;
+
 /**
  * JAVADOC
  */
@@ -195,6 +196,29 @@ public class AccountModel extends Observable implements EventListener
       }
    }
 
+   public void changeMessageDeliveryType(String newDeliveryType)
+         throws ResourceException
+   {
+      ValueBuilder<StringValue> builder = vbf
+            .newValueBuilder(StringValue.class);
+      builder.prototype().string().set(newDeliveryType);
+      CommandQueryClient client = userResource();
+      client.putCommand("changemessagedeliverytype", builder.newInstance());
+   }
+
+   public String getMessageDeliveryType() 
+   {
+      try
+      {
+         CommandQueryClient client = userResource();
+         return client.query("getmessagedeliverytype", StringValue.class)
+               .string().get();
+      } catch (Exception e)
+      {
+         throw new OperationException(TaskResources.could_not_refresh, e);
+      }
+   }
+
    // Contact Details
    public ContactValue getContact()
    {
@@ -234,7 +258,8 @@ public class AccountModel extends Observable implements EventListener
 
    public void changeName(String newName) throws ResourceException
    {
-      ValueBuilder<StringValue> builder = vbf.newValueBuilder(StringValue.class);
+      ValueBuilder<StringValue> builder = vbf
+            .newValueBuilder(StringValue.class);
       builder.prototype().string().set(newName);
       contactClient = contactResource();
       contactClient.putCommand("changename", builder.newInstance());

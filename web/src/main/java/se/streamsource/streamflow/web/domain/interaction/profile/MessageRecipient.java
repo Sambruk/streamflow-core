@@ -14,12 +14,19 @@
 
 package se.streamsource.streamflow.web.domain.interaction.profile;
 
+import static se.streamsource.streamflow.infrastructure.event.DomainEvent.CREATE;
+
 import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
+
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 /**
  * JAVADOC
  */
+@Mixins(MessageRecipient.Mixin.class)
 public interface MessageRecipient
 {
    public enum MessageDeliveryTypes
@@ -27,10 +34,30 @@ public interface MessageRecipient
       email,
       none
    }
+   
+   public void changeMessageDeliveryType(MessageDeliveryTypes deliveryType);
 
    interface Data
    {
       @UseDefaults
       Property<MessageDeliveryTypes> delivery();
+
+      public void changedMessageDeliveryType(DomainEvent event, MessageDeliveryTypes deliveryType);
+   }
+   
+   abstract class Mixin implements MessageRecipient, Data 
+   {
+      @This
+      Data state;
+      
+      public void changeMessageDeliveryType(MessageDeliveryTypes deliveryType) 
+      {
+         changedMessageDeliveryType(CREATE, deliveryType);
+      }
+      
+      public void changedMessageDeliveryType(DomainEvent event, MessageDeliveryTypes deliveryType)
+      {
+         state.delivery().set(deliveryType);   
+      }
    }
 }
