@@ -21,13 +21,15 @@ import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.spi.service.importer.NewObjectImporter;
 import se.streamsource.dci.context.InteractionConstraintsService;
 import se.streamsource.streamflow.web.context.access.AccessContext;
+import se.streamsource.streamflow.web.context.access.forms.FormSummaryContext;
+import se.streamsource.streamflow.web.context.access.forms.RequiredFormsContext;
+import se.streamsource.streamflow.web.context.access.forms.SubmittedFormsContext;
 import se.streamsource.streamflow.web.context.access.organizations.AccessPointContext;
 import se.streamsource.streamflow.web.context.access.organizations.AccessPointsContext;
-import se.streamsource.streamflow.web.context.access.organizations.FormSubmissionsContext;
+import se.streamsource.streamflow.web.context.access.forms.FormSubmissionContext;
+import se.streamsource.streamflow.web.context.access.forms.FormSubmissionsContext;
 import se.streamsource.streamflow.web.context.access.organizations.ProxyUserContext;
 import se.streamsource.streamflow.web.context.access.organizations.ProxyUsersContext;
-import se.streamsource.streamflow.web.context.access.organizations.RequiredFormsContext;
-import se.streamsource.streamflow.web.context.access.organizations.SubmittedFormsContext;
 import se.streamsource.streamflow.web.context.conversation.ConversationParticipantContext;
 import se.streamsource.streamflow.web.context.conversation.ConversationParticipantsContext;
 import se.streamsource.streamflow.web.context.conversation.ConversationsContext;
@@ -197,6 +199,9 @@ public class ContextsAssembler
             SubmittedFormsContext.class,
             RequiredFormsContext.class,
             FormSubmissionsContext.class,
+            FormSubmissionContext.class,
+            se.streamsource.streamflow.web.context.access.forms.FormPageContext.class,
+            FormSummaryContext.class,
             AccessPointsContext.class,
             AccessPointContext.class,
             ProxyUserContext.class,

@@ -10,32 +10,30 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.context.access.organizations;
+package se.streamsource.streamflow.web.context.access.forms;
 
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.unitofwork.UnitOfWork;
 import se.streamsource.dci.context.Context;
 import se.streamsource.dci.context.ContextMixin;
 import se.streamsource.dci.context.IndexContext;
+import se.streamsource.dci.context.SubContexts;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
-import se.streamsource.streamflow.web.domain.entity.form.FormSubmissionsQueries;
-import se.streamsource.streamflow.web.domain.entity.task.TaskEntity;
-import se.streamsource.streamflow.web.domain.structure.form.Form;
+import se.streamsource.streamflow.web.domain.entity.form.FormSubmissionEntity;
 import se.streamsource.streamflow.web.domain.structure.form.FormSubmission;
 import se.streamsource.streamflow.web.domain.structure.form.FormSubmissions;
-import se.streamsource.streamflow.web.domain.structure.form.Forms;
-import se.streamsource.streamflow.web.domain.structure.task.Task;
 
 /**
  * JAVADOC
  */
 @Mixins(FormSubmissionsContext.Mixin.class)
 public interface FormSubmissionsContext
-   extends Context, IndexContext<LinksValue>
+   extends Context, IndexContext<LinksValue>, SubContexts<FormSubmissionContext>
 {
+
+   FormSubmissionContext context( String id );
+
    abstract class Mixin
       extends ContextMixin
       implements FormSubmissionsContext
@@ -52,6 +50,23 @@ public interface FormSubmissionsContext
          }
 
          return builder.newLinks();
+      }
+
+      public FormSubmissionContext context( String id )
+      {
+         FormSubmissions.Data formSubmissions = context.role( FormSubmissions.Data.class );
+
+         for ( FormSubmission formSubmission : formSubmissions.formSubmissions() )
+         {
+            FormSubmissionEntity entity = (FormSubmissionEntity) formSubmission;
+            if ( entity.identity().get().equals( id ))
+            {
+               context.playRoles( formSubmission );
+               context.playRoles( formSubmission.getFormSubmission() );
+               return subContext( FormSubmissionContext.class );
+            }
+         }
+         return null;
       }
    }
 }

@@ -123,11 +123,18 @@ public interface FormSubmissions
          builder.prototype().pages().set( new ArrayList<SubmittedPageValue>() );
 
          Pages.Data pageEntities = (Pages.Data) form;
+         boolean firstPage = true;
          for (Page page : pageEntities.pages())
          {
             pageBuilder.prototype().title().set( page.getDescription() );
             pageBuilder.prototype().page().set( EntityReference.getEntityReference( page ));
             pageBuilder.prototype().fields().set( new ArrayList<FieldSubmissionValue>() );
+            pageBuilder.prototype().firstPage().set( firstPage );
+
+            if ( firstPage )
+            {
+               firstPage = false;
+            }
 
             Fields.Data fieldEntities = (Fields.Data) page;
             for (Field field : fieldEntities.fields())
@@ -144,6 +151,11 @@ public interface FormSubmissions
             }
             builder.prototype().pages().get().add( pageBuilder.newInstance() );
          }
+
+         int pages = builder.prototype().pages().get().size();
+         builder.prototype().pages().get().remove( pages-1 );
+         pageBuilder.prototype().lastPage().set( true );
+         builder.prototype().pages().get().add( pageBuilder.newInstance() );
 
          submissionEntityBuilder.instance().changeFormSubmission( builder.newInstance() );
 

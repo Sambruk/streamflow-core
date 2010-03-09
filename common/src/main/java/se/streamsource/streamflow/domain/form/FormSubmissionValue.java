@@ -18,6 +18,7 @@ import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**

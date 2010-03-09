@@ -10,31 +10,33 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.context.access.organizations;
+package se.streamsource.streamflow.web.context.access.forms;
 
 import org.qi4j.api.mixin.Mixins;
 import se.streamsource.dci.context.Context;
 import se.streamsource.dci.context.ContextMixin;
 import se.streamsource.dci.context.IndexContext;
-import se.streamsource.streamflow.resource.task.SubmittedFormsListDTO;
-import se.streamsource.streamflow.web.domain.entity.form.SubmittedFormsQueries;
+import se.streamsource.dci.context.SubContexts;
+import se.streamsource.dci.value.LinksValue;
+import se.streamsource.streamflow.domain.form.FormSubmissionValue;
+import se.streamsource.streamflow.domain.form.SubmittedPageValue;
+import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 
 /**
  * JAVADOC
  */
-@Mixins(SubmittedFormsContext.Mixin.class)
-public interface SubmittedFormsContext
-   extends Context, IndexContext<SubmittedFormsListDTO>
+@Mixins(FormSummaryContext.Mixin.class)
+public interface FormSummaryContext
+   extends Context, IndexContext<FormSubmissionValue>
 {
 
    abstract class Mixin
       extends ContextMixin
-      implements SubmittedFormsContext
+      implements FormSummaryContext
    {
-      public SubmittedFormsListDTO index()
+      public FormSubmissionValue index()
       {
-         SubmittedFormsQueries forms = context.role( SubmittedFormsQueries.class );
-         return forms.getSubmittedForms();
+         return context.role( FormSubmissionValue.class );
       }
    }
 }
