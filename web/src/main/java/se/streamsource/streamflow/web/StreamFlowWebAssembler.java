@@ -114,7 +114,6 @@ public class StreamFlowWebAssembler
       new EntityFinderAssembler().assemble( domainInfrastructureLayer.moduleAssembly( "Entity Finder" ) );
       new EventAssembler().assemble( domainInfrastructureLayer.moduleAssembly( "Events" ) );
       new EmbeddedSolrAssembler().assemble( domainInfrastructureLayer.moduleAssembly( "Search Engine" ));
-      //new MailAssembler().assemble( domainInfrastructureLayer.moduleAssembly( "Mail" ));
    }
 
 
