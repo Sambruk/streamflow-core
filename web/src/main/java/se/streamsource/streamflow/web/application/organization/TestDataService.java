@@ -282,9 +282,9 @@ public interface TestDataService
          // Access test data
          ArrayList<Label> labels = new ArrayList<Label>();
          labels.add( question );
-         organization.createAccessPoint( "AccessPoint", project, bug, labels );
+         organization.createAccessPoint( "Bug Report Question", project, bug, labels );
 
-         organization.createProxyUser( "Charles Xavier", "professorx", "professorx" );
+         organization.createProxyUser( "User External", "professorx", "professorx" );
 
 
          uow.complete();

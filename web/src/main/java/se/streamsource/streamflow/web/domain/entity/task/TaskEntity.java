@@ -31,6 +31,7 @@ import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversations;
 import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
+import se.streamsource.streamflow.web.domain.structure.form.FormSubmissions;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedForms;
 import se.streamsource.streamflow.web.domain.structure.label.Labelable;
 import se.streamsource.streamflow.web.domain.structure.task.Contacts;
@@ -71,6 +72,7 @@ public interface TaskEntity
       Contacts.Data,
       Labelable.Data,
       Removable.Data,
+      FormSubmissions.Data,
       SubmittedForms.Data,
       TypedTask.Data,
 

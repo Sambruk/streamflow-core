@@ -36,8 +36,6 @@ public interface TaskTypesContext
    {
       public LinksValue index()
       {
-         UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
-
          SelectedTaskTypes.Data data = context.role( SelectedTaskTypes.Data.class );
 
          LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );

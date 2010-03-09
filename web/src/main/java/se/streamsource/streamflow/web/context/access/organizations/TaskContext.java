@@ -19,9 +19,11 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.dci.context.Context;
 import se.streamsource.dci.context.ContextMixin;
 import se.streamsource.dci.context.IndexContext;
+import se.streamsource.dci.context.SubContext;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.resource.task.ProxyUserTaskDTO;
+import se.streamsource.streamflow.web.domain.entity.form.SubmittedFormsQueries;
 import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
 import se.streamsource.streamflow.web.domain.entity.task.TaskEntity;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
@@ -35,9 +37,18 @@ import se.streamsource.streamflow.web.domain.structure.task.Task;
 public interface TaskContext
       extends IndexContext<ProxyUserTaskDTO>, Context
 {
+   // commands
    void changedescription( StringValue newDescription );
-
    void sendtofunction();
+
+   @SubContext
+   SubmittedFormsContext submittedforms();
+
+   @SubContext
+   RequiredFormsContext requiredforms();
+
+   @SubContext
+   FormSubmissionsContext formdrafts();
 
    abstract class Mixin
          extends ContextMixin
@@ -78,6 +89,22 @@ public interface TaskContext
 
          task.unassign();
          task.sendTo( project );
+      }
+
+      public SubmittedFormsContext submittedforms()
+      {
+         return subContext( SubmittedFormsContext.class );
+      }
+
+      public RequiredFormsContext requiredforms()
+      {
+         
+         return subContext( RequiredFormsContext.class );
+      }
+
+      public FormSubmissionsContext formdrafts()
+      {
+         return subContext( FormSubmissionsContext.class );
       }
    }
 }

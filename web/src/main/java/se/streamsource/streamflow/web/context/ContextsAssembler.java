@@ -23,8 +23,11 @@ import se.streamsource.dci.context.InteractionConstraintsService;
 import se.streamsource.streamflow.web.context.access.AccessContext;
 import se.streamsource.streamflow.web.context.access.organizations.AccessPointContext;
 import se.streamsource.streamflow.web.context.access.organizations.AccessPointsContext;
+import se.streamsource.streamflow.web.context.access.organizations.FormSubmissionsContext;
 import se.streamsource.streamflow.web.context.access.organizations.ProxyUserContext;
 import se.streamsource.streamflow.web.context.access.organizations.ProxyUsersContext;
+import se.streamsource.streamflow.web.context.access.organizations.RequiredFormsContext;
+import se.streamsource.streamflow.web.context.access.organizations.SubmittedFormsContext;
 import se.streamsource.streamflow.web.context.conversation.ConversationParticipantContext;
 import se.streamsource.streamflow.web.context.conversation.ConversationParticipantsContext;
 import se.streamsource.streamflow.web.context.conversation.ConversationsContext;
@@ -191,6 +194,9 @@ public class ContextsAssembler
             se.streamsource.streamflow.web.context.access.projects.LabelsContext.class,
             se.streamsource.streamflow.web.context.access.organizations.OrganizationsContext.class,
             se.streamsource.streamflow.web.context.access.organizations.TaskContext.class,
+            SubmittedFormsContext.class,
+            RequiredFormsContext.class,
+            FormSubmissionsContext.class,
             AccessPointsContext.class,
             AccessPointContext.class,
             ProxyUserContext.class,
