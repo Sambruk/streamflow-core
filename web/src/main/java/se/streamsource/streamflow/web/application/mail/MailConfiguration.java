@@ -83,9 +83,44 @@ public interface MailConfiguration
    Property<String> from();
 
    /**
-    * The default mail subject.
+    * Whether the mail receiver should run or not.
     * @return
     */
    @UseDefaults
-   Property<String> defaultsubject();
+   Property<Boolean> receiverEnabled();
+   /**
+    *  The delay before the mail receiver kicks in (in minutes).
+    * @return
+    */
+   @UseDefaults
+   Property<Long> receiverDelay();
+
+   /**
+    *  The sleep period before checking inbox again (in minutes).
+    * @return
+    */
+   @UseDefaults
+   Property<Long> receiverSleepPeriod();
+
+   /**
+    * The protocol to use - pop3 or imap
+    * @return
+    */
+   @UseDefaults
+   Property<String> receiverProtocol();
+
+   /**
+    *  The receiver host
+    * @return
+    */
+   @UseDefaults
+   Property<String> receiverHost();
+
+   /**
+    * The receiver port
+    * @return
+    */
+   @UseDefaults
+   Property<Integer> receiverPort();
+
 }
