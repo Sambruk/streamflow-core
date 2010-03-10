@@ -72,6 +72,27 @@ public interface ConversationParticipantsQueries
                   list.add( user );
                }
             }
+         } else if( owner instanceof User)
+         {
+            // for all organizations a user belongs to get all users
+            // and add them to a list without duplicates except users already participating.
+            for (Organization org : ((OrganizationParticipations.Data) owner).organizations().toList())
+            {
+               OrganizationParticipations.Data userOrgs = QueryExpressions.templateFor( OrganizationParticipations.Data.class );
+               Query<User> query = module.queryBuilderFactory().
+                     newQueryBuilder( User.class ).
+                     where( QueryExpressions.contains( userOrgs.organizations(), org ) ).
+                     newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
+
+               for (User user : query)
+               {
+                  if (!participants.participants().contains( user ) && !list.contains( user ))
+                  {
+                     list.add( user );
+                  }
+               }
+
+            }
          } else
          {
             OrganizationalUnitEntity oue = (OrganizationalUnitEntity) ((OwningOrganizationalUnit.Data) owner).organizationalUnit().get();
