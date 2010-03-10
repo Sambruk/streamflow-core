@@ -200,7 +200,6 @@ public class ContextsAssembler
             RequiredFormsContext.class,
             FormSubmissionsContext.class,
             FormSubmissionContext.class,
-            se.streamsource.streamflow.web.context.access.forms.FormPageContext.class,
             FormSummaryContext.class,
             AccessPointsContext.class,
             AccessPointContext.class,

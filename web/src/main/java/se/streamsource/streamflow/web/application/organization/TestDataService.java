@@ -48,6 +48,7 @@ import se.streamsource.streamflow.web.domain.structure.form.Page;
 import se.streamsource.streamflow.web.domain.structure.form.Submitter;
 import se.streamsource.streamflow.web.domain.structure.group.Group;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
+import se.streamsource.streamflow.web.domain.structure.organization.AccessPoint;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
 import se.streamsource.streamflow.web.domain.structure.project.Member;
@@ -55,6 +56,7 @@ import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.project.ProjectRole;
 import se.streamsource.streamflow.web.domain.structure.task.Task;
 import se.streamsource.streamflow.web.domain.structure.tasktype.TaskType;
+import se.streamsource.streamflow.web.domain.structure.user.ProxyUser;
 import se.streamsource.streamflow.web.domain.structure.user.User;
 import se.streamsource.streamflow.web.domain.structure.user.Users;
 
@@ -284,7 +286,15 @@ public interface TestDataService
          labels.add( question );
          organization.createAccessPoint( "Bug Report Question", project, bug, labels );
 
-         organization.createProxyUser( "User External", "professorx", "professorx" );
+         ProxyUser proxyUser = organization.createProxyUser( "User External", "professorx", "professorx" );
+
+         TaskEntity task1 = proxyUser.createTask();
+         task1.changeDescription( "Simple Question" );
+         task1.taskType().set( bug );
+         for (Label label : labels)
+         {
+            task1.addLabel( label );
+         }
 
 
          uow.complete();

@@ -14,6 +14,7 @@
 
 package se.streamsource.streamflow.domain.form;
 
+import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
@@ -30,6 +31,9 @@ public interface FormSubmissionValue
    Property<EntityReference> form();
 
    Property<String> description();
+
+   @UseDefaults
+   Property<Integer> currentPage();
 
    Property<List<SubmittedPageValue>> pages();
 }

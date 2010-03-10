@@ -13,55 +13,105 @@
 package se.streamsource.streamflow.web.context.access.forms;
 
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.dci.context.Context;
 import se.streamsource.dci.context.ContextMixin;
 import se.streamsource.dci.context.IndexContext;
+import se.streamsource.dci.context.SubContext;
 import se.streamsource.dci.context.SubContexts;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.domain.form.FormSubmissionValue;
 import se.streamsource.streamflow.domain.form.SubmittedPageValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
+import se.streamsource.streamflow.resource.roles.IntegerDTO;
+import se.streamsource.streamflow.web.domain.entity.task.TaskEntity;
+import se.streamsource.streamflow.web.domain.structure.form.FormSubmission;
+import se.streamsource.streamflow.web.domain.structure.form.Forms;
 
 /**
  * JAVADOC
  */
 @Mixins(FormSubmissionContext.Mixin.class)
 public interface FormSubmissionContext
-   extends Context, IndexContext<LinksValue>, SubContexts<FormPageContext>
+   extends Context, IndexContext<SubmittedPageValue>
 {
-   FormPageContext context( String id );
+   // commands
+   @HasNextPage(true)
+   void next();
+
+   @HasPreviousPage
+   void previous();
+
+   void updatepage( SubmittedPageValue newPageValue );
+
+   @SubContext
+   @HasNextPage(false)
+   FormSummaryContext summary();
+
+   void discard();
+
 
    abstract class Mixin
       extends ContextMixin
       implements FormSubmissionContext
    {
-      public LinksValue index()
+      public SubmittedPageValue index()
       {
          FormSubmissionValue value = context.role( FormSubmissionValue.class );
 
-         LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() );
-
-         for (SubmittedPageValue pageValue : value.pages().get())
-         {
-            builder.addLink( pageValue.title().get(), pageValue.page().get() );
-         }
-
-         return builder.newLinks();
+         return value.pages().get().get( value.currentPage().get() );
       }
 
-      public FormPageContext context( String id )
+      public void next()
+      {
+         ValueBuilder<FormSubmissionValue> builder = getFormSubmissionValueBuilder();
+
+         builder.prototype().currentPage().set( builder.prototype().currentPage().get() + 1 );
+
+         updateFormSubmission( context.role( FormSubmission.class ), builder );
+      }
+
+      public void previous()
+      {
+         ValueBuilder<FormSubmissionValue> builder = getFormSubmissionValueBuilder();
+
+         builder.prototype().currentPage().set( builder.prototype().currentPage().get() - 1 );
+
+         updateFormSubmission( context.role( FormSubmission.class ), builder );
+      }
+
+      public void updatepage( SubmittedPageValue newPageValue )
+      {
+         ValueBuilder<FormSubmissionValue> builder = getFormSubmissionValueBuilder();
+
+         builder.prototype().pages().get().remove( builder.prototype().currentPage().get().intValue() );
+         builder.prototype().pages().get().add( builder.prototype().currentPage().get(), newPageValue );
+
+         updateFormSubmission( context.role( FormSubmission.class ), builder );
+      }
+
+      private ValueBuilder<FormSubmissionValue> getFormSubmissionValueBuilder()
       {
          FormSubmissionValue value = context.role( FormSubmissionValue.class );
+         return module.valueBuilderFactory().newValueBuilder( FormSubmissionValue.class ).withPrototype( value );
+      }
 
-         for (SubmittedPageValue submittedPageValue : value.pages().get())
-         {
-            if ( submittedPageValue.page().get().identity().equals( id ) )
-            {
-               context.playRoles( submittedPageValue );
-               return subContext( FormPageContext.class );
-            }
-         }
-         return null;
+      private void updateFormSubmission( FormSubmission formSubmission, ValueBuilder<FormSubmissionValue> builder )
+      {
+         FormSubmissionValue newFormValue = builder.newInstance();
+         formSubmission.changeFormSubmission( newFormValue );
+
+         context.playRoles( newFormValue );
+      }
+
+      public FormSummaryContext summary()
+      {
+         return subContext( FormSummaryContext.class );
+      }
+
+      public void discard()
+      {
+         // delete formSubmission
       }
    }
 }

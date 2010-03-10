@@ -14,6 +14,7 @@ package se.streamsource.streamflow.web.context.access.forms;
 
 import org.qi4j.api.constraint.ConstraintDeclaration;
 import org.qi4j.api.constraint.Constraints;
+import se.streamsource.streamflow.domain.form.FormSubmissionValue;
 import se.streamsource.streamflow.domain.form.SubmittedPageValue;
 
 import java.lang.annotation.Retention;
@@ -30,11 +31,12 @@ public @interface HasNextPage
    public abstract boolean value();
 
    public class Constraint
-         implements org.qi4j.api.constraint.Constraint<HasNextPage, SubmittedPageValue>
+         implements org.qi4j.api.constraint.Constraint<HasNextPage, FormSubmissionValue>
    {
-      public boolean isValid( HasNextPage page, SubmittedPageValue value )
+      public boolean isValid( HasNextPage page, FormSubmissionValue value )
       {
-         return page.value() != value.lastPage().get();
+         boolean lastPage = value.pages().get().size()-1 == value.currentPage().get();
+         return page.value() != lastPage;
       }
    }
 }

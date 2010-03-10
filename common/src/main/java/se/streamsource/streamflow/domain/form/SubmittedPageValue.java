@@ -33,10 +33,4 @@ public interface SubmittedPageValue
    Property<String> title();
 
    Property<List<FieldSubmissionValue>> fields();
-
-   @UseDefaults
-   Property<Boolean> firstPage();
-
-   @UseDefaults
-   Property<Boolean> lastPage();
 }
