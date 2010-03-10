@@ -165,7 +165,7 @@ public interface MailService
          Conversation conversation = message.conversation().get();
          ConversationOwner owner = conversation.conversationOwner().get();
 
-         String taskId = ((CompletableId.Data) owner).taskId() != null ? ((CompletableId.Data) owner).taskId().get() : "n/a";
+         String taskId = ((CompletableId.Data) owner).taskId().get() != null ? ((CompletableId.Data) owner).taskId().get() : "n/a";
 
          if (emailAddress != null && emailAddress.length() != 0)
          {
