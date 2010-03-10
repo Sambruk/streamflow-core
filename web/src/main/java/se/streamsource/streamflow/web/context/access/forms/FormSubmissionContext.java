@@ -23,6 +23,7 @@ import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.domain.form.FormSubmissionValue;
 import se.streamsource.streamflow.domain.form.SubmittedPageValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
+import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.resource.roles.IntegerDTO;
 import se.streamsource.streamflow.web.domain.entity.task.TaskEntity;
 import se.streamsource.streamflow.web.domain.structure.form.FormSubmission;
@@ -35,6 +36,9 @@ import se.streamsource.streamflow.web.domain.structure.form.Forms;
 public interface FormSubmissionContext
    extends Context, IndexContext<SubmittedPageValue>
 {
+   // queries
+   LinksValue pages();
+
    // commands
    @HasNextPage(true)
    void next();
@@ -44,12 +48,13 @@ public interface FormSubmissionContext
 
    void updatepage( SubmittedPageValue newPageValue );
 
+   void gotopage( IntegerDTO page );
+
    @SubContext
    @HasNextPage(false)
    FormSummaryContext summary();
 
    void discard();
-
 
    abstract class Mixin
       extends ContextMixin
@@ -62,13 +67,31 @@ public interface FormSubmissionContext
          return value.pages().get().get( value.currentPage().get() );
       }
 
+      public LinksValue pages()
+      {
+         FormSubmissionValue value = context.role( FormSubmissionValue.class );
+
+         LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() );
+
+         int pageIndex = 0;
+         for (SubmittedPageValue pageValue : value.pages().get())
+         {
+            builder.path( "../" );
+            builder.command( "gotopage" );
+            builder.addLink( pageValue.title().get(), ""+pageIndex );
+            pageIndex++;
+         }
+
+         return builder.newLinks();
+      }
+
       public void next()
       {
          ValueBuilder<FormSubmissionValue> builder = getFormSubmissionValueBuilder();
 
          builder.prototype().currentPage().set( builder.prototype().currentPage().get() + 1 );
 
-         updateFormSubmission( context.role( FormSubmission.class ), builder );
+         updateFormSubmission( builder );
       }
 
       public void previous()
@@ -77,7 +100,7 @@ public interface FormSubmissionContext
 
          builder.prototype().currentPage().set( builder.prototype().currentPage().get() - 1 );
 
-         updateFormSubmission( context.role( FormSubmission.class ), builder );
+         updateFormSubmission( builder );
       }
 
       public void updatepage( SubmittedPageValue newPageValue )
@@ -87,7 +110,7 @@ public interface FormSubmissionContext
          builder.prototype().pages().get().remove( builder.prototype().currentPage().get().intValue() );
          builder.prototype().pages().get().add( builder.prototype().currentPage().get(), newPageValue );
 
-         updateFormSubmission( context.role( FormSubmission.class ), builder );
+         updateFormSubmission( builder );
       }
 
       private ValueBuilder<FormSubmissionValue> getFormSubmissionValueBuilder()
@@ -96,9 +119,10 @@ public interface FormSubmissionContext
          return module.valueBuilderFactory().newValueBuilder( FormSubmissionValue.class ).withPrototype( value );
       }
 
-      private void updateFormSubmission( FormSubmission formSubmission, ValueBuilder<FormSubmissionValue> builder )
+      private void updateFormSubmission( ValueBuilder<FormSubmissionValue> builder )
       {
          FormSubmissionValue newFormValue = builder.newInstance();
+         FormSubmission formSubmission = context.role( FormSubmission.class );
          formSubmission.changeFormSubmission( newFormValue );
 
          context.playRoles( newFormValue );
@@ -112,6 +136,15 @@ public interface FormSubmissionContext
       public void discard()
       {
          // delete formSubmission
+      }
+
+      public void gotopage( IntegerDTO page )
+      {
+         ValueBuilder<FormSubmissionValue> valueBuilder = getFormSubmissionValueBuilder();
+
+         valueBuilder.prototype().currentPage().set( page.integer().get() );
+
+         updateFormSubmission( valueBuilder );
       }
    }
 }
