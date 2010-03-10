@@ -15,6 +15,7 @@
 package se.streamsource.streamflow.web.application.mail;
 
 import org.qi4j.api.common.Visibility;
+import org.qi4j.api.structure.Application;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
@@ -27,6 +28,10 @@ public class MailAssembler
 {
    public void assemble( ModuleAssembly module ) throws AssemblyException
    {
-      module.addServices( MailService.class ).identifiedBy( "mail" ).instantiateOnStartup().visibleIn( Visibility.application );
+
+      if (module.layerAssembly().applicationAssembly().mode() == Application.Mode.production )
+      {
+         module.addServices( MailService.class ).identifiedBy( "mail" ).instantiateOnStartup().visibleIn( Visibility.application );
+      }
    }
 }
