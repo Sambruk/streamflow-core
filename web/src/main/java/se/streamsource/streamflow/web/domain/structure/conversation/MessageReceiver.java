@@ -14,6 +14,9 @@
 
 package se.streamsource.streamflow.web.domain.structure.conversation;
 
+import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.entity.Identity;
+import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
@@ -23,19 +26,28 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 @Mixins(MessageReceiver.Mixin.class)
 public interface MessageReceiver
 {
-   void receiveMessage(Message message);
+   void receiveMessage( Message message );
 
    interface Data
    {
-      void receivedMessage( DomainEvent event, Message message);
+      void receivedMessage( DomainEvent event, Message message );
    }
 
    class Mixin
-      implements MessageReceiver, Data
+         implements MessageReceiver, Data
    {
+
+      @This
+      Identity identity;
+
       public void receiveMessage( Message message )
       {
-         receivedMessage( DomainEvent.CREATE, message );
+         if (!identity.identity().get().equals(
+               EntityReference.getEntityReference(
+                     ((Message.Data) message).sender().get() ).identity() ))
+         {
+            receivedMessage( DomainEvent.CREATE, message );
+         }
       }
 
       public void receivedMessage( DomainEvent event, Message message )
