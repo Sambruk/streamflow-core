@@ -30,8 +30,8 @@ import se.streamsource.streamflow.domain.form.DateFieldValue;
 import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
 import se.streamsource.streamflow.domain.form.FormSubmissionValue;
 import se.streamsource.streamflow.domain.form.NumberFieldValue;
+import se.streamsource.streamflow.domain.form.PageSubmissionValue;
 import se.streamsource.streamflow.domain.form.SelectionFieldValue;
-import se.streamsource.streamflow.domain.form.SubmittedPageValue;
 import se.streamsource.streamflow.domain.form.TextFieldValue;
 import se.streamsource.streamflow.web.domain.entity.conversation.ConversationEntity;
 import se.streamsource.streamflow.web.domain.entity.gtd.Inbox;
@@ -48,7 +48,6 @@ import se.streamsource.streamflow.web.domain.structure.form.Page;
 import se.streamsource.streamflow.web.domain.structure.form.Submitter;
 import se.streamsource.streamflow.web.domain.structure.group.Group;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
-import se.streamsource.streamflow.web.domain.structure.organization.AccessPoint;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
 import se.streamsource.streamflow.web.domain.structure.project.Member;
@@ -303,7 +302,7 @@ public interface TestDataService
       private void submitStatus( Task task, FormSubmission formSubmission, String status, Submitter submitter )
       {
          FormSubmissionValue submissionValue = (FormSubmissionValue) formSubmission.getFormSubmission().buildWith().prototype();
-         for (SubmittedPageValue pageValue : submissionValue.pages().get())
+         for (PageSubmissionValue pageValue : submissionValue.pages().get())
          {
             for (FieldSubmissionValue value : pageValue.fields().get())
             {

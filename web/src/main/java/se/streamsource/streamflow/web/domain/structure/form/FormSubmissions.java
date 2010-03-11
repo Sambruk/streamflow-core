@@ -26,9 +26,9 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
 import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
 import se.streamsource.streamflow.domain.form.FormSubmissionValue;
+import se.streamsource.streamflow.domain.form.PageSubmissionValue;
 import se.streamsource.streamflow.domain.form.SubmittedFieldValue;
 import se.streamsource.streamflow.domain.form.SubmittedFormValue;
-import se.streamsource.streamflow.domain.form.SubmittedPageValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.web.domain.structure.tasktype.TaskType;
 import se.streamsource.streamflow.web.domain.structure.tasktype.TypedTask;
@@ -117,10 +117,10 @@ public interface FormSubmissions
          builder.prototype().description().set( form.getDescription() );
          builder.prototype().form().set( EntityReference.getEntityReference( form ));
 
-         ValueBuilder<SubmittedPageValue> pageBuilder = vbf.newValueBuilder( SubmittedPageValue.class );
+         ValueBuilder<PageSubmissionValue> pageBuilder = vbf.newValueBuilder( PageSubmissionValue.class );
          ValueBuilder<FieldSubmissionValue> fieldBuilder = vbf.newValueBuilder( FieldSubmissionValue.class );
          ValueBuilder<FieldDefinitionValue> valueBuilder = vbf.newValueBuilder( FieldDefinitionValue.class );
-         builder.prototype().pages().set( new ArrayList<SubmittedPageValue>() );
+         builder.prototype().pages().set( new ArrayList<PageSubmissionValue>() );
 
          Pages.Data pageEntities = (Pages.Data) form;
          for (Page page : pageEntities.pages())
@@ -140,6 +140,7 @@ public interface FormSubmissions
 
                fieldBuilder.prototype().field().set( valueBuilder.newInstance() );
                fieldBuilder.prototype().value().set( getSubmittedValue( field, submittedFormValue ) );
+               fieldBuilder.prototype().enabled().set( true );
                pageBuilder.prototype().fields().get().add( fieldBuilder.newInstance() );
             }
             builder.prototype().pages().get().add( pageBuilder.newInstance() );

@@ -19,7 +19,7 @@ import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
 import se.streamsource.streamflow.domain.form.FieldValueDTO;
 import se.streamsource.streamflow.domain.form.FormSubmissionValue;
-import se.streamsource.streamflow.domain.form.SubmittedPageValue;
+import se.streamsource.streamflow.domain.form.PageSubmissionValue;
 import se.streamsource.streamflow.web.domain.structure.form.FormSubmission;
 import se.streamsource.dci.context.Context;
 import se.streamsource.dci.context.ContextMixin;
@@ -51,7 +51,7 @@ public interface TaskFormContext
 
          ValueBuilder<FormSubmissionValue> builder = formSubmission.getFormSubmission().buildWith();
 
-         for (SubmittedPageValue pageValue : builder.prototype().pages().get())
+         for (PageSubmissionValue pageValue : builder.prototype().pages().get())
          {
             for ( FieldSubmissionValue value : pageValue.fields().get() )
             {

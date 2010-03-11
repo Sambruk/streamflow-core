@@ -40,10 +40,10 @@ import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.domain.form.CommentFieldValue;
 import se.streamsource.streamflow.domain.form.DateFieldValue;
 import se.streamsource.streamflow.domain.form.NumberFieldValue;
+import se.streamsource.streamflow.domain.form.PageSubmissionValue;
 import se.streamsource.streamflow.domain.form.SelectionFieldValue;
 import se.streamsource.streamflow.domain.form.TextFieldValue;
 import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
-import se.streamsource.streamflow.domain.form.SubmittedPageValue;
 import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
 
 import javax.swing.JComboBox;
@@ -74,7 +74,7 @@ public class FormSubmissionWizardPage
    private ValidationResultModel validationResultModel;
    private FormSubmissionModel model;
 
-   public FormSubmissionWizardPage( @Uses SubmittedPageValue page,
+   public FormSubmissionWizardPage( @Uses PageSubmissionValue page,
                                     @Uses FormSubmissionModel model)
    {
       super( page.title().get() );

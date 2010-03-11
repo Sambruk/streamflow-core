@@ -43,7 +43,7 @@ public class FormAssembler
             FieldDefinitionValue.class,
             FieldSubmissionValue.class,
             SubmittedFormValue.class,
-            SubmittedPageValue.class,
+            PageSubmissionValue.class,
             SubmitFormDTO.class,
             PageDefinitionValue.class).visibleIn( Visibility.application );
    }

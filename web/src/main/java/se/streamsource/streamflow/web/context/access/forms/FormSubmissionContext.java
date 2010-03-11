@@ -18,24 +18,20 @@ import se.streamsource.dci.context.Context;
 import se.streamsource.dci.context.ContextMixin;
 import se.streamsource.dci.context.IndexContext;
 import se.streamsource.dci.context.SubContext;
-import se.streamsource.dci.context.SubContexts;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
 import se.streamsource.streamflow.domain.form.FormSubmissionValue;
-import se.streamsource.streamflow.domain.form.SubmittedPageValue;
+import se.streamsource.streamflow.domain.form.PageSubmissionValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.resource.roles.IntegerDTO;
-import se.streamsource.streamflow.web.domain.entity.task.TaskEntity;
 import se.streamsource.streamflow.web.domain.structure.form.FormSubmission;
-import se.streamsource.streamflow.web.domain.structure.form.Forms;
 
 /**
  * JAVADOC
  */
 @Mixins(FormSubmissionContext.Mixin.class)
 public interface FormSubmissionContext
-   extends Context, IndexContext<SubmittedPageValue>
+   extends Context, IndexContext<PageSubmissionValue>
 {
    // queries
    LinksValue pages();
@@ -61,7 +57,7 @@ public interface FormSubmissionContext
       extends ContextMixin
       implements FormSubmissionContext
    {
-      public SubmittedPageValue index()
+      public PageSubmissionValue index()
       {
          FormSubmissionValue value = context.role( FormSubmissionValue.class );
 
@@ -75,7 +71,7 @@ public interface FormSubmissionContext
          LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() );
 
          int pageIndex = 0;
-         for (SubmittedPageValue pageValue : value.pages().get())
+         for (PageSubmissionValue pageValue : value.pages().get())
          {
             builder.path( "../" );
             builder.command( "gotopage" );
@@ -109,7 +105,7 @@ public interface FormSubmissionContext
          ValueBuilder<FormSubmissionValue> builder = getFormSubmissionValueBuilder();
 
 
-         SubmittedPageValue pageValue = builder.prototype().pages().get().remove( builder.prototype().currentPage().get().intValue() );
+         PageSubmissionValue pageValue = builder.prototype().pages().get().remove( builder.prototype().currentPage().get().intValue() );
 
          for (FieldSubmissionValue value : pageValue.fields().get())
          {

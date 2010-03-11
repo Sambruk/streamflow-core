@@ -29,4 +29,10 @@ public interface FieldSubmissionValue
 
    @Optional
    Property<String> value();
+
+   @Optional
+   Property<String> message();
+
+   Property<Boolean> enabled();
+
 }

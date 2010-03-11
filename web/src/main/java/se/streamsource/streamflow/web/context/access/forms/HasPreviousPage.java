@@ -15,7 +15,6 @@ package se.streamsource.streamflow.web.context.access.forms;
 import org.qi4j.api.constraint.ConstraintDeclaration;
 import org.qi4j.api.constraint.Constraints;
 import se.streamsource.streamflow.domain.form.FormSubmissionValue;
-import se.streamsource.streamflow.domain.form.SubmittedPageValue;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

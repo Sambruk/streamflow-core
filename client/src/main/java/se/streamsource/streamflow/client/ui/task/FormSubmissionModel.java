@@ -27,7 +27,7 @@ import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.domain.form.FormSubmissionValue;
 import se.streamsource.streamflow.domain.form.FieldValueDTO;
-import se.streamsource.streamflow.domain.form.SubmittedPageValue;
+import se.streamsource.streamflow.domain.form.PageSubmissionValue;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -56,7 +56,7 @@ public class FormSubmissionModel
          throw new OperationException( WorkspaceResources.could_not_get_form_submission, e );
       }
       pages = new ArrayList<WizardPage>( formSubmission.pages().get().size() );
-      for (SubmittedPageValue page : formSubmission.pages().get())
+      for (PageSubmissionValue page : formSubmission.pages().get())
       {
          if ( page.fields().get() != null && page.fields().get().size() >0 )
          {

@@ -25,7 +25,7 @@ import java.util.List;
 /**
  * JAVADOC
  */
-public interface SubmittedPageValue
+public interface PageSubmissionValue
       extends ValueComposite
 {
    Property<EntityReference> page();
