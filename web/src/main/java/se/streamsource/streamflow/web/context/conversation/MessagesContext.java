@@ -23,6 +23,7 @@ import se.streamsource.dci.context.IndexContext;
 import se.streamsource.dci.context.SubContexts;
 import se.streamsource.dci.value.*;
 import se.streamsource.dci.value.StringValue;
+import se.streamsource.streamflow.domain.contact.Contactable;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.resource.conversation.MessageDTO;
 import se.streamsource.streamflow.web.domain.entity.conversation.ConversationEntity;
@@ -36,13 +37,13 @@ import se.streamsource.streamflow.web.domain.structure.conversation.Messages;
  */
 @Mixins(MessagesContext.Mixin.class)
 public interface MessagesContext
-   extends SubContexts<MessageContext>, IndexContext<LinksValue>, Context
+      extends SubContexts<MessageContext>, IndexContext<LinksValue>, Context
 {
-   public void addmessage( StringValue message);
+   public void addmessage( StringValue message );
 
    abstract class Mixin
-      extends ContextMixin
-      implements MessagesContext
+         extends ContextMixin
+         implements MessagesContext
    {
       public LinksValue index()
       {
@@ -52,7 +53,11 @@ public interface MessagesContext
 
          for (Message message : conversation.messages())
          {
-            builder.prototype().sender().set( EntityReference.getEntityReference( ((MessageEntity) message).sender().get() ) );
+            Contactable contact = module.unitOfWorkFactory().currentUnitOfWork().get( Contactable.class, EntityReference.getEntityReference( ((MessageEntity) message).sender().get() ).identity() );
+            String sender = contact.getContact().name().get();
+            builder.prototype().sender().set( !"".equals( sender )
+                  ? sender
+                  : EntityReference.getEntityReference( ((MessageEntity) message).sender().get() ).identity() );
             builder.prototype().createdOn().set( ((MessageEntity) message).createdOn().get() );
             builder.prototype().text().set( ((MessageEntity) message).body().get() );
             builder.prototype().href().set( ((MessageEntity) message).identity().get() );
@@ -72,7 +77,7 @@ public interface MessagesContext
 
       public MessageContext context( String id )
       {
-         context.playRoles( module.unitOfWorkFactory().currentUnitOfWork().get( Message.class, id ));
+         context.playRoles( module.unitOfWorkFactory().currentUnitOfWork().get( Message.class, id ) );
          return subContext( MessageContext.class );
       }
    }

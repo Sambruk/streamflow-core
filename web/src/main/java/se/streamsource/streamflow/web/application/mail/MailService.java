@@ -152,6 +152,11 @@ public interface MailService
       public void sendNotification( DomainEvent event ) throws Exception
       {
          Contactable user = uowf.currentUnitOfWork().get( Contactable.class, event.entity().get() );
+         String userName = user.getContact().name().get();
+         if ("".equals( userName ))
+         {
+            userName = event.entity().get();
+         }
          ListIterator<ContactEmailValue> listIter = user.getContact().emailAddresses().get().listIterator();
          String emailAddress = "";
          if (listIter.hasNext())
@@ -167,7 +172,7 @@ public interface MailService
 
          String taskId = "n/a";
 
-         if(owner != null)
+         if (owner != null)
             taskId = ((CompletableId.Data) owner).taskId().get() != null ? ((CompletableId.Data) owner).taskId().get() : "n/a";
 
          if (emailAddress != null && emailAddress.length() != 0)
@@ -182,7 +187,17 @@ public interface MailService
             msg.setSender( new InternetAddress( config.configuration().from().get() ) );
             msg.setSubject( "[" + taskId + "]" + conversation.getDescription()
                   + "(" + EntityReference.getEntityReference( message.conversation().get() ).identity() + ":" + event.entity().get() + ")" );
-            msg.setContent( message.body().get(), "text/html" );
+
+            String formattedMsg = message.body().get();
+            if (formattedMsg.contains( "<body>" ))
+            {
+               formattedMsg = formattedMsg.replace( "<body>", "<body><b>" + userName + ":</b><br/><br/>" );
+            } else
+            {
+               formattedMsg = userName + ":\r\n\r\n" + formattedMsg;
+            }
+
+            msg.setContent( formattedMsg, "text/html" );
 
             msg.setRecipient( javax.mail.Message.RecipientType.TO, new InternetAddress( emailAddress ) );
 
@@ -215,10 +230,12 @@ public interface MailService
                props.setProperty( "mail." + protocol + ".socketFactory.port", "" + config.configuration().receiverPort().get().intValue() );
             }
 
-
-            for (Map.Entry prop : props.entrySet())
+            if (config.configuration().debug().get())
             {
-               logger.info( prop.getKey() + "=" + prop.getValue() );
+               for (Map.Entry prop : props.entrySet())
+               {
+                  logger.info( prop.getKey() + "=" + prop.getValue() );
+               }
             }
 
             Session session = javax.mail.Session.getInstance( props, authenticator );

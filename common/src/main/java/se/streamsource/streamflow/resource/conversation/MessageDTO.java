@@ -14,7 +14,6 @@
 
 package se.streamsource.streamflow.resource.conversation;
 
-import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.property.Property;
 import se.streamsource.dci.value.LinkValue;
 
@@ -23,7 +22,7 @@ import java.util.Date;
 public interface MessageDTO
       extends LinkValue
 {
-   Property<EntityReference> sender();
+   Property<String> sender();
 
    Property<Date> createdOn();
 }
