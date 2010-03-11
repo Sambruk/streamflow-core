@@ -17,8 +17,6 @@ package se.streamsource.streamflow.client.ui.administration.users;
 import org.jdesktop.application.ApplicationActionMap;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.JXTable;
-import org.jdesktop.swingx.renderer.CheckBoxProvider;
-import org.jdesktop.swingx.renderer.DefaultTableRenderer;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
@@ -97,7 +95,7 @@ public class UsersAdministrationView
       // Ask the user for a file to import user/pwd pairs from
       // Can be either Excels or CVS format
       JFileChooser fileChooser = new JFileChooser();
-      fileChooser.setFileSelectionMode( JFileChooser.FILES_ONLY );
+      fileChooser.setFileSelectionMode( JFileChooser.FILES_AND_DIRECTORIES );
       fileChooser.setMultiSelectionEnabled( false );
       fileChooser.addChoosableFileFilter( new FileNameExtensionFilter(
             text( AdministrationResources.import_files ), "xls", "csv", "txt" ) );
