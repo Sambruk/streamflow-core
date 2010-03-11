@@ -20,6 +20,7 @@ import se.streamsource.dci.context.IndexContext;
 import se.streamsource.dci.context.SubContext;
 import se.streamsource.dci.context.SubContexts;
 import se.streamsource.dci.value.LinksValue;
+import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
 import se.streamsource.streamflow.domain.form.FormSubmissionValue;
 import se.streamsource.streamflow.domain.form.SubmittedPageValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
@@ -46,7 +47,7 @@ public interface FormSubmissionContext
    @HasPreviousPage
    void previous();
 
-   void updatepage( SubmittedPageValue newPageValue );
+   void updatefield( FieldSubmissionValue newFieldValue );
 
    void gotopage( IntegerDTO page );
 
@@ -103,14 +104,23 @@ public interface FormSubmissionContext
          updateFormSubmission( builder );
       }
 
-      public void updatepage( SubmittedPageValue newPageValue )
+      public void updatefield( FieldSubmissionValue newFieldValue )
       {
          ValueBuilder<FormSubmissionValue> builder = getFormSubmissionValueBuilder();
 
-         builder.prototype().pages().get().remove( builder.prototype().currentPage().get().intValue() );
-         builder.prototype().pages().get().add( builder.prototype().currentPage().get(), newPageValue );
 
-         updateFormSubmission( builder );
+         SubmittedPageValue pageValue = builder.prototype().pages().get().remove( builder.prototype().currentPage().get().intValue() );
+
+         for (FieldSubmissionValue value : pageValue.fields().get())
+         {
+            if ( value.field().get().field().get().equals( newFieldValue.field().get().field().get() ) )
+            {
+               value.value().set( newFieldValue.value().get() );
+               builder.prototype().pages().get().add( builder.prototype().currentPage().get(), pageValue );
+               updateFormSubmission( builder );
+               return;
+            }
+         }
       }
 
       private ValueBuilder<FormSubmissionValue> getFormSubmissionValueBuilder()
