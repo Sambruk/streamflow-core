@@ -12,8 +12,11 @@
 
 package se.streamsource.streamflow.web.context.access.forms;
 
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.value.ValueBuilder;
+import org.restlet.data.Form;
+import org.restlet.representation.Representation;
 import se.streamsource.dci.context.Context;
 import se.streamsource.dci.context.ContextMixin;
 import se.streamsource.dci.context.IndexContext;
@@ -25,6 +28,9 @@ import se.streamsource.streamflow.domain.form.PageSubmissionValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.resource.roles.IntegerDTO;
 import se.streamsource.streamflow.web.domain.structure.form.FormSubmission;
+
+import java.util.Map;
+import java.util.Set;
 
 /**
  * JAVADOC
@@ -38,7 +44,7 @@ public interface FormSubmissionContext
 
    // commands
    @HasNextPage
-   void next();
+   void next(Representation rep);
 
    @HasPreviousPage
    void previous();
@@ -82,9 +88,20 @@ public interface FormSubmissionContext
          return builder.newLinks();
       }
 
-      public void next()
+      public void next( Representation rep)
       {
-         ValueBuilder<FormSubmissionValue> builder = getFormSubmissionValueBuilder();
+         Form form = new Form(rep);
+
+         Set<Map.Entry<String, String>> entries = form.getValuesMap().entrySet();
+
+         FormSubmission submission = context.role( FormSubmission.class );
+
+         for (Map.Entry<String, String> entry : entries)
+         {
+            submission.changeFieldValue( EntityReference.parseEntityReference(entry.getKey() ), entry.getValue());
+         }
+
+         ValueBuilder<FormSubmissionValue> builder = context.role( FormSubmission.Data.class ).formSubmissionValue().get().buildWith();
 
          builder.prototype().currentPage().set( builder.prototype().currentPage().get() + 1 );
 
@@ -122,7 +139,7 @@ public interface FormSubmissionContext
       private ValueBuilder<FormSubmissionValue> getFormSubmissionValueBuilder()
       {
          FormSubmissionValue value = context.role( FormSubmissionValue.class );
-         return module.valueBuilderFactory().newValueBuilder( FormSubmissionValue.class ).withPrototype( value );
+         return value.buildWith();
       }
 
       private void updateFormSubmission( ValueBuilder<FormSubmissionValue> builder )

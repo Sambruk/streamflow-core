@@ -756,6 +756,10 @@ public abstract class CommandQueryServerResource
             {
                // Command method takes Representation as input
                return new Object[]{getRequest().getEntity()};
+            } else if (method.getParameterTypes()[0].equals( Form.class ))
+            {
+               // Command method takes Representation as input
+               return new Object[]{getRequest().getEntityAsForm()};
             } else
             {
                // Need to parse input into ValueComposite
@@ -804,11 +808,17 @@ public abstract class CommandQueryServerResource
       } else
       {
          Form asForm = getRequest().getResourceRef().getQueryAsForm();
-         if (args.length == 1 && ValueComposite.class.isAssignableFrom( method.getParameterTypes()[0] ))
+         if (args.length == 1)
          {
-            Class<?> valueType = method.getParameterTypes()[0];
+            if (ValueComposite.class.isAssignableFrom( method.getParameterTypes()[0] ))
+            {
+               Class<?> valueType = method.getParameterTypes()[0];
 
-            args[0] = getValueFromForm( (Class<ValueComposite>) valueType, asForm );
+               args[0] = getValueFromForm( (Class<ValueComposite>) valueType, asForm );
+            } else if (Form.class.equals(method.getParameterTypes()[0] ))
+            {
+               args[0] = asForm;
+            }
          } else
          {
             for (Annotation[] annotations : method.getParameterAnnotations())

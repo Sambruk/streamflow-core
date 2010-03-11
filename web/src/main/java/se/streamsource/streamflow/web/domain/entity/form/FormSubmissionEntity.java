@@ -23,6 +23,7 @@ import se.streamsource.streamflow.web.domain.structure.form.FormSubmission;
 public interface FormSubmissionEntity
       extends
       FormSubmission,
+      FormSubmission.Data,
       DomainEntity
 {
 }

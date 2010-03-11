@@ -14,12 +14,17 @@
 
 package se.streamsource.streamflow.web.domain.structure.form;
 
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
+import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
 import se.streamsource.streamflow.domain.form.FormSubmissionValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+
+import java.util.List;
 
 /**
  * JAVADOC
@@ -30,6 +35,8 @@ public interface FormSubmission
    FormSubmissionValue getFormSubmission();
 
    void changeFormSubmission( FormSubmissionValue formSubmission );
+
+   void changeFieldValue( EntityReference fieldId, String newValue);
 
    interface Data
    {
@@ -49,10 +56,31 @@ public interface FormSubmission
          return formSubmissionValue().get();
       }
 
-
       public void changeFormSubmission( FormSubmissionValue formSubmission )
       {
          changedFormSubmission( DomainEvent.CREATE, formSubmission );
+      }
+
+      public void changeFieldValue( EntityReference fieldId, String newValue )
+      {
+         ValueBuilder<FormSubmissionValue> builder = formSubmissionValue().get().buildWith();
+
+         int currentPage = builder.prototype().currentPage().get();
+
+         List<FieldSubmissionValue> fields = builder.prototype().pages().get().get( currentPage ).fields().get();
+         for (FieldSubmissionValue field : fields)
+         {
+            if (field.field().get().field().get().equals(fieldId))
+            {
+               if (field.value().get() != null && field.value().get().equals( newValue ))
+                  return; // Skip update - same value
+
+               field.value().set( newValue );
+               break;
+            }
+         }
+
+         changedFormSubmission( DomainEvent.CREATE, builder.newInstance() );
       }
 
       public void changedFormSubmission( DomainEvent event, FormSubmissionValue formSubmission )
