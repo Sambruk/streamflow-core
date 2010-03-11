@@ -51,7 +51,8 @@ public class GroupsModel
    @Structure
    ValueBuilderFactory vbf;
 
-   SortedList<LinkValue> groups = new SortedList<LinkValue>(new BasicEventList<LinkValue>( ), new LinkComparator() );
+   BasicEventList<LinkValue> sourceGroups = new BasicEventList<LinkValue>();
+   SortedList<LinkValue> groups = new SortedList<LinkValue>( sourceGroups, new LinkComparator() );
 
    WeakModelMap<String, ParticipantsModel> groupModels = new WeakModelMap<String, ParticipantsModel>()
    {
@@ -102,7 +103,7 @@ public class GroupsModel
       try
       {
          LinksValue groupsList = client.query( "groups", LinksValue.class );
-         EventListSynch.synchronize( groupsList.links().get(), groups );
+         EventListSynch.synchronize( groupsList.links().get(), sourceGroups );
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_refresh, e );

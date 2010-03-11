@@ -22,6 +22,8 @@ import java.util.Collection;
 /**
  * Synchronize an EventList with a collection. This is used for getting updates
  * from the server and showing them in the UI.
+ * In conjunction with a SortedList <code>EventListSynch.synchronize()</code> may only be called on the
+ * underlying BasicEventList!!
  */
 public class EventListSynch
 {

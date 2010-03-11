@@ -16,6 +16,7 @@ package se.streamsource.streamflow.client.ui.administration.groups;
 
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.SortedList;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
@@ -27,6 +28,7 @@ import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
+import se.streamsource.streamflow.client.infrastructure.ui.LinkComparator;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
@@ -44,7 +46,8 @@ public class ParticipantsModel
    @Uses
    CommandQueryClient client;
 
-   private BasicEventList<LinkValue> participants = new BasicEventList<LinkValue>( );
+   private BasicEventList<LinkValue> sourceParticipants = new BasicEventList<LinkValue>();
+   private SortedList<LinkValue> participants = new SortedList<LinkValue>( sourceParticipants, new LinkComparator() );
 
    public EventList<LinkValue> getParticipants()
    {
@@ -82,7 +85,7 @@ public class ParticipantsModel
    public void refresh() throws ResourceException
    {
       LinksValue list = client.query( "index", LinksValue.class );
-      EventListSynch.synchronize( list.links().get(), participants );
+      EventListSynch.synchronize( list.links().get(), sourceParticipants );
    }
 
    public void notifyEvent( DomainEvent event )

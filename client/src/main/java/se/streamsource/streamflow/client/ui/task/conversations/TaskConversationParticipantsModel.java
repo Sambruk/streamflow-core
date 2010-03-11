@@ -43,7 +43,8 @@ public class TaskConversationParticipantsModel
    @Structure
    ValueBuilderFactory vbf;
 
-   SortedList<LinkValue> participants = new SortedList<LinkValue>(new BasicEventList<LinkValue>( ), new LinkComparator());
+   BasicEventList<LinkValue> sourceParticipants = new BasicEventList<LinkValue>();
+   SortedList<LinkValue> participants = new SortedList<LinkValue>( sourceParticipants, new LinkComparator());
 
    public EventList<LinkValue> participants()
    {
@@ -98,7 +99,7 @@ public class TaskConversationParticipantsModel
      try
       {
          LinksValue participants = client.query( "index", LinksValue.class );
-         EventListSynch.synchronize( participants.links().get(), this.participants );
+         EventListSynch.synchronize( participants.links().get(), this.sourceParticipants );
 
       } catch (Exception e)
       {

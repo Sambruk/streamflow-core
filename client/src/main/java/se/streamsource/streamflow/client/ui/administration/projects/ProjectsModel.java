@@ -55,7 +55,8 @@ public class ProjectsModel
    @Uses
    CommandQueryClient client;
 
-   SortedList<LinkValue> eventList = new SortedList<LinkValue>( new BasicEventList<LinkValue>(), new LinkComparator() );
+   BasicEventList<LinkValue> sourceProjects = new BasicEventList<LinkValue>();
+   SortedList<LinkValue> projects = new SortedList<LinkValue>( sourceProjects, new LinkComparator() );
 
    WeakModelMap<String, ProjectModel> projectModels = new WeakModelMap<String, ProjectModel>()
    {
@@ -77,7 +78,7 @@ public class ProjectsModel
 
    public SortedList<LinkValue> getProjectList()
    {
-      return eventList;
+      return projects;
    }
 
    public void refresh()
@@ -86,7 +87,7 @@ public class ProjectsModel
       {
          // Get Project list
          LinksValue projectsList = client.query( "index", LinksValue.class );
-         EventListSynch.synchronize( projectsList.links().get(), eventList );
+         EventListSynch.synchronize( projectsList.links().get(), sourceProjects );
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_refresh, e );
@@ -130,7 +131,7 @@ public class ProjectsModel
 
       try
       {
-         client.getSubClient( eventList.get( selectedIndex ).id().get() ).putCommand( "changedescription", builder.newInstance() );
+         client.getSubClient( projects.get( selectedIndex ).id().get() ).putCommand( "changedescription", builder.newInstance() );
       } catch (ResourceException e)
       {
          if (Status.CLIENT_ERROR_CONFLICT.equals( e.getStatus() ))

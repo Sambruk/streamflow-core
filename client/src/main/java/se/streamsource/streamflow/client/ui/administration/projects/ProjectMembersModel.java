@@ -57,7 +57,8 @@ public class ProjectMembersModel
    @Structure
    ValueBuilderFactory vbf;
 
-   private SortedList<LinkValue> members = new SortedList<LinkValue>( new BasicEventList<LinkValue>( ), new LinkComparator() );
+   private BasicEventList<LinkValue> sourceMembers = new BasicEventList<LinkValue>();
+   private SortedList<LinkValue> members = new SortedList<LinkValue>( sourceMembers, new LinkComparator() );
 
    public SortedList<LinkValue> getMembers()
    {
@@ -69,7 +70,7 @@ public class ProjectMembersModel
       try
       {
          LinksValue membersList = client.query( "index", LinksValue.class);
-         EventListSynch.synchronize( membersList.links().get(), members );
+         EventListSynch.synchronize( membersList.links().get(), sourceMembers );
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_refresh_list_of_members, e );

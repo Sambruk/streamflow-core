@@ -16,17 +16,20 @@ package se.streamsource.streamflow.client.ui.administration.label;
 
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.SortedList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
-import se.streamsource.dci.value.*;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.dci.value.LinkValue;
+import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
+import se.streamsource.streamflow.client.infrastructure.ui.LinkComparator;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
@@ -40,14 +43,15 @@ public class LabelsModel
    @Uses
    CommandQueryClient client;
 
-   BasicEventList<LinkValue> eventList = new BasicEventList<LinkValue>();
+   BasicEventList<LinkValue> sourceLabels = new BasicEventList<LinkValue>();
+   SortedList<LinkValue> labels = new SortedList<LinkValue>( sourceLabels, new LinkComparator() );
 
    @Structure
    ValueBuilderFactory vbf;
 
    public EventList<LinkValue> getLabelList()
    {
-      return eventList;
+      return labels;
    }
 
    public void refresh()
@@ -57,7 +61,7 @@ public class LabelsModel
          // Get label list
          LinksValue newList = client.query( "labels", LinksValue.class );
 
-         EventListSynch.synchronize( newList.links().get(), eventList );
+         EventListSynch.synchronize( newList.links().get(), sourceLabels );
 
       } catch (ResourceException e)
       {

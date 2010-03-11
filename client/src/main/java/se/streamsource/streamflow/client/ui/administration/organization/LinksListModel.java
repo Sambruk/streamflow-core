@@ -40,7 +40,8 @@ public class LinksListModel
    private String query;
 
    private List<LinkValue> links;
-   private EventList<LinkValue> eventList = new TransactionList<LinkValue>( new SortedList<LinkValue>(new BasicEventList<LinkValue>( ), new LinkComparator() ));
+   private BasicEventList<LinkValue> sourceList = new BasicEventList<LinkValue>();
+   private EventList<LinkValue> eventList = new TransactionList<LinkValue>( new SortedList<LinkValue>( sourceList, new LinkComparator() ));
 
    public LinksListModel(@Uses CommandQueryClient client, @Uses String query)
    {
@@ -54,7 +55,7 @@ public class LinksListModel
       try
       {
          links = client.query(query, LinksValue.class).links().get();
-         EventListSynch.synchronize( links, eventList );
+         EventListSynch.synchronize( links, sourceList );
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_refresh, e );
