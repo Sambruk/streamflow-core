@@ -128,7 +128,7 @@ public class TaskConversationView extends JPanel
 
       // NEWMESSAGE
       sendPanel = new JPanel( new BorderLayout() );
-      sendPanel.setPreferredSize( new Dimension( 100, 100 ) );
+      sendPanel.setPreferredSize( new Dimension( 100, 200 ) );
       JScrollPane messageScroll = new JScrollPane();
       newMessage = new JTextPane();
       newMessage.setContentType( "text/html" );
@@ -163,6 +163,8 @@ public class TaskConversationView extends JPanel
    {
       bottomPanel.add( sendPanel, "NEW_MESSAGE" );
       ((CardLayout) bottomPanel.getLayout()).show( bottomPanel, "NEW_MESSAGE" );
+
+      newMessage.requestFocusInWindow();
    }
 
    @Action
