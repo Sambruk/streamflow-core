@@ -21,6 +21,9 @@ import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.domain.form.FormSubmissionValue;
 import se.streamsource.streamflow.domain.form.SubmittedPageValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
+import se.streamsource.streamflow.web.domain.structure.form.FormSubmission;
+import se.streamsource.streamflow.web.domain.structure.form.SubmittedForms;
+import se.streamsource.streamflow.web.domain.structure.user.ProxyUser;
 
 /**
  * JAVADOC
@@ -30,6 +33,8 @@ public interface FormSummaryContext
    extends Context, IndexContext<FormSubmissionValue>
 {
 
+   void submit();
+
    abstract class Mixin
       extends ContextMixin
       implements FormSummaryContext
@@ -37,6 +42,14 @@ public interface FormSummaryContext
       public FormSubmissionValue index()
       {
          return context.role( FormSubmissionValue.class );
+      }
+
+      public void submit()
+      {
+         SubmittedForms submittedForms = context.role( SubmittedForms.class );
+         FormSubmission formSubmission = context.role( FormSubmission.class );
+         ProxyUser user = context.role( ProxyUser.class );
+         submittedForms.submitForm( formSubmission, user );
       }
    }
 }

@@ -28,7 +28,7 @@ import java.lang.annotation.RetentionPolicy;
 @Constraints(HasNextPage.Constraint.class)
 public @interface HasNextPage
 {
-   public abstract boolean value();
+   public abstract boolean value() default true;
 
    public class Constraint
          implements org.qi4j.api.constraint.Constraint<HasNextPage, FormSubmissionValue>

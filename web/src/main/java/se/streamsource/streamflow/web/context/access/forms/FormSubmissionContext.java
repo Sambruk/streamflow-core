@@ -41,7 +41,7 @@ public interface FormSubmissionContext
    LinksValue pages();
 
    // commands
-   @HasNextPage(true)
+   @HasNextPage
    void next();
 
    @HasPreviousPage
