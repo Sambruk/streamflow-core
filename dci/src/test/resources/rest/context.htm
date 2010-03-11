@@ -13,8 +13,7 @@
 <h2>Queries</h2>
 <ul>
 #foreach($query in $result.queries)
-<li> <div style="border:thin solid black">$api.method($query)</div>
-
+<li>
     <a href="$query">$query</a></li>
 #end
 </ul>
@@ -37,12 +36,7 @@
 <h2>Sub-contexts</h2>
 <ul>
 #foreach($context in $result.contexts)
-#set($desc = $api.method($context))
 <li>
-    #if($desc)
-    x
-    <div style="border:thin solid black">x $api.method($context)</div>
-    #end
     <a href="$context">$context</a>
 </li>
 #end

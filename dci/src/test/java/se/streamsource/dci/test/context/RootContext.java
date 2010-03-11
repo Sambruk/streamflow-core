@@ -19,6 +19,11 @@ import se.streamsource.dci.context.Context;
 import se.streamsource.dci.context.ContextMixin;
 import se.streamsource.dci.context.SubContext;
 import se.streamsource.dci.test.context.file.FilesContext;
+import se.streamsource.dci.test.context.jmx.JmxServerContext;
+
+import javax.management.MBeanServer;
+import javax.management.MBeanServerFactory;
+import java.lang.management.ManagementFactory;
 
 /**
  * JAVADOC
@@ -30,6 +35,9 @@ public interface RootContext
    @SubContext
    FilesContext files();
 
+   @SubContext
+   JmxServerContext jmx();
+
    abstract class Mixin
       extends ContextMixin
       implements RootContext
@@ -37,6 +45,12 @@ public interface RootContext
       public FilesContext files()
       {
          return subContext( FilesContext.class );
+      }
+
+      public JmxServerContext jmx()
+      {
+         context.playRoles( ManagementFactory.getPlatformMBeanServer() );
+         return subContext( JmxServerContext.class );
       }
    }
 }

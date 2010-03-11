@@ -12,13 +12,20 @@
  *
  */
 
-package se.streamsource.dci.context;
+package se.streamsource.dci.test.context.jmx;
+
+import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueComposite;
+
+import java.util.List;
 
 /**
  * JAVADOC
  */
-public interface SubContexts<T>
+public interface TabularDataValue
+   extends ValueComposite
 {
-   T context(String id)
-      throws ContextNotFoundException;
+   @UseDefaults
+   Property<List<List<String>>> cells();
 }

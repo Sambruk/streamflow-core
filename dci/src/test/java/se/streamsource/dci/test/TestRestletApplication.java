@@ -39,6 +39,7 @@ import se.streamsource.dci.restlet.server.ViewFilter;
 import se.streamsource.dci.restlet.server.sitemesh.RestletFilterBuilder;
 import se.streamsource.dci.restlet.server.sitemesh.SiteMeshRestletFilter;
 
+import javax.management.MBeanServerFactory;
 import java.util.Arrays;
 
 /**
@@ -103,7 +104,7 @@ public class TestRestletApplication
             addDecoratorPath( "/", "clap://class/decorator/main.html" );
       Filter siteMeshFilter = builder.create();
       getContext().getClientDispatcher().setProtocols( Arrays.asList( Protocol.CLAP ));
-      return new ExtensionMediaTypeFilter(getContext(), siteMeshFilter );
+      return new ExtensionMediaTypeFilter(getContext(), viewFilter );
    }
 
    @Override
@@ -111,6 +112,8 @@ public class TestRestletApplication
    {
       try
       {
+         MBeanServerFactory.createMBeanServer();
+
          // Start Qi4j
          Energy4Java is = new Energy4Java();
          app = is.newApplication( new TestAssembler( ) );

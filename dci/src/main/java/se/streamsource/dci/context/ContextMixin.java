@@ -14,6 +14,7 @@
 
 package se.streamsource.dci.context;
 
+import org.qi4j.api.composite.TransientComposite;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
@@ -23,7 +24,6 @@ import se.streamsource.dci.context.Context;
  * JAVADOC
  */
 public abstract class ContextMixin
-   implements Context
 {
    protected @Uses
    InteractionContext context;
@@ -31,13 +31,11 @@ public abstract class ContextMixin
    protected @Structure
    Module module;
 
-   protected InteractionContext context()
+   protected <T> T subContext( Class<T> contextClass )
    {
-      return context;
-   }
-
-   protected <T extends Context> T subContext( Class<T> compositeClass )
-   {
-      return module.transientBuilderFactory().newTransientBuilder( compositeClass ).use( context ).newInstance();
+      if (TransientComposite.class.isAssignableFrom( contextClass ))
+         return module.transientBuilderFactory().newTransientBuilder( contextClass ).use( context ).newInstance();
+      else
+         return module.objectBuilderFactory().newObjectBuilder( contextClass ).use( context ).newInstance();
    }
 }

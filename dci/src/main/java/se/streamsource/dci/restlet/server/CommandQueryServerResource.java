@@ -60,6 +60,7 @@ import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
 import org.restlet.security.User;
 import org.slf4j.LoggerFactory;
+import se.streamsource.dci.context.Context;
 import se.streamsource.dci.context.ContextNotFoundException;
 import se.streamsource.dci.context.IndexContext;
 import se.streamsource.dci.context.InteractionConstraints;
@@ -83,6 +84,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Handle requests to command/query resources.
@@ -131,6 +134,8 @@ public abstract class CommandQueryServerResource
    private Template commandTemplate;
    private Template linksTemplate;
    private Template valueTemplate;
+
+   private Map<Class, List<Method>> resourceClassMethods = new ConcurrentHashMap<Class, List<Method>>( );
 
    public CommandQueryServerResource(@Service VelocityEngine templates) throws Exception
    {
@@ -275,7 +280,7 @@ public abstract class CommandQueryServerResource
 
    private Method getMethod( Object resource, String lastSegment ) throws ResourceException
    {
-      for (Method method : resource.getClass().getInterfaces()[0].getMethods())
+      for (Method method : getResourceMethods( resource ))
       {
          if (method.getName().equals( lastSegment ))
             return method;
@@ -290,33 +295,34 @@ public abstract class CommandQueryServerResource
    {
       MediaType responseType = getRequest().getClientInfo().getPreferredMediaType( Arrays.asList( MediaType.APPLICATION_JSON, MediaType.TEXT_HTML ) );
 
-      Method[] methods = resource.getClass().getInterfaces()[0].getMethods();
+      Iterable<Method> methods = getResourceMethods( resource );
       final List<Method> queries = new ArrayList<Method>();
       final List<Method> commands = new ArrayList<Method>();
       final List<Method> subResources = new ArrayList<Method>();
+
+      InteractionConstraints methodConstraints = constraints;
+      if (resource instanceof InteractionConstraints)
+         methodConstraints = (InteractionConstraints) resource;
 
       for (Method method : methods)
       {
          if (!(method.getDeclaringClass().isAssignableFrom( TransientComposite.class )))
          {
-            if (constraints.isValid( method, interactionContext ))
-
-            if (method.getAnnotation( SubContext.class ) != null || SubContexts.class.equals( method.getDeclaringClass() ))
-            {
-               subResources.add( method );
-            } else if (method.getReturnType().equals( Void.TYPE ))
-            {
-               commands.add( method );
-            } else
-            {
-               queries.add( method );
-            }
+            if (methodConstraints.isValid( method, interactionContext ))
+               if (method.getAnnotation( SubContext.class ) != null || SubContexts.class.equals( method.getDeclaringClass() ))
+               {
+                  subResources.add( method );
+               } else if (method.getReturnType().equals( Void.TYPE ))
+               {
+                  commands.add( method );
+               } else
+               {
+                  queries.add( method );
+               }
          }
       }
 
       final Value index = resource instanceof IndexContext ? ((IndexContext)resource).index() : null;
-
-      getResponse().getAttributes().put( RestJavadoc.class.getName(), new RestJavadoc(resource.getClass().getInterfaces()[0]) );
 
       // JSON
       Representation rep = new WriterRepresentation( MediaType.APPLICATION_JSON )
@@ -366,6 +372,25 @@ public abstract class CommandQueryServerResource
       };
       rep.setCharacterSet( CharacterSet.UTF_8 );
       return rep;
+   }
+
+   private Iterable<Method> getResourceMethods( Object resource )
+   {
+      List<Method> methods = resourceClassMethods.get( resource.getClass() );
+
+      if (methods == null)
+      {
+         methods = new ArrayList<Method>( );
+         Method[] allMethods = resource instanceof Context ? resource.getClass().getInterfaces()[0].getMethods() : resource.getClass().getDeclaredMethods();
+         for (Method allMethod : allMethods)
+         {
+            if (!allMethod.isSynthetic())
+               methods.add( allMethod );
+         }
+         resourceClassMethods.put( resource.getClass(), methods );
+      }
+
+      return methods;
    }
 
    private Representation query( Object resource, String query, Variant variant ) throws ResourceException

@@ -1,0 +1,23 @@
+<html>
+<head>
+    <title>Title = ${request.resourceRef.remainingPart}</title>
+    <!--    <link rel="stylesheet" type="text/css" href="/streamflow/streamflow/v1/static/rest.css" /> -->
+</head>
+
+<body>
+<h1>${request.resourceRef.remainingPart}</h1>
+
+<table border="1">
+    <tr>
+        <th>Key</th>
+        <th>Value</th>
+    </tr>
+    #foreach($row in $result.index.cells)
+    <tr>#foreach($column in $row)
+        <td>$column</td>
+        #end
+    </tr>
+    #end
+</table>
+</body>
+</html>

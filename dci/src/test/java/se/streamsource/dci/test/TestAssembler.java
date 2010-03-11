@@ -29,6 +29,11 @@ import se.streamsource.dci.restlet.server.ViewFilter;
 import se.streamsource.dci.test.context.file.FileContext;
 import se.streamsource.dci.test.context.file.FilesContext;
 import se.streamsource.dci.test.context.RootContext;
+import se.streamsource.dci.test.context.jmx.DomainContext;
+import se.streamsource.dci.test.context.jmx.JmxServerContext;
+import se.streamsource.dci.test.context.jmx.MBeanAttributeContext;
+import se.streamsource.dci.test.context.jmx.MBeanContext;
+import se.streamsource.dci.test.context.jmx.TabularDataValue;
 import se.streamsource.dci.value.IndexValue;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.LinksValue;
@@ -63,11 +68,13 @@ public class TestAssembler
             FilesContext.class,
             FileContext.class);
 
+      module.addObjects( JmxServerContext.class, DomainContext.class, MBeanContext.class, MBeanAttributeContext.class );
+
       module.addObjects( TestRestletApplication.class,
             ViewFilter.class,
             ResourceFinder.class,
             TestApplication.class );
       
-      module.addValues( IndexValue.class, LinksValue.class, LinkValue.class, StringValue.class );
+      module.addValues( IndexValue.class, LinksValue.class, LinkValue.class, StringValue.class, TabularDataValue.class );
    }
 }
