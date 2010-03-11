@@ -19,6 +19,7 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
+import se.streamsource.dci.context.InteractionConstraints;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.domain.interaction.gtd.Actions;
@@ -56,7 +57,7 @@ import static se.streamsource.streamflow.domain.interaction.gtd.States.*;
  */
 @Mixins(TaskActionsContext.Mixin.class)
 public interface TaskActionsContext
-      extends DeleteContext
+      extends DeleteContext // , InteractionConstraints
 {
    // List possible actions
    public Actions actions();

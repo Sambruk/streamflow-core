@@ -37,7 +37,6 @@ import java.io.IOException;
 public class OrganizationalUnitAdministrationNode
       extends DefaultMutableTreeNode implements Transferable, EventListener
 {
-   @Uses
    CommandQueryClient client;
 
    OrganizationalUnitAdministrationModel model;
@@ -52,7 +51,7 @@ public class OrganizationalUnitAdministrationNode
       for (TreeNodeValue treeNodeValue : ou.children().get())
       {
          Reference reference = client.getReference().clone().getParentRef().addSegment( treeNodeValue.entity().get().identity() );
-         add( obf.newObjectBuilder( OrganizationalUnitAdministrationNode.class ).use( this, treeNodeValue, reference, client.getClient() ).newInstance() );
+         add( obf.newObjectBuilder( OrganizationalUnitAdministrationNode.class ).use( this, treeNodeValue, client.getClient(reference.getPath()) ).newInstance() );
       }
    }
 

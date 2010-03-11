@@ -55,6 +55,9 @@ public interface OrganizationalUnitContext
    @SubContext
    SelectedLabelsContext selectedlabels();
 
+   @SubContext
+   OrganizationalUnitsContext organizationalunits();
+
    abstract class Mixin
       extends ContextMixin
       implements OrganizationalUnitContext
@@ -123,6 +126,11 @@ public interface OrganizationalUnitContext
       public SelectedLabelsContext selectedlabels()
       {
          return subContext( SelectedLabelsContext.class );
+      }
+
+      public OrganizationalUnitsContext organizationalunits()
+      {
+         return subContext( OrganizationalUnitsContext.class );
       }
    }
 }

@@ -119,7 +119,7 @@ public class OrganizationalUnitAdministrationModel
       {
          ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
          builder.prototype().entity().set( id );
-         client.getSubClient("organizationalunits" ).postCommand( "removeorganizationalunit", builder.newInstance() );
+         client.getSubClient("organizationalunits" ).getSubClient( id.identity() ).delete();
       } catch (ResourceException e)
       {
          if (Status.CLIENT_ERROR_CONFLICT.equals( e.getStatus() ))
