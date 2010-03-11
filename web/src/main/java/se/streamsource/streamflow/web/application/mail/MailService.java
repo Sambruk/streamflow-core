@@ -152,11 +152,7 @@ public interface MailService
       public void sendNotification( DomainEvent event ) throws Exception
       {
          Contactable user = uowf.currentUnitOfWork().get( Contactable.class, event.entity().get() );
-         String userName = user.getContact().name().get();
-         if ("".equals( userName ))
-         {
-            userName = event.entity().get();
-         }
+
          ListIterator<ContactEmailValue> listIter = user.getContact().emailAddresses().get().listIterator();
          String emailAddress = "";
          if (listIter.hasNext())
@@ -170,6 +166,7 @@ public interface MailService
          Conversation conversation = message.conversation().get();
          ConversationOwner owner = conversation.conversationOwner().get();
 
+         String sender = ((Contactable.Data)message.sender().get()).contact().get().name().get();
          String taskId = "n/a";
 
          if (owner != null)
@@ -191,10 +188,10 @@ public interface MailService
             String formattedMsg = message.body().get();
             if (formattedMsg.contains( "<body>" ))
             {
-               formattedMsg = formattedMsg.replace( "<body>", "<body><b>" + userName + ":</b><br/><br/>" );
+               formattedMsg = formattedMsg.replace( "<body>", "<body><b>" + sender + ":</b><br/><br/>" );
             } else
             {
-               formattedMsg = userName + ":\r\n\r\n" + formattedMsg;
+               formattedMsg = sender + ":\r\n\r\n" + formattedMsg;
             }
 
             msg.setContent( formattedMsg, "text/html" );
