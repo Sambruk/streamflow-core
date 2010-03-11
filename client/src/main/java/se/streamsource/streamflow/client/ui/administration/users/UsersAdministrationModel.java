@@ -177,7 +177,7 @@ public class UsersAdministrationModel
 
       } catch (ResourceException e)
       {
-         throw new OperationException( AdministrationResources.could_not_import_users, e );
+         throw new RuntimeException( e.getMessage(), e );
 
       }
    }

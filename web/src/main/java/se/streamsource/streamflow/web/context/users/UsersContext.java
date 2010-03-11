@@ -60,6 +60,9 @@ public interface UsersContext
    @RequiresPermission("administrator")
    void createuser( NewUserCommand command);
 
+   @RequiresPermission("administrator")
+   void importusers( Representation representation ) throws ResourceException;
+
    abstract class Mixin
       extends ContextMixin
       implements UsersContext

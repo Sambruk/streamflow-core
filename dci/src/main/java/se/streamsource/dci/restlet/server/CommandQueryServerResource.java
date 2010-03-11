@@ -586,7 +586,11 @@ public abstract class CommandQueryServerResource
          {
             unitOfWork.discard();
             LoggerFactory.getLogger( getClass() ).warn( "Could not complete UnitOfWork", e );
-            throw new ResourceException( Status.CLIENT_ERROR_CONFLICT, "Could not perform command" );
+
+            if (e instanceof ResourceException)
+               throw (ResourceException) e;
+            else
+               throw new ResourceException( Status.CLIENT_ERROR_CONFLICT, "Could not perform command" );
          }
       }
 
@@ -723,28 +727,36 @@ public abstract class CommandQueryServerResource
             return args;
          } else
          {
-            if (getRequest().getEntity().getMediaType().equals( MediaType.APPLICATION_JSON ))
+            if (method.getParameterTypes()[0].equals( Representation.class ))
             {
-               String json = getRequest().getEntityAsText();
-
-               Object command = vbf.newValueFromJSON( commandType, json );
-               args[0] = command;
-               return args;
-            } else if (getRequest().getEntity().getMediaType().equals( MediaType.TEXT_PLAIN ))
-            {
-               String text = getRequest().getEntityAsText();
-               if (text == null)
-                  throw new ResourceException( Status.SERVER_ERROR_INTERNAL, "Bug in Tomcat encountered; notify developers!" );
-               args[0] = text;
-               return args;
-            } else if (getRequest().getEntity().getMediaType().equals( (MediaType.APPLICATION_WWW_FORM) ))
-            {
-               Form asForm = getRequest().getEntityAsForm();
-               Class<?> valueType = method.getParameterTypes()[0];
-               args[0] = getValueFromForm( (Class<ValueComposite>) valueType, asForm );
-               return args;
+               // Command method takes Representation as input
+               return new Object[]{getRequest().getEntity()};
             } else
-               throw new ResourceException( Status.CLIENT_ERROR_BAD_REQUEST, "Command has to be in JSON format" );
+            {
+               // Need to parse input into ValueComposite
+               if (getRequest().getEntity().getMediaType().equals( MediaType.APPLICATION_JSON ))
+               {
+                  String json = getRequest().getEntityAsText();
+
+                  Object command = vbf.newValueFromJSON( commandType, json );
+                  args[0] = command;
+                  return args;
+               } else if (getRequest().getEntity().getMediaType().equals( MediaType.TEXT_PLAIN ))
+               {
+                  String text = getRequest().getEntityAsText();
+                  if (text == null)
+                     throw new ResourceException( Status.SERVER_ERROR_INTERNAL, "Bug in Tomcat encountered; notify developers!" );
+                  args[0] = text;
+                  return args;
+               } else if (getRequest().getEntity().getMediaType().equals( (MediaType.APPLICATION_WWW_FORM) ))
+               {
+                  Form asForm = getRequest().getEntityAsForm();
+                  Class<?> valueType = method.getParameterTypes()[0];
+                  args[0] = getValueFromForm( (Class<ValueComposite>) valueType, asForm );
+                  return args;
+               } else
+                  throw new ResourceException( Status.CLIENT_ERROR_BAD_REQUEST, "Command has to be in JSON format" );
+            }
          }
       } else
       {
