@@ -16,13 +16,18 @@ package se.streamsource.streamflow.client.ui.task;
 
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
+import se.streamsource.streamflow.client.infrastructure.ui.ModifiedFlowLayout;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.resource.task.TaskValue;
 
-import javax.swing.*;
-import javax.swing.border.BevelBorder;
-import java.awt.*;
+import javax.swing.BorderFactory;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTable;
+import java.awt.FlowLayout;
+import java.awt.Font;
 import java.text.SimpleDateFormat;
 import java.util.Observable;
 import java.util.Observer;
@@ -48,7 +53,7 @@ public class TaskInfoView extends JPanel implements Observer
 
    public TaskInfoView(@Service ApplicationContext appContext)
 	{
-      super(new FlowLayout(FlowLayout.LEFT));
+      super(new ModifiedFlowLayout(FlowLayout.LEFT));
 
       Font boldFont = description.getFont().deriveFont( Font.BOLD );
       description.setFont( boldFont );
