@@ -117,8 +117,6 @@ public class OrganizationalUnitAdministrationModel
    {
       try
       {
-         ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
-         builder.prototype().entity().set( id );
          client.getSubClient("organizationalunits" ).getSubClient( id.identity() ).delete();
       } catch (ResourceException e)
       {
