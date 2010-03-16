@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2010, Rickard Öberg. All Rights Reserved.
- *
+ * Copyright (c) 2010, Mads Enevoldsen. All Rights Reserved.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -9,7 +8,6 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package se.streamsource.streamflow.web.context.users;
@@ -63,7 +61,7 @@ public interface ContactableContext
          ContactValue contact = contactable.getContact();
 
          ValueBuilder<ContactValue> builder = contact.buildWith();
-         builder.prototype().name().set( name.string().get() );
+         builder.prototype().name().set( name.string().get().trim() );
 
          contactable.updateContact( builder.newInstance() );
       }
@@ -154,11 +152,11 @@ public interface ContactableContext
          if (contact.emailAddresses().get().isEmpty())
          {
             ContactEmailValue email = vbf.newValue( ContactEmailValue.class ).<ContactEmailValue>buildWith().prototype();
-            email.emailAddress().set( emailValue.emailAddress().get() );
+            email.emailAddress().set( emailValue.emailAddress().get().trim() );
             builder.prototype().emailAddresses().get().add( email );
          } else
          {
-            builder.prototype().emailAddresses().get().get( 0 ).emailAddress().set( emailValue.emailAddress().get() );
+            builder.prototype().emailAddresses().get().get( 0 ).emailAddress().set( emailValue.emailAddress().get().trim() );
          }
 
          contactable.updateContact( builder.newInstance() );
