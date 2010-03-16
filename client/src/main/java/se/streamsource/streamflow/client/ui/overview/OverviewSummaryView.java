@@ -196,7 +196,7 @@ public class OverviewSummaryView extends JPanel
       fileChooser.setFileSelectionMode( JFileChooser.FILES_ONLY );
       fileChooser.setMultiSelectionEnabled( false );
       fileChooser.addChoosableFileFilter( new FileNameExtensionFilter(
-            text( StreamFlowResources.excel_file ), "xls" ) );
+            text( StreamFlowResources.excel_file ), true, "xls" ) );
       int returnVal = fileChooser.showSaveDialog( OverviewSummaryView.this );
       if (returnVal != JFileChooser.APPROVE_OPTION)
       {

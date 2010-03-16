@@ -98,7 +98,7 @@ public class UsersAdministrationView
       fileChooser.setFileSelectionMode( JFileChooser.FILES_AND_DIRECTORIES );
       fileChooser.setMultiSelectionEnabled( false );
       fileChooser.addChoosableFileFilter( new FileNameExtensionFilter(
-            text( AdministrationResources.import_files ), "xls", "csv", "txt" ) );
+            text( AdministrationResources.import_files ), true, "xls", "csv", "txt" ) );
       fileChooser.setDialogTitle( text( AdministrationResources.import_users ) );
       int returnVal = fileChooser.showOpenDialog( (UsersAdministrationView.this) );
       if (returnVal != JFileChooser.APPROVE_OPTION)

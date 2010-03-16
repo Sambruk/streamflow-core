@@ -9,16 +9,23 @@ public class FileNameExtensionFilter extends FileFilter
 {
    String description = null;
    List<String> extensions = null;
+   boolean showDirectories;
 
-   public FileNameExtensionFilter( String aDescription, String... extension )
+   public FileNameExtensionFilter( String aDescription, boolean showDirectories, String... extension )
    {
       description = aDescription;
+      this.showDirectories = showDirectories;
       extensions = Arrays.asList( extension );
    }
 
    @Override
    public boolean accept( File f )
    {
+      if( showDirectories && f.isDirectory())
+      {
+        return true;  
+      }
+
       if (f.getName().lastIndexOf( '.' ) != -1)
       {
          String extension = f.getName().substring(
