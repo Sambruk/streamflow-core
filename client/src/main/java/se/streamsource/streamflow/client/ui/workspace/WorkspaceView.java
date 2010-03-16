@@ -48,6 +48,7 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JTree;
 import javax.swing.KeyStroke;
@@ -456,7 +457,7 @@ public class WorkspaceView
       if (popup == null)
       {
          Point location = selectContextButton.getLocationOnScreen();
-         popup = PopupFactory.getSharedInstance().getPopup( this, workspaceTree, (int) location.getX(), (int) location.getY() + selectContextButton.getHeight() );
+         popup = PopupFactory.getSharedInstance().getPopup( this, new JScrollPane(workspaceTree), (int) location.getX(), (int) location.getY() + selectContextButton.getHeight() );
          popup.show();
 
          return obf.newObjectBuilder( RefreshTaskCountTask.class ).use( workspaceTree, model.getRoot() ).newInstance();
