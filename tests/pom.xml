@@ -47,6 +47,11 @@
             <artifactId>streamflow-client</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>se.streamsource.streamflow</groupId>
+            <artifactId>streamflow-web</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <!-- Qi4j -->
         <dependency>
