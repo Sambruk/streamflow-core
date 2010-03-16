@@ -24,8 +24,11 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.dci.value.LinkValue;
+import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemComparator;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
@@ -46,9 +49,9 @@ public class RolesModel
    @Uses
    CommandQueryClient client;
 
-   private SortedList<ListItemValue> roles = new SortedList<ListItemValue>( new BasicEventList<ListItemValue>( ), new ListItemComparator() );
+   private EventList<LinkValue> roles = new BasicEventList<LinkValue>( );
 
-   public EventList<ListItemValue> getRoles()
+   public EventList<LinkValue> getRoles()
    {
       return roles;
    }
@@ -87,9 +90,8 @@ public class RolesModel
    {
       try
       {
-         ListValue rolesList = client.query( "roles", ListValue.class);
-         roles.clear();
-         roles.addAll( rolesList.items().get() );
+         LinksValue rolesList = client.query( "roles", LinksValue.class);
+         EventListSynch.synchronize( rolesList.links().get(), roles );
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_refresh, e );

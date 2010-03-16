@@ -16,7 +16,6 @@ package se.streamsource.streamflow.client.ui.task.conversations;
 
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.SortedList;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
@@ -28,7 +27,6 @@ import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
-import se.streamsource.streamflow.client.infrastructure.ui.LinkComparator;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.ui.task.TaskResources;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
@@ -43,8 +41,7 @@ public class TaskConversationParticipantsModel
    @Structure
    ValueBuilderFactory vbf;
 
-   BasicEventList<LinkValue> sourceParticipants = new BasicEventList<LinkValue>();
-   SortedList<LinkValue> participants = new SortedList<LinkValue>( sourceParticipants, new LinkComparator());
+   BasicEventList<LinkValue> participants = new BasicEventList<LinkValue>();
 
    public EventList<LinkValue> participants()
    {
@@ -99,7 +96,7 @@ public class TaskConversationParticipantsModel
      try
       {
          LinksValue participants = client.query( "index", LinksValue.class );
-         EventListSynch.synchronize( participants.links().get(), this.sourceParticipants );
+         EventListSynch.synchronize( participants.links().get(), this.participants );
 
       } catch (Exception e)
       {

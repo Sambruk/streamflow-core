@@ -14,6 +14,7 @@
 
 package se.streamsource.streamflow.client.ui.administration.policy;
 
+import ca.odell.glazedlists.SortedList;
 import ca.odell.glazedlists.swing.EventListModel;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
@@ -23,6 +24,7 @@ import org.qi4j.api.object.ObjectBuilder;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.client.StreamFlowResources;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
+import se.streamsource.streamflow.client.infrastructure.ui.LinkComparator;
 import se.streamsource.streamflow.client.infrastructure.ui.LinkListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
@@ -63,7 +65,7 @@ public class AdministratorsView
 
       setActionMap( context.getActionMap( this ) );
 
-      administratorList = new JList( new EventListModel(model.getAdministrators()) );
+      administratorList = new JList( new EventListModel<LinkValue>(new SortedList<LinkValue>(model.getAdministrators(), new LinkComparator())) );
 
       administratorList.setCellRenderer( new LinkListCellRenderer() );
       add( administratorList, BorderLayout.CENTER );

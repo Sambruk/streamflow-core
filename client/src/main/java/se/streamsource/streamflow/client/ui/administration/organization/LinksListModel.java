@@ -16,15 +16,12 @@ package se.streamsource.streamflow.client.ui.administration.organization;
 
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.SortedList;
-import ca.odell.glazedlists.TransactionList;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
-import se.streamsource.streamflow.client.infrastructure.ui.LinkComparator;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
@@ -40,8 +37,7 @@ public class LinksListModel
    private String query;
 
    private List<LinkValue> links;
-   private BasicEventList<LinkValue> sourceList = new BasicEventList<LinkValue>();
-   private EventList<LinkValue> eventList = new TransactionList<LinkValue>( new SortedList<LinkValue>( sourceList, new LinkComparator() ));
+   private BasicEventList<LinkValue> eventList = new BasicEventList<LinkValue>();
 
    public LinksListModel(@Uses CommandQueryClient client, @Uses String query)
    {
@@ -55,7 +51,7 @@ public class LinksListModel
       try
       {
          links = client.query(query, LinksValue.class).links().get();
-         EventListSynch.synchronize( links, sourceList );
+         EventListSynch.synchronize( links, eventList );
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_refresh, e );

@@ -14,6 +14,7 @@
 
 package se.streamsource.streamflow.client.ui.administration.tasktypes;
 
+import ca.odell.glazedlists.SortedList;
 import ca.odell.glazedlists.swing.EventListModel;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
@@ -23,6 +24,7 @@ import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.client.StreamFlowResources;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.JListPopup;
+import se.streamsource.streamflow.client.infrastructure.ui.LinkComparator;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.infrastructure.ui.LinkListCellRenderer;
@@ -71,7 +73,7 @@ public class TaskTypesView
       popup.add( am.get( "rename" ) );
 
       JScrollPane scrollPane = new JScrollPane();
-      projectList = new JListPopup( new EventListModel<LinkValue>( model.getTaskTypeList() ), popup );
+      projectList = new JListPopup( new EventListModel<LinkValue>( new SortedList<LinkValue>(model.getTaskTypeList(), new LinkComparator()) ), popup );
       projectList.setCellRenderer( new LinkListCellRenderer() );
       scrollPane.setViewportView( projectList );
       add( scrollPane, BorderLayout.CENTER );

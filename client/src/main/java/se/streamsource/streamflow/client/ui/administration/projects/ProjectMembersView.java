@@ -14,6 +14,7 @@
 
 package se.streamsource.streamflow.client.ui.administration.projects;
 
+import ca.odell.glazedlists.SortedList;
 import ca.odell.glazedlists.swing.EventListModel;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
@@ -26,6 +27,7 @@ import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.client.StreamFlowResources;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
+import se.streamsource.streamflow.client.infrastructure.ui.LinkComparator;
 import se.streamsource.streamflow.client.infrastructure.ui.LinkListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
@@ -69,7 +71,7 @@ public class ProjectMembersView
 
       setActionMap( context.getActionMap( this ) );
 
-      membersList = new JXList( new EventListModel<LinkValue>(membersModel.getMembers()) );
+      membersList = new JXList( new EventListModel<LinkValue>(new SortedList<LinkValue>(membersModel.getMembers(), new LinkComparator())) );
 
       membersList.setCellRenderer( new LinkListCellRenderer() );
 

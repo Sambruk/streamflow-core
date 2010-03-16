@@ -15,6 +15,7 @@
 package se.streamsource.streamflow.client.ui.administration.projects;
 
 import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.SortedList;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
@@ -26,7 +27,6 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
-import se.streamsource.streamflow.client.infrastructure.ui.LinkComparator;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
@@ -57,10 +57,9 @@ public class ProjectMembersModel
    @Structure
    ValueBuilderFactory vbf;
 
-   private BasicEventList<LinkValue> sourceMembers = new BasicEventList<LinkValue>();
-   private SortedList<LinkValue> members = new SortedList<LinkValue>( sourceMembers, new LinkComparator() );
+   private EventList<LinkValue> members = new BasicEventList<LinkValue>();
 
-   public SortedList<LinkValue> getMembers()
+   public EventList<LinkValue> getMembers()
    {
       return members;
    }
@@ -70,7 +69,7 @@ public class ProjectMembersModel
       try
       {
          LinksValue membersList = client.query( "index", LinksValue.class);
-         EventListSynch.synchronize( membersList.links().get(), sourceMembers );
+         EventListSynch.synchronize( membersList.links().get(), members );
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_refresh_list_of_members, e );

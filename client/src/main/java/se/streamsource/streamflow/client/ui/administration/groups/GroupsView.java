@@ -14,6 +14,7 @@
 
 package se.streamsource.streamflow.client.ui.administration.groups;
 
+import ca.odell.glazedlists.SortedList;
 import ca.odell.glazedlists.swing.EventListModel;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
@@ -25,6 +26,7 @@ import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.client.StreamFlowResources;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.JListPopup;
+import se.streamsource.streamflow.client.infrastructure.ui.LinkComparator;
 import se.streamsource.streamflow.client.infrastructure.ui.LinkListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
@@ -74,7 +76,7 @@ public class GroupsView
       JPopupMenu popup = new JPopupMenu();
       popup.add( am.get( "rename" ) );
 
-      groupList = new JListPopup( new EventListModel<LinkValue>(model.getGroups()), popup );
+      groupList = new JListPopup( new EventListModel<LinkValue>(new SortedList<LinkValue>(model.getGroups(), new LinkComparator())), popup );
 
       groupList.setCellRenderer( new LinkListCellRenderer() );
 

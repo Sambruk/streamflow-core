@@ -14,6 +14,7 @@
 
 package se.streamsource.streamflow.client.ui.administration.groups;
 
+import ca.odell.glazedlists.SortedList;
 import ca.odell.glazedlists.swing.EventListModel;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
@@ -23,6 +24,7 @@ import org.qi4j.api.object.ObjectBuilder;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.StreamFlowResources;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
+import se.streamsource.streamflow.client.infrastructure.ui.LinkComparator;
 import se.streamsource.streamflow.client.infrastructure.ui.LinkListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.ConfirmationDialog;
@@ -63,7 +65,7 @@ public class ParticipantsView
       ActionMap am = context.getActionMap( this );
       setActionMap( am );
 
-      participantList = new JList( new EventListModel<LinkValue>(model.getParticipants()) );
+      participantList = new JList( new EventListModel<LinkValue>(new SortedList<LinkValue>(model.getParticipants(), new LinkComparator())) );
 
       participantList.setCellRenderer( new LinkListCellRenderer() );
 

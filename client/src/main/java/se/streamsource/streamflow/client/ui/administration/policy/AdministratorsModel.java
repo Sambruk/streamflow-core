@@ -25,6 +25,7 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
 import se.streamsource.streamflow.client.infrastructure.ui.LinkComparator;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
@@ -46,7 +47,7 @@ public class AdministratorsModel
    @Uses
    CommandQueryClient client;
 
-   private SortedList<LinkValue> administrators = new SortedList<LinkValue>( new BasicEventList<LinkValue>( ), new LinkComparator() );
+   private EventList<LinkValue> administrators = new BasicEventList<LinkValue>( );
 
    public EventList<LinkValue> getAdministrators()
    {
@@ -86,8 +87,7 @@ public class AdministratorsModel
       try
       {
          LinksValue administratorsList = client.query( "administrators", LinksValue.class );
-         administrators.clear();
-         administrators.addAll( administratorsList.links().get() );
+         EventListSynch.synchronize( administratorsList.links().get(), administrators );
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_refresh, e );

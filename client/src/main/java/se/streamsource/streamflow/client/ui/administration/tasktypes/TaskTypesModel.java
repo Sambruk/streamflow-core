@@ -26,6 +26,7 @@ import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
@@ -74,8 +75,7 @@ public class TaskTypesModel
       try
       {
          // Get TaskType list
-         eventList.clear();
-         eventList.addAll( client.query( "index", LinksValue.class ).links().get() );
+         EventListSynch.synchronize( client.query( "index", LinksValue.class ).links().get(), eventList );
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_refresh, e );

@@ -69,8 +69,7 @@ public class LabelsView
       popup.add( am.get( "rename" ) );
 
       JScrollPane scrollPane = new JScrollPane();
-      EventList<LinkValue> itemValueEventList = model.getLabelList();
-      itemValueEventList = new SortedList<LinkValue>( itemValueEventList, new LinkComparator() );
+      EventList<LinkValue> itemValueEventList = new SortedList<LinkValue>( model.getLabelList(), new LinkComparator() );
       labelList = new JListPopup( new EventListModel<LinkValue>( itemValueEventList ), popup );
       labelList.setCellRenderer( new LinkListCellRenderer() );
       scrollPane.setViewportView( labelList );

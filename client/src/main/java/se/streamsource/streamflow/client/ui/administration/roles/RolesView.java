@@ -14,13 +14,16 @@
 
 package se.streamsource.streamflow.client.ui.administration.roles;
 
+import ca.odell.glazedlists.SortedList;
 import ca.odell.glazedlists.swing.EventListModel;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
+import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.client.StreamFlowResources;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
+import se.streamsource.streamflow.client.infrastructure.ui.LinkComparator;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
@@ -61,7 +64,7 @@ public class RolesView
 
       setActionMap( context.getActionMap( this ) );
 
-      roleList = new JList( new EventListModel(model.getRoles()) );
+      roleList = new JList( new EventListModel<LinkValue>(new SortedList<LinkValue>(model.getRoles(), new LinkComparator())) );
 
       roleList.setCellRenderer( new ListItemListCellRenderer() );
       add( roleList, BorderLayout.CENTER );
@@ -94,8 +97,8 @@ public class RolesView
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamFlowResources.confirmation ) );
       if (dialog.isConfirmed())
       {
-         ListItemValue selected = (ListItemValue) roleList.getSelectedValue();
-         model.removeRole( selected.entity().get().identity() );
+         LinkValue selected = (LinkValue) roleList.getSelectedValue();
+         model.removeRole( selected.id().get() );
          model.refresh();
       }
    }

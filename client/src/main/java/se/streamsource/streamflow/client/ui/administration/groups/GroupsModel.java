@@ -16,7 +16,6 @@ package se.streamsource.streamflow.client.ui.administration.groups;
 
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.SortedList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
@@ -28,7 +27,6 @@ import se.streamsource.dci.value.*;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
-import se.streamsource.streamflow.client.infrastructure.ui.LinkComparator;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
@@ -51,8 +49,7 @@ public class GroupsModel
    @Structure
    ValueBuilderFactory vbf;
 
-   BasicEventList<LinkValue> sourceGroups = new BasicEventList<LinkValue>();
-   SortedList<LinkValue> groups = new SortedList<LinkValue>( sourceGroups, new LinkComparator() );
+   BasicEventList<LinkValue> groups = new BasicEventList<LinkValue>();
 
    WeakModelMap<String, ParticipantsModel> groupModels = new WeakModelMap<String, ParticipantsModel>()
    {
@@ -103,7 +100,7 @@ public class GroupsModel
       try
       {
          LinksValue groupsList = client.query( "groups", LinksValue.class );
-         EventListSynch.synchronize( groupsList.links().get(), sourceGroups );
+         EventListSynch.synchronize( groupsList.links().get(), groups );
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_refresh, e );

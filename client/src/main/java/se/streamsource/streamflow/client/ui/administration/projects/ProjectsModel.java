@@ -28,7 +28,6 @@ import se.streamsource.dci.value.*;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
-import se.streamsource.streamflow.client.infrastructure.ui.LinkComparator;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
@@ -56,8 +55,7 @@ public class ProjectsModel
    @Uses
    CommandQueryClient client;
 
-   BasicEventList<LinkValue> sourceProjects = new BasicEventList<LinkValue>();
-   SortedList<LinkValue> projects = new SortedList<LinkValue>( sourceProjects, new LinkComparator() );
+   BasicEventList<LinkValue> projects = new BasicEventList<LinkValue>();
 
    WeakModelMap<String, ProjectModel> projectModels = new WeakModelMap<String, ProjectModel>()
    {
@@ -77,7 +75,7 @@ public class ProjectsModel
       }
    };
 
-   public SortedList<LinkValue> getProjectList()
+   public EventList<LinkValue> getProjectList()
    {
       return projects;
    }
@@ -88,7 +86,7 @@ public class ProjectsModel
       {
          // Get Project list
          LinksValue projectsList = client.query( "index", LinksValue.class );
-         EventListSynch.synchronize( projectsList.links().get(), sourceProjects );
+         EventListSynch.synchronize( projectsList.links().get(), projects );
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_refresh, e );

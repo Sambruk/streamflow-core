@@ -14,6 +14,7 @@
 
 package se.streamsource.streamflow.client.ui.administration.organization;
 
+import ca.odell.glazedlists.SortedList;
 import ca.odell.glazedlists.swing.EventListModel;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.util.WindowUtils;
@@ -26,6 +27,7 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.client.StreamFlowResources;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
+import se.streamsource.streamflow.client.infrastructure.ui.LinkComparator;
 import se.streamsource.streamflow.client.infrastructure.ui.LinkListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
@@ -60,6 +62,7 @@ public class OrganizationUsersView
    public JList participantList;
 
    private LinksListModel model;
+   public SortedList<LinkValue> linkValues;
 
    public OrganizationUsersView( @Service ApplicationContext context, @Uses LinksListModel model )
    {
@@ -69,7 +72,8 @@ public class OrganizationUsersView
       ActionMap am = context.getActionMap( this );
       setActionMap( am );
 
-      participantList = new JList( new EventListModel<LinkValue>(model.getEventList()) );
+      linkValues = new SortedList<LinkValue>(model.getEventList(), new LinkComparator());
+      participantList = new JList( new EventListModel<LinkValue>( linkValues ) );
 
       participantList.setCellRenderer( new LinkListCellRenderer() );
 
@@ -115,7 +119,7 @@ public class OrganizationUsersView
       {
          for (int index : participantList.getSelectedIndices())
          {
-            LinkValue user = model.getEventList().get( index );
+            LinkValue user = linkValues.get( index );
             model.getClient().getClient( user.href().get() ).delete();
          }
 
