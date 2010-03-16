@@ -23,7 +23,7 @@ import java.util.Date;
 public interface ConversationDTO
    extends LinkValue
 {
-   Property<EntityReference> creator();
+   Property<String> creator();
 
    Property<Date> creationDate();
 

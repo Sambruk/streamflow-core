@@ -100,7 +100,7 @@ public class ConversationsListCellRenderer implements ListCellRenderer
 			ingressPanel.add(labelDate);
 
 			// Creator
-			JLabel labelCreator = new JLabel(conversations.creator().get().toString());
+			JLabel labelCreator = new JLabel(conversations.creator().get());
 			ingressPanel.add(labelCreator);			
 			contentPanel.add(ingressPanel, BorderLayout.NORTH);
 			renderer.add(contentPanel, BorderLayout.CENTER);

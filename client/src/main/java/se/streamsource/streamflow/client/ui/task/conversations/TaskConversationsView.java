@@ -44,6 +44,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.io.IOException;
 
@@ -73,6 +74,7 @@ public class TaskConversationsView
       MacOsUIWrapper.convertAccelerators( getActionMap() );
       this.context = context;
       JPanel left = new JPanel( new BorderLayout() );
+      left.setPreferredSize( new Dimension(200, 100) );
       final CardLayout cards = new CardLayout();
       final JPanel right = new JPanel( cards );
       JPanel empty = new JPanel();

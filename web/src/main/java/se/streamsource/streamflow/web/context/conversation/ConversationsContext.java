@@ -24,6 +24,7 @@ import se.streamsource.dci.context.ContextMixin;
 import se.streamsource.dci.context.IndexContext;
 import se.streamsource.dci.context.SubContexts;
 import se.streamsource.dci.value.StringValue;
+import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.resource.conversation.ConversationDTO;
@@ -63,7 +64,7 @@ public interface ConversationsContext
          for (Conversation conversation : conversations.conversations())
          {
             builder.prototype().creationDate().set( conversation.createdOn().get() );
-            builder.prototype().creator().set( EntityReference.getEntityReference( conversation.createdBy().get()) );
+            builder.prototype().creator().set( ((Describable)conversation.createdBy().get() ).getDescription() );
             builder.prototype().messages().set( ((Messages.Data)conversation).messages().count() );
             builder.prototype().participants().set( ((ConversationParticipants.Data)conversation).participants().count() );
             builder.prototype().href().set( EntityReference.getEntityReference( conversation ).identity() );

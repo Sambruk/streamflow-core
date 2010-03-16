@@ -23,6 +23,7 @@ import se.streamsource.dci.context.Context;
 import se.streamsource.dci.context.ContextMixin;
 import se.streamsource.dci.context.IndexContext;
 import se.streamsource.dci.context.SubContext;
+import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.resource.conversation.ConversationDTO;
 import se.streamsource.streamflow.web.domain.entity.conversation.ConversationEntity;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipants;
@@ -57,7 +58,7 @@ public interface ConversationContext
          builder.prototype().href().set( conversation.identity().get() );                           
          builder.prototype().text().set( conversation.getDescription() );
          builder.prototype().creationDate().set( conversation.createdOn().get() );
-         builder.prototype().creator().set( EntityReference.getEntityReference( conversation.createdBy().get() ));
+         builder.prototype().creator().set( ((Describable)conversation.createdBy().get() ).getDescription());
          builder.prototype().messages().set( ((Messages.Data)conversation).messages().count() );
          builder.prototype().participants().set( ((ConversationParticipants.Data)conversation).participants().count() );
 
