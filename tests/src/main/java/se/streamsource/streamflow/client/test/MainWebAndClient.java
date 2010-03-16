@@ -43,7 +43,7 @@ public class MainWebAndClient
       web = new MainWeb();
       mainClient = new MainClient();
                                                         
-      // Start web server_label
+      // Start web server
       web.start();
 
       // Start client

@@ -87,23 +87,22 @@ public class EventsFilter
             MediaType responseType = request.getClientInfo().getPreferredMediaType( Arrays.asList( MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN, MediaType.TEXT_HTML ) );
             final EventFilter filter = new EventFilter( AllEventsSpecification.INSTANCE );
             Representation rep;
+            TransactionEvents tx = transactions.get();
+            if (tx == null)
+            {
+               ValueBuilder<TransactionEvents> builder = vbf.newValueBuilder( TransactionEvents.class );
+               builder.prototype().timestamp().set( System.currentTimeMillis() );
+               tx = builder.newInstance();
+            }
+            final TransactionEvents txEvents = tx;
+
             if (responseType == null || (responseType.equals( MediaType.TEXT_PLAIN )))
             {
                rep = new WriterRepresentation( MediaType.TEXT_PLAIN )
                {
                   public void write( Writer writer ) throws IOException
                   {
-                     if (transactions == null)
-                     {
-                        ValueBuilder<TransactionEvents> builder = vbf.newValueBuilder( TransactionEvents.class );
-                        builder.prototype().timestamp().set( System.currentTimeMillis() );
-                        TransactionEvents events = builder.newInstance();
-                        writer.write( events.toJSON() );
-                     } else
-                     {
-                        TransactionEvents events = transactions.get();
-                        writer.write( events.toJSON() );
-                     }
+                     writer.write( txEvents.toJSON() );
                   }
                };
             } else if (responseType.equals( MediaType.TEXT_HTML ))
@@ -113,7 +112,7 @@ public class EventsFilter
                   public void write( Writer writer ) throws IOException
                   {
                      StringWriter string = new StringWriter();
-                     for (DomainEvent event : filter.events( Collections.singletonList( transactions.get()) ))
+                     for (DomainEvent event : filter.events( Collections.singletonList( txEvents) ))
                      {
                         string.write( "<tr>" +
                               "<td>" + event.usecase().get() + "</td>" +
@@ -126,7 +125,7 @@ public class EventsFilter
 
                      VelocityContext context = new VelocityContext();
                      context.put("events", string.toString());
-                     eventsTemplate.merge( context, writer );;
+                     eventsTemplate.merge( context, writer );
                   }
                };
             } else
@@ -135,7 +134,7 @@ public class EventsFilter
                {
                   public void write( Writer writer ) throws IOException
                   {
-                     writer.write( transactions.get().toJSON() );
+                     writer.write( txEvents.toJSON() );
                   }
                };
             }

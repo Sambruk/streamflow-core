@@ -47,11 +47,6 @@
             <artifactId>streamflow-client</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>se.streamsource.streamflow</groupId>
-            <artifactId>streamflow-web</artifactId>
-            <version>${project.version}</version>
-        </dependency>
 
         <!-- Qi4j -->
         <dependency>
@@ -76,12 +71,6 @@
             <groupId>org.qi4j.core</groupId>
             <artifactId>qi4j-core-testsupport</artifactId>
             <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.openrdf.sesame</groupId>
-            <artifactId>sesame-queryparser-sparql</artifactId>
-            <version>2.2.1</version>
         </dependency>
 
         <!-- Testing -->
