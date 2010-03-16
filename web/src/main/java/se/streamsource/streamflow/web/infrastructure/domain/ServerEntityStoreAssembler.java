@@ -14,6 +14,7 @@
 
 package se.streamsource.streamflow.web.infrastructure.domain;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.qi4j.api.common.Visibility;
@@ -63,63 +64,123 @@ public class ServerEntityStoreAssembler
          MigrationBuilder migrationBuilder = new MigrationBuilder( "0.0" );
          migrationBuilder.
                toVersion( "0.1.14.357" ).
-                  renameEntity( "se.streamsource.streamflow.web.domain.project.RoleEntity",
-                        "se.streamsource.streamflow.web.domain.project.ProjectRoleEntity" ).
-                  forEntities( "se.streamsource.streamflow.web.domain.organization.OrganizationEntity",
-                        "se.streamsource.streamflow.web.domain.organization.OrganizationalUnitEntity" ).
-                     renameManyAssociation( "roles", "projectRoles" ).
-                  end().
+               renameEntity( "se.streamsource.streamflow.web.domain.project.RoleEntity",
+                     "se.streamsource.streamflow.web.domain.project.ProjectRoleEntity" ).
+               forEntities( "se.streamsource.streamflow.web.domain.organization.OrganizationEntity",
+                     "se.streamsource.streamflow.web.domain.organization.OrganizationalUnitEntity" ).
+               renameManyAssociation( "roles", "projectRoles" ).
+               end().
                toVersion("0.2.18.0").
                toVersion( "0.3.20.962" ).
-                  renamePackage( "se.streamsource.streamflow.web.domain.form", "se.streamsource.streamflow.web.domain.entity.form" ).
-                     withEntities( "FieldEntity",
-                                   "FieldTemplateEntity",
-                                   "FormEntity",
-                                   "FormTemplateEntity").
-                  end().
-                  renameEntity( "se.streamsource.streamflow.web.domain.label.LabelEntity","se.streamsource.streamflow.web.domain.entity.label.LabelEntity" ).
-                  renamePackage("se.streamsource.streamflow.web.domain.organization", "se.streamsource.streamflow.web.domain.entity.organization").
-                     withEntities( "OrganizationalUnitEntity",
-                                   "OrganizationEntity",
-                                   "OrganizationsEntity").
-                  end().
-                  renameEntity( "se.streamsource.streamflow.web.domain.group.GroupEntity", "se.streamsource.streamflow.web.domain.entity.organization.GroupEntity" ).
-                  renameEntity( "se.streamsource.streamflow.web.domain.role.RoleEntity", "se.streamsource.streamflow.web.domain.entity.organization.RoleEntity" ).
-                  renamePackage( "se.streamsource.streamflow.web.domain.project", "se.streamsource.streamflow.web.domain.entity.project" ).
-                     withEntities( "ProjectEntity", "ProjectRoleEntity" ).
-                  end().
-                  renamePackage( "se.streamsource.streamflow.web.domain.task", "se.streamsource.streamflow.web.domain.entity.task" ).
-                     withEntities( "TaskEntity").
-                  end().
-                  renamePackage( "se.streamsource.streamflow.web.domain.tasktype", "se.streamsource.streamflow.web.domain.entity.tasktype" ).
-                     withEntities( "TaskTypeEntity").
-                  end().
-                  renamePackage( "se.streamsource.streamflow.web.domain.user", "se.streamsource.streamflow.web.domain.entity.user" ).
-                     withEntities( "UserEntity").
-                  end().
+               renamePackage( "se.streamsource.streamflow.web.domain.form", "se.streamsource.streamflow.web.domain.entity.form" ).
+               withEntities( "FieldEntity",
+                     "FieldTemplateEntity",
+                     "FormEntity",
+                     "FormTemplateEntity").
+               end().
+               renameEntity( "se.streamsource.streamflow.web.domain.label.LabelEntity","se.streamsource.streamflow.web.domain.entity.label.LabelEntity" ).
+               renamePackage("se.streamsource.streamflow.web.domain.organization", "se.streamsource.streamflow.web.domain.entity.organization").
+               withEntities( "OrganizationalUnitEntity",
+                     "OrganizationEntity",
+                     "OrganizationsEntity").
+               end().
+               renameEntity( "se.streamsource.streamflow.web.domain.group.GroupEntity", "se.streamsource.streamflow.web.domain.entity.organization.GroupEntity" ).
+               renameEntity( "se.streamsource.streamflow.web.domain.role.RoleEntity", "se.streamsource.streamflow.web.domain.entity.organization.RoleEntity" ).
+               renamePackage( "se.streamsource.streamflow.web.domain.project", "se.streamsource.streamflow.web.domain.entity.project" ).
+               withEntities( "ProjectEntity", "ProjectRoleEntity" ).
+               end().
+               renamePackage( "se.streamsource.streamflow.web.domain.task", "se.streamsource.streamflow.web.domain.entity.task" ).
+               withEntities( "TaskEntity").
+               end().
+               renamePackage( "se.streamsource.streamflow.web.domain.tasktype", "se.streamsource.streamflow.web.domain.entity.tasktype" ).
+               withEntities( "TaskTypeEntity").
+               end().
+               renamePackage( "se.streamsource.streamflow.web.domain.user", "se.streamsource.streamflow.web.domain.entity.user" ).
+               withEntities( "UserEntity").
+               end().
                toVersion( "0.5.23.1349" ).forEntities( "se.streamsource.streamflow.web.domain.entity.form.FieldEntity" ).
-                  custom( new EntityMigrationOperation()
+               custom( new EntityMigrationOperation()
+               {
+                  public boolean upgrade( JSONObject state, StateStore stateStore, Migrator migrator ) throws JSONException
                   {
-                     public boolean upgrade( JSONObject state, StateStore stateStore, Migrator migrator ) throws JSONException
+                     JSONObject fieldValue = state.getJSONObject( "properties" ).getJSONObject( "fieldValue" );
+                     if (fieldValue.get( "_type" ).equals("se.streamsource.streamflow.domain.form.PageBreakFieldValue"))
                      {
-                        JSONObject fieldValue = state.getJSONObject( "properties" ).getJSONObject( "fieldValue" );
-                        if (fieldValue.get( "_type" ).equals("se.streamsource.streamflow.domain.form.PageBreakFieldValue"))
+                        fieldValue.put( "_type", "se.streamsource.streamflow.domain.form.CommentFieldValue" );
+                        return true;
+                     }
+
+                     return false;
+                  }
+
+                  public boolean downgrade( JSONObject state, StateStore stateStore, Migrator migrator ) throws JSONException
+                  {
+                     return false;
+                  }
+               })
+               .end().
+               toVersion( "0.6.24.1488" ).forEntities( "se.streamsource.streamflow.web.domain.entity.task.TaskEntity" ).
+               custom( new EntityMigrationOperation()
+               {
+                  public boolean upgrade( JSONObject state, StateStore stateStore, Migrator migrator ) throws JSONException
+                  {
+                     JSONArray contacts = state.getJSONObject( "properties" ).getJSONArray( "contacts" );
+
+                     boolean changed = false;
+                     for ( int i=0; i<contacts.length(); i++ )
+                     {
+                        JSONObject contact = contacts.getJSONObject( i );
+                        JSONArray emails = contact.getJSONArray( "emailAddresses" );
+
+                        for ( int j=0; j<emails.length(); j++ )
                         {
-                           fieldValue.put( "_type", "se.streamsource.streamflow.domain.form.CommentFieldValue" );
-                           return true;
+                           JSONObject email = emails.getJSONObject( j );
+                           String emailString = (String) email.get( "emailAddress" );
+
+                           if ( !emailString.matches( "(.*@.*)?" ) )
+                           {
+                              email.put( "emailAddress", "" );
+                              changed = true;
+                           }
                         }
-
-                        return false;
                      }
+                     return changed;
+                  }
 
-                     public boolean downgrade( JSONObject state, StateStore stateStore, Migrator migrator ) throws JSONException
+                  public boolean downgrade( JSONObject jsonObject, StateStore stateStore, Migrator migrator ) throws JSONException
+                  {
+                     return false;
+                  }
+               }).end()
+               .forEntities( "se.streamsource.streamflow.web.domain.entity.user.UserEntity" ).
+               custom( new EntityMigrationOperation()
+               {
+                  public boolean upgrade( JSONObject state, StateStore stateStore, Migrator migrator ) throws JSONException
+                  {
+                     JSONObject contact = state.getJSONObject( "properties" ).getJSONObject( "contact" );
+                     JSONArray emails = contact.getJSONArray( "emailAddresses" );
+
+                     boolean changed = false;
+                     for ( int j=0; j<emails.length(); j++ )
                      {
-                        return false;
-                     }
-                  })
-               .end()
+                        JSONObject email = emails.getJSONObject( j );
+                        String emailString = (String) email.get( "emailAddress" );
 
-                  ;
+                        if ( !emailString.matches( "(.*@.*)?" ) )
+                        {
+                           email.put( "emailAddress", "" );
+                           changed = true;
+                        }
+                     }
+                                                                  
+                     return changed;
+                  }
+
+                  public boolean downgrade( JSONObject jsonObject, StateStore stateStore, Migrator migrator ) throws JSONException
+                  {
+                     return false;
+                  }
+               }).end();
 
          module.addServices( MigrationService.class ).setMetaInfo( migrationBuilder );
       }
