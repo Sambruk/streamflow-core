@@ -29,6 +29,6 @@ public class LinkComparator
       String s1 = o1.text().get();
       String s2 = o2.text().get();
 
-      return s1.compareTo( s2 );
+      return s1.compareToIgnoreCase( s2 );
    }
 }
