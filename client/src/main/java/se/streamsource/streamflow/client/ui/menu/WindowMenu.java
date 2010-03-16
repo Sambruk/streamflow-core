@@ -29,13 +29,8 @@ public class WindowMenu
    protected void init()
    {
       menu( "windowMenu",
-/*
-                "minimizeAll",
-                "---",
-*/
             "showWorkspaceWindow",
             "showOverviewWindow",
-            "showSearchWindow",
             "showAdministrationWindow",
             "showDebugWindow" );
    }

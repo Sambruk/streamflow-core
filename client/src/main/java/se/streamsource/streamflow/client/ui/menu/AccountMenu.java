@@ -24,7 +24,8 @@ public class AccountMenu
    {
       menu( "accountMenu",
             "manageAccounts",
-            "selectAccount"
+            "selectAccount",
+            "myProfile"
       );
    }
 }

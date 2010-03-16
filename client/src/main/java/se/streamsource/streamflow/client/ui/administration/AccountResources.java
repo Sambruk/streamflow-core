@@ -33,6 +33,7 @@ public enum AccountResources
    account_title, 
    registration_separator,
    user_settings_separator,
-   contact_info_separator, 
+   contact_info_separator,
+   profile_title,
    contact_info_for_user_separator
 }

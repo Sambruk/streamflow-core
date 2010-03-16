@@ -28,8 +28,9 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
-import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ProxyActions;
@@ -63,6 +64,7 @@ import se.streamsource.streamflow.client.ui.AccountSelector;
 import se.streamsource.streamflow.client.ui.DebugWindow;
 import se.streamsource.streamflow.client.ui.administration.AccountResources;
 import se.streamsource.streamflow.client.ui.administration.AdministrationWindow;
+import se.streamsource.streamflow.client.ui.administration.ProfileDialog;
 import se.streamsource.streamflow.client.ui.menu.AccountsDialog;
 import se.streamsource.streamflow.client.ui.menu.AccountsModel;
 import se.streamsource.streamflow.client.ui.overview.OverviewWindow;
@@ -168,6 +170,9 @@ public class StreamFlowApplication
          ToolTipManager.sharedInstance().setReshowDelay(Integer.parseInt(toolTipReshowDelay));
       }
 
+      getContext().getActionMap().get( "myProfile" ).setEnabled( false );
+
+
       this.accountSelector = accountSelector;
       this.workspaceWindow = obf.newObjectBuilder( WorkspaceWindow.class ).use( accountSelector ).newInstance();
       this.overviewWindow = obf.newObjectBuilder( OverviewWindow.class ).use( accountSelector ).newInstance();
@@ -201,6 +206,14 @@ public class StreamFlowApplication
             }
          }
       } );
+
+      accountSelector.getSelectionModel().addListSelectionListener( new ListSelectionListener()
+      {
+         public void valueChanged( ListSelectionEvent e )
+         {
+            StreamFlowApplication.this.getContext().getActionMap().get( "myProfile" ).setEnabled( !accountSelector.getSelectionModel().isSelectionEmpty() );
+         }
+      });
    }
 
    @Override
@@ -281,6 +294,16 @@ public class StreamFlowApplication
       {
          administrationWindow.getFrame().setVisible( false );
       }
+   }
+
+   @Uses
+   private ObjectBuilder<ProfileDialog> profileDialogs;
+
+   @Action
+   public void myProfile()
+   {
+      ProfileDialog profile = profileDialogs.use(accountSelector.getSelectedAccount()).newInstance();
+      dialogs.showOkDialog( getMainFrame(), profile, text(AccountResources.profile_title) );
    }
 
    public AccountsModel accountsModel()

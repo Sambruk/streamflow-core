@@ -73,7 +73,7 @@ import com.jgoodies.forms.layout.FormLayout;
 /**
  * JAVADOC
  */
-public class AccountView extends JScrollPane implements Observer
+public class AccountView extends JScrollPane
 {
 
    @Structure
@@ -97,16 +97,10 @@ public class AccountView extends JScrollPane implements Observer
    private ValueBuilder<AccountSettingsValue> accountSettingsBuilder;
    private StateBinder accountBinder;
    private StateBinder connectedBinder;
-   private StateBinder contactBinder;
-   private StateBinder phoneNumberBinder;
-   private StateBinder emailBinder;
-   // private StateBinder addressBinder;
 
    public FormEditor accountEditor;
    public JPanel accountForm;
    public JPanel contactForm;
-   public JRadioButton noneButton;
-   public JRadioButton emailButton;
 
    public AccountView(@Service ApplicationContext context)
    {
@@ -169,21 +163,6 @@ public class AccountView extends JScrollPane implements Observer
       FormLayout contactLayout = new FormLayout("75dlu, 5dlu, 120dlu:grow",
             "pref, pref, pref, pref, pref, pref, pref, pref, pref, pref, pref, pref");
 
-      contactBinder = new StateBinder();
-      contactBinder.setResourceMap(context.getResourceMap(getClass()));
-      ContactValue contactTemplate = contactBinder
-            .bindingTemplate(ContactValue.class);
-
-      phoneNumberBinder = new StateBinder();
-      phoneNumberBinder.setResourceMap(context.getResourceMap(getClass()));
-      ContactPhoneValue phoneTemplate = phoneNumberBinder
-            .bindingTemplate(ContactPhoneValue.class);
-
-      emailBinder = new StateBinder();
-      emailBinder.setResourceMap(context.getResourceMap(getClass()));
-      ContactEmailValue emailTemplate = emailBinder
-            .bindingTemplate(ContactEmailValue.class);
-
       DefaultFormBuilder contactBuilder = new DefaultFormBuilder(contactLayout,
             contactForm);
       // contactBuilder.setDefaultDialogBorder();
@@ -195,56 +174,9 @@ public class AccountView extends JScrollPane implements Observer
       contactBuilder.add(new JButton(am.get("test")));
       contactBuilder.nextLine(2);
 
-      contactBuilder.appendSeparator(i18n
-            .text(AccountResources.contact_info_for_user_separator));
-      // contactBuilder.appendSeparator(i18n
-      // .text(AccountResources.contact_info_separator));
-      contactBuilder.nextLine();
-
-      contactBuilder.add(new JLabel(i18n.text(WorkspaceResources.name_label)));
-      contactBuilder.nextColumn(2);
-      contactBuilder.add(contactBinder.bind(TEXTFIELD.newField(),
-            contactTemplate.name()));
-      contactBuilder.nextLine();
-
-      contactBuilder.add(new JLabel(i18n.text(WorkspaceResources.email_label)));
-      contactBuilder.nextColumn(2);
-      contactBuilder.add(emailBinder.bind(TEXTFIELD.newField(), emailTemplate
-            .emailAddress()));
-      contactBuilder.nextLine();
-
-      contactBuilder.add(new JLabel(i18n.text(WorkspaceResources.phone_label)));
-      contactBuilder.nextColumn(2);
-      contactBuilder.add(phoneNumberBinder.bind(TEXTFIELD.newField(),
-            phoneTemplate.phoneNumber()));
-      contactBuilder.nextLine(2);
-
-      contactBuilder.add(new JLabel(i18n
-            .text(WorkspaceResources.choose_message_delivery_type)));
-      noneButton = (JRadioButton) RADIOBUTTON.newField();
-      noneButton.setAction(am.get("messageDeliveryTypeNone"));
-      noneButton.setSelected(true);
-      contactBuilder.nextColumn(2);
-      contactBuilder.add(noneButton);
-      contactBuilder.nextLine();
-      contactBuilder.nextColumn(2);
-      emailButton = (JRadioButton) RADIOBUTTON.newField();
-      emailButton.setAction(am.get("messageDeliveryTypeEmail"));
-      contactBuilder.add(emailButton);
-
-      // Group the radio buttons.
-      ButtonGroup group = new ButtonGroup();
-      group.add(noneButton);
-      group.add(emailButton);
-
-      contactBuilder.nextLine(2);
-
       contactBuilder.nextColumn(2);
       contactBuilder.add(new JButton(am.get("changePassword")));
 
-      contactBinder.addObserver(this);
-      phoneNumberBinder.addObserver(this);
-      emailBinder.addObserver(this);
       setViewportView(panel);
    }
 
@@ -307,18 +239,6 @@ public class AccountView extends JScrollPane implements Observer
    }
 
    @Action
-   public void messageDeliveryTypeNone() throws Exception
-   {
-      model.changeMessageDeliveryType("none");
-   }
-
-   @Action
-   public void messageDeliveryTypeEmail() throws Exception
-   {
-      model.changeMessageDeliveryType("email");
-   }
-
-   @Action
    public void edit() throws UnitOfWorkCompletionException
    {
       if (!accountEditor.isEditing())
@@ -330,9 +250,6 @@ public class AccountView extends JScrollPane implements Observer
 
          // Update settings
          model.updateSettings(accountSettingsBuilder.newInstance());
-         contactBinder.updateWith(model.getContact());
-         phoneNumberBinder.updateWith(model.getPhoneNumber());
-         emailBinder.updateWith(model.getEmailAddress());
       }
    }
 
@@ -343,54 +260,6 @@ public class AccountView extends JScrollPane implements Observer
 
       accountSettingsBuilder = model.settings().buildWith();
       accountBinder.updateWith(accountSettingsBuilder.prototype());
-      contactBinder.updateWith(model.getContact());
-      phoneNumberBinder.updateWith(model.getPhoneNumber());
-      emailBinder.updateWith(model.getEmailAddress());
       connectedBinder.update();
-
-      String messageDeliveryType = model.getMessageDeliveryType();
-      if ("email".equalsIgnoreCase(messageDeliveryType))
-      {
-         emailButton.setSelected(true);
-      } else
-      {
-         noneButton.setSelected(true);
-      }
    }
-
-   public void update(Observable observable, Object arg)
-   {
-      Property property = (Property) arg;
-      if (property.qualifiedName().name().equals("name"))
-      {
-         try
-         {
-            model.changeName((String) property.get());
-         } catch (ResourceException e)
-         {
-            throw new OperationException(TaskResources.could_not_change_name, e);
-         }
-      } else if (property.qualifiedName().name().equals("phoneNumber"))
-      {
-         try
-         {
-            model.changePhoneNumber((String) property.get());
-         } catch (ResourceException e)
-         {
-            throw new OperationException(
-                  TaskResources.could_not_change_phone_number, e);
-         }
-      } else if (property.qualifiedName().name().equals("emailAddress"))
-      {
-         try
-         {
-            model.changeEmailAddress((String) property.get());
-         } catch (ResourceException e)
-         {
-            throw new OperationException(
-                  TaskResources.could_not_change_email_address, e);
-         }
-      }
-   }
-
 }

@@ -58,6 +58,8 @@ public class AdministrationAssembler
             AdministrationModel.class,
             AdministrationOutlineView.class );
 
+      UIAssemblers.addViews( module, ProfileDialog.class );
+
       UIAssemblers.addMV( module,
             AccountModel.class,
             AccountView.class );
