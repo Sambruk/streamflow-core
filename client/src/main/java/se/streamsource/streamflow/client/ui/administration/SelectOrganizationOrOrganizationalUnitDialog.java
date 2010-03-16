@@ -35,6 +35,7 @@ import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 
@@ -94,8 +95,8 @@ public class SelectOrganizationOrOrganizationalUnitDialog
       JPanel toolbar = new JPanel();
       toolbar.setBorder( BorderFactory.createEtchedBorder() );
 
-      add( BorderLayout.CENTER, tree );
-      this.setPreferredSize( new Dimension( 100, 200 ) );
+      add( BorderLayout.CENTER, new JScrollPane(tree) );
+      this.setPreferredSize( new Dimension( 200, 300 ) );
    }
 
    @Action

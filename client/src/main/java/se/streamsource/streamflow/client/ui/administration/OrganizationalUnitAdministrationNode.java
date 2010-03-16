@@ -50,7 +50,7 @@ public class OrganizationalUnitAdministrationNode
 
       for (TreeNodeValue treeNodeValue : ou.children().get())
       {
-         Reference reference = client.getReference().clone().getParentRef().addSegment( treeNodeValue.entity().get().identity() );
+         Reference reference = client.getReference().clone().getParentRef().addSegment( treeNodeValue.entity().get().identity() ).addSegment( "" );
          add( obf.newObjectBuilder( OrganizationalUnitAdministrationNode.class ).use( this, treeNodeValue, client.getClient(reference.getPath()) ).newInstance() );
       }
    }
