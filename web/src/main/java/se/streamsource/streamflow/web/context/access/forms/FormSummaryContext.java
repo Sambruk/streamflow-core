@@ -13,10 +13,13 @@
 package se.streamsource.streamflow.web.context.access.forms;
 
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.value.ValueBuilder;
+import org.restlet.representation.Representation;
 import se.streamsource.dci.context.Context;
 import se.streamsource.dci.context.ContextMixin;
 import se.streamsource.dci.context.IndexContext;
 import se.streamsource.streamflow.domain.form.FormSubmissionValue;
+import se.streamsource.streamflow.resource.roles.IntegerDTO;
 import se.streamsource.streamflow.web.domain.structure.form.FormSubmission;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedForms;
 import se.streamsource.streamflow.web.domain.structure.user.ProxyUser;
@@ -30,6 +33,8 @@ public interface FormSummaryContext
 {
 
    void submit();
+
+   void gotopage( IntegerDTO page );
 
    abstract class Mixin
       extends ContextMixin
@@ -46,6 +51,18 @@ public interface FormSummaryContext
          FormSubmission formSubmission = context.role( FormSubmission.class );
          ProxyUser user = context.role( ProxyUser.class );
          submittedForms.submitForm( formSubmission, user );
+      }
+
+      public void gotopage( IntegerDTO page)
+      {
+         FormSubmissionValue value = context.role( FormSubmissionValue.class );
+         ValueBuilder<FormSubmissionValue> valueBuilder = value.buildWith();
+
+         valueBuilder.prototype().currentPage().set( page.integer().get() );
+
+         FormSubmissionValue newFormValue = valueBuilder.newInstance();
+         FormSubmission formSubmission = context.role( FormSubmission.class );
+         formSubmission.changeFormSubmission( newFormValue );
       }
    }
 }

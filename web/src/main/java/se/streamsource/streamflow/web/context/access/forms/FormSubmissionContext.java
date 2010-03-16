@@ -51,8 +51,6 @@ public interface FormSubmissionContext
 
    void updatefield( FieldSubmissionValue newFieldValue );
 
-   void gotopage( IntegerDTO page );
-
    @SubContext
    @HasNextPage(false)
    FormSummaryContext summary();
@@ -90,7 +88,7 @@ public interface FormSubmissionContext
 
       public void next( Representation rep)
       {
-         Form form = new Form(rep);
+         Form form = new Form( rep );
 
          Set<Map.Entry<String, String>> entries = form.getValuesMap().entrySet();
 
@@ -153,21 +151,13 @@ public interface FormSubmissionContext
 
       public FormSummaryContext summary()
       {
+         context.playRoles( this );
          return subContext( FormSummaryContext.class );
       }
 
       public void discard()
       {
          // delete formSubmission
-      }
-
-      public void gotopage( IntegerDTO page )
-      {
-         ValueBuilder<FormSubmissionValue> valueBuilder = getFormSubmissionValueBuilder();
-
-         valueBuilder.prototype().currentPage().set( page.integer().get() );
-
-         updateFormSubmission( valueBuilder );
       }
    }
 }
