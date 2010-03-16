@@ -24,6 +24,7 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.LinkValue;
@@ -54,8 +55,7 @@ public class PossibleTaskTypesModel
       {
          LinksValue taskTypes = client.query( "possibletasktypes", LinksValue.class );
 
-         taskTypeList.clear();
-         taskTypeList.addAll( taskTypes.links().get() );
+         EventListSynch.synchronize( taskTypes.links().get(), taskTypeList );
       } catch (ResourceException e)
       {
          throw new OperationException( TaskResources.could_not_refresh, e );

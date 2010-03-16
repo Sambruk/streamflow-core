@@ -20,6 +20,7 @@ import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
@@ -67,8 +68,7 @@ public class PossibleFormsModel
 
    public void setForms( List<LinkValue> forms )
    {
-      this.forms.clear();
-      this.forms.addAll( forms );
+      EventListSynch.synchronize( forms, this.forms );
    }
 
    public EventList<LinkValue> getForms()

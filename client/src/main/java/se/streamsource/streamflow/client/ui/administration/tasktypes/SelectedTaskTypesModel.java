@@ -25,6 +25,7 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
@@ -46,8 +47,6 @@ public class SelectedTaskTypesModel
    @Structure
    ValueBuilderFactory vbf;
 
-   private LinksValue list;
-
    public EventList<LinkValue> getTaskTypeList()
    {
       return eventList;
@@ -60,13 +59,7 @@ public class SelectedTaskTypesModel
          // Get tasktype list
          LinksValue newList = client.query( "index", LinksValue.class );
 
-         if (list == null || !newList.equals( list ))
-         {
-            eventList.clear();
-            eventList.addAll( newList.links().get() );
-            list = newList;
-         }
-
+         EventListSynch.synchronize( newList.links().get(), eventList );
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_refresh_list_of_tasktypes, e );

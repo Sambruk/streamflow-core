@@ -41,6 +41,7 @@ public interface LabelableContext
    extends SubContexts<LabeledContext>, IndexContext<LinksValue>, Context
 {
    LinksValue possiblelabels();
+   
    void addlabel( EntityReferenceDTO reference );
 
    abstract class Mixin

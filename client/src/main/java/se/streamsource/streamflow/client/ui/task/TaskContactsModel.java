@@ -56,8 +56,6 @@ public class TaskContactsModel
    {
    }
 
-   List<ContactValue> contacts = Collections.emptyList();
-
    public void refresh()
    {
       try

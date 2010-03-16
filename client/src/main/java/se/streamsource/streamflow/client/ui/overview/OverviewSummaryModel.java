@@ -20,6 +20,7 @@ import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
 import se.streamsource.streamflow.resource.overview.ProjectSummaryDTO;
 import se.streamsource.streamflow.resource.overview.ProjectSummaryListDTO;
 
@@ -48,8 +49,7 @@ public class OverviewSummaryModel
       try
       {
          ProjectSummaryListDTO newResource = client.query( "projectsummary", ProjectSummaryListDTO.class );
-         projectOverviews.clear();
-         projectOverviews.addAll( newResource.projectOverviews().get() );
+         EventListSynch.synchronize( newResource.projectOverviews().get(), projectOverviews );
       } catch (Exception e)
       {
          throw new OperationException( OverviewResources.could_not_refresh, e );

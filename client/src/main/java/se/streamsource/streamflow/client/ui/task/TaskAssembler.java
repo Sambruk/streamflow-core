@@ -54,10 +54,6 @@ public class TaskAssembler
             TaskDetailView.class );
 
       UIAssemblers.addMV( module,
-            TaskCommentsModel.class,
-            TaskCommentsView.class );
-      
-      UIAssemblers.addMV( module,
             TaskContactsModel.class,
             TaskContactsView.class );
 
@@ -72,10 +68,6 @@ public class TaskAssembler
       UIAssemblers.addMV( module,
             TaskLabelsModel.class,
             TaskLabelsView.class );
-
-      UIAssemblers.addMV( module,
-            TaskLabelSelectionModel.class,
-            TaskLabelSelectionView.class );
 
       UIAssemblers.addMV( module,
             PossibleTaskTypesModel.class,

@@ -30,6 +30,7 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
@@ -116,8 +117,7 @@ public class FieldsModel
       try
       {
          List<ListItemValue> list = ((ListValue)client.query( "pagessummary", ListValue.class ).buildWith().prototype()).items().get();
-         fieldsList.clear();
-         fieldsList.addAll( list );
+         EventListSynch.synchronize( list, fieldsList );
 
          fireContentsChanged( this, 0, getSize() );
       } catch (ResourceException e)

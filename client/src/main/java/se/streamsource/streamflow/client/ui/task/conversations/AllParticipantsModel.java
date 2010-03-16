@@ -23,6 +23,7 @@ import org.restlet.resource.ResourceException;
 
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
 import se.streamsource.streamflow.client.ui.task.TaskResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
@@ -53,8 +54,7 @@ public class AllParticipantsModel
 
    public void setParticipants( ListValue participants )
    {
-      this.participants.clear();
-      this.participants.addAll( participants.items().get() );
+      EventListSynch.synchronize( participants.items().get(), this.participants );
    }
    
    public void addParticipant( EntityReference addParticipant )

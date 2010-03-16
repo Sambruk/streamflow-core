@@ -23,6 +23,7 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
@@ -58,8 +59,7 @@ public class TaskSubmittedFormsModel
    {
       try
       {
-         submittedForms.clear();
-         submittedForms.addAll( client.query( "listsubmittedforms", SubmittedFormsListDTO.class ).forms().get() );
+         EventListSynch.synchronize( client.query( "listsubmittedforms", SubmittedFormsListDTO.class ).forms().get(), submittedForms );
       } catch (Exception e)
       {
          throw new OperationException( TaskResources.could_not_refresh, e );
