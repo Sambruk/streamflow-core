@@ -72,7 +72,12 @@ public interface ConversationParticipantsContext
          Owner owner = ownable.owner().get();
          List<ConversationParticipant> possibleParticipants = context.role( ConversationParticipantsQueries.class).possibleParticipants(owner);
          LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() ).command( "addparticipant" );
-         linksBuilder.addDescribables( possibleParticipants );
+
+         for (ConversationParticipant possibleParticipant : possibleParticipants)
+         {
+            String group = "" + Character.toUpperCase( possibleParticipant.getDescription().charAt( 0 ) );
+            linksBuilder.addDescribable( possibleParticipant, group );
+         }
 
          return linksBuilder.newLinks();
       }

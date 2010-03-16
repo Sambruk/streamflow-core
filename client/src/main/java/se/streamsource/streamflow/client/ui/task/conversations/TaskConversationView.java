@@ -40,11 +40,12 @@ import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.task.TaskResources;
 import se.streamsource.streamflow.client.ui.workspace.FilterListDialog;
+import se.streamsource.streamflow.client.ui.workspace.GroupedFilterListDialog;
 
 public class TaskConversationView extends JPanel
 {
    @Uses
-   ObjectBuilder<FilterListDialog> participantsDialog;
+   ObjectBuilder<GroupedFilterListDialog> participantsDialog;
 
    @Service
    DialogService dialogs;
@@ -187,7 +188,7 @@ public class TaskConversationView extends JPanel
    @Action
    public void addParticipants()
    {
-      FilterListDialog dialog = participantsDialog.use(
+      GroupedFilterListDialog dialog = participantsDialog.use(
             i18n.text( TaskResources.choose_participant ),
             model.getParticipantsModel().possibleParticipants() ).newInstance();
       dialogs.showOkCancelHelpDialog( addParticipants, dialog );
