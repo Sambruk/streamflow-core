@@ -58,6 +58,12 @@ public class AboutDialog
    }
 
    @Action
+   public void execute()
+   {
+
+   }
+   
+   @Action
    public void close()
    {
       WindowUtils.findWindow( this ).dispose();

@@ -14,9 +14,6 @@
 
 package se.streamsource.streamflow.client.ui.administration;
 
-import java.io.IOException;
-import java.util.Observable;
-
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
@@ -28,7 +25,6 @@ import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.Uniform;
 import org.restlet.resource.ResourceException;
-
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.client.OperationException;
@@ -54,6 +50,9 @@ import se.streamsource.streamflow.infrastructure.application.TreeValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.resource.user.ChangePasswordCommand;
+
+import java.io.IOException;
+import java.util.Observable;
 
 /**
  * JAVADOC

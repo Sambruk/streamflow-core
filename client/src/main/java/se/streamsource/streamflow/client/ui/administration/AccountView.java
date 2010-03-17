@@ -29,12 +29,13 @@ import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
+import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
-import se.streamsource.streamflow.client.domain.individual.ConnectionException;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.FormEditor;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.ui.InfoDialog;
 import se.streamsource.streamflow.client.ui.workspace.TestConnectionTask;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.resource.user.ChangePasswordCommand;
@@ -174,7 +175,7 @@ public class AccountView extends JScrollPane
          public void succeeded(TaskEvent<String> stringTaskEvent)
          {
             String result = stringTaskEvent.getValue();
-            dialogs.showOkDialog( AccountView.this, new TestConnectionDialog(context, result) );
+            dialogs.showOkDialog( AccountView.this, new InfoDialog(context, result), "Server Version:" );
          }
 
          @Override
@@ -183,10 +184,10 @@ public class AccountView extends JScrollPane
             try
             {
                throw throwableTaskEvent.getValue();
-            } catch (ConnectionException e)
+            } catch (ResourceException e)
             {
-               dialogs.showOkDialog(AccountView.this, new JLabel(
-                     "#Connection is not ok:" + e.status().getName()));
+               dialogs.showOkDialog(AccountView.this, new InfoDialog( context,
+                     i18n.text(AccountResources.connection_not_ok)+ " " + e.getStatus().toString()), "Info");
             } catch (Throwable throwable)
             {
                throwable.printStackTrace();

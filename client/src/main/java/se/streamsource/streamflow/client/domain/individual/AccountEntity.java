@@ -31,6 +31,8 @@ import org.restlet.Uniform;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Reference;
+import org.restlet.data.Status;
+import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
 import org.restlet.routing.Filter;
@@ -133,8 +135,17 @@ public interface AccountEntity
          CommandQueryClient server = server( client );
          ClientResource version = new ClientResource( server.getReference().clone().addSegment( "static" ).addSegment( "version.html" ));
          version.setNext( server.getClient() );
+         Representation rep = version.get();
 
-         String response = version.get().getText();
+         String response = "";
+         if( !Status.SUCCESS_OK.equals(version.getStatus()))
+         {
+            throw new ResourceException( version.getStatus() );
+         } else
+         {
+            response = rep.getText();
+         }
+
          return response;
       }
    }

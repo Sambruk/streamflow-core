@@ -12,7 +12,7 @@
  *
  */
 
-package se.streamsource.streamflow.client.ui.administration;
+package se.streamsource.streamflow.client.ui;
 
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
@@ -25,11 +25,11 @@ import javax.swing.JPanel;
 /**
  * Dialog for testing server connection.
  */
-public class TestConnectionDialog
+public class InfoDialog
       extends JPanel
 {
 
-   public TestConnectionDialog( @Service ApplicationContext context, String label )
+   public InfoDialog( @Service ApplicationContext context, String label )
    {
       setActionMap( context.getActionMap( this ) );
       add( new JLabel( label ) );
