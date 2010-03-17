@@ -14,28 +14,9 @@
 
 package se.streamsource.streamflow.client.ui.administration;
 
-import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.PASSWORD;
-import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.TEXTFIELD;
-import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.RADIOBUTTON;
-
-import java.awt.BorderLayout;
-import java.awt.Insets;
-import java.awt.event.KeyEvent;
-import java.util.Observable;
-import java.util.Observer;
-
-import javax.swing.ButtonGroup;
-import javax.swing.ButtonModel;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
-import javax.swing.JToggleButton;
-import javax.swing.border.EmptyBorder;
-
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
 import org.jdesktop.application.Action;
-import org.jdesktop.application.ApplicationActionMap;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
 import org.jdesktop.application.TaskEvent;
@@ -44,31 +25,31 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilder;
-import org.qi4j.api.property.Property;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import org.restlet.resource.ResourceException;
-
-import se.streamsource.dci.value.StringValue;
-import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
 import se.streamsource.streamflow.client.domain.individual.ConnectionException;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.FormEditor;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import se.streamsource.streamflow.client.ui.task.TaskResources;
 import se.streamsource.streamflow.client.ui.workspace.TestConnectionTask;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
-import se.streamsource.streamflow.domain.contact.ContactEmailValue;
-import se.streamsource.streamflow.domain.contact.ContactPhoneValue;
-import se.streamsource.streamflow.domain.contact.ContactValue;
 import se.streamsource.streamflow.resource.user.ChangePasswordCommand;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
+import javax.swing.ActionMap;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JToggleButton;
+import javax.swing.border.EmptyBorder;
+import java.awt.BorderLayout;
+import java.awt.Insets;
+
+import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.*;
 
 /**
  * JAVADOC
@@ -97,6 +78,7 @@ public class AccountView extends JScrollPane
    private ValueBuilder<AccountSettingsValue> accountSettingsBuilder;
    private StateBinder accountBinder;
    private StateBinder connectedBinder;
+   private ApplicationContext context;
 
    public FormEditor accountEditor;
    public JPanel accountForm;
@@ -104,7 +86,8 @@ public class AccountView extends JScrollPane
 
    public AccountView(@Service ApplicationContext context)
    {
-      ApplicationActionMap am = context.getActionMap(this);
+      this.context = context;
+      ActionMap am = context.getActionMap(this);
       setActionMap(am);
 
       JPanel panel = new JPanel(new BorderLayout());
@@ -191,7 +174,7 @@ public class AccountView extends JScrollPane
          public void succeeded(TaskEvent<String> stringTaskEvent)
          {
             String result = stringTaskEvent.getValue();
-            dialogs.showOkDialog(AccountView.this, new JLabel(result));
+            dialogs.showOkDialog( AccountView.this, new TestConnectionDialog(context, result) );
          }
 
          @Override
