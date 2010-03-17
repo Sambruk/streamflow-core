@@ -18,13 +18,16 @@ import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.swingx.JXDialog;
 import org.jdesktop.swingx.util.WindowUtils;
+import org.qi4j.api.constraint.ConstraintViolationException;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.Restlet;
+import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.StreamFlowApplication;
 import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
 import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
@@ -34,8 +37,17 @@ import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.administration.AccountResources;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 
+import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JPopupMenu;
+import javax.swing.JTextField;
+import javax.swing.Popup;
+import javax.swing.PopupFactory;
+
+import java.awt.Window;
 
 import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.*;
 
@@ -44,96 +56,68 @@ import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBui
  */
 public class CreateAccountDialog extends JPanel
 {
-   private AccountSettingsValue settings;
-
    @Structure
-   UnitOfWorkFactory uowf;
-
-   @Service
-   IndividualRepository individualRepository;
-
-   @Service
-   StreamFlowApplication controller;
-
-   @Service
-   Restlet client;
-
    ValueBuilderFactory vbf;
 
-   private StateBinder accountBinder;
-   private ValueBuilder<AccountSettingsValue> accountBuilder;
+   private JTextField nameField;
+   private JTextField serverField;
+   private JTextField usernameField;
+   private JPasswordField passwordField;
+   private AccountSettingsValue settings;
 
-   public CreateAccountDialog(@Service ApplicationContext context,
-         @Structure ValueBuilderFactory vbf)
+   public CreateAccountDialog( @Service ApplicationContext context )
    {
       setActionMap(context.getActionMap(this));
-      this.vbf = vbf;
 
       FormLayout layout = new FormLayout("50dlu, 5dlu, 175dlu",
             "pref, pref, pref, pref");
       DefaultFormBuilder builder = new DefaultFormBuilder(layout, this);
-//      builder.setDefaultDialogBorder();
 
-      accountBinder = new StateBinder();
-      accountBinder.setResourceMap(context.getResourceMap(getClass()));
-      AccountSettingsValue template = accountBinder
-            .bindingTemplate(AccountSettingsValue.class);
+      nameField = (JTextField) TEXTFIELD.newField();
+      serverField = (JTextField) TEXTFIELD.newField();
+      serverField.setText( "http://streamflow.doesntexist.com/streamflow" );
+      usernameField = (JTextField) TEXTFIELD.newField();
+      passwordField = (JPasswordField) PASSWORD.newField();
 
-//      builder.appendSeparator(i18n
-//            .text(AccountResources.account_separator));
-//      builder.nextLine();
-
-      builder.add(new JLabel(i18n
-            .text(AdministrationResources.create_account_name)));
+      builder.add(new JLabel(i18n.text(AdministrationResources.create_account_name)));
       builder.nextColumn(2);
-      builder.add(accountBinder.bind(TEXTFIELD.newField(),
-            template.name()));
+      builder.add(nameField);
       builder.nextLine();
 
       builder.add(new JLabel(i18n.text(AdministrationResources.create_account_server)));
       builder.nextColumn(2);
-      builder.add(accountBinder.bind(TEXTFIELD.newField(),
-            template.server()));
+      builder.add( serverField );
       builder.nextLine();
 
-      builder
-            .add(new JLabel(i18n.text(AdministrationResources.create_account_username)));
+      builder.add(new JLabel(i18n.text(AdministrationResources.create_account_username)));
       builder.nextColumn(2);
-      builder.add(accountBinder.bind(TEXTFIELD.newField(),
-            template.userName()));
+      builder.add(usernameField);
       builder.nextLine();
 
-      builder
-            .add(new JLabel(i18n.text(AdministrationResources.create_account_password)));
+      builder.add(new JLabel(i18n.text(AdministrationResources.create_account_password)));
       builder.nextColumn(2);
-      builder.add(accountBinder.bind(PASSWORD.newField(),
-            template.password()));
+      builder.add(passwordField);
       builder.nextLine();
-
-//      BindingFormBuilder bb = new BindingFormBuilder(builder, accountBinder);
-//
-//      bb.appendLine(AdministrationResources.create_account_name, TEXTFIELD,
-//            template.name()).appendLine(
-//            AdministrationResources.create_account_server, TEXTFIELD,
-//            template.server()).appendLine(
-//            AdministrationResources.create_account_username, TEXTFIELD,
-//            template.userName()).appendLine(
-//            AdministrationResources.create_account_password, PASSWORD,
-//            template.password());
-
-      accountBuilder = vbf.newValueBuilder(AccountSettingsValue.class);
-
-      // for the demo this has been pre-filled
-      accountBuilder.prototype().server().set(
-            "http://streamflow.doesntexist.com/streamflow");
-
-      accountBinder.updateWith(accountBuilder.prototype());
    }
 
    @Action
    public void execute()
    {
-      settings = accountBuilder.newInstance();
+      try
+      {
+         ValueBuilder<AccountSettingsValue> accountBuilder = vbf.newValueBuilder( AccountSettingsValue.class );
+         accountBuilder.prototype().name().set( nameField.getText() );
+         accountBuilder.prototype().server().set( serverField.getText() );
+         accountBuilder.prototype().userName().set( usernameField.getText() );
+         accountBuilder.prototype().password().set( String.valueOf( passwordField.getPassword() ) );
+         settings = accountBuilder.newInstance();
+      } catch( ConstraintViolationException cve )
+      {
+         JOptionPane.showMessageDialog(new JFrame(), cve.getMessage(), "Dialog",
+            JOptionPane.ERROR_MESSAGE);
+         return;
+      }
+
       WindowUtils.findWindow(this).dispose();
    }
 
