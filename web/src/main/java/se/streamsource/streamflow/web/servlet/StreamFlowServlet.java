@@ -15,7 +15,9 @@
 package se.streamsource.streamflow.web.servlet;
 
 import org.restlet.Application;
+import org.restlet.Component;
 import org.restlet.Context;
+import org.restlet.data.Protocol;
 import org.restlet.ext.servlet.ServerServlet;
 import se.streamsource.streamflow.web.rest.StreamFlowRestApplication;
 
@@ -25,6 +27,16 @@ import se.streamsource.streamflow.web.rest.StreamFlowRestApplication;
 public class StreamFlowServlet
       extends ServerServlet
 {
+   @Override
+   protected Component createComponent()
+   {
+      Component component = super.createComponent();
+      component.getClients().add( Protocol.CLAP );
+      component.getClients().add( Protocol.FILE );
+
+      return component;
+   }
+
    @Override
    protected Application createApplication( Context context )
    {
