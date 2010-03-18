@@ -47,7 +47,7 @@ public class TasksDetailView2
 
    private CardLayout layout = new CardLayout();
 
-   public TasksDetailView2(  @Uses TaskDetailView current, @Service EventSource events )
+   public TasksDetailView2( @Uses TaskDetailView current, @Service EventSource events )
    {
       setLayout(layout );
 
@@ -78,7 +78,11 @@ public class TasksDetailView2
       current.setTaskModel( task );
 
       layout.show( this, "detail" );
+   }
 
-      current.requestFocusInWindow();
+   @Override
+   public boolean requestFocusInWindow()
+   {
+      return current.requestFocusInWindow();
    }
 }

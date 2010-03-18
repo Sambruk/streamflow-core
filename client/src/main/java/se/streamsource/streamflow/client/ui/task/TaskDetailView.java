@@ -24,7 +24,6 @@ import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.task.conversations.TaskConversationsView;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import java.awt.BorderLayout;
