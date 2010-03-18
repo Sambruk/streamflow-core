@@ -16,6 +16,7 @@ package se.streamsource.streamflow.client.infrastructure.ui;
 
 import se.streamsource.dci.value.LinkValue;
 
+import java.text.Collator;
 import java.util.Comparator;
 
 /**
@@ -26,9 +27,7 @@ public class LinkComparator
 {
    public int compare( LinkValue o1, LinkValue o2 )
    {
-      String s1 = o1.text().get();
-      String s2 = o2.text().get();
-
-      return s1.compareToIgnoreCase( s2 );
+      Collator collator = Collator.getInstance();
+      return collator.compare( o1.text().get(), o2.text().get() );
    }
 }
