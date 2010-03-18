@@ -224,8 +224,11 @@ public class TaskGeneralView extends JScrollPane implements Observer
             notePane, template.note() );
 
       JPanel formsContainer = new JPanel( new BorderLayout() );
-      formsContainer.add( notePane, BorderLayout.CENTER );
-      formsContainer.add( rightForm, BorderLayout.EAST );
+      //formsContainer.add( notePane, BorderLayout.CENTER );
+      //formsContainer.add( rightForm, BorderLayout.EAST );
+      // STREAMFLOW-206
+      formsContainer.add( notePane, BorderLayout.WEST );
+      formsContainer.add( rightForm, BorderLayout.CENTER );
 
 /*
       JPanel borderLayoutContainer = new JPanel( new BorderLayout() );
