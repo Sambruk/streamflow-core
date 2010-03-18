@@ -26,19 +26,11 @@ import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
 import se.streamsource.streamflow.infrastructure.event.source.ForEvents;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
-import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
 
-import javax.swing.*;
-import javax.swing.event.EventListenerList;
-import javax.swing.plaf.basic.BasicTabbedPaneUI;
-import javax.swing.plaf.metal.MetalTabbedPaneUI;
-import java.awt.*;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import java.util.EventListener;
-import java.util.HashMap;
-import java.util.Map;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import java.awt.CardLayout;
+import java.awt.Dimension;
 
 /**
  * JAVADOC
@@ -86,5 +78,7 @@ public class TasksDetailView2
       current.setTaskModel( task );
 
       layout.show( this, "detail" );
+
+      current.requestFocusInWindow();
    }
 }
