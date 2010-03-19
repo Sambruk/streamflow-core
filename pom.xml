@@ -4,7 +4,7 @@
     <groupId>se.streamsource.streamflow</groupId>
     <artifactId>streamflow</artifactId>
     <name>StreamFlow (Build POM)</name>
-    <version>0.6-SNAPSHOT</version>
+    <version>0.7-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <!-- This POM is ONLY to initiate the modules to be built. -->
@@ -35,8 +35,8 @@
     </modules>
 
     <scm>
-        <connection>scm:svn:https://source.waygroup.se/svn/streamsource/streamflow/branches/0.6</connection>
-        <developerConnection>scm:svn:https://source.waygroup.se/svn/streamsource/streamflow/branches/0.6</developerConnection>
+        <connection>scm:svn:https://source.waygroup.se/svn/streamsource/streamflow/trunk</connection>
+        <developerConnection>scm:svn:https://source.waygroup.se/svn/streamsource/streamflow/trunk</developerConnection>
     </scm>
 
     <distributionManagement>
