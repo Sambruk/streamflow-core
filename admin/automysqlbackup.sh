@@ -37,16 +37,7 @@ DBHOST=localhost
 DBNAMES="streamflow"
 
 # Backup directory location e.g /backups
-BACKUPDIR="./backups"
-
-case `uname -s` in
-	Darwin) BACKUPDIR="$HOME/Library/Application Support/StreamFlowServer/statisticbackup"
-	;;
-	Linux) BACKUPDIR="/usr/share/tomcat6/.StreamFlowServer/statisticbackup"
-	;;
-	*) BACKUPDIR="./backups"
-	;;
-esac	
+BACKUPDIR="/usr/share/tomcat6/.StreamFlowServer/statisticbackup"
 
 # Mail setup
 # What would you like to be mailed to you?
