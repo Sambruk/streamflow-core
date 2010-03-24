@@ -18,7 +18,9 @@ import se.streamsource.dci.context.ContextMixin;
 import se.streamsource.dci.context.IndexContext;
 import se.streamsource.dci.context.SubContexts;
 import se.streamsource.dci.value.LinksValue;
+import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
+import se.streamsource.streamflow.infrastructure.application.TitledLinksBuilder;
 import se.streamsource.streamflow.web.domain.entity.user.ProxyUserEntity;
 import se.streamsource.streamflow.web.domain.structure.user.ProxyUser;
 import se.streamsource.streamflow.web.domain.structure.user.ProxyUsers;
@@ -37,10 +39,12 @@ public interface AccessPointContext
       public LinksValue index()
       {
          ProxyUsers.Data data = context.role( ProxyUsers.Data.class );
+         Describable describable = context.role( Describable.class );
 
-         LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
+         TitledLinksBuilder linksBuilder = new TitledLinksBuilder( module.valueBuilderFactory() );
 
          linksBuilder.addDescribables( data.proxyUsers() );
+         linksBuilder.addTitle( describable.getDescription() );
 
          return linksBuilder.newLinks();
       }

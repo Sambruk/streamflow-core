@@ -19,7 +19,9 @@ import se.streamsource.dci.context.ContextMixin;
 import se.streamsource.dci.context.IndexContext;
 import se.streamsource.dci.context.SubContexts;
 import se.streamsource.dci.value.LinksValue;
+import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
+import se.streamsource.streamflow.infrastructure.application.TitledLinksBuilder;
 import se.streamsource.streamflow.web.domain.structure.tasktype.SelectedTaskTypes;
 import se.streamsource.streamflow.web.domain.structure.tasktype.TaskType;
 
@@ -37,12 +39,14 @@ public interface TaskTypesContext
       public LinksValue index()
       {
          SelectedTaskTypes.Data data = context.role( SelectedTaskTypes.Data.class );
+         Describable describable = context.role( Describable.class );
 
-         LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
+         TitledLinksBuilder builder = new TitledLinksBuilder( module.valueBuilderFactory() );
 
-         linksBuilder.addDescribables( data.selectedTaskTypes() );
+         builder.addDescribables( data.selectedTaskTypes() );
+         builder.addTitle( describable.getDescription() );
 
-         return linksBuilder.newLinks();
+         return builder.newLinks();
       }
 
       public LabelsContext context( String id )

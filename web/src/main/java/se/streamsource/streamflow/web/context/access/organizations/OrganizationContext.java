@@ -13,17 +13,21 @@
 package se.streamsource.streamflow.web.context.access.organizations;
 
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.dci.context.Context;
 import se.streamsource.dci.context.ContextMixin;
+import se.streamsource.dci.context.IndexContext;
 import se.streamsource.dci.context.SubContext;
+import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.web.context.access.projects.ProjectsContext;
+import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 
 /**
  * JAVADOC
  */
 @Mixins(OrganizationContext.Mixin.class)
 public interface OrganizationContext
-   extends Context
+   extends Context, IndexContext<StringValue>
 {
    @SubContext
    ProjectsContext projects();
@@ -52,6 +56,15 @@ public interface OrganizationContext
       public ProxyUsersContext proxyusers()
       {
          return subContext( ProxyUsersContext.class );
+      }
+
+      public StringValue index()
+      {
+         ValueBuilder<StringValue> builder = module.valueBuilderFactory().newValueBuilder( StringValue.class );
+
+         builder.prototype().string().set( context.role( Organization.class ).getDescription() );
+
+         return builder.newInstance();
       }
    }
 }

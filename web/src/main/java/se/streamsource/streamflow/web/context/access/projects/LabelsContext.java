@@ -19,7 +19,10 @@ import se.streamsource.dci.context.IndexContext;
 import se.streamsource.dci.context.SubContexts;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.StringValue;
+import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
+import se.streamsource.streamflow.infrastructure.application.TitledLinksBuilder;
+import se.streamsource.streamflow.web.context.structure.DescribableContext;
 import se.streamsource.streamflow.web.domain.entity.project.ProjectLabelsQueries;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
@@ -47,9 +50,12 @@ public interface LabelsContext
       {
          ProjectLabelsQueries labelsQueries = context.role( ProjectLabelsQueries.class );
 
-         LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
+         TitledLinksBuilder linksBuilder = new TitledLinksBuilder( module.valueBuilderFactory() );
 
          Map<Label,SelectedLabels> map = labelsQueries.possibleLabels( context.role( TaskType.class ) );
+         TaskType type = context.role( TaskType.class );
+         StringBuilder title = new StringBuilder( type.getDescription() + ": " );
+         boolean firstLabel = true;
 
          try
          {
@@ -59,13 +65,23 @@ public interface LabelsContext
                if ( !labels.contains( label ) )
                {
                   linksBuilder.addDescribable( label );
+               } else
+               {
+                  if (firstLabel)
+                  {
+                     firstLabel = false;
+                  } else
+                  {
+                     title.append( ", " );
+                  }
+                  title.append( label.getDescription() );
                }
             }
          } catch (IllegalArgumentException e)
          {
             linksBuilder.addDescribables( map.keySet() );
          }
-
+         linksBuilder.addTitle( title.toString() );
          return linksBuilder.newLinks();
       }
 

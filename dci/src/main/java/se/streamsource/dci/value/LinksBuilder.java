@@ -23,7 +23,7 @@ import org.qi4j.api.value.ValueBuilderFactory;
  */
 public class LinksBuilder
 {
-   protected ValueBuilder<LinksValue> linksBuilder;
+   protected ValueBuilder<? extends LinksValue> linksBuilder;
    protected ValueBuilder<LinkValue> linkBuilder;
    protected ValueBuilder<TitledLinkValue> titledLinkBuilder;
    protected ValueBuilderFactory vbf;

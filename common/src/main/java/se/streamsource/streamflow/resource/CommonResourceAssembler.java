@@ -90,6 +90,7 @@ public class CommonResourceAssembler
             LinkValue.class,
             LinksValue.class,
             TitledLinkValue.class,
+            TitledLinksValue.class,
             ListValue.class,
             ListItemValue.class,
             GroupedListItemValue.class,
