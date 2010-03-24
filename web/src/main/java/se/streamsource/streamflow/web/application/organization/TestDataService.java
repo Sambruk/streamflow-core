@@ -131,6 +131,7 @@ public interface TestDataService
          TaskType improvement = organization.createTaskType( "Improvement" );
          improvement.addSelectedLabel( minor );
          improvement.addSelectedLabel( major );
+         TaskType complaint = organization.createTaskType( "Complaint" );
          TaskType passwordReset = organization.createTaskType( "Reset password" );
 
          // Create suborganizations
@@ -234,6 +235,14 @@ public interface TestDataService
          page = resetPasswordForm.createPage( "Reset password form" );
          page.createField( "Username", builder.newInstance() ).changeNote( "Username whose password should be reset" );
 
+         Form complaintForm = complaint.createForm();
+         complaintForm.changeDescription( "Complaint" );
+         complaintForm.changeNote( "This form is to file in a complaint" );
+         page = complaintForm.createPage( "Complaint" );
+         page.createField( "Name", builder.newInstance() );
+         page.createField( "Email", builder.newInstance() );
+         page.createField( "Complaint", builder.newInstance() );
+
          // Create labels
          project.addSelectedLabel( question );
          project.addSelectedLabel( issueChase );
@@ -261,6 +270,7 @@ public interface TestDataService
          itSupport.addMember( user );
 
          Project invoicing = admin.createProject( "Invoicing" );
+         invoicing.addSelectedTaskType( complaint );
          invoicing.addMember( user );
 
          // Create tasks
@@ -283,13 +293,13 @@ public interface TestDataService
          // Access test data
          ArrayList<Label> labels = new ArrayList<Label>();
          labels.add( question );
-         organization.createAccessPoint( "Bug Report Question", project, bug, labels );
+         organization.createAccessPoint( "ComplaintAccess", invoicing, complaint, labels );
 
-         ProxyUser proxyUser = organization.createProxyUser( "User External", "professorx", "professorx" );
+         ProxyUser proxyUser = organization.createProxyUser( "User External", "mrx", "mrxmrx" );
 
          TaskEntity task1 = proxyUser.createTask();
-         task1.changeDescription( "Simple Question" );
-         task1.taskType().set( bug );
+         task1.changeDescription( "No Salary" );
+         task1.taskType().set( complaint );
          for (Label label : labels)
          {
             task1.addLabel( label );

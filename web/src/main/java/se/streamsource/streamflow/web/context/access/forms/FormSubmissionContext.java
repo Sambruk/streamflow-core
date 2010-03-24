@@ -47,7 +47,7 @@ public interface FormSubmissionContext
    void next(Representation rep);
 
    @HasPreviousPage
-   void previous();
+   void previous(Representation rep);
 
    void updatefield( FieldSubmissionValue newFieldValue );
 
@@ -106,9 +106,20 @@ public interface FormSubmissionContext
          updateFormSubmission( builder );
       }
 
-      public void previous()
+      public void previous(Representation rep)
       {
-         ValueBuilder<FormSubmissionValue> builder = getFormSubmissionValueBuilder();
+         Form form = new Form( rep );
+
+         Set<Map.Entry<String, String>> entries = form.getValuesMap().entrySet();
+
+         FormSubmission submission = context.role( FormSubmission.class );
+
+         for (Map.Entry<String, String> entry : entries)
+         {
+            submission.changeFieldValue( EntityReference.parseEntityReference(entry.getKey() ), entry.getValue());
+         }
+
+         ValueBuilder<FormSubmissionValue> builder = context.role( FormSubmission.Data.class ).formSubmissionValue().get().buildWith();
 
          builder.prototype().currentPage().set( builder.prototype().currentPage().get() - 1 );
 
