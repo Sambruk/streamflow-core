@@ -4,6 +4,10 @@
 SFDIR=/usr/share/tomcat6/.StreamFlowServer
 BACKUPDEST="$2"
 
+old_dir=`pwd`
+
+cd `dirname "$0"`
+
 streamflow()
 {
 	sh jmxsh backup.tcl
@@ -41,3 +45,5 @@ case "$1" in
                 echo "Usage: $0 streamflow | statistic | full <backup destination>"
                 exit 3
 esac
+
+cd $old_dir
