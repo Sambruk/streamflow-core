@@ -27,11 +27,10 @@ import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.usecase.UsecaseBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.api.value.ValueComposite;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
-import se.streamsource.streamflow.infrastructure.event.replay.EventReplayException;
-import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 import java.lang.reflect.Method;
 import java.text.ParseException;
@@ -146,10 +145,10 @@ public interface DomainEventPlayerService
             return (Boolean) value;
          } else if (parameterType.equals( Long.class ) || parameterType.equals( Long.TYPE ))
          {
-            return (Long) value;
+            return ((Number) value).longValue();
          } else if (parameterType.equals( Integer.class ) || parameterType.equals( Integer.TYPE ))
          {
-            return (Integer) value;
+            return ((Number) value).intValue();
          } else if (parameterType.equals( Date.class ))
          {
             return dateFormat.parse( (String) value );
