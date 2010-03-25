@@ -163,7 +163,7 @@ public interface DomainEventPlayerService
                obj = module.valueBuilderFactory().newValueFromJSON( parameterType, (String) value );
             } catch (ConstraintViolationException cve)
             {
-               obj = module.valueBuilderFactory().newValueFromJSON( parameterType, "" );
+               return null;
             }
             return obj;
          } else if (parameterType.isInterface())
