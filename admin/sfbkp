@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Backup StreamFlow EntityStore,EventDiff and/or statistics database
-SFDIR=/usr/share/tomcat6/.StreamFlowServer
+SFDIR=/usr/share/tomcat6
 BACKUPDEST="$2"
 
 old_dir=`pwd`
@@ -30,16 +30,16 @@ case "$1" in
                 statistic
                 cd "$SFDIR"
                 NAME=StreamFlowServerBackup_`hostname`_`date +%Y-%m-%d_%Hh%Mm`.zip
-                tar -cvf $NAME ./data/backup ./statisticbackup
-               
+                tar -cvf $NAME ./.StreamFlowServer/data/backup ./.StreamFlowServer/statisticbackup ./.java
+
                 if [ -z "$BACKUPDEST" ]; then
                 	echo "Missing backup destination host. Backup stored locally!"
-                else	
-			        echo "Sending $NAME to $BACKUPDEST"
+                else
+			echo "Sending $NAME to $BACKUPDEST"
                 	scp -i ~/streamflow/admin/id-eu-streamflow-keypair $SFDIR/$NAME root@$BACKUPDEST:/var/sfbackups/
-			        rm $NAME
-			echo "Backup DONE." 
-                fi	               		 
+			rm $NAME
+			echo "Backup DONE."
+                fi
                 ;;
         *)
                 echo "Usage: $0 streamflow | statistic | full <backup destination>"
