@@ -16,6 +16,7 @@ package se.streamsource.streamflow.infrastructure.event.replay;
 
 import org.json.JSONObject;
 import org.json.JSONTokener;
+import org.qi4j.api.constraint.ConstraintViolationException;
 import org.qi4j.api.entity.IdentityGenerator;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
@@ -154,7 +155,17 @@ public interface DomainEventPlayerService
             return dateFormat.parse( (String) value );
          } else if (ValueComposite.class.isAssignableFrom( parameterType ))
          {
-            return module.valueBuilderFactory().newValueFromJSON( parameterType, (String) value );
+            // Check for ConstraintViolationException: This situation will occur if constraints
+            // have been added after the event was recorded. In that case we set the value to empty.
+            Object obj;
+            try
+            {
+               obj = module.valueBuilderFactory().newValueFromJSON( parameterType, (String) value );
+            } catch (ConstraintViolationException cve)
+            {
+               obj = module.valueBuilderFactory().newValueFromJSON( parameterType, "" );
+            }
+            return obj;
          } else if (parameterType.isInterface())
          {
             return uow.get( parameterType, (String) value );
