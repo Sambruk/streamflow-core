@@ -16,7 +16,7 @@ package se.streamsource.streamflow.infrastructure.event.replay;
 
 import org.json.JSONObject;
 import org.json.JSONTokener;
-import org.qi4j.api.constraint.ConstraintViolationException;
+import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.entity.IdentityGenerator;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
@@ -28,6 +28,8 @@ import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.usecase.UsecaseBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.api.value.ValueComposite;
+import org.qi4j.spi.Qi4jSPI;
+import org.qi4j.spi.entity.EntityState;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
@@ -64,6 +66,9 @@ public interface DomainEventPlayerService
       @Structure
       Module module;
 
+      @Structure
+      Qi4jSPI spi;
+
       String version;
 
       SimpleDateFormat dateFormat = new SimpleDateFormat( "EEE MMM dd HH:mm:ss zzz yyyy" );
@@ -89,6 +94,12 @@ public interface DomainEventPlayerService
 
                      // Get method
                      Method eventMethod = getEventMethod( entityType, domainEvent.name().get() );
+                     // check if the event has already occured
+                     EntityState state = spi.getEntityState( (EntityComposite)entity );
+                     if( state.lastModified() > currentEvent.on().get().getTime() )
+                     {
+                        break; // dont rerun event in this transaction
+                     }
 
                      if (eventMethod == null)
                      {
@@ -155,17 +166,8 @@ public interface DomainEventPlayerService
             return dateFormat.parse( (String) value );
          } else if (ValueComposite.class.isAssignableFrom( parameterType ))
          {
-            // Check for ConstraintViolationException: This situation will occur if constraints
-            // have been added after the event was recorded. In that case we set the value to empty.
-            Object obj;
-            try
-            {
-               obj = module.valueBuilderFactory().newValueFromJSON( parameterType, (String) value );
-            } catch (ConstraintViolationException cve)
-            {
-               return null;
-            }
-            return obj;
+
+            return module.valueBuilderFactory().newValueFromJSON( parameterType, (String) value );
          } else if (parameterType.isInterface())
          {
             return uow.get( parameterType, (String) value );

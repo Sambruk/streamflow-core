@@ -321,14 +321,9 @@ public interface ManagerComposite
 
             // Replay events from time of snapshot backup
             Date latestBackupDate = latestBackup == null ? new Date( 0 ) : getBackupDate( latestBackup );
-            Date eventReplayDate = null;
 
             for (File eventFile : eventFiles)
             {
-               // Check if this file is a diff file that contains events after backup was made
-               Date eventBackupDate = getEventBackupDate( eventFile );
-               if (!isCompleteEventBackup( eventFile ) && eventBackupDate.after( latestBackupDate ) && eventReplayDate == null)
-                  eventReplayDate = new Date(); // Only replay events from here on
 
                InputStream in = new FileInputStream( eventFile );
                if (eventFile.getName().endsWith( ".gz" ))
@@ -340,10 +335,7 @@ public interface ManagerComposite
                eventManagement.restoreEvents( reader );
             }
 
-            if (eventReplayDate == null)
-               eventReplayDate = new Date( 0 );
-
-            eventPlayer.replayEvents( eventReplayDate.getTime() );
+            eventPlayer.replayEvents( latestBackupDate.getTime() - 60000 );
 
             return "Backup restored successfully";
          } catch (Exception ex)
