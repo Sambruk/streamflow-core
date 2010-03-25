@@ -36,7 +36,7 @@ case "$1" in
                 	echo "Missing backup destination host. Backup stored locally!"
                 else
 			echo "Sending $NAME to $BACKUPDEST"
-                	scp -i ~/streamflow/admin/id-eu-streamflow-keypair $SFDIR/$NAME root@$BACKUPDEST:/var/sfbackups/
+                	scp -i ./admin/id-eu-streamflow-keypair $SFDIR/$NAME root@$BACKUPDEST:/var/sfbackups/
 			rm $NAME
 			echo "Backup DONE."
                 fi
