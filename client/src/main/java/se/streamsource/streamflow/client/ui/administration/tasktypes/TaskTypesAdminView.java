@@ -63,7 +63,7 @@ public class TaskTypesAdminView
                   LinkValue taskTypeLink = (LinkValue) list.getModel().getElementAt( idx );
                   TaskTypeModel taskTypeModel = taskTypesModel.getTaskTypeModel( taskTypeLink.id().get() );
                   TaskTypeView view = obf.newObjectBuilder( TaskTypeView.class ).use(
-                        taskTypeModel.getSelectedLabelsModel(), labelsModel, taskTypeModel.getFormsModel(), administrationView, taskTypeModel ).newInstance();
+                        taskTypeModel.getSelectedLabelsModel(), labelsModel, taskTypeModel.getFormsModel(), taskTypeModel.getSelectedFormsModel(), administrationView, taskTypeModel ).newInstance();
                   setRightComponent( view );
                } else
                {

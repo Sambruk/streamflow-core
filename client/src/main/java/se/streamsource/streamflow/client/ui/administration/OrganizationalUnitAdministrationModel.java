@@ -29,6 +29,7 @@ import se.streamsource.streamflow.client.ui.administration.groups.GroupsModel;
 import se.streamsource.streamflow.client.ui.administration.label.SelectedLabelsModel;
 import se.streamsource.streamflow.client.ui.administration.policy.AdministratorsModel;
 import se.streamsource.streamflow.client.ui.administration.projects.ProjectsModel;
+import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FormsModel;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
@@ -48,6 +49,7 @@ public class OrganizationalUnitAdministrationModel
 
    private GroupsModel groupsModel;
    private ProjectsModel projectsModel;
+   private FormsModel formsModel;
    private SelectedLabelsModel selectedLabelsModel;
    private AdministratorsModel administratorsModel;
    private CommandQueryClient client;
@@ -58,6 +60,7 @@ public class OrganizationalUnitAdministrationModel
 
       groupsModel = obf.newObjectBuilder( GroupsModel.class ).use( client.getSubClient( "groups" )).newInstance();
       projectsModel = obf.newObjectBuilder( ProjectsModel.class ).use( client.getSubClient( "projects" ), this).newInstance();
+      formsModel = obf.newObjectBuilder( FormsModel.class ).use( client.getSubClient( "forms" ), this).newInstance();
       selectedLabelsModel = obf.newObjectBuilder( SelectedLabelsModel.class ).use( client.getSubClient( "selectedlabels" ), this).newInstance();
       administratorsModel = obf.newObjectBuilder( AdministratorsModel.class ).use( client.getSubClient( "administrators" )).newInstance();
    }
@@ -75,6 +78,12 @@ public class OrganizationalUnitAdministrationModel
    public ProjectsModel projectsModel()
    {
       return projectsModel;
+   }
+
+
+   public FormsModel formsModel()
+   {
+      return formsModel;
    }
 
    public SelectedLabelsModel selectedLabelsModel()
@@ -182,6 +191,7 @@ public class OrganizationalUnitAdministrationModel
    {
       groupsModel.notifyEvent( event );
       projectsModel.notifyEvent( event );
+      formsModel.notifyEvent( event );
       administratorsModel.notifyEvent( event );
    }
 }

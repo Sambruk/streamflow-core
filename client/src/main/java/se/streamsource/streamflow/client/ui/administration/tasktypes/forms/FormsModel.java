@@ -86,7 +86,7 @@ public class FormsModel
    {
       try
       {
-         formsList = client.query( "forms", LinksValue.class ).links().get();
+         formsList = client.query( "index", LinksValue.class ).links().get();
          fireContentsChanged( this, 0, getSize() );
       } catch (ResourceException e)
       {
@@ -114,7 +114,7 @@ public class FormsModel
          client.getClient( form ).delete();
       } catch (ResourceException e)
       {
-         throw new OperationException( AdministrationResources.could_not_remove_form_definition, e );
+         throw new OperationException( AdministrationResources.could_not_remove, e );
       }
    }
 

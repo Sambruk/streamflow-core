@@ -34,15 +34,13 @@ public interface Forms
 {
    Form createForm();
 
-   Form createFormFromTemplate( FormTemplate template );
-
    void removeForm( Form form );
 
    interface Data
    {
       ManyAssociation<Form> forms();
 
-      Form createdForm( DomainEvent event, String id, @Optional FormTemplate template );
+      Form createdForm( DomainEvent event, String id);
 
       void removedForm( DomainEvent event, Form removedForm );
 
@@ -60,16 +58,7 @@ public interface Forms
 
       public Form createForm()
       {
-         Form form = createdForm( DomainEvent.CREATE, idGen.generate( Identity.class ), null );
-
-         return form;
-      }
-
-      public Form createFormFromTemplate( FormTemplate template )
-      {
-         Form form = createdForm( DomainEvent.CREATE, idGen.generate( Identity.class ), template );
-
-         form.synchronizeWithTemplate();
+         Form form = createdForm( DomainEvent.CREATE, idGen.generate( Identity.class ) );
 
          return form;
       }
@@ -82,18 +71,12 @@ public interface Forms
          removedForm( DomainEvent.CREATE, form );
       }
 
-      public Form createdForm( DomainEvent event, String id, FormTemplate template )
+      public Form createdForm( DomainEvent event, String id )
       {
          EntityBuilder<Form> builder = uowf.currentUnitOfWork().newEntityBuilder( Form.class, id );
-         builder.instanceFor(FormTemplateReference.Data.class).template().set( template );
          Form form = builder.newInstance();
          forms().add( form );
          return form;
-      }
-
-      public void projectFormDefinitionAdded( DomainEvent event, Form addedForm )
-      {
-         forms().add( addedForm );
       }
 
       public void removedForm( DomainEvent event, Form removedForm )

@@ -17,6 +17,7 @@ package se.streamsource.streamflow.web.context.users.overview;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
+import org.restlet.data.Reference;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.web.context.task.TasksContext;
 import se.streamsource.streamflow.web.domain.entity.gtd.AssignmentsQueries;
@@ -47,7 +48,7 @@ public interface OverviewProjectAssignmentsContext
 
          QueryBuilder<Assignable> builder = assignmentsQueries.assignments( null );
          Query query = builder.newQuery( module.unitOfWorkFactory().currentUnitOfWork() ).orderBy( orderBy( templateFor( CreatedOn.class ).createdOn() ) );
-         return TasksContext.Mixin.buildTaskList( query, module, null);
+         return TasksContext.Mixin.buildTaskList( query, module, context.role( Reference.class).getBaseRef().getPath());
       }
 
    }

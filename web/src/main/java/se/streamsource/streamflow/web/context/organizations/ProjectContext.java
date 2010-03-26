@@ -15,6 +15,7 @@
 package se.streamsource.streamflow.web.context.organizations;
 
 import org.qi4j.api.mixin.Mixins;
+import se.streamsource.streamflow.web.context.organizations.forms.FormsContext;
 import se.streamsource.streamflow.web.context.structure.labels.SelectedLabelsContext;
 import se.streamsource.streamflow.web.domain.structure.organization.Projects;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
@@ -37,6 +38,9 @@ public interface ProjectContext
    MembersContext members();
 
    @SubContext
+   FormsContext forms();
+
+   @SubContext
    SelectedLabelsContext selectedlabels();
 
    @SubContext
@@ -57,6 +61,11 @@ public interface ProjectContext
       public MembersContext members()
       {
          return subContext( MembersContext.class );
+      }
+
+      public FormsContext forms()
+      {
+         return subContext( FormsContext.class );
       }
 
       public SelectedLabelsContext selectedlabels()

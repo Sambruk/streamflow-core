@@ -18,6 +18,9 @@ import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
 /**
  * Builder for making it easier to create LinksValue/LinkValue
  */
@@ -41,7 +44,13 @@ public class LinksBuilder
 
    public LinksBuilder path(String subPath)
    {
-      path = subPath;
+      try
+      {
+         path = URLEncoder.encode( subPath, "UTF-8");
+      } catch (UnsupportedEncodingException e)
+      {
+         e.printStackTrace();
+      }
 
       return this;
    }
@@ -73,17 +82,24 @@ public class LinksBuilder
 
    public LinksBuilder addLink( String description, String id )
    {
-      linkBuilder.prototype().text().set( description );
-      linkBuilder.prototype().id().set( id );
-      if (command != null)
-         linkBuilder.prototype().href().set( command+"?entity="+id );
-      else
-         linkBuilder.prototype().href().set( (path == null ? "" : path+"/")+id+"/" );
-      linkBuilder.prototype().rel().set( rel );
+      try
+      {
+         linkBuilder.prototype().text().set( description );
+         linkBuilder.prototype().id().set( id );
+         if (command != null)
+            linkBuilder.prototype().href().set( command+"?entity="+id );
+         else
+            linkBuilder.prototype().href().set( (path == null ? "" : path+"/")+URLEncoder.encode( id, "UTF-8")+"/" );
+         linkBuilder.prototype().rel().set( rel );
 
-      addLink(linkBuilder.newInstance());
+         addLink(linkBuilder.newInstance());
 
-      return this;
+         return this;
+      } catch (UnsupportedEncodingException e)
+      {
+         e.printStackTrace();
+         return this;
+      }
    }
 
    public LinksBuilder addLink( String description, String id, String rel, String href )

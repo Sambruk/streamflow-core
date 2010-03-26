@@ -1,0 +1,30 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Domain events</title>
+</head>
+
+<body>
+<a href="./">Back</a>
+<table style="font-size:10" border="1" cellpadding="0">
+    <tr>
+        <th>Usecase</th>
+        <th>Event</th>
+        <th>Timestamp</th>
+        <th>Entity</th>
+        <th>Parameters</th>
+        <th>User</th>
+    </tr>
+    #foreach($event in $result.events)
+    <tr>
+        <td>$event.usecase</td>
+        <td>$event.name</td>
+        <td>$event.on</td>
+        <td>$event.entity</td>
+        <td>$event.parameters</td>
+        <td>$event.by</td>
+    </tr>
+    #end
+</table>
+</body>
+
+</html>

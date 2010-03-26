@@ -96,9 +96,9 @@ public interface FormSubmissions
          TaskType tasktype = typedTask.taskType().get();
          if ( tasktype != null )
          {
-            Forms.Data forms = (Forms.Data) tasktype;
+            SelectedForms.Data forms = (SelectedForms.Data) tasktype;
 
-            if ( forms.forms().contains( form ) )
+            if ( forms.selectedForms().contains( form ) )
             {
                return createdFormSubmission( DomainEvent.CREATE, form );
             }

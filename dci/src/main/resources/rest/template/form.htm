@@ -1,0 +1,16 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>$request.resourceRef.lastSegment</title>
+</head>
+
+<body>
+<h1>$request.resourceRef.lastSegment</h1>
+<form action="" method="$request.method.name">
+#foreach ($property in $result.state().properties())
+    ${property.qualifiedName().name()}: <input type="text" name="${property.qualifiedName().name()}"><br/>
+#end
+    <input value="Submit" type="submit"/>
+</form>
+</body>
+
+</html>

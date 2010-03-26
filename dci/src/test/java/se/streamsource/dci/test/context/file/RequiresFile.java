@@ -28,10 +28,10 @@ import java.lang.annotation.RetentionPolicy;
  */
 @ConstraintDeclaration
 @Retention(RetentionPolicy.RUNTIME)
-@Constraints(RequiresFile.RequiresRoleConstraint.class)
+@Constraints(RequiresFile.ConstraintImpl.class)
 public @interface RequiresFile
 {
-   class RequiresRoleConstraint
+   class ConstraintImpl
       implements Constraint<RequiresFile, InteractionContext>
    {
       public boolean isValid( RequiresFile requiresRoles, InteractionContext context )

@@ -35,6 +35,7 @@ import se.streamsource.streamflow.client.ui.administration.AdministrationResourc
 import se.streamsource.streamflow.client.ui.administration.OrganizationalUnitAdministrationModel;
 import se.streamsource.streamflow.client.ui.administration.label.SelectedLabelsModel;
 import se.streamsource.streamflow.client.ui.administration.tasktypes.SelectedTaskTypesModel;
+import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FormsModel;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 /**
@@ -63,12 +64,14 @@ public class ProjectsModel
       {
          CommandQueryClient projectClient = client.getSubClient( key );
          SelectedLabelsModel selectedLabelsModel = obf.newObjectBuilder( SelectedLabelsModel.class ).use( projectClient.getSubClient( "selectedlabels" ) ).newInstance();
+         FormsModel formsModel = obf.newObjectBuilder( FormsModel.class ).use( projectClient.getSubClient( "forms" ) ).newInstance();
          SelectedTaskTypesModel selectedTaskTypesModel = obf.newObjectBuilder( SelectedTaskTypesModel.class ).use( projectClient.getSubClient( "selectedtasktypes" ) ).newInstance();
          ProjectMembersModel projectMembersModel = obf.newObjectBuilder(ProjectMembersModel.class).use( projectClient.getSubClient( "members" ) ).newInstance();
 
 
          return obf.newObjectBuilder( ProjectModel.class ).use(
                projectMembersModel,
+               formsModel,
                selectedLabelsModel,
                selectedTaskTypesModel,
                organizationModel ).newInstance();

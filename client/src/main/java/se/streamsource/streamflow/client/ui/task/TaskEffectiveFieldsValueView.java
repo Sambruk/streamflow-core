@@ -67,6 +67,7 @@ public class TaskEffectiveFieldsValueView
    public void setModel( TaskEffectiveFieldsValueModel model )
    {
       effectiveValueTable.setModel( model );
+
       refresher.setRefreshable( model );
    }
 }

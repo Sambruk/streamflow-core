@@ -14,13 +14,12 @@
 
 package se.streamsource.streamflow.web.resource;
 
-import org.apache.velocity.app.VelocityEngine;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.spi.service.importer.NewObjectImporter;
-import se.streamsource.dci.restlet.server.ViewFilter;
-import se.streamsource.dci.value.IndexValue;
+import se.streamsource.dci.restlet.server.DCIAssembler;
+import se.streamsource.dci.restlet.server.DefaultResponseWriterFactory;
 import se.streamsource.streamflow.web.resource.admin.ConsoleServerResource;
 import se.streamsource.streamflow.web.resource.events.EventsServerResource;
 
@@ -32,15 +31,15 @@ public class ServerResourceAssembler
 {
    public void assemble( ModuleAssembly module ) throws AssemblyException
    {
-      module.importServices( VelocityEngine.class ).importedBy( NewObjectImporter.class );
-      module.addObjects( VelocityEngine.class, EventsFilter.class, ViewFilter.class );
+      module.addObjects( DefaultResponseWriterFactory.class, EventsCommandResult.class );
+      new DCIAssembler().assemble( module );
 
-      module.addValues( IndexValue.class );
+      module.importServices( StreamFlowRootContextFactory.class ).importedBy( NewObjectImporter.class );
 
       // Resources
       module.addObjects(
             APIv1Router.class,
-            StreamFlowCommandQueryServerResource.class,
+            StreamFlowRootContextFactory.class,
 
             // Events
             EventsServerResource.class,

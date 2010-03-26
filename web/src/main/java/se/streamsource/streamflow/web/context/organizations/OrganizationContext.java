@@ -20,6 +20,7 @@ import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.dci.context.Context;
 import se.streamsource.dci.context.ContextMixin;
 import se.streamsource.dci.context.SubContext;
+import se.streamsource.streamflow.web.context.organizations.forms.FormsContext;
 import se.streamsource.streamflow.web.context.structure.DescribableContext;
 import se.streamsource.streamflow.web.context.structure.labels.LabelsContext;
 import se.streamsource.streamflow.web.context.structure.labels.SelectedLabelsContext;
@@ -48,6 +49,9 @@ public interface OrganizationContext
 
    @SubContext
    SelectedLabelsContext selectedlabels();
+
+   @SubContext
+   FormsContext forms();
 
    @SubContext
    TaskTypesContext tasktypes();
@@ -98,6 +102,11 @@ public interface OrganizationContext
       public SelectedLabelsContext selectedlabels()
       {
          return subContext( SelectedLabelsContext.class );
+      }
+
+      public FormsContext forms()
+      {
+         return subContext( FormsContext.class );
       }
 
       public TaskTypesContext tasktypes()

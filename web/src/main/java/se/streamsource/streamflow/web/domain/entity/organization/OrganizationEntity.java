@@ -26,7 +26,7 @@ import se.streamsource.streamflow.web.domain.entity.tasktype.TaskTypesQueries;
 import se.streamsource.streamflow.web.domain.interaction.security.Authorization;
 import se.streamsource.streamflow.web.domain.interaction.gtd.IdGenerator;
 import se.streamsource.streamflow.web.domain.structure.form.FieldTemplates;
-import se.streamsource.streamflow.web.domain.structure.form.FormTemplates;
+import se.streamsource.streamflow.web.domain.structure.form.Forms;
 import se.streamsource.streamflow.web.domain.structure.label.Labels;
 import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
 import se.streamsource.streamflow.web.domain.structure.organization.AccessPoints;
@@ -58,7 +58,7 @@ public interface OrganizationEntity
       // Data
       Describable.Data,
       FieldTemplates.Data,
-      FormTemplates.Data,
+      Forms.Data,
       Labels.Data,
       OrganizationalUnits.Data,
       OwningOrganization,

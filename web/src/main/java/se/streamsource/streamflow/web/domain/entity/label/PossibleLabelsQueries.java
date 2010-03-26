@@ -36,9 +36,6 @@ public interface PossibleLabelsQueries
    class Mixin
       implements PossibleLabelsQueries
    {
-      @Structure
-      ValueBuilderFactory vbf;
-
       @This
       SelectedLabels.Data data;
 

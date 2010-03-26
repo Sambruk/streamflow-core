@@ -38,9 +38,6 @@ public class FormsSteps
    OrganizationsSteps orgsSteps;
 
    @Uses
-   FormTemplatesSteps formTemplatesSteps;
-
-   @Uses
    TaskTypesSteps taskTypesSetupSteps;
 
    @Structure

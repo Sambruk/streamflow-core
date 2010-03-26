@@ -20,10 +20,12 @@ import org.restlet.Application;
 import org.restlet.data.MediaType;
 import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.Representation;
+import org.restlet.resource.ResourceException;
 import org.restlet.service.MetadataService;
 import se.streamsource.dci.context.Context;
 import se.streamsource.dci.context.ContextMixin;
 import se.streamsource.dci.context.ContextNotFoundException;
+import se.streamsource.dci.context.DeleteContext;
 import se.streamsource.dci.context.IndexContext;
 import se.streamsource.dci.context.SubContexts;
 import se.streamsource.dci.value.LinksBuilder;
@@ -33,14 +35,20 @@ import se.streamsource.dci.value.StringValue;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
 /**
  * JAVADOC
  */
 @Mixins(FileContext.Mixin.class)
 public interface FileContext
-   extends Context, IndexContext<LinksValue>, SubContexts<FileContext>
+   extends Context, IndexContext<LinksValue>, SubContexts<FileContext>, DeleteContext
 {
+   void rename(StringValue newName);
+
+   @RequiresDirectory
+   void newfile() throws ResourceException;
+
    @RequiresFile
    StringValue lastModified();
 
@@ -51,6 +59,25 @@ public interface FileContext
       extends ContextMixin
       implements FileContext
    {
+      public void rename( StringValue newName )
+      {
+         File file = context.role( File.class );
+         File newFile = new File( file.getParentFile(), newName.string().get() );
+         boolean worked = file.renameTo( newFile );
+         System.out.println(worked);
+      }
+
+      public void newfile() throws ResourceException
+      {
+         try
+         {
+            new File(context.role(File.class), "New file.txt").createNewFile();
+         } catch (IOException e)
+         {
+            throw new ResourceException(e);
+         }
+      }
+
       public StringValue lastModified()
       {
          ValueBuilder<StringValue> builder = module.valueBuilderFactory().newValueBuilder( StringValue.class );
@@ -84,6 +111,11 @@ public interface FileContext
          }
 
          return builder.newLinks();
+      }
+
+      public void delete() throws ResourceException
+      {
+         context.role( File.class ).delete();
       }
 
       public FileContext context( String id )

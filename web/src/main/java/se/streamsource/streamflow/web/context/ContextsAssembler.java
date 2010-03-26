@@ -67,6 +67,8 @@ import se.streamsource.streamflow.web.context.organizations.forms.FormFieldsCont
 import se.streamsource.streamflow.web.context.organizations.forms.FormPageContext;
 import se.streamsource.streamflow.web.context.organizations.forms.FormPagesContext;
 import se.streamsource.streamflow.web.context.organizations.forms.FormsContext;
+import se.streamsource.streamflow.web.context.organizations.forms.SelectedFormContext;
+import se.streamsource.streamflow.web.context.organizations.forms.SelectedFormsContext;
 import se.streamsource.streamflow.web.context.structure.labels.LabelContext;
 import se.streamsource.streamflow.web.context.structure.labels.LabelableContext;
 import se.streamsource.streamflow.web.context.structure.labels.LabeledContext;
@@ -121,6 +123,8 @@ public class ContextsAssembler
             FormPageContext.class,
             FormPagesContext.class,
             FormsContext.class,
+            SelectedFormsContext.class,
+            SelectedFormContext.class,
 
             AdministratorContext.class,
             AdministratorsContext.class,

@@ -15,6 +15,7 @@
 package se.streamsource.streamflow.web.context.organizations;
 
 import org.qi4j.api.mixin.Mixins;
+import se.streamsource.streamflow.web.context.organizations.forms.SelectedFormsContext;
 import se.streamsource.streamflow.web.domain.structure.tasktype.TaskType;
 import se.streamsource.streamflow.web.domain.structure.tasktype.TaskTypes;
 import se.streamsource.dci.context.Context;
@@ -36,6 +37,9 @@ public interface TaskTypeContext
    FormsContext forms();
 
    @SubContext
+   SelectedFormsContext selectedforms();
+
+   @SubContext
    SelectedLabelsContext selectedlabels();
 
    abstract class Mixin
@@ -54,6 +58,11 @@ public interface TaskTypeContext
       public FormsContext forms()
       {
          return subContext( FormsContext.class );
+      }
+
+      public SelectedFormsContext selectedforms()
+      {
+         return subContext( SelectedFormsContext.class );
       }
 
       public SelectedLabelsContext selectedlabels()

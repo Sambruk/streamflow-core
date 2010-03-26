@@ -22,6 +22,7 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.ui.administration.form.SelectedFormsModel;
 import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FormsModel;
 import se.streamsource.streamflow.client.ui.administration.label.SelectedLabelsModel;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
@@ -50,6 +51,10 @@ public class TaskTypeModel
    @Uses
    FormsModel formsModel;
 
+   private
+   @Uses
+   SelectedFormsModel selectedFormsModel;
+
    public void changeDescription( String newName )
    {
       ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
@@ -72,6 +77,11 @@ public class TaskTypeModel
    public FormsModel getFormsModel()
    {
       return formsModel;
+   }
+
+   public SelectedFormsModel getSelectedFormsModel()
+   {
+      return selectedFormsModel;
    }
 
    public void notifyEvent( DomainEvent event )

@@ -20,6 +20,7 @@ import se.streamsource.streamflow.domain.structure.Removable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
 import se.streamsource.streamflow.web.domain.entity.label.PossibleLabelsQueries;
 import se.streamsource.streamflow.web.domain.interaction.security.Authorization;
+import se.streamsource.streamflow.web.domain.structure.form.Forms;
 import se.streamsource.streamflow.web.domain.structure.group.Groups;
 import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
@@ -28,6 +29,7 @@ import se.streamsource.streamflow.web.domain.structure.organization.Organization
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganization;
 import se.streamsource.streamflow.web.domain.structure.organization.Projects;
 import se.streamsource.streamflow.web.domain.structure.organization.RolePolicy;
+import se.streamsource.streamflow.web.domain.structure.tasktype.TaskTypes;
 
 /**
  * JAVADOC
@@ -45,12 +47,14 @@ public interface OrganizationalUnitEntity
       OrganizationalUnit,
       OrganizationalUnitRefactoring.Data,
       OrganizationalUnits.Data,
+      Forms.Data,
       Groups.Data,
       Projects.Data,
       Removable.Data,
       RolePolicy.Data,
       OwningOrganization,
       SelectedLabels.Data,
+      TaskTypes.Data,
 
       // Queries
       OrganizationalUnitsQueries,

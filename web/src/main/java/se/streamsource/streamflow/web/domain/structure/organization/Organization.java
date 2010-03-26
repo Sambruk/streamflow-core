@@ -17,7 +17,7 @@ package se.streamsource.streamflow.web.domain.structure.organization;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.domain.structure.Removable;
 import se.streamsource.streamflow.web.domain.structure.form.FieldTemplates;
-import se.streamsource.streamflow.web.domain.structure.form.FormTemplates;
+import se.streamsource.streamflow.web.domain.structure.form.Forms;
 import se.streamsource.streamflow.web.domain.structure.label.Labels;
 import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
 import se.streamsource.streamflow.web.domain.structure.project.ProjectRoles;
@@ -33,8 +33,8 @@ public interface Organization
       Describable,
       ProjectRoles,
       RolePolicy,
+      Forms,
       FieldTemplates,
-      FormTemplates,
       Labels,
       OrganizationalUnits,
       Roles,

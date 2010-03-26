@@ -42,6 +42,7 @@ import se.streamsource.streamflow.web.domain.interaction.gtd.Delegatable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Delegatee;
 import se.streamsource.streamflow.web.domain.interaction.gtd.IdGenerator;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
+import se.streamsource.streamflow.web.domain.structure.form.Forms;
 import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganization;
@@ -81,6 +82,7 @@ public interface ProjectEntity
       Members.Data,
       Describable.Data,
       OwningOrganizationalUnit.Data,
+      Forms.Data,
       SelectedLabels.Data,
       Removable.Data,
       SelectedTaskTypes.Data,

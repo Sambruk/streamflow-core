@@ -21,11 +21,9 @@
 #if($result.commands)
 <div class="block">
 <h2>Commands</h2>
-<ul>
 #foreach($command in $result.commands)
-<li><a href="$command">$command</a></li>
+    <form action="$command" method="POST" ><input type="submit" value="$command"/> </form>
 #end
-</ul>
 </div>
 #end
 

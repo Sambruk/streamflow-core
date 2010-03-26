@@ -23,7 +23,9 @@ import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.web.domain.entity.task.TaskEntity;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
 import se.streamsource.streamflow.web.domain.structure.form.Forms;
+import se.streamsource.streamflow.web.domain.structure.form.SelectedForms;
 import se.streamsource.streamflow.web.domain.structure.task.Task;
+import se.streamsource.streamflow.web.domain.structure.tasktype.TypedTask;
 
 /**
  * JAVADOC
@@ -42,14 +44,14 @@ public interface RequiredFormsContext
    {
       public LinksValue index()
       {
-         TaskEntity taskEntity = context.role( TaskEntity.class );
+         TypedTask.Data typedTask = context.role( TypedTask.Data.class );
 
-         Forms.Data forms = (Forms.Data) taskEntity.taskType().get();
+         SelectedForms.Data forms = (SelectedForms.Data) typedTask.taskType().get();
 
          LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() );
          builder.command( "createformdraft" );
 
-         builder.addDescribables( forms.forms() );
+         builder.addDescribables( forms.selectedForms() );
 
          return builder.newLinks();
       }

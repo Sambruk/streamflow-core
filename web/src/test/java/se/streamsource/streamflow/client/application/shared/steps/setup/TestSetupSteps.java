@@ -22,8 +22,6 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.client.application.shared.steps.FieldDefinitionsSteps;
-import se.streamsource.streamflow.client.application.shared.steps.FormTemplateSteps;
-import se.streamsource.streamflow.client.application.shared.steps.FormTemplatesSteps;
 import se.streamsource.streamflow.client.application.shared.steps.FormsSteps;
 import se.streamsource.streamflow.client.application.shared.steps.GroupsSteps;
 import se.streamsource.streamflow.client.application.shared.steps.InboxSteps;
@@ -85,14 +83,6 @@ public class TestSetupSteps
    @Optional
    @Uses
    FieldDefinitionsSteps fieldDefinitionsSteps;
-
-   @Optional
-   @Uses
-   FormTemplatesSteps formTemplatesSteps;
-
-   @Optional
-   @Uses
-   FormTemplateSteps formTemplateSteps;
 
    @Optional
    @Uses
@@ -174,8 +164,6 @@ public class TestSetupSteps
       formsSteps.createForm( SOME_FORM );
       //formsSteps.createField( SOME_FIELD );
       //formsSteps.createField( SOME_FIELD );
-
-      formTemplatesSteps.createTemplate();
 
       genericSteps.clearEvents();
    }

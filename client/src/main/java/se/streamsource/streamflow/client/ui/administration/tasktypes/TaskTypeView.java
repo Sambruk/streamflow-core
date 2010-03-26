@@ -17,6 +17,7 @@ package se.streamsource.streamflow.client.ui.administration.tasktypes;
 import org.qi4j.api.injection.scope.Uses;
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.ui.administration.form.SelectedFormsView;
 import se.streamsource.streamflow.client.ui.administration.label.SelectedLabelsView;
 import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FormsAdminView;
 
@@ -32,10 +33,12 @@ public class TaskTypeView
 
    public TaskTypeView( @Uses SelectedLabelsView selectedLabelsView ,
                         @Uses FormsAdminView formsView,
+                        @Uses SelectedFormsView selectedFormsView,
                         @Uses TaskTypeModel taskTypeModel)
    {
       this.taskTypeModel = taskTypeModel;
       addTab( text( AdministrationResources.selected_labels_tab ), selectedLabelsView );
       addTab( text( AdministrationResources.forms_tab ), formsView );
+      addTab( text( AdministrationResources.selected_forms_tab ), selectedFormsView );
    }
 }

@@ -18,7 +18,6 @@ import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.domain.structure.Notable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
-import se.streamsource.streamflow.web.domain.structure.form.FormTemplateReference;
 import se.streamsource.streamflow.web.domain.structure.form.Pages;
 
 /**
@@ -29,7 +28,6 @@ public interface FormEntity
       Form,
 
       // Data
-      FormTemplateReference.Data,
       Describable.Data,
       Notable.Data,
       Pages.Data,

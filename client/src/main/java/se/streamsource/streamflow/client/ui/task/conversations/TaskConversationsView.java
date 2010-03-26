@@ -146,7 +146,7 @@ public class TaskConversationsView
          model.conversations().removeListEventListener( this );
 
       model = taskConversationsModel;
-      model.refresh();
+//      model.refresh();
       refresher.setRefreshable( model );
 
       if (model != null)

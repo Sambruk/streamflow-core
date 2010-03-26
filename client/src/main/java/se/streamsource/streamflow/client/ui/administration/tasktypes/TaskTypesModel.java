@@ -31,6 +31,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.ui.administration.form.SelectedFormsModel;
 import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FormsModel;
 import se.streamsource.streamflow.client.ui.administration.label.SelectedLabelsModel;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
@@ -60,8 +61,9 @@ public class TaskTypesModel
          CommandQueryClient taskTypeClient = client.getSubClient( key );
          SelectedLabelsModel selectedLabelsModel = obf.newObjectBuilder( SelectedLabelsModel.class ).use( taskTypeClient.getSubClient( "selectedlabels" ) ).newInstance();
          FormsModel formsModel = obf.newObjectBuilder( FormsModel.class ).use( taskTypeClient.getSubClient( "forms" ) ).newInstance();
+         SelectedFormsModel selectedFormsModel = obf.newObjectBuilder( SelectedFormsModel.class ).use( taskTypeClient.getSubClient( "selectedforms" ) ).newInstance();
 
-         return obf.newObjectBuilder( TaskTypeModel.class ).use( selectedLabelsModel, formsModel, taskTypeClient ).newInstance();
+         return obf.newObjectBuilder( TaskTypeModel.class ).use( selectedLabelsModel, formsModel, selectedFormsModel, taskTypeClient ).newInstance();
       }
    };
 

@@ -23,7 +23,6 @@ import se.streamsource.streamflow.domain.structure.Notable;
 public interface Form
  extends Describable,
       Notable,
-      Pages,
-      FormTemplateReference
+      Pages
 {
 }

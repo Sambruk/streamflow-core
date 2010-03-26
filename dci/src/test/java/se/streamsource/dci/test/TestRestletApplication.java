@@ -14,7 +14,6 @@
 
 package se.streamsource.dci.test;
 
-import org.apache.velocity.app.VelocityEngine;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
@@ -31,13 +30,10 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Protocol;
 import org.restlet.routing.Filter;
 import org.restlet.security.Verifier;
-import org.sitemesh.content.tagrules.html.CoreHtmlTagRuleBundle;
 import org.slf4j.LoggerFactory;
+import se.streamsource.dci.restlet.server.CommandQueryRestlet;
 import se.streamsource.dci.restlet.server.ExtensionMediaTypeFilter;
-import se.streamsource.dci.restlet.server.ResourceFinder;
-import se.streamsource.dci.restlet.server.ViewFilter;
 import se.streamsource.dci.restlet.server.sitemesh.RestletFilterBuilder;
-import se.streamsource.dci.restlet.server.sitemesh.SiteMeshRestletFilter;
 
 import javax.management.MBeanServerFactory;
 import java.util.Arrays;
@@ -92,19 +88,18 @@ public class TestRestletApplication
    {
       getContext().setVerifier( verifier );
 
-      ResourceFinder finder = factory.newObject( ResourceFinder.class );
-      finder.setTargetClass( TestApplication.class );
+      Restlet cqr = factory.newObject( CommandQueryRestlet.class );
 
-      ViewFilter viewFilter = factory.newObjectBuilder( ViewFilter.class ).use( getContext(), finder ).newInstance();
+//      ViewFilter viewFilter = factory.newObjectBuilder( ViewFilter.class ).use( getContext(), cqr ).newInstance();
 
       RestletFilterBuilder builder = new RestletFilterBuilder().
             setContext( getContext() ).
-            setNext( viewFilter ).
+            setNext( cqr ).
             addDecoratorPath( "/files*", "clap://class/decorator/menu.html" ).
             addDecoratorPath( "/", "clap://class/decorator/main.html" );
       Filter siteMeshFilter = builder.create();
       getContext().getClientDispatcher().setProtocols( Arrays.asList( Protocol.CLAP ));
-      return new ExtensionMediaTypeFilter(getContext(), viewFilter );
+      return new ExtensionMediaTypeFilter(getContext(), cqr );
    }
 
    @Override
@@ -116,8 +111,7 @@ public class TestRestletApplication
 
          // Start Qi4j
          Energy4Java is = new Energy4Java();
-         app = is.newApplication( new TestAssembler( ) );
-
+         app = is.newApplication( new TestAssembler(getMetadataService() ) );
          app.activate();
 
          Module module = app.findModule( "Web", "REST" );

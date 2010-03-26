@@ -106,7 +106,7 @@ public class StreamFlowRestApplication
       {
 // Start Qi4j
          Energy4Java is = new Energy4Java();
-         app = is.newApplication( new StreamFlowWebAssembler( this ) );
+         app = is.newApplication( new StreamFlowWebAssembler( this, getMetadataService() ) );
 
          app.activate();
 

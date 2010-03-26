@@ -14,10 +14,12 @@
 
 package se.streamsource.dci.context;
 
+import org.qi4j.api.common.ConstructionException;
 import org.qi4j.api.constraint.Constraint;
 import org.qi4j.api.constraint.ConstraintDeclaration;
 import org.qi4j.api.constraint.Constraints;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.object.NoSuchObjectException;
 import org.qi4j.api.object.ObjectBuilderFactory;
 
 import java.lang.annotation.Annotation;
@@ -89,7 +91,14 @@ public class InteractionConstraintsService
          } else if (annotation.annotationType().getAnnotation( InteractionConstraintDeclaration.class ) != null)
          {
             Class<? extends InteractionConstraint> constraintClass = annotation.annotationType().getAnnotation( InteractionConstraintDeclaration.class ).value();
-            InteractionConstraint<Annotation> constraint = (InteractionConstraint<Annotation>) obf.newObject( constraintClass);
+            InteractionConstraint<Annotation> constraint = null;
+            try
+            {
+               constraint = constraintClass.newInstance();
+            } catch (Exception e)
+            {
+               continue; // Skip this constraint
+            }
             InteractionConstraintBinding constraintBinding = new InteractionConstraintBinding(constraint, annotation);
             methodConstraintBindings.add( constraintBinding );
 

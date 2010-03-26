@@ -27,6 +27,7 @@ import javax.security.auth.Subject;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.security.Principal;
+import java.util.Iterator;
 
 /**
  * JAVADOC
@@ -44,9 +45,16 @@ public @interface RequiresPermission
       {
          Authorization policy = context.role( Authorization.class );
 
-         Principal principal = context.role( Subject.class ).getPrincipals( Principal.class ).iterator().next();
+         Iterator<Principal> principalIterator = context.role( Subject.class ).getPrincipals( Principal.class ).iterator();
+         if (principalIterator.hasNext())
+         {
+            Principal principal = principalIterator.next();
 
-         return policy.hasPermission( principal.getName(), requiresPermission.value() );
+            return policy.hasPermission( principal.getName(), requiresPermission.value() );
+         } else
+         {
+            return false;
+         }
       }
    }
 }

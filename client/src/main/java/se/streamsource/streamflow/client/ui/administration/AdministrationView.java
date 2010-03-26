@@ -127,6 +127,7 @@ public class AdministrationView
                         organizationAdministrationModel.rolesModel(),
                         organizationAdministrationModel.taskTypesModel(),
                         organizationAdministrationModel.labelsModel(),
+                        organizationAdministrationModel.formsModel(),
                         organizationAdministrationModel.selectedLabelsModel(),
                         AdministrationView.this ).newInstance();
                } else if (node instanceof OrganizationalUnitAdministrationNode)
@@ -136,6 +137,7 @@ public class AdministrationView
                   view = obf.newObjectBuilder( OrganizationalUnitAdministrationView.class ).use( ouAdminModel,
                         ouAdminModel.groupsModel(),
                         ouAdminModel.projectsModel(),
+                        ouAdminModel.formsModel(),
                         ouAdminModel.selectedLabelsModel(),
                         ouAdminModel.administratorsModel(),
                         AdministrationView.this ).newInstance();

@@ -36,6 +36,7 @@ import se.streamsource.streamflow.web.domain.entity.task.TaskTypeQueries;
 import se.streamsource.streamflow.web.domain.interaction.gtd.DueOn;
 import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresStatus;
 import se.streamsource.streamflow.web.domain.structure.form.Forms;
+import se.streamsource.streamflow.web.domain.structure.form.SelectedForms;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.tasktype.TaskType;
 import se.streamsource.streamflow.web.domain.structure.tasktype.TypedTask;
@@ -160,11 +161,10 @@ public interface TaskGeneralContext
 
          TaskType taskType = typedTask.taskType().get();
 
-         ListValue formsList;
          if (taskType != null)
          {
-            Forms.Data forms = (Forms.Data) taskType;
-            return new LinksBuilder(module.valueBuilderFactory()).addDescribables( forms.forms() ).newLinks();
+            SelectedForms.Data forms = (SelectedForms.Data) taskType;
+            return new LinksBuilder(module.valueBuilderFactory()).addDescribables( forms.selectedForms() ).newLinks();
          } else
          {
             return new LinksBuilder(module.valueBuilderFactory()).newLinks();

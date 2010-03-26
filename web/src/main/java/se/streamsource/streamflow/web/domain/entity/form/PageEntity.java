@@ -24,7 +24,7 @@ import se.streamsource.streamflow.web.domain.structure.form.Page;
  * JAVADOC
  */
 public interface PageEntity
-      extends PageTemplateEntity, 
+      extends
       Page,
       Fields.Data,
       Describable.Data,

@@ -32,6 +32,8 @@ import se.streamsource.dci.context.Context;
 import se.streamsource.dci.context.ContextMixin;
 import se.streamsource.dci.context.SubContexts;
 
+import javax.security.auth.Subject;
+
 /**
  * JAVADOC
  */

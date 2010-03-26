@@ -28,11 +28,10 @@ public class FormAssembler
    public void assemble( ModuleAssembly moduleAssembly ) throws AssemblyException
    {
       moduleAssembly.addEntities(
-            FormTemplateEntity.class,
             FormEntity.class,
             FormSubmissionEntity.class,
             FieldEntity.class,
-            PageEntity.class,
-            PageTemplateEntity.class).visibleIn( Visibility.application );
+            PageEntity.class
+            ).visibleIn( Visibility.application );
    }
 }

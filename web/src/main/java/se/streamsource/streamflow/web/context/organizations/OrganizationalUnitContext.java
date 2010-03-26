@@ -23,6 +23,7 @@ import se.streamsource.streamflow.domain.organization.MergeOrganizationalUnitExc
 import se.streamsource.streamflow.domain.organization.MoveOrganizationalUnitException;
 import se.streamsource.streamflow.domain.organization.OpenProjectExistsException;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
+import se.streamsource.streamflow.web.context.organizations.forms.FormsContext;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnitRefactoring;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnits;
@@ -51,6 +52,9 @@ public interface OrganizationalUnitContext
 
    @SubContext
    ProjectsContext projects();
+
+   @SubContext
+   FormsContext forms();
 
    @SubContext
    SelectedLabelsContext selectedlabels();
@@ -121,6 +125,11 @@ public interface OrganizationalUnitContext
       public ProjectsContext projects()
       {
          return subContext( ProjectsContext.class );
+      }
+
+      public FormsContext forms()
+      {
+         return subContext( FormsContext.class );
       }
 
       public SelectedLabelsContext selectedlabels()

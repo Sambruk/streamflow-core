@@ -1,34 +1,20 @@
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 <head>
-    <title>${request.resourceRef.remainingPart}</title>
+    <title>Title = ${request.resourceRef.remainingPart}</title>
     <link rel="stylesheet" type="text/css" href="/streamflow/streamflow/v1/static/rest.css" />
 </head>
 
 <body>
 
-<h1>
-    #set($path=$request.resourceRef.baseRef.path)
-    <a href="${path}/">Root</a>
-    #foreach ($segment in $request.resourceRef.relativeRef.segments)
-      #if($segment != ".")
-        #set($path=$path+"/"+$segment)
-        / <a href="${path}/">$segment</a>
-      #end
-    #end
-</h1>
+<h1>${request.resourceRef.remainingPart}</h1>
 
 #if ($result.queries)
 <div class="block">
 <h2>Queries</h2>
 <ul>
 #foreach($query in $result.queries)
-    #set($desc = $api.method($query))
-    <li>
-        <a href="$query">$query</a>
-        #if($desc)
-        <p>$desc</p>
-        #end
-    </li>
+<li>
+    <a href="$query">$query</a></li>
 #end
 </ul>
 </div>
@@ -37,17 +23,9 @@
 #if($result.commands)
 <div class="block">
 <h2>Commands</h2>
-<ul>
 #foreach($command in $result.commands)
-    #set($desc = $api.method($command))
-    <li>
-        <a href="$command">$command</a>
-        #if($desc)
-        <p>$desc</p>
-        #end
-    </li>
+<form action="$command" method="POST" ><input type="submit" value="$command"/> </form>
 #end
-</ul>
 </div>
 #end
 
@@ -56,19 +34,15 @@
 <h2>Sub-contexts</h2>
 <ul>
 #foreach($context in $result.contexts)
-#set($desc = $api.method($context))
 <li>
     <a href="$context">$context</a>
-    #if($desc)
-    <p>$desc</p>
-    #end
 </li>
 #end
 </ul>
 </div>
 #end
 
-#if ($result.index != "null")
+#if ($result.index)
 
 #if ($result.index.links)
 <div class="block">
@@ -84,5 +58,5 @@
 <pre>$result.index</pre>
 #end
 #end
-
+</body>
 </html>

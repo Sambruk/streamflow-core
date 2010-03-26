@@ -16,7 +16,7 @@ package se.streamsource.streamflow.client.infrastructure.ui;
 
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
-import java.awt.Component;
+import java.awt.*;
 
 /**
  * Refresh a Refreshable when a component becomes visible.
@@ -42,13 +42,17 @@ public class RefreshWhenVisible
    {
       this.refreshable = refreshable;
 
-      if (refreshable != null && component.isVisible())
-         refreshable.refresh();
+      if (refreshable != null)
+      {
+         if (!isVisible())
+            return;
+      }
+      refreshable.refresh();
    }
 
    public void ancestorAdded( AncestorEvent event )
    {
-      if (refreshable != null && event.getAncestor().equals( component ))
+      if (refreshable != null && isVisible())
       {
          refreshable.refresh();
       }
@@ -60,5 +64,20 @@ public class RefreshWhenVisible
 
    public void ancestorMoved( AncestorEvent event )
    {
+   }
+
+   private boolean isVisible()
+   {
+      // All components in the hierarchy have to be visible
+      Component current = component;
+      do
+      {
+         if (!current.isVisible())
+            return false;
+
+         current = current.getParent();
+      } while (current != null);
+
+      return true;
    }
 }

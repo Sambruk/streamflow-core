@@ -15,8 +15,6 @@
 package se.streamsource.streamflow.client.scenarios;
 
 import se.streamsource.streamflow.client.application.shared.steps.FieldDefinitionsSteps;
-import se.streamsource.streamflow.client.application.shared.steps.FormTemplateSteps;
-import se.streamsource.streamflow.client.application.shared.steps.FormTemplatesSteps;
 import se.streamsource.streamflow.client.application.shared.steps.FormsSteps;
 import se.streamsource.streamflow.client.application.shared.steps.GroupsSteps;
 import se.streamsource.streamflow.client.application.shared.steps.MembersSteps;
@@ -46,8 +44,6 @@ public class ParticipantScenario
    {
       super( classLoader, new TestSetupSteps(),
             new FieldDefinitionsSteps(),
-            new FormTemplateSteps(),
-            new FormTemplatesSteps(),
             new FormsSteps(),
             new OrganizationsSteps(),
             new OrganizationalUnitsSteps(),

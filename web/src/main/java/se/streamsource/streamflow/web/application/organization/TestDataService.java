@@ -43,7 +43,6 @@ import se.streamsource.streamflow.web.domain.entity.user.UsersEntity;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversation;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
 import se.streamsource.streamflow.web.domain.structure.form.FormSubmission;
-import se.streamsource.streamflow.web.domain.structure.form.FormTemplates;
 import se.streamsource.streamflow.web.domain.structure.form.Page;
 import se.streamsource.streamflow.web.domain.structure.form.Submitter;
 import se.streamsource.streamflow.web.domain.structure.group.Group;
@@ -149,8 +148,6 @@ public interface TestDataService
          admins.addParticipant( testUser );
          admins.addParticipant( someUser );
 
-         FormTemplates forms = (FormTemplates) organization;
-
          ProjectRole agent = organization.createProjectRole( "Agent" );
          ProjectRole manager = organization.createProjectRole( "Manager" );
 
@@ -209,14 +206,14 @@ public interface TestDataService
          values.add( "Server" );
          values.add( "Client" );
          page.createField( "Bug Location", selectionBuilder.newInstance() ).changeNote( "Indicate what part of the application the bug is. Optional" );
+         bug.addSelectedForm( bugreport );
 
          Form statusForm = bug.createForm();
          statusForm.changeDescription( "StatusForm" );
          statusForm.changeNote( "This is the Status form. \nWhen urgencies occur please upgrade the status of the current task" );
          page = statusForm.createPage( "Status Form" );
          page.createField( "Status", builder.newInstance() ).changeMandatory( true );
-
-         organization.createFormTemplate( bugreport );
+         bug.addSelectedForm( statusForm );
 
          Form emailForm = improvement.createForm();
          emailForm.changeDescription( "Email form" );
@@ -227,6 +224,7 @@ public interface TestDataService
          page.createField( "Subject", builder.newInstance() ).changeNote( "Subject of the mail" );
          builder.prototype().rows().set( 10 );
          page.createField( "Content", builder.newInstance() ).changeNote( "Mail content" );
+         improvement.addSelectedForm( emailForm );
 
          Form resetPasswordForm = passwordReset.createForm();
          resetPasswordForm.changeDescription( "Reset password" );
@@ -234,6 +232,7 @@ public interface TestDataService
          builder.prototype().rows().set( 0 );
          page = resetPasswordForm.createPage( "Reset password form" );
          page.createField( "Username", builder.newInstance() ).changeNote( "Username whose password should be reset" );
+         passwordReset.addSelectedForm( resetPasswordForm );
 
          Form complaintForm = complaint.createForm();
          complaintForm.changeDescription( "Complaint" );
@@ -242,6 +241,7 @@ public interface TestDataService
          page.createField( "Name", builder.newInstance() );
          page.createField( "Email", builder.newInstance() );
          page.createField( "Complaint", builder.newInstance() );
+         complaint.addSelectedForm( complaintForm );
 
          // Create labels
          project.addSelectedLabel( question );

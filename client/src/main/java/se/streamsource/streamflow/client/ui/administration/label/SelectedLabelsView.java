@@ -52,7 +52,7 @@ public class SelectedLabelsView
    Iterable<NameDialog> nameDialogs;
 
    @Uses
-   ObjectBuilder<SelectLabelsDialog> labelsDialogs;
+   ObjectBuilder<SelectionDialog> labelsDialogs;
 
    public JList labelList;
 
@@ -84,22 +84,13 @@ public class SelectedLabelsView
    @Action
    public void add()
    {
-/*
-        NameDialog dialog = nameDialogs.iterator().next();
-        dialogs.showOkCancelHelpDialog(this, dialog, text(AdministrationResources.add_label_title));
-        String name = dialog.name();
-        if (name != null)
-        {
-            modelSelected.createLabel( name);
-        }
-*/
-      SelectLabelsDialog dialog = labelsDialogs.use( modelSelected.getPossibleLabels() ).newInstance();
+      SelectionDialog dialog = labelsDialogs.use( modelSelected.getPossibleLabels() ).newInstance();
 
-      dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.chose_label_title ) );
+      dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.choose_label_title ) );
 
-      if (dialog.getSelectedLabels() != null)
+      if (dialog.getSelectedLinks() != null)
       {
-         for (LinkValue linkValue : dialog.getSelectedLabels())
+         for (LinkValue linkValue : dialog.getSelectedLinks())
          {
             modelSelected.addLabel( EntityReference.parseEntityReference( linkValue.id().get()) );
          }

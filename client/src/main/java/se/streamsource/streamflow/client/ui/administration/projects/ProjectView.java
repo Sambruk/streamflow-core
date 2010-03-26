@@ -19,6 +19,7 @@ import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.administration.label.SelectedLabelsView;
 import se.streamsource.streamflow.client.ui.administration.tasktypes.SelectedTaskTypesView;
+import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FormsView;
 
 import javax.swing.*;
 
@@ -29,13 +30,15 @@ public class ProjectView
       extends JTabbedPane
 {
    public ProjectView( @Uses ProjectMembersView membersView,
+                       @Uses FormsView formsView,
                        @Uses SelectedLabelsView selectedLabelsView,
                        @Uses SelectedTaskTypesView selectedTaskTypesView )
    {
       super();
 
       addTab( text(AdministrationResources.members_tab), membersView );
+      addTab( text(AdministrationResources.forms_tab), formsView );
       addTab( text(AdministrationResources.selected_labels_tab), selectedLabelsView );
-      addTab( text(AdministrationResources.tasktypes_tab), selectedTaskTypesView );
+      addTab( text(AdministrationResources.selected_tasktypes_tab), selectedTaskTypesView );
    }
 }
