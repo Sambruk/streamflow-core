@@ -21,7 +21,6 @@ import org.restlet.data.Reference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.composite.TransientBuilderFactory;
 import se.streamsource.dci.context.InteractionContext;
-import se.streamsource.dci.restlet.server.CommandQueryServerResource;
 import se.streamsource.dci.restlet.server.RootContextFactory;
 import se.streamsource.streamflow.web.context.RootContext;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Actor;
