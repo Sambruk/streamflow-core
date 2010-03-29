@@ -236,13 +236,18 @@ public interface TaskActionsContext
 
       public void assign()
       {
-         Assignable task = context.role(Assignable.class);
+         TaskEntity task = context.role(TaskEntity.class);
 
          Assignee assignee = context.role(Actor.class);
 
          if (!task.isAssigned())
          {
             task.assignTo( assignee );
+         }
+
+         if ( task.isDelegated() )
+         {
+            task.sendTo( (Owner) task.delegatedTo().get() );
          }
       }
 

@@ -58,6 +58,13 @@ public interface PossibleActions
                         actions.add( "reject" );
                         actions.add( "label" );
                      }
+                     // Waiting for
+                     else if ( task.isStatus( States.DONE ))
+                     {
+                        actions.add( "complete" );
+                        actions.add( "redo" );
+                     }
+
                   } else
                   {
                      // Assignments (mine)
