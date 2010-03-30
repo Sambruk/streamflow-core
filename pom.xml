@@ -326,6 +326,9 @@
                         <exclude>**/*.hs</exclude>
                         <exclude>**/*.TAB</exclude>
                         <exclude>**/*.DOC</exclude>
+                        <exclude>**/docbkx/**</exclude>
+                        <exclude>**/javadoc/**</exclude>
+                        <exclude>**/site/**</exclude>
                     </excludes>
                     <mapping>
                         <tcl>SCRIPT_STYLE</tcl>
