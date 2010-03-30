@@ -1,5 +1,7 @@
-/*
- * Copyright (c) 2009, Rickard Öberg. All Rights Reserved.
+/**
+ *
+ * Copyright (c) 2009 Streamsource AB
+ * All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -9,7 +11,6 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package se.streamsource.streamflow.client.ui;
@@ -101,27 +102,25 @@ public class AccountSelector
             BufferedReader reader = new BufferedReader(
                   new StringReader( response ) );
 
-            int rowCount = 0;
             while ((str = reader.readLine()) != null)
             {
-               if(rowCount == 4 )
+               str = str.trim();
+               if(str.startsWith("Version:" ))
                {
-                  String tmp = str.trim();
-                  int toIndex = tmp.indexOf('-') != -1 ? tmp.indexOf('-' ) : tmp.lastIndexOf( '.' );
+                  int toIndex = str.indexOf('-') != -1 ? str.indexOf('-' ) : str.lastIndexOf( '.' );
 
                   if( toIndex == -1 )
                      throw new ResourceException( Status.CLIENT_ERROR_NOT_FOUND );
 
-                  String serverVersion = tmp.substring( 0, toIndex  );
+                  String serverVersion = str.substring( str.indexOf(":") + 1, toIndex  );
 
-                  if(!clientVersion.startsWith( serverVersion ))
+                  if(!clientVersion.startsWith( serverVersion.trim() ))
                   {
                      String msg = MessageFormat.format( i18n.text( AccountResources.version_missmatch ), clientVersion, serverVersion );
                      dialogs.showOkDialog( this, new InfoDialog(context, msg), "Info" );
                      throw new PropertyVetoException( msg, evt );
                   }
                }
-               rowCount++;
             }
          }
 
