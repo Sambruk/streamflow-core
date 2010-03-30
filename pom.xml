@@ -110,7 +110,7 @@
             <organization>Jayway</organization>
             <organizationUrl>http://www.jayway.com</organizationUrl>
             <roles>
-                <role>Technical Mento</role>
+                <role>Technical Mentor</role>
                 <role>Project Admin</role>
             </roles>
             <timezone>UTC+1</timezone>
@@ -140,8 +140,13 @@
         </contributor>
     </contributors>
 
-    <inceptionYear>2008</inceptionYear>
+    <inceptionYear>2009</inceptionYear>
     <url>http://www.streamsource.se</url>
+
+    <organization>
+        <name>Streamsource AB</name>
+        <url>N/A</url>
+    </organization>
 
     <build>
         <extensions>
@@ -296,6 +301,72 @@
                     </postProcess>
                 </configuration>
             </plugin>
+            <plugin>
+                <inherited>false</inherited>
+                <groupId>com.mycila.maven-license-plugin</groupId>
+                <artifactId>maven-license-plugin</artifactId>
+                <configuration>
+                    <header>${basedir}/LICENSE_HEADER.txt</header>
+                    <failIfMissing>true</failIfMissing>
+                    <aggregate>true</aggregate>
+                    <properties>
+                        <owner>${project.organization.name}</owner>
+                        <year>${project.inceptionYear}</year>
+                    </properties>
+                    <excludes>
+                        <exclude>LICENSE.txt</exclude>
+                        <exclude>NOTICE.txt</exclude>
+                        <exclude>**/src/test/resources/**</exclude>
+                        <exclude>**/src/test/data/**</exclude>
+                        <exclude>**/.idea/**</exclude>
+                        <exclude>**/*.scenario</exclude>
+                        <exclude>**/*.vm</exclude>
+                        <exclude>**/automysqlbackup.sh</exclude>
+                        <exclude>**/*.atom</exclude>
+                        <exclude>**/*.hs</exclude>
+                        <exclude>**/*.TAB</exclude>
+                        <exclude>**/*.DOC</exclude>
+                    </excludes>
+                    <mapping>
+                        <tcl>SCRIPT_STYLE</tcl>
+                    </mapping>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>check-headers</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>format</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-remote-resources-plugin</artifactId>
+                <version>1.1</version>
+
+                <executions>
+                    <execution>
+                        <id>process-remote-resources</id>
+                        <goals>
+                            <goal>process</goal>
+                        </goals>
+                        <configuration>
+                            <runOnlyAtExecutionRoot>false</runOnlyAtExecutionRoot>
+                            <resourceBundles>
+                                <resourceBundle>se.streamsource.streamflow:streamflow-jar-resource-bundle:1.0</resourceBundle>                                    
+                            </resourceBundles>
+                                    <supplementalModelArtifacts>
+                                      <supplementalModelArtifact>se.streamsource.streamflow:dependency-resource-supplement:1.0</supplementalModelArtifact>
+                                    </supplementalModelArtifacts>
+                                    <supplementalModels>
+                                      <supplementalModel>supplemental-models.xml</supplementalModel>
+                                    </supplementalModels>
+                            
+                        </configuration>
+                    </execution>
+                </executions>
+             </plugin>
         </plugins>
         <resources>
             <resource>

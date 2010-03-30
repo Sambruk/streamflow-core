@@ -1,3 +1,4 @@
+#!/bin/sh
 #
 #
 # Copyright (c) 2009 Streamsource AB
@@ -13,10 +14,17 @@
 # limitations under the License.
 #
 
-# Restore from backup
-# Place the database backup file (e.g. streamflow_data_*.jzon.gz) into
-# the /backup directory before running this
 
-source "connect.tcl"
-puts [jmx_invoke -m StreamFlow:name=Manager restore]
-exit
+
+#
+# jmxsh
+#
+# A shell wrapper for jmxsh.
+#
+# Assumes java is in the PATH.  If not, will need to edit this script.
+#
+# You'll need to modify this when you find a place to jmxsh.
+#
+JMXSH_JARFILE=./jmxsh-R4.jar
+
+exec java -jar $JMXSH_JARFILE "$@"
