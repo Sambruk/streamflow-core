@@ -101,7 +101,12 @@ public interface FormSubmissionContext
 
          ValueBuilder<FormSubmissionValue> builder = context.role( FormSubmission.Data.class ).formSubmissionValue().get().buildWith();
 
-         builder.prototype().currentPage().set( builder.prototype().currentPage().get() + 1 );
+         int pages = builder.prototype().pages().get().size();
+         int next = builder.prototype().currentPage().get() + 1;
+         if ( next < pages )
+         {
+            builder.prototype().currentPage().set( next );
+         }
 
          updateFormSubmission( builder );
       }
@@ -121,7 +126,11 @@ public interface FormSubmissionContext
 
          ValueBuilder<FormSubmissionValue> builder = context.role( FormSubmission.Data.class ).formSubmissionValue().get().buildWith();
 
-         builder.prototype().currentPage().set( builder.prototype().currentPage().get() - 1 );
+         int previous = builder.prototype().currentPage().get() - 1;
+         if ( previous >= 0 )
+         {
+            builder.prototype().currentPage().set( previous );
+         }
 
          updateFormSubmission( builder );
       }

@@ -12,6 +12,7 @@
 
 package se.streamsource.streamflow.web.domain.structure.organization;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 import se.streamsource.streamflow.domain.structure.Describable;
@@ -39,6 +40,7 @@ public interface AccessPoint
    {
       Property<Project> project();
       Property<TaskType> taskType();
+      @Optional
       Property<List<Label>> labels();
 
       void addedProject( DomainEvent event, Project project );
