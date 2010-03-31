@@ -20,6 +20,7 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
 import se.streamsource.streamflow.web.domain.structure.tasktype.SelectedTaskTypes;
 import se.streamsource.streamflow.web.domain.structure.tasktype.TaskType;
 import se.streamsource.streamflow.web.domain.structure.tasktype.TaskTypes;
@@ -53,7 +54,7 @@ public interface SelectedTaskTypesContext
       public LinksValue possibletasktypes()
       {
          SelectedTaskTypes.Data selectedLabels = context.role(SelectedTaskTypes.Data.class);
-         TaskTypes.Data taskTypes = context.role(TaskTypes.Data.class);
+         TaskTypes.Data taskTypes = context.role( OrganizationEntity.class);
          return new LinksBuilder(module.valueBuilderFactory()).command( "addtasktype" ).addDescribables(selectedLabels.possibleTaskTypes( taskTypes.taskTypes() )).newLinks();
       }
 
