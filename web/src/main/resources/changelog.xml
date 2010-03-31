@@ -78,7 +78,7 @@
         </createTable>
         <createTable tableName="labels">
             <column name="id" type="varchar(60)">
-                <constraints primaryKey="true" nullable="false"/>
+                <constraints nullable="false"/>
             </column>
             <column name="label" type="varchar(256)">
                 <constraints nullable="false"/>
