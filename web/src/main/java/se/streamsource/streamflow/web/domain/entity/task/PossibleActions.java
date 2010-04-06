@@ -102,6 +102,9 @@ public interface PossibleActions
                      {
                         actions.add( "complete" );
                         actions.add( "redo" );
+                     } else if (task.isStatus( States.COMPLETED ))
+                     {
+                        actions.add( "reactivate" );
                      }
 
                   } else if (!task.isAssigned())
