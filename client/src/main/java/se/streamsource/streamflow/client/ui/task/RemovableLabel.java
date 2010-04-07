@@ -77,7 +77,7 @@ public class RemovableLabel extends JPanel
       this.setRequestFocusEnabled( true );
 
       JXLabel label = new JXLabel(  itemValue != null ? itemValue.description().get() : link.text().get() );
-      button = new JButton( i18n.icon( Icons.deleteLabel, 16 ) );
+      button = new JButton( i18n.icon( Icons.drop, 16 ) );
       button.setBorder( new EmptyBorder( new Insets( 0, 0, 0, 0 ) ) );
       button.setFocusable( false );
 

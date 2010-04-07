@@ -24,6 +24,8 @@ public enum Icons
    add,
    remove,
    refresh,
+   cancel,
+   drop,
 
    user,
    projects,
@@ -47,7 +49,6 @@ public enum Icons
 
    // Admin
    account,
-   deleteLabel, 
    organization, 
 
    // Conversations
