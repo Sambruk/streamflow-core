@@ -20,34 +20,33 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.dci.context.InteractionConstraints;
-import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
+import se.streamsource.dci.context.ContextMixin;
+import se.streamsource.dci.context.DeleteContext;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.domain.interaction.gtd.Actions;
 import se.streamsource.streamflow.domain.structure.Removable;
+import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.web.domain.entity.task.PossibleActions;
 import se.streamsource.streamflow.web.domain.entity.task.TaskEntity;
 import se.streamsource.streamflow.web.domain.entity.task.TaskTypeQueries;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Actor;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
-import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresAssigned;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Delegatable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Delegatee;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
+import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresAssigned;
 import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresDelegated;
 import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresOwner;
 import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresStatus;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.tasktype.TaskType;
 import se.streamsource.streamflow.web.domain.structure.tasktype.TypedTask;
 import se.streamsource.streamflow.web.domain.structure.user.User;
-import se.streamsource.dci.context.ContextMixin;
-import se.streamsource.dci.context.DeleteContext;
 
 import java.util.List;
 
@@ -246,10 +245,10 @@ public interface TaskActionsContext
             task.assignTo( assignee );
          }
 
-         if ( task.isDelegated() )
+         /*if ( task.isDelegated() )
          {
             task.sendTo( (Owner) task.delegatedTo().get() );
-         }
+         }*/
       }
 
       public void complete()
@@ -278,11 +277,7 @@ public interface TaskActionsContext
       public void done()
       {
          TaskEntity task = context.role(TaskEntity.class);
-         Actor actor = context.role(Actor.class);
 
-         if (!task.isAssigned())
-            task.assignTo( actor );
-         task.sendTo( (Owner) task.delegatedTo().get() );
          task.done();
       }
 
@@ -343,7 +338,6 @@ public interface TaskActionsContext
       {
          TaskEntity task = context.role(TaskEntity.class);
 
-         task.unassign();
          task.rejectDelegation();
       }
 

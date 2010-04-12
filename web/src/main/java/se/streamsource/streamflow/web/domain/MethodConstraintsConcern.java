@@ -15,6 +15,7 @@
 
 package se.streamsource.streamflow.web.domain;
 
+import org.qi4j.api.Qi4j;
 import org.qi4j.api.common.AppliesTo;
 import org.qi4j.api.common.AppliesToFilter;
 import org.qi4j.api.composite.Composite;
@@ -25,6 +26,8 @@ import org.qi4j.api.constraint.ConstraintViolation;
 import org.qi4j.api.constraint.ConstraintViolationException;
 import org.qi4j.api.constraint.Constraints;
 import org.qi4j.api.injection.scope.Invocation;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.This;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -39,6 +42,11 @@ public class MethodConstraintsConcern
 {
    Constraint<Annotation, Object> constraint;
    private Annotation annotation;
+
+   private @This
+   Composite composite;
+   private @Structure
+   Qi4j api;
 
    public MethodConstraintsConcern( @Invocation Method method ) throws IllegalAccessException, InstantiationException
    {
@@ -58,8 +66,8 @@ public class MethodConstraintsConcern
 
    public Object invoke( Object proxy, Method method, Object[] args ) throws Throwable
    {
-      if (!constraint.isValid( annotation, proxy ))
-         throw new ConstraintViolationException((Composite) proxy, method, Collections.singleton( new ConstraintViolation(annotation.annotationType().getSimpleName(), annotation, proxy) ));
+      if (!constraint.isValid( annotation, api.dereference( composite ) ))
+         throw new ConstraintViolationException(api.dereference( composite ), method, Collections.singleton( new ConstraintViolation(annotation.annotationType().getSimpleName(), annotation, api.dereference( composite )) ));
 
       return next.invoke( proxy, method, args );
    }

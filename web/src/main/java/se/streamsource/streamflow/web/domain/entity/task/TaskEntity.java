@@ -15,6 +15,7 @@
 
 package se.streamsource.streamflow.web.domain.entity.task;
 
+import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.sideeffect.SideEffects;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.domain.structure.Notable;
@@ -43,6 +44,7 @@ import se.streamsource.streamflow.web.domain.structure.tasktype.TypedTask;
  * JAVADOC
  */
 @SideEffects(AssignIdSideEffect.class)
+@Concerns( OwnershipConcern.class)
 public interface TaskEntity
       extends Task,
 

@@ -43,7 +43,7 @@ public class TaskInfoModel extends Observable implements Refreshable,
    public TaskInfoModel(@Uses CommandQueryClient client)
 	{
 		this.client = client;
-		eventFilter = new EventVisitorFilter(client.getReference().getLastSegment(), this, "sentTo", "changedTaskType", "changedDescription", "assignedTo", "unassigned");
+		eventFilter = new EventVisitorFilter(client.getReference().getLastSegment(), this, "sentTo", "changedTaskType", "changedDescription", "assignedTo", "unassigned", "changedStatus");
 	}
 
 	public TaskValue getInfo()

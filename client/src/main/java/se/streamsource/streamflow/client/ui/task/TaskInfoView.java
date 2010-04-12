@@ -118,5 +118,7 @@ public class TaskInfoView extends JPanel implements Observer
          assignedTo.setText( "" );
       else
          assignedTo.setText( "<html>"+i18n.text(WorkspaceResources.assigned_to_header )+":<b>"+task.assignedTo().get()+"</b></html>");
+
+      this.repaint();
 	}
 }

@@ -24,5 +24,5 @@ public enum States
    COMPLETED,
    DONE,
    DROPPED,
-   ON_HOLD,
+   ON_HOLD
 }
