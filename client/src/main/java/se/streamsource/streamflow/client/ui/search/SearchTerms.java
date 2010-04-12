@@ -25,11 +25,13 @@ public class SearchTerms
 
    public static String translate( String search )
    {
-      String translation = search;
+      // strip eventual white spaces around colon
+      String translation = search.replaceAll("\\s?:\\s?", ":" );
 
       for(SearchTermsResources term: SearchTermsResources.values())
       {
          String searchTerm = i18n.text(term);
+
          if (translation.contains( searchTerm ))
          {
             if( term.equals(SearchTermsResources.today)
