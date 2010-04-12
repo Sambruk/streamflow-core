@@ -155,7 +155,7 @@ public class CommandQueryRestlet
       Reference ref = request.getResourceRef();
       List<String> segments = ref.getScheme().equals( "riap" ) ? ref.getRelativeRef( new Reference( "riap://application/" ) ).getSegments() : ref.getRelativeRef().getSegments();
 
-      uowf.newUnitOfWork( UsecaseBuilder.newUsecase( request.getResourceRef().getRemainingPart() ) );
+      UnitOfWork uow = uowf.newUnitOfWork( UsecaseBuilder.newUsecase( request.getResourceRef().getRemainingPart() ) );
 
       InteractionContext interactionContext = new InteractionContext();
       initContext( request, interactionContext );
@@ -167,12 +167,14 @@ public class CommandQueryRestlet
          context = getContext( rootContextFactory.getRoot( interactionContext ), segments );
       } catch (Exception e)
       {
+         uow.discard();
          logger.error( e.getMessage() );
          response.setStatus( Status.SERVER_ERROR_INTERNAL );
       }
 
       if (context == null)
       {
+         uow.discard();
          response.setStatus( Status.CLIENT_ERROR_NOT_FOUND );
          return;
       }
@@ -198,7 +200,7 @@ public class CommandQueryRestlet
             } catch (UnitOfWorkCompletionException e)
             {
                // Retry
-               uowf.newUnitOfWork( UsecaseBuilder.newUsecase( request.getResourceRef().getRemainingPart() ) );
+               uow = uowf.newUnitOfWork( UsecaseBuilder.newUsecase( request.getResourceRef().getRemainingPart() ) );
 
                interactionContext = new InteractionContext();
                initContext( request, interactionContext );
@@ -210,6 +212,7 @@ public class CommandQueryRestlet
                   context = getContext( rootContextFactory.getRoot( interactionContext ), segments );
                } catch (Exception ex)
                {
+                  uow.discard();
                   logger.error( e.getMessage() );
                   response.setStatus( Status.SERVER_ERROR_INTERNAL );
                   return;
@@ -262,9 +265,12 @@ public class CommandQueryRestlet
             // Check whether it's a command or query
             if (isCommandMethod( method ))
             {
-               ResponseWriter responseWriter = responseWriterFactory.createWriter( segments, Method.class, interactionContext, getVariant( request ) );
+               ResponseWriter responseWriter = responseWriterFactory.createWriter( segments, ValueDescriptor.class, interactionContext, getVariant( request ) );
 
-               responseWriter.write( method, request, response );
+               Class<? extends ValueComposite> valueType = (Class<? extends ValueComposite>) method.getParameterTypes()[0];
+               ValueDescriptor valueDescriptor = module.valueDescriptor( valueType.getName() );
+
+               responseWriter.write( valueDescriptor, request, response );
             } else
             {
                query( request, response, context, segments, interactionContext, method );

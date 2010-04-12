@@ -31,5 +31,5 @@ public interface EntityValue
     * @return
     */
    @Optional
-   Property<String> id();
+   Property<String> entity();
 }

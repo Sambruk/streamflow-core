@@ -104,6 +104,21 @@ public class LabelsModel
       }
    }
 
+   public EventList<LinkValue> usages(LinkValue label)
+   {
+      try
+      {
+         LinksValue usages = client.getClient(label).query( "usages", LinksValue.class );
+         EventList<LinkValue> eventList = new BasicEventList<LinkValue>();
+         EventListSynch.synchronize( usages.links().get(), eventList );
+
+         return eventList;
+      } catch (ResourceException e)
+      {
+         throw new OperationException(AdministrationResources.could_not_perform_query, e);
+      }
+   }
+
    public void notifyEvent( DomainEvent event )
    {
    }

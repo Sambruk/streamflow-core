@@ -16,7 +16,13 @@
 package se.streamsource.streamflow.web.context.organizations;
 
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.query.Query;
+import se.streamsource.dci.value.LinksValue;
+import se.streamsource.streamflow.domain.structure.Describable;
+import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.web.context.organizations.forms.SelectedFormsContext;
+import se.streamsource.streamflow.web.domain.entity.task.TaskTypeQueries;
+import se.streamsource.streamflow.web.domain.structure.tasktype.SelectedTaskTypes;
 import se.streamsource.streamflow.web.domain.structure.tasktype.TaskType;
 import se.streamsource.streamflow.web.domain.structure.tasktype.TaskTypes;
 import se.streamsource.dci.context.Context;
@@ -34,6 +40,8 @@ import se.streamsource.streamflow.web.context.structure.labels.SelectedLabelsCon
 public interface TaskTypeContext
    extends DescribableContext, DeleteContext, Context
 {
+   LinksValue usages();
+
    @SubContext
    FormsContext forms();
 
@@ -47,6 +55,18 @@ public interface TaskTypeContext
       extends ContextMixin
       implements TaskTypeContext
    {
+      public LinksValue usages()
+      {
+         Query<SelectedTaskTypes> usageQuery = context.role( TaskTypes.class).usages( context.role(TaskType.class) );
+         LinksBuilder builder = new LinksBuilder(module.valueBuilderFactory()); // TODO What to use for path here?
+         for (SelectedTaskTypes selectedTaskTypes : usageQuery)
+         {
+            builder.addDescribable( (Describable) selectedTaskTypes );
+         }
+
+         return builder.newLinks();
+      }
+
       public void delete()
       {
          TaskTypes taskTypes = context.role(TaskTypes.class);

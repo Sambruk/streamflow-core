@@ -25,19 +25,25 @@ import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.client.StreamFlowResources;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
-import se.streamsource.streamflow.client.infrastructure.ui.JListPopup;
 import se.streamsource.streamflow.client.infrastructure.ui.LinkComparator;
 import se.streamsource.streamflow.client.infrastructure.ui.LinkListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 import se.streamsource.streamflow.client.ui.ConfirmationDialog;
 import se.streamsource.streamflow.client.ui.NameDialog;
+import se.streamsource.streamflow.client.ui.OptionsAction;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 
-import javax.swing.*;
+import javax.swing.ActionMap;
+import javax.swing.JButton;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
 import java.awt.*;
+
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 
 /**
  * Admin of labels on organizational level.
@@ -56,7 +62,7 @@ public class LabelsView
    @Uses
    Iterable<ConfirmationDialog> confirmationDialog;
 
-   public JListPopup labelList;
+   public JList labelList;
 
    public LabelsView( @Service ApplicationContext context, @Uses LabelsModel model )
    {
@@ -66,22 +72,24 @@ public class LabelsView
       ActionMap am = context.getActionMap( this );
       setActionMap( am );
 
-      JPopupMenu popup = new JPopupMenu();
-      popup.add( am.get( "rename" ) );
+      JPopupMenu options = new JPopupMenu();
+      options.add( am.get( "rename" ) );
+      options.add( am.get( "showUsages" ) );
+      options.add( am.get( "remove" ) );
 
       JScrollPane scrollPane = new JScrollPane();
       EventList<LinkValue> itemValueEventList = new SortedList<LinkValue>( model.getLabelList(), new LinkComparator() );
-      labelList = new JListPopup( new EventListModel<LinkValue>( itemValueEventList ), popup );
+      labelList = new JList( new EventListModel<LinkValue>( itemValueEventList ) );
       labelList.setCellRenderer( new LinkListCellRenderer() );
       scrollPane.setViewportView( labelList );
       add( scrollPane, BorderLayout.CENTER );
 
       JPanel toolbar = new JPanel();
       toolbar.add( new JButton( am.get( "add" ) ) );
-      toolbar.add( new JButton( am.get( "remove" ) ) );
+      toolbar.add( new JButton( new OptionsAction(options) ) );
       add( toolbar, BorderLayout.SOUTH );
 
-      labelList.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "remove" ) ) );
+      labelList.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "remove" ), am.get( "rename" ), am.get( "showUsages" ) ) );
 
       addAncestorListener( new RefreshWhenVisible( model, this ) );
    }
@@ -112,6 +120,21 @@ public class LabelsView
          model.removeLabel( selected );
          model.refresh();
       }
+   }
+
+   @Action
+   public void showUsages()
+   {
+      LinkValue item = (LinkValue) labelList.getSelectedValue();
+      EventList<LinkValue> usageList = model.usages( item );
+
+      JList list = new JList();
+      list.setCellRenderer( new LinkListCellRenderer() );
+      list.setModel( new EventListModel<LinkValue>(usageList) );
+
+      dialogs.showOkDialog( this, list );
+
+      usageList.dispose();
    }
 
    @Action

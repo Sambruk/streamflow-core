@@ -22,7 +22,9 @@ import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilderFactory;
+import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
@@ -37,6 +39,9 @@ public interface TaskTypes
    TaskType createTaskType( String name );
 
    boolean removeTaskType( TaskType taskType );
+
+   // Queries
+   Query<SelectedTaskTypes> usages( TaskType taskType );
 
    interface Data
    {
@@ -77,6 +82,16 @@ public interface TaskTypes
          taskTypes().add( taskType );
 
          return taskType;
+      }
+
+      public Query<SelectedTaskTypes> usages( TaskType taskType )
+      {
+         SelectedTaskTypes.Data selectedTaskTypes = QueryExpressions.templateFor( SelectedTaskTypes.Data.class );
+         Query<SelectedTaskTypes> taskTypeUsages = qbf.newQueryBuilder( SelectedTaskTypes.class ).
+               where( QueryExpressions.contains( selectedTaskTypes.selectedTaskTypes(), taskType ) ).
+               newQuery( uowf.currentUnitOfWork() );
+
+         return taskTypeUsages;
       }
    }
 }

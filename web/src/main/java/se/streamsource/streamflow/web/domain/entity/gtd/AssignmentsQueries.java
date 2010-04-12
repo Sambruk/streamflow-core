@@ -81,7 +81,8 @@ public interface AssignmentsQueries
          queryBuilder = queryBuilder.where( and(
                assignee == null ? isNotNull( assignedId ) : eq( assignedId, assignee ),
                eq( ownedId, owner ),
-               QueryExpressions.eq( templateFor( Status.Data.class ).status(), States.ACTIVE ) ) );
+               QueryExpressions.or(QueryExpressions.eq( templateFor( Status.Data.class ).status(), States.ACTIVE ),
+                                   QueryExpressions.eq( templateFor( Status.Data.class ).status(), States.ON_HOLD ) )));
          return queryBuilder;
       }
 

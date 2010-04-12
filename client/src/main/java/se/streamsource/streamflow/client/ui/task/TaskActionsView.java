@@ -163,6 +163,13 @@ public class TaskActionsView extends JPanel
 		}
 	}
 
+   @Action
+   public void onhold()
+   {
+      model.onHold();
+      refresh();
+   }
+
 	@Action
 	public void redo()
 	{
@@ -183,6 +190,13 @@ public class TaskActionsView extends JPanel
 		model.reject();
 		refresh();
 	}
+
+   @Action
+   public void resume()
+   {
+      model.resume();
+      refresh();
+   }
 
 	@Action
 	public void unassign()

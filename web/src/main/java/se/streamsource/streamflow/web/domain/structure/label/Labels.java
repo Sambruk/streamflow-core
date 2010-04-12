@@ -20,9 +20,14 @@ import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.query.Query;
+import org.qi4j.api.query.QueryBuilderFactory;
+import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.web.domain.structure.tasktype.SelectedTaskTypes;
+import se.streamsource.streamflow.web.domain.structure.tasktype.TaskType;
 
 /**
  * JAVADOC
@@ -35,6 +40,8 @@ public interface Labels
    void removeLabel( Label label );
 
    Iterable<Label> getLabels();
+
+   Query<SelectedLabels> usages( Label label );
 
    interface Data
    {
@@ -51,6 +58,9 @@ public interface Labels
    {
       @Structure
       UnitOfWorkFactory uowf;
+
+      @Structure
+      QueryBuilderFactory qbf;
 
       @This
       Data state;
@@ -76,6 +86,15 @@ public interface Labels
          return state.labels();
       }
 
+      public Query<SelectedLabels> usages( Label label )
+      {
+         SelectedLabels.Data selectedLabels = QueryExpressions.templateFor( SelectedLabels.Data.class );
+         Query<SelectedLabels> labelUsages = qbf.newQueryBuilder( SelectedLabels.class ).
+               where( QueryExpressions.contains( selectedLabels.selectedLabels(), label ) ).
+               newQuery( uowf.currentUnitOfWork() );
+
+         return labelUsages;
+      }
 
       public Label createdLabel( DomainEvent event )
       {

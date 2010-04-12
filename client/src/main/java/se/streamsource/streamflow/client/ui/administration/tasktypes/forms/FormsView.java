@@ -15,11 +15,13 @@
 
 package se.streamsource.streamflow.client.ui.administration.tasktypes.forms;
 
+import ca.odell.glazedlists.swing.EventListModel;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilder;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.StreamFlowResources;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
@@ -29,14 +31,19 @@ import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.infrastructure.ui.LinkListCellRenderer;
 import se.streamsource.streamflow.client.ui.ConfirmationDialog;
 import se.streamsource.streamflow.client.ui.NameDialog;
+import se.streamsource.streamflow.client.ui.OptionsAction;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.dci.value.LinkValue;
+import se.streamsource.streamflow.client.ui.administration.label.SelectionDialog;
 
 import javax.swing.ActionMap;
 import javax.swing.JButton;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import java.awt.BorderLayout;
+
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 
 /**
  * JAVADOC
@@ -54,7 +61,10 @@ public class FormsView
    DialogService dialogs;
 
    @Uses
-   Iterable<NameDialog> newFormDialogs;
+   Iterable<NameDialog> nameDialogs;
+
+   @Uses
+   ObjectBuilder<SelectionDialog> possibleMoveToDialogs;
 
    @Structure
    ObjectBuilderFactory obf;
@@ -68,25 +78,30 @@ public class FormsView
 
       ActionMap am = context.getActionMap( this );
       setActionMap( am );
-      formList = new JList( model );
+      formList = new JList( new EventListModel<LinkValue>(model.getForms()) );
 
       formList.setCellRenderer( new LinkListCellRenderer() );
 
       add( formList, BorderLayout.CENTER );
 
+      JPopupMenu optionsPopup = new JPopupMenu();
+      optionsPopup.add( am.get( "move" ) );
+      optionsPopup.add( am.get( "remove" ) );
+
       JPanel toolbar = new JPanel();
       toolbar.add( new JButton( am.get( "add" ) ) );
-      toolbar.add( new JButton( am.get( "remove" ) ) );
+      toolbar.add( new JButton( new OptionsAction(optionsPopup) ));
       add( toolbar, BorderLayout.SOUTH );
-      formList.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "remove" ) ) );
+      formList.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "remove" ), am.get( "move" ) ) );
 
       addAncestorListener( new RefreshWhenVisible( model, this ) );
+
    }
 
    @Action
    public void add()
    {
-      NameDialog formDialog = newFormDialogs.iterator().next();
+      NameDialog formDialog = nameDialogs.iterator().next();
 
       dialogs.showOkCancelHelpDialog( this, formDialog, i18n.text( AdministrationResources.create_new_form ) );
 
@@ -94,6 +109,7 @@ public class FormsView
       if (name != null && !"".equals( name ))
       {
          model.createForm( name );
+         model.refresh();
       }
    }
 
@@ -110,6 +126,25 @@ public class FormsView
             model.removeForm( selected );
             model.formModels.clear();
             formList.clearSelection();
+         }
+      }
+   }
+
+   @Action
+   public void move()
+   {
+      LinkValue selected = (LinkValue) formList.getSelectedValue();
+      FormModel formModel = model.getFormModel( selected.id().get() );
+      SelectionDialog dialog = possibleMoveToDialogs.use(formModel.getPossibleMoveTo()).newInstance();
+
+      dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.choose_move_to ) );
+
+      if (dialog.getSelectedLinks() != null)
+      {
+         for (LinkValue linkValue : dialog.getSelectedLinks())
+         {
+            formModel.moveForm( linkValue );
+            model.refresh();
          }
       }
    }

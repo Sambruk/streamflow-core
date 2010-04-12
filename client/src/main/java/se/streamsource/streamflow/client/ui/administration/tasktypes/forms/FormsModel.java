@@ -15,6 +15,8 @@
 
 package se.streamsource.streamflow.client.ui.administration.tasktypes.forms;
 
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
@@ -24,6 +26,7 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.dci.value.*;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
@@ -33,7 +36,6 @@ import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
 import se.streamsource.streamflow.infrastructure.event.source.EventVisitorFilter;
 
-import javax.swing.AbstractListModel;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -41,7 +43,6 @@ import java.util.logging.Logger;
  * JAVADOC
  */
 public class FormsModel
-      extends AbstractListModel
       implements Refreshable, EventListener, EventVisitor
 
 {
@@ -54,7 +55,7 @@ public class FormsModel
    @Structure
    ValueBuilderFactory vbf;
 
-   private List<LinkValue> formsList;
+   private BasicEventList<LinkValue> forms = new BasicEventList<LinkValue>();
 
    private EventVisitorFilter eventFilter;
 
@@ -72,23 +73,17 @@ public class FormsModel
       }
    };
 
-
-   public int getSize()
+   public EventList<LinkValue> getForms()
    {
-      return formsList == null ? 0 : formsList.size();
-   }
-
-   public Object getElementAt( int index )
-   {
-      return formsList.get( index );
+      return forms;
    }
 
    public void refresh()
    {
       try
       {
-         formsList = client.query( "index", LinksValue.class ).links().get();
-         fireContentsChanged( this, 0, getSize() );
+         List<LinkValue> formsList = client.query( "index", LinksValue.class ).links().get();
+         EventListSynch.synchronize( formsList, forms );
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_refresh_list_of_members, e );

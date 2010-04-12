@@ -53,12 +53,14 @@ public enum TaskResources
    task_status_completed_icon,
    task_status_done_icon,
    task_status_dropped_icon,
-   task_status_dropped_text, 
+   task_status_on_hold_icon,
+   task_status_dropped_text,
    task_status_active_text,
    task_status_archived_text,
    task_status_completed_text,
    task_status_done_text,
-   
+   task_status_on_hold_text,
+
    // Conversation
    could_not_remove_conversation_participant, 
    could_not_add_conversation_participant, 

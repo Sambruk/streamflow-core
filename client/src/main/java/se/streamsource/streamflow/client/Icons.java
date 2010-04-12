@@ -23,9 +23,10 @@ public enum Icons
    // General
    add,
    remove,
+   drop,
+   options,
    refresh,
    cancel,
-   drop,
 
    user,
    projects,

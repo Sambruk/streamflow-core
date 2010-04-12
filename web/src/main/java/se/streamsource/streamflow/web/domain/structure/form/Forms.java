@@ -35,13 +35,19 @@ public interface Forms
 {
    Form createForm();
 
+   void addForm( Form form );
+
    void removeForm( Form form );
+
+   void moveForm( Form form, Forms toForms );
 
    interface Data
    {
       ManyAssociation<Form> forms();
 
       Form createdForm( DomainEvent event, String id);
+
+      void addedForm( DomainEvent create, Form form );
 
       void removedForm( DomainEvent event, Form removedForm );
 
@@ -64,12 +70,32 @@ public interface Forms
          return form;
       }
 
+      public void addForm( Form form )
+      {
+         if (forms().contains( form ))
+            return;
+
+         addedForm(DomainEvent.CREATE, form);
+      }
+
+      public void addedForm( DomainEvent create, Form form )
+      {
+         forms().add( form );
+      }
+
       public void removeForm( Form form )
       {
          if (!forms().contains( form ))
             return;
 
          removedForm( DomainEvent.CREATE, form );
+      }
+
+      public void moveForm( Form form, Forms toForms )
+      {
+         toForms.addForm(form);
+
+         removedForm(DomainEvent.CREATE, form);
       }
 
       public Form createdForm( DomainEvent event, String id )

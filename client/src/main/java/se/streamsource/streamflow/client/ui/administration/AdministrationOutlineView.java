@@ -16,6 +16,7 @@
 package se.streamsource.streamflow.client.ui.administration;
 
 import org.jdesktop.application.Action;
+import org.jdesktop.application.ApplicationAction;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.JXTree;
 import org.jdesktop.swingx.renderer.DefaultTreeRenderer;
@@ -27,33 +28,30 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
-import org.restlet.data.Status;
-import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.Icons;
-import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.StreamFlowResources;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
+import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.ConfirmationDialog;
 import se.streamsource.streamflow.client.ui.NameDialog;
-import se.streamsource.streamflow.client.ui.PopupMenuTrigger;
+import se.streamsource.streamflow.client.ui.OptionsAction;
 
 import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
-import javax.swing.JLabel;
+import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
 import javax.swing.JTree;
-import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.MutableTreeNode;
-import java.awt.BorderLayout;
-import java.awt.event.MouseEvent;
+import java.awt.*;
 import java.util.ArrayList;
 
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
+import static java.util.Arrays.asList;
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 
 /**
  * JAVADOC
@@ -136,56 +134,50 @@ public class AdministrationOutlineView
 
       final ActionMap am = context.getActionMap( this );
 
-      //Organization Popup
-      {
-         JPopupMenu orgPopup = new JPopupMenu();
-         orgPopup.add( am.get( "changeDescription" ) );
-         orgPopup.add( am.get( "createOrganizationalUnit" ) );
-         orgPopup.add( am.get( "removeOrganizationalUnit" ) );
+      JPopupMenu adminPopup = new JPopupMenu();
+      adminPopup.add( am.get( "changeDescription" ) );
+      adminPopup.add( am.get( "removeOrganizationalUnit" ) );
+      adminPopup.add( new JSeparator() );
+      adminPopup.add( am.get( "moveOrganizationalUnit" ) );
+      adminPopup.add( am.get( "mergeOrganizationalUnit" ) );
 
-         tree.addMouseListener( new PopupMenuTrigger( orgPopup )
-         {
-            @Override
-            protected void showPopup( MouseEvent e )
-            {
+      JPanel actions = new JPanel();
+      actions.add(new JButton(am.get( "createOrganizationalUnit" )));
+      actions.add(new JButton(new OptionsAction(adminPopup)));
 
-               if (tree.getSelectionPath() != null &&
-                     tree.getSelectionPath().getLastPathComponent() instanceof OrganizationAdministrationNode)
-               {
-                  super.showPopup( e );
-               }
-            }
-         } );
-      }
-
-      //OU Popup
-      {
-         JPopupMenu ouPopup = new JPopupMenu();
-         ouPopup.add( am.get( "changeDescription" ) );
-         ouPopup.add( am.get( "createOrganizationalUnit" ) );
-         ouPopup.add( am.get( "removeOrganizationalUnit" ) );
-         ouPopup.add( new JSeparator() );
-         ouPopup.add( am.get( "moveOrganizationalUnit" ) );
-         ouPopup.add( am.get( "mergeOrganizationalUnit" ) );
-
-         tree.addMouseListener( new PopupMenuTrigger( ouPopup )
-         {
-            @Override
-            protected void showPopup( MouseEvent e )
-            {
-
-               if (tree.getSelectionPath() != null &&
-                     tree.getSelectionPath().getLastPathComponent() instanceof OrganizationalUnitAdministrationNode)
-               {
-                  super.showPopup( e );
-               }
-            }
-         } );
-      }
+      add( actions, BorderLayout.SOUTH);
 
       refreshWhenVisible = new RefreshWhenVisible( model, this );
       addRefreshWhenVisible();
       //addAncestorListener(refreshWhenVisible);
+
+      tree.getSelectionModel().addTreeSelectionListener( new SelectionActionEnabler( am.get( "changeDescription" ),
+                                                                                     am.get( "removeOrganizationalUnit" ),
+                                                                                     am.get( "moveOrganizationalUnit"),
+                                                                                     am.get( "mergeOrganizationalUnit"))
+      {
+         @Override
+         public boolean isSelectedValueValid( javax.swing.Action action )
+         {
+            // TODO This should be done by asking for possible interactions on server instead
+            
+            Object node = tree.getLastSelectedPathComponent();
+
+            String name = ((ApplicationAction) action).getName();
+            if (asList( "moveOrganizationalUnit","mergeOrganizationalUnit","removeOrganizationalUnit").contains( name ))
+            {
+               return node instanceof OrganizationalUnitAdministrationNode;
+            } else if ("changeDescription".equals( name ))
+            {
+               return !(node instanceof AccountAdministrationNode);
+            }
+
+
+            
+            return super.isSelectedValueValid( action );
+         }
+      });
+
    }
 
 

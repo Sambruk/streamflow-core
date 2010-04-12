@@ -26,13 +26,13 @@ import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.client.StreamFlowResources;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
-import se.streamsource.streamflow.client.infrastructure.ui.JListPopup;
 import se.streamsource.streamflow.client.infrastructure.ui.LinkComparator;
 import se.streamsource.streamflow.client.infrastructure.ui.LinkListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.ConfirmationDialog;
 import se.streamsource.streamflow.client.ui.NameDialog;
+import se.streamsource.streamflow.client.ui.OptionsAction;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 
 import javax.swing.ActionMap;
@@ -64,7 +64,7 @@ public class GroupsView
    @Service
    DialogService dialogs;
 
-   public JListPopup groupList;
+   public JList groupList;
 
    public GroupsView( @Service ApplicationContext context, @Uses final GroupsModel model )
    {
@@ -76,8 +76,9 @@ public class GroupsView
 
       JPopupMenu popup = new JPopupMenu();
       popup.add( am.get( "rename" ) );
+      popup.add( am.get( "remove" ) );
 
-      groupList = new JListPopup( new EventListModel<LinkValue>(new SortedList<LinkValue>(model.getGroups(), new LinkComparator())), popup );
+      groupList = new JList( new EventListModel<LinkValue>(new SortedList<LinkValue>(model.getGroups(), new LinkComparator())));
 
       groupList.setCellRenderer( new LinkListCellRenderer() );
 
@@ -85,10 +86,10 @@ public class GroupsView
 
       JPanel toolbar = new JPanel();
       toolbar.add( new JButton( am.get( "add" ) ) );
-      toolbar.add( new JButton( am.get( "remove" ) ) );
+      toolbar.add( new JButton( new OptionsAction(popup) ) );
       add( toolbar, BorderLayout.SOUTH );
 
-      groupList.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "remove" ) ) );
+      groupList.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "remove" ), am.get( "rename" ) ) );
    }
 
    @Action

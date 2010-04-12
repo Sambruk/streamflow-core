@@ -23,6 +23,8 @@ import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilderFactory;
 import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.value.ValueBuilderFactory;
+import se.streamsource.dci.value.LinksBuilder;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.domain.structure.Notable;
 import se.streamsource.streamflow.domain.structure.Removable;
@@ -95,6 +97,5 @@ public interface TaskTypeEntity
          next.deleteEntity();
       }
    }
-
 }
 

@@ -20,8 +20,12 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
+import se.streamsource.dci.value.EntityValue;
+import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.domain.form.FormValue;
+import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.web.domain.entity.form.FormEntity;
+import se.streamsource.streamflow.web.domain.entity.form.PossibleFormMoveToQueries;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
 import se.streamsource.streamflow.web.domain.structure.form.Forms;
 import se.streamsource.dci.context.Context;
@@ -39,6 +43,10 @@ public interface FormContext
    extends DeleteContext, DescribableContext, NotableContext, Context
 {
    FormValue form();
+
+   LinksValue possiblemoveto();
+
+   void move( EntityValue to);
 
    @SubContext
    FormPagesContext pages();
@@ -61,6 +69,21 @@ public interface FormContext
          builder.prototype().form().set( EntityReference.parseEntityReference( form.identity().get() ) );
 
          return builder.newInstance();
+      }
+
+      public LinksValue possiblemoveto()
+      {
+         LinksBuilder builder = new LinksBuilder(module.valueBuilderFactory());
+         builder.command( "move" );
+         context.role( PossibleFormMoveToQueries.class).possibleMoveTo( builder );
+         return builder.newLinks();
+      }
+
+      public void move(EntityValue to)
+      {
+         Forms toForms = module.unitOfWorkFactory().currentUnitOfWork().get( Forms.class, to.entity().get() );
+         Form form = context.role(Form.class);
+         context.role( Forms.class ).moveForm(form, toForms);
       }
 
       public void delete()

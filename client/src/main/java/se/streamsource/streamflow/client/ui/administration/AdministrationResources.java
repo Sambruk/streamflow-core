@@ -170,6 +170,9 @@ public enum AdministrationResources
    invalid_value,
    rename,
    description_cannot_be_more_than_50,
-   selected_tasktypes_tab, 
+   selected_tasktypes_tab,
+   could_not_move,
+   choose_move_to,
+   could_not_perform_query,
    members_tab
 }

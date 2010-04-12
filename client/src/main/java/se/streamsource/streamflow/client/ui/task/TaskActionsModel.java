@@ -224,4 +224,26 @@ public class TaskActionsModel
          throw new OperationException(WorkspaceResources.could_not_perform_operation, e);
       }
    }
+
+   public void onHold()
+   {
+      try
+      {
+         client.postCommand( "onhold" );
+      } catch (ResourceException e)
+      {
+         throw new OperationException(WorkspaceResources.could_not_perform_operation, e);
+      }
+   }
+
+   public void resume()
+   {
+      try
+      {
+         client.postCommand( "resume" );
+      } catch (ResourceException e)
+      {
+         throw new OperationException(WorkspaceResources.could_not_perform_operation, e);
+      }
+   }
 }

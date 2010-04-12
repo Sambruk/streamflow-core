@@ -22,6 +22,9 @@ import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.dci.context.ContextMixin;
 import se.streamsource.dci.context.DeleteContext;
+import se.streamsource.dci.context.InteractionConstraints;
+import se.streamsource.streamflow.domain.interaction.gtd.States;
+import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.domain.interaction.gtd.Actions;
 import se.streamsource.streamflow.domain.structure.Removable;
@@ -98,6 +101,8 @@ public interface TaskActionsContext
    @RequiresStatus({ACTIVE})
    public void done();
 
+   public void onhold();
+
    public void sendto( EntityReferenceDTO entity );
 
    @RequiresDelegated(false)
@@ -114,6 +119,9 @@ public interface TaskActionsContext
 
    @RequiresDelegated(true)
    public void reject();
+
+   @RequiresStatus({States.ON_HOLD})
+   public void resume();
 
    @RequiresAssigned(true)
    public void unassign();
@@ -281,6 +289,11 @@ public interface TaskActionsContext
          task.done();
       }
 
+      public void onhold()
+      {
+         context.role(Status.class).onHold();
+      }
+
       public void sendto( EntityReferenceDTO entity )
       {
          TaskEntity task = context.role(TaskEntity.class);
@@ -339,6 +352,11 @@ public interface TaskActionsContext
          TaskEntity task = context.role(TaskEntity.class);
 
          task.rejectDelegation();
+      }
+
+      public void resume()
+      {
+         context.role(Status.class).resume();
       }
 
       public void unassign()

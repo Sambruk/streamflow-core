@@ -38,7 +38,7 @@ public class TaskSelectionActionEnabler
    }
 
    @Override
-   public boolean isSelectedValueValid()
+   public boolean isSelectedValueValid(Action action)
    {
       return !((States) table.getValueAt( table.convertRowIndexToModel( table.getSelectedRow() ), completedColumn )).equals( States.COMPLETED );
    }

@@ -24,6 +24,8 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.web.domain.MethodConstraintsConcern;
 
 import static se.streamsource.streamflow.domain.interaction.gtd.States.*;
+import static se.streamsource.streamflow.domain.interaction.gtd.States.ACTIVE;
+import static se.streamsource.streamflow.domain.interaction.gtd.States.ON_HOLD;
 
 /**
  * Status for a task. Possible transitions are:
@@ -45,11 +47,17 @@ public interface Status
    @RequiresStatus({ACTIVE, DONE})
    void drop();
 
+   @RequiresStatus({ACTIVE})
+   void onHold();
+
    @RequiresStatus({COMPLETED, DROPPED})
    void reactivate();
 
    @RequiresStatus(DONE)
    void redo();
+
+   @RequiresStatus({ON_HOLD})
+   void resume();
 
    boolean isStatus( States status );
 
@@ -75,9 +83,9 @@ public interface Status
          changedStatus( DomainEvent.CREATE, DROPPED );
       }
 
-      public void redo()
+      public void onHold()
       {
-         changedStatus( DomainEvent.CREATE, States.ACTIVE );
+         changedStatus( DomainEvent.CREATE, ON_HOLD );
       }
 
       public void done()
@@ -87,7 +95,17 @@ public interface Status
 
       public void reactivate()
       {
-         changedStatus( DomainEvent.CREATE, States.ACTIVE );
+         changedStatus( DomainEvent.CREATE, ACTIVE );
+      }
+
+      public void redo()
+      {
+         changedStatus( DomainEvent.CREATE, ACTIVE );
+      }
+
+      public void resume()
+      {
+         changedStatus( DomainEvent.CREATE, ACTIVE );
       }
 
       public boolean isStatus( States status )

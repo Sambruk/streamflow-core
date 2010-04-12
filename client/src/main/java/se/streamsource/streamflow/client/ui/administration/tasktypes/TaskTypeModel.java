@@ -15,13 +15,19 @@
 
 package se.streamsource.streamflow.client.ui.administration.tasktypes;
 
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
+import se.streamsource.dci.value.LinkValue;
+import se.streamsource.dci.value.LinksValue;
+import se.streamsource.dci.value.TitledLinkValue;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.administration.form.SelectedFormsModel;
 import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FormsModel;
@@ -101,4 +107,20 @@ public class TaskTypeModel
          throw new OperationException( AdministrationResources.could_not_remove_tasktype, e );
       }
    }
+
+   public EventList<LinkValue> usages()
+   {
+      try
+      {
+         LinksValue usages = client.query( "usages", LinksValue.class );
+         EventList<LinkValue> eventList = new BasicEventList<LinkValue>();
+         EventListSynch.synchronize( usages.links().get(), eventList );
+
+         return eventList;
+      } catch (ResourceException e)
+      {
+         throw new OperationException(AdministrationResources.could_not_perform_query, e);
+      }
+   }
+
 }

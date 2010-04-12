@@ -62,6 +62,12 @@ public class TaskStatusTableCellRenderer extends DefaultTableCellRenderer
                i18n.ICON_16 ) );
          setName( i18n.text( TaskResources.task_status_dropped_text ) );
          setToolTipText( i18n.text( TaskResources.task_status_dropped_text ) );
+      } else if (value.equals( States.ON_HOLD ))
+      {
+         setIcon( i18n.icon( TaskResources.task_status_on_hold_icon,
+               i18n.ICON_16 ) );
+         setName( i18n.text( TaskResources.task_status_on_hold_text ) );
+         setToolTipText( i18n.text( TaskResources.task_status_on_hold_text ) );
       }
 
       return this;

@@ -24,13 +24,13 @@ import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.client.StreamFlowResources;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
-import se.streamsource.streamflow.client.infrastructure.ui.JListPopup;
 import se.streamsource.streamflow.client.infrastructure.ui.LinkComparator;
 import se.streamsource.streamflow.client.infrastructure.ui.LinkListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.ConfirmationDialog;
 import se.streamsource.streamflow.client.ui.NameDialog;
+import se.streamsource.streamflow.client.ui.OptionsAction;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 
 import javax.swing.ActionMap;
@@ -60,7 +60,7 @@ public class ProjectsView
    @Uses
    Iterable<ConfirmationDialog> confirmationDialog;
 
-   public JListPopup projectList;
+   public JList projectList;
 
    public ProjectsView( @Service ApplicationContext context, @Uses ProjectsModel model )
    {
@@ -70,21 +70,22 @@ public class ProjectsView
       ActionMap am = context.getActionMap( this );
       setActionMap( am );
 
-      JPopupMenu popup = new JPopupMenu();
-      popup.add( am.get( "rename" ) );
+      JPopupMenu options = new JPopupMenu();
+      options.add( am.get( "rename" ) );
+      options.add( am.get( "remove" ) );
 
       JScrollPane scrollPane = new JScrollPane();
-      projectList = new JListPopup( new EventListModel<LinkValue>( new SortedList<LinkValue>(model.getProjectList(), new LinkComparator()) ), popup );
+      projectList = new JList( new EventListModel<LinkValue>( new SortedList<LinkValue>(model.getProjectList(), new LinkComparator()) ) );
       projectList.setCellRenderer( new LinkListCellRenderer() );
       scrollPane.setViewportView( projectList );
       add( scrollPane, BorderLayout.CENTER );
 
       JPanel toolbar = new JPanel();
       toolbar.add( new JButton( am.get( "add" ) ) );
-      toolbar.add( new JButton( am.get( "remove" ) ) );
+      toolbar.add( new JButton( new OptionsAction(options) ));
       add( toolbar, BorderLayout.SOUTH );
 
-      projectList.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "remove" ) ) );
+      projectList.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "remove" ), am.get( "rename" ) ) );
    }
 
    @Action

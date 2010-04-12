@@ -22,6 +22,7 @@ import org.qi4j.api.mixin.Mixins;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.domain.structure.Removable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
+import se.streamsource.streamflow.web.domain.entity.form.PossibleFormMoveToQueries;
 import se.streamsource.streamflow.web.domain.entity.label.PossibleLabelsQueries;
 import se.streamsource.streamflow.web.domain.entity.tasktype.TaskTypesQueries;
 import se.streamsource.streamflow.web.domain.interaction.security.Authorization;
@@ -76,6 +77,7 @@ public interface OrganizationEntity
       OrganizationParticipationsQueries,
       OrganizationQueries,
       OrganizationalUnitsQueries,
+      PossibleFormMoveToQueries,
       PossibleLabelsQueries,
       TaskTypesQueries
 {

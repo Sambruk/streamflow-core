@@ -47,7 +47,7 @@ public class SelectionActionEnabler
          for (int i = 0; i < action.length; i++)
          {
             Action action1 = action[i];
-            action1.setEnabled( !((ListSelectionModel) e.getSource()).isSelectionEmpty() && isSelectedValueValid() );
+            action1.setEnabled( !((ListSelectionModel) e.getSource()).isSelectionEmpty() && isSelectedValueValid(action1) );
          }
       }
    }
@@ -57,7 +57,7 @@ public class SelectionActionEnabler
       for (int i = 0; i < action.length; i++)
       {
          Action action1 = action[i];
-         action1.setEnabled( e.getNewLeadSelectionPath() != null );
+         action1.setEnabled( e.getNewLeadSelectionPath() != null && isSelectedValueValid(action1));
       }
    }
 
@@ -66,7 +66,7 @@ public class SelectionActionEnabler
     *
     * @return
     */
-   public boolean isSelectedValueValid()
+   public boolean isSelectedValueValid(Action action)
    {
       return true;
    }

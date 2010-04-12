@@ -23,6 +23,7 @@ import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.spi.service.importer.NewObjectImporter;
 import org.restlet.service.MetadataService;
 import se.streamsource.dci.context.InteractionConstraintsService;
+import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.IndexValue;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.LinksValue;
@@ -50,6 +51,6 @@ public class DCIAssembler
 
       module.importServices( MetadataService.class );
 
-      module.addValues( IndexValue.class, LinksValue.class, LinkValue.class, StringValue.class );
+      module.addValues( IndexValue.class, EntityValue.class, LinksValue.class, LinkValue.class, StringValue.class );
    }
 }

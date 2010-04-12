@@ -16,12 +16,17 @@
 package se.streamsource.streamflow.web.context.structure.labels;
 
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.query.Query;
+import se.streamsource.dci.value.LinksValue;
+import se.streamsource.streamflow.domain.structure.Describable;
+import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.label.Labels;
 import se.streamsource.dci.context.Context;
 import se.streamsource.dci.context.ContextMixin;
 import se.streamsource.dci.context.DeleteContext;
 import se.streamsource.streamflow.web.context.structure.DescribableContext;
+import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
 
 /**
  * JAVADOC
@@ -32,10 +37,24 @@ public interface LabelContext
       DeleteContext,
       Context
 {
+   LinksValue usages();
+
    abstract class Mixin
          extends ContextMixin
          implements LabelContext
    {
+      public LinksValue usages()
+      {
+         Query<SelectedLabels> usageQuery = context.role( Labels.class).usages( context.role(Label.class) );
+         LinksBuilder builder = new LinksBuilder(module.valueBuilderFactory()); // TODO What to use for path here?
+         for (SelectedLabels selectedTaskTypes : usageQuery)
+         {
+            builder.addDescribable( (Describable) selectedTaskTypes );
+         }
+
+         return builder.newLinks();
+      }
+
       public void delete()
       {
          Labels labels = context.role( Labels.class );

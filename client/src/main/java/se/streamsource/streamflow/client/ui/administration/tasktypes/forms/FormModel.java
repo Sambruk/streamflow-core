@@ -15,11 +15,15 @@
 
 package se.streamsource.streamflow.client.ui.administration.tasktypes.forms;
 
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.dci.value.LinkValue;
+import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
@@ -62,6 +66,30 @@ public class FormModel
       }
    };
 
+
+   public EventList<LinkValue> getPossibleMoveTo()
+   {
+      try
+      {
+         BasicEventList<LinkValue> possibleLinks = new BasicEventList<LinkValue>();
+         possibleLinks.addAll( client.query( "possiblemoveto", LinksValue.class ).links().get() );
+         return possibleLinks;
+      } catch (ResourceException e)
+      {
+         throw new OperationException( AdministrationResources.could_not_refresh, e );
+      }
+   }
+
+   public void moveForm( LinkValue to)
+   {
+      try
+      {
+         client.postLink( to );
+      } catch (ResourceException e)
+      {
+         throw new OperationException(AdministrationResources.could_not_move, e);
+      }
+   }   
 
    public void refresh() throws OperationException
    {

@@ -77,14 +77,16 @@ public interface PossibleActions
                         actions.add( "complete" );
                         actions.add( "sendto" );
                         actions.add( "delegate" );
+                        actions.add( "onhold" );
                         actions.add( "drop" );
                         actions.add( "delete" );
                         actions.add( "unassign" );
-                        actions.add( "tasktype" );
-                        actions.add( "label" );
                      } else if (task.isStatus( States.COMPLETED ))
                      {
                         actions.add( "reactivate" );
+                     } else if (task.isStatus( States.ON_HOLD ))
+                     {
+                        actions.add( "resume" );
                      }
                   }
                } else
@@ -100,7 +102,6 @@ public interface PossibleActions
                         actions.add( "delegate" );
                         actions.add( "drop" );
                         actions.add( "delete" );
-                        actions.add( "tasktype" );
                      } else if (task.isStatus( States.DONE ))
                      {
                         actions.add( "complete" );
@@ -127,8 +128,6 @@ public interface PossibleActions
                         actions.add( "delegate" );
                         actions.add( "drop" );
                         actions.add( "delete" );
-                        actions.add( "tasktype" );
-                        actions.add( "label" );
                      }
                   } else
                   {
@@ -183,7 +182,6 @@ public interface PossibleActions
                      {
                         actions.add( "done" );
                         actions.add( "reject" );
-                        actions.add( "label" );
                      }
                   } else
                   {
@@ -193,14 +191,16 @@ public interface PossibleActions
                         actions.add( "complete" );
                         actions.add( "sendto" );
                         actions.add( "delegate" );
+                        actions.add( "onhold" );
                         actions.add( "drop" );
                         actions.add( "delete" );
                         actions.add( "unassign" );
-                        actions.add( "tasktype" );
-                        actions.add( "label" );
                      } else if (task.isStatus( States.COMPLETED ))
                      {
                         actions.add( "reactivate" );
+                     } else if (task.isStatus( States.ON_HOLD ))
+                     {
+                        actions.add( "resume" );
                      }
                   }
                } else
@@ -216,8 +216,6 @@ public interface PossibleActions
                         actions.add( "delegate" );
                         actions.add( "drop" );
                         actions.add( "delete" );
-                        actions.add( "tasktype" );
-                        actions.add( "label" );
                      }
                   } else
                   {

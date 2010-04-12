@@ -57,12 +57,12 @@ public interface LoggingService
 
          // Access logging
          File accessLog = new File(fileConfig.logDirectory(), "access.log");
-         Logger.getLogger( "org.restlet.Component.LogService" ).addAppender( new DailyRollingFileAppender(new PatternLayout("%m%n"), accessLog.getAbsolutePath(), "'.'yyyy-ww" ));
+         Logger.getLogger( "org.restlet.Component.LogService" ).addAppender( new DailyRollingFileAppender(new PatternLayout("%d %m%n"), accessLog.getAbsolutePath(), "'.'yyyy-ww" ));
          logger.info( "Logging HTTP access to:"+accessLog );
 
          // General logging
          File generalLog = new File(fileConfig.logDirectory(), "streamflow.log");
-         Logger.getRootLogger().addAppender( new DailyRollingFileAppender(new PatternLayout("%5p %c{1} - %m%n"), generalLog.getAbsolutePath(), "'.'yyyy-ww" ));
+         Logger.getRootLogger().addAppender( new DailyRollingFileAppender(new PatternLayout("%d %5p %c{1} - %m%n"), generalLog.getAbsolutePath(), "'.'yyyy-ww" ));
          logger.info( "Logging StreamFlow messages:"+generalLog );
 
       }
