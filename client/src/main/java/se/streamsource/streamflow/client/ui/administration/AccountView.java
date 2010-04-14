@@ -247,4 +247,9 @@ public class AccountView extends JScrollPane
       accountBinder.updateWith(accountSettingsBuilder.prototype());
       connectedBinder.update();
    }
+
+   public void setModel( AccountModel model)
+   {
+      this.model = model;
+   }
 }

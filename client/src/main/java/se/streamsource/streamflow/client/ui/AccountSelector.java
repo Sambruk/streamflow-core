@@ -33,6 +33,7 @@ import se.streamsource.streamflow.client.ui.administration.AccountResources;
 import se.streamsource.streamflow.client.ui.menu.AccountsModel;
 
 import javax.swing.JList;
+import javax.swing.SwingUtilities;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeListener;
@@ -59,7 +60,7 @@ public class AccountSelector
 
    public AccountSelector( @Uses final AccountsModel dataModel )
    {
-      super( new EventListModel(dataModel.getAccounts()) );
+      super( new EventListModel( dataModel.getAccounts() ) );
       this.dataModel = dataModel;
       this.context = Application.getInstance().getContext();
       setCellRenderer( new ListItemListCellRenderer() );
@@ -67,7 +68,7 @@ public class AccountSelector
       dataModel.getAccounts().addListEventListener( this );
       VetoableListSelectionModel veto = new VetoableListSelectionModel();
       setSelectionModel( veto );
-      setSelectionMode(VetoableListSelectionModel.SINGLE_SELECTION);
+      setSelectionMode( VetoableListSelectionModel.SINGLE_SELECTION );
       veto.addVetoableChangeListener( this );
 
    }
@@ -79,10 +80,16 @@ public class AccountSelector
 
    public void listChanged( ListEvent listEvent )
    {
-      if (isSelectionEmpty() && dataModel.getAccounts().size() == 1)
+      SwingUtilities.invokeLater( new Runnable()
       {
-         setSelectedIndex( 0 );
-      }
+         public void run()
+         {
+            if (isSelectionEmpty() && dataModel.getAccounts().size() == 1)
+            {
+               setSelectedIndex( 0 );
+            }
+         }
+      } );
    }
 
    public void vetoableChange( PropertyChangeEvent evt ) throws PropertyVetoException
@@ -96,8 +103,8 @@ public class AccountSelector
 
             String clientVersion = p.getProperty( "application.version" );
             String response = dataModel.accountModel( (Integer) evt.getNewValue() ).test();
-            System.out.print(response);
-            
+            System.out.print( response );
+
             String str;
             BufferedReader reader = new BufferedReader(
                   new StringReader( response ) );
@@ -105,19 +112,19 @@ public class AccountSelector
             while ((str = reader.readLine()) != null)
             {
                str = str.trim();
-               if(str.startsWith("Version:" ))
+               if (str.startsWith( "Version:" ))
                {
-                  int toIndex = str.indexOf('-') != -1 ? str.indexOf('-' ) : str.lastIndexOf( '.' );
+                  int toIndex = str.indexOf( '-' ) != -1 ? str.indexOf( '-' ) : str.lastIndexOf( '.' );
 
-                  if( toIndex == -1 )
+                  if (toIndex == -1)
                      throw new ResourceException( Status.CLIENT_ERROR_NOT_FOUND );
 
-                  String serverVersion = str.substring( str.indexOf(":") + 1, toIndex  );
+                  String serverVersion = str.substring( str.indexOf( ":" ) + 1, toIndex );
 
-                  if(!clientVersion.startsWith( serverVersion.trim() ))
+                  if (!clientVersion.startsWith( serverVersion.trim() ))
                   {
                      String msg = MessageFormat.format( i18n.text( AccountResources.version_missmatch ), clientVersion, serverVersion );
-                     dialogs.showOkDialog( this, new InfoDialog(context, msg), "Info" );
+                     dialogs.showOkDialog( this, new InfoDialog( context, msg ), "Info" );
                      throw new PropertyVetoException( msg, evt );
                   }
                }
@@ -126,13 +133,13 @@ public class AccountSelector
 
       } catch (ResourceException e)
       {
-         String msg = i18n.text(AccountResources.resource_failure) + " \r\n" +e.getStatus().toString();
-         dialogs.showOkDialog( this, new InfoDialog(context, msg), "Info" );
+         String msg = i18n.text( AccountResources.resource_failure ) + " \r\n" + e.getStatus().toString();
+         dialogs.showOkDialog( this, new InfoDialog( context, msg ), "Info" );
          throw new PropertyVetoException( msg, evt );
-      }catch (IOException e)
+      } catch (IOException e)
       {
-         String msg = i18n.text(AccountResources.cannot_read_stream);
-         dialogs.showOkDialog( this, new InfoDialog(context, msg), "Info" );
+         String msg = i18n.text( AccountResources.cannot_read_stream );
+         dialogs.showOkDialog( this, new InfoDialog( context, msg ), "Info" );
          throw new PropertyVetoException( msg, evt );
       }
    }

@@ -191,5 +191,18 @@ public class VetoableListSelectionModel extends DefaultListSelectionModel
       super.setSelectionInterval( index0, index1 );
    }
 
+   public void insertIndexInterval( int index, int length, boolean before )
+   {
+      if ((SINGLE_SELECTION == getSelectionMode()) &&
+            isSelectedIndex( index ) && before)
+      {
+         // keep the selection on whatever it was before
+         setSelectionInterval( index + length, index + length );
+      } else
+      {
+         super.insertIndexInterval( index, length, before );
+      }
+   }
+
 
 }

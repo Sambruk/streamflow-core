@@ -15,20 +15,9 @@
 
 package se.streamsource.streamflow.client.ui.menu;
 
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
-
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Insets;
-
-import javax.swing.JButton;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.border.EmptyBorder;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-
+import ca.odell.glazedlists.event.ListEvent;
+import ca.odell.glazedlists.event.ListEventListener;
+import ca.odell.glazedlists.swing.EventListModel;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.util.WindowUtils;
@@ -40,8 +29,6 @@ import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
-
-import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.StreamFlowResources;
 import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
@@ -52,18 +39,26 @@ import se.streamsource.streamflow.client.ui.ConfirmationDialog;
 import se.streamsource.streamflow.client.ui.administration.AccountModel;
 import se.streamsource.streamflow.client.ui.administration.AccountResources;
 import se.streamsource.streamflow.client.ui.administration.AccountView;
-import se.streamsource.streamflow.client.ui.task.TaskContactModel;
-import se.streamsource.streamflow.domain.contact.ContactAddressValue;
-import se.streamsource.streamflow.domain.contact.ContactEmailValue;
-import se.streamsource.streamflow.domain.contact.ContactPhoneValue;
-import se.streamsource.streamflow.domain.contact.ContactValue;
-import ca.odell.glazedlists.swing.EventListModel;
+import se.streamsource.streamflow.infrastructure.application.ListItemValue;
+
+import javax.swing.JButton;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.Dimension;
+
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 
 /**
  * JAVADOC
  */
 public class AccountsDialog
       extends JPanel
+      implements ListEventListener
 {
    AccountsModel model;
 
@@ -120,6 +115,12 @@ public class AccountsDialog
 
       add( listPanel, BorderLayout.WEST );
 
+      final CardLayout cardLayout = new CardLayout();
+      final JPanel viewPanel = new JPanel( cardLayout );
+      viewPanel.add( new JPanel(), "EMPTY" );
+
+      add( viewPanel, BorderLayout.CENTER );
+
       accountList.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( getActionMap().get( "remove" ) ) );
 
       accountList.getSelectionModel().addListSelectionListener( new ListSelectionListener()
@@ -128,17 +129,17 @@ public class AccountsDialog
          {
             if (!e.getValueIsAdjusting())
             {
-               // Account
-               if (accountView != null)
-                  remove( accountView );
-
                if (accountList.getSelectedIndex() != -1)
                {
                   AccountModel account = model.accountModel( accountList.getSelectedIndex() );
                   accountView = obf.newObjectBuilder( AccountView.class ).use( account ).newInstance();
-                  add( accountView, BorderLayout.CENTER );
+                  viewPanel.add( accountView, "VIEW" );
+                  cardLayout.show( viewPanel, "VIEW" );
+               } else
+               {
+                  cardLayout.show( viewPanel, "EMPTY" );
                }
-               revalidate();
+               viewPanel.revalidate();
             }
          }
       } );
@@ -159,6 +160,7 @@ public class AccountsDialog
       if (dialog.settings() != null)
       {
          model.newAccount( dialog.settings() );
+         listChanged(null);
       }
    }
 
@@ -169,9 +171,17 @@ public class AccountsDialog
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamFlowResources.confirmation ) );
       if (dialog.isConfirmed())
       {
-         System.out.println( "DeleteAccount invoked" );
          model.removeAccount( accountList.getSelectedIndex() );
+         listChanged(null);
       }
    }
 
+   public void listChanged( ListEvent listEvent )
+   {
+      int prevSelected = accountList.getSelectedIndex();
+      accountList.setModel( new EventListModel<ListItemValue>( model.accounts ) );
+      accountList.repaint();
+      accountList.setSelectedIndex( prevSelected );
+
+   }
 }
