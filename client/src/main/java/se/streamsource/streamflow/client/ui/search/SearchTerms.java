@@ -26,7 +26,7 @@ public class SearchTerms
    public static String translate( String search )
    {
       // strip eventual white spaces around colon
-      String translation = search.replaceAll("\\s?:\\s?", ":" );
+      String translation = search.replaceAll("(\\s+)?:(\\s+)?", ":" );
 
       for(SearchTermsResources term: SearchTermsResources.values())
       {
