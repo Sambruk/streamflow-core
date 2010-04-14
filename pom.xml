@@ -329,6 +329,7 @@
                         <exclude>**/docbkx/**</exclude>
                         <exclude>**/javadoc/**</exclude>
                         <exclude>**/site/**</exclude>
+                        <exclude>**/version.html</exclude>
                     </excludes>
                     <mapping>
                         <tcl>SCRIPT_STYLE</tcl>
