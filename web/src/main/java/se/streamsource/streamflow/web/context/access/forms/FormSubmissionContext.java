@@ -29,7 +29,6 @@ import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
 import se.streamsource.streamflow.domain.form.FormSubmissionValue;
 import se.streamsource.streamflow.domain.form.PageSubmissionValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.resource.roles.IntegerDTO;
 import se.streamsource.streamflow.web.domain.structure.form.FormSubmission;
 
 import java.util.Map;
@@ -91,30 +90,36 @@ public interface FormSubmissionContext
 
       public void next( Representation rep)
       {
-         Form form = new Form( rep );
+         updateFieldValues( rep );
 
-         Set<Map.Entry<String, String>> entries = form.getValuesMap().entrySet();
-
-         FormSubmission submission = context.role( FormSubmission.class );
-
-         for (Map.Entry<String, String> entry : entries)
-         {
-            submission.changeFieldValue( EntityReference.parseEntityReference(entry.getKey() ), entry.getValue());
-         }
-
-         ValueBuilder<FormSubmissionValue> builder = context.role( FormSubmission.Data.class ).formSubmissionValue().get().buildWith();
-
-         int pages = builder.prototype().pages().get().size();
-         int next = builder.prototype().currentPage().get() + 1;
-         if ( next < pages )
-         {
-            builder.prototype().currentPage().set( next );
-         }
+         ValueBuilder<FormSubmissionValue> builder = incrementPage( 1 );
 
          updateFormSubmission( builder );
       }
 
       public void previous(Representation rep)
+      {
+         updateFieldValues( rep );
+
+         ValueBuilder<FormSubmissionValue> builder = incrementPage( -1 );
+
+         updateFormSubmission( builder );
+      }
+
+      private ValueBuilder<FormSubmissionValue> incrementPage( int increment )
+      {
+         ValueBuilder<FormSubmissionValue> builder = context.role( FormSubmission.Data.class ).formSubmissionValue().get().buildWith();
+         int page = builder.prototype().currentPage().get() + increment;
+         int pages = builder.prototype().pages().get().size();
+
+         if ( page < pages && page >= 0 )
+         {
+            builder.prototype().currentPage().set( page );
+         }
+         return builder;
+      }
+
+      private void updateFieldValues( Representation rep )
       {
          Form form = new Form( rep );
 
@@ -124,18 +129,12 @@ public interface FormSubmissionContext
 
          for (Map.Entry<String, String> entry : entries)
          {
-            submission.changeFieldValue( EntityReference.parseEntityReference(entry.getKey() ), entry.getValue());
+            String value = entry.getValue();
+            if ( value != null)
+            {
+               submission.changeFieldValue( EntityReference.parseEntityReference(entry.getKey() ), value );
+            }
          }
-
-         ValueBuilder<FormSubmissionValue> builder = context.role( FormSubmission.Data.class ).formSubmissionValue().get().buildWith();
-
-         int previous = builder.prototype().currentPage().get() - 1;
-         if ( previous >= 0 )
-         {
-            builder.prototype().currentPage().set( previous );
-         }
-
-         updateFormSubmission( builder );
       }
 
       public void updatefield( FieldSubmissionValue newFieldValue )
