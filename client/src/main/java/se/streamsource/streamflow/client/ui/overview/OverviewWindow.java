@@ -79,7 +79,8 @@ public class OverviewWindow
             }
          }
       } );
-      javaHelp.enableHelp( this.getRootPane(), "overview" );
+      // Turn off java help for 1.0 release
+      //javaHelp.enableHelp( this.getRootPane(), "overview" );
    }
 
 }

@@ -35,5 +35,5 @@ public enum StreamFlowResources
    tooltip_delay_reshow, 
    contact_info_separator,
    account_settings_separator, 
-   user_info_separator;
+   user_info_separator, not_implemented;
 }

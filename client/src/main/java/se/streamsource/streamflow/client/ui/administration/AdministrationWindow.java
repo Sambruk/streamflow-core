@@ -77,7 +77,8 @@ public class AdministrationWindow
             }
          }
       } );
-      javaHelp.enableHelp( this.getRootPane(), "admin" );
+      // Turn off java help for 1.0 release
+      //javaHelp.enableHelp( this.getRootPane(), "admin" );
    }
 
 }
