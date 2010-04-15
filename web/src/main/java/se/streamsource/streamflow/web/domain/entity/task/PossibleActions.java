@@ -42,6 +42,12 @@ public interface PossibleActions
 
       public void addActions( Actor actor, Collection<String> actions )
       {
+         // droped tasks can be reactivated from anyone from anywhere
+         if( task.isStatus( States.DROPPED ) && !actions.contains( "reactivate" ))
+         {
+            actions.add( "reactivate" );
+         }
+         
          if (task.owner().get() instanceof Project)
          {
             // Project owned task
