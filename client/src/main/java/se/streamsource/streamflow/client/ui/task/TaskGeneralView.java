@@ -52,7 +52,11 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.LayoutFocusTraversalPolicy;
 import javax.swing.SwingConstants;
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridLayout;
+import java.awt.KeyboardFocusManager;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.text.DateFormat;
@@ -63,7 +67,7 @@ import java.util.Observable;
 import java.util.Observer;
 
 import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.*;
-import static se.streamsource.streamflow.domain.interaction.gtd.States.ACTIVE;
+import static se.streamsource.streamflow.domain.interaction.gtd.States.*;
 
 /**
  * JAVADOC
@@ -298,9 +302,10 @@ public class TaskGeneralView extends JScrollPane implements Observer
       notePane.getViewport().getView().setEnabled( model.getCommandEnabled( "changenote" ));
       taskTypeButton.setEnabled( model.getCommandEnabled( "tasktype" ));
 
-      labelButton.setEnabled( model.getTaskStatus().equals( ACTIVE ));
-      labels.setEnabled( model.getTaskStatus().equals( ACTIVE ));
-      forms.setEnabled( model.getTaskStatus().equals( ACTIVE ));
+      boolean enabled = model.getTaskStatus().equals( ACTIVE ) || model.getTaskStatus().equals( DELEGATED );
+      labelButton.setEnabled( enabled );
+      labels.setEnabled( enabled );
+      forms.setEnabled( enabled );
    }
 
    public void update( Observable o, Object arg )

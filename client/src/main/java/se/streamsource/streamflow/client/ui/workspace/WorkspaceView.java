@@ -26,8 +26,6 @@ import org.jdesktop.swingx.renderer.WrappingIconPanel;
 import org.jdesktop.swingx.renderer.WrappingProvider;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilder;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.OperationException;
@@ -64,7 +62,12 @@ import javax.swing.event.TreeWillExpandListener;
 import javax.swing.tree.ExpandVetoException;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.Component;
+import java.awt.Font;
+import java.awt.Point;
+import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 
 /**
@@ -85,7 +88,7 @@ public class WorkspaceView
    private JButton selectContextButton;
    private JTextField searchField;
 
-   private Component currentSelection = new JLabel( "<html><h1>Welcome to StreamFlow</h1>Begin by selecting a context by using the blue button</html>", JLabel.CENTER );
+   private Component currentSelection = new JLabel( i18n.text( WorkspaceResources.welcome ) , JLabel.CENTER );
    public Popup popup;
 
 

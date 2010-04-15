@@ -29,10 +29,11 @@ import static se.streamsource.streamflow.domain.interaction.gtd.States.ON_HOLD;
 
 /**
  * Status for a task. Possible transitions are:
- * Active -> Completed, Dropped, Done
+ * Active -> Delegated, Completed, Dropped, Done
  * Done -> Active, Dropped, Completed
  * Completed -> Active
- * Dropped -> Archived
+ * Dropped -> Active, Archived
+ * Delegated -> Active, Done
  */
 @Concerns(MethodConstraintsConcern.class)
 @Mixins(Status.Mixin.class)
@@ -41,16 +42,16 @@ public interface Status
    @RequiresStatus({ACTIVE, DONE})
    void complete();
 
-   @RequiresStatus(ACTIVE)
+   @RequiresStatus( {ACTIVE, DELEGATED} )
    void done();
 
-   @RequiresStatus({ACTIVE, DONE})
+   @RequiresStatus({ACTIVE, DONE, DELEGATED})
    void drop();
 
-   @RequiresStatus({ACTIVE})
+   @RequiresStatus({ACTIVE, DELEGATED})
    void onHold();
 
-   @RequiresStatus({COMPLETED, DROPPED})
+   @RequiresStatus({COMPLETED, DROPPED, DELEGATED})
    void reactivate();
 
    @RequiresStatus(DONE)
@@ -58,6 +59,9 @@ public interface Status
 
    @RequiresStatus({ON_HOLD})
    void resume();
+
+   @RequiresStatus({ACTIVE, DELEGATED})
+   void delegate();
 
    boolean isStatus( States status );
 
@@ -106,6 +110,11 @@ public interface Status
       public void resume()
       {
          changedStatus( DomainEvent.CREATE, ACTIVE );
+      }
+
+      public void delegate()
+      {
+         changedStatus( DomainEvent.CREATE, DELEGATED );
       }
 
       public boolean isStatus( States status )

@@ -76,7 +76,9 @@ public interface DelegationsQueries
          queryBuilder = queryBuilder.where( and(
                eq( delegatedTo, delegatee ),
                isNull( assignee ),
-               QueryExpressions.eq( templateFor( Status.Data.class ).status(), States.ACTIVE ) ) );
+               or(
+                     QueryExpressions.eq( templateFor( Status.Data.class ).status(), States.ACTIVE ),
+                     eq( templateFor( Status.Data.class ).status(), States.DELEGATED ) ) ) );
 
          return queryBuilder;
       }

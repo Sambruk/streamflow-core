@@ -22,30 +22,29 @@ import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.dci.value.*;
+import se.streamsource.dci.context.Context;
+import se.streamsource.dci.context.ContextMixin;
+import se.streamsource.dci.context.IndexContext;
+import se.streamsource.dci.context.SubContext;
+import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.StringValue;
-import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.domain.structure.Notable;
+import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.resource.roles.DateDTO;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
+import se.streamsource.streamflow.web.context.structure.labels.LabelableContext;
 import se.streamsource.streamflow.web.domain.entity.task.TaskEntity;
 import se.streamsource.streamflow.web.domain.entity.task.TaskTypeQueries;
 import se.streamsource.streamflow.web.domain.interaction.gtd.DueOn;
 import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresStatus;
-import se.streamsource.streamflow.web.domain.structure.form.Forms;
 import se.streamsource.streamflow.web.domain.structure.form.SelectedForms;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.tasktype.TaskType;
 import se.streamsource.streamflow.web.domain.structure.tasktype.TypedTask;
-import se.streamsource.dci.context.Context;
-import se.streamsource.dci.context.ContextMixin;
-import se.streamsource.dci.context.IndexContext;
-import se.streamsource.dci.context.SubContext;
-import se.streamsource.streamflow.web.context.structure.labels.LabelableContext;
 
 import static se.streamsource.streamflow.domain.interaction.gtd.States.*;
 
@@ -58,16 +57,16 @@ public interface TaskGeneralContext
       IndexContext<TaskGeneralDTO>,
       Context
 {
-   @RequiresStatus(ACTIVE)
+   @RequiresStatus( { ACTIVE, DELEGATED } )
    void changedueon( DateDTO dueOnValue );
 
-   @RequiresStatus( ACTIVE )
+   @RequiresStatus( { ACTIVE, DELEGATED } )
    void tasktype( EntityReferenceDTO dto );
 
-   @RequiresStatus(ACTIVE)
+   @RequiresStatus({ ACTIVE, DELEGATED } )
    void changedescription( StringValue stringValue );
 
-   @RequiresStatus(ACTIVE)
+   @RequiresStatus( { ACTIVE, DELEGATED } )
    void changenote( StringValue noteValue );
 
    LinksValue possibletasktypes();

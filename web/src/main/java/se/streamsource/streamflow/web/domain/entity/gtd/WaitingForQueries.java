@@ -89,6 +89,7 @@ public interface WaitingForQueries
                isNotNull( delegatee ),
                or(
                      QueryExpressions.eq( templateFor( Status.Data.class ).status(), States.ACTIVE ),
+                     eq( templateFor( Status.Data.class ).status(), States.DELEGATED ),
                      eq( templateFor( Status.Data.class ).status(), States.DONE ) ) ) );
 
          return queryBuilder;

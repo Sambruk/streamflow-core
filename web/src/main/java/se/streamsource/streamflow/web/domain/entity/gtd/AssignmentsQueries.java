@@ -82,6 +82,7 @@ public interface AssignmentsQueries
                assignee == null ? isNotNull( assignedId ) : eq( assignedId, assignee ),
                eq( ownedId, owner ),
                QueryExpressions.or(QueryExpressions.eq( templateFor( Status.Data.class ).status(), States.ACTIVE ),
+                                   QueryExpressions.eq( templateFor( Status.Data.class ).status(), States.DELEGATED ), 
                                    QueryExpressions.eq( templateFor( Status.Data.class ).status(), States.ON_HOLD ) )));
          return queryBuilder;
       }

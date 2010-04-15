@@ -69,6 +69,9 @@ public interface Delegatable
       @This
       Ownable ownable;
 
+      @This
+      Status status;
+
       public void delegateTo( Delegatee delegatee, Delegator delegator, Owner delegatedFrom )
       {
          delegatedTo( DomainEvent.CREATE, delegatee, delegator, delegatedFrom );
@@ -80,6 +83,7 @@ public interface Delegatable
          delegatedBy().set( delegator );
          delegatedOn().set( event.on().get() );
          delegatedFrom().set( delegatedFrom );
+         status.delegate();
       }
 
       public void rejectDelegation()
@@ -127,6 +131,7 @@ public interface Delegatable
          delegatedBy().set( null );
          delegatedOn().set( null );
          delegatedFrom().set( null );
+         status.reactivate();
       }
 
       public void cancelledDelegation( DomainEvent event )

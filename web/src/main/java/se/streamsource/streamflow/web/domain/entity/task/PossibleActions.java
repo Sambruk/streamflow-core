@@ -57,13 +57,22 @@ public interface PossibleActions
                if (task.isAssignedTo( actor ))
                {
                   if (task.isDelegated())
-                  {                     
-                     // Assignments (delegated)
+                  {
                      if (task.isStatus( States.ACTIVE ))
+                     {
+                        actions.add( "complete" );
+                        actions.add( "sendto" );
+                        actions.add( "delegate" );
+                        actions.add( "onhold" );
+                        actions.add( "drop" );
+                        actions.add( "delete" );
+                        actions.add( "unassign" );
+                     }
+                     // Assignments (delegated)
+                     else if (task.isStatus( States.DELEGATED ))
                      {
                         actions.add( "done" );
                         actions.add( "reject" );
-                        actions.add( "label" );
                      }
                      // Waiting for
                      else if ( task.isStatus( States.DONE ))
@@ -100,7 +109,8 @@ public interface PossibleActions
                   if (task.isDelegatedBy( actor ))
                   {
                      // WaitingFor (not assigned)
-                     if (task.isStatus( States.ACTIVE ))
+                     if (task.isStatus( States.ACTIVE )
+                           || task.isStatus( States.DELEGATED ))
                      {
                         actions.add( "complete" );
                         actions.add( "assign" );
@@ -145,7 +155,8 @@ public interface PossibleActions
                if (task.isDelegatedBy( actor ))
                {
                   // WaitingFor (assigned)
-                  if (task.isStatus( States.ACTIVE ))
+                  if (task.isStatus( States.ACTIVE )
+                        || task.isStatus( States.DELEGATED ))
                   {
                      actions.add( "complete" );
                      actions.add( "assign" );
@@ -165,7 +176,7 @@ public interface PossibleActions
                } else if (task.isDelegatedTo( actor ))
                {
                   // Delegations
-                  if (task.isStatus( States.ACTIVE ))
+                  if (task.isStatus( States.DELEGATED ))
                   {
                      actions.add( "accept" );
                      actions.add( "reject" );
@@ -183,16 +194,34 @@ public interface PossibleActions
                {
                   if (task.isDelegatedTo( actor ))
                   {
+                     if (task.isStatus( States.ACTIVE ) )
+                     {
+                        actions.add( "complete" );
+                        actions.add( "sendto" );
+                        actions.add( "delegate" );
+                        actions.add( "onhold" );
+                        actions.add( "drop" );
+                        actions.add( "delete" );
+                        actions.add( "unassign" );
+                     }
                      // Assignments (delegated)
-                     if (task.isStatus( States.ACTIVE ))
+                     else if (task.isStatus( States.DELEGATED ))
                      {
                         actions.add( "done" );
                         actions.add( "reject" );
+                     } else if ( task.isStatus( States.DONE ))
+                     {
+                        actions.add( "complete" );
+                        actions.add( "redo" );
+                     } else if (task.isStatus( States.COMPLETED ))
+                     {
+                        actions.add( "reactivate" );
                      }
                   } else
                   {
                      // Assignments (mine)
-                     if (task.isStatus( States.ACTIVE ))
+                     if (task.isStatus( States.ACTIVE )
+                           || task.isStatus( States.DELEGATED ))
                      {
                         actions.add( "complete" );
                         actions.add( "sendto" );
@@ -207,6 +236,10 @@ public interface PossibleActions
                      } else if (task.isStatus( States.ON_HOLD ))
                      {
                         actions.add( "resume" );
+                     } else if ( task.isStatus( States.DONE ))
+                     {
+                        actions.add( "complete" );
+                        actions.add( "redo" );
                      }
                   }
                } else
@@ -214,7 +247,8 @@ public interface PossibleActions
                   if (task.isDelegatedBy( actor ))
                   {
                      // WaitingFor (not assigned)
-                     if (task.isStatus( States.ACTIVE ))
+                     if (task.isStatus( States.ACTIVE )
+                           || task.isStatus( States.DELEGATED ))
                      {
                         actions.add( "complete" );
                         actions.add( "assign" );
@@ -234,8 +268,6 @@ public interface PossibleActions
                         actions.add( "delegate" );
                         actions.add( "drop" );
                         actions.add( "delete" );
-                        actions.add( "tasktype" );
-                        actions.add( "label" );
                      }
                   }
                }
@@ -244,7 +276,8 @@ public interface PossibleActions
                if (task.isDelegatedBy( actor ))
                {
                   // WaitingFor (assigned)
-                  if (task.isStatus( States.ACTIVE ))
+                  if (task.isStatus( States.ACTIVE )
+                        || task.isStatus( States.DELEGATED ))
                   {
                      actions.add( "complete" );
                      actions.add( "assign" );
@@ -262,7 +295,7 @@ public interface PossibleActions
                } else if (task.isDelegatedTo( actor ))
                {
                   // Delegations
-                  if (task.isStatus( States.ACTIVE ))
+                  if (task.isStatus( States.DELEGATED ))
                   {
                      actions.add( "accept" );
                      actions.add( "reject" );
