@@ -68,6 +68,12 @@ public class TaskStatusTableCellRenderer extends DefaultTableCellRenderer
                i18n.ICON_16 ) );
          setName( i18n.text( TaskResources.task_status_on_hold_text ) );
          setToolTipText( i18n.text( TaskResources.task_status_on_hold_text ) );
+      } else if (value.equals( States.DELEGATED ))
+      {
+         setIcon( i18n.icon( TaskResources.task_status_delegated_icon,
+               i18n.ICON_16 ) );
+         setName( i18n.text( TaskResources.task_status_delegated_text ) );
+         setToolTipText( i18n.text( TaskResources.task_status_delegated_text ) );
       }
 
       return this;
