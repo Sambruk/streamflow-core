@@ -22,7 +22,10 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilder;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
 import se.streamsource.streamflow.client.StreamFlowApplication;
+import se.streamsource.streamflow.client.StreamFlowResources;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.ui.ConfirmationDialog;
 import se.streamsource.streamflow.client.ui.workspace.SelectUserOrProjectDialog;
 import se.streamsource.streamflow.domain.interaction.gtd.Actions;
 
@@ -43,6 +46,9 @@ public class TaskActionsView extends JPanel
 {
 	@Uses
 	protected ObjectBuilder<SelectUserOrProjectDialog> userOrProjectSelectionDialog;
+
+   @Uses
+   private ObjectBuilder<ConfirmationDialog> confirmationDialog;
 
 	@Service
 	DialogService dialogs;
@@ -132,7 +138,12 @@ public class TaskActionsView extends JPanel
 	@Action
 	public void delete()
 	{
-		model.delete();
+      ConfirmationDialog dialog = confirmationDialog.newInstance();
+      dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamFlowResources.confirmation) );
+      if( dialog.isConfirmed())
+      {
+		   model.delete();
+      }
 	}
 
 	@Action
