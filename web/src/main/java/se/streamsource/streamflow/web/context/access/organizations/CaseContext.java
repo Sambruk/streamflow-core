@@ -38,8 +38,8 @@ import se.streamsource.streamflow.web.domain.structure.task.Task;
 /**
  * JAVADOC
  */
-@Mixins(TaskContext.Mixin.class)
-public interface TaskContext
+@Mixins(CaseContext.Mixin.class)
+public interface CaseContext
       extends IndexContext<ProxyUserTaskDTO>, Context
 {
    // commands
@@ -57,7 +57,7 @@ public interface TaskContext
 
    abstract class Mixin
          extends ContextMixin
-         implements TaskContext
+         implements CaseContext
    {
       @Structure
       ValueBuilderFactory vbf;

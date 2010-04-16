@@ -35,7 +35,7 @@ import static org.qi4j.api.query.QueryExpressions.*;
  */
 @Mixins(ProjectsContext.Mixin.class)
 public interface ProjectsContext
-   extends SubContexts<TaskTypesContext>, IndexContext<LinksValue>, Context
+   extends SubContexts<CaseTypesContext>, IndexContext<LinksValue>, Context
 {
    abstract class Mixin
       extends ContextMixin
@@ -54,11 +54,11 @@ public interface ProjectsContext
          return linksBuilder.newLinks();
       }
 
-      public TaskTypesContext context( String id )
+      public CaseTypesContext context( String id )
       {
          context.playRoles( module.unitOfWorkFactory().currentUnitOfWork().get( Project.class, id ) );
 
-         return subContext( TaskTypesContext.class);
+         return subContext( CaseTypesContext.class);
       }
    }
 }

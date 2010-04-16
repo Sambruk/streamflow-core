@@ -23,7 +23,6 @@ import se.streamsource.dci.context.SubContexts;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.domain.structure.Describable;
-import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.infrastructure.application.TitledLinksBuilder;
 import se.streamsource.streamflow.web.domain.entity.gtd.Inbox;
 import se.streamsource.streamflow.web.domain.entity.gtd.InboxQueries;
@@ -36,10 +35,10 @@ import se.streamsource.streamflow.web.domain.structure.organization.AccessPoint;
  */
 @Mixins(ProxyUserContext.Mixin.class)
 public interface ProxyUserContext
-   extends SubContexts<TaskContext>, Context, IndexContext<LinksValue>
+   extends SubContexts<CaseContext>, Context, IndexContext<LinksValue>
 {
    // command
-   void createtask( StringValue description );
+   void createcase( StringValue description );
 
 
    abstract class Mixin
@@ -60,7 +59,7 @@ public interface ProxyUserContext
          return linksBuilder.newLinks();
       }
 
-      public void createtask( StringValue description )
+      public void createcase( StringValue description )
       {
          Inbox inbox = context.role( Inbox.class );
          AccessPoint.Data data = context.role( AccessPoint.Data.class );
@@ -73,12 +72,12 @@ public interface ProxyUserContext
          }
       }
 
-      public TaskContext context( String id)
+      public CaseContext context( String id)
       {
          TaskEntity taskEntity = module.unitOfWorkFactory().currentUnitOfWork().get( TaskEntity.class, id );
 
          context.playRoles( taskEntity );
-         return subContext( TaskContext.class );
+         return subContext( CaseContext.class );
       }
    }
 }

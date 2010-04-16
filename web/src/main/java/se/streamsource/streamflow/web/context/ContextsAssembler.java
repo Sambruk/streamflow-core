@@ -21,7 +21,7 @@ import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.spi.service.importer.NewObjectImporter;
 import se.streamsource.dci.context.InteractionConstraintsService;
-import se.streamsource.streamflow.web.context.access.AccessContext;
+import se.streamsource.streamflow.web.context.access.SurfaceContext;
 import se.streamsource.streamflow.web.context.access.forms.FormSummaryContext;
 import se.streamsource.streamflow.web.context.access.forms.RequiredFormsContext;
 import se.streamsource.streamflow.web.context.access.forms.SubmittedFormsContext;
@@ -29,8 +29,10 @@ import se.streamsource.streamflow.web.context.access.organizations.AccessPointCo
 import se.streamsource.streamflow.web.context.access.organizations.AccessPointsContext;
 import se.streamsource.streamflow.web.context.access.forms.FormSubmissionContext;
 import se.streamsource.streamflow.web.context.access.forms.FormSubmissionsContext;
+import se.streamsource.streamflow.web.context.access.organizations.CaseContext;
 import se.streamsource.streamflow.web.context.access.organizations.ProxyUserContext;
 import se.streamsource.streamflow.web.context.access.organizations.ProxyUsersContext;
+import se.streamsource.streamflow.web.context.access.projects.CaseTypesContext;
 import se.streamsource.streamflow.web.context.conversation.ConversationParticipantContext;
 import se.streamsource.streamflow.web.context.conversation.ConversationParticipantsContext;
 import se.streamsource.streamflow.web.context.conversation.ConversationsContext;
@@ -194,13 +196,13 @@ public class ContextsAssembler
             MessagesContext.class,
 
             // ACCESS
-            AccessContext.class,
+            SurfaceContext.class,
             se.streamsource.streamflow.web.context.access.organizations.OrganizationContext.class,
             se.streamsource.streamflow.web.context.access.projects.ProjectsContext.class,
-            se.streamsource.streamflow.web.context.access.projects.TaskTypesContext.class,
+            CaseTypesContext.class,
             se.streamsource.streamflow.web.context.access.projects.LabelsContext.class,
             se.streamsource.streamflow.web.context.access.organizations.OrganizationsContext.class,
-            se.streamsource.streamflow.web.context.access.organizations.TaskContext.class,
+            se.streamsource.streamflow.web.context.access.organizations.CaseContext.class,
             SubmittedFormsContext.class,
             RequiredFormsContext.class,
             FormSubmissionsContext.class,

@@ -24,8 +24,8 @@ import se.streamsource.streamflow.web.context.access.organizations.Organizations
 /**
  * JAVADOC
  */
-@Mixins(AccessContext.Mixin.class)
-public interface AccessContext
+@Mixins(SurfaceContext.Mixin.class)
+public interface SurfaceContext
    extends Context
 {
    @SubContext
@@ -33,7 +33,7 @@ public interface AccessContext
 
    abstract class Mixin
       extends ContextMixin
-      implements AccessContext
+      implements SurfaceContext
    {
 
       public OrganizationsContext organizations()

@@ -16,14 +16,12 @@
 package se.streamsource.streamflow.web.context.access.projects;
 
 import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.unitofwork.UnitOfWork;
 import se.streamsource.dci.context.Context;
 import se.streamsource.dci.context.ContextMixin;
 import se.streamsource.dci.context.IndexContext;
 import se.streamsource.dci.context.SubContexts;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.domain.structure.Describable;
-import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.infrastructure.application.TitledLinksBuilder;
 import se.streamsource.streamflow.web.domain.structure.tasktype.SelectedTaskTypes;
 import se.streamsource.streamflow.web.domain.structure.tasktype.TaskType;
@@ -31,13 +29,13 @@ import se.streamsource.streamflow.web.domain.structure.tasktype.TaskType;
 /**
  * JAVADOC
  */
-@Mixins(TaskTypesContext.Mixin.class)
-public interface TaskTypesContext
+@Mixins(CaseTypesContext.Mixin.class)
+public interface CaseTypesContext
    extends SubContexts<LabelsContext>, IndexContext<LinksValue>, Context
 {
    abstract class Mixin
       extends ContextMixin
-      implements TaskTypesContext
+      implements CaseTypesContext
    {
       public LinksValue index()
       {
