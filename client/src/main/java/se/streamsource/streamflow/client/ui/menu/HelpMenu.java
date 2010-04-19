@@ -31,12 +31,12 @@ public class HelpMenu
    {
       if (config.os() == FileConfiguration.OS.mac)
       {
-         menu( "helpMenu",
-               "showHelp" );
+         menu( "helpMenu"/*,
+               "showHelp"*/ );
       } else
       {
          menu( "helpMenu",
-               "showHelp",
+               /*"showHelp",*/
                "showAbout" );
       }
    }

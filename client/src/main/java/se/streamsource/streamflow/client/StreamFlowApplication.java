@@ -384,7 +384,6 @@ public class StreamFlowApplication
    {
       // Turn off java help for 1.0 release
       // javaHelp.init();
-      dialogs.showOkDialog( getMainFrame(), new JLabel( i18n.text( StreamFlowResources.not_implemented )) );
    }
 
    @Override
