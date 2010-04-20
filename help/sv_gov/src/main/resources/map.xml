@@ -41,9 +41,9 @@
 	<mapID target="snap00006" url="graphics/snap00006.gif"/>
 	<mapID target="functions" url="html/functions.html"/>
 	<mapID target="intro1" url="html/intro.html"/>
-	<mapID target="taskinfo" url="html/taskinfo.html"/>
+	<mapID target="caseinfo" url="html/caseinfo.html"/>
 	<mapID target="workspace" url="html/workspace.html"/>
-	<mapID target="newtask" url="html/newtask.html"/>
+	<mapID target="newcase" url="html/newcase.html"/>
 	<mapID target="contacts" url="html/contacts.html"/>
 	<mapID target="snap00007" url="graphics/snap00007.gif"/>
 	<mapID target="snap00008" url="graphics/snap00008.gif"/>

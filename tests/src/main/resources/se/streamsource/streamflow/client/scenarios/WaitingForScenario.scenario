@@ -1,12 +1,12 @@
-Scenario: Complete waitingFor task 
+Scenario: Complete waitingFor case
 Given basic setup 1
 Given the organization
 Given user named user2
 Given organizational unit named OU2
 Given project named project2
-Given first waitingFor task
+Given first waitingFor case
 
-When waitingFor task is completed
+When waitingFor case is completed
 Then events changedOwner,assignedTo,changedStatus occurred
-Then task is completed
+Then case is completed
 

@@ -298,7 +298,7 @@
                         <font size="-1">
                             <code> 
                                 <a href="../../../../../se/streamsource/streamflow/web/context/task/TasksContext.html"
-                                   shape="rect" title="interface in se.streamsource.streamflow.web.context.task">
+                                   shape="rect" title="interface in se.streamsource.streamflow.web.context.caze">
                                     TasksContext
                                 </a>
                             </code>
@@ -423,7 +423,7 @@
             <font size="-1">@SubContext
             </font>
             <a href="../../../../../se/streamsource/streamflow/web/context/task/TasksContext.html" shape="rect"
-               title="interface in se.streamsource.streamflow.web.context.task">TasksContext
+               title="interface in se.streamsource.streamflow.web.context.caze">TasksContext
             </a>
             <b>tasks</b>()
         </pre>

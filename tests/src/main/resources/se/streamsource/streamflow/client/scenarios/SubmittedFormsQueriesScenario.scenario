@@ -4,7 +4,7 @@ Given basic form submit setup
 Given the organization
 Given organizational unit named OU1
 Given project named project1
-Given project task
+Given project case
 When submitted forms is requested
 Then there are 2 submitted forms
 When submitted form 0 is requested

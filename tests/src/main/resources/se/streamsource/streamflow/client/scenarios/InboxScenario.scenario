@@ -1,21 +1,21 @@
-Scenario: Create inbox task
+Scenario: Create inbox case
 Given basic setup 1
 Given user named user1
-When inbox task is created
-Then events createdTask,changedOwner,changedDate,setCounter,assignedTaskId,addedContact occurred
+When inbox case is created
+Then events createdCase,changedOwner,changedDate,setCounter,assignedCaseId,addedContact occurred
 
-Scenario: Forward task
+Scenario: Forward case
 Given basic setup 1
-When inbox task is created
+When inbox case is created
 And events are cleared
-And inbox task is forwarded to user user2
+And inbox case is forwarded to user user2
 Then events changedOwner occurred
 
-Scenario: Forward completed task
+Scenario: Forward completed case
 Given basic setup 1
 Given user named user1
-When inbox task is created
-And task is completed
+When inbox case is created
+And case is completed
 And events are cleared
-And inbox task is forwarded to user user2
+And inbox case is forwarded to user user2
 Then ConstraintViolationException is thrown

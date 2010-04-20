@@ -5,7 +5,7 @@ Given organizational unit named OU1
 Given project named project1
 Given form named SomeForm
 Given user named user1
-When inbox task is created
+When inbox case is created
 And form submission is created
 And field SomeField with value somevalue is added to form
 And submission date is now

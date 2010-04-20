@@ -1,52 +1,52 @@
-Scenario: Create assigned task
+Scenario: Create assigned case
 Given basic setup 1
 Given the organization
 Given organizational unit named OU1
 Given project named project1
 Given user named user1
-When an assigned task is created
-Then events createdAssignedTask,changedOwner,changedDate,setCounter,assignedTaskId,addedContact,assignedTo occurred
+When an assigned case is created
+Then events createdAssignedCase,changedOwner,changedDate,setCounter,assignedCaseId,addedContact,assignedTo occurred
 
-Scenario: Complete assigned task
+Scenario: Complete assigned case
 Given basic setup 1
 Given the organization
 Given organizational unit named OU1
 Given project named project1
 Given user named user1
-When an assigned task is created
+When an assigned case is created
 And events are cleared
-And assigned task is completed
+And assigned case is completed
 Then events changedStatus occurred
 
-Scenario: Drop assigned task
+Scenario: Drop assigned case
 Given basic setup 1
 Given the organization
 Given organizational unit named OU1
 Given project named project1
 Given user named user1
-When an assigned task is created
+When an assigned case is created
 And events are cleared
-And assigned task is dropped
+And assigned case is dropped
 Then events changedStatus occurred
 
-Scenario: Forward assigned task
+Scenario: Forward assigned case
 Given basic setup 1
 Given the organization
 Given organizational unit named OU1
 Given project named project1
 Given user named user1
-When an assigned task is created
+When an assigned case is created
 And events are cleared
-And assigned task is forwarded to user user2
+And assigned case is forwarded to user user2
 Then events unassigned,changedOwner occurred
 
-Scenario: Delegate assigned task
+Scenario: Delegate assigned case
 Given basic setup 1
 Given the organization
 Given organizational unit named OU1
 Given project named project1
 Given user named user1
-When an assigned task is created
+When an assigned case is created
 And events are cleared
-And assigned task is delegated to user user2
+And assigned case is delegated to user user2
 Then events unassigned,delegatedTo occurred

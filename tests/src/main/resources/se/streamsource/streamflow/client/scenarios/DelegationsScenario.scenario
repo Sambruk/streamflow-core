@@ -1,12 +1,12 @@
-Scenario: Finish delegated task 
+Scenario: Finish delegated case
 Given basic setup 1
 Given the organization
 Given user named user2
 Given organizational unit named OU2
 Given project named project2
-Given first delegated task
+Given first delegated case
 
-When delegated task is finished
+When delegated case is finished
 Then events assignedTo,changedOwner,changedStatus occurred
-Then task is done
+Then case is done
 
