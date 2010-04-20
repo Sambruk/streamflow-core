@@ -18,7 +18,7 @@ package se.streamsource.streamflow.client.ui.search;
 public enum SearchTermsResources
 {
    createdOn,
-   taskType,
+   caseType,
    project,
    label,
    assignedTo,

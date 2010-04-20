@@ -22,7 +22,7 @@ import se.streamsource.streamflow.client.ui.administration.label.LabelsView;
 import se.streamsource.streamflow.client.ui.administration.label.SelectedLabelsView;
 import se.streamsource.streamflow.client.ui.administration.policy.AdministratorsView;
 import se.streamsource.streamflow.client.ui.administration.projects.ProjectAdminView;
-import se.streamsource.streamflow.client.ui.administration.tasktypes.TaskTypesAdminView;
+import se.streamsource.streamflow.client.ui.administration.tasktypes.CaseTypesAdminView;
 import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FormsAdminView;
 
 import javax.swing.*;
@@ -36,7 +36,7 @@ public class OrganizationalUnitAdministrationView
    public OrganizationalUnitAdministrationView( @Uses ProjectAdminView projectAdmin,
                                                 @Uses GroupAdminView groupAdmin,
                                                 @Uses FormsAdminView formsView,
-                                                @Uses TaskTypesAdminView taskTypesView,
+                                                @Uses CaseTypesAdminView caseTypesView,
                                                 @Uses LabelsView labels,
                                                 @Uses SelectedLabelsView selectedLabels,
                                                 @Uses AdministratorsView administratorsAdmin )
@@ -44,7 +44,7 @@ public class OrganizationalUnitAdministrationView
       addTab( text( AdministrationResources.projects_tab ), projectAdmin );
       addTab( text( AdministrationResources.groups_tab ), groupAdmin );
       addTab( text( AdministrationResources.forms_tab ), formsView );
-      addTab( text( AdministrationResources.tasktypes_tab ), taskTypesView );
+      addTab( text( AdministrationResources.casetypes_tab ), caseTypesView );
       addTab( text( AdministrationResources.labels_tab ), labels );
       addTab( text( AdministrationResources.selected_labels_tab ), selectedLabels );
       addTab( text( AdministrationResources.administrators_tab ), administratorsAdmin );

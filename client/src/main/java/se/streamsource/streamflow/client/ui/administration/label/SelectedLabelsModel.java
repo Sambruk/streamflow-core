@@ -39,7 +39,7 @@ import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import java.util.Collection;
 
 /**
- * Management of selected labels on a tasktype, project or OU level
+ * Management of selected labels on a casetype, project or OU level
  */
 public class SelectedLabelsModel
       implements EventListener, Refreshable

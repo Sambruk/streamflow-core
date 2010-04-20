@@ -20,8 +20,8 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import se.streamsource.streamflow.client.ui.task.TaskCreationNode;
-import se.streamsource.streamflow.client.ui.task.TaskTableModel;
+import se.streamsource.streamflow.client.ui.caze.CaseCreationNode;
+import se.streamsource.streamflow.client.ui.caze.CasesTableModel;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 
@@ -32,19 +32,19 @@ import javax.swing.tree.DefaultMutableTreeNode;
  */
 public class WorkspaceUserInboxNode
       extends DefaultMutableTreeNode
-      implements EventListener, TaskCreationNode
+      implements EventListener, CaseCreationNode
 {
    @Uses
    CommandQueryClient client;
 
    @Uses
-   private TaskTableModel model;
+   private CasesTableModel model;
 
    public String toString()
    {
       String text = i18n.text( WorkspaceResources.inboxes_node );
 
-      String count = getParent().getParent().getTaskCount( "inbox" );
+      String count = getParent().getParent().getCaseCount( "inbox" );
       if (!count.equals(""))
       {
          text += " (" + count + ")";
@@ -56,11 +56,11 @@ public class WorkspaceUserInboxNode
       return text;
    }
 
-   public void createTask()
+   public void createCase()
    {
       try
       {
-         client.postCommand( "createtask" );
+         client.postCommand( "createcase" );
       } catch (ResourceException e)
       {
          throw new OperationException(WorkspaceResources.could_not_perform_operation, e);
@@ -73,7 +73,7 @@ public class WorkspaceUserInboxNode
       return (WorkspaceUserNode) super.getParent();
    }
 
-   public TaskTableModel taskTableModel()
+   public CasesTableModel caseTableModel()
    {
       return model;
    }

@@ -29,10 +29,10 @@ import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import se.streamsource.streamflow.client.ui.task.OverviewAssignmentsTaskTableFormatter;
-import se.streamsource.streamflow.client.ui.task.TaskTableModel;
-import se.streamsource.streamflow.client.ui.task.TaskTableView;
-import se.streamsource.streamflow.client.ui.task.OverviewWaitingForTaskTableFormatter;
+import se.streamsource.streamflow.client.ui.caze.CasesTableModel;
+import se.streamsource.streamflow.client.ui.caze.OverviewAssignmentsCaseTableFormatter;
+import se.streamsource.streamflow.client.ui.caze.CaseTableView;
+import se.streamsource.streamflow.client.ui.caze.OverviewWaitingForCaseTableFormatter;
 
 import javax.swing.AbstractAction;
 import javax.swing.Icon;
@@ -184,11 +184,11 @@ public class OverviewView
                } else if (node instanceof OverviewProjectAssignmentsNode)
                {
                   OverviewProjectAssignmentsNode projectAssignmentsNode = (OverviewProjectAssignmentsNode) node;
-                  final TaskTableModel assignmentsModel = projectAssignmentsNode.taskTableModel();
-                  view = obf.newObjectBuilder( TaskTableView.class ).use( assignmentsModel,
-                        projectAssignmentsNode.getParent().getParent().getParent().getUserObject().tasks(),
+                  final CasesTableModel assignmentsModel = projectAssignmentsNode.caseTableModel();
+                  view = obf.newObjectBuilder( CaseTableView.class ).use( assignmentsModel,
+                        projectAssignmentsNode.getParent().getParent().getParent().getUserObject().cases(),
                         projectAssignmentsNode.getParent(),
-                        new OverviewAssignmentsTaskTableFormatter()).newInstance();
+                        new OverviewAssignmentsCaseTableFormatter()).newInstance();
 
                   context.getTaskService().execute( new Task( context.getApplication() )
                   {
@@ -202,11 +202,11 @@ public class OverviewView
                } else if (node instanceof OverviewProjectWaitingForNode)
                {
                   OverviewProjectWaitingForNode projectWaitingForNode = (OverviewProjectWaitingForNode) node;
-                  final TaskTableModel waitingForModel = projectWaitingForNode.taskTableModel();
-                  view = obf.newObjectBuilder( TaskTableView.class ).use(
+                  final CasesTableModel waitingForModel = projectWaitingForNode.caseTableModel();
+                  view = obf.newObjectBuilder( CaseTableView.class ).use(
                         waitingForModel,
-                        projectWaitingForNode.getParent().getParent().getParent().getUserObject().tasks(),
-                        new OverviewWaitingForTaskTableFormatter()).newInstance();
+                        projectWaitingForNode.getParent().getParent().getParent().getUserObject().cases(),
+                        new OverviewWaitingForCaseTableFormatter()).newInstance();
 
                   context.getTaskService().execute( new Task( context.getApplication() )
                   {

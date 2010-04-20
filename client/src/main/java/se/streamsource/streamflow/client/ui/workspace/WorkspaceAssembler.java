@@ -45,7 +45,7 @@ public class WorkspaceAssembler
             WorkspaceProjectAssignmentsNode.class,
             WorkspaceProjectDelegationsNode.class,
             WorkspaceProjectWaitingForNode.class,
-            RefreshTaskCountTask.class).visibleIn( Visibility.layer );
+            RefreshCaseCountTask.class).visibleIn( Visibility.layer );
 
       UIAssemblers.addMV( module,
             WorkspaceModel.class,

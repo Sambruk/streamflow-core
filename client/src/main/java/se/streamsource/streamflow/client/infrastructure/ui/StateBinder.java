@@ -26,7 +26,7 @@ import org.qi4j.api.property.Property;
 import org.qi4j.api.util.DateFunctions;
 import org.qi4j.runtime.composite.ConstraintsCheck;
 import org.qi4j.runtime.property.PropertyInstance;
-import se.streamsource.streamflow.client.ui.task.MultiSelectPanel;
+import se.streamsource.streamflow.client.ui.caze.MultiSelectPanel;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 
 import javax.swing.*;

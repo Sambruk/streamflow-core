@@ -25,7 +25,7 @@ import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.LinkComparator;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.ui.administration.AccountModel;
-import se.streamsource.streamflow.client.ui.task.TaskTableModel;
+import se.streamsource.streamflow.client.ui.caze.CasesTableModel;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
@@ -89,10 +89,10 @@ public class WorkspaceProjectsNode
             CommandQueryClient projectDelegationsClientResource = projectClient.getSubClient( "delegations" );
             CommandQueryClient projectWaitingforClientResource = projectClient.getSubClient( "waitingfor" );
 
-            TaskTableModel inboxModel = obf.newObjectBuilder( TaskTableModel.class ).use( projectInboxClientResource ).newInstance();
-            TaskTableModel assignmentsModel = obf.newObjectBuilder( TaskTableModel.class ).use( projectAssignmentsClientResource ).newInstance();
-            TaskTableModel delegationsModel = obf.newObjectBuilder( TaskTableModel.class ).use( projectDelegationsClientResource ).newInstance();
-            TaskTableModel waitingForModel = obf.newObjectBuilder( TaskTableModel.class ).use( projectWaitingforClientResource ).newInstance();
+            CasesTableModel inboxModel = obf.newObjectBuilder( CasesTableModel.class ).use( projectInboxClientResource ).newInstance();
+            CasesTableModel assignmentsModel = obf.newObjectBuilder( CasesTableModel.class ).use( projectAssignmentsClientResource ).newInstance();
+            CasesTableModel delegationsModel = obf.newObjectBuilder( CasesTableModel.class ).use( projectDelegationsClientResource ).newInstance();
+            CasesTableModel waitingForModel = obf.newObjectBuilder( CasesTableModel.class ).use( projectWaitingforClientResource ).newInstance();
 
             WorkspaceProjectInboxNode inboxNode = obf.newObjectBuilder( WorkspaceProjectInboxNode.class ).use( projectInboxClientResource, inboxModel ).newInstance();
             WorkspaceProjectAssignmentsNode assignmentsNode = obf.newObjectBuilder( WorkspaceProjectAssignmentsNode.class ).use( projectAssignmentsClientResource, assignmentsModel ).newInstance();
@@ -104,7 +104,7 @@ public class WorkspaceProjectsNode
                   assignmentsNode,
                   delegationsNode,
                   waitingForNode,
-                  account.tasks(),
+                  account.cases(),
                   project.text().get() ).newInstance() );
          }
 

@@ -16,7 +16,7 @@
 package se.streamsource.streamflow.client.ui.menu;
 
 /**
- * Tasks menu
+ * Cases menu
  */
 public class EditMenu
       extends AbstractMenu

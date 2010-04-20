@@ -20,25 +20,11 @@ package se.streamsource.streamflow.client.ui.workspace;
  */
 public enum WorkspaceResources
 {
-   inbox_node,
-
-   inbox_tab, detail_tab,
-
-   description_column_header,
    title_column_header,
-   tasktype_column_header,
+   casetype_column_header,
    created_column_header,
-   project_column_header,
-   complete_task_header,
-   task_status_header,
+   case_status_header,
 
-   add_task_title,
-   task_separator,
-   id_label,
-   description_label,
-   title_label,
-   labels_label,
-   selected_labels_label,
    note_label,
    name_label,
    contact_id_label,
@@ -48,22 +34,14 @@ public enum WorkspaceResources
    email_label,
    address_label,
 
-   assignments_tab,
-
-   delegations_tab,
    delegated_from_header,
-
-   waitingfor_tab,
 
    delegated_on_header,
    delegated_to_header,
    assigned_to_header,
-   delegated_done_header,
 
    comment_text_label,
    comment_public_label,
-   public_comment,
-   user_node,
    projects_node,
    inboxes_node,
 
@@ -73,25 +51,15 @@ public enum WorkspaceResources
 
    general_tab,
    metadata_tab,
-   comments_tab,
    conversations_tab,
-   attachments_tab,
    contacts_tab,
 
    add_comment_title,
 
    window_name,
    could_not_refresh_projects,
-   is_completed,
-
-   date_format,
-
-   search_project,
    search_projects_users,
    select_account, 
-   select_labels,
-   could_not_create_label,
-   could_not_refresh_list_of_labels,
    submitted_forms_tab,
    effective_fields_tab,
    could_not_get_submitted_form,
@@ -100,28 +68,17 @@ public enum WorkspaceResources
    could_not_perform_operation,
    could_not_get_form,
    could_not_submit_form,
-   could_not_forward_task_to_project,
    field_date,
    field_submitter,
    date_time_format,
-   form_submit_wizard,
-   form_select_description,
-   form_submit_title,
-   form_submit_description,
-   select_form,
-   tasktype_label,
    forms_label,
-   could_not_refresh, 
-   chose_tasktype,
-   search_tasktype,
-   fill_all_fields,
+   could_not_refresh,
+   chose_casetype,
    mandatory_field_missing,
    could_not_get_form_submission,
-   could_not_parse_date,
    could_not_discard_form_submission,
    owner,
-   choose_task, 
-   search_user,
+   choose_case,
    change_password_title,
    welcome, choose_message_delivery_type
 }

@@ -28,7 +28,7 @@ import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.TitledLinkValue;
 import se.streamsource.streamflow.client.infrastructure.ui.GroupedFilteredList;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import se.streamsource.streamflow.client.ui.task.TaskActionsModel;
+import se.streamsource.streamflow.client.ui.caze.CaseActionsModel;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -49,7 +49,7 @@ public class SelectUserOrProjectDialog
    public GroupedFilteredList projectList;
    public GroupedFilteredList userList;
 
-   public SelectUserOrProjectDialog( final @Uses TaskActionsModel taskModel,
+   public SelectUserOrProjectDialog( final @Uses CaseActionsModel caseModel,
                                       @Service ApplicationContext context,
                                       @Structure ObjectBuilderFactory obf )
    {
@@ -58,7 +58,7 @@ public class SelectUserOrProjectDialog
       setName( i18n.text( WorkspaceResources.search_projects_users ) );
       setActionMap( context.getActionMap( this ) );
 
-      EventList<TitledLinkValue> projects = taskModel.getPossibleProjects();
+      EventList<TitledLinkValue> projects = caseModel.getPossibleProjects();
 
       projectList = new GroupedFilteredList();
       projectList.setEventList( projects );
@@ -68,7 +68,7 @@ public class SelectUserOrProjectDialog
       userList = new GroupedFilteredList();
       try
       {
-         EventList<TitledLinkValue> users = taskModel.getPossibleUsers();
+         EventList<TitledLinkValue> users = caseModel.getPossibleUsers();
 
          userList.setEventList(users);
 

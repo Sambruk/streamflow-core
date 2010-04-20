@@ -27,7 +27,6 @@ public class WorkspaceMenuBar
 {
    public WorkspaceMenuBar( @Uses FileMenu fileMenu,
                             @Uses EditMenu editMenu,
-                            @Uses ViewMenu viewMenu,
                             @Uses AccountMenu accountMenu,
                             @Uses WindowMenu windowMenu,
                             @Uses HelpMenu helpMenu
@@ -35,7 +34,6 @@ public class WorkspaceMenuBar
    {
       add( fileMenu );
       add( editMenu );
-      add( viewMenu );
       add( accountMenu );
       add( windowMenu );
       add( helpMenu );

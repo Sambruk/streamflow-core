@@ -16,7 +16,6 @@
 package se.streamsource.streamflow.client.domain.form;
 
 import se.streamsource.streamflow.domain.form.TextFieldValue;
-import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FieldValueEditModel;
 import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FieldValueTextEditView;
 
 import java.awt.Component;

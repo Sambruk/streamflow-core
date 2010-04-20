@@ -18,8 +18,8 @@ package se.streamsource.streamflow.client.ui.administration.projects;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.ui.administration.label.LabelsModel;
 import se.streamsource.streamflow.client.ui.administration.label.SelectedLabelsModel;
-import se.streamsource.streamflow.client.ui.administration.tasktypes.SelectedTaskTypesModel;
-import se.streamsource.streamflow.client.ui.administration.tasktypes.TaskTypesModel;
+import se.streamsource.streamflow.client.ui.administration.tasktypes.SelectedCaseTypesModel;
+import se.streamsource.streamflow.client.ui.administration.tasktypes.CaseTypesModel;
 import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FormsModel;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
@@ -40,7 +40,7 @@ public class ProjectModel
 
    private
    @Uses
-   TaskTypesModel taskTypesModel;
+   CaseTypesModel caseTypesModel;
 
    private
    @Uses
@@ -52,7 +52,7 @@ public class ProjectModel
 
    private
    @Uses
-   SelectedTaskTypesModel selectedTaskTypesModel;
+   SelectedCaseTypesModel selectedCaseTypesModel;
 
    public ProjectMembersModel getMembersModel()
    {
@@ -64,9 +64,9 @@ public class ProjectModel
       return formsModel;
    }
 
-   public TaskTypesModel getTaskTypesModel()
+   public CaseTypesModel getCaseTypesModel()
    {
-      return taskTypesModel;
+      return caseTypesModel;
    }
 
    public LabelsModel getLabelsModel()
@@ -79,18 +79,18 @@ public class ProjectModel
       return selectedLabelsModel;
    }
 
-   public SelectedTaskTypesModel getSelectedTaskTypes()
+   public SelectedCaseTypesModel getSelectedCaseTypes()
    {
-      return selectedTaskTypesModel;
+      return selectedCaseTypesModel;
    }
 
    public void notifyEvent( DomainEvent event )
    {
       membersModel.notifyEvent( event );
       formsModel.notifyEvent( event );
-      taskTypesModel.notifyEvent( event );
+      caseTypesModel.notifyEvent( event );
       selectedLabelsModel.notifyEvent( event );
-      selectedTaskTypesModel.notifyEvent( event );
+      selectedCaseTypesModel.notifyEvent( event );
    }
 
 }

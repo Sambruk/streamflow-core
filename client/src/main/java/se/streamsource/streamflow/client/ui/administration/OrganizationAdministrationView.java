@@ -20,7 +20,7 @@ import se.streamsource.streamflow.client.ui.administration.label.LabelsView;
 import se.streamsource.streamflow.client.ui.administration.label.SelectedLabelsView;
 import se.streamsource.streamflow.client.ui.administration.policy.AdministratorsView;
 import se.streamsource.streamflow.client.ui.administration.roles.RolesView;
-import se.streamsource.streamflow.client.ui.administration.tasktypes.TaskTypesAdminView;
+import se.streamsource.streamflow.client.ui.administration.tasktypes.CaseTypesAdminView;
 import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FormsAdminView;
 
 import javax.swing.JTabbedPane;
@@ -37,14 +37,14 @@ public class OrganizationAdministrationView
                                           @Uses SelectedLabelsView selectedLabelsView,
                                           @Uses FormsAdminView formsView,
                                           @Uses RolesView rolesView,
-                                          @Uses TaskTypesAdminView taskTypesView,
+                                          @Uses CaseTypesAdminView caseTypesView,
                                           @Uses AdministratorsView administratorsAdmin
    )
    {
       addTab( text( AdministrationResources.labels_tab ), labelsView );
       addTab( text( AdministrationResources.selected_labels_tab ), selectedLabelsView );
       addTab( text( AdministrationResources.forms_tab ), formsView );
-      addTab( text( AdministrationResources.tasktypes_tab ), taskTypesView );
+      addTab( text( AdministrationResources.casetypes_tab ), caseTypesView );
 //        addTab( text( AdministrationResources.roles_tab ), rolesView );
       addTab( text( AdministrationResources.administrators_tab ), administratorsAdmin );
    }

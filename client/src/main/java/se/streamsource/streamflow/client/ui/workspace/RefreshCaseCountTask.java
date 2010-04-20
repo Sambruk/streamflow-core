@@ -30,7 +30,7 @@ import java.util.logging.Logger;
 /**
  * JAVADOC
  */
-public class RefreshTaskCountTask extends Task<Void, Void>
+public class RefreshCaseCountTask extends Task<Void, Void>
 {
    @Uses
    WorkspaceNode node;
@@ -40,7 +40,7 @@ public class RefreshTaskCountTask extends Task<Void, Void>
 
 
 
-   public RefreshTaskCountTask( @Service Application app, @Uses Component tree )
+   public RefreshCaseCountTask( @Service Application app, @Uses Component tree )
    {
       super( app );
    }

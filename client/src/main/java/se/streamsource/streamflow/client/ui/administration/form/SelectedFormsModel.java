@@ -38,7 +38,7 @@ import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 
 /**
- * Management of selected forms on a tasktype
+ * Management of selected forms on a casetype
  */
 public class SelectedFormsModel
    extends SelectionModel

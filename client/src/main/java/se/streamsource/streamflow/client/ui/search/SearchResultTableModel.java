@@ -20,8 +20,8 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
-import se.streamsource.streamflow.client.ui.task.TaskTableModel;
-import se.streamsource.streamflow.client.ui.task.TasksModel;
+import se.streamsource.streamflow.client.ui.caze.CasesModel;
+import se.streamsource.streamflow.client.ui.caze.CasesTableModel;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 
 import javax.swing.*;
@@ -30,10 +30,10 @@ import javax.swing.*;
  * JAVADOC
  */
 public class SearchResultTableModel
-      extends TaskTableModel
+      extends CasesTableModel
 {
    @Uses
-   TasksModel tasksModel;
+   CasesModel casesModel;
 
    private String searchString;
 
@@ -49,8 +49,8 @@ public class SearchResultTableModel
    {
       try
       {
-         final LinksValue newRoot = tasksModel.search( searchString );
-         boolean same = newRoot.equals( tasks );
+         final LinksValue newRoot = casesModel.search( searchString );
+         boolean same = newRoot.equals( cases );
          if (!same)
          {
             SwingUtilities.invokeLater( new Runnable()
@@ -58,7 +58,7 @@ public class SearchResultTableModel
                public void run()
                {
                   EventListSynch.synchronize( newRoot.links().get(), eventList );
-                  tasks = newRoot;
+                  cases = newRoot;
                }
             });
          }

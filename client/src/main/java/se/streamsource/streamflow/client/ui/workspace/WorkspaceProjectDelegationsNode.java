@@ -18,7 +18,7 @@ package se.streamsource.streamflow.client.ui.workspace;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import se.streamsource.streamflow.client.ui.task.TaskTableModel;
+import se.streamsource.streamflow.client.ui.caze.CasesTableModel;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 
@@ -35,7 +35,7 @@ public class WorkspaceProjectDelegationsNode
    private CommandQueryClient client;
 
    @Uses
-   private TaskTableModel model;
+   private CasesTableModel model;
 
    @Override
    public WorkspaceProjectNode getParent()
@@ -48,7 +48,7 @@ public class WorkspaceProjectDelegationsNode
    {
       String text = i18n.text( WorkspaceResources.delegations_node );
 
-      String count = getParent().getParent().getParent().getTaskCount( client.getReference().getSegments().get(0)+"/delegations" );
+      String count = getParent().getParent().getParent().getCaseCount( client.getReference().getSegments().get(0)+"/delegations" );
       if (!count.equals(""))
       {
          text += " (" + count + ")";
@@ -60,7 +60,7 @@ public class WorkspaceProjectDelegationsNode
       return text;
    }
 
-   public TaskTableModel taskTableModel()
+   public CasesTableModel caseTableModel()
    {
       return model;
    }

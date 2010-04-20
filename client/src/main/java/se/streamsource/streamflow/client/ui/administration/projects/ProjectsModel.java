@@ -17,7 +17,6 @@ package se.streamsource.streamflow.client.ui.administration.projects;
 
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.SortedList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
@@ -34,10 +33,10 @@ import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.administration.OrganizationalUnitAdministrationModel;
+import se.streamsource.streamflow.client.ui.administration.tasktypes.CaseTypesModel;
 import se.streamsource.streamflow.client.ui.administration.label.LabelsModel;
 import se.streamsource.streamflow.client.ui.administration.label.SelectedLabelsModel;
-import se.streamsource.streamflow.client.ui.administration.tasktypes.SelectedTaskTypesModel;
-import se.streamsource.streamflow.client.ui.administration.tasktypes.TaskTypesModel;
+import se.streamsource.streamflow.client.ui.administration.tasktypes.SelectedCaseTypesModel;
 import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FormsModel;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
@@ -69,18 +68,18 @@ public class ProjectsModel
          LabelsModel labelsModel = obf.newObjectBuilder( LabelsModel.class ).use( projectClient.getSubClient( "labels" ) ).newInstance();
          SelectedLabelsModel selectedLabelsModel = obf.newObjectBuilder( SelectedLabelsModel.class ).use( projectClient.getSubClient( "selectedlabels" ) ).newInstance();
          FormsModel formsModel = obf.newObjectBuilder( FormsModel.class ).use( projectClient.getSubClient( "forms" ) ).newInstance();
-         TaskTypesModel taskTypesModel = obf.newObjectBuilder( TaskTypesModel.class ).use( projectClient.getSubClient( "tasktypes" ) ).newInstance();
-         SelectedTaskTypesModel selectedTaskTypesModel = obf.newObjectBuilder( SelectedTaskTypesModel.class ).use( projectClient.getSubClient( "selectedtasktypes" ) ).newInstance();
+         CaseTypesModel caseTypesModel = obf.newObjectBuilder( CaseTypesModel.class ).use( projectClient.getSubClient( "casetypes" ) ).newInstance();
+         SelectedCaseTypesModel selectedCaseTypesModel = obf.newObjectBuilder( SelectedCaseTypesModel.class ).use( projectClient.getSubClient( "selectedcasetypes" ) ).newInstance();
          ProjectMembersModel projectMembersModel = obf.newObjectBuilder(ProjectMembersModel.class).use( projectClient.getSubClient( "members" ) ).newInstance();
 
 
          return obf.newObjectBuilder( ProjectModel.class ).use(
                projectMembersModel,
                formsModel,
-               taskTypesModel,
+               caseTypesModel,
                labelsModel,
                selectedLabelsModel,
-               selectedTaskTypesModel,
+               selectedCaseTypesModel,
                organizationModel ).newInstance();
       }
    };

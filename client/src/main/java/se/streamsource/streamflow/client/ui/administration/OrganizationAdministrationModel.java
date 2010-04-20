@@ -26,11 +26,11 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.ui.administration.tasktypes.CaseTypesModel;
 import se.streamsource.streamflow.client.ui.administration.label.LabelsModel;
 import se.streamsource.streamflow.client.ui.administration.label.SelectedLabelsModel;
 import se.streamsource.streamflow.client.ui.administration.policy.AdministratorsModel;
 import se.streamsource.streamflow.client.ui.administration.roles.RolesModel;
-import se.streamsource.streamflow.client.ui.administration.tasktypes.TaskTypesModel;
 import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FormsModel;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
@@ -50,7 +50,7 @@ public class OrganizationAdministrationModel
    private LabelsModel labelsModel;
    private SelectedLabelsModel selectedLabelsModel;
    private FormsModel formsModel;
-   private TaskTypesModel taskTypesModel;
+   private CaseTypesModel caseTypesModel;
    private CommandQueryClient client;
 
    public OrganizationAdministrationModel( @Structure ObjectBuilderFactory obf, @Uses CommandQueryClient client)
@@ -62,7 +62,7 @@ public class OrganizationAdministrationModel
       labelsModel = obf.newObjectBuilder( LabelsModel.class ).use( client.getSubClient( "labels")).newInstance();
       selectedLabelsModel = obf.newObjectBuilder( SelectedLabelsModel.class ).use( client.getSubClient( "selectedlabels")).newInstance();
       formsModel = obf.newObjectBuilder( FormsModel.class ).use( client.getSubClient( "forms")).newInstance();
-      taskTypesModel = obf.newObjectBuilder( TaskTypesModel.class ).use( client.getSubClient( "tasktypes" )).newInstance();
+      caseTypesModel = obf.newObjectBuilder( CaseTypesModel.class ).use( client.getSubClient( "casetypes" )).newInstance();
       administratorsModel = obf.newObjectBuilder( AdministratorsModel.class ).use( client.getSubClient( "administrators" )).newInstance();
    }
 
@@ -86,9 +86,9 @@ public class OrganizationAdministrationModel
       return formsModel;
    }
 
-   public TaskTypesModel taskTypesModel()
+   public CaseTypesModel caseTypesModel()
    {
-      return taskTypesModel;
+      return caseTypesModel;
    }
 
    public AdministratorsModel administratorsModel()
@@ -147,6 +147,6 @@ public class OrganizationAdministrationModel
       labelsModel.notifyEvent( event );
       formsModel.notifyEvent( event );
       administratorsModel.notifyEvent( event );
-      taskTypesModel.notifyEvent( event );
+      caseTypesModel.notifyEvent( event );
    }
 }

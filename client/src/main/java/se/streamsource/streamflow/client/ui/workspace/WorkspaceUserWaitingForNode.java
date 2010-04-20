@@ -17,7 +17,7 @@ package se.streamsource.streamflow.client.ui.workspace;
 
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import se.streamsource.streamflow.client.ui.task.TaskTableModel;
+import se.streamsource.streamflow.client.ui.caze.CasesTableModel;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 
@@ -31,7 +31,7 @@ public class WorkspaceUserWaitingForNode
       implements EventListener
 {
    @Uses
-   private TaskTableModel model;
+   private CasesTableModel model;
 
    @Override
    public WorkspaceUserNode getParent()
@@ -43,7 +43,7 @@ public class WorkspaceUserWaitingForNode
    public String toString()
    {
       String text = i18n.text( WorkspaceResources.waitingfor_node );
-      String count = getParent().getParent().getTaskCount( "waitingfor" );
+      String count = getParent().getParent().getCaseCount( "waitingfor" );
       if (!count.equals(""))
       {
          text += " (" + count + ")";
@@ -55,7 +55,7 @@ public class WorkspaceUserWaitingForNode
       return text;
    }
 
-   public TaskTableModel taskTableModel()
+   public CasesTableModel caseTableModel()
    {
       return model;
    }

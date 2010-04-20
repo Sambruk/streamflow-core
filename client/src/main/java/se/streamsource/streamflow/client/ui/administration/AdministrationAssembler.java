@@ -27,7 +27,7 @@ import se.streamsource.streamflow.client.ui.administration.organization.Organiza
 import se.streamsource.streamflow.client.ui.administration.policy.AdministratorAdministrationAssembler;
 import se.streamsource.streamflow.client.ui.administration.projects.ProjectAdministrationAssembler;
 import se.streamsource.streamflow.client.ui.administration.roles.RoleAdministrationAssembler;
-import se.streamsource.streamflow.client.ui.administration.tasktypes.TaskTypeAdministrationAssembler;
+import se.streamsource.streamflow.client.ui.administration.tasktypes.CaseTypeAdministrationAssembler;
 import se.streamsource.streamflow.client.ui.administration.users.UserAdministrationAssembler;
 import se.streamsource.streamflow.client.ui.workspace.TestConnectionTask;
 
@@ -79,7 +79,7 @@ public class AdministrationAssembler
       new OrganizationsAdministrationAssembler().assemble( module.layerAssembly().moduleAssembly( "Organizations" ) );
       new GroupAdministrationAssembler().assemble( module.layerAssembly().moduleAssembly( "Groups" ) );
       new ProjectAdministrationAssembler().assemble( module.layerAssembly().moduleAssembly( "Projects" ) );
-      new TaskTypeAdministrationAssembler().assemble( module.layerAssembly().moduleAssembly( "Task types" ) );
+      new CaseTypeAdministrationAssembler().assemble( module.layerAssembly().moduleAssembly( "Case types" ) );
       new RoleAdministrationAssembler().assemble( module.layerAssembly().moduleAssembly( "Roles" ) );
       new FormsAssembler().assemble( module.layerAssembly().moduleAssembly( "Forms" ) );
       new AdministratorAdministrationAssembler().assemble( module.layerAssembly().moduleAssembly( "Administrators" ) );

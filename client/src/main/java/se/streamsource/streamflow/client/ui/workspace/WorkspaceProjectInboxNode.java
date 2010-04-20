@@ -18,7 +18,7 @@ package se.streamsource.streamflow.client.ui.workspace;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.streamflow.client.ui.task.TaskTableModel;
+import se.streamsource.streamflow.client.ui.caze.CasesTableModel;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 
@@ -36,13 +36,13 @@ public class WorkspaceProjectInboxNode
    CommandQueryClient client;
 
    @Uses
-   private TaskTableModel model;
+   private CasesTableModel model;
 
    public String toString()
    {
       String text = i18n.text( WorkspaceResources.inboxes_node );
 
-      String count = getParent().getParent().getParent().getTaskCount( client.getReference().getSegments().get(0)+"/inbox" );
+      String count = getParent().getParent().getParent().getCaseCount( client.getReference().getSegments().get(0)+"/inbox" );
       if (!count.equals(""))
       {
          text += " (" + count + ")";
@@ -60,7 +60,7 @@ public class WorkspaceProjectInboxNode
       return (WorkspaceProjectNode) super.getParent();
    }
 
-   public TaskTableModel taskTableModel()
+   public CasesTableModel caseTableModel()
    {
       return model;
    }

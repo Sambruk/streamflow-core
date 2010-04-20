@@ -26,13 +26,11 @@ public class AdministrationMenuBar
       extends JMenuBar
 {
    public AdministrationMenuBar( @Uses FileMenu fileMenu,
-//                                 @Uses ViewMenu viewMenu,
                                  @Uses WindowMenu windowMenu,
                                  @Uses HelpMenu helpMenu
    )
    {
       add( fileMenu );
-//      add( viewMenu );
       add( windowMenu );
       add( helpMenu );
    }

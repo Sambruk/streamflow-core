@@ -15,8 +15,6 @@
 
 package se.streamsource.streamflow.client.domain.form;
 
-import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FieldValueEditModel;
-
 import java.awt.Component;/*
  * Copyright (c) 2010, Mads Enevoldsen. All Rights Reserved.
  *

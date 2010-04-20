@@ -24,13 +24,13 @@ import javax.swing.Action;
 /**
  * Action enabler that checks whether the completed flag is set or not
  */
-public class TaskSelectionActionEnabler
+public class CaseSelectionActionEnabler
       extends SelectionActionEnabler
 {
    private int completedColumn;
    private JXTable table;
 
-   public TaskSelectionActionEnabler( int completedColumn, JXTable table, Action... action )
+   public CaseSelectionActionEnabler( int completedColumn, JXTable table, Action... action )
    {
       super( action );
       this.completedColumn = completedColumn;

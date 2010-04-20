@@ -37,7 +37,7 @@ public class WorkspaceNode
 {
    private WorkspaceUserNode userNode;
    private WorkspaceProjectsNode projectsNode;
-   public LinksValue taskCounts;
+   public LinksValue caseCounts;
 
    public WorkspaceNode( @Uses WorkspaceUserNode userNode,
                          @Uses WorkspaceProjectsNode projectsNode,
@@ -67,12 +67,12 @@ public class WorkspaceNode
       return projectsNode;
    }
 
-   public String getTaskCount(String id)
+   public String getCaseCount(String id)
    {
-      if (taskCounts == null)
+      if (caseCounts == null)
          return "";
 
-      for (LinkValue linkValue : taskCounts.links().get())
+      for (LinkValue linkValue : caseCounts.links().get())
       {
          if (linkValue.id().get().equals(id))
             return linkValue.text().get();
@@ -93,7 +93,7 @@ public class WorkspaceNode
       {
          CommandQueryClient user = getUserObject().userResource();
          CommandQueryClient projectsClient = user.getSubClient( "workspace" );
-         taskCounts = projectsClient.query( "taskcounts", LinksValue.class ).<LinksValue>buildWith().prototype();
+         caseCounts = projectsClient.query( "casecounts", LinksValue.class ).<LinksValue>buildWith().prototype();
       } catch (ResourceException e)
       {
          e.printStackTrace();
