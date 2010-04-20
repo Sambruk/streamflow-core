@@ -31,6 +31,9 @@ import se.streamsource.streamflow.web.context.access.forms.FormSubmissionContext
 import se.streamsource.streamflow.web.context.access.forms.FormSubmissionsContext;
 import se.streamsource.streamflow.web.context.access.organizations.ProxyUserContext;
 import se.streamsource.streamflow.web.context.access.organizations.ProxyUsersContext;
+import se.streamsource.streamflow.web.context.caze.CaseFormContext;
+import se.streamsource.streamflow.web.context.caze.CaseFormsContext;
+import se.streamsource.streamflow.web.context.caze.CaseGeneralContext;
 import se.streamsource.streamflow.web.context.conversation.ConversationParticipantContext;
 import se.streamsource.streamflow.web.context.conversation.ConversationParticipantsContext;
 import se.streamsource.streamflow.web.context.conversation.ConversationsContext;
@@ -42,6 +45,7 @@ import se.streamsource.streamflow.web.context.gtd.InboxContext;
 import se.streamsource.streamflow.web.context.gtd.WaitingForContext;
 import se.streamsource.streamflow.web.context.organizations.AdministratorContext;
 import se.streamsource.streamflow.web.context.organizations.AdministratorsContext;
+import se.streamsource.streamflow.web.context.organizations.CaseTypesContext;
 import se.streamsource.streamflow.web.context.organizations.GroupContext;
 import se.streamsource.streamflow.web.context.organizations.GroupsContext;
 import se.streamsource.streamflow.web.context.organizations.MemberContext;
@@ -58,10 +62,9 @@ import se.streamsource.streamflow.web.context.organizations.ProjectContext;
 import se.streamsource.streamflow.web.context.organizations.ProjectsContext;
 import se.streamsource.streamflow.web.context.organizations.RoleContext;
 import se.streamsource.streamflow.web.context.organizations.RolesContext;
-import se.streamsource.streamflow.web.context.organizations.SelectedTaskTypeContext;
-import se.streamsource.streamflow.web.context.organizations.SelectedTaskTypesContext;
-import se.streamsource.streamflow.web.context.organizations.TaskTypeContext;
-import se.streamsource.streamflow.web.context.organizations.TaskTypesContext;
+import se.streamsource.streamflow.web.context.organizations.SelectedCaseTypeContext;
+import se.streamsource.streamflow.web.context.organizations.SelectedCaseTypesContext;
+import se.streamsource.streamflow.web.context.organizations.CaseTypeContext;
 import se.streamsource.streamflow.web.context.organizations.forms.FormContext;
 import se.streamsource.streamflow.web.context.organizations.forms.FormFieldContext;
 import se.streamsource.streamflow.web.context.organizations.forms.FormFieldsContext;
@@ -76,14 +79,11 @@ import se.streamsource.streamflow.web.context.structure.labels.LabeledContext;
 import se.streamsource.streamflow.web.context.structure.labels.LabelsContext;
 import se.streamsource.streamflow.web.context.structure.labels.SelectedLabelContext;
 import se.streamsource.streamflow.web.context.structure.labels.SelectedLabelsContext;
-import se.streamsource.streamflow.web.context.task.ContactContext;
-import se.streamsource.streamflow.web.context.task.ContactsContext;
-import se.streamsource.streamflow.web.context.task.TaskContext;
+import se.streamsource.streamflow.web.context.caze.ContactContext;
+import se.streamsource.streamflow.web.context.caze.ContactsContext;
+import se.streamsource.streamflow.web.context.caze.CaseContext;
 import se.streamsource.streamflow.web.context.conversation.ConversationContext;
-import se.streamsource.streamflow.web.context.task.TaskFormContext;
-import se.streamsource.streamflow.web.context.task.TaskFormsContext;
-import se.streamsource.streamflow.web.context.task.TaskGeneralContext;
-import se.streamsource.streamflow.web.context.task.TasksContext;
+import se.streamsource.streamflow.web.context.caze.CasesContext;
 import se.streamsource.streamflow.web.context.users.ContactableContext;
 import se.streamsource.streamflow.web.context.users.UserAdministrationContext;
 import se.streamsource.streamflow.web.context.users.UserContext;
@@ -145,10 +145,10 @@ public class InteractionsAssembler
             ProjectsContext.class,
             RoleContext.class,
             RolesContext.class,
-            SelectedTaskTypeContext.class,
-            SelectedTaskTypesContext.class,
-            TaskTypeContext.class,
-            TaskTypesContext.class,
+            SelectedCaseTypeContext.class,
+            SelectedCaseTypesContext.class,
+            CaseTypeContext.class,
+            CaseTypesContext.class,
 
             LabelableContext.class,
             LabelContext.class,
@@ -180,11 +180,11 @@ public class InteractionsAssembler
 
             ContactContext.class,
             ContactsContext.class,
-            TaskContext.class,
-            TaskFormsContext.class,
-            TaskFormContext.class,
-            TaskGeneralContext.class,
-            TasksContext.class,
+            CaseContext.class,
+            CaseFormsContext.class,
+            CaseFormContext.class,
+            CaseGeneralContext.class,
+            CasesContext.class,
 
             ConversationContext.class,
             ConversationParticipantContext.class,

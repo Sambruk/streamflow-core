@@ -21,7 +21,7 @@ import org.qi4j.api.query.QueryBuilder;
 import org.restlet.data.Reference;
 import se.streamsource.dci.api.InteractionsMixin;
 import se.streamsource.dci.value.LinksValue;
-import se.streamsource.streamflow.web.context.task.TasksContext;
+import se.streamsource.streamflow.web.context.caze.CasesContext;
 import se.streamsource.streamflow.web.domain.entity.gtd.AssignmentsQueries;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
 import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
@@ -37,19 +37,19 @@ import static org.qi4j.api.query.QueryExpressions.templateFor;
 public interface OverviewProjectAssignmentsContext
    extends Interactions
 {
-   public LinksValue tasks();
+   public LinksValue cases();
 
    abstract class Mixin
       extends InteractionsMixin
       implements OverviewProjectAssignmentsContext
    {
-      public LinksValue tasks()
+      public LinksValue cases()
       {
          AssignmentsQueries assignmentsQueries = context.get(AssignmentsQueries.class);
 
          QueryBuilder<Assignable> builder = assignmentsQueries.assignments( null );
          Query query = builder.newQuery( module.unitOfWorkFactory().currentUnitOfWork() ).orderBy( orderBy( templateFor( CreatedOn.class ).createdOn() ) );
-         return TasksContext.Mixin.buildTaskList( query, module, context.get( Reference.class).getBaseRef().getPath());
+         return CasesContext.Mixin.buildCaseList( query, module, context.get( Reference.class).getBaseRef().getPath());
       }
 
    }

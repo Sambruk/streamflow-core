@@ -39,7 +39,7 @@ public class FormsSteps
    OrganizationsSteps orgsSteps;
 
    @Uses
-   TaskTypesSteps taskTypesSetupSteps;
+   CaseTypesSteps caseTypesSetupSteps;
 
    @Structure
    ValueBuilderFactory vbf;
@@ -49,7 +49,7 @@ public class FormsSteps
    @Given("form named $form")
    public void givenForm( String form )
    {
-      givenForm = taskTypesSetupSteps.givenTaskType.getFormByName( form );
+      givenForm = caseTypesSetupSteps.givenCaseType.getFormByName( form );
    }
 
    @When("a form named $name is created")
@@ -57,7 +57,7 @@ public class FormsSteps
    {
       try
       {
-         Forms forms = taskTypesSetupSteps.givenTaskType;
+         Forms forms = caseTypesSetupSteps.givenCaseType;
 
          givenForm = (FormEntity) forms.createForm();
          givenForm.changeDescription( name );
@@ -72,7 +72,7 @@ public class FormsSteps
    {
       try
       {
-         Forms forms = taskTypesSetupSteps.givenTaskType;
+         Forms forms = caseTypesSetupSteps.givenCaseType;
 
          forms.removeForm( givenForm );
       } catch (Exception e)

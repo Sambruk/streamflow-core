@@ -16,6 +16,7 @@
 package se.streamsource.streamflow.client.scenarios;
 
 import se.streamsource.streamflow.client.application.shared.steps.AssignmentsSteps;
+import se.streamsource.streamflow.client.application.shared.steps.CaseTypesSteps;
 import se.streamsource.streamflow.client.application.shared.steps.FieldDefinitionsSteps;
 import se.streamsource.streamflow.client.application.shared.steps.FormsSteps;
 import se.streamsource.streamflow.client.application.shared.steps.GroupsSteps;
@@ -24,7 +25,6 @@ import se.streamsource.streamflow.client.application.shared.steps.Organizational
 import se.streamsource.streamflow.client.application.shared.steps.OrganizationsSteps;
 import se.streamsource.streamflow.client.application.shared.steps.ParticipantsSteps;
 import se.streamsource.streamflow.client.application.shared.steps.ProjectsSteps;
-import se.streamsource.streamflow.client.application.shared.steps.TaskTypesSteps;
 import se.streamsource.streamflow.client.application.shared.steps.UserSteps;
 import se.streamsource.streamflow.client.application.shared.steps.setup.TestSetupSteps;
 import se.streamsource.streamflow.test.AbstractWebDomainApplicationScenario;
@@ -49,7 +49,7 @@ public class AssignmentsScenario
             new FormsSteps(),
             new OrganizationsSteps(),
             new OrganizationalUnitsSteps(),
-            new TaskTypesSteps(),
+            new CaseTypesSteps(),
             new AssignmentsSteps(),
             new MembersSteps(),
             new ProjectsSteps(),

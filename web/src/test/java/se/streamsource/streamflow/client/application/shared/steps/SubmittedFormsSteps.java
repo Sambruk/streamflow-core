@@ -94,7 +94,7 @@ public class SubmittedFormsSteps
 
       try
       {
-         inboxSteps.givenTask.submitForm( formBuilder.newInstance() );
+         inboxSteps.givenCase.submitForm( formBuilder.newInstance() );
       } catch (Exception e)
       {
          genericSteps.setThrowable( e );
@@ -104,7 +104,7 @@ public class SubmittedFormsSteps
    @Then("effective field value for field $field is $value")
    public void removed( String form, String value ) throws Exception
    {
-      SubmittedForms.Data data = (SubmittedForms.Data) inboxSteps.givenTask;
+      SubmittedForms.Data data = (SubmittedForms.Data) inboxSteps.givenCase;
 
 /*
 

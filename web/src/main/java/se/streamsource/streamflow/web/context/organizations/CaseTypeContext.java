@@ -24,10 +24,10 @@ import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.web.context.organizations.forms.SelectedFormsContext;
 import se.streamsource.streamflow.web.context.structure.labels.LabelsContext;
-import se.streamsource.streamflow.web.domain.entity.tasktype.TaskTypesQueries;
-import se.streamsource.streamflow.web.domain.structure.tasktype.SelectedTaskTypes;
-import se.streamsource.streamflow.web.domain.structure.tasktype.TaskType;
-import se.streamsource.streamflow.web.domain.structure.tasktype.TaskTypes;
+import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypesQueries;
+import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
+import se.streamsource.streamflow.web.domain.structure.casetype.CaseTypes;
+import se.streamsource.streamflow.web.domain.structure.casetype.SelectedCaseTypes;
 import se.streamsource.dci.api.InteractionsMixin;
 import se.streamsource.dci.api.DeleteInteraction;
 import se.streamsource.dci.api.SubContext;
@@ -38,8 +38,8 @@ import se.streamsource.streamflow.web.context.structure.labels.SelectedLabelsCon
 /**
  * JAVADOC
  */
-@Mixins(TaskTypeContext.Mixin.class)
-public interface TaskTypeContext
+@Mixins(CaseTypeContext.Mixin.class)
+public interface CaseTypeContext
    extends DescribableContext, DeleteInteraction, Interactions
 {
    LinksValue usages();
@@ -62,15 +62,15 @@ public interface TaskTypeContext
 
    abstract class Mixin
       extends InteractionsMixin
-      implements TaskTypeContext
+      implements CaseTypeContext
    {
       public LinksValue usages()
       {
-         Query<SelectedTaskTypes> usageQuery = context.get( TaskTypes.class).usages( context.get(TaskType.class) );
+         Query<SelectedCaseTypes> usageQuery = context.get( CaseTypes.class).usages( context.get( CaseType.class) );
          LinksBuilder builder = new LinksBuilder(module.valueBuilderFactory()); // TODO What to use for path here?
-         for (SelectedTaskTypes selectedTaskTypes : usageQuery)
+         for (SelectedCaseTypes selectedCaseTypes : usageQuery)
          {
-            builder.addDescribable( (Describable) selectedTaskTypes );
+            builder.addDescribable( (Describable) selectedCaseTypes );
          }
 
          return builder.newLinks();
@@ -78,11 +78,11 @@ public interface TaskTypeContext
 
       public void delete()
       {
-         TaskTypes taskTypes = context.get(TaskTypes.class);
+         CaseTypes caseTypes = context.get( CaseTypes.class);
 
-         TaskType taskType = context.get(TaskType.class);
+         CaseType caseType = context.get( CaseType.class);
 
-         taskTypes.removeTaskType( taskType );
+         caseTypes.removeCaseType( caseType );
       }
 
       public FormsContext forms()
@@ -109,15 +109,15 @@ public interface TaskTypeContext
       {
          LinksBuilder builder = new LinksBuilder(module.valueBuilderFactory());
          builder.command( "move" );
-         context.get( TaskTypesQueries.class).possibleMoveTaskTypeTo( builder );
+         context.get( CaseTypesQueries.class).possibleMoveCaseTypeTo( builder );
          return builder.newLinks();
       }
 
       public void move( EntityValue to )
       {
-         TaskTypes toTaskTypes = module.unitOfWorkFactory().currentUnitOfWork().get( TaskTypes.class, to.entity().get() );
-         TaskType taskType = context.get(TaskType.class);
-         context.get( TaskTypes.class ).moveTaskType(taskType, toTaskTypes);
+         CaseTypes toCaseTypes = module.unitOfWorkFactory().currentUnitOfWork().get( CaseTypes.class, to.entity().get() );
+         CaseType caseType = context.get( CaseType.class);
+         context.get( CaseTypes.class ).moveCaseType( caseType, toCaseTypes );
       }
    }
 }

@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.context.task;
+package se.streamsource.streamflow.web.context.caze;
 
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
@@ -24,9 +24,9 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.dci.api.InteractionsMixin;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.resource.roles.IntegerDTO;
-import se.streamsource.streamflow.resource.task.EffectiveFieldsDTO;
-import se.streamsource.streamflow.resource.task.SubmittedFormDTO;
-import se.streamsource.streamflow.resource.task.SubmittedFormsListDTO;
+import se.streamsource.streamflow.resource.caze.EffectiveFieldsDTO;
+import se.streamsource.streamflow.resource.caze.SubmittedFormDTO;
+import se.streamsource.streamflow.resource.caze.SubmittedFormsListDTO;
 import se.streamsource.streamflow.web.domain.entity.form.FormSubmissionEntity;
 import se.streamsource.streamflow.web.domain.entity.form.FormSubmissionsQueries;
 import se.streamsource.streamflow.web.domain.entity.form.SubmittedFormsQueries;
@@ -41,9 +41,9 @@ import se.streamsource.dci.api.SubContexts;
 /**
  * JAVADOC
  */
-@Mixins(TaskFormsContext.Mixin.class)
-public interface TaskFormsContext
-   extends SubContexts<TaskFormContext>, Interactions
+@Mixins(CaseFormsContext.Mixin.class)
+public interface CaseFormsContext
+   extends SubContexts<CaseFormContext>, Interactions
 {
       public SubmittedFormsListDTO listsubmittedforms();
       public EffectiveFieldsDTO effectivefields();
@@ -55,7 +55,7 @@ public interface TaskFormsContext
 
    abstract class Mixin
       extends InteractionsMixin
-      implements TaskFormsContext
+      implements CaseFormsContext
    {
       @Structure
       UnitOfWorkFactory uowf;
@@ -126,11 +126,11 @@ public interface TaskFormsContext
          context.get( SubmittedForms.class).submitForm( formSubmission, submitter );
       }
 
-      public TaskFormContext context( String id )
+      public CaseFormContext context( String id )
       {
          context.set( uowf.currentUnitOfWork().get( FormSubmissionEntity.class, id ));
 
-         return subContext( TaskFormContext.class );
+         return subContext( CaseFormContext.class );
       }
    }
 }

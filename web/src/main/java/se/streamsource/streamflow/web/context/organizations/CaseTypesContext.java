@@ -23,44 +23,44 @@ import se.streamsource.dci.api.InteractionsMixin;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.dci.value.LinksValue;
-import se.streamsource.streamflow.web.domain.structure.tasktype.TaskType;
-import se.streamsource.streamflow.web.domain.structure.tasktype.TaskTypes;
+import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
+import se.streamsource.streamflow.web.domain.structure.casetype.CaseTypes;
 import se.streamsource.dci.api.IndexInteraction;
 import se.streamsource.dci.api.SubContexts;
 
 /**
  * JAVADOC
  */
-@Mixins(TaskTypesContext.Mixin.class)
-public interface TaskTypesContext
-   extends SubContexts<TaskTypeContext>, IndexInteraction<LinksValue>, Interactions
+@Mixins(CaseTypesContext.Mixin.class)
+public interface CaseTypesContext
+   extends SubContexts<CaseTypeContext>, IndexInteraction<LinksValue>, Interactions
 {
-   public void createtasktype( StringValue name );
+   public void createcasetype( StringValue name );
 
    abstract class Mixin
       extends InteractionsMixin
-      implements TaskTypesContext
+      implements CaseTypesContext
    {
       @Structure
       Module module;
 
       public LinksValue index()
       {
-         TaskTypes.Data taskTypes = context.get(TaskTypes.Data.class);
-         return new LinksBuilder(module.valueBuilderFactory()).rel( "tasktype" ).addDescribables( taskTypes.taskTypes()).newLinks();
+         CaseTypes.Data caseTypes = context.get( CaseTypes.Data.class);
+         return new LinksBuilder(module.valueBuilderFactory()).rel( "casetype" ).addDescribables( caseTypes.caseTypes()).newLinks();
       }
 
-      public void createtasktype( StringValue name )
+      public void createcasetype( StringValue name )
       {
-         TaskTypes taskTypes = context.get(TaskTypes.class);
-         taskTypes.createTaskType( name.string().get() );
+         CaseTypes caseTypes = context.get( CaseTypes.class);
+         caseTypes.createCaseType( name.string().get() );
       }
 
-      public TaskTypeContext context( String id )
+      public CaseTypeContext context( String id )
       {
-         context.set( module.unitOfWorkFactory().currentUnitOfWork().get( TaskType.class, id ));
+         context.set( module.unitOfWorkFactory().currentUnitOfWork().get( CaseType.class, id ));
 
-         return subContext( TaskTypeContext.class );
+         return subContext( CaseTypeContext.class );
       }
    }
 }

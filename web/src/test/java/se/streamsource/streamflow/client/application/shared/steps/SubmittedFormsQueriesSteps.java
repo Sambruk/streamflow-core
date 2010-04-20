@@ -23,9 +23,9 @@ import org.jbehave.scenario.steps.Steps;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.test.GenericSteps;
 import se.streamsource.streamflow.client.application.shared.steps.setup.TestSetupSteps;
-import se.streamsource.streamflow.resource.task.EffectiveFieldsDTO;
-import se.streamsource.streamflow.resource.task.SubmittedFormDTO;
-import se.streamsource.streamflow.resource.task.SubmittedFormsListDTO;
+import se.streamsource.streamflow.resource.caze.EffectiveFieldsDTO;
+import se.streamsource.streamflow.resource.caze.SubmittedFormDTO;
+import se.streamsource.streamflow.resource.caze.SubmittedFormsListDTO;
 
 import static org.jbehave.Ensure.*;
 
@@ -92,13 +92,13 @@ public class SubmittedFormsQueriesSteps
    @Given("project task")
    public void givenProjectTask()
    {
-      ensureThat( inboxSteps.givenTask, CoreMatchers.notNullValue() );
+      ensureThat( inboxSteps.givenCase, CoreMatchers.notNullValue() );
    }
 
    @When("submitted forms is requested")
    public void getSubmittedForms()
    {
-      submittedForms = inboxSteps.givenTask.getSubmittedForms();
+      submittedForms = inboxSteps.givenCase.getSubmittedForms();
    }
 
    @Then("there are $expected submitted forms")
@@ -110,7 +110,7 @@ public class SubmittedFormsQueriesSteps
    @When("submitted form $idx is requested")
    public void getSubmittedForm( int idx )
    {
-      submittedForm = inboxSteps.givenTask.getSubmittedForm( idx );
+      submittedForm = inboxSteps.givenCase.getSubmittedForm( idx );
    }
 
    @Then("is has name $name")
@@ -134,7 +134,7 @@ public class SubmittedFormsQueriesSteps
    @When("effective fields are requested")
    public void getEffectiveFields()
    {
-      effectiveFieldsDTO = inboxSteps.givenTask.effectiveFields();
+      effectiveFieldsDTO = inboxSteps.givenCase.effectiveFields();
    }
 
    @Then("there is $fieldCount effective fields")

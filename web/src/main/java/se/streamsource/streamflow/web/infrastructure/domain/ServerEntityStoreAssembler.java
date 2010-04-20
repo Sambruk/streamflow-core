@@ -71,6 +71,7 @@ public class ServerEntityStoreAssembler
                      "se.streamsource.streamflow.web.domain.organization.OrganizationalUnitEntity" ).
                renameManyAssociation( "roles", "projectRoles" ).
                end().
+
                toVersion("0.2.18.0").
                toVersion( "0.3.20.962" ).
                renamePackage( "se.streamsource.streamflow.web.domain.form", "se.streamsource.streamflow.web.domain.entity.form" ).
@@ -91,14 +92,15 @@ public class ServerEntityStoreAssembler
                withEntities( "ProjectEntity", "ProjectRoleEntity" ).
                end().
                renamePackage( "se.streamsource.streamflow.web.domain.task", "se.streamsource.streamflow.web.domain.entity.task" ).
-               withEntities( "TaskEntity").
+               withEntities( "CaseEntity").
                end().
                renamePackage( "se.streamsource.streamflow.web.domain.tasktype", "se.streamsource.streamflow.web.domain.entity.tasktype" ).
-               withEntities( "TaskTypeEntity").
+               withEntities( "CaseTypeEntity").
                end().
                renamePackage( "se.streamsource.streamflow.web.domain.user", "se.streamsource.streamflow.web.domain.entity.user" ).
                withEntities( "UserEntity").
                end().
+
                toVersion( "0.5.23.1349" ).forEntities( "se.streamsource.streamflow.web.domain.entity.form.FieldEntity" ).
                custom( new EntityMigrationOperation()
                {
@@ -120,7 +122,8 @@ public class ServerEntityStoreAssembler
                   }
                })
                .end().
-               toVersion( "0.6.24.1488" ).forEntities( "se.streamsource.streamflow.web.domain.entity.task.TaskEntity" ).
+
+               toVersion( "0.6.24.1488" ).forEntities( "se.streamsource.streamflow.web.domain.entity.task.CaseEntity" ).
                custom( new EntityMigrationOperation()
                {
                   public boolean upgrade( JSONObject state, StateStore stateStore, Migrator migrator ) throws JSONException
@@ -181,7 +184,23 @@ public class ServerEntityStoreAssembler
                   {
                      return false;
                   }
-               }).end();
+               }).end().
+
+               toVersion( "0.7.25" ).
+               renameEntity( "se.streamsource.streamflow.web.domain.entity.task.TaskEntity","se.streamsource.streamflow.web.domain.entity.caze.CaseEntity" ).
+               renameEntity( "se.streamsource.streamflow.web.domain.entity.tasktype.TaskTypeEntity", "se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity" ).
+               forEntities( "se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity" ).
+                  renameManyAssociation( "taskTypes", "caseTypes" ).
+               end().
+               forEntities( "se.streamsource.streamflow.web.domain.entity.caze.CaseEntity" ).
+                  renameAssociation( "taskType", "caseType" ).
+                  renameProperty( "taskId", "caseId" ).
+               end().
+               forEntities( "se.streamsource.streamflow.web.domain.entity.project.ProjectEntity" ).
+                  renameManyAssociation( "selectedTaskTypes", "selectedCaseTypes" ).
+               end().
+               forEntities( "se.streamsource.streamflow.web.domain.entity.organization.AccessPointEntity" ).
+                  renameAssociation( "taskType", "caseType" );
 
          module.addServices( MigrationService.class ).setMetaInfo( migrationBuilder );
       }

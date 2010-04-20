@@ -465,7 +465,7 @@ public interface ManagerComposite
       }
 
 
-      public String generateTestData( @Name("Nr of tasks") int nrOfTasks ) throws Exception
+      public String generateTestData( int nrOfCases ) throws Exception
       {
          UnitOfWork uow = uowf.newUnitOfWork( UsecaseBuilder.newUsecase( "Generate test data" ) );
 
@@ -473,9 +473,9 @@ public interface ManagerComposite
          {
             Inbox inbox = uow.get( Inbox.class, "administrator" );
 
-            for (int i = 0; i < nrOfTasks; i++)
+            for (int i = 0; i < nrOfCases; i++)
             {
-               inbox.createTask().changeDescription( "Task " + i );
+               inbox.createCase().changeDescription( "Case " + i );
             }
 
             uow.complete();
@@ -485,7 +485,7 @@ public interface ManagerComposite
             throw e;
          }
 
-         return "Created " + nrOfTasks + " in Administrators inbox";
+         return "Created " + nrOfCases + " in Administrators inbox";
       }
 
       public String databaseSize()

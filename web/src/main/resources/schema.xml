@@ -435,7 +435,7 @@
    <field name="description_for_sort" type="string"/>
 
    <field name="note" type="text" indexed="true" stored="true" multiValued="true"/>
-   <field name="taskId" type="string" indexed="true" stored="true" />
+   <field name="caseId" type="string" indexed="true" stored="true" />
 
    <field name="contacts" type="json" indexed="false" stored="false"/>
    <field name="contactId" type="string" indexed="true" stored="true" multiValued="true"/>
@@ -452,7 +452,7 @@
 
    <field name="owner" type="string" indexed="true" stored="true" />
 
-   <field name="taskType" type="string" indexed="true" stored="true" />
+   <field name="caseType" type="string" indexed="true" stored="true" />
 
    <field name="createdOn" type="date" indexed="true" stored="true" />
 
@@ -567,7 +567,7 @@
    <copyField source="description" dest="text"/>
    <copyField source="description" dest="description_for_sort"/>
    <copyField source="note" dest="text"/>
-   <copyField source="taskId" dest="text" />
+   <copyField source="caseId" dest="text" />
 
    <!--
    <copyField source="manu" dest="text"/>

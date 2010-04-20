@@ -65,14 +65,11 @@ public interface UserContext extends Interactions, IndexInteraction<LinksValue>
    {
       public LinksValue index()
       {
-         return new LinksBuilder(module.valueBuilderFactory()).addLink("Inbox",
-               "inbox", "inbox", "workspace/user/inbox/tasks").addLink(
-               "Assignments", "assignments", "assignments",
-               "workspace/user/assignments/tasks")
-               .addLink("Delegations", "delegations", "delegations",
-                     "workspace/user/delegations/tasks").addLink("Waiting for",
-                     "waitingfor", "waitingfor",
-                     "workspace/user/waitingfor/tasks").newLinks();
+         return new LinksBuilder(module.valueBuilderFactory()).
+               addLink("Inbox","inbox", "inbox", "workspace/user/inbox/cases").
+               addLink("Assignments", "assignments", "assignments","workspace/user/assignments/cases").
+               addLink("Delegations", "delegations", "delegations","workspace/user/delegations/cases").
+               addLink("Waiting for","waitingfor", "waitingfor","workspace/user/waitingfor/cases").newLinks();
       }
 
       public void changepassword(ChangePasswordCommand newPassword)

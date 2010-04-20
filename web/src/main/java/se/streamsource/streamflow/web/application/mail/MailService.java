@@ -168,10 +168,10 @@ public interface MailService
          ConversationOwner owner = conversation.conversationOwner().get();
 
          String sender = ((Contactable.Data)message.sender().get()).contact().get().name().get();
-         String taskId = "n/a";
+         String caseId = "n/a";
 
          if (owner != null)
-            taskId = ((CompletableId.Data) owner).taskId().get() != null ? ((CompletableId.Data) owner).taskId().get() : "n/a";
+            caseId = ((CompletableId.Data) owner).caseId().get() != null ? ((CompletableId.Data) owner).caseId().get() : "n/a";
 
          if (emailAddress != null && emailAddress.length() != 0)
          {
@@ -183,7 +183,7 @@ public interface MailService
 
             MimeMessage msg = new MimeMessage( session );
             msg.setSender( new InternetAddress( config.configuration().from().get() ) );
-            msg.setSubject( "[" + taskId + "]" + conversation.getDescription()
+            msg.setSubject( "[" + caseId + "]" + conversation.getDescription()
                   + "(" + EntityReference.getEntityReference( message.conversation().get() ).identity() + ":" + event.entity().get() + ")" );
 
             String formattedMsg = message.body().get();

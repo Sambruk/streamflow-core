@@ -26,7 +26,7 @@ import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.test.GenericSteps;
 import se.streamsource.streamflow.domain.interaction.gtd.States;
-import se.streamsource.streamflow.web.domain.entity.task.TaskEntity;
+import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 
 public class DelegationsSteps extends Steps
 {
@@ -42,7 +42,7 @@ public class DelegationsSteps extends Steps
    @Uses
    GenericSteps genericSteps;
 
-   public TaskEntity givenTask;
+   public CaseEntity givenCase;
 
    @Given("first delegated task")
    public void givenDelegatedTask() throws UnitOfWorkCompletionException
@@ -50,8 +50,8 @@ public class DelegationsSteps extends Steps
 /*
       uowf.currentUnitOfWork().apply();
       TaskListDTO list = projectsSteps.givenProject.delegations();
-      TaskValue task = list.tasks().get().get( 0 );
-      givenTask = uowf.currentUnitOfWork().get( TaskEntity.class, task.task().get().identity() );
+      CaseValue task = list.tasks().get().get( 0 );
+      givenCase = uowf.currentUnitOfWork().get( CaseEntity.class, task.task().get().identity() );
 */
    }
 
@@ -59,7 +59,7 @@ public class DelegationsSteps extends Steps
    @When("delegated task is finished")
    public void finishDelegatedTask()
    {
-      projectsSteps.givenProject.finishDelegatedTask( givenTask,
+      projectsSteps.givenProject.finishDelegatedTask( givenCase,
             orgsSteps.givenUser );
    }
 */
@@ -67,7 +67,7 @@ public class DelegationsSteps extends Steps
    @Then("task is done")
    public void taskStatusEqualsDone()
    {
-      ensureThat( givenTask.status().get(), CoreMatchers
+      ensureThat( givenCase.status().get(), CoreMatchers
             .equalTo( States.DONE ) );
    }
 

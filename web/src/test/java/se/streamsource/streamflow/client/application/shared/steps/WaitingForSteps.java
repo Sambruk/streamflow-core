@@ -26,7 +26,7 @@ import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.test.GenericSteps;
 import se.streamsource.streamflow.domain.interaction.gtd.States;
-import se.streamsource.streamflow.web.domain.entity.task.TaskEntity;
+import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 
 /**
  * JAVADOC
@@ -46,7 +46,7 @@ public class WaitingForSteps
    @Uses
    GenericSteps genericSteps;
 
-   public TaskEntity givenTask;
+   public CaseEntity givenCase;
 
    @Given("first waitingFor task")
    public void givenWaitingForTask() throws UnitOfWorkCompletionException
@@ -54,8 +54,8 @@ public class WaitingForSteps
 /*
       uowf.currentUnitOfWork().apply();
       TaskListDTO list = projectsSteps.givenProject.waitingFor( orgsSteps.givenUser );
-      TaskValue task = list.tasks().get().get( 0 );
-      givenTask = uowf.currentUnitOfWork().get( TaskEntity.class, task.task().get().identity() );
+      CaseValue task = list.tasks().get().get( 0 );
+      givenCase = uowf.currentUnitOfWork().get( CaseEntity.class, task.task().get().identity() );
 */
    }
 
@@ -63,33 +63,33 @@ public class WaitingForSteps
    @When("waitingFor task is completed")
    public void completeWaitingForTask()
    {
-      projectsSteps.givenProject.completeWaitingForTask( givenTask, orgsSteps.givenUser );
+      projectsSteps.givenProject.completeWaitingForTask( givenCase, orgsSteps.givenUser );
    }
 */
 
    @Then("task is completed")
    public void taskStatusEqualsCompleted()
    {
-      ensureThat( givenTask.status().get(), CoreMatchers.equalTo( States.COMPLETED ) );
+      ensureThat( givenCase.status().get(), CoreMatchers.equalTo( States.COMPLETED ) );
    }
 
 //  @When("waitingFor task is finished")
 //  public void completeFinishedTask()
 //	{
-//  	projectsSteps.givenProject.completeWaitingForTask(givenTask, assignee)
-//  	projectsSteps.givenProject.completeFinishedTask( givenTask );
+//  	projectsSteps.givenProject.completeWaitingForTask(givenCase, assignee)
+//  	projectsSteps.givenProject.completeFinishedTask( givenCase );
 //	}
 
 /*
-    void rejectFinishedTask(Task task);
+    void rejectFinishedTask(Case task);
 
-    void dropWaitingForTask(Task task, Assignee assignee);
+    void dropWaitingForTask(Case task, Assignee assignee);
 
-    void markWaitingForAsRead(Task task);
+    void markWaitingForAsRead(Case task);
 
-    void markWaitingForAsUnread(Task task);
+    void markWaitingForAsUnread(Case task);
 
-    void rejectTask(Task task);
+    void rejectTask(Case task);
 */
 
 }

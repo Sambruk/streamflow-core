@@ -21,7 +21,7 @@ import org.qi4j.api.query.QueryBuilder;
 import org.restlet.data.Reference;
 import se.streamsource.dci.api.Interactions;
 import se.streamsource.dci.value.LinksValue;
-import se.streamsource.streamflow.web.context.task.TasksContext;
+import se.streamsource.streamflow.web.context.caze.CasesContext;
 import se.streamsource.streamflow.web.domain.entity.gtd.DelegationsQueries;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Delegatable;
 import se.streamsource.dci.api.InteractionsMixin;
@@ -36,19 +36,19 @@ import static org.qi4j.api.query.QueryExpressions.templateFor;
 public interface DelegationsContext
    extends Interactions
 {
-   LinksValue tasks();
+   LinksValue cases();
 
    abstract class Mixin
       extends InteractionsMixin
       implements DelegationsContext
    {
-      public LinksValue tasks( )
+      public LinksValue cases( )
       {
          DelegationsQueries delegations = context.get( DelegationsQueries.class);
          QueryBuilder<Delegatable> builder = delegations.delegations();
          Query query = builder.newQuery( module.unitOfWorkFactory().currentUnitOfWork() ).orderBy( orderBy( templateFor( Delegatable.Data.class ).delegatedOn() ) );
 
-         return TasksContext.Mixin.buildTaskList( query, module, context.get( Reference.class).getBaseRef().getPath() );
+         return CasesContext.Mixin.buildCaseList( query, module, context.get( Reference.class).getBaseRef().getPath() );
       }
    }
 }

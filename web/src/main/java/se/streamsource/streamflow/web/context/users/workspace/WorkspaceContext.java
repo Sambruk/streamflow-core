@@ -41,7 +41,7 @@ import se.streamsource.streamflow.web.domain.structure.user.User;
 public interface WorkspaceContext
    extends Interactions
 {
-   LinksValue taskcounts();
+   LinksValue casecounts();
 
    @SubContext
    WorkspaceUserContext user();
@@ -56,7 +56,7 @@ public interface WorkspaceContext
       @Structure
       Module module;
 
-      public LinksValue taskcounts()
+      public LinksValue casecounts()
       {
          LinksBuilder builder = new LinksBuilder(module.valueBuilderFactory());
 

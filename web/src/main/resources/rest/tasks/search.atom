@@ -4,11 +4,11 @@
  <title>Search result for ${request.resourceRef.queryAsForm.getFirstValue("string")}</title>
  <link href="$request.resourceRef"/>
 
-#foreach($task in $result.links)
+#foreach($link in $result.links)
  <entry>
-   <title>$task.text</title>
-   <link href="$task.href"/>
-   <id>urn:uuid:${task.id}</id>
+   <title>$link.text</title>
+   <link href="$link.href"/>
+   <id>urn:uuid:${link.id}</id>
  </entry>
 #end
 

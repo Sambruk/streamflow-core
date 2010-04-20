@@ -25,22 +25,22 @@ import se.streamsource.dci.api.InteractionsMixin;
 import se.streamsource.dci.api.SubContext;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.domain.structure.Describable;
-import se.streamsource.streamflow.resource.task.ProxyUserTaskDTO;
+import se.streamsource.streamflow.resource.caze.ProxyUserCaseDTO;
 import se.streamsource.streamflow.web.context.access.forms.FormSubmissionsContext;
 import se.streamsource.streamflow.web.context.access.forms.RequiredFormsContext;
 import se.streamsource.streamflow.web.context.access.forms.SubmittedFormsContext;
 import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
-import se.streamsource.streamflow.web.domain.entity.task.TaskEntity;
+import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.organization.AccessPoint;
-import se.streamsource.streamflow.web.domain.structure.task.Task;
+import se.streamsource.streamflow.web.domain.structure.caze.Case;
 
 /**
  * JAVADOC
  */
 @Mixins(CaseContext.Mixin.class)
 public interface CaseContext
-      extends IndexInteraction<ProxyUserTaskDTO>, Interactions
+      extends IndexInteraction<ProxyUserCaseDTO>, Interactions
 {
    // commands
    void changedescription( StringValue newDescription );
@@ -62,19 +62,19 @@ public interface CaseContext
       @Structure
       ValueBuilderFactory vbf;
 
-      public ProxyUserTaskDTO index()
+      public ProxyUserCaseDTO index()
       {
-         Task task = context.get( Task.class );
+         Case aCase = context.get( Case.class );
 
-         ValueBuilder<ProxyUserTaskDTO> builder = vbf.newValueBuilder( ProxyUserTaskDTO.class );
-         builder.prototype().description().set( task.getDescription() );
+         ValueBuilder<ProxyUserCaseDTO> builder = vbf.newValueBuilder( ProxyUserCaseDTO.class );
+         builder.prototype().description().set( aCase.getDescription() );
          AccessPoint.Data accessPoint = context.get( AccessPoint.Data.class );
 
          builder.prototype().project().set( accessPoint.project().get().getDescription() );
-         builder.prototype().taskType().set( accessPoint.taskType().get().getDescription() );
+         builder.prototype().caseType().set( accessPoint.caseType().get().getDescription() );
 
 
-         for (Label label : accessPoint.labels().get())
+         for (Label label : accessPoint.labels())
          {
             builder.prototype().labels().get().add( label.getDescription() );
          }
@@ -89,11 +89,11 @@ public interface CaseContext
 
       public void sendtofunction()
       {
-         TaskEntity task = context.get(TaskEntity.class);
+         CaseEntity aCase = context.get( CaseEntity.class);
          ProjectEntity project = (ProjectEntity) context.get( AccessPoint.Data.class ).project().get();
 
-         task.unassign();
-         task.sendTo( project );
+         aCase.unassign();
+         aCase.sendTo( project );
       }
 
       public SubmittedFormsContext submittedforms()

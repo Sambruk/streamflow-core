@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.context.task;
+package se.streamsource.streamflow.web.context.caze;
 
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
@@ -26,7 +26,7 @@ import se.streamsource.streamflow.domain.contact.ContactAddressValue;
 import se.streamsource.streamflow.domain.contact.ContactEmailValue;
 import se.streamsource.streamflow.domain.contact.ContactPhoneValue;
 import se.streamsource.streamflow.domain.contact.ContactValue;
-import se.streamsource.streamflow.web.domain.structure.task.Contacts;
+import se.streamsource.streamflow.web.domain.structure.caze.Contacts;
 import se.streamsource.dci.api.InteractionsMixin;
 
 /**

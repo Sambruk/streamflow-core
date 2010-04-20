@@ -17,27 +17,27 @@ package se.streamsource.streamflow.web.context.organizations;
 
 import org.qi4j.api.mixin.Mixins;
 import se.streamsource.dci.api.Interactions;
-import se.streamsource.streamflow.web.domain.structure.tasktype.SelectedTaskTypes;
-import se.streamsource.streamflow.web.domain.structure.tasktype.TaskType;
+import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
+import se.streamsource.streamflow.web.domain.structure.casetype.SelectedCaseTypes;
 import se.streamsource.dci.api.InteractionsMixin;
 import se.streamsource.dci.api.DeleteInteraction;
 
 /**
  * JAVADOC
  */
-@Mixins(SelectedTaskTypeContext.Mixin.class)
-public interface SelectedTaskTypeContext
+@Mixins(SelectedCaseTypeContext.Mixin.class)
+public interface SelectedCaseTypeContext
    extends DeleteInteraction, Interactions
 {
    abstract class Mixin
       extends InteractionsMixin
-      implements SelectedTaskTypeContext
+      implements SelectedCaseTypeContext
    {
       public void delete()
       {
-         SelectedTaskTypes taskTypes = context.get(SelectedTaskTypes.class);
-         TaskType taskType = context.get(TaskType.class);
-         taskTypes.removeSelectedTaskType( taskType );
+         SelectedCaseTypes caseTypes = context.get( SelectedCaseTypes.class);
+         CaseType caseType = context.get( CaseType.class);
+         caseTypes.removeSelectedCaseType( caseType );
       }      
    }
 }

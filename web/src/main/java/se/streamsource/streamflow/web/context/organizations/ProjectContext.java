@@ -43,7 +43,7 @@ public interface ProjectContext
    FormsContext forms();
 
    @SubContext
-   TaskTypesContext tasktypes();
+   CaseTypesContext casetypes();
 
    @SubContext
    public LabelsContext labels();
@@ -52,7 +52,7 @@ public interface ProjectContext
    SelectedLabelsContext selectedlabels();
 
    @SubContext
-   SelectedTaskTypesContext selectedtasktypes();
+   SelectedCaseTypesContext selectedcasetypes();
 
    abstract class Mixin
       extends InteractionsMixin
@@ -76,9 +76,9 @@ public interface ProjectContext
          return subContext( FormsContext.class );
       }
 
-      public TaskTypesContext tasktypes()
+      public CaseTypesContext casetypes()
       {
-         return subContext( TaskTypesContext.class );
+         return subContext( CaseTypesContext.class );
       }
 
       public LabelsContext labels()
@@ -91,9 +91,9 @@ public interface ProjectContext
          return subContext( SelectedLabelsContext.class );
       }
 
-      public SelectedTaskTypesContext selectedtasktypes()
+      public SelectedCaseTypesContext selectedcasetypes()
       {
-         return subContext( SelectedTaskTypesContext.class );
+         return subContext( SelectedCaseTypesContext.class );
       }
    }
 }

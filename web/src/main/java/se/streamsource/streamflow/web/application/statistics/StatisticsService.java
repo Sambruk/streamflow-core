@@ -40,7 +40,7 @@ import se.streamsource.streamflow.infrastructure.event.source.EventVisitorFilter
 import se.streamsource.streamflow.infrastructure.event.source.TransactionEventAdapter;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionTimestampFilter;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
-import se.streamsource.streamflow.web.domain.entity.task.TaskEntity;
+import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.structure.group.Group;
@@ -52,7 +52,7 @@ import se.streamsource.streamflow.web.domain.structure.organization.OwningOrgani
 import se.streamsource.streamflow.web.domain.structure.project.Member;
 import se.streamsource.streamflow.web.domain.structure.project.Members;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
-import se.streamsource.streamflow.web.domain.structure.tasktype.TaskType;
+import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 
 import javax.sql.DataSource;
 import java.io.InputStream;
@@ -66,7 +66,7 @@ import java.util.logging.Logger;
 /**
  * Generate statistics data to a JDBC database. This service
  * listens for domain events, and on "completed" it will put
- * information about the task into the database.
+ * information about the case into the database.
  */
 @Mixins(StatisticsService.Mixin.class)
 public interface StatisticsService
@@ -174,41 +174,41 @@ public interface StatisticsService
 
                   for (DomainEvent domainEvent : eventCollector.events())
                   {
-                     TaskEntity task = null;
+                     CaseEntity aCase = null;
                      try
                      {
-                        task = uow.get( TaskEntity.class, domainEvent.entity().get() );
+                        aCase = uow.get( CaseEntity.class, domainEvent.entity().get() );
                      } catch (NoSuchEntityException e)
                      {
                         // Entity has been removed
                         continue;
                      }
 
-                     // Only save statistics for tasks in projects
-                     Owner owner = task.owner().get();
+                     // Only save statistics for cases in projects
+                     Owner owner = aCase.owner().get();
                      if (owner instanceof Project)
                      {
                         if (domainEvent.usecase().get().equals("complete"))
                         {
                            PreparedStatement stmt = conn.prepareStatement( sql.getProperty( "completed.insert" ) );
                            int idx = 1;
-                           String id = task.identity().get();
+                           String id = aCase.identity().get();
                            stmt.setString( idx++, id );
-                           stmt.setString( idx++, task.taskId().get() );
-                           stmt.setString( idx++, task.description().get() );
-                           stmt.setString( idx++, task.note().get() );
-                           stmt.setTimestamp( idx++, new java.sql.Timestamp( task.createdOn().get().getTime() ) );
+                           stmt.setString( idx++, aCase.caseId().get() );
+                           stmt.setString( idx++, aCase.description().get() );
+                           stmt.setString( idx++, aCase.note().get() );
+                           stmt.setTimestamp( idx++, new java.sql.Timestamp( aCase.createdOn().get().getTime() ) );
                            stmt.setTimestamp( idx++, new java.sql.Timestamp( domainEvent.on().get().getTime() ) );
-                           stmt.setLong( idx++, domainEvent.on().get().getTime() - task.createdOn().get().getTime() );
-                           Assignee assignee = task.assignedTo().get();
+                           stmt.setLong( idx++, domainEvent.on().get().getTime() - aCase.createdOn().get().getTime() );
+                           Assignee assignee = aCase.assignedTo().get();
                            if (assignee == null)
                               continue;
 
                            stmt.setString( idx++, ((Describable)assignee).getDescription() );
 
-                           TaskType taskType = task.taskType().get();
-                           if (taskType != null)
-                              stmt.setString( idx, taskType.getDescription());
+                           CaseType caseType = aCase.caseType().get();
+                           if (caseType != null)
+                              stmt.setString( idx, caseType.getDescription());
                            else
                               stmt.setString( idx, null );
                            idx++;
@@ -239,7 +239,7 @@ public interface StatisticsService
                            stmt.close();
 
                            // Add Label information
-                           Labelable.Data labelable = task;
+                           Labelable.Data labelable = aCase;
                            for (Label labelEntity : labelable.labels())
                            {
                               stmt = conn.prepareStatement( sql.getProperty( "labels.insert" ) );
@@ -252,7 +252,7 @@ public interface StatisticsService
                         {
                            // Reactivated - remove statistics
                            PreparedStatement stmt = conn.prepareStatement( sql.getProperty( "completed.delete" ) );
-                           String id = task.identity().get();
+                           String id = aCase.identity().get();
                            stmt.setString( 1, id );
                            stmt.executeUpdate();
                            stmt.close();

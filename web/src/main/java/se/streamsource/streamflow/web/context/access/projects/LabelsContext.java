@@ -24,11 +24,11 @@ import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.infrastructure.application.TitledLinksBuilder;
 import se.streamsource.streamflow.web.domain.entity.project.ProjectLabelsQueries;
+import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
 import se.streamsource.streamflow.web.domain.structure.organization.AccessPoints;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
-import se.streamsource.streamflow.web.domain.structure.tasktype.TaskType;
 
 import java.util.List;
 import java.util.Map;
@@ -52,8 +52,8 @@ public interface LabelsContext
 
          TitledLinksBuilder linksBuilder = new TitledLinksBuilder( module.valueBuilderFactory() );
 
-         Map<Label,SelectedLabels> map = labelsQueries.possibleLabels( context.get( TaskType.class ) );
-         TaskType type = context.get( TaskType.class );
+         Map<Label,SelectedLabels> map = labelsQueries.possibleLabels( context.get( CaseType.class ) );
+         CaseType type = context.get( CaseType.class );
          StringBuilder title = new StringBuilder( type.getDescription() + ": " );
          boolean firstLabel = true;
 
@@ -88,11 +88,11 @@ public interface LabelsContext
       public void createaccesspoint( StringValue name )
       {
          Project project = context.get( Project.class );
-         TaskType taskType = context.get( TaskType.class );
+         CaseType caseType = context.get( CaseType.class );
          List<Label> labels = context.getAll( Label.class );
 
          AccessPoints accessPoints = context.get( AccessPoints.class );
-         accessPoints.createAccessPoint( name.string().get(), project, taskType, labels );
+         accessPoints.createAccessPoint( name.string().get(), project, caseType, labels );
       }
 
       public LabelsContext context( String id )

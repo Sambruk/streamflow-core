@@ -19,35 +19,35 @@ import org.jbehave.scenario.annotations.Given;
 import org.jbehave.scenario.annotations.When;
 import org.jbehave.scenario.steps.Steps;
 import org.qi4j.api.injection.scope.Uses;
-import se.streamsource.streamflow.web.domain.entity.tasktype.TaskTypeEntity;
+import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity;
 
 /**
  * JAVADOC
  */
-public class TaskTypesSteps
+public class CaseTypesSteps
       extends Steps
 {
    @Uses
    OrganizationsSteps orgSteps;
 
-   public TaskTypeEntity givenTaskType;
+   public CaseTypeEntity givenCaseType;
 
 
    @Given("tasktype named $tasktype")
    public void givenTaskType( String name )
    {
-      givenTaskType = (TaskTypeEntity) orgSteps.givenOrganization.getTaskTypeByName( name );
+      givenCaseType = (CaseTypeEntity) orgSteps.givenOrganization.getCaseTypeByName( name );
    }
 
    @When("a tasktype named $name is created")
    public void createTaskType( String name )
    {
-      givenTaskType = (TaskTypeEntity) orgSteps.givenOrganization.createTaskType( name );
+      givenCaseType = (CaseTypeEntity) orgSteps.givenOrganization.createCaseType( name );
    }
 
    @When("tasktype is removed")
    public void removeProject()
    {
-      orgSteps.givenOrganization.removeTaskType( givenTaskType );
+      orgSteps.givenOrganization.removeCaseType( givenCaseType );
    }
 }

@@ -37,7 +37,7 @@ public interface SelectedFormsContext
 {
    public LinksValue possibleforms();
 
-   public void addform( EntityReferenceDTO taskTypeDTO );
+   public void addform( EntityReferenceDTO caseTypeDTO );
 
    abstract class Mixin
       extends InteractionsMixin

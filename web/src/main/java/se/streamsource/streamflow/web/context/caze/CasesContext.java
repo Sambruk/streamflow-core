@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.context.task;
+package se.streamsource.streamflow.web.context.caze;
 
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
@@ -27,31 +27,31 @@ import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.domain.structure.Describable;
-import se.streamsource.streamflow.web.domain.entity.task.TaskEntity;
-import se.streamsource.streamflow.web.domain.entity.user.SearchTaskQueries;
-import se.streamsource.streamflow.web.domain.structure.task.Task;
+import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
+import se.streamsource.streamflow.web.domain.entity.user.SearchCaseQueries;
+import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
 import se.streamsource.dci.api.SubContexts;
 
 /**
  * JAVADOC
  */
-@Mixins(TasksContext.Mixin.class)
-public interface TasksContext
-   extends SubContexts<TaskContext>, Interactions
+@Mixins(CasesContext.Mixin.class)
+public interface CasesContext
+   extends SubContexts<CaseContext>, Interactions
 {
    LinksValue search( StringValue query);
 
    abstract class Mixin
       extends InteractionsMixin
-      implements TasksContext
+      implements CasesContext
    {
-      public static LinksValue buildTaskList(Query<Task> query, Module module, String basePath)
+      public static LinksValue buildCaseList(Query<Case> query, Module module, String basePath)
       {
          LinksBuilder linksBuilder = new LinksBuilder(module.valueBuilderFactory()).path( basePath );
-         for (Task task : query)
+         for (Case aCase : query)
          {
-            linksBuilder.addLink( TaskContext.Mixin.taskDTO( (TaskEntity) task, module, basePath ));
+            linksBuilder.addLink( CaseContext.Mixin.caseDTO( (CaseEntity) aCase, module, basePath ));
          }
          return linksBuilder.newLinks();
       }
@@ -61,19 +61,19 @@ public interface TasksContext
 
       public LinksValue search( StringValue query )
       {
-         SearchTaskQueries taskQueries = context.get( SearchTaskQueries.class );
+         SearchCaseQueries caseQueries = context.get( SearchCaseQueries.class );
          String name = context.get( UserAuthentication.Data.class ).userName().get();
-         Query<Task> taskQuery = taskQueries.search( query, name );
-         taskQuery.orderBy( QueryExpressions.orderBy(QueryExpressions.templateFor( Describable.Data.class ).description()) );
-         return buildTaskList( taskQuery, module, context.get(Reference.class).getBaseRef().getPath());
+         Query<Case> caseQuery = caseQueries.search( query, name );
+         caseQuery.orderBy( QueryExpressions.orderBy(QueryExpressions.templateFor( Describable.Data.class ).description()) );
+         return buildCaseList( caseQuery, module, context.get(Reference.class).getBaseRef().getPath());
       }
 
-      public TaskContext context( String id )
+      public CaseContext context( String id )
       {
-         TaskEntity task = module.unitOfWorkFactory().currentUnitOfWork().get( TaskEntity.class, id );
-         context.set( task );
+         CaseEntity aCase = module.unitOfWorkFactory().currentUnitOfWork().get( CaseEntity.class, id );
+         context.set( aCase );
 
-         return subContext( TaskContext.class);
+         return subContext( CaseContext.class);
       }
    }
 }

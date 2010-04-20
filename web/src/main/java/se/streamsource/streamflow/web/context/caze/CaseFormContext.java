@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.context.task;
+package se.streamsource.streamflow.web.context.caze;
 
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.value.ValueBuilder;
@@ -28,8 +28,8 @@ import se.streamsource.dci.api.InteractionsMixin;
 /**
  * JAVADOC
  */
-@Mixins(TaskFormContext.Mixin.class)
-public interface TaskFormContext
+@Mixins(CaseFormContext.Mixin.class)
+public interface CaseFormContext
    extends Interactions
 {
    public FormSubmissionValue formsubmission();
@@ -37,7 +37,7 @@ public interface TaskFormContext
 
    abstract class Mixin
       extends InteractionsMixin
-      implements TaskFormContext
+      implements CaseFormContext
    {
       public FormSubmissionValue formsubmission()
       {

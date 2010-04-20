@@ -40,8 +40,8 @@ import se.streamsource.streamflow.web.domain.entity.organization.GroupAssembler;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationAssembler;
 import se.streamsource.streamflow.web.domain.entity.organization.RoleAssembler;
 import se.streamsource.streamflow.web.domain.entity.project.ProjectAssembler;
-import se.streamsource.streamflow.web.domain.entity.task.TaskAssembler;
-import se.streamsource.streamflow.web.domain.entity.tasktype.TaskTypeAssembler;
+import se.streamsource.streamflow.web.domain.entity.caze.CaseAssembler;
+import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeAssembler;
 import se.streamsource.streamflow.web.domain.entity.user.UserAssembler;
 import se.streamsource.streamflow.web.domain.interaction.comment.CommentAssembler;
 import se.streamsource.streamflow.web.infrastructure.database.DatabaseAssembler;
@@ -69,7 +69,10 @@ public class StreamFlowWebAssembler
    {
       ApplicationAssembly assembly = applicationFactory.newApplicationAssembly();
       assembly.setName( "StreamFlowServer" );
-      assembly.setVersion( "0.6.24.1488" );
+
+      // Version name rules: x.y.sprint.revision
+      assembly.setVersion( "0.7.25.1665" );
+
       LayerAssembly configurationLayer = assembly.layerAssembly( "Configuration" );
       LayerAssembly domainInfrastructureLayer = assembly.layerAssembly( "Domain infrastructure" );
       LayerAssembly domainLayer = assembly.layerAssembly( "Domain" );
@@ -155,8 +158,8 @@ public class StreamFlowWebAssembler
       new OrganizationAssembler().assemble( domainLayer.moduleAssembly( "Organizations" ) );
       new ProjectAssembler().assemble( domainLayer.moduleAssembly( "Projects" ) );
       new RoleAssembler().assemble( domainLayer.moduleAssembly( "Roles" ) );
-      new TaskAssembler().assemble( domainLayer.moduleAssembly( "Tasks" ) );
-      new TaskTypeAssembler().assemble( domainLayer.moduleAssembly( "Task types" ) );
+      new CaseAssembler().assemble( domainLayer.moduleAssembly( "Cases" ) );
+      new CaseTypeAssembler().assemble( domainLayer.moduleAssembly( "Case types" ) );
       new UserAssembler().assemble( domainLayer.moduleAssembly( "Users" ) );
    }
 }

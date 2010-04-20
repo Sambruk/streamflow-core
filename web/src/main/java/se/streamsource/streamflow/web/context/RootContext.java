@@ -20,8 +20,8 @@ import se.streamsource.dci.api.Interactions;
 import se.streamsource.dci.api.InteractionsMixin;
 import se.streamsource.dci.api.SubContext;
 import se.streamsource.streamflow.web.context.access.SurfaceContext;
+import se.streamsource.streamflow.web.context.caze.CasesContext;
 import se.streamsource.streamflow.web.context.organizations.OrganizationsContext;
-import se.streamsource.streamflow.web.context.task.TasksContext;
 import se.streamsource.streamflow.web.context.users.UsersContext;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
 import se.streamsource.streamflow.web.domain.entity.user.UsersEntity;
@@ -42,10 +42,10 @@ public interface RootContext
    UsersContext users();
 
    /**
-    * Here is where you access all tasks, including search
+    * Here is where you access all cases, including search
     */
    @SubContext
-   TasksContext tasks();
+   CasesContext cases();
 
    @SubContext
    OrganizationsContext organizations();
@@ -63,9 +63,9 @@ public interface RootContext
          return subContext( UsersContext.class );
       }
 
-      public TasksContext tasks()
+      public CasesContext cases()
       {
-         return subContext( TasksContext.class );
+         return subContext( CasesContext.class );
       }
 
       public OrganizationsContext organizations()

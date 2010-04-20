@@ -13,15 +13,15 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.context.task;
+package se.streamsource.streamflow.web.context.caze;
 
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.streamflow.domain.contact.ContactValue;
-import se.streamsource.streamflow.resource.task.TaskContactsDTO;
-import se.streamsource.streamflow.web.domain.structure.task.Contacts;
+import se.streamsource.streamflow.resource.caze.ContactsDTO;
+import se.streamsource.streamflow.web.domain.structure.caze.Contacts;
 import se.streamsource.dci.api.Interactions;
 import se.streamsource.dci.api.InteractionsMixin;
 import se.streamsource.dci.api.SubContexts;
@@ -38,7 +38,7 @@ public interface ContactsContext
 {
    public void add( ContactValue newContact );
 
-   TaskContactsDTO contacts();
+   ContactsDTO contacts();
 
    abstract class Mixin
       extends InteractionsMixin
@@ -47,9 +47,9 @@ public interface ContactsContext
       @Structure
       Module module;
 
-      public TaskContactsDTO contacts()
+      public ContactsDTO contacts()
       {
-         ValueBuilder<TaskContactsDTO> builder = module.valueBuilderFactory().newValueBuilder( TaskContactsDTO.class );
+         ValueBuilder<ContactsDTO> builder = module.valueBuilderFactory().newValueBuilder( ContactsDTO.class );
          ValueBuilder<ContactValue> contactBuilder = module.valueBuilderFactory().newValueBuilder( ContactValue.class );
          List<ContactValue> list = builder.prototype().contacts().get();
 

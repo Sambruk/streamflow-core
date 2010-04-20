@@ -49,6 +49,6 @@ public class CommentableSteps
       builder.prototype().creationDate().set( new Date() );
       builder.prototype().commenter().set( EntityReference.getEntityReference( orgsSteps.givenUser ) );
 
-      inboxSteps.givenTask.addComment( builder.newInstance() );
+      inboxSteps.givenCase.addComment( builder.newInstance() );
    }
 }

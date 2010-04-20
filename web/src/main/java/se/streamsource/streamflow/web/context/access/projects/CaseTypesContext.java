@@ -23,8 +23,8 @@ import se.streamsource.dci.api.SubContexts;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.application.TitledLinksBuilder;
-import se.streamsource.streamflow.web.domain.structure.tasktype.SelectedTaskTypes;
-import se.streamsource.streamflow.web.domain.structure.tasktype.TaskType;
+import se.streamsource.streamflow.web.domain.structure.casetype.SelectedCaseTypes;
+import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 
 /**
  * JAVADOC
@@ -39,12 +39,12 @@ public interface CaseTypesContext
    {
       public LinksValue index()
       {
-         SelectedTaskTypes.Data data = context.get( SelectedTaskTypes.Data.class );
+         SelectedCaseTypes.Data data = context.get( SelectedCaseTypes.Data.class );
          Describable describable = context.get( Describable.class );
 
          TitledLinksBuilder builder = new TitledLinksBuilder( module.valueBuilderFactory() );
 
-         builder.addDescribables( data.selectedTaskTypes() );
+         builder.addDescribables( data.selectedCaseTypes() );
          builder.addTitle( describable.getDescription() );
 
          return builder.newLinks();
@@ -52,7 +52,7 @@ public interface CaseTypesContext
 
       public LabelsContext context( String id )
       {
-         context.set( module.unitOfWorkFactory().currentUnitOfWork().get( TaskType.class, id ) );
+         context.set( module.unitOfWorkFactory().currentUnitOfWork().get( CaseType.class, id ) );
 
          return subContext( LabelsContext.class);
       }

@@ -47,9 +47,9 @@ public interface LabelContext
       {
          Query<SelectedLabels> usageQuery = context.get( Labels.class).usages( context.get(Label.class) );
          LinksBuilder builder = new LinksBuilder(module.valueBuilderFactory()); // TODO What to use for path here?
-         for (SelectedLabels selectedTaskTypes : usageQuery)
+         for (SelectedLabels selectedLabels : usageQuery)
          {
-            builder.addDescribable( (Describable) selectedTaskTypes );
+            builder.addDescribable( (Describable) selectedLabels );
          }
 
          return builder.newLinks();

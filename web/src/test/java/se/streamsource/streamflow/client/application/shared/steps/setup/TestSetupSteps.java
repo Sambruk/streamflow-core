@@ -22,6 +22,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import se.streamsource.streamflow.client.application.shared.steps.CaseTypesSteps;
 import se.streamsource.streamflow.client.application.shared.steps.FieldDefinitionsSteps;
 import se.streamsource.streamflow.client.application.shared.steps.FormsSteps;
 import se.streamsource.streamflow.client.application.shared.steps.GroupsSteps;
@@ -32,12 +33,11 @@ import se.streamsource.streamflow.client.application.shared.steps.OrganizationsS
 import se.streamsource.streamflow.client.application.shared.steps.ParticipantsSteps;
 import se.streamsource.streamflow.client.application.shared.steps.ProjectsSteps;
 import se.streamsource.streamflow.client.application.shared.steps.SubmittedFormsSteps;
-import se.streamsource.streamflow.client.application.shared.steps.TaskTypesSteps;
 import se.streamsource.streamflow.client.application.shared.steps.UsersSteps;
 import se.streamsource.streamflow.test.GenericSteps;
 import se.streamsource.streamflow.web.domain.entity.gtd.Inbox;
 import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
-import se.streamsource.streamflow.web.domain.entity.task.TaskEntity;
+import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.structure.user.User;
 import se.streamsource.streamflow.web.domain.structure.user.Users;
@@ -79,7 +79,7 @@ public class TestSetupSteps
 
    @Optional
    @Uses
-   TaskTypesSteps taskTypesSteps;
+   CaseTypesSteps caseTypesSteps;
 
    @Optional
    @Uses
@@ -128,12 +128,12 @@ public class TestSetupSteps
    @Structure
    UnitOfWorkFactory uowf;
 
-   public TaskEntity assignedTask;
-   public TaskEntity unassignedTask;
-   public TaskEntity readAssignedTask;
-   public TaskEntity readInboxTask;
-   public TaskEntity readWaitingForTask;
-   public TaskEntity readDelegatedTask;
+   public CaseEntity assignedCase;
+   public CaseEntity unassignedCase;
+   public CaseEntity readAssignedCase;
+   public CaseEntity readInboxCase;
+   public CaseEntity readWaitingForCase;
+   public CaseEntity readDelegatedCase;
 
    @Given("basic setup 1")
    public void setup1() throws Exception
@@ -151,8 +151,8 @@ public class TestSetupSteps
    public void setupTaskTypes()
    {
       organizationsSteps.givenOrganization( "Organization" );
-      taskTypesSteps.createTaskType( TASKTYPE1 );
-      taskTypesSteps.createTaskType( TASKTYPE2 );
+      caseTypesSteps.createTaskType( TASKTYPE1 );
+      caseTypesSteps.createTaskType( TASKTYPE2 );
    }
 
    @Given("basic form setup")
@@ -160,7 +160,7 @@ public class TestSetupSteps
    {
       ouSteps.givenOrganization();
       ouSteps.givenOU( OU1 );
-      taskTypesSteps.givenTaskType( TASKTYPE1 );
+      caseTypesSteps.givenTaskType( TASKTYPE1 );
 
       formsSteps.createForm( SOME_FORM );
       //formsSteps.createField( SOME_FIELD );
@@ -229,23 +229,23 @@ public class TestSetupSteps
    public void setupTasks() throws Exception
    {
       UserEntity user = usersSteps.givenUsers().getUserByName( USER1 );
-      unassignedTask = user.createTask();
-      assignedTask = user.createTask();
-      assignedTask.assignTo( user );
+      unassignedCase = user.createCase();
+      assignedCase = user.createCase();
+      assignedCase.assignTo( user );
       Inbox inbox = user;
-      readInboxTask = user.createTask();
+      readInboxCase = user.createCase();
 
       UserEntity user2 = usersSteps.givenUsers().getUserByName( USER2 );
-      readAssignedTask = user2.createTask();
-      readAssignedTask.assignTo( user2 );
+      readAssignedCase = user2.createCase();
+      readAssignedCase.assignTo( user2 );
 
       ouSteps.givenOrganization();
       ouSteps.givenOU( OU1 );
       projectsSteps.givenProject( PROJECT1 );
       ProjectEntity project = projectsSteps.givenProject;
       project.addMember( user );
-      project.createTask();
-      project.createTask().assignTo( user );
+      project.createCase();
+      project.createCase().assignTo( user );
 
       ouSteps.givenOrganization();
       ouSteps.givenOU( OU2 );
@@ -253,11 +253,11 @@ public class TestSetupSteps
       projectsSteps.givenProject( PROJECT2 );
       project = projectsSteps.givenProject;
       project.addMember( groupsSteps.givenGroup );
-      project.createTask();
-      project.createTask();
+      project.createCase();
+      project.createCase();
 
-      readWaitingForTask = project.createTask();
-      readWaitingForTask.delegateTo( user, user2, project );
+      readWaitingForCase = project.createCase();
+      readWaitingForCase.delegateTo( user, user2, project );
 
       genericSteps.clearEvents();
    }

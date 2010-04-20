@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.context.task;
+package se.streamsource.streamflow.web.context.caze;
 
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
@@ -32,19 +32,18 @@ import se.streamsource.streamflow.domain.structure.Notable;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
+import se.streamsource.streamflow.resource.caze.CaseGeneralDTO;
 import se.streamsource.streamflow.resource.roles.DateDTO;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
-import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
 import se.streamsource.streamflow.web.context.structure.labels.LabelableContext;
-import se.streamsource.streamflow.web.domain.Specification;
-import se.streamsource.streamflow.web.domain.entity.task.TaskEntity;
-import se.streamsource.streamflow.web.domain.entity.task.TaskTypeQueries;
+import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
+import se.streamsource.streamflow.web.domain.entity.caze.CaseTypeQueries;
 import se.streamsource.streamflow.web.domain.interaction.gtd.DueOn;
 import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresStatus;
+import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.form.SelectedForms;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
-import se.streamsource.streamflow.web.domain.structure.tasktype.TaskType;
-import se.streamsource.streamflow.web.domain.structure.tasktype.TypedTask;
+import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
 import se.streamsource.dci.api.SubContext;
 
 import static se.streamsource.streamflow.domain.interaction.gtd.States.*;
@@ -52,17 +51,17 @@ import static se.streamsource.streamflow.domain.interaction.gtd.States.*;
 /**
  * JAVADOC
  */
-@Mixins(TaskGeneralContext.Mixin.class)
-public interface TaskGeneralContext
+@Mixins(CaseGeneralContext.Mixin.class)
+public interface CaseGeneralContext
    extends
-      IndexInteraction<TaskGeneralDTO>,
+      IndexInteraction<CaseGeneralDTO>,
       Interactions
 {
    @RequiresStatus( { ACTIVE, DELEGATED } )
    void changedueon( DateDTO dueOnValue );
 
    @RequiresStatus( { ACTIVE, DELEGATED } )
-   void tasktype( EntityReferenceDTO dto );
+   void casetype( EntityReferenceDTO dto );
 
    @RequiresStatus({ ACTIVE, DELEGATED } )
    void changedescription( StringValue stringValue );
@@ -70,7 +69,7 @@ public interface TaskGeneralContext
    @RequiresStatus( { ACTIVE, DELEGATED } )
    void changenote( StringValue noteValue );
 
-   LinksValue possibletasktypes();
+   LinksValue possiblecasetypes();
    LinksValue possibleforms();
 
    @SubContext
@@ -78,7 +77,7 @@ public interface TaskGeneralContext
 
    abstract class Mixin
       extends InteractionsMixin
-      implements TaskGeneralContext
+      implements CaseGeneralContext
    {
       @Structure
       Module module;
@@ -95,37 +94,37 @@ public interface TaskGeneralContext
          notable.changeNote( noteValue.string().get() );
       }
 
-      public TaskGeneralDTO index()
+      public CaseGeneralDTO index()
       {
          ValueBuilderFactory vbf = module.valueBuilderFactory();
-         ValueBuilder<TaskGeneralDTO> builder = vbf.newValueBuilder( TaskGeneralDTO.class );
-         TaskEntity task = context.get( TaskEntity.class );
-         builder.prototype().description().set( task.description().get() );
+         ValueBuilder<CaseGeneralDTO> builder = vbf.newValueBuilder( CaseGeneralDTO.class );
+         CaseEntity aCase = context.get( CaseEntity.class );
+         builder.prototype().description().set( aCase.description().get() );
 
          ValueBuilder<ListValue> labelsBuilder = vbf.newValueBuilder( ListValue.class );
          ValueBuilder<ListItemValue> labelsItemBuilder = vbf.newValueBuilder( ListItemValue.class );
-         for (Label label : task.labels())
+         for (Label label : aCase.labels())
          {
             labelsItemBuilder.prototype().entity().set( EntityReference.getEntityReference( label ) );
             labelsItemBuilder.prototype().description().set( label.getDescription() );
             labelsBuilder.prototype().items().get().add( labelsItemBuilder.newInstance() );
          }
 
-         TaskType taskType = task.taskType().get();
-         if (taskType != null)
+         CaseType caseType = aCase.caseType().get();
+         if (caseType != null)
          {
-            ValueBuilder<ListItemValue> taskTypeBuilder = vbf.newValueBuilder( ListItemValue.class );
-            taskTypeBuilder.prototype().description().set( taskType.getDescription() );
-            taskTypeBuilder.prototype().entity().set( EntityReference.getEntityReference( taskType ) );
-            builder.prototype().taskType().set( taskTypeBuilder.newInstance() );
+            ValueBuilder<ListItemValue> caseTypeBuilder = vbf.newValueBuilder( ListItemValue.class );
+            caseTypeBuilder.prototype().description().set( caseType.getDescription() );
+            caseTypeBuilder.prototype().entity().set( EntityReference.getEntityReference( caseType ) );
+            builder.prototype().caseType().set( caseTypeBuilder.newInstance() );
          }
 
          builder.prototype().labels().set( labelsBuilder.newInstance() );
-         builder.prototype().note().set( task.note().get() );
-         builder.prototype().creationDate().set( task.createdOn().get() );
-         builder.prototype().taskId().set( task.taskId().get() );
-         builder.prototype().dueOn().set( task.dueOn().get() );
-         builder.prototype().status().set( task.status().get() );
+         builder.prototype().note().set( aCase.note().get() );
+         builder.prototype().creationDate().set( aCase.createdOn().get() );
+         builder.prototype().caseId().set( aCase.caseId().get() );
+         builder.prototype().dueOn().set( aCase.dueOn().get() );
+         builder.prototype().status().set( aCase.status().get() );
 
          return builder.newInstance();
       }
@@ -136,39 +135,39 @@ public interface TaskGeneralContext
          dueOn.dueOn( dueOnValue.date().get() );
       }
 
-      public LinksValue possibletasktypes()
+      public LinksValue possiblecasetypes()
       {
-         TaskTypeQueries task = context.get(TaskTypeQueries.class);
-         LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() ).command( "tasktype" );
+         CaseTypeQueries aCase = context.get( CaseTypeQueries.class);
+         LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() ).command( "casetype" );
 
-         task.taskTypes(builder);
+         aCase.caseTypes(builder);
 
          return builder.newLinks();
       }
 
-      public void tasktype( EntityReferenceDTO dto )
+      public void casetype( EntityReferenceDTO dto )
       {
          UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
-         TypedTask task = context.get(TypedTask.class);
+         TypedCase aCase = context.get( TypedCase.class);
 
          EntityReference entityReference = dto.entity().get();
          if (entityReference != null)
          {
-            TaskType taskType = uow.get( TaskType.class, entityReference.identity() );
-            task.changeTaskType( taskType );
+            CaseType caseType = uow.get( CaseType.class, entityReference.identity() );
+            aCase.changeCaseType( caseType );
          } else
-            task.changeTaskType( null );
+            aCase.changeCaseType( null );
       }
 
       public LinksValue possibleforms()
       {
-         TypedTask.Data typedTask = context.get(TypedTask.Data.class);
+         TypedCase.Data typedCase = context.get( TypedCase.Data.class);
 
-         TaskType taskType = typedTask.taskType().get();
+         CaseType caseType = typedCase.caseType().get();
 
-         if (taskType != null)
+         if (caseType != null)
          {
-            SelectedForms.Data forms = (SelectedForms.Data) taskType;
+            SelectedForms.Data forms = (SelectedForms.Data) caseType;
             return new LinksBuilder(module.valueBuilderFactory()).addDescribables( forms.selectedForms() ).newLinks();
          } else
          {

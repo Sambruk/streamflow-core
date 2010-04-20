@@ -55,7 +55,7 @@ public interface OrganizationContext
    FormsContext forms();
 
    @SubContext
-   TaskTypesContext tasktypes();
+   CaseTypesContext casetypes();
 
    abstract class Mixin
       extends InteractionsMixin
@@ -110,9 +110,9 @@ public interface OrganizationContext
          return subContext( FormsContext.class );
       }
 
-      public TaskTypesContext tasktypes()
+      public CaseTypesContext casetypes()
       {
-         return subContext( TaskTypesContext.class );
+         return subContext( CaseTypesContext.class );
       }
 
    }

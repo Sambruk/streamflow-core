@@ -24,9 +24,9 @@ import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.application.TitledLinksBuilder;
+import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.entity.gtd.Inbox;
 import se.streamsource.streamflow.web.domain.entity.gtd.InboxQueries;
-import se.streamsource.streamflow.web.domain.entity.task.TaskEntity;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.organization.AccessPoint;
 
@@ -63,20 +63,20 @@ public interface ProxyUserContext
       {
          Inbox inbox = context.get( Inbox.class );
          AccessPoint.Data data = context.get( AccessPoint.Data.class );
-         TaskEntity taskEntity = inbox.createTask();
-         taskEntity.changeDescription( description.string().get() );
-         taskEntity.changeTaskType( data.taskType().get() );
-         for (Label label : data.labels().get())
+         CaseEntity caseEntity = inbox.createCase();
+         caseEntity.changeDescription( description.string().get() );
+         caseEntity.changeCaseType( data.caseType().get() );
+         for (Label label : data.labels())
          {
-            taskEntity.addLabel( label );
+            caseEntity.addLabel( label );
          }
       }
 
       public CaseContext context( String id)
       {
-         TaskEntity taskEntity = module.unitOfWorkFactory().currentUnitOfWork().get( TaskEntity.class, id );
+         CaseEntity caseEntity = module.unitOfWorkFactory().currentUnitOfWork().get( CaseEntity.class, id );
 
-         context.set( taskEntity );
+         context.set( caseEntity );
          return subContext( CaseContext.class );
       }
    }

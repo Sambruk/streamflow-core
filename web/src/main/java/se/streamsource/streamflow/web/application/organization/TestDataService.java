@@ -34,13 +34,14 @@ import se.streamsource.streamflow.domain.form.NumberFieldValue;
 import se.streamsource.streamflow.domain.form.PageSubmissionValue;
 import se.streamsource.streamflow.domain.form.SelectionFieldValue;
 import se.streamsource.streamflow.domain.form.TextFieldValue;
+import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.entity.conversation.ConversationEntity;
 import se.streamsource.streamflow.web.domain.entity.gtd.Inbox;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
-import se.streamsource.streamflow.web.domain.entity.task.TaskEntity;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.entity.user.UsersEntity;
+import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversation;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
 import se.streamsource.streamflow.web.domain.structure.form.FormSubmission;
@@ -53,8 +54,7 @@ import se.streamsource.streamflow.web.domain.structure.organization.Organization
 import se.streamsource.streamflow.web.domain.structure.project.Member;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.project.ProjectRole;
-import se.streamsource.streamflow.web.domain.structure.task.Task;
-import se.streamsource.streamflow.web.domain.structure.tasktype.TaskType;
+import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.user.ProxyUser;
 import se.streamsource.streamflow.web.domain.structure.user.User;
 import se.streamsource.streamflow.web.domain.structure.user.Users;
@@ -122,17 +122,17 @@ public interface TestDataService
          Label major = organization.createLabel( "Major" );
          Label critical = organization.createLabel( "Critical" );
 
-         // Create task types
-         TaskType newFeature = organization.createTaskType( "New feature" );
-         TaskType bug = organization.createTaskType( "Bug" );
+         // Create aCase types
+         CaseType newFeature = organization.createCaseType( "New feature" );
+         CaseType bug = organization.createCaseType( "Bug" );
          bug.addSelectedLabel( minor );
          bug.addSelectedLabel( major );
          bug.addSelectedLabel( critical );
-         TaskType improvement = organization.createTaskType( "Improvement" );
+         CaseType improvement = organization.createCaseType( "Improvement" );
          improvement.addSelectedLabel( minor );
          improvement.addSelectedLabel( major );
-         TaskType complaint = organization.createTaskType( "Complaint" );
-         TaskType passwordReset = organization.createTaskType( "Reset password" );
+         CaseType complaint = organization.createCaseType( "Complaint" );
+         CaseType passwordReset = organization.createCaseType( "Reset password" );
 
          // Create suborganizations
          OrganizationalUnit jayway = organization.createOrganizationalUnit( "Jayway" );
@@ -152,16 +152,16 @@ public interface TestDataService
          ProjectRole agent = organization.createProjectRole( "Agent" );
          ProjectRole manager = organization.createProjectRole( "Manager" );
 
-         // Create tasks
+         // Create cases
          for (int i = 0; i < 30; i++)
          {
-            TaskEntity task = user.createTask();
-            task.changeDescription( "Arbetsuppgift " + i );
+            CaseEntity aCase = user.createCase();
+            aCase.changeDescription( "Arbetsuppgift " + i );
             if (i>20)
             {
-               task.assignTo( user );
+               aCase.assignTo( user );
 
-               Conversation conversation = task.createConversation( "Questions " + i , testUser );
+               Conversation conversation = aCase.createConversation( "Questions " + i , testUser );
                ConversationEntity conversationEntity = (ConversationEntity) conversation;
                conversationEntity.addParticipant( testUser );
                conversationEntity.addParticipant( someUser );
@@ -175,9 +175,9 @@ public interface TestDataService
          // Create project
          Project project = jayway.createProject( "StreamFlow" );
 
-         project.addSelectedTaskType( newFeature );
-         project.addSelectedTaskType( bug );
-         project.addSelectedTaskType( improvement );
+         project.addSelectedCaseType( newFeature );
+         project.addSelectedCaseType( bug );
+         project.addSelectedCaseType( improvement );
 
          Form bugreport = bug.createForm();
          bugreport.changeDescription( "Bug Report" );
@@ -211,7 +211,7 @@ public interface TestDataService
 
          Form statusForm = bug.createForm();
          statusForm.changeDescription( "StatusForm" );
-         statusForm.changeNote( "This is the Status form. \nWhen urgencies occur please upgrade the status of the current task" );
+         statusForm.changeNote( "This is the Status form. \nWhen urgencies occur please upgrade the status of the current aCase" );
          page = statusForm.createPage( "Status Form" );
          page.createField( "Status", builder.newInstance() ).changeMandatory( true );
          bug.addSelectedForm( statusForm );
@@ -259,32 +259,32 @@ public interface TestDataService
 
          // Create project
          Project info2 = jayway.createProject( "StreamForm" );
-         info2.addSelectedTaskType( newFeature );
-         info2.addSelectedTaskType( bug );
-         info2.addSelectedTaskType( improvement );
+         info2.addSelectedCaseType( newFeature );
+         info2.addSelectedCaseType( bug );
+         info2.addSelectedCaseType( improvement );
 
          info2.addMember( (Member) developers );
          info2.addMember( user );
 
          Project itSupport = admin.createProject( "IT support" );
-         itSupport.addSelectedTaskType( passwordReset );
+         itSupport.addSelectedCaseType( passwordReset );
          itSupport.addMember( user );
 
          Project invoicing = admin.createProject( "Invoicing" );
-         invoicing.addSelectedTaskType( complaint );
+         invoicing.addSelectedCaseType( complaint );
          invoicing.addMember( user );
 
-         // Create tasks
-         Task task = ((Inbox)project).createTask();
-         task.changeDescription( "Arbetsuppgift 0" );
+         // Create cases
+         Case aCase = ((Inbox)project).createCase();
+         aCase.changeDescription( "Arbetsuppgift 0" );
 
-         task.changeTaskType( bug );
-         FormSubmission formSubmission = task.createFormSubmission( statusForm );
-         submitStatus(task, formSubmission, "Progress is slow", (Submitter) testUser );
-         submitStatus(task, formSubmission, "Progress is getting better", (Submitter) someUser );
+         aCase.changeCaseType( bug );
+         FormSubmission formSubmission = aCase.createFormSubmission( statusForm );
+         submitStatus( aCase, formSubmission, "Progress is slow", (Submitter) testUser );
+         submitStatus( aCase, formSubmission, "Progress is getting better", (Submitter) someUser );
 
          for (int i = 1; i < 30; i++)
-            ((Inbox)project).createTask().changeDescription( "Arbetsuppgift " + i );
+            ((Inbox)project).createCase().changeDescription( "Arbetsuppgift " + i );
 
          // Create labels
          for (int i = 1; i < 10; i++)
@@ -298,19 +298,19 @@ public interface TestDataService
 
          ProxyUser proxyUser = organization.createProxyUser( "User External", "mrx", "mrxmrx" );
 
-         TaskEntity task1 = proxyUser.createTask();
-         task1.changeDescription( "No Salary" );
-         task1.taskType().set( complaint );
+         CaseEntity case1 = proxyUser.createCase();
+         case1.changeDescription( "No Salary" );
+         case1.caseType().set( complaint );
          for (Label label : labels)
          {
-            task1.addLabel( label );
+            case1.addLabel( label );
          }
 
 
          uow.complete();
       }
 
-      private void submitStatus( Task task, FormSubmission formSubmission, String status, Submitter submitter )
+      private void submitStatus( Case aCase, FormSubmission formSubmission, String status, Submitter submitter )
       {
          FormSubmissionValue submissionValue = (FormSubmissionValue) formSubmission.getFormSubmission().buildWith().prototype();
          for (PageSubmissionValue pageValue : submissionValue.pages().get())
@@ -321,7 +321,7 @@ public interface TestDataService
             }
          }
          formSubmission.changeFormSubmission( submissionValue );
-         task.submitForm( formSubmission, submitter );
+         aCase.submitForm( formSubmission, submitter );
       }
 
 

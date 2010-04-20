@@ -25,7 +25,7 @@ import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
-import se.streamsource.streamflow.web.domain.entity.task.TaskLabelsQueries;
+import se.streamsource.streamflow.web.domain.entity.caze.CaseLabelsQueries;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.label.Labelable;
 import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
@@ -59,7 +59,7 @@ public interface LabelableContext
 
       public LinksValue possiblelabels()
       {
-         TaskLabelsQueries labels = context.get(TaskLabelsQueries.class);
+         CaseLabelsQueries labels = context.get( CaseLabelsQueries.class);
 
          LinksBuilder builder = new LinksBuilder(module.valueBuilderFactory()).command( "addlabel" );
          for (Map.Entry<Label, SelectedLabels> labelSelectedLabelsEntry : labels.possibleLabels().entrySet())

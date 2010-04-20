@@ -26,7 +26,7 @@ import se.streamsource.streamflow.client.application.shared.steps.ParticipantsSt
 import se.streamsource.streamflow.client.application.shared.steps.ProjectsSteps;
 import se.streamsource.streamflow.client.application.shared.steps.SubmittedFormsQueriesSteps;
 import se.streamsource.streamflow.client.application.shared.steps.SubmittedFormsSteps;
-import se.streamsource.streamflow.client.application.shared.steps.TaskTypesSteps;
+import se.streamsource.streamflow.client.application.shared.steps.CaseTypesSteps;
 import se.streamsource.streamflow.client.application.shared.steps.UserSteps;
 import se.streamsource.streamflow.client.application.shared.steps.setup.TestSetupSteps;
 import se.streamsource.streamflow.test.AbstractWebDomainApplicationScenario;
@@ -57,6 +57,6 @@ public class SubmittedFormsQueriesScenario
             new InboxSteps(),
             new SubmittedFormsSteps(),
             new SubmittedFormsQueriesSteps(),
-            new TaskTypesSteps() );
+            new CaseTypesSteps() );
    }
 }

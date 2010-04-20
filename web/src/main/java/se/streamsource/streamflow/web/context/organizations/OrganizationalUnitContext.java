@@ -59,7 +59,7 @@ public interface OrganizationalUnitContext
    FormsContext forms();
 
    @SubContext
-   TaskTypesContext tasktypes();
+   CaseTypesContext casetypes();
 
    @SubContext
    LabelsContext labels();
@@ -140,9 +140,9 @@ public interface OrganizationalUnitContext
          return subContext( FormsContext.class );
       }
 
-      public TaskTypesContext tasktypes()
+      public CaseTypesContext casetypes()
       {
-         return subContext( TaskTypesContext.class );
+         return subContext( CaseTypesContext.class );
       }
 
       public LabelsContext labels()

@@ -25,8 +25,8 @@ import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
 import se.streamsource.streamflow.web.domain.structure.form.SelectedForms;
-import se.streamsource.streamflow.web.domain.structure.task.Task;
-import se.streamsource.streamflow.web.domain.structure.tasktype.TypedTask;
+import se.streamsource.streamflow.web.domain.structure.caze.Case;
+import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
 
 /**
  * JAVADOC
@@ -45,9 +45,9 @@ public interface RequiredFormsContext
    {
       public LinksValue index()
       {
-         TypedTask.Data typedTask = context.get( TypedTask.Data.class );
+         TypedCase.Data typedCase = context.get( TypedCase.Data.class );
 
-         SelectedForms.Data forms = (SelectedForms.Data) typedTask.taskType().get();
+         SelectedForms.Data forms = (SelectedForms.Data) typedCase.caseType().get();
 
          LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() );
          builder.command( "createformdraft" );
@@ -62,8 +62,8 @@ public interface RequiredFormsContext
          UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
          Form form = uow.get( Form.class, formReference.entity().get().identity() );
 
-         Task task = context.get( Task.class );
-         task.createFormSubmission( form );
+         Case aCase = context.get( Case.class );
+         aCase.createFormSubmission( form );
       }
    }
 }

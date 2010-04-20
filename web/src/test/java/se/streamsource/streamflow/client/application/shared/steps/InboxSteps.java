@@ -19,7 +19,7 @@ import org.jbehave.scenario.annotations.When;
 import org.jbehave.scenario.steps.Steps;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.test.GenericSteps;
-import se.streamsource.streamflow.web.domain.entity.task.TaskEntity;
+import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 
 /**
@@ -40,12 +40,12 @@ public class InboxSteps
    @Uses
    GenericSteps genericSteps;
 
-   public TaskEntity givenTask;
+   public CaseEntity givenCase;
 
    @When("inbox task is created")
    public void createTask()
    {
-      givenTask = (TaskEntity) projectsSteps.givenProject.createTask();
+      givenCase = (CaseEntity) projectsSteps.givenProject.createCase();
    }
 
    @When("inbox task is forwarded to user $name")
@@ -54,7 +54,7 @@ public class InboxSteps
       try
       {
          UserEntity user = usersSteps.givenUsers().getUserByName( name );
-         givenTask.sendTo( user );
+         givenCase.sendTo( user );
       } catch (Exception e)
       {
          genericSteps.setThrowable( e );
@@ -66,7 +66,7 @@ public class InboxSteps
    {
       try
       {
-         givenTask.complete();
+         givenCase.complete();
       } catch (Exception e)
       {
          genericSteps.setThrowable( e );
@@ -74,14 +74,14 @@ public class InboxSteps
    }
 
    /*
-  void receiveTask(Task task);
+  void receiveTask(Case task);
 
 
-  void dropTask(Task task, Assignee assignee);
+  void dropTask(Case task, Assignee assignee);
 
-  void assignTo(Task task, Assignee assignee);
+  void assignTo(Case task, Assignee assignee);
 
-  void delegateTo(Task task, Delegatee delegatee, Delegator delegator);
+  void delegateTo(Case task, Delegatee delegatee, Delegator delegator);
 
    */
 }
