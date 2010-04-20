@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.client.ui.administration.tasktypes.forms;
+package se.streamsource.streamflow.client.ui.administration.casetypes.forms;
 
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
@@ -26,7 +26,7 @@ import javax.swing.ActionMap;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.util.Observable;
 import java.util.Observer;
 

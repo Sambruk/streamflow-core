@@ -13,10 +13,9 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.client.ui.administration.tasktypes;
+package se.streamsource.streamflow.client.ui.administration.casetypes;
 
 import ca.odell.glazedlists.BasicEventList;
-import ca.odell.glazedlists.EventList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
@@ -24,26 +23,25 @@ import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.StringValue;
-import se.streamsource.dci.value.TitledLinkValue;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FormsModel;
 import se.streamsource.streamflow.client.ui.administration.form.SelectedFormsModel;
-import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FormsModel;
 import se.streamsource.streamflow.client.ui.administration.label.SelectedLabelsModel;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 
 /**
- * List of tasktypes in an Organization
+ * List of casetypes in an Organization
  */
-public class TaskTypesModel
+public class CaseTypesModel
       implements Refreshable, EventListener
 {
    @Structure
@@ -57,20 +55,20 @@ public class TaskTypesModel
 
    BasicEventList<LinkValue> eventList = new BasicEventList<LinkValue>();
 
-   WeakModelMap<String, TaskTypeModel> taskTypeModels = new WeakModelMap<String, TaskTypeModel>()
+   WeakModelMap<String, CaseTypeModel> caseTypeModels = new WeakModelMap<String, CaseTypeModel>()
    {
-      protected TaskTypeModel newModel( String key )
+      protected CaseTypeModel newModel( String key )
       {
-         CommandQueryClient taskTypeClient = client.getSubClient( key );
-         SelectedLabelsModel selectedLabelsModel = obf.newObjectBuilder( SelectedLabelsModel.class ).use( taskTypeClient.getSubClient( "selectedlabels" ) ).newInstance();
-         FormsModel formsModel = obf.newObjectBuilder( FormsModel.class ).use( taskTypeClient.getSubClient( "forms" ) ).newInstance();
-         SelectedFormsModel selectedFormsModel = obf.newObjectBuilder( SelectedFormsModel.class ).use( taskTypeClient.getSubClient( "selectedforms" ) ).newInstance();
+         CommandQueryClient caseTypeClient = client.getSubClient( key );
+         SelectedLabelsModel selectedLabelsModel = obf.newObjectBuilder( SelectedLabelsModel.class ).use( caseTypeClient.getSubClient( "selectedlabels" ) ).newInstance();
+         FormsModel formsModel = obf.newObjectBuilder( FormsModel.class ).use( caseTypeClient.getSubClient( "forms" ) ).newInstance();
+         SelectedFormsModel selectedFormsModel = obf.newObjectBuilder( SelectedFormsModel.class ).use( caseTypeClient.getSubClient( "selectedforms" ) ).newInstance();
 
-         return obf.newObjectBuilder( TaskTypeModel.class ).use( selectedLabelsModel, formsModel, selectedFormsModel, taskTypeClient ).newInstance();
+         return obf.newObjectBuilder( CaseTypeModel.class ).use( selectedLabelsModel, formsModel, selectedFormsModel, caseTypeClient ).newInstance();
       }
    };
 
-   public BasicEventList<LinkValue> getTaskTypeList()
+   public BasicEventList<LinkValue> getCaseTypeList()
    {
       return eventList;
    }
@@ -79,7 +77,7 @@ public class TaskTypesModel
    {
       try
       {
-         // Get TaskType list
+         // Get CaseType list
          EventListSynch.synchronize( client.query( "index", LinksValue.class ).links().get(), eventList );
       } catch (ResourceException e)
       {
@@ -87,18 +85,18 @@ public class TaskTypesModel
       }
    }
 
-   public void removeTaskType( String id )
+   public void removeCaseType( String id )
    {
-      getTaskTypeModel( id ).remove();
+      getCaseTypeModel( id ).remove();
    }
 
-   public void newTaskType( String taskTypeName )
+   public void newCaseType( String caseTypeName )
    {
       try
       {
          ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
-         builder.prototype().string().set( taskTypeName );
-         client.postCommand( "createtasktype", builder.newInstance() );
+         builder.prototype().string().set( caseTypeName );
+         client.postCommand( "createcasetype", builder.newInstance() );
       } catch (ResourceException e)
       {
          if (Status.CLIENT_ERROR_CONFLICT.equals( e.getStatus() ))
@@ -111,14 +109,14 @@ public class TaskTypesModel
 
    public void notifyEvent( DomainEvent event )
    {
-      for (TaskTypeModel taskTypeModel : taskTypeModels)
+      for (CaseTypeModel caseTypeModel : caseTypeModels)
       {
-         taskTypeModel.notifyEvent( event );
+         caseTypeModel.notifyEvent( event );
       }
    }
 
-   public TaskTypeModel getTaskTypeModel( String id )
+   public CaseTypeModel getCaseTypeModel( String id )
    {
-      return taskTypeModels.get( id );
+      return caseTypeModels.get( id );
    }
 }

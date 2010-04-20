@@ -13,21 +13,17 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.client.ui.administration.tasktypes.forms;
+package se.streamsource.streamflow.client.ui.administration.casetypes.forms;
 
-import java.util.List;
-import java.util.logging.Logger;
-
-import javax.swing.AbstractListModel;
-
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import org.qi4j.api.entity.EntityReference;
 import org.restlet.resource.ResourceException;
-
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.client.OperationException;
@@ -42,11 +38,13 @@ import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.PageListItemValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
+import se.streamsource.streamflow.infrastructure.event.source.EventParameters;
 import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
 import se.streamsource.streamflow.infrastructure.event.source.EventVisitorFilter;
-import se.streamsource.streamflow.infrastructure.event.source.EventParameters;
-import ca.odell.glazedlists.BasicEventList;
-import ca.odell.glazedlists.EventList;
+
+import javax.swing.AbstractListModel;
+import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * JAVADOC

@@ -13,31 +13,32 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.client.ui.administration.tasktypes;
+package se.streamsource.streamflow.client.ui.administration.casetypes;
 
 import org.qi4j.api.injection.scope.Uses;
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FormsAdminView;
 import se.streamsource.streamflow.client.ui.administration.form.SelectedFormsView;
 import se.streamsource.streamflow.client.ui.administration.label.SelectedLabelsView;
-import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FormsAdminView;
 
-import javax.swing.*;
+import javax.swing.JTabbedPane;
+
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 
 /**
  * JAVADOC
  */
-public class TaskTypeView
+public class CaseTypeView
       extends JTabbedPane
 {
-   private TaskTypeModel taskTypeModel;
+   private CaseTypeModel caseTypeModel;
 
-   public TaskTypeView( @Uses SelectedLabelsView selectedLabelsView ,
+   public CaseTypeView( @Uses SelectedLabelsView selectedLabelsView ,
                         @Uses FormsAdminView formsView,
                         @Uses SelectedFormsView selectedFormsView,
-                        @Uses TaskTypeModel taskTypeModel)
+                        @Uses CaseTypeModel caseTypeModel)
    {
-      this.taskTypeModel = taskTypeModel;
+      this.caseTypeModel = caseTypeModel;
       addTab( text( AdministrationResources.selected_labels_tab ), selectedLabelsView );
       addTab( text( AdministrationResources.forms_tab ), formsView );
       addTab( text( AdministrationResources.selected_forms_tab ), selectedFormsView );

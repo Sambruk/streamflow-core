@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.client.ui.administration.tasktypes;
+package se.streamsource.streamflow.client.ui.administration.casetypes;
 
 import ca.odell.glazedlists.EventList;
 import org.jdesktop.application.Action;
@@ -25,20 +25,20 @@ import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.client.infrastructure.ui.FilteredList;
 
 import javax.swing.JPanel;
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * JAVADOC
  */
-public class SelectTaskTypesDialog
+public class SelectCaseTypesDialog
       extends JPanel
 {
    public FilteredList filteredList = new FilteredList();
    public List<LinkValue> selected;
 
-   public SelectTaskTypesDialog( @Service ApplicationContext context, @Uses EventList<LinkValue> list )
+   public SelectCaseTypesDialog( @Service ApplicationContext context, @Uses EventList<LinkValue> list )
    {
       setActionMap( context.getActionMap( this ) );
 
@@ -48,7 +48,7 @@ public class SelectTaskTypesDialog
       add( filteredList, BorderLayout.CENTER );
    }
 
-   public Iterable<LinkValue> getSelectedTaskTypes()
+   public Iterable<LinkValue> getSelectedCaseTypes()
    {
       return selected;
    }

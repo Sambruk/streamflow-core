@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.client.ui.administration.tasktypes.forms;
+package se.streamsource.streamflow.client.ui.administration.casetypes.forms;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
@@ -26,32 +26,33 @@ import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
+import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
-import se.streamsource.streamflow.client.ui.task.TaskResources;
-import se.streamsource.streamflow.domain.form.FormValue;
-import se.streamsource.streamflow.domain.form.FieldValue;
-import se.streamsource.streamflow.domain.form.TextFieldValue;
+import se.streamsource.streamflow.client.ui.caze.CaseResources;
+import se.streamsource.streamflow.domain.form.CommentFieldValue;
 import se.streamsource.streamflow.domain.form.DateFieldValue;
+import se.streamsource.streamflow.domain.form.FieldValue;
+import se.streamsource.streamflow.domain.form.FormValue;
 import se.streamsource.streamflow.domain.form.NumberFieldValue;
 import se.streamsource.streamflow.domain.form.SelectionFieldValue;
-import se.streamsource.streamflow.domain.form.CommentFieldValue;
+import se.streamsource.streamflow.domain.form.TextFieldValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.PageListItemValue;
-import se.streamsource.dci.value.StringValue;
 
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.util.Observable;
 import java.util.Observer;
 
-import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.*;
+import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.TEXTAREA;
+import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.TEXTFIELD;
 
 
 /**
@@ -179,7 +180,7 @@ public class FormEditAdminView
             model.changeDescription( builder.newInstance() );
          } catch (ResourceException e)
          {
-            throw new OperationException( TaskResources.could_not_change_name, e );
+            throw new OperationException( CaseResources.could_not_change_name, e );
          }
       } else if (property.qualifiedName().name().equals( "note" ))
       {
@@ -190,7 +191,7 @@ public class FormEditAdminView
             model.changeNote( builder.newInstance() );
          } catch (ResourceException e)
          {
-            throw new OperationException( TaskResources.could_not_change_note, e );
+            throw new OperationException( CaseResources.could_not_change_note, e );
          }
       }
    }

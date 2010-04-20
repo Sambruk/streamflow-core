@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.client.ui.administration.tasktypes;
+package se.streamsource.streamflow.client.ui.administration.casetypes;
 
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
@@ -23,21 +23,21 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 
 /**
- * Management of selected tasktypes on a project
+ * Management of selected casetypes on a project
  */
-public class SelectedTaskTypesModel
+public class SelectedCaseTypesModel
       implements EventListener, Refreshable
 {
    @Uses
@@ -48,7 +48,7 @@ public class SelectedTaskTypesModel
    @Structure
    ValueBuilderFactory vbf;
 
-   public EventList<LinkValue> getTaskTypeList()
+   public EventList<LinkValue> getCaseTypeList()
    {
       return eventList;
    }
@@ -57,50 +57,50 @@ public class SelectedTaskTypesModel
    {
       try
       {
-         // Get tasktype list
+         // Get casetype list
          LinksValue newList = client.query( "index", LinksValue.class );
 
          EventListSynch.synchronize( newList.links().get(), eventList );
       } catch (ResourceException e)
       {
-         throw new OperationException( AdministrationResources.could_not_refresh_list_of_tasktypes, e );
+         throw new OperationException( AdministrationResources.could_not_refresh_list_of_casetypes, e );
       }
    }
 
-   public EventList<LinkValue> getPossibleTaskTypes()
+   public EventList<LinkValue> getPossibleCaseTypes()
    {
       try
       {
-         BasicEventList<LinkValue> possibleTaskTypes = new BasicEventList<LinkValue>();
-         possibleTaskTypes.addAll( client.query( "possibletasktypes", LinksValue.class ).links().get() );
-         return possibleTaskTypes;
+         BasicEventList<LinkValue> possibleCaseTypes = new BasicEventList<LinkValue>();
+         possibleCaseTypes.addAll( client.query( "possiblecasetypes", LinksValue.class ).links().get() );
+         return possibleCaseTypes;
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_refresh, e );
       }
    }
 
-   public void addTaskType( LinkValue identity )
+   public void addCaseType( LinkValue identity )
    {
       try
       {
          ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
          builder.prototype().entity().set( EntityReference.parseEntityReference( identity.id().get()) );
-         client.postCommand( "addtasktype", builder.newInstance() );
+         client.postCommand( "addcasetype", builder.newInstance() );
       } catch (ResourceException e)
       {
-         throw new OperationException( AdministrationResources.could_not_add_tasktype, e );
+         throw new OperationException( AdministrationResources.could_not_add_casetype, e );
       }
    }
 
-   public void removeTaskType( EntityReference identity )
+   public void removeCaseType( EntityReference identity )
    {
       try
       {
          client.getSubClient( identity.identity() ).delete();
       } catch (ResourceException e)
       {
-         throw new OperationException( AdministrationResources.could_not_remove_tasktype, e );
+         throw new OperationException( AdministrationResources.could_not_remove_casetype, e );
       }
    }
 

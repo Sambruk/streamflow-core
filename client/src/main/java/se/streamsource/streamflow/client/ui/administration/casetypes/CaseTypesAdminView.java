@@ -13,15 +13,15 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.client.ui.administration.tasktypes;
+package se.streamsource.streamflow.client.ui.administration.casetypes;
 
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
-import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
-import se.streamsource.streamflow.client.ui.administration.label.LabelsModel;
-import se.streamsource.streamflow.client.ui.administration.AdministrationView;
 import se.streamsource.dci.value.LinkValue;
+import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
+import se.streamsource.streamflow.client.ui.administration.AdministrationView;
+import se.streamsource.streamflow.client.ui.administration.label.LabelsModel;
 
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -33,25 +33,25 @@ import javax.swing.event.ListSelectionListener;
 /**
  * JAVADOC
  */
-public class TaskTypesAdminView
+public class CaseTypesAdminView
       extends JSplitPane
 {
    @Structure
    ObjectBuilderFactory obf;
 
-   public TaskTypesAdminView( @Uses final TaskTypesView taskTypesView,
-                              @Uses final TaskTypesModel taskTypesModel,
+   public CaseTypesAdminView( @Uses final CaseTypesView caseTypesView,
+                              @Uses final CaseTypesModel caseTypesModel,
                               @Uses final LabelsModel labelsModel,
                               @Uses final AdministrationView administrationView)
    {
       super();
 
-      setLeftComponent( taskTypesView );
+      setLeftComponent( caseTypesView );
       setRightComponent( new JPanel() );
 
       setDividerLocation( 200 );
 
-      final JList list = taskTypesView.getProjectList();
+      final JList list = caseTypesView.getProjectList();
       list.addListSelectionListener( new ListSelectionListener()
       {
          public void valueChanged( ListSelectionEvent e )
@@ -61,10 +61,10 @@ public class TaskTypesAdminView
                int idx = list.getSelectedIndex();
                if (idx < list.getModel().getSize() && idx >= 0)
                {
-                  LinkValue taskTypeLink = (LinkValue) list.getModel().getElementAt( idx );
-                  TaskTypeModel taskTypeModel = taskTypesModel.getTaskTypeModel( taskTypeLink.id().get() );
-                  TaskTypeView view = obf.newObjectBuilder( TaskTypeView.class ).use(
-                        taskTypeModel.getSelectedLabelsModel(), labelsModel, taskTypeModel.getFormsModel(), taskTypeModel.getSelectedFormsModel(), administrationView, taskTypeModel ).newInstance();
+                  LinkValue caseTypeLink = (LinkValue) list.getModel().getElementAt( idx );
+                  CaseTypeModel caseTypeModel = caseTypesModel.getCaseTypeModel( caseTypeLink.id().get() );
+                  CaseTypeView view = obf.newObjectBuilder( CaseTypeView.class ).use(
+                        caseTypeModel.getSelectedLabelsModel(), labelsModel, caseTypeModel.getFormsModel(), caseTypeModel.getSelectedFormsModel(), administrationView, caseTypeModel ).newInstance();
                   setRightComponent( view );
                } else
                {
@@ -75,7 +75,7 @@ public class TaskTypesAdminView
       } );
 
 
-      addAncestorListener( new RefreshWhenVisible( taskTypesModel, this ) );
+      addAncestorListener( new RefreshWhenVisible( caseTypesModel, this ) );
    }
 
 }

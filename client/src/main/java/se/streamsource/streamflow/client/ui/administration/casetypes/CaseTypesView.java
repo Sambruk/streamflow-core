@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.client.ui.administration.tasktypes;
+package se.streamsource.streamflow.client.ui.administration.casetypes;
 
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.SortedList;
@@ -47,10 +47,10 @@ import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 /**
  * JAVADOC
  */
-public class TaskTypesView
+public class CaseTypesView
       extends JPanel
 {
-   TaskTypesModel model;
+   CaseTypesModel model;
 
    @Uses
    Iterable<NameDialog> nameDialogs;
@@ -63,7 +63,7 @@ public class TaskTypesView
 
    public JList projectList;
 
-   public TaskTypesView( @Service ApplicationContext context, @Uses TaskTypesModel model )
+   public CaseTypesView( @Service ApplicationContext context, @Uses CaseTypesModel model )
    {
       super( new BorderLayout() );
       this.model = model;
@@ -77,7 +77,7 @@ public class TaskTypesView
       options.add( am.get( "remove" ) );
 
       JScrollPane scrollPane = new JScrollPane();
-      projectList = new JList( new EventListModel<LinkValue>( new SortedList<LinkValue>(model.getTaskTypeList(), new LinkComparator()) ) );
+      projectList = new JList( new EventListModel<LinkValue>( new SortedList<LinkValue>(model.getCaseTypeList(), new LinkComparator()) ) );
       projectList.setCellRenderer( new LinkListCellRenderer() );
       scrollPane.setViewportView( projectList );
       add( scrollPane, BorderLayout.CENTER );
@@ -95,11 +95,11 @@ public class TaskTypesView
    {
       NameDialog dialog = nameDialogs.iterator().next();
 
-      dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.add_tasktype_title ) );
+      dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.add_casetype_title ) );
 
       if (dialog.name() != null)
       {
-         model.newTaskType( dialog.name() );
+         model.newCaseType( dialog.name() );
          model.refresh();
       }
    }
@@ -112,7 +112,7 @@ public class TaskTypesView
       if (dialog.isConfirmed())
       {
          LinkValue selected = (LinkValue) projectList.getSelectedValue();
-         model.removeTaskType( selected.id().get() );
+         model.removeCaseType( selected.id().get() );
          model.refresh();
       }
    }
@@ -126,7 +126,7 @@ public class TaskTypesView
       if (dialog.name() != null)
       {
          LinkValue item = (LinkValue) projectList.getSelectedValue();
-         model.getTaskTypeModel( item.id().get() ).changeDescription( dialog.name() );
+         model.getCaseTypeModel( item.id().get() ).changeDescription( dialog.name() );
          model.refresh();
       }
    }
@@ -135,7 +135,7 @@ public class TaskTypesView
    public void showUsages()
    {
       LinkValue item = (LinkValue) projectList.getSelectedValue();
-      EventList<LinkValue> usageList = model.getTaskTypeModel( item.id().get() ).usages();
+      EventList<LinkValue> usageList = model.getCaseTypeModel( item.id().get() ).usages();
 
       JList list = new JList();
       list.setCellRenderer( new LinkListCellRenderer() );

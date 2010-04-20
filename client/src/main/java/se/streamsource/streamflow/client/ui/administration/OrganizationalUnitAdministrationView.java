@@ -22,8 +22,8 @@ import se.streamsource.streamflow.client.ui.administration.label.LabelsView;
 import se.streamsource.streamflow.client.ui.administration.label.SelectedLabelsView;
 import se.streamsource.streamflow.client.ui.administration.policy.AdministratorsView;
 import se.streamsource.streamflow.client.ui.administration.projects.ProjectAdminView;
-import se.streamsource.streamflow.client.ui.administration.tasktypes.CaseTypesAdminView;
-import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FormsAdminView;
+import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypesAdminView;
+import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FormsAdminView;
 
 import javax.swing.*;
 

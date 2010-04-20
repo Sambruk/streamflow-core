@@ -18,11 +18,11 @@ package se.streamsource.streamflow.client.ui.administration.projects;
 import org.qi4j.api.injection.scope.Uses;
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
-import se.streamsource.streamflow.client.ui.administration.tasktypes.CaseTypesAdminView;
+import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypesAdminView;
 import se.streamsource.streamflow.client.ui.administration.label.LabelsView;
 import se.streamsource.streamflow.client.ui.administration.label.SelectedLabelsView;
-import se.streamsource.streamflow.client.ui.administration.tasktypes.SelectedCaseTypesView;
-import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FormsView;
+import se.streamsource.streamflow.client.ui.administration.casetypes.SelectedCaseTypesView;
+import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FormsView;
 
 import javax.swing.*;
 

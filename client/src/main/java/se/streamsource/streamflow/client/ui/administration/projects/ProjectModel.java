@@ -18,9 +18,9 @@ package se.streamsource.streamflow.client.ui.administration.projects;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.ui.administration.label.LabelsModel;
 import se.streamsource.streamflow.client.ui.administration.label.SelectedLabelsModel;
-import se.streamsource.streamflow.client.ui.administration.tasktypes.SelectedCaseTypesModel;
-import se.streamsource.streamflow.client.ui.administration.tasktypes.CaseTypesModel;
-import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FormsModel;
+import se.streamsource.streamflow.client.ui.administration.casetypes.SelectedCaseTypesModel;
+import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypesModel;
+import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FormsModel;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 

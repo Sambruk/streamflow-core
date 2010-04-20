@@ -21,12 +21,12 @@ import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.client.ui.administration.AdministrationView;
 import se.streamsource.streamflow.client.ui.administration.OrganizationalUnitAdministrationModel;
-import se.streamsource.streamflow.client.ui.administration.tasktypes.CaseTypesModel;
+import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypesModel;
 import se.streamsource.streamflow.client.ui.administration.label.LabelsModel;
 import se.streamsource.streamflow.client.ui.administration.label.SelectedLabelsModel;
-import se.streamsource.streamflow.client.ui.administration.tasktypes.SelectedCaseTypesModel;
+import se.streamsource.streamflow.client.ui.administration.casetypes.SelectedCaseTypesModel;
 import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
-import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FormsModel;
+import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FormsModel;
 
 import javax.swing.JList;
 import javax.swing.JPanel;

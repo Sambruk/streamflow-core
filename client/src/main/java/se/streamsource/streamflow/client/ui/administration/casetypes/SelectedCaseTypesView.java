@@ -13,9 +13,8 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.client.ui.administration.tasktypes;
+package se.streamsource.streamflow.client.ui.administration.casetypes;
 
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 import ca.odell.glazedlists.SortedList;
 import ca.odell.glazedlists.swing.EventListModel;
 import org.jdesktop.application.Action;
@@ -37,25 +36,27 @@ import javax.swing.JButton;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import java.awt.BorderLayout;
+import java.awt.*;
+
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 
 /**
  * JAVADOC
  */
-public class SelectedTaskTypesView
+public class SelectedCaseTypesView
       extends JPanel
 {
    @Service
    DialogService dialogs;
 
    @Uses
-   ObjectBuilder<SelectTaskTypesDialog> taskTypesDialogs;
+   ObjectBuilder<SelectCaseTypesDialog> caseTypesDialogs;
 
-   public JList taskTypeList;
+   public JList caseTypeList;
 
-   private SelectedTaskTypesModel modelSelected;
+   private SelectedCaseTypesModel modelSelected;
 
-   public SelectedTaskTypesView( @Service ApplicationContext context, @Uses SelectedTaskTypesModel modelSelected )
+   public SelectedCaseTypesView( @Service ApplicationContext context, @Uses SelectedCaseTypesModel modelSelected )
    {
       super( new BorderLayout() );
       this.modelSelected = modelSelected;
@@ -63,17 +64,17 @@ public class SelectedTaskTypesView
       ActionMap am = context.getActionMap( this );
       setActionMap( am );
 
-      taskTypeList = new JList( new EventListModel<LinkValue>( new SortedList<LinkValue>( modelSelected.getTaskTypeList(), new LinkComparator() ) ) );
+      caseTypeList = new JList( new EventListModel<LinkValue>( new SortedList<LinkValue>( modelSelected.getCaseTypeList(), new LinkComparator() ) ) );
 
-      taskTypeList.setCellRenderer( new LinkListCellRenderer() );
+      caseTypeList.setCellRenderer( new LinkListCellRenderer() );
 
-      add( new JScrollPane( taskTypeList ), BorderLayout.CENTER );
+      add( new JScrollPane( caseTypeList ), BorderLayout.CENTER );
 
       JPanel toolbar = new JPanel();
       toolbar.add( new JButton( am.get( "add" ) ) );
       toolbar.add( new JButton( am.get( "remove" ) ) );
       add( toolbar, BorderLayout.SOUTH );
-      taskTypeList.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "remove" ) ) );
+      caseTypeList.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "remove" ) ) );
 
       addAncestorListener( new RefreshWhenVisible( modelSelected, this ) );
    }
@@ -81,15 +82,15 @@ public class SelectedTaskTypesView
    @Action
    public void add()
    {
-      SelectTaskTypesDialog dialog = taskTypesDialogs.use( modelSelected.getPossibleTaskTypes() ).newInstance();
+      SelectCaseTypesDialog dialog = caseTypesDialogs.use( modelSelected.getPossibleCaseTypes() ).newInstance();
 
-      dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.add_tasktype_title ) );
+      dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.add_casetype_title ) );
 
-      if (dialog.getSelectedTaskTypes() != null)
+      if (dialog.getSelectedCaseTypes() != null)
       {
-         for (LinkValue linkValue : dialog.getSelectedTaskTypes())
+         for (LinkValue linkValue : dialog.getSelectedCaseTypes())
          {
-            modelSelected.addTaskType( linkValue );
+            modelSelected.addCaseType( linkValue );
          }
          modelSelected.refresh();
       }
@@ -99,8 +100,8 @@ public class SelectedTaskTypesView
    @Action
    public void remove()
    {
-      LinkValue selected = (LinkValue) taskTypeList.getSelectedValue();
-      modelSelected.removeTaskType( EntityReference.parseEntityReference( selected.id().get()) );
+      LinkValue selected = (LinkValue) caseTypeList.getSelectedValue();
+      modelSelected.removeCaseType( EntityReference.parseEntityReference( selected.id().get()) );
       modelSelected.refresh();
    }
 }

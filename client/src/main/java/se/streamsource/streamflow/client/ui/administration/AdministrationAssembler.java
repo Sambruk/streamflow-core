@@ -27,7 +27,7 @@ import se.streamsource.streamflow.client.ui.administration.organization.Organiza
 import se.streamsource.streamflow.client.ui.administration.policy.AdministratorAdministrationAssembler;
 import se.streamsource.streamflow.client.ui.administration.projects.ProjectAdministrationAssembler;
 import se.streamsource.streamflow.client.ui.administration.roles.RoleAdministrationAssembler;
-import se.streamsource.streamflow.client.ui.administration.tasktypes.CaseTypeAdministrationAssembler;
+import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypeAdministrationAssembler;
 import se.streamsource.streamflow.client.ui.administration.users.UserAdministrationAssembler;
 import se.streamsource.streamflow.client.ui.workspace.TestConnectionTask;
 

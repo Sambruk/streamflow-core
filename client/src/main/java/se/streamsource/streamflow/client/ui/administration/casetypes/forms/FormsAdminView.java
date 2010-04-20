@@ -13,13 +13,13 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.client.ui.administration.tasktypes.forms;
+package se.streamsource.streamflow.client.ui.administration.casetypes.forms;
 
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
-import se.streamsource.streamflow.client.ui.administration.AdministrationView;
 import se.streamsource.dci.value.LinkValue;
+import se.streamsource.streamflow.client.ui.administration.AdministrationView;
 
 import javax.swing.JList;
 import javax.swing.JPanel;

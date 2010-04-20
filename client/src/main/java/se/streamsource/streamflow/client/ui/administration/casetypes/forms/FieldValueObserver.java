@@ -13,17 +13,16 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.client.ui.administration.tasktypes.forms;
+package se.streamsource.streamflow.client.ui.administration.casetypes.forms;
 
-import org.qi4j.api.property.Property;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.property.Property;
 import org.restlet.resource.ResourceException;
-
-import java.util.Observer;
-import java.util.Observable;
-
 import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.ui.task.TaskResources;
+import se.streamsource.streamflow.client.ui.caze.CaseResources;
+
+import java.util.Observable;
+import java.util.Observer;
 
 public class FieldValueObserver
    implements Observer
@@ -41,7 +40,7 @@ public class FieldValueObserver
             model.changeMandatory( (Boolean) property.get() );
          } catch (ResourceException e)
          {
-            throw new OperationException( TaskResources.could_not_change_mandatory, e );
+            throw new OperationException( CaseResources.could_not_change_mandatory, e );
          }
       } else if (property.qualifiedName().name().equals( "description" ))
       {
@@ -50,7 +49,7 @@ public class FieldValueObserver
             model.changeDescription( (String) property.get() );
          } catch (ResourceException e)
          {
-            throw new OperationException( TaskResources.could_not_change_name, e );
+            throw new OperationException( CaseResources.could_not_change_name, e );
          }
       } else if (property.qualifiedName().name().equals( "note" ))
       {
@@ -59,7 +58,7 @@ public class FieldValueObserver
             model.changeNote( (String) property.get() );
          } catch (ResourceException e)
          {
-            throw new OperationException( TaskResources.could_not_change_note, e );
+            throw new OperationException( CaseResources.could_not_change_note, e );
          }
       } else if (property.qualifiedName().name().equals( "width" ))
       {
@@ -68,7 +67,7 @@ public class FieldValueObserver
             model.changeWidth( Integer.parseInt( (String) property.get() ) );
          } catch (ResourceException e)
          {
-            throw new OperationException( TaskResources.could_not_change_width, e );
+            throw new OperationException( CaseResources.could_not_change_width, e );
          }
       } else if (property.qualifiedName().name().equals( "rows" ))
       {
@@ -77,7 +76,7 @@ public class FieldValueObserver
             model.changeRows( Integer.parseInt( (String) property.get() ) );
          } catch (ResourceException e)
          {
-            throw new OperationException( TaskResources.could_not_change_rows, e );
+            throw new OperationException( CaseResources.could_not_change_rows, e );
          }
       } else if (property.qualifiedName().name().equals( "multiple" ))
       {
@@ -86,7 +85,7 @@ public class FieldValueObserver
             model.changeMultiple( (Boolean) property.get());
          } catch (ResourceException e)
          {
-            throw new OperationException( TaskResources.could_not_change_multiple, e );
+            throw new OperationException( CaseResources.could_not_change_multiple, e );
          }
       } else if ( property.qualifiedName().name().equals( "comment" ))
       {
@@ -95,7 +94,7 @@ public class FieldValueObserver
             model.changeComment( (String) property.get() );
          } catch (ResourceException e)
          {
-            throw new OperationException( TaskResources.could_not_change_comment, e );
+            throw new OperationException( CaseResources.could_not_change_comment, e );
          }
       }
 

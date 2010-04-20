@@ -13,38 +13,38 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.client.ui.administration.tasktypes;
+package se.streamsource.streamflow.client.ui.administration.casetypes;
 
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import se.streamsource.streamflow.client.infrastructure.ui.UIAssemblers;
-import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FormModel;
-import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FormsModel;
-import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FormView;
-import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FormsView;
+import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FormModel;
+import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FormView;
+import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FormsModel;
+import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FormsView;
 
 /**
  * JAVADOC
  */
-public class TaskTypeAdministrationAssembler
+public class CaseTypeAdministrationAssembler
       implements Assembler
 {
    public void assemble( ModuleAssembly module ) throws AssemblyException
    {
-      UIAssemblers.addViews( module, TaskTypesAdminView.class );
+      UIAssemblers.addViews( module, CaseTypesAdminView.class );
 
-      UIAssemblers.addDialogs( module, SelectTaskTypesDialog.class );
+      UIAssemblers.addDialogs( module, SelectCaseTypesDialog.class );
 
-      UIAssemblers.addMV( module, SelectedTaskTypesModel.class, SelectedTaskTypesView.class );
+      UIAssemblers.addMV( module, SelectedCaseTypesModel.class, SelectedCaseTypesView.class );
 
       UIAssemblers.addMV( module, FormsModel.class, FormsView.class );
 
       UIAssemblers.addMV( module, FormModel.class, FormView.class );
 
-      UIAssemblers.addMV( module, TaskTypesModel.class,
-            TaskTypesView.class );
+      UIAssemblers.addMV( module, CaseTypesModel.class,
+            CaseTypesView.class );
 
-      UIAssemblers.addMV( module, TaskTypeModel.class, TaskTypeView.class );
+      UIAssemblers.addMV( module, CaseTypeModel.class, CaseTypeView.class );
    }
 }
