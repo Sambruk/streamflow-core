@@ -13,24 +13,27 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.resource.task;
+package se.streamsource.streamflow.resource.caze;
 
+import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * JAVADOC
  */
-public interface EffectiveFieldDTO
+public interface SubmittedFormDTO
       extends ValueComposite
 {
    Property<Date> submissionDate();
 
    Property<String> submitter();
 
-   Property<String> fieldName();
+   Property<String> form();
 
-   Property<String> fieldValue();
+   @UseDefaults
+   Property<List<FieldDTO>> values();
 }

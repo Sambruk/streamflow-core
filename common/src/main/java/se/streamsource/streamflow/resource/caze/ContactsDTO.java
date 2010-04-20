@@ -13,34 +13,21 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.resource.task;
+package se.streamsource.streamflow.resource.caze;
 
-import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
-import org.qi4j.library.constraints.annotation.MaxLength;
-import se.streamsource.streamflow.domain.interaction.gtd.States;
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
-import se.streamsource.streamflow.infrastructure.application.ListValue;
+import se.streamsource.streamflow.domain.contact.ContactValue;
 
-import java.util.Date;
 import java.util.List;
 
 /**
- * General information about a task
+ * General information about a case
  */
-public interface ProxyUserTaskDTO
+public interface ContactsDTO
       extends ValueComposite
 {
-   Property<String> project();
-
-   Property<String> taskType();
-
-   @Optional
    @UseDefaults
-   Property<List<String>> labels();
-
-   @MaxLength(50)
-   Property<String> description();
+   Property<List<ContactValue>> contacts();
 }

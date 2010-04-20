@@ -13,21 +13,34 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.resource.task;
+package se.streamsource.streamflow.resource.caze;
 
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
-import se.streamsource.streamflow.domain.contact.ContactValue;
-
-import java.util.List;
 
 /**
- * General information about a task
+ * Query for Inbox.
  */
-public interface TaskContactsDTO
+public interface CasesQuery
       extends ValueComposite
 {
+   public enum InboxSorting
+   {
+      CREATED_ON, DESCRIPTION
+   }
+
+   public enum InboxStatus
+   {
+      ACTIVE
+   }
+
    @UseDefaults
-   Property<List<ContactValue>> contacts();
+   Property<InboxSorting> sort();
+
+   @UseDefaults
+   Property<InboxStatus> status();
+
+   @UseDefaults
+   Property<Integer> start();
 }

@@ -13,34 +13,30 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.resource.task;
+package se.streamsource.streamflow.resource.caze;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
+import org.qi4j.library.constraints.annotation.MaxLength;
+
+import java.util.List;
 
 /**
- * Query for Inbox.
+ * General information about a case
  */
-public interface TasksQuery
+public interface ProxyUserCaseDTO
       extends ValueComposite
 {
-   public enum InboxSorting
-   {
-      CREATED_ON, DESCRIPTION
-   }
+   Property<String> project();
 
-   public enum InboxStatus
-   {
-      ACTIVE
-   }
+   Property<String> caseType();
 
+   @Optional
    @UseDefaults
-   Property<InboxSorting> sort();
+   Property<List<String>> labels();
 
-   @UseDefaults
-   Property<InboxStatus> status();
-
-   @UseDefaults
-   Property<Integer> start();
+   @MaxLength(50)
+   Property<String> description();
 }

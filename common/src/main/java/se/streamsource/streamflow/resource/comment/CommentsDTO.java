@@ -22,7 +22,7 @@ import org.qi4j.api.value.ValueComposite;
 import java.util.List;
 
 /**
- * List of task comments
+ * List of comments
  */
 public interface CommentsDTO
       extends ValueComposite

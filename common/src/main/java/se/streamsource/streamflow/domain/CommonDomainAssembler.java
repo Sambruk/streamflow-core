@@ -32,6 +32,6 @@ public class CommonDomainAssembler
       new ContactAssembler().assemble( domainLayer.moduleAssembly( "Contact" ) );
       new FormAssembler().assemble( domainLayer.moduleAssembly( "Form" ) );
 
-      domainLayer.moduleAssembly( "Task" ).addValues( Actions.class ).visibleIn( Visibility.application );
+      domainLayer.moduleAssembly( "Case" ).addValues( Actions.class ).visibleIn( Visibility.application );
    }
 }

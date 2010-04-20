@@ -13,18 +13,20 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.resource.task;
+package se.streamsource.streamflow.resource.caze;
 
+import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
+
+import java.util.List;
 
 /**
  * JAVADOC
  */
-public interface FieldDTO
+public interface EffectiveFieldsDTO
       extends ValueComposite
 {
-   Property<String> field();
-
-   Property<String> value();
+   @UseDefaults
+   Property<List<EffectiveFieldDTO>> effectiveFields();
 }

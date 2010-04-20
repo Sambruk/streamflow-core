@@ -13,28 +13,20 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.infrastructure.application;
+package se.streamsource.streamflow.resource.caze;
 
-import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
-import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
 
 import java.util.List;
 
 /**
- * Link value
+ * List of submitted forms for a case
  */
-public interface AccessPointValue
+public interface SubmittedFormsListDTO
       extends ValueComposite
 {
-   Property<EntityReference> entity();
-   Property<String> name();
-   Property<String> project();
-   Property<String> caseType();
-
-   @Optional
    @UseDefaults
-   Property<List<String>> labels();
+   Property<List<SubmittedFormListDTO>> forms();
 }

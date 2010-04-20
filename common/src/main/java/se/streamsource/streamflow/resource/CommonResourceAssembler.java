@@ -28,6 +28,8 @@ import se.streamsource.streamflow.infrastructure.application.PageListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ResourceValue;
 import se.streamsource.streamflow.infrastructure.application.TreeNodeValue;
 import se.streamsource.streamflow.infrastructure.application.TreeValue;
+import se.streamsource.streamflow.resource.caze.CaseGeneralDTO;
+import se.streamsource.streamflow.resource.caze.ContactsDTO;
 import se.streamsource.streamflow.resource.comment.CommentDTO;
 import se.streamsource.streamflow.resource.comment.CommentsDTO;
 import se.streamsource.streamflow.resource.comment.NewCommentCommand;
@@ -40,17 +42,15 @@ import se.streamsource.streamflow.resource.roles.DateDTO;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.resource.roles.IntegerDTO;
 import se.streamsource.streamflow.resource.roles.NamedIndexDTO;
-import se.streamsource.streamflow.resource.task.EffectiveFieldDTO;
-import se.streamsource.streamflow.resource.task.EffectiveFieldsDTO;
-import se.streamsource.streamflow.resource.task.FieldDTO;
-import se.streamsource.streamflow.resource.task.ProxyUserTaskDTO;
-import se.streamsource.streamflow.resource.task.SubmittedFormDTO;
-import se.streamsource.streamflow.resource.task.SubmittedFormListDTO;
-import se.streamsource.streamflow.resource.task.SubmittedFormsListDTO;
-import se.streamsource.streamflow.resource.task.TaskContactsDTO;
-import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
-import se.streamsource.streamflow.resource.task.TaskValue;
-import se.streamsource.streamflow.resource.task.TasksQuery;
+import se.streamsource.streamflow.resource.caze.EffectiveFieldDTO;
+import se.streamsource.streamflow.resource.caze.EffectiveFieldsDTO;
+import se.streamsource.streamflow.resource.caze.FieldDTO;
+import se.streamsource.streamflow.resource.caze.ProxyUserCaseDTO;
+import se.streamsource.streamflow.resource.caze.SubmittedFormDTO;
+import se.streamsource.streamflow.resource.caze.SubmittedFormListDTO;
+import se.streamsource.streamflow.resource.caze.SubmittedFormsListDTO;
+import se.streamsource.streamflow.resource.caze.CaseValue;
+import se.streamsource.streamflow.resource.caze.CasesQuery;
 import se.streamsource.streamflow.resource.user.ChangePasswordCommand;
 import se.streamsource.streamflow.resource.user.NewProxyUserCommand;
 import se.streamsource.streamflow.resource.user.NewUserCommand;
@@ -82,7 +82,7 @@ public class CommonResourceAssembler
             ResetPasswordCommand.class ).visibleIn( Visibility.application );
 
       // Queries
-      module.addValues( TasksQuery.class ).visibleIn( Visibility.application );
+      module.addValues( CasesQuery.class ).visibleIn( Visibility.application );
 
       // Result values
       module.addValues(
@@ -96,10 +96,10 @@ public class CommonResourceAssembler
             ListItemValue.class,
             GroupedListItemValue.class,
             PageListItemValue.class,
-            TaskValue.class,
-            TaskGeneralDTO.class,
-            TaskContactsDTO.class,
-            ProxyUserTaskDTO.class,
+            CaseValue.class,
+            CaseGeneralDTO.class,
+            ContactsDTO.class,
+            ProxyUserCaseDTO.class,
             CommentsDTO.class,
             CommentDTO.class,
             ConversationDTO.class,

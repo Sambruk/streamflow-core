@@ -13,20 +13,18 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.resource.task;
+package se.streamsource.streamflow.resource.caze;
 
-import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
 
-import java.util.List;
-
 /**
- * List of submitted forms for a task
+ * JAVADOC
  */
-public interface SubmittedFormsListDTO
+public interface FieldDTO
       extends ValueComposite
 {
-   @UseDefaults
-   Property<List<SubmittedFormListDTO>> forms();
+   Property<String> field();
+
+   Property<String> value();
 }

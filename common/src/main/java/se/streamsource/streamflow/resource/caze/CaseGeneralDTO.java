@@ -13,27 +13,41 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.resource.task;
+package se.streamsource.streamflow.resource.caze;
 
-import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
+import org.qi4j.library.constraints.annotation.MaxLength;
+import se.streamsource.streamflow.domain.interaction.gtd.States;
+import se.streamsource.streamflow.infrastructure.application.ListItemValue;
+import se.streamsource.streamflow.infrastructure.application.ListValue;
 
 import java.util.Date;
-import java.util.List;
 
 /**
- * JAVADOC
+ * General information about a case
  */
-public interface SubmittedFormDTO
+public interface CaseGeneralDTO
       extends ValueComposite
 {
-   Property<Date> submissionDate();
+   @Optional
+   Property<String> caseId();
 
-   Property<String> submitter();
+   @Optional
+   Property<ListItemValue> caseType();
 
-   Property<String> form();
+   Property<ListValue> labels();
 
-   @UseDefaults
-   Property<List<FieldDTO>> values();
+   @MaxLength(50)
+   Property<String> description();
+
+   Property<String> note();
+
+   Property<Date> creationDate();
+
+   Property<States> status();
+
+   @Optional
+   Property<Date> dueOn();
 }

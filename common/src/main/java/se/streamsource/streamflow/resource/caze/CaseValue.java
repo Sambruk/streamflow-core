@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.resource.task;
+package se.streamsource.streamflow.resource.caze;
 
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.property.Property;
@@ -26,7 +26,7 @@ import java.util.Date;
 /**
  * JAVADOC
  */
-public interface TaskValue
+public interface CaseValue
       extends LinkValue
 {
    Property<Date> creationDate();
@@ -35,7 +35,7 @@ public interface TaskValue
    Property<String> createdBy();
 
    @Optional
-   Property<String> taskId();
+   Property<String> caseId();
 
    Property<States> status();
 
@@ -44,7 +44,7 @@ public interface TaskValue
    Property<LinksValue> labels();
 
    @Optional
-   Property<String> taskType();
+   Property<String> caseType();
 
    @Optional
    Property<String> assignedTo();

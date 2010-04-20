@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.resource.task;
+package se.streamsource.streamflow.resource.caze;
 
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
