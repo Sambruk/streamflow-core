@@ -32,13 +32,13 @@ import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.domain.individual.Account;
 import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
 import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
+import se.streamsource.streamflow.client.ui.caze.CasesModel;
+import se.streamsource.streamflow.client.ui.caze.CasesTableModel;
 import se.streamsource.streamflow.client.ui.overview.OverviewModel;
 import se.streamsource.streamflow.client.ui.overview.OverviewProjectsNode;
 import se.streamsource.streamflow.client.ui.overview.OverviewSummaryModel;
 import se.streamsource.streamflow.client.ui.search.SearchResultTableModel;
-import se.streamsource.streamflow.client.ui.task.TaskResources;
-import se.streamsource.streamflow.client.ui.task.TaskTableModel;
-import se.streamsource.streamflow.client.ui.task.TasksModel;
+import se.streamsource.streamflow.client.ui.caze.CaseResources;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceModel;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceUserAssignmentsNode;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceUserDelegationsNode;
@@ -85,8 +85,8 @@ public class AccountModel extends Observable implements EventListener
    private OverviewModel overviewModel;
    private SearchResultTableModel searchResults;
    private AdministrationModel administrationModel;
-   private TasksModel tasksModel;
-   public CommandQueryClient tasksClient;
+   private CasesModel casesModel;
+   public CommandQueryClient casesClient;
    private CommandQueryClient contactClient;
    private ContactValue contact;
 
@@ -215,7 +215,7 @@ public class AccountModel extends Observable implements EventListener
                .string().get();
       } catch (Exception e)
       {
-         throw new OperationException(TaskResources.could_not_refresh, e);
+         throw new OperationException( CaseResources.could_not_refresh, e);
       }
    }
 
@@ -230,7 +230,7 @@ public class AccountModel extends Observable implements EventListener
          return contact;
       } catch (Exception e)
       {
-         throw new OperationException(TaskResources.could_not_refresh, e);
+         throw new OperationException( CaseResources.could_not_refresh, e);
       }
    }
 
@@ -285,16 +285,16 @@ public class AccountModel extends Observable implements EventListener
       contactClient.putCommand("changeemailaddress", builder.newInstance());
    }
 
-   public TasksModel tasks()
+   public CasesModel cases()
    {
-      if (tasksModel == null)
+      if (casesModel == null)
       {
-         tasksClient = serverResource().getSubClient("tasks");
-         tasksModel = obf.newObjectBuilder(TasksModel.class).use(this,
-               tasksClient).newInstance();
+         casesClient = serverResource().getSubClient("cases");
+         casesModel = obf.newObjectBuilder( CasesModel.class).use(this,
+               casesClient ).newInstance();
       }
 
-      return tasksModel;
+      return casesModel;
    }
 
    public WorkspaceModel workspace()
@@ -305,7 +305,7 @@ public class AccountModel extends Observable implements EventListener
          CommandQueryClient userInboxClient = resource
                .getSubClient("workspace").getSubClient("user").getSubClient(
                      "inbox");
-         TaskTableModel inboxModel = obf.newObjectBuilder(TaskTableModel.class)
+         CasesTableModel inboxModel = obf.newObjectBuilder( CasesTableModel.class)
                .use(userInboxClient).newInstance();
          WorkspaceUserInboxNode userInboxNode = obf.newObjectBuilder(
                WorkspaceUserInboxNode.class).use(inboxModel, userInboxClient)
@@ -313,31 +313,31 @@ public class AccountModel extends Observable implements EventListener
 
          CommandQueryClient userAssignmentsClient = resource.getSubClient(
                "workspace").getSubClient("user").getSubClient("assignments");
-         TaskTableModel assignmentsModel = obf.newObjectBuilder(
-               TaskTableModel.class).use(userAssignmentsClient).newInstance();
+         CasesTableModel assignmentsModel = obf.newObjectBuilder(
+               CasesTableModel.class).use(userAssignmentsClient).newInstance();
          WorkspaceUserAssignmentsNode userAssignmentsNode = obf
                .newObjectBuilder(WorkspaceUserAssignmentsNode.class).use(
                      assignmentsModel, userAssignmentsClient).newInstance();
 
          CommandQueryClient userDelegationsClient = resource.getSubClient(
                "workspace").getSubClient("user").getSubClient("delegations");
-         TaskTableModel delegationsModel = obf.newObjectBuilder(
-               TaskTableModel.class).use(userDelegationsClient).newInstance();
+         CasesTableModel delegationsModel = obf.newObjectBuilder(
+               CasesTableModel.class).use(userDelegationsClient).newInstance();
          WorkspaceUserDelegationsNode userDelegationsNode = obf
                .newObjectBuilder(WorkspaceUserDelegationsNode.class).use(
                      delegationsModel, userDelegationsClient).newInstance();
 
          CommandQueryClient userWaitingForClient = resource.getSubClient(
                "workspace").getSubClient("user").getSubClient("waitingfor");
-         TaskTableModel waitingForModel = obf.newObjectBuilder(
-               TaskTableModel.class).use(userWaitingForClient).newInstance();
+         CasesTableModel waitingForModel = obf.newObjectBuilder(
+               CasesTableModel.class).use(userWaitingForClient).newInstance();
          WorkspaceUserWaitingForNode userWaitingForNode = obf.newObjectBuilder(
                WorkspaceUserWaitingForNode.class).use(waitingForModel,
                userWaitingForClient).newInstance();
 
          workspaceModel = obf.newObjectBuilder(WorkspaceModel.class).use(this,
                resource, userInboxNode, userAssignmentsNode,
-               userDelegationsNode, userWaitingForNode, tasks()).newInstance();
+               userDelegationsNode, userWaitingForNode, cases()).newInstance();
       }
 
       return workspaceModel;
@@ -357,7 +357,7 @@ public class AccountModel extends Observable implements EventListener
                userResource().getSubClient("overview")).newInstance();
 
          overviewModel = obf.newObjectBuilder(OverviewModel.class).use(this,
-               tasks(), overviewProjects, summaryModel).newInstance();
+               cases(), overviewProjects, summaryModel).newInstance();
       }
 
       return overviewModel;
@@ -368,7 +368,7 @@ public class AccountModel extends Observable implements EventListener
       if (searchResults == null)
       {
          searchResults = obf.newObjectBuilder(SearchResultTableModel.class)
-               .use(tasks(), tasksClient).newInstance();
+               .use( cases(), casesClient ).newInstance();
       }
 
       return searchResults;
@@ -379,7 +379,7 @@ public class AccountModel extends Observable implements EventListener
       if (administrationModel == null)
       {
          administrationModel = obf.newObjectBuilder(AdministrationModel.class)
-               .use(this, tasks()).newInstance();
+               .use(this, cases()).newInstance();
       }
 
       return administrationModel;
@@ -399,8 +399,8 @@ public class AccountModel extends Observable implements EventListener
       if (administrationModel != null)
          administrationModel.notifyEvent(event);
 
-      if (tasksModel != null)
-         tasksModel.notifyEvent(event);
+      if (casesModel != null)
+         casesModel.notifyEvent(event);
    }
 
 }
