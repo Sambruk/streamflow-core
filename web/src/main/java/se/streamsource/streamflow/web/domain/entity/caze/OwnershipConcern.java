@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.domain.entity.task;
+package se.streamsource.streamflow.web.domain.entity.caze;
 
 import org.qi4j.api.concern.ConcernOf;
 import org.qi4j.api.injection.scope.This;
@@ -24,8 +24,8 @@ import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 
 public abstract class OwnershipConcern
-   extends ConcernOf<TaskEntity>
-   implements TaskEntity
+   extends ConcernOf<CaseEntity>
+   implements CaseEntity
 {
 
    @This

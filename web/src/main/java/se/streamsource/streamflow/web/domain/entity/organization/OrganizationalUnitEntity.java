@@ -19,7 +19,6 @@ import org.qi4j.api.mixin.Mixins;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.domain.structure.Removable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
-import se.streamsource.streamflow.web.domain.entity.label.PossibleLabelsQueries;
 import se.streamsource.streamflow.web.domain.interaction.security.Authorization;
 import se.streamsource.streamflow.web.domain.structure.form.Forms;
 import se.streamsource.streamflow.web.domain.structure.group.Groups;
@@ -31,7 +30,7 @@ import se.streamsource.streamflow.web.domain.structure.organization.Organization
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganization;
 import se.streamsource.streamflow.web.domain.structure.organization.Projects;
 import se.streamsource.streamflow.web.domain.structure.organization.RolePolicy;
-import se.streamsource.streamflow.web.domain.structure.tasktype.TaskTypes;
+import se.streamsource.streamflow.web.domain.structure.casetype.CaseTypes;
 
 /**
  * JAVADOC
@@ -57,7 +56,7 @@ public interface OrganizationalUnitEntity
       OwningOrganization,
       Labels.Data,
       SelectedLabels.Data,
-      TaskTypes.Data,
+      CaseTypes.Data,
 
       // Queries
       OrganizationalUnitsQueries

@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.domain.entity.tasktype;
+package se.streamsource.streamflow.web.domain.entity.casetype;
 
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.IdentityGenerator;
@@ -21,7 +21,6 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
 import org.qi4j.api.query.QueryBuilderFactory;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
@@ -30,35 +29,34 @@ import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.domain.structure.Removable;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.web.domain.Specification;
-import se.streamsource.streamflow.web.domain.structure.form.Forms;
+import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
+import se.streamsource.streamflow.web.domain.structure.casetype.CaseTypes;
+import se.streamsource.streamflow.web.domain.structure.casetype.SelectedCaseTypes;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnits;
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.organization.Projects;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
-import se.streamsource.streamflow.web.domain.structure.tasktype.SelectedTaskTypes;
-import se.streamsource.streamflow.web.domain.structure.tasktype.TaskType;
-import se.streamsource.streamflow.web.domain.structure.tasktype.TaskTypes;
 
 import static org.qi4j.api.query.QueryExpressions.*;
 
 /**
  * JAVADOC
  */
-@Mixins(TaskTypesQueries.Mixin.class)
-public interface TaskTypesQueries
+@Mixins(CaseTypesQueries.Mixin.class)
+public interface CaseTypesQueries
 {
    // Queries
-   QueryBuilder<Project> possibleProjects( @Optional TaskType taskType );
+   QueryBuilder<Project> possibleProjects( @Optional CaseType caseType );
 
-   void taskTypes( LinksBuilder builder, Specification<TaskType> specification );
+   void caseTypes( LinksBuilder builder, Specification<CaseType> specification );
 
-   void possibleMoveTaskTypeTo( LinksBuilder builder);
+   void possibleMoveCaseTypeTo( LinksBuilder builder);
 
-   TaskType getTaskTypeByName( String name );
+   CaseType getCaseTypeByName( String name );
 
    abstract class Mixin
-         implements TaskTypesQueries, TaskTypes.Data
+         implements CaseTypesQueries, CaseTypes.Data
    {
       @Service
       IdentityGenerator idGen;
@@ -78,49 +76,49 @@ public interface TaskTypesQueries
       @This
       OrganizationalUnits.Data ous;
 
-      public void taskTypes( LinksBuilder builder, Specification<TaskType> specification )
+      public void caseTypes( LinksBuilder builder, Specification<CaseType> specification )
       {
-         for (TaskType taskType : taskTypes())
+         for (CaseType caseType : caseTypes())
          {
-            builder.addDescribable( taskType, describable );
+            builder.addDescribable( caseType, describable );
          }
 
          for (OrganizationalUnit organizationalUnit : ous.organizationalUnits())
          {
-            taskTypesforOU( builder, specification, organizationalUnit );
+            caseTypesforOU( builder, specification, organizationalUnit );
          }
       }
 
-      private void taskTypesforOU( LinksBuilder builder, Specification<TaskType> specification, OrganizationalUnit organizationalUnit )
+      private void caseTypesforOU( LinksBuilder builder, Specification<CaseType> specification, OrganizationalUnit organizationalUnit )
       {
          {
-            TaskTypes.Data taskTypes = (TaskTypes.Data) organizationalUnit;
-            for (TaskType taskType : taskTypes.taskTypes())
+            CaseTypes.Data caseTypes = (CaseTypes.Data) organizationalUnit;
+            for (CaseType caseType : caseTypes.caseTypes())
             {
-               if (specification.valid( taskType ))
-                  builder.addDescribable( taskType, organizationalUnit );
+               if (specification.valid( caseType ))
+                  builder.addDescribable( caseType, organizationalUnit );
             }
          }
 
          Projects.Data projects = (Projects.Data)organizationalUnit;
          for (Project project : projects.projects())
          {
-            TaskTypes.Data taskTypes = (TaskTypes.Data) project;
-            for (TaskType taskType : taskTypes.taskTypes())
+            CaseTypes.Data caseTypes = (CaseTypes.Data) project;
+            for (CaseType caseType : caseTypes.caseTypes())
             {
-               if (specification.valid( taskType ))
-                  builder.addDescribable( taskType, project );
+               if (specification.valid( caseType ))
+                  builder.addDescribable( caseType, project );
             }
          }
 
          // Sub-OU's
          for (OrganizationalUnit ou : ((OrganizationalUnits.Data)organizationalUnit).organizationalUnits())
          {
-            taskTypesforOU( builder, specification, ou );
+            caseTypesforOU( builder, specification, ou );
          }
       }
 
-      public void possibleMoveTaskTypeTo( LinksBuilder builder)
+      public void possibleMoveCaseTypeTo( LinksBuilder builder)
       {
          builder.addDescribable( describable );
 
@@ -136,19 +134,19 @@ public interface TaskTypesQueries
          }
       }
 
-      public TaskType getTaskTypeByName( String name )
+      public CaseType getCaseTypeByName( String name )
       {
-         return Describable.Mixin.getDescribable( taskTypes(), name );
+         return Describable.Mixin.getDescribable( caseTypes(), name );
       }
 
-      public QueryBuilder<Project> possibleProjects( TaskType taskType )
+      public QueryBuilder<Project> possibleProjects( CaseType caseType )
       {
          QueryBuilder<Project> projects = qbf.newQueryBuilder( Project.class );
 
-         SelectedTaskTypes.Data template = templateFor( SelectedTaskTypes.Data.class );
+         SelectedCaseTypes.Data template = templateFor( SelectedCaseTypes.Data.class );
 
-         if (taskType != null)
-            projects = projects.where( contains( template.selectedTaskTypes(), taskType ) );
+         if (caseType != null)
+            projects = projects.where( contains( template.selectedCaseTypes(), caseType ) );
          else
          {
             projects = projects.where( and( eq( templateFor( Removable.Data.class ).removed(), false ),

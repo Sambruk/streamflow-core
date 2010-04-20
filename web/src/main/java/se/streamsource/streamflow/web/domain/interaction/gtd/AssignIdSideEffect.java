@@ -19,7 +19,7 @@ import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.sideeffect.SideEffectOf;
 
 /**
- * Assign id to task if sent to project inbox
+ * Assign id to case if sent to project inbox
  */
 public class AssignIdSideEffect
       extends SideEffectOf<Ownable>

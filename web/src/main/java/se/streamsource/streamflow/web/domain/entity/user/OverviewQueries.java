@@ -37,7 +37,7 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.domain.interaction.gtd.States;
 import se.streamsource.streamflow.resource.overview.ProjectSummaryDTO;
 import se.streamsource.streamflow.resource.overview.ProjectSummaryListDTO;
-import se.streamsource.streamflow.web.domain.entity.task.TaskEntity;
+import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Delegatable;
@@ -91,22 +91,22 @@ public interface OverviewQueries
             Association<Assignee> assigneeAssociation = templateFor( Assignable.Data.class ).assignedTo();
             Association<Owner> ownableId = templateFor( Ownable.Data.class ).owner();
 
-            QueryBuilder<TaskEntity> ownerQueryBuilder = qbf.newQueryBuilder( TaskEntity.class ).where(
+            QueryBuilder<CaseEntity> ownerQueryBuilder = qbf.newQueryBuilder( CaseEntity.class ).where(
                   eq( ownableId, (Owner) project ));
 
             Association<Delegatee> delegatee = templateFor( Delegatable.Data.class ).delegatedTo();
 
-            QueryBuilder<TaskEntity> inboxQueryBuilder = ownerQueryBuilder.where( and(
+            QueryBuilder<CaseEntity> inboxQueryBuilder = ownerQueryBuilder.where( and(
                   isNull( assigneeAssociation ),
                   isNull( delegatee ),
                   eq( templateFor( Status.Data.class ).status(), States.ACTIVE ) ) );
-            Query<TaskEntity> inboxQuery = inboxQueryBuilder.newQuery( uow );
+            Query<CaseEntity> inboxQuery = inboxQueryBuilder.newQuery( uow );
 
 
-            QueryBuilder<TaskEntity> assignedQueryBuilder = ownerQueryBuilder.where( and(
+            QueryBuilder<CaseEntity> assignedQueryBuilder = ownerQueryBuilder.where( and(
                   isNotNull( assigneeAssociation ),
                   eq( templateFor( Status.Data.class ).status(), States.ACTIVE ) ) );
-            Query<TaskEntity> assignedQuery = assignedQueryBuilder.newQuery( uow );
+            Query<CaseEntity> assignedQuery = assignedQueryBuilder.newQuery( uow );
 
             builderPrototype.project().set( project.getDescription() );
             builderPrototype.inboxCount().set( inboxQuery.count() );

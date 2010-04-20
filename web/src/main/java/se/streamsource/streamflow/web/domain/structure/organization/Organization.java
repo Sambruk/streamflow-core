@@ -23,7 +23,7 @@ import se.streamsource.streamflow.web.domain.structure.label.Labels;
 import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
 import se.streamsource.streamflow.web.domain.structure.project.ProjectRoles;
 import se.streamsource.streamflow.web.domain.structure.role.Roles;
-import se.streamsource.streamflow.web.domain.structure.tasktype.TaskTypes;
+import se.streamsource.streamflow.web.domain.structure.casetype.CaseTypes;
 import se.streamsource.streamflow.web.domain.structure.user.ProxyUsers;
 
 /**
@@ -40,7 +40,7 @@ public interface Organization
       OrganizationalUnits,
       Roles,
       SelectedLabels,
-      TaskTypes,
+      CaseTypes,
       Removable,
       AccessPoints,
       ProxyUsers

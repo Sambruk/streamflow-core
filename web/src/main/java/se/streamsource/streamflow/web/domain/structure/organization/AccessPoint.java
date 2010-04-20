@@ -15,17 +15,14 @@
 
 package se.streamsource.streamflow.web.domain.structure.organization;
 
-import org.qi4j.api.common.Optional;
+import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
-import se.streamsource.streamflow.web.domain.structure.tasktype.TaskType;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * JAVADOC
@@ -36,18 +33,17 @@ public interface AccessPoint
       Describable
 {
    void addProject( Project project );
-   void addTaskType( TaskType taskType );
+   void addCaseType( CaseType caseType );
    void addLabel( Label label );
 
    interface Data
    {
       Property<Project> project();
-      Property<TaskType> taskType();
-      @Optional
-      Property<List<Label>> labels();
+      Property<CaseType> caseType();
+      ManyAssociation<Label> labels();
 
       void addedProject( DomainEvent event, Project project );
-      void addedTaskType( DomainEvent event, TaskType taskType );
+      void addedCaseType( DomainEvent event, CaseType caseType );
       void addedLabel( DomainEvent event, Label label );
    }
 
@@ -64,24 +60,19 @@ public interface AccessPoint
          project().set( project );
       }
 
-      public void addTaskType( TaskType taskType )
+      public void addCaseType( CaseType caseType )
       {
-         addedTaskType( DomainEvent.CREATE, taskType );
+         addedCaseType( DomainEvent.CREATE, caseType );
       }
 
-      public void addedTaskType( DomainEvent event, TaskType taskType )
+      public void addedCaseType( DomainEvent event, CaseType caseType )
       {
-         taskType().set( taskType );
+         caseType().set( caseType );
       }
 
       public void addLabel( Label label )
       {
-         if ( labels().get() == null )
-         {
-            // is this a state change in a non-event method?
-            labels().set( new ArrayList<Label>() );
-         }
-         if ( !labels().get().contains( label ) )
+         if ( !labels().contains( label ) )
          {
             addedLabel( DomainEvent.CREATE, label );
          }
@@ -89,7 +80,7 @@ public interface AccessPoint
 
       public void addedLabel( DomainEvent event, Label label )
       {
-         labels().get().add( label );
+         labels().add( label );
       }
    }
 }

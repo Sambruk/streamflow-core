@@ -29,7 +29,7 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 public interface CompletableId
 {
    /**
-    * Set new id for the task. It needs to be on the format:
+    * Set new id for the case. It needs to be on the format:
     * yyyymmdd-n
     * such as:
     * 20090320-123
@@ -43,10 +43,10 @@ public interface CompletableId
    interface Data
    {
       @Optional
-      Property<String> taskId();
+      Property<String> caseId();
 
 
-      void assignedTaskId( DomainEvent event, String id );
+      void assignedCaseId( DomainEvent event, String id );
    }
 
    abstract class Mixin
@@ -60,7 +60,7 @@ public interface CompletableId
 
       public void assignId( IdGenerator idgen )
       {
-         if (state.taskId().get() == null)
+         if (state.caseId().get() == null)
          {
             idgen.assignId( id );
          }
@@ -68,17 +68,17 @@ public interface CompletableId
 
       public void assignId( String id )
       {
-         if (state.taskId().get() == null)
+         if (state.caseId().get() == null)
          {
-            state.assignedTaskId( DomainEvent.CREATE, id );
+            state.assignedCaseId( DomainEvent.CREATE, id );
          }
       }
 
       // Event
 
-      public void assignedTaskId( DomainEvent event, String id )
+      public void assignedCaseId( DomainEvent event, String id )
       {
-         state.taskId().set( id );
+         state.caseId().set( id );
       }
    }
 }

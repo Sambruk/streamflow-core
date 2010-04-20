@@ -40,7 +40,7 @@ import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.domain.interaction.gtd.States;
-import se.streamsource.streamflow.web.domain.entity.task.TaskEntity;
+import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
@@ -54,7 +54,7 @@ public interface AssignmentsQueries
 {
    QueryBuilder<Assignable> assignments(@Optional Assignee assignee);
 
-   boolean assignmentsHaveActiveTasks();
+   boolean assignmentsHaveActiveCases();
 
    class Mixin
          implements AssignmentsQueries
@@ -74,7 +74,7 @@ public interface AssignmentsQueries
 
       public QueryBuilder<Assignable> assignments( Assignee assignee )
       {
-         // Find all my Active tasks assigned to optional assignee
+         // Find all my Active cases assigned to optional assignee
          QueryBuilder<Assignable> queryBuilder = qbf.newQueryBuilder( Assignable.class );
          Association<Assignee> assignedId = templateFor( Assignable.Data.class ).assignedTo();
          Association<Owner> ownedId = templateFor( Ownable.Data.class ).owner();
@@ -87,12 +87,12 @@ public interface AssignmentsQueries
          return queryBuilder;
       }
 
-      public boolean assignmentsHaveActiveTasks()
+      public boolean assignmentsHaveActiveCases()
       {
-         QueryBuilder<TaskEntity> queryBuilder = qbf.newQueryBuilder( TaskEntity.class );
+         QueryBuilder<CaseEntity> queryBuilder = qbf.newQueryBuilder( CaseEntity.class );
          Association<Assignee> assignedId = templateFor( Assignable.Data.class ).assignedTo();
          Association<Owner> ownedId = templateFor( Ownable.Data.class ).owner();
-         Query<TaskEntity> assignmentsQuery = queryBuilder.where( and(
+         Query<CaseEntity> assignmentsQuery = queryBuilder.where( and(
                isNotNull( assignedId ),
                eq( ownedId, owner ),
                QueryExpressions.eq( templateFor( Status.Data.class ).status(), States.ACTIVE ) ) ).

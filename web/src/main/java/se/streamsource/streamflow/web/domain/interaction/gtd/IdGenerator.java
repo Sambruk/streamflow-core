@@ -80,9 +80,9 @@ public interface IdGenerator
 
          String date = format.format( now.getTime() );
 
-         String taskId = date + "-" + current;
+         String caseId = date + "-" + current;
 
-         completable.assignId( taskId );
+         completable.assignId( caseId );
       }
 
       // Events

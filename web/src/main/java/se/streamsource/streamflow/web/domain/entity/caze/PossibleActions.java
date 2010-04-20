@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.domain.entity.task;
+package se.streamsource.streamflow.web.domain.entity.caze;
 
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
@@ -21,13 +21,13 @@ import se.streamsource.streamflow.domain.interaction.gtd.States;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Actor;
 import se.streamsource.streamflow.web.domain.structure.project.Member;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
-import se.streamsource.streamflow.web.domain.structure.tasktype.TaskType;
+import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 
 import java.util.Collection;
 
 /**
  * Figure out what possible actions can be performed
- * on a task by a user
+ * on a aCase by a user
  */
 @Mixins(PossibleActions.Mixin.class)
 public interface PossibleActions
@@ -38,27 +38,27 @@ public interface PossibleActions
          implements PossibleActions
    {
       @This
-      TaskEntity task;
+      CaseEntity aCase;
 
       public void addActions( Actor actor, Collection<String> actions )
       {
-         // droped tasks can be reactivated from anyone from anywhere
-         if( task.isStatus( States.DROPPED ) && !actions.contains( "reactivate" ))
+         // droped cases can be reactivated from anyone from anywhere
+         if( aCase.isStatus( States.DROPPED ) && !actions.contains( "reactivate" ))
          {
             actions.add( "reactivate" );
          }
          
-         if (task.owner().get() instanceof Project)
+         if (aCase.owner().get() instanceof Project)
          {
-            // Project owned task
-            Project project = (Project) task.owner().get();
+            // Project owned aCase
+            Project project = (Project) aCase.owner().get();
             if (((Member) actor).isMember( project ))
             {
-               if (task.isAssignedTo( actor ))
+               if (aCase.isAssignedTo( actor ))
                {
-                  if (task.isDelegated())
+                  if (aCase.isDelegated())
                   {
-                     if (task.isStatus( States.ACTIVE ))
+                     if (aCase.isStatus( States.ACTIVE ))
                      {
                         actions.add( "complete" );
                         actions.add( "sendto" );
@@ -69,17 +69,17 @@ public interface PossibleActions
                         actions.add( "unassign" );
                      }
                      // Assignments (delegated)
-                     else if (task.isStatus( States.DELEGATED ))
+                     else if (aCase.isStatus( States.DELEGATED ))
                      {
                         actions.add( "done" );
                         actions.add( "reject" );
                      }
                      // Waiting for
-                     else if ( task.isStatus( States.DONE ))
+                     else if ( aCase.isStatus( States.DONE ))
                      {
                         actions.add( "complete" );
                         actions.add( "redo" );
-                     } else if (task.isStatus( States.COMPLETED ))
+                     } else if (aCase.isStatus( States.COMPLETED ))
                      {
                         actions.add( "reactivate" );
                      }
@@ -87,7 +87,7 @@ public interface PossibleActions
                   } else
                   {
                      // Assignments (mine)
-                     if (task.isStatus( States.ACTIVE ))
+                     if (aCase.isStatus( States.ACTIVE ))
                      {
                         actions.add( "complete" );
                         actions.add( "sendto" );
@@ -96,21 +96,21 @@ public interface PossibleActions
                         actions.add( "drop" );
                         actions.add( "delete" );
                         actions.add( "unassign" );
-                     } else if (task.isStatus( States.COMPLETED ))
+                     } else if (aCase.isStatus( States.COMPLETED ))
                      {
                         actions.add( "reactivate" );
-                     } else if (task.isStatus( States.ON_HOLD ))
+                     } else if (aCase.isStatus( States.ON_HOLD ))
                      {
                         actions.add( "resume" );
                      }
                   }
                } else
                {
-                  if (task.isDelegatedBy( actor ))
+                  if (aCase.isDelegatedBy( actor ))
                   {
                      // WaitingFor (not assigned)
-                     if (task.isStatus( States.ACTIVE )
-                           || task.isStatus( States.DELEGATED ))
+                     if (aCase.isStatus( States.ACTIVE )
+                           || aCase.isStatus( States.DELEGATED ))
                      {
                         actions.add( "complete" );
                         actions.add( "assign" );
@@ -118,24 +118,24 @@ public interface PossibleActions
                         actions.add( "delegate" );
                         actions.add( "drop" );
                         actions.add( "delete" );
-                     } else if (task.isStatus( States.DONE ))
+                     } else if (aCase.isStatus( States.DONE ))
                      {
                         actions.add( "complete" );
                         actions.add( "redo" );
-                     } else if (task.isStatus( States.COMPLETED ))
+                     } else if (aCase.isStatus( States.COMPLETED ))
                      {
                         actions.add( "reactivate" );
                      }
 
-                  } else if (!task.isAssigned())
+                  } else if (!aCase.isAssigned())
                   {
                      // Inbox
-                     if (task.isStatus( States.ACTIVE ))
+                     if (aCase.isStatus( States.ACTIVE ))
                      {
                         actions.add( "complete" );
 
-                        TaskType type = task.taskType().get();
-                        if (type == null || project.hasSelectedTaskType( type ))
+                        CaseType type = aCase.caseType().get();
+                        if (type == null || project.hasSelectedCaseType( type ))
                         {
                            actions.add( "assign" );
                         }
@@ -152,11 +152,11 @@ public interface PossibleActions
                }
             } else
             {
-               if (task.isDelegatedBy( actor ))
+               if (aCase.isDelegatedBy( actor ))
                {
                   // WaitingFor (assigned)
-                  if (task.isStatus( States.ACTIVE )
-                        || task.isStatus( States.DELEGATED ))
+                  if (aCase.isStatus( States.ACTIVE )
+                        || aCase.isStatus( States.DELEGATED ))
                   {
                      actions.add( "complete" );
                      actions.add( "assign" );
@@ -164,19 +164,19 @@ public interface PossibleActions
                      actions.add( "delegate" );
                      actions.add( "drop" );
                      actions.add( "delete" );
-                  } else if (task.isStatus( States.DONE ))
+                  } else if (aCase.isStatus( States.DONE ))
                   {
                      actions.add( "complete" );
                      actions.add( "redo" );
-                  } else if (task.isStatus( States.COMPLETED ))
+                  } else if (aCase.isStatus( States.COMPLETED ))
                   {
                      actions.add( "reactivate" );
                   }
 
-               } else if (task.isDelegatedTo( actor ))
+               } else if (aCase.isDelegatedTo( actor ))
                {
                   // Delegations
-                  if (task.isStatus( States.DELEGATED ))
+                  if (aCase.isStatus( States.DELEGATED ))
                   {
                      actions.add( "accept" );
                      actions.add( "reject" );
@@ -188,13 +188,13 @@ public interface PossibleActions
          } else
          {
             // User actions
-            if (task.isOwnedBy( actor ))
+            if (aCase.isOwnedBy( actor ))
             {
-               if (task.isAssignedTo( actor ))
+               if (aCase.isAssignedTo( actor ))
                {
-                  if (task.isDelegatedTo( actor ))
+                  if (aCase.isDelegatedTo( actor ))
                   {
-                     if (task.isStatus( States.ACTIVE ) )
+                     if (aCase.isStatus( States.ACTIVE ) )
                      {
                         actions.add( "complete" );
                         actions.add( "sendto" );
@@ -205,23 +205,23 @@ public interface PossibleActions
                         actions.add( "unassign" );
                      }
                      // Assignments (delegated)
-                     else if (task.isStatus( States.DELEGATED ))
+                     else if (aCase.isStatus( States.DELEGATED ))
                      {
                         actions.add( "done" );
                         actions.add( "reject" );
-                     } else if ( task.isStatus( States.DONE ))
+                     } else if ( aCase.isStatus( States.DONE ))
                      {
                         actions.add( "complete" );
                         actions.add( "redo" );
-                     } else if (task.isStatus( States.COMPLETED ))
+                     } else if (aCase.isStatus( States.COMPLETED ))
                      {
                         actions.add( "reactivate" );
                      }
                   } else
                   {
                      // Assignments (mine)
-                     if (task.isStatus( States.ACTIVE )
-                           || task.isStatus( States.DELEGATED ))
+                     if (aCase.isStatus( States.ACTIVE )
+                           || aCase.isStatus( States.DELEGATED ))
                      {
                         actions.add( "complete" );
                         actions.add( "sendto" );
@@ -230,13 +230,13 @@ public interface PossibleActions
                         actions.add( "drop" );
                         actions.add( "delete" );
                         actions.add( "unassign" );
-                     } else if (task.isStatus( States.COMPLETED ))
+                     } else if (aCase.isStatus( States.COMPLETED ))
                      {
                         actions.add( "reactivate" );
-                     } else if (task.isStatus( States.ON_HOLD ))
+                     } else if (aCase.isStatus( States.ON_HOLD ))
                      {
                         actions.add( "resume" );
-                     } else if ( task.isStatus( States.DONE ))
+                     } else if ( aCase.isStatus( States.DONE ))
                      {
                         actions.add( "complete" );
                         actions.add( "redo" );
@@ -244,11 +244,11 @@ public interface PossibleActions
                   }
                } else
                {
-                  if (task.isDelegatedBy( actor ))
+                  if (aCase.isDelegatedBy( actor ))
                   {
                      // WaitingFor (not assigned)
-                     if (task.isStatus( States.ACTIVE )
-                           || task.isStatus( States.DELEGATED ))
+                     if (aCase.isStatus( States.ACTIVE )
+                           || aCase.isStatus( States.DELEGATED ))
                      {
                         actions.add( "complete" );
                         actions.add( "assign" );
@@ -260,7 +260,7 @@ public interface PossibleActions
                   } else
                   {
                      // Inbox
-                     if (task.isStatus( States.ACTIVE ))
+                     if (aCase.isStatus( States.ACTIVE ))
                      {
                         actions.add( "complete" );
                         actions.add( "assign" );
@@ -273,11 +273,11 @@ public interface PossibleActions
                }
             } else
             {
-               if (task.isDelegatedBy( actor ))
+               if (aCase.isDelegatedBy( actor ))
                {
                   // WaitingFor (assigned)
-                  if (task.isStatus( States.ACTIVE )
-                        || task.isStatus( States.DELEGATED ))
+                  if (aCase.isStatus( States.ACTIVE )
+                        || aCase.isStatus( States.DELEGATED ))
                   {
                      actions.add( "complete" );
                      actions.add( "assign" );
@@ -285,17 +285,17 @@ public interface PossibleActions
                      actions.add( "delegate" );
                      actions.add( "drop" );
                      actions.add( "delete" );
-                  } else if (task.isStatus( States.DONE ))
+                  } else if (aCase.isStatus( States.DONE ))
                   {
                      actions.add( "complete" );
                      actions.add( "redo" );
                   }
 
 
-               } else if (task.isDelegatedTo( actor ))
+               } else if (aCase.isDelegatedTo( actor ))
                {
                   // Delegations
-                  if (task.isStatus( States.DELEGATED ))
+                  if (aCase.isStatus( States.DELEGATED ))
                   {
                      actions.add( "accept" );
                      actions.add( "reject" );

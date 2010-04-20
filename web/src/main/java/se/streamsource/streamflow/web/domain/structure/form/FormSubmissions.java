@@ -31,8 +31,8 @@ import se.streamsource.streamflow.domain.form.PageSubmissionValue;
 import se.streamsource.streamflow.domain.form.SubmittedFieldValue;
 import se.streamsource.streamflow.domain.form.SubmittedFormValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.web.domain.structure.tasktype.TaskType;
-import se.streamsource.streamflow.web.domain.structure.tasktype.TypedTask;
+import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
+import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
 
 import java.util.ArrayList;
 
@@ -64,7 +64,7 @@ public interface FormSubmissions
       ValueBuilderFactory vbf;
 
       @This
-      TypedTask.Data typedTask;
+      TypedCase.Data typedCase;
 
       @This
       SubmittedForms.Data submittedForms;
@@ -94,10 +94,10 @@ public interface FormSubmissions
             return null;
          }
 
-         TaskType tasktype = typedTask.taskType().get();
-         if ( tasktype != null )
+         CaseType caseType = typedCase.caseType().get();
+         if ( caseType != null )
          {
-            SelectedForms.Data forms = (SelectedForms.Data) tasktype;
+            SelectedForms.Data forms = (SelectedForms.Data) caseType;
 
             if ( forms.selectedForms().contains( form ) )
             {

@@ -16,21 +16,15 @@
 package se.streamsource.streamflow.web.domain.entity.project;
 
 import org.qi4j.api.entity.association.ManyAssociation;
-import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
+import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
-import se.streamsource.streamflow.web.domain.structure.label.Labelable;
 import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
-import se.streamsource.streamflow.web.domain.structure.organization.OrganizationParticipations;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganization;
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganizationalUnit;
-import se.streamsource.streamflow.web.domain.structure.tasktype.TaskType;
-import se.streamsource.streamflow.web.domain.structure.tasktype.TypedTask;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -38,7 +32,7 @@ import java.util.Map;
 @Mixins(ProjectLabelsQueries.Mixin.class)
 public interface ProjectLabelsQueries
 {
-   Map<Label, SelectedLabels> possibleLabels( TaskType tasktype );
+   Map<Label, SelectedLabels> possibleLabels( CaseType caseType );
 
    class Mixin
          implements ProjectLabelsQueries
@@ -50,13 +44,13 @@ public interface ProjectLabelsQueries
       OwningOrganizationalUnit.Data ownerOU;
 
 
-      public Map<Label, SelectedLabels> possibleLabels( TaskType tasktype )
+      public Map<Label, SelectedLabels> possibleLabels( CaseType caseType )
       {
          Map<Label, SelectedLabels> labels = new LinkedHashMap<Label, SelectedLabels>( );
 
          addLabels( labels, selectedLabels );
 
-         addLabels( labels, tasktype );
+         addLabels( labels, caseType );
 
          // Add labels from OU
          OrganizationalUnit ou = ownerOU.organizationalUnit().get();

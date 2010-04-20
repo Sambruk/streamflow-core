@@ -24,7 +24,7 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import java.util.Date;
 
 /**
- * Due date management for tasks.
+ * Due date management for cases.
  */
 @Mixins(DueOn.Mixin.class)
 public interface DueOn

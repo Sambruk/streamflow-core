@@ -26,8 +26,6 @@ import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.web.domain.structure.tasktype.SelectedTaskTypes;
-import se.streamsource.streamflow.web.domain.structure.tasktype.TaskType;
 
 /**
  * JAVADOC

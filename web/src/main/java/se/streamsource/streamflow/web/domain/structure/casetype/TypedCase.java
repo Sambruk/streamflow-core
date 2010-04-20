@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.domain.structure.tasktype;
+package se.streamsource.streamflow.web.domain.structure.casetype;
 
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.association.Association;
@@ -26,17 +26,17 @@ import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
 /**
  * JAVADOC
  */
-@Mixins(TypedTask.Mixin.class)
-public interface TypedTask
+@Mixins(TypedCase.Mixin.class)
+public interface TypedCase
 {
-   void changeTaskType( @Optional TaskType newTaskType );
+   void changeCaseType( @Optional CaseType newCaseType );
 
    interface Data
    {
       @Optional
-      Association<TaskType> taskType();
+      Association<CaseType> caseType();
 
-      void changedTaskType( DomainEvent event, @Optional TaskType taskType );
+      void changedCaseType( DomainEvent event, @Optional CaseType caseType );
    }
 
    abstract class Mixin
@@ -45,14 +45,14 @@ public interface TypedTask
       @This
       Labelable labelable;
 
-      public void changedTaskType( DomainEvent event, @Optional TaskType taskType )
+      public void changedCaseType( DomainEvent event, @Optional CaseType caseType )
       {
-         TaskType currentTaskType = taskType().get();
-         if ((currentTaskType == null && taskType != null) || !currentTaskType.equals( taskType ))
+         CaseType currentCaseType = caseType().get();
+         if ((currentCaseType == null && caseType != null) || !currentCaseType.equals( caseType ))
          {
-            labelable.retainLabels( (SelectedLabels) currentTaskType, (SelectedLabels) taskType );
+            labelable.retainLabels( currentCaseType, caseType );
 
-            taskType().set( taskType );
+            caseType().set( caseType );
          }
       }
    }

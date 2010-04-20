@@ -28,7 +28,7 @@ import static se.streamsource.streamflow.domain.interaction.gtd.States.ACTIVE;
 import static se.streamsource.streamflow.domain.interaction.gtd.States.ON_HOLD;
 
 /**
- * Status for a task. Possible transitions are:
+ * Status for a case. Possible transitions are:
  * Active -> Delegated, Completed, Dropped, Done
  * Done -> Active, Dropped, Completed
  * Completed -> Active

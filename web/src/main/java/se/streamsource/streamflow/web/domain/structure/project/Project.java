@@ -17,16 +17,16 @@ package se.streamsource.streamflow.web.domain.structure.project;
 
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.domain.structure.Removable;
+import se.streamsource.streamflow.web.domain.structure.casetype.CaseTypes;
+import se.streamsource.streamflow.web.domain.structure.casetype.SelectedCaseTypes;
 import se.streamsource.streamflow.web.domain.structure.form.Forms;
 import se.streamsource.streamflow.web.domain.structure.label.Labels;
 import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
-import se.streamsource.streamflow.web.domain.structure.tasktype.SelectedTaskTypes;
-import se.streamsource.streamflow.web.domain.structure.tasktype.TaskTypes;
 
 /**
  * JAVADOC
  */
 public interface Project
-   extends Members, Forms, TaskTypes, SelectedTaskTypes, Labels, SelectedLabels, Describable, Removable
+   extends Members, Forms, CaseTypes, SelectedCaseTypes, Labels, SelectedLabels, Describable, Removable
 {
 }

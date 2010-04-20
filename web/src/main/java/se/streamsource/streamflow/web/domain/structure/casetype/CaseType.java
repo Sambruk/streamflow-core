@@ -13,30 +13,27 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.domain.structure.task;
+package se.streamsource.streamflow.web.domain.structure.casetype;
 
 import se.streamsource.streamflow.domain.structure.Describable;
+import se.streamsource.streamflow.domain.structure.Notable;
 import se.streamsource.streamflow.domain.structure.Removable;
-import se.streamsource.streamflow.web.domain.structure.conversation.ConversationOwner;
-import se.streamsource.streamflow.web.domain.structure.conversation.Conversations;
-import se.streamsource.streamflow.web.domain.structure.form.FormSubmissions;
-import se.streamsource.streamflow.web.domain.structure.form.SubmittedForms;
-import se.streamsource.streamflow.web.domain.structure.label.Labelable;
-import se.streamsource.streamflow.web.domain.structure.tasktype.TypedTask;
+import se.streamsource.streamflow.web.domain.structure.form.Forms;
+import se.streamsource.streamflow.web.domain.structure.form.SelectedForms;
+import se.streamsource.streamflow.web.domain.structure.label.Labels;
+import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
 
 /**
- * Task entity.
+ * JAVADOC
  */
-public interface Task
-      extends
-      Contacts,
-      Conversations,
-      ConversationOwner,
+public interface CaseType
+   extends
       Describable,
-      Labelable,
-      Removable,
-      SubmittedForms,
-      FormSubmissions,
-      TypedTask
+      Notable,
+      Labels,
+      SelectedLabels,
+      Forms,
+      SelectedForms,
+      Removable
 {
 }

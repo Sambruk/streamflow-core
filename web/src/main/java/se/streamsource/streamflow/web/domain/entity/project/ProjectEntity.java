@@ -34,8 +34,7 @@ import se.streamsource.streamflow.web.domain.entity.gtd.DelegationsQueries;
 import se.streamsource.streamflow.web.domain.entity.gtd.Inbox;
 import se.streamsource.streamflow.web.domain.entity.gtd.InboxQueries;
 import se.streamsource.streamflow.web.domain.entity.gtd.WaitingForQueries;
-import se.streamsource.streamflow.web.domain.entity.label.PossibleLabelsQueries;
-import se.streamsource.streamflow.web.domain.entity.task.TaskEntity;
+import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
 import se.streamsource.streamflow.web.domain.interaction.gtd.CompletableId;
@@ -43,6 +42,8 @@ import se.streamsource.streamflow.web.domain.interaction.gtd.Delegatable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Delegatee;
 import se.streamsource.streamflow.web.domain.interaction.gtd.IdGenerator;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
+import se.streamsource.streamflow.web.domain.structure.casetype.CaseTypes;
+import se.streamsource.streamflow.web.domain.structure.casetype.SelectedCaseTypes;
 import se.streamsource.streamflow.web.domain.structure.form.Forms;
 import se.streamsource.streamflow.web.domain.structure.label.Labels;
 import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
@@ -52,8 +53,6 @@ import se.streamsource.streamflow.web.domain.structure.organization.OwningOrgani
 import se.streamsource.streamflow.web.domain.structure.project.Member;
 import se.streamsource.streamflow.web.domain.structure.project.Members;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
-import se.streamsource.streamflow.web.domain.structure.tasktype.SelectedTaskTypes;
-import se.streamsource.streamflow.web.domain.structure.tasktype.TaskTypes;
 
 /**
  * JAVADOC
@@ -85,9 +84,9 @@ public interface ProjectEntity
       Forms.Data,
       Labels.Data,
       SelectedLabels.Data,
-      TaskTypes.Data,
+      CaseTypes.Data,
       Removable.Data,
-      SelectedTaskTypes.Data,
+      SelectedCaseTypes.Data,
 
       // Queries
       AssignmentsQueries,
@@ -132,10 +131,10 @@ public interface ProjectEntity
 
       public void removeMember( Member member )
       {
-         // Get all active tasks in a project for a particular user and unassign.
-         for (Assignable task : assignments.assignments( (Assignee) member ).newQuery( uowf.currentUnitOfWork() ))
+         // Get all active cases in a project for a particular user and unassign.
+         for (Assignable caze : assignments.assignments( (Assignee) member ).newQuery( uowf.currentUnitOfWork() ))
          {
-            task.unassign();
+            caze.unassign();
          }
       }
    }
@@ -173,17 +172,17 @@ public interface ProjectEntity
 
       public boolean removeEntity()
       {
-         if (inbox.inboxHasActiveTasks()
-               || assignments.assignmentsHaveActiveTasks()
-               || waitingFor.hasActiveOrDoneAndUnreadTasks())
+         if (inbox.inboxHasActiveCases()
+               || assignments.assignmentsHaveActiveCases()
+               || waitingFor.hasActiveOrDoneCases())
          {
-            throw new IllegalStateException( "Cannot remove project with ACTIVE tasks." );
+            throw new IllegalStateException( "Cannot remove project with ACTIVE cases." );
 
          } else
          {
             for (Delegatable delegatable : delegationsQueries.delegations().newQuery( uowf.currentUnitOfWork() ))
             {
-               uowf.currentUnitOfWork().get( TaskEntity.class, ((Identity)delegatable).identity().get() ).rejectDelegation();
+               uowf.currentUnitOfWork().get( CaseEntity.class, ((Identity)delegatable).identity().get() ).rejectDelegation();
             }
             members.removeAllMembers();
             return next.removeEntity();

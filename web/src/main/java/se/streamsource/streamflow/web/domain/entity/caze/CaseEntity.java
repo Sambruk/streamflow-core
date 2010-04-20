@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.domain.entity.task;
+package se.streamsource.streamflow.web.domain.entity.caze;
 
 import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.sideeffect.SideEffects;
@@ -36,17 +36,17 @@ import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
 import se.streamsource.streamflow.web.domain.structure.form.FormSubmissions;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedForms;
 import se.streamsource.streamflow.web.domain.structure.label.Labelable;
-import se.streamsource.streamflow.web.domain.structure.task.Contacts;
-import se.streamsource.streamflow.web.domain.structure.task.Task;
-import se.streamsource.streamflow.web.domain.structure.tasktype.TypedTask;
+import se.streamsource.streamflow.web.domain.structure.caze.Contacts;
+import se.streamsource.streamflow.web.domain.structure.caze.Case;
+import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
 
 /**
  * JAVADOC
  */
 @SideEffects(AssignIdSideEffect.class)
 @Concerns( OwnershipConcern.class)
-public interface TaskEntity
-      extends Task,
+public interface CaseEntity
+      extends Case,
 
       // Interactions
       Assignable,
@@ -77,13 +77,13 @@ public interface TaskEntity
       Removable.Data,
       FormSubmissions.Data,
       SubmittedForms.Data,
-      TypedTask.Data,
+      TypedCase.Data,
 
       // Queries
       SubmittedFormsQueries,
       FormSubmissionsQueries,
-      TaskLabelsQueries,
-      TaskTypeQueries,
+      CaseLabelsQueries,
+      CaseTypeQueries,
 
       DomainEntity
 {

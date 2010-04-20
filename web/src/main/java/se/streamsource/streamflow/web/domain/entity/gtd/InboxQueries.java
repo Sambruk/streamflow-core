@@ -45,16 +45,16 @@ import se.streamsource.streamflow.web.domain.interaction.gtd.Delegatee;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
-import se.streamsource.streamflow.web.domain.structure.task.Task;
+import se.streamsource.streamflow.web.domain.structure.caze.Case;
 
 import static org.qi4j.api.query.QueryExpressions.*;
 
 @Mixins(InboxQueries.Mixin.class)
 public interface InboxQueries
 {
-   QueryBuilder<Task> inbox();
+   QueryBuilder<Case> inbox();
 
-   boolean inboxHasActiveTasks();
+   boolean inboxHasActiveCases();
 
    class Mixin
          implements InboxQueries
@@ -75,10 +75,10 @@ public interface InboxQueries
       @This
       Inbox.Data inbox;
 
-      public QueryBuilder<Task> inbox()
+      public QueryBuilder<Case> inbox()
       {
-         // Find all Active tasks with specific owner which have not yet been assigned
-         QueryBuilder<Task> queryBuilder = qbf.newQueryBuilder( Task.class );
+         // Find all Active cases with specific owner which have not yet been assigned
+         QueryBuilder<Case> queryBuilder = qbf.newQueryBuilder( Case.class );
          Association<Owner> ownableId = templateFor( Ownable.Data.class ).owner();
          Association<Assignee> assignee = templateFor( Assignable.Data.class ).assignedTo();
          Association<Delegatee> delegatee = templateFor( Delegatable.Data.class ).delegatedTo();
@@ -90,7 +90,7 @@ public interface InboxQueries
          return queryBuilder;
       }
 
-      public boolean inboxHasActiveTasks()
+      public boolean inboxHasActiveCases()
       {
          return inbox().newQuery( uowf.currentUnitOfWork() ).count() > 0;
       }

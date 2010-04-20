@@ -15,26 +15,19 @@
 
 package se.streamsource.streamflow.web.domain.entity.label;
 
-import org.qi4j.api.entity.association.ManyAssociation;
-import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.web.domain.Specification;
+import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.label.Labels;
-import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnits;
 import se.streamsource.streamflow.web.domain.structure.organization.Projects;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
-import se.streamsource.streamflow.web.domain.structure.tasktype.TaskType;
-import se.streamsource.streamflow.web.domain.structure.tasktype.TaskTypes;
-
-import java.util.ArrayList;
-import java.util.List;
+import se.streamsource.streamflow.web.domain.structure.casetype.CaseTypes;
 
 /**
  * JAVADOC
@@ -93,14 +86,14 @@ public interface PossibleLabelsQueries
                }
             }
 
-            TaskTypes.Data taskTypes = (TaskTypes.Data) project;
-            for (TaskType taskType : taskTypes.taskTypes())
+            CaseTypes.Data caseTypes = (CaseTypes.Data) project;
+            for (CaseType caseType : caseTypes.caseTypes())
             {
-               Labels.Data labels = (Labels.Data) taskType;
+               Labels.Data labels = (Labels.Data) caseType;
                for (Label label : labels.labels())
                {
                   if (specification.valid( label ))
-                     builder.addDescribable( label, taskType );
+                     builder.addDescribable( label, caseType );
                }
             }
          }

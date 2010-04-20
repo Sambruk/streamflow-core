@@ -24,7 +24,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Check that a Task is in a particular state
+ * Check that a Case is in a particular state
  */
 @ConstraintDeclaration
 @Retention(RetentionPolicy.RUNTIME)

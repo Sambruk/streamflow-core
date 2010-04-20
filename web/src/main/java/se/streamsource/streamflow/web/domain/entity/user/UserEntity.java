@@ -69,7 +69,7 @@ public interface UserEntity
       InboxQueries,
       WaitingForQueries,
       ProjectQueries,
-      SearchTaskQueries,
+      SearchCaseQueries,
 
       // Data
       Inbox.Data,

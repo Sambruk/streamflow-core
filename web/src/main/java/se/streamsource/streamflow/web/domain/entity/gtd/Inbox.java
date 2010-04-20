@@ -27,7 +27,7 @@ import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.domain.contact.ContactValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.web.domain.entity.task.TaskEntity;
+import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
 import se.streamsource.streamflow.web.domain.structure.created.Creator;
@@ -38,11 +38,11 @@ import se.streamsource.streamflow.web.domain.structure.created.Creator;
 @Mixins(Inbox.InboxMixin.class)
 public interface Inbox
 {
-   TaskEntity createTask();
+   CaseEntity createCase();
 
    interface Data
    {
-      TaskEntity createdTask( DomainEvent event, String id );
+      CaseEntity createdCase( DomainEvent event, String id );
    }
 
    abstract class InboxMixin
@@ -60,18 +60,18 @@ public interface Inbox
       @Service
       IdentityGenerator idGenerator;
 
-      public TaskEntity createTask()
+      public CaseEntity createCase()
       {
-         TaskEntity task = createdTask( DomainEvent.CREATE, idGenerator.generate( Identity.class ) );
-         task.sendTo( owner );
-         task.addContact( vbf.newValue( ContactValue.class ) );
+         CaseEntity aCase = createdCase( DomainEvent.CREATE, idGenerator.generate( Identity.class ) );
+         aCase.sendTo( owner );
+         aCase.addContact( vbf.newValue( ContactValue.class ) );
 
-         return task;
+         return aCase;
       }
 
-      public TaskEntity createdTask( DomainEvent event, String id )
+      public CaseEntity createdCase( DomainEvent event, String id )
       {
-         EntityBuilder<TaskEntity> builder = uowf.currentUnitOfWork().newEntityBuilder( TaskEntity.class, id );
+         EntityBuilder<CaseEntity> builder = uowf.currentUnitOfWork().newEntityBuilder( CaseEntity.class, id );
          CreatedOn createdOn = builder.instanceFor( CreatedOn.class );
          createdOn.createdOn().set( event.on().get() );
          try

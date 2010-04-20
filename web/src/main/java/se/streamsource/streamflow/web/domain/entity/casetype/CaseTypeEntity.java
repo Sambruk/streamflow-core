@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.domain.entity.tasktype;
+package se.streamsource.streamflow.web.domain.entity.casetype;
 
 import org.qi4j.api.concern.ConcernOf;
 import org.qi4j.api.concern.Concerns;
@@ -23,30 +23,27 @@ import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilderFactory;
 import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.dci.value.LinksBuilder;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.domain.structure.Notable;
 import se.streamsource.streamflow.domain.structure.Removable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
 import se.streamsource.streamflow.web.domain.entity.form.PossibleFormsQueries;
-import se.streamsource.streamflow.web.domain.entity.label.PossibleLabelsQueries;
+import se.streamsource.streamflow.web.domain.structure.casetype.SelectedCaseTypes;
 import se.streamsource.streamflow.web.domain.structure.form.Forms;
 import se.streamsource.streamflow.web.domain.structure.form.SelectedForms;
 import se.streamsource.streamflow.web.domain.structure.label.Labels;
 import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
-import se.streamsource.streamflow.web.domain.structure.tasktype.SelectedTaskTypes;
-import se.streamsource.streamflow.web.domain.structure.tasktype.TaskType;
+import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 
 /**
  * JAVADOC
  */
-@Concerns(TaskTypeEntity.RemovableConcern.class)
-public interface TaskTypeEntity
+@Concerns(CaseTypeEntity.RemovableConcern.class)
+public interface CaseTypeEntity
       extends DomainEntity,
 
       // Structure
-      TaskType,
+      CaseType,
       Describable.Data,
       Notable.Data,
       Labels.Data,
@@ -68,24 +65,24 @@ public interface TaskTypeEntity
       UnitOfWorkFactory uowf;
 
       @This
-      TaskType taskType;
+      CaseType caseType;
 
       public boolean removeEntity()
       {
          boolean removed = next.removeEntity();
 
-         // Remove all usages of this task-type
+         // Remove all usages of this case-type
          if (removed)
          {
             {
-               SelectedTaskTypes.Data selectedTaskTypes = QueryExpressions.templateFor( SelectedTaskTypes.Data.class );
-               Query<SelectedTaskTypes> taskTypeUsages = qbf.newQueryBuilder( SelectedTaskTypes.class ).
-                     where( QueryExpressions.contains(selectedTaskTypes.selectedTaskTypes(), taskType )).
+               SelectedCaseTypes.Data selectedCaseTypes = QueryExpressions.templateFor( SelectedCaseTypes.Data.class );
+               Query<SelectedCaseTypes> caseTypeUsages = qbf.newQueryBuilder( SelectedCaseTypes.class ).
+                     where( QueryExpressions.contains(selectedCaseTypes.selectedCaseTypes(), caseType )).
                      newQuery( uowf.currentUnitOfWork() );
 
-               for (SelectedTaskTypes taskTypeUsage : taskTypeUsages)
+               for (SelectedCaseTypes caseTypeUsage : caseTypeUsages)
                {
-                  taskTypeUsage.removeSelectedTaskType( taskType );
+                  caseTypeUsage.removeSelectedCaseType( caseType );
                }
             }
          }

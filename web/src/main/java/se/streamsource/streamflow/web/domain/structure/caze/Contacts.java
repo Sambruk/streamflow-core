@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.domain.structure.task;
+package se.streamsource.streamflow.web.domain.structure.caze;
 
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.injection.scope.Structure;

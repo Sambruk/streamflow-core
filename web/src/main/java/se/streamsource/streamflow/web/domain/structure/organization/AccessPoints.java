@@ -24,13 +24,11 @@ import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.query.QueryBuilderFactory;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
-import se.streamsource.streamflow.web.domain.structure.tasktype.TaskType;
+import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 
 import java.util.List;
 
@@ -42,14 +40,14 @@ import static se.streamsource.streamflow.infrastructure.event.DomainEvent.*;
 @Mixins(AccessPoints.Mixin.class)
 public interface AccessPoints
 {
-   AccessPoint createAccessPoint( String name, Project project, TaskType taskType, @Optional List<Label> labels );
+   AccessPoint createAccessPoint( String name, Project project, CaseType caseType, @Optional List<Label> labels );
 
    interface Data
    {
       @Aggregated
       ManyAssociation<AccessPoint> accessPoints();
 
-      AccessPoint createdAccessPoint( DomainEvent event, String id, Project project, TaskType taskType, @Optional List<Label> labels );
+      AccessPoint createdAccessPoint( DomainEvent event, String id, Project project, CaseType caseType, @Optional List<Label> labels );
 
       void addedAccessPoint( DomainEvent event, AccessPoint accessPoint );
    }
@@ -63,9 +61,9 @@ public interface AccessPoints
       @Service
       IdentityGenerator idGen;
 
-      public AccessPoint createAccessPoint( String name, Project project, TaskType taskType, @Optional List<Label> labels )
+      public AccessPoint createAccessPoint( String name, Project project, CaseType caseType, @Optional List<Label> labels )
       {
-         AccessPoint ap = createdAccessPoint( CREATE, idGen.generate( Identity.class), project, taskType, labels );
+         AccessPoint ap = createdAccessPoint( CREATE, idGen.generate( Identity.class), project, caseType, labels );
 
          addedAccessPoint( CREATE, ap );
          ap.changeDescription( name );
@@ -73,11 +71,11 @@ public interface AccessPoints
          return ap;
       }
 
-      public AccessPoint createdAccessPoint( DomainEvent event, String id, Project project, TaskType taskType, @Optional List<Label> labels  )
+      public AccessPoint createdAccessPoint( DomainEvent event, String id, Project project, CaseType caseType, @Optional List<Label> labels  )
       {
          EntityBuilder<AccessPoint> entityBuilder = uowf.currentUnitOfWork().newEntityBuilder( AccessPoint.class, id );
          entityBuilder.instance().addProject( project );
-         entityBuilder.instance().addTaskType( taskType );
+         entityBuilder.instance().addCaseType( caseType );
          for (Label label : labels)
          {
             entityBuilder.instance().addLabel( label );

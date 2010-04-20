@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.domain.entity.task;
+package se.streamsource.streamflow.web.domain.entity.casetype;
 
 import org.qi4j.api.common.Visibility;
 import org.qi4j.bootstrap.Assembler;
@@ -23,11 +23,11 @@ import org.qi4j.bootstrap.ModuleAssembly;
 /**
  * JAVADOC
  */
-public class TaskAssembler
+public class CaseTypeAssembler
       implements Assembler
 {
    public void assemble( ModuleAssembly module ) throws AssemblyException
    {
-      module.addEntities( TaskEntity.class ).visibleIn( Visibility.application );
+      module.addEntities( CaseTypeEntity.class ).visibleIn( Visibility.application );
    }
 }

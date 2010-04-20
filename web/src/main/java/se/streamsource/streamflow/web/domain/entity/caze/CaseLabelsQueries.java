@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.domain.entity.task;
+package se.streamsource.streamflow.web.domain.entity.caze;
 
 import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Structure;
@@ -29,28 +29,24 @@ import se.streamsource.streamflow.web.domain.structure.organization.Organization
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganization;
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganizationalUnit;
-import se.streamsource.streamflow.web.domain.structure.tasktype.TaskType;
-import se.streamsource.streamflow.web.domain.structure.tasktype.TaskTypes;
-import se.streamsource.streamflow.web.domain.structure.tasktype.TypedTask;
+import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
-@Mixins(TaskLabelsQueries.Mixin.class)
-public interface TaskLabelsQueries
+@Mixins(CaseLabelsQueries.Mixin.class)
+public interface CaseLabelsQueries
 {
    Map<Label, SelectedLabels> possibleLabels();
 
    class Mixin
-         implements TaskLabelsQueries
+         implements CaseLabelsQueries
    {
       @This
       Ownable.Data ownable;
 
       @This
-      TypedTask.Data type;
+      TypedCase.Data type;
 
       @This
       Labelable.Data labelable;
@@ -67,9 +63,9 @@ public interface TaskLabelsQueries
             addLabels( labels, (SelectedLabels) ownable.owner().get() );
          }
 
-         if (type.taskType().get() != null)
+         if (type.caseType().get() != null)
          {
-            addLabels( labels, type.taskType().get());
+            addLabels( labels, type.caseType().get());
          }
 
          if (ownable.owner().get() instanceof OwningOrganizationalUnit.Data)

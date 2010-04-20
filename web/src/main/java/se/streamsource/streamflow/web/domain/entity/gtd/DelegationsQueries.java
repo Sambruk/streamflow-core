@@ -69,7 +69,7 @@ public interface DelegationsQueries
 
       public QueryBuilder<Delegatable> delegations()
       {
-         // Find all Active tasks delegated to "me"
+         // Find all Active cases delegated to "me"
          QueryBuilder<Delegatable> queryBuilder = qbf.newQueryBuilder( Delegatable.class );
          Association<Delegatee> delegatedTo = templateFor( Delegatable.Data.class ).delegatedTo();
          Association<Assignee> assignee = templateFor( Assignable.Data.class ).assignedTo();

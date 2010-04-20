@@ -24,10 +24,10 @@ import org.qi4j.api.util.DateFunctions;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.resource.organization.search.DateSearchKeyword;
 import se.streamsource.streamflow.resource.organization.search.UserSearchKeyword;
+import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity;
 import se.streamsource.streamflow.web.domain.entity.label.LabelEntity;
 import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
-import se.streamsource.streamflow.web.domain.entity.tasktype.TaskTypeEntity;
-import se.streamsource.streamflow.web.domain.structure.task.Task;
+import se.streamsource.streamflow.web.domain.structure.caze.Case;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -44,18 +44,18 @@ import java.util.regex.PatternSyntaxException;
 /**
  * JAVADOC
  */
-@Mixins(SearchTaskQueries.Mixin.class)
-public interface SearchTaskQueries
+@Mixins(SearchCaseQueries.Mixin.class)
+public interface SearchCaseQueries
 {
-   Query<Task> search( StringValue query, String userName );
+   Query<Case> search( StringValue query, String userName );
 
    abstract class Mixin
-      implements SearchTaskQueries
+      implements SearchCaseQueries
    {
       @Structure
       Module module;
 
-      public Query<Task> search( StringValue query, String userName )
+      public Query<Case> search( StringValue query, String userName )
       {
          UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
 
@@ -96,26 +96,26 @@ public interface SearchTaskQueries
                      }
                      queryBuilder.append( ")" );
                   }
-               } else if (search.hasName( "taskType" ))
+               } else if (search.hasName( "caseType" ))
                {
-                  StringBuilder taskTypeQueryBuilder = new StringBuilder( "type:se.streamsource.streamflow.web.domain.entity.tasktype.TaskTypeEntity" );
-                  taskTypeQueryBuilder.append( " description:" ).append( search.getValue() );
+                  StringBuilder caseTypeQueryBuilder = new StringBuilder( "type:se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity" );
+                  caseTypeQueryBuilder.append( " description:" ).append( search.getValue() );
 
-                  Query<TaskTypeEntity> taskTypes = module.queryBuilderFactory()
-                        .newNamedQuery( TaskTypeEntity.class, uow, "solrquery" ).setVariable( "query", taskTypeQueryBuilder.toString() );
+                  Query<CaseTypeEntity> caseTypes = module.queryBuilderFactory()
+                        .newNamedQuery( CaseTypeEntity.class, uow, "solrquery" ).setVariable( "query", caseTypeQueryBuilder.toString() );
 
-                  if (taskTypes.iterator().hasNext())
+                  if (caseTypes.iterator().hasNext())
                   {
-                     queryBuilder.append( " taskType:(" );
+                     queryBuilder.append( " caseType:(" );
                      int count = 0;
-                     for (TaskTypeEntity taskType : taskTypes)
+                     for (CaseTypeEntity caseType : caseTypes)
                      {
                         if (count == 0)
                         {
-                           queryBuilder.append( taskType.identity().get() );
+                           queryBuilder.append( caseType.identity().get() );
                         } else
                         {
-                           queryBuilder.append( " OR " ).append( taskType.identity().get() );
+                           queryBuilder.append( " OR " ).append( caseType.identity().get() );
                         }
 
                         count++;
@@ -166,13 +166,13 @@ public interface SearchTaskQueries
 
             if (queryBuilder.length() != 0)
             {
-               queryBuilder.append( " type:se.streamsource.streamflow.web.domain.entity.task.TaskEntity" );
-               Query<Task> tasks = module.queryBuilderFactory()
-                     .newNamedQuery( Task.class, uow, "solrquery" ).setVariable( "query", queryBuilder.toString() );
-               return tasks;
+               queryBuilder.append( " type:se.streamsource.streamflow.web.domain.entity.caze.CaseEntity" );
+               Query<Case> cases = module.queryBuilderFactory()
+                     .newNamedQuery( Case.class, uow, "solrquery" ).setVariable( "query", queryBuilder.toString() );
+               return cases;
             }
          }
-         return module.queryBuilderFactory().newQueryBuilder( Task.class ).newQuery( Collections.<Task>emptyList() );
+         return module.queryBuilderFactory().newQueryBuilder( Case.class ).newQuery( Collections.<Case>emptyList() );
       }
 
       private void buildDateQuery( StringBuilder queryBuilder, SubQuery search )

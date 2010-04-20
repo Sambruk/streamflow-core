@@ -41,7 +41,7 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.domain.interaction.gtd.States;
-import se.streamsource.streamflow.web.domain.entity.task.TaskEntity;
+import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Delegatable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Delegatee;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Delegator;
@@ -55,7 +55,7 @@ public interface WaitingForQueries
 {
    QueryBuilder<Delegatable> waitingFor( @Optional Delegator delegator );
 
-   boolean hasActiveOrDoneAndUnreadTasks();
+   boolean hasActiveOrDoneCases();
 
    class Mixin
          implements WaitingForQueries
@@ -77,8 +77,8 @@ public interface WaitingForQueries
       {
          UnitOfWork uow = uowf.currentUnitOfWork();
 
-         // Find all Active delegated tasks owned by this Entity and, optionally, delegated by "delegator"
-         // or delegated tasks that are marked as done
+         // Find all Active delegated cases owned by this Entity and, optionally, delegated by "delegator"
+         // or delegated cases that are marked as done
          QueryBuilder<Delegatable> queryBuilder = qbf.newQueryBuilder( Delegatable.class );
          Association<Delegator> delegatedBy = templateFor( Delegatable.Data.class ).delegatedBy();
          Association<Owner> ownerAssociation = templateFor( Delegatable.Data.class ).delegatedFrom();
@@ -95,16 +95,16 @@ public interface WaitingForQueries
          return queryBuilder;
       }
 
-      public boolean hasActiveOrDoneAndUnreadTasks()
+      public boolean hasActiveOrDoneCases()
       {
          UnitOfWork uow = uowf.currentUnitOfWork();
 
-         // Find all Active delegated tasks owned by this Entity
-         // or Completed delegated tasks that are marked as unread
-         QueryBuilder<TaskEntity> queryBuilder = qbf.newQueryBuilder( TaskEntity.class );
+         // Find all Active delegated cases owned by this Entity
+         // or Completed delegated cases that are marked as unread
+         QueryBuilder<CaseEntity> queryBuilder = qbf.newQueryBuilder( CaseEntity.class );
          Association<Owner> ownerAssociation = templateFor( Delegatable.Data.class ).delegatedFrom();
          Association<Delegatee> delegatee = templateFor( Delegatable.Data.class ).delegatedTo();
-         Query<TaskEntity> waitingForQuery = queryBuilder.where( and(
+         Query<CaseEntity> waitingForQuery = queryBuilder.where( and(
                eq( ownerAssociation, this.owner ),
                isNotNull( delegatee ),
                or(
