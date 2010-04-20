@@ -26,6 +26,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
+import se.streamsource.dci.api.InteractionsMixin;
 import se.streamsource.streamflow.resource.user.NewUserCommand;
 import se.streamsource.streamflow.resource.user.UserEntityListDTO;
 import se.streamsource.streamflow.web.context.RequiresPermission;
@@ -33,9 +34,8 @@ import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.entity.user.UsersQueries;
 import se.streamsource.streamflow.web.domain.structure.user.User;
 import se.streamsource.streamflow.web.domain.structure.user.Users;
-import se.streamsource.dci.context.Context;
-import se.streamsource.dci.context.ContextMixin;
-import se.streamsource.dci.context.SubContexts;
+import se.streamsource.dci.api.Interactions;
+import se.streamsource.dci.api.SubContexts;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -51,7 +51,7 @@ import java.util.regex.Pattern;
  */
 @Mixins(UsersContext.Mixin.class)
 public interface UsersContext
-   extends SubContexts<UserContext>, Context
+   extends SubContexts<UserContext>, Interactions
 {
    // Queries
    @RequiresPermission("administrator")
@@ -65,12 +65,12 @@ public interface UsersContext
    void importusers( Representation representation ) throws ResourceException;
 
    abstract class Mixin
-      extends ContextMixin
+      extends InteractionsMixin
       implements UsersContext
    {
       public UserEntityListDTO users()
       {
-         UsersQueries orgs = context.role(UsersQueries.class);
+         UsersQueries orgs = context.get(UsersQueries.class);
 
          return orgs.users();
       }
@@ -79,7 +79,7 @@ public interface UsersContext
       {
          UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
 
-         Users users = context.role(Users.class);
+         Users users = context.get(Users.class);
          User user = users.createUser( command.username().get(), command.password().get() );
       }
 
@@ -87,14 +87,14 @@ public interface UsersContext
       {
          boolean badRequest = false;
          String errors = "<html>";
-         Locale locale = context.role(Locale.class);
+         Locale locale = context.get(Locale.class);
 
          ResourceBundle bundle = ResourceBundle.getBundle(
                UsersContext.class.getName(), locale );
 
          UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
 
-         Users organizations = context.role(Users.class);
+         Users organizations = context.get(Users.class);
 
          try
          {
@@ -204,7 +204,7 @@ public interface UsersContext
       public UserContext context( String id )
       {
          UserEntity user = module.unitOfWorkFactory().currentUnitOfWork().get( UserEntity.class, id );
-         context.playRoles( user, UserEntity.class );
+         context.set( user );
 
          return subContext( UserContext.class);
       }

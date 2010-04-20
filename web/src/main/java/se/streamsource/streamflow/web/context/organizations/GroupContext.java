@@ -16,12 +16,12 @@
 package se.streamsource.streamflow.web.context.organizations;
 
 import org.qi4j.api.mixin.Mixins;
+import se.streamsource.dci.api.Interactions;
+import se.streamsource.dci.api.InteractionsMixin;
 import se.streamsource.streamflow.web.domain.structure.group.Group;
 import se.streamsource.streamflow.web.domain.structure.group.Groups;
-import se.streamsource.dci.context.Context;
-import se.streamsource.dci.context.ContextMixin;
-import se.streamsource.dci.context.DeleteContext;
-import se.streamsource.dci.context.SubContext;
+import se.streamsource.dci.api.DeleteInteraction;
+import se.streamsource.dci.api.SubContext;
 import se.streamsource.streamflow.web.context.structure.DescribableContext;
 
 /**
@@ -29,19 +29,19 @@ import se.streamsource.streamflow.web.context.structure.DescribableContext;
  */
 @Mixins(GroupContext.Mixin.class)
 public interface GroupContext
-   extends DeleteContext, DescribableContext, Context
+   extends DeleteInteraction, DescribableContext, Interactions
 {
    @SubContext
    ParticipantsContext participants();
 
    abstract class Mixin
-      extends ContextMixin
+      extends InteractionsMixin
       implements GroupContext
    {
       public void delete()
       {
-         Groups groups = context.role(Groups.class);
-         Group group = context.role(Group.class);
+         Groups groups = context.get(Groups.class);
+         Group group = context.get(Group.class);
          groups.removeGroup( group );
       }
 

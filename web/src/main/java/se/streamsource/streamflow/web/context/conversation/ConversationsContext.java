@@ -20,10 +20,10 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
-import se.streamsource.dci.context.Context;
-import se.streamsource.dci.context.ContextMixin;
-import se.streamsource.dci.context.IndexContext;
-import se.streamsource.dci.context.SubContexts;
+import se.streamsource.dci.api.IndexInteraction;
+import se.streamsource.dci.api.Interactions;
+import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.SubContexts;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
@@ -44,12 +44,12 @@ import se.streamsource.streamflow.web.domain.structure.created.Creator;
 @Mixins(ConversationsContext.Mixin.class)
 public interface ConversationsContext
    extends
-      SubContexts<ConversationContext>, IndexContext<LinksValue>, Context
+      SubContexts<ConversationContext>, IndexInteraction<LinksValue>, Interactions
 {
    public void create( StringValue topic );
 
    abstract class Mixin
-      extends ContextMixin
+      extends InteractionsMixin
       implements ConversationsContext
    {
       @Structure
@@ -60,7 +60,7 @@ public interface ConversationsContext
          LinksBuilder links = new LinksBuilder( module.valueBuilderFactory() );
          ValueBuilder<ConversationDTO> builder = module.valueBuilderFactory().newValueBuilder( ConversationDTO.class );
 
-         Conversations.Data conversations = context.role( Conversations.Data.class );
+         Conversations.Data conversations = context.get( Conversations.Data.class );
 
          for (Conversation conversation : conversations.conversations())
          {
@@ -79,15 +79,15 @@ public interface ConversationsContext
 
       public void create( StringValue topic )
       {
-         Conversations conversations = context.role(Conversations.class);
-         Conversation conversation = conversations.createConversation( topic.string().get(), context.role( Creator.class) );
-         ((ConversationEntity)conversation).addParticipant( context.role( ConversationParticipant.class ) );
+         Conversations conversations = context.get(Conversations.class);
+         Conversation conversation = conversations.createConversation( topic.string().get(), context.get( Creator.class) );
+         ((ConversationEntity)conversation).addParticipant( context.get( ConversationParticipant.class ) );
 
       }
 
       public ConversationContext context( String id )
       {
-         context.playRoles( module.unitOfWorkFactory().currentUnitOfWork().get( Conversation.class, id ) );
+         context.set( module.unitOfWorkFactory().currentUnitOfWork().get( Conversation.class, id ) );
 
          return subContext( ConversationContext.class );
       }

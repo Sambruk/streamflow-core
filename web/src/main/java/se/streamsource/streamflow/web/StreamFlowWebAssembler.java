@@ -32,7 +32,7 @@ import se.streamsource.streamflow.web.application.organization.BootstrapAssemble
 import se.streamsource.streamflow.web.application.security.SecurityAssembler;
 import se.streamsource.streamflow.web.application.statistics.StatisticsAssembler;
 import se.streamsource.streamflow.web.configuration.ConfigurationAssembler;
-import se.streamsource.streamflow.web.context.ContextsAssembler;
+import se.streamsource.streamflow.web.context.InteractionsAssembler;
 import se.streamsource.streamflow.web.domain.entity.conversation.ConversationAssembler;
 import se.streamsource.streamflow.web.domain.entity.form.FormAssembler;
 import se.streamsource.streamflow.web.domain.entity.label.LabelAssembler;
@@ -73,7 +73,7 @@ public class StreamFlowWebAssembler
       LayerAssembly configurationLayer = assembly.layerAssembly( "Configuration" );
       LayerAssembly domainInfrastructureLayer = assembly.layerAssembly( "Domain infrastructure" );
       LayerAssembly domainLayer = assembly.layerAssembly( "Domain" );
-      LayerAssembly contextLayer = assembly.layerAssembly( "Context" );
+      LayerAssembly contextLayer = assembly.layerAssembly( "Interactions" );
       LayerAssembly appLayer = assembly.layerAssembly( "Application" );
       LayerAssembly webLayer = assembly.layerAssembly( "Web" );
 
@@ -87,7 +87,7 @@ public class StreamFlowWebAssembler
 
       assembleApplicationLayer( appLayer );
 
-      assembleContextLayer( contextLayer );
+      assembleInteractionsLayer( contextLayer );
 
       assembleDomainLayer( domainLayer );
 
@@ -137,10 +137,10 @@ public class StreamFlowWebAssembler
       new MailAssembler().assemble( appLayer.moduleAssembly( "Mail" ));
    }
 
-   protected void assembleContextLayer( LayerAssembly contextLayer ) throws AssemblyException
+   protected void assembleInteractionsLayer( LayerAssembly interactionsLayer ) throws AssemblyException
    {
-      ModuleAssembly moduleAssembly = contextLayer.moduleAssembly( "Context" );
-      new ContextsAssembler().assemble( moduleAssembly );
+      ModuleAssembly moduleAssembly = interactionsLayer.moduleAssembly( "Interactions" );
+      new InteractionsAssembler().assemble( moduleAssembly );
    }
 
    protected void assembleDomainLayer( LayerAssembly domainLayer ) throws AssemblyException

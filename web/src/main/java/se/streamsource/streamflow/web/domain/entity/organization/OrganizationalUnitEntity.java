@@ -23,6 +23,7 @@ import se.streamsource.streamflow.web.domain.entity.label.PossibleLabelsQueries;
 import se.streamsource.streamflow.web.domain.interaction.security.Authorization;
 import se.streamsource.streamflow.web.domain.structure.form.Forms;
 import se.streamsource.streamflow.web.domain.structure.group.Groups;
+import se.streamsource.streamflow.web.domain.structure.label.Labels;
 import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnitRefactoring;
@@ -54,11 +55,11 @@ public interface OrganizationalUnitEntity
       Removable.Data,
       RolePolicy.Data,
       OwningOrganization,
+      Labels.Data,
       SelectedLabels.Data,
       TaskTypes.Data,
 
       // Queries
-      OrganizationalUnitsQueries,
-      PossibleLabelsQueries
+      OrganizationalUnitsQueries
 {
 }

@@ -16,7 +16,7 @@
 package se.streamsource.dci.restlet.server;
 
 import org.restlet.representation.Variant;
-import se.streamsource.dci.context.InteractionContext;
+import se.streamsource.dci.api.Context;
 
 import java.util.List;
 
@@ -25,6 +25,6 @@ import java.util.List;
  */
 public interface ResponseWriterFactory
 {
-   public ResponseWriter createWriter( List<String> segments, Class resultType, InteractionContext context, Variant variant )
+   public ResponseWriter createWriter( List<String> segments, Class resultType, Context context, Variant variant )
          throws Exception;
 }

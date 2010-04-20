@@ -18,6 +18,9 @@ package se.streamsource.streamflow.web.context.organizations;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.unitofwork.UnitOfWork;
+import se.streamsource.dci.api.IndexInteraction;
+import se.streamsource.dci.api.Interactions;
+import se.streamsource.dci.api.InteractionsMixin;
 import se.streamsource.dci.value.*;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.domain.structure.Describable;
@@ -31,10 +34,7 @@ import se.streamsource.streamflow.web.domain.structure.organization.OwningOrgani
 import se.streamsource.streamflow.web.domain.structure.project.Member;
 import se.streamsource.streamflow.web.domain.structure.project.Members;
 import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
-import se.streamsource.dci.context.Context;
-import se.streamsource.dci.context.ContextMixin;
-import se.streamsource.dci.context.IndexContext;
-import se.streamsource.dci.context.SubContexts;
+import se.streamsource.dci.api.SubContexts;
 
 import static org.qi4j.api.query.QueryExpressions.orderBy;
 import static org.qi4j.api.query.QueryExpressions.templateFor;
@@ -44,7 +44,7 @@ import static org.qi4j.api.query.QueryExpressions.templateFor;
  */
 @Mixins(MembersContext.Mixin.class)
 public interface MembersContext
-   extends SubContexts<MemberContext>, IndexContext<LinksValue>, Context
+   extends SubContexts<MemberContext>, IndexInteraction<LinksValue>, Interactions
 {
    public void addmember( EntityReferenceDTO memberId);
 
@@ -53,12 +53,12 @@ public interface MembersContext
    public LinksValue possiblegroups( StringValue query );
 
    abstract class Mixin
-      extends ContextMixin
+      extends InteractionsMixin
       implements MembersContext
    {
       public LinksValue index()
       {
-         Members.Data members = context.role(Members.Data.class);
+         Members.Data members = context.get(Members.Data.class);
 
          return new LinksBuilder( module.valueBuilderFactory() ).rel( "member" ).addDescribables( members.members() ).newLinks();
       }
@@ -68,16 +68,16 @@ public interface MembersContext
          UnitOfWork unitOfWork = module.unitOfWorkFactory().currentUnitOfWork();
          Member member = unitOfWork.get( Member.class, memberId.entity().get().identity() );
 
-         Members members = context.role(Members.class);
+         Members members = context.get(Members.class);
 
          members.addMember( member );
       }
 
       public LinksValue possibleusers( StringValue query )
       {
-         OwningOrganization org = context.role(OwningOrganization.class);
+         OwningOrganization org = context.get(OwningOrganization.class);
          OrganizationEntity organization = (OrganizationEntity) org.organization().get();
-         Members.Data members = context.role(Members.Data.class);
+         Members.Data members = context.get(Members.Data.class);
 
          Query<UserEntity> users = organization.findUsersByUsername( query.string().get() ).newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
          users = users.orderBy( orderBy( templateFor( UserAuthentication.Data.class ).userName() ) );
@@ -98,12 +98,12 @@ public interface MembersContext
 
       public LinksValue possiblegroups( StringValue query )
       {
-         OwningOrganization org = context.role(OwningOrganization.class);
+         OwningOrganization org = context.get(OwningOrganization.class);
 
          Query<GroupEntity> groups = ((OrganizationQueries)org.organization().get()).findGroupsByName( query.string().get() ).newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
          groups.orderBy( orderBy( templateFor( Describable.Data.class ).description() ) );
 
-         Members.Data members = context.role(Members.Data.class);
+         Members.Data members = context.get(Members.Data.class);
 
          LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
          linksBuilder.command("addmember");
@@ -122,7 +122,7 @@ public interface MembersContext
 
       public MemberContext context( String id )
       {
-         context.playRoles( module.unitOfWorkFactory().currentUnitOfWork().get(Member.class, id ));
+         context.set( module.unitOfWorkFactory().currentUnitOfWork().get(Member.class, id ));
          return subContext( MemberContext.class );
       }
    }

@@ -22,7 +22,7 @@ import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.spi.service.importer.NewObjectImporter;
 import org.restlet.service.MetadataService;
-import se.streamsource.dci.context.InteractionConstraintsService;
+import se.streamsource.dci.api.InteractionConstraintsService;
 import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.IndexValue;
 import se.streamsource.dci.value.LinkValue;

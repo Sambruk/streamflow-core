@@ -20,15 +20,15 @@ import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.entity.Identity;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.value.ValueBuilder;
+import se.streamsource.dci.api.InteractionsMixin;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.domain.form.PageDefinitionValue;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.web.domain.structure.form.Page;
 import se.streamsource.streamflow.web.domain.structure.form.Pages;
-import se.streamsource.dci.context.Context;
-import se.streamsource.dci.context.ContextMixin;
-import se.streamsource.dci.context.DeleteContext;
-import se.streamsource.dci.context.SubContext;
+import se.streamsource.dci.api.Interactions;
+import se.streamsource.dci.api.DeleteInteraction;
+import se.streamsource.dci.api.SubContext;
 import se.streamsource.streamflow.web.context.structure.DescribableContext;
 import se.streamsource.streamflow.web.context.structure.NotableContext;
 
@@ -37,7 +37,7 @@ import se.streamsource.streamflow.web.context.structure.NotableContext;
  */
 @Mixins(FormPageContext.Mixin.class)
 public interface FormPageContext
-   extends DescribableContext, NotableContext, DeleteContext, Context
+   extends DescribableContext, NotableContext, DeleteInteraction, Interactions
 {
    PageDefinitionValue page();
    void move( StringValue direction );
@@ -46,13 +46,13 @@ public interface FormPageContext
    FormFieldsContext fields();
    
    abstract class Mixin
-      extends ContextMixin
+      extends InteractionsMixin
       implements FormPageContext
    {
       public PageDefinitionValue page()
       {
-         Describable describable = context.role(Describable.class);
-         Identity identity = context.role(Identity.class);
+         Describable describable = context.get(Describable.class);
+         Identity identity = context.get(Identity.class);
 
          ValueBuilder<PageDefinitionValue> builder = module.valueBuilderFactory().newValueBuilder( PageDefinitionValue.class );
          builder.prototype().description().set( describable.getDescription() );
@@ -62,9 +62,9 @@ public interface FormPageContext
 
       public void move( StringValue direction )
       {
-         Page page = context.role(Page.class);
-         Pages.Data pagesData = context.role(Pages.Data.class);
-         Pages pages = context.role(Pages.class);
+         Page page = context.get(Page.class);
+         Pages.Data pagesData = context.get(Pages.Data.class);
+         Pages pages = context.get(Pages.class);
 
          int index = pagesData.pages().toList().indexOf( page );
          if ( direction.string().get().equalsIgnoreCase( "up" ))
@@ -81,8 +81,8 @@ public interface FormPageContext
 
       public void delete()
       {
-         Page pageEntity = context.role(Page.class);
-         Pages form = context.role( Pages.class);
+         Page pageEntity = context.get(Page.class);
+         Pages form = context.get( Pages.class);
 
          form.removePage( pageEntity );
       }

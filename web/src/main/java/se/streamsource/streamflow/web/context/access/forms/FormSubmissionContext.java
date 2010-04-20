@@ -20,10 +20,10 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.value.ValueBuilder;
 import org.restlet.data.Form;
 import org.restlet.representation.Representation;
-import se.streamsource.dci.context.Context;
-import se.streamsource.dci.context.ContextMixin;
-import se.streamsource.dci.context.IndexContext;
-import se.streamsource.dci.context.SubContext;
+import se.streamsource.dci.api.IndexInteraction;
+import se.streamsource.dci.api.Interactions;
+import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.SubContext;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
 import se.streamsource.streamflow.domain.form.FormSubmissionValue;
@@ -39,7 +39,7 @@ import java.util.Set;
  */
 @Mixins(FormSubmissionContext.Mixin.class)
 public interface FormSubmissionContext
-   extends Context, IndexContext<PageSubmissionValue>
+   extends Interactions, IndexInteraction<PageSubmissionValue>
 {
    // queries
    LinksValue pages();
@@ -60,19 +60,19 @@ public interface FormSubmissionContext
    void discard();
 
    abstract class Mixin
-      extends ContextMixin
+      extends InteractionsMixin
       implements FormSubmissionContext
    {
       public PageSubmissionValue index()
       {
-         FormSubmissionValue value = context.role( FormSubmissionValue.class );
+         FormSubmissionValue value = context.get( FormSubmissionValue.class );
 
          return value.pages().get().get( value.currentPage().get() );
       }
 
       public LinksValue pages()
       {
-         FormSubmissionValue value = context.role( FormSubmissionValue.class );
+         FormSubmissionValue value = context.get( FormSubmissionValue.class );
 
          LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() );
 
@@ -108,7 +108,7 @@ public interface FormSubmissionContext
 
       private ValueBuilder<FormSubmissionValue> incrementPage( int increment )
       {
-         ValueBuilder<FormSubmissionValue> builder = context.role( FormSubmission.Data.class ).formSubmissionValue().get().buildWith();
+         ValueBuilder<FormSubmissionValue> builder = context.get( FormSubmission.Data.class ).formSubmissionValue().get().buildWith();
          int page = builder.prototype().currentPage().get() + increment;
          int pages = builder.prototype().pages().get().size();
 
@@ -125,7 +125,7 @@ public interface FormSubmissionContext
 
          Set<Map.Entry<String, String>> entries = form.getValuesMap().entrySet();
 
-         FormSubmission submission = context.role( FormSubmission.class );
+         FormSubmission submission = context.get( FormSubmission.class );
 
          for (Map.Entry<String, String> entry : entries)
          {
@@ -158,22 +158,22 @@ public interface FormSubmissionContext
 
       private ValueBuilder<FormSubmissionValue> getFormSubmissionValueBuilder()
       {
-         FormSubmissionValue value = context.role( FormSubmissionValue.class );
+         FormSubmissionValue value = context.get( FormSubmissionValue.class );
          return value.buildWith();
       }
 
       private void updateFormSubmission( ValueBuilder<FormSubmissionValue> builder )
       {
          FormSubmissionValue newFormValue = builder.newInstance();
-         FormSubmission formSubmission = context.role( FormSubmission.class );
+         FormSubmission formSubmission = context.get( FormSubmission.class );
          formSubmission.changeFormSubmission( newFormValue );
 
-         context.playRoles( newFormValue );
+         context.set( newFormValue );
       }
 
       public FormSummaryContext summary()
       {
-         context.playRoles( this );
+         context.set( this );
          return subContext( FormSummaryContext.class );
       }
 

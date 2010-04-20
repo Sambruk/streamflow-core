@@ -40,8 +40,6 @@ public interface SelectedTaskTypes
    {
       ManyAssociation<TaskType> selectedTaskTypes();
 
-      List<TaskType> possibleTaskTypes( ManyAssociation<TaskType> taskTypes );
-
       void selectedTaskTypeAdded( DomainEvent event, TaskType taskType );
 
       void selectedTaskTypeRemoved( DomainEvent event, TaskType taskType );
@@ -76,21 +74,6 @@ public interface SelectedTaskTypes
       public void selectedTaskTypeRemoved( DomainEvent event, TaskType taskType )
       {
          selectedTaskTypes().remove( taskType );
-      }
-
-      public List<TaskType> possibleTaskTypes( ManyAssociation<TaskType> taskTypes )
-      {
-         List<TaskType> possibleTaskTypes = new ArrayList<TaskType>( );
-
-         for (TaskType taskType : taskTypes)
-         {
-            if (!selectedTaskTypes().contains( taskType ))
-            {
-               possibleTaskTypes.add( taskType );
-            }
-         }
-
-         return possibleTaskTypes;
       }
    }
 }

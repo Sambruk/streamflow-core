@@ -38,6 +38,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
 import se.streamsource.streamflow.client.infrastructure.ui.UncaughtExceptionHandler;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.workspace.FilterListDialog;
+import se.streamsource.streamflow.client.ui.workspace.GroupedFilterListDialog;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
@@ -81,7 +82,7 @@ public class TaskGeneralView extends JScrollPane implements Observer
    UncaughtExceptionHandler exception;
 
    @Uses
-   protected ObjectBuilder<FilterListDialog> taskTypeDialog;
+   protected ObjectBuilder<GroupedFilterListDialog> taskTypeDialog;
 
    @Uses
    protected ObjectBuilder<TaskLabelsDialog> labelSelectionDialog;
@@ -337,7 +338,7 @@ public class TaskGeneralView extends JScrollPane implements Observer
    @Action
    public void tasktype()
    {
-      FilterListDialog dialog = taskTypeDialog.use(
+      GroupedFilterListDialog dialog = taskTypeDialog.use(
             i18n.text( WorkspaceResources.chose_tasktype ),
             model.getPossibleTaskTypes() ).newInstance();
       dialogs.showOkCancelHelpDialog( taskTypeButton, dialog );

@@ -19,22 +19,22 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
 import org.restlet.data.Reference;
+import se.streamsource.dci.api.Interactions;
+import se.streamsource.dci.api.InteractionsMixin;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.resource.task.TaskValue;
 import se.streamsource.streamflow.web.context.conversation.ConversationsContext;
 import se.streamsource.streamflow.web.domain.entity.task.TaskEntity;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
-import se.streamsource.dci.context.Context;
-import se.streamsource.dci.context.ContextMixin;
-import se.streamsource.dci.context.SubContext;
+import se.streamsource.dci.api.SubContext;
 
 /**
  * JAVADOC
  */
 @Mixins(TaskContext.Mixin.class)
 public interface TaskContext
-   extends Context, TaskActionsContext
+   extends Interactions, TaskActionsContext
 {
    TaskValue info();
 
@@ -51,7 +51,7 @@ public interface TaskContext
    TaskFormsContext forms();
 
    abstract class Mixin
-      extends ContextMixin
+      extends InteractionsMixin
       implements TaskContext
    {
       public static TaskValue taskDTO( TaskEntity task, Module module, String basePath )
@@ -99,7 +99,7 @@ public interface TaskContext
 
       public TaskValue info()
       {
-         return taskDTO(context.role( TaskEntity.class ), module, context.role( Reference.class ).getBaseRef().getPath());
+         return taskDTO(context.get( TaskEntity.class ), module, context.get( Reference.class ).getBaseRef().getPath());
       }
 
       public TaskGeneralContext general()

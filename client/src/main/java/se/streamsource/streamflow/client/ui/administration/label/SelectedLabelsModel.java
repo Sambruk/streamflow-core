@@ -27,6 +27,7 @@ import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.StringValue;
+import se.streamsource.dci.value.TitledLinkValue;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
@@ -34,6 +35,8 @@ import se.streamsource.streamflow.client.ui.administration.AdministrationResourc
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
+
+import java.util.Collection;
 
 /**
  * Management of selected labels on a tasktype, project or OU level
@@ -68,12 +71,15 @@ public class SelectedLabelsModel
       }
    }
 
-   public EventList<LinkValue> getPossibleLabels()
+   public EventList<TitledLinkValue> getPossibleLabels()
    {
       try
       {
-         BasicEventList<LinkValue> possibleLabels = new BasicEventList<LinkValue>();
-         possibleLabels.addAll( client.query( "possiblelabels", LinksValue.class ).links().get() );
+         BasicEventList<TitledLinkValue> possibleLabels = new BasicEventList<TitledLinkValue>();
+         for (LinkValue link : client.query( "possiblelabels", LinksValue.class ).links().get())
+         {
+            possibleLabels.add( (TitledLinkValue) link);
+         }
          return possibleLabels;
       } catch (ResourceException e)
       {

@@ -16,13 +16,12 @@
 package se.streamsource.streamflow.web.context.access.organizations;
 
 import org.qi4j.api.mixin.Mixins;
-import se.streamsource.dci.context.Context;
-import se.streamsource.dci.context.ContextMixin;
-import se.streamsource.dci.context.IndexContext;
-import se.streamsource.dci.context.SubContexts;
+import se.streamsource.dci.api.IndexInteraction;
+import se.streamsource.dci.api.Interactions;
+import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.SubContexts;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.domain.structure.Describable;
-import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.infrastructure.application.TitledLinksBuilder;
 import se.streamsource.streamflow.web.domain.entity.user.ProxyUserEntity;
 import se.streamsource.streamflow.web.domain.structure.user.ProxyUser;
@@ -33,16 +32,16 @@ import se.streamsource.streamflow.web.domain.structure.user.ProxyUsers;
  */
 @Mixins(AccessPointContext.Mixin.class)
 public interface AccessPointContext
-   extends SubContexts<ProxyUserContext>, IndexContext<LinksValue>, Context
+   extends SubContexts<ProxyUserContext>, IndexInteraction<LinksValue>, Interactions
 {
    abstract class Mixin
-      extends ContextMixin
+      extends InteractionsMixin
       implements AccessPointContext
    {
       public LinksValue index()
       {
-         ProxyUsers.Data data = context.role( ProxyUsers.Data.class );
-         Describable describable = context.role( Describable.class );
+         ProxyUsers.Data data = context.get( ProxyUsers.Data.class );
+         Describable describable = context.get( Describable.class );
 
          TitledLinksBuilder linksBuilder = new TitledLinksBuilder( module.valueBuilderFactory() );
 
@@ -54,13 +53,13 @@ public interface AccessPointContext
 
       public ProxyUserContext context( String id )
       {
-         ProxyUsers.Data data = context.role( ProxyUsers.Data.class );
+         ProxyUsers.Data data = context.get( ProxyUsers.Data.class );
          for (ProxyUser proxyUser : data.proxyUsers() )
          {
             ProxyUserEntity entity = (ProxyUserEntity) proxyUser;
             if ( entity.identity().get().equals( id ) )
             {
-               context.playRoles( proxyUser );
+               context.set( proxyUser );
             }
          }
          return subContext( ProxyUserContext.class);

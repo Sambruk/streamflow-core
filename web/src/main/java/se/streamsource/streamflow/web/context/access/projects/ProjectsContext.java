@@ -17,10 +17,10 @@ package se.streamsource.streamflow.web.context.access.projects;
 
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
-import se.streamsource.dci.context.Context;
-import se.streamsource.dci.context.ContextMixin;
-import se.streamsource.dci.context.IndexContext;
-import se.streamsource.dci.context.SubContexts;
+import se.streamsource.dci.api.Interactions;
+import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.IndexInteraction;
+import se.streamsource.dci.api.SubContexts;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
@@ -35,15 +35,15 @@ import static org.qi4j.api.query.QueryExpressions.*;
  */
 @Mixins(ProjectsContext.Mixin.class)
 public interface ProjectsContext
-   extends SubContexts<CaseTypesContext>, IndexContext<LinksValue>, Context
+   extends SubContexts<CaseTypesContext>, IndexInteraction<LinksValue>, Interactions
 {
    abstract class Mixin
-      extends ContextMixin
+      extends InteractionsMixin
       implements ProjectsContext
    {
       public LinksValue index()
       {
-         OrganizationQueries organizationQueries = context.role( OrganizationQueries.class );
+         OrganizationQueries organizationQueries = context.get( OrganizationQueries.class );
          Query<ProjectEntity> projects = organizationQueries.findProjects( "*" );
          projects = projects.orderBy( orderBy( templateFor( Describable.Data.class ).description() ) );
 
@@ -56,7 +56,7 @@ public interface ProjectsContext
 
       public CaseTypesContext context( String id )
       {
-         context.playRoles( module.unitOfWorkFactory().currentUnitOfWork().get( Project.class, id ) );
+         context.set( module.unitOfWorkFactory().currentUnitOfWork().get( Project.class, id ) );
 
          return subContext( CaseTypesContext.class);
       }

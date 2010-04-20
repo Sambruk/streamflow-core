@@ -21,6 +21,7 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
+import se.streamsource.dci.api.InteractionsMixin;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.resource.roles.IntegerDTO;
 import se.streamsource.streamflow.resource.task.EffectiveFieldsDTO;
@@ -34,16 +35,15 @@ import se.streamsource.streamflow.web.domain.structure.form.FormSubmission;
 import se.streamsource.streamflow.web.domain.structure.form.FormSubmissions;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedForms;
 import se.streamsource.streamflow.web.domain.structure.form.Submitter;
-import se.streamsource.dci.context.Context;
-import se.streamsource.dci.context.ContextMixin;
-import se.streamsource.dci.context.SubContexts;
+import se.streamsource.dci.api.Interactions;
+import se.streamsource.dci.api.SubContexts;
 
 /**
  * JAVADOC
  */
 @Mixins(TaskFormsContext.Mixin.class)
 public interface TaskFormsContext
-   extends SubContexts<TaskFormContext>, Context
+   extends SubContexts<TaskFormContext>, Interactions
 {
       public SubmittedFormsListDTO listsubmittedforms();
       public EffectiveFieldsDTO effectivefields();
@@ -54,7 +54,7 @@ public interface TaskFormsContext
       public void submit( EntityReferenceDTO formDTO ) throws ResourceException;
 
    abstract class Mixin
-      extends ContextMixin
+      extends InteractionsMixin
       implements TaskFormsContext
    {
       @Structure
@@ -62,27 +62,27 @@ public interface TaskFormsContext
 
       public SubmittedFormsListDTO listsubmittedforms()
       {
-         SubmittedFormsQueries forms = context.role(SubmittedFormsQueries.class);
+         SubmittedFormsQueries forms = context.get(SubmittedFormsQueries.class);
          return forms.getSubmittedForms();
       }
 
       public EffectiveFieldsDTO effectivefields()
       {
-         SubmittedFormsQueries fields = context.role(SubmittedFormsQueries.class);
+         SubmittedFormsQueries fields = context.get(SubmittedFormsQueries.class);
 
          return fields.effectiveFields();
       }
 
       public SubmittedFormDTO submittedform( IntegerDTO index)
       {
-         SubmittedFormsQueries forms = context.role(SubmittedFormsQueries.class);
+         SubmittedFormsQueries forms = context.get(SubmittedFormsQueries.class);
 
          return forms.getSubmittedForm( index.integer().get() );
       }
 
       public void createformsubmission( EntityReferenceDTO formDTO )
       {
-         FormSubmissions formSubmissions = context.role(FormSubmissions.class);
+         FormSubmissions formSubmissions = context.get(FormSubmissions.class);
 
          Form form = uowf.currentUnitOfWork().get( Form.class, formDTO.entity().get().identity() );
 
@@ -93,7 +93,7 @@ public interface TaskFormsContext
       {
          UnitOfWork uow = uowf.currentUnitOfWork();
 
-         FormSubmissions formSubmissions = context.role(FormSubmissions.class);
+         FormSubmissions formSubmissions = context.get(FormSubmissions.class);
 
          Form form = uowf.currentUnitOfWork().get( Form.class, formDTO.entity().get().identity() );
 
@@ -102,7 +102,7 @@ public interface TaskFormsContext
 
       public EntityReferenceDTO formsubmission( EntityReferenceDTO formDTO )
       {
-         FormSubmissionsQueries formSubmissions = context.role(FormSubmissionsQueries.class);
+         FormSubmissionsQueries formSubmissions = context.get(FormSubmissionsQueries.class);
 
          return formSubmissions.getFormSubmission( formDTO.entity().get() );
       }
@@ -111,7 +111,7 @@ public interface TaskFormsContext
       {
          UnitOfWork uow = uowf.currentUnitOfWork();
 
-         EntityReferenceDTO dto = context.role(FormSubmissionsQueries.class).getFormSubmission( formDTO.entity().get() );
+         EntityReferenceDTO dto = context.get(FormSubmissionsQueries.class).getFormSubmission( formDTO.entity().get() );
 
          if ( dto == null )
          {
@@ -121,14 +121,14 @@ public interface TaskFormsContext
          FormSubmission formSubmission =
                uow.get( FormSubmission.class, dto.entity().get().identity() );
 
-         Submitter submitter = context.role(Submitter.class);
+         Submitter submitter = context.get(Submitter.class);
 
-         context.role( SubmittedForms.class).submitForm( formSubmission, submitter );
+         context.get( SubmittedForms.class).submitForm( formSubmission, submitter );
       }
 
       public TaskFormContext context( String id )
       {
-         context.playRoles( uowf.currentUnitOfWork().get( FormSubmissionEntity.class, id ), FormSubmissionEntity.class);
+         context.set( uowf.currentUnitOfWork().get( FormSubmissionEntity.class, id ));
 
          return subContext( TaskFormContext.class );
       }

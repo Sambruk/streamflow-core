@@ -17,52 +17,60 @@ package se.streamsource.streamflow.web.context.organizations;
 
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWork;
+import se.streamsource.dci.api.InteractionsMixin;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
-import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
+import se.streamsource.streamflow.web.domain.Specification;
+import se.streamsource.streamflow.web.domain.entity.tasktype.TaskTypesQueries;
 import se.streamsource.streamflow.web.domain.structure.tasktype.SelectedTaskTypes;
 import se.streamsource.streamflow.web.domain.structure.tasktype.TaskType;
-import se.streamsource.streamflow.web.domain.structure.tasktype.TaskTypes;
-import se.streamsource.dci.context.Context;
-import se.streamsource.dci.context.ContextMixin;
-import se.streamsource.dci.context.IndexContext;
-import se.streamsource.dci.context.SubContexts;
+import se.streamsource.dci.api.Interactions;
+import se.streamsource.dci.api.IndexInteraction;
+import se.streamsource.dci.api.SubContexts;
 
 /**
  * JAVADOC
  */
 @Mixins(SelectedTaskTypesContext.Mixin.class)
 public interface SelectedTaskTypesContext
-   extends SubContexts<SelectedTaskTypeContext>, IndexContext<LinksValue>, Context
+   extends SubContexts<SelectedTaskTypeContext>, IndexInteraction<LinksValue>, Interactions
 {
    public LinksValue possibletasktypes();
 
    public void addtasktype( EntityReferenceDTO taskTypeDTO );
 
    abstract class Mixin
-      extends ContextMixin
+      extends InteractionsMixin
       implements SelectedTaskTypesContext
    {
       public LinksValue index()
       {
-         SelectedTaskTypes.Data taskTypes = context.role(SelectedTaskTypes.Data.class);
+         SelectedTaskTypes.Data taskTypes = context.get(SelectedTaskTypes.Data.class);
 
          return new LinksBuilder( module.valueBuilderFactory() ).rel("tasktype").addDescribables( taskTypes.selectedTaskTypes() ).newLinks();
       }
 
       public LinksValue possibletasktypes()
       {
-         SelectedTaskTypes.Data selectedLabels = context.role(SelectedTaskTypes.Data.class);
-         TaskTypes.Data taskTypes = context.role( OrganizationEntity.class);
-         return new LinksBuilder(module.valueBuilderFactory()).command( "addtasktype" ).addDescribables(selectedLabels.possibleTaskTypes( taskTypes.taskTypes() )).newLinks();
+         final SelectedTaskTypes.Data selectedLabels = context.get(SelectedTaskTypes.Data.class);
+         TaskTypesQueries taskTypes = context.get( TaskTypesQueries.class);
+         LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() ).command( "addtasktype" );
+         taskTypes.taskTypes( builder, new Specification<TaskType>()
+         {
+            public boolean valid( TaskType instance )
+            {
+               return !selectedLabels.selectedTaskTypes().contains( instance );
+            }
+         });
+         return builder.newLinks();
       }
 
       public void addtasktype( EntityReferenceDTO taskTypeDTO )
       {
          UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
 
-         SelectedTaskTypes taskTypes = context.role(SelectedTaskTypes.class);
+         SelectedTaskTypes taskTypes = context.get(SelectedTaskTypes.class);
          TaskType taskType = uow.get( TaskType.class, taskTypeDTO.entity().get().identity() );
 
          taskTypes.addSelectedTaskType( taskType );
@@ -70,7 +78,7 @@ public interface SelectedTaskTypesContext
 
       public SelectedTaskTypeContext context( String id )
       {
-         context.playRoles( module.unitOfWorkFactory().currentUnitOfWork().get( TaskType.class, id ));
+         context.set( module.unitOfWorkFactory().currentUnitOfWork().get( TaskType.class, id ));
          return subContext( SelectedTaskTypeContext.class );
       }
    }

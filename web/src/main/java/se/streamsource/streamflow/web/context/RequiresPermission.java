@@ -15,13 +15,9 @@
 
 package se.streamsource.streamflow.web.context;
 
-import org.qi4j.api.constraint.Constraint;
-import org.qi4j.api.constraint.ConstraintDeclaration;
-import org.qi4j.api.constraint.Constraints;
-import se.streamsource.dci.context.InteractionConstraint;
-import se.streamsource.dci.context.InteractionConstraintDeclaration;
-import se.streamsource.dci.context.InteractionContext;
-import se.streamsource.streamflow.web.application.security.StreamFlowPrincipal;
+import se.streamsource.dci.api.InteractionConstraint;
+import se.streamsource.dci.api.InteractionConstraintDeclaration;
+import se.streamsource.dci.api.Context;
 import se.streamsource.streamflow.web.domain.interaction.security.Authorization;
 
 import javax.security.auth.Subject;
@@ -42,11 +38,11 @@ public @interface RequiresPermission
    class RequiresPermissionConstraint
       implements InteractionConstraint<RequiresPermission>
    {
-      public boolean isValid( RequiresPermission requiresPermission, InteractionContext context )
+      public boolean isValid( RequiresPermission requiresPermission, Context context )
       {
-         Authorization policy = context.role( Authorization.class );
+         Authorization policy = context.get( Authorization.class );
 
-         Iterator<Principal> principalIterator = context.role( Subject.class ).getPrincipals( Principal.class ).iterator();
+         Iterator<Principal> principalIterator = context.get( Subject.class ).getPrincipals( Principal.class ).iterator();
          if (principalIterator.hasNext())
          {
             Principal principal = principalIterator.next();

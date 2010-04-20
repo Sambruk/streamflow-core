@@ -16,10 +16,10 @@
 package se.streamsource.streamflow.web.context.access.organizations;
 
 import org.qi4j.api.mixin.Mixins;
-import se.streamsource.dci.context.Context;
-import se.streamsource.dci.context.ContextMixin;
-import se.streamsource.dci.context.IndexContext;
-import se.streamsource.dci.context.SubContexts;
+import se.streamsource.dci.api.IndexInteraction;
+import se.streamsource.dci.api.Interactions;
+import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.SubContexts;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.web.domain.entity.organization.AccessPointEntity;
@@ -31,15 +31,15 @@ import se.streamsource.streamflow.web.domain.structure.organization.AccessPoints
  */
 @Mixins(AccessPointsContext.Mixin.class)
 public interface AccessPointsContext
-   extends SubContexts<AccessPointContext>, IndexContext<LinksValue>, Context
+   extends SubContexts<AccessPointContext>, IndexInteraction<LinksValue>, Interactions
 {
    abstract class Mixin
-      extends ContextMixin
+      extends InteractionsMixin
       implements AccessPointsContext
    {
       public LinksValue index()
       {
-         AccessPoints.Data data = context.role( AccessPoints.Data.class );
+         AccessPoints.Data data = context.get( AccessPoints.Data.class );
 
          LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
 
@@ -50,13 +50,13 @@ public interface AccessPointsContext
 
       public AccessPointContext context( String id )
       {
-         AccessPoints.Data data = context.role( AccessPoints.Data.class );
+         AccessPoints.Data data = context.get( AccessPoints.Data.class );
          for (AccessPoint accessPoint : data.accessPoints())
          {
             AccessPointEntity entity = (AccessPointEntity) accessPoint;
             if ( entity.identity().get().equals( id ) )
             {
-               context.playRoles( accessPoint );
+               context.set( accessPoint );
             }
          }
          return subContext( AccessPointContext.class);

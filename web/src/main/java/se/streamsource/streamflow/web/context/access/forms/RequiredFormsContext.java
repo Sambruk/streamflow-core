@@ -17,15 +17,13 @@ package se.streamsource.streamflow.web.context.access.forms;
 
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWork;
-import se.streamsource.dci.context.Context;
-import se.streamsource.dci.context.ContextMixin;
-import se.streamsource.dci.context.IndexContext;
+import se.streamsource.dci.api.IndexInteraction;
+import se.streamsource.dci.api.Interactions;
+import se.streamsource.dci.api.InteractionsMixin;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
-import se.streamsource.streamflow.web.domain.entity.task.TaskEntity;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
-import se.streamsource.streamflow.web.domain.structure.form.Forms;
 import se.streamsource.streamflow.web.domain.structure.form.SelectedForms;
 import se.streamsource.streamflow.web.domain.structure.task.Task;
 import se.streamsource.streamflow.web.domain.structure.tasktype.TypedTask;
@@ -35,19 +33,19 @@ import se.streamsource.streamflow.web.domain.structure.tasktype.TypedTask;
  */
 @Mixins(RequiredFormsContext.Mixin.class)
 public interface RequiredFormsContext
-   extends Context, IndexContext<LinksValue>
+   extends Interactions, IndexInteraction<LinksValue>
 {
    // commands
    void createformdraft( EntityReferenceDTO form );
 
 
    abstract class Mixin
-      extends ContextMixin
+      extends InteractionsMixin
       implements RequiredFormsContext
    {
       public LinksValue index()
       {
-         TypedTask.Data typedTask = context.role( TypedTask.Data.class );
+         TypedTask.Data typedTask = context.get( TypedTask.Data.class );
 
          SelectedForms.Data forms = (SelectedForms.Data) typedTask.taskType().get();
 
@@ -64,7 +62,7 @@ public interface RequiredFormsContext
          UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
          Form form = uow.get( Form.class, formReference.entity().get().identity() );
 
-         Task task = context.role( Task.class );
+         Task task = context.get( Task.class );
          task.createFormSubmission( form );
       }
    }

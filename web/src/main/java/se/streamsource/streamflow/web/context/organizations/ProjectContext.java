@@ -16,14 +16,15 @@
 package se.streamsource.streamflow.web.context.organizations;
 
 import org.qi4j.api.mixin.Mixins;
+import se.streamsource.dci.api.InteractionsMixin;
 import se.streamsource.streamflow.web.context.organizations.forms.FormsContext;
+import se.streamsource.streamflow.web.context.structure.labels.LabelsContext;
 import se.streamsource.streamflow.web.context.structure.labels.SelectedLabelsContext;
 import se.streamsource.streamflow.web.domain.structure.organization.Projects;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
-import se.streamsource.dci.context.Context;
-import se.streamsource.dci.context.ContextMixin;
-import se.streamsource.dci.context.DeleteContext;
-import se.streamsource.dci.context.SubContext;
+import se.streamsource.dci.api.Interactions;
+import se.streamsource.dci.api.DeleteInteraction;
+import se.streamsource.dci.api.SubContext;
 import se.streamsource.streamflow.web.context.structure.DescribableContext;
 
 /**
@@ -31,9 +32,9 @@ import se.streamsource.streamflow.web.context.structure.DescribableContext;
  */
 @Mixins(ProjectContext.Mixin.class)
 public interface ProjectContext
-   extends DeleteContext,
+   extends DeleteInteraction,
       DescribableContext,
-      Context
+      Interactions
 {
    @SubContext
    MembersContext members();
@@ -42,19 +43,25 @@ public interface ProjectContext
    FormsContext forms();
 
    @SubContext
+   TaskTypesContext tasktypes();
+
+   @SubContext
+   public LabelsContext labels();
+
+   @SubContext
    SelectedLabelsContext selectedlabels();
 
    @SubContext
    SelectedTaskTypesContext selectedtasktypes();
 
    abstract class Mixin
-      extends ContextMixin
+      extends InteractionsMixin
       implements ProjectContext
    {
       public void delete()
       {
-         Projects projects = context.role(Projects.class);
-         Project project = context.role(Project.class);
+         Projects projects = context.get(Projects.class);
+         Project project = context.get(Project.class);
 
          projects.removeProject( project );
       }
@@ -67,6 +74,16 @@ public interface ProjectContext
       public FormsContext forms()
       {
          return subContext( FormsContext.class );
+      }
+
+      public TaskTypesContext tasktypes()
+      {
+         return subContext( TaskTypesContext.class );
+      }
+
+      public LabelsContext labels()
+      {
+         return subContext(LabelsContext.class);
       }
 
       public SelectedLabelsContext selectedlabels()

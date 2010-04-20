@@ -28,6 +28,7 @@ import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.web.domain.structure.form.Form;
 
 /**
  * JAVADOC
@@ -38,7 +39,11 @@ public interface TaskTypes
    // Commands
    TaskType createTaskType( String name );
 
+   void addTaskType(TaskType taskType);
+
    boolean removeTaskType( TaskType taskType );
+
+   void moveTaskType( TaskType taskType, TaskTypes toTaskTypes );
 
    // Queries
    Query<SelectedTaskTypes> usages( TaskType taskType );
@@ -71,17 +76,39 @@ public interface TaskTypes
       public TaskType createTaskType( String name )
       {
          TaskType taskType = createdTaskType( DomainEvent.CREATE, idGen.generate( Identity.class ) );
+         addedTaskType(DomainEvent.CREATE, taskType);
          taskType.changeDescription( name );
 
          return taskType;
       }
 
+      public void addTaskType( TaskType taskType )
+      {
+         addedTaskType(DomainEvent.CREATE, taskType);
+      }
+
+      public void moveTaskType( TaskType taskType, TaskTypes toTaskTypes )
+      {
+         toTaskTypes.addTaskType(taskType);
+
+         removedTaskType( DomainEvent.CREATE, taskType);
+      }
+
       public TaskType createdTaskType( DomainEvent event, String id )
       {
          TaskType taskType = uowf.currentUnitOfWork().newEntity( TaskType.class, id );
-         taskTypes().add( taskType );
 
          return taskType;
+      }
+
+      public void addedTaskType( DomainEvent event, TaskType taskType )
+      {
+         taskTypes().add( taskType );
+      }
+
+      public void removedTaskType( DomainEvent event, TaskType taskType )
+      {
+         taskTypes().remove( taskType );
       }
 
       public Query<SelectedTaskTypes> usages( TaskType taskType )

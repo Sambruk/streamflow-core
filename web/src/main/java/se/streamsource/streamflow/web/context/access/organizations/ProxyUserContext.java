@@ -16,10 +16,10 @@
 package se.streamsource.streamflow.web.context.access.organizations;
 
 import org.qi4j.api.mixin.Mixins;
-import se.streamsource.dci.context.Context;
-import se.streamsource.dci.context.ContextMixin;
-import se.streamsource.dci.context.IndexContext;
-import se.streamsource.dci.context.SubContexts;
+import se.streamsource.dci.api.Interactions;
+import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.IndexInteraction;
+import se.streamsource.dci.api.SubContexts;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.domain.structure.Describable;
@@ -35,21 +35,21 @@ import se.streamsource.streamflow.web.domain.structure.organization.AccessPoint;
  */
 @Mixins(ProxyUserContext.Mixin.class)
 public interface ProxyUserContext
-   extends SubContexts<CaseContext>, Context, IndexContext<LinksValue>
+   extends SubContexts<CaseContext>, Interactions, IndexInteraction<LinksValue>
 {
    // command
    void createcase( StringValue description );
 
 
    abstract class Mixin
-      extends ContextMixin
+      extends InteractionsMixin
       implements ProxyUserContext
    {
 
       public LinksValue index()
       {
-         InboxQueries inboxQueries = context.role( InboxQueries.class );
-         Describable describable = context.role( Describable.class );
+         InboxQueries inboxQueries = context.get( InboxQueries.class );
+         Describable describable = context.get( Describable.class );
 
          TitledLinksBuilder linksBuilder = new TitledLinksBuilder( module.valueBuilderFactory() );
 
@@ -61,8 +61,8 @@ public interface ProxyUserContext
 
       public void createcase( StringValue description )
       {
-         Inbox inbox = context.role( Inbox.class );
-         AccessPoint.Data data = context.role( AccessPoint.Data.class );
+         Inbox inbox = context.get( Inbox.class );
+         AccessPoint.Data data = context.get( AccessPoint.Data.class );
          TaskEntity taskEntity = inbox.createTask();
          taskEntity.changeDescription( description.string().get() );
          taskEntity.changeTaskType( data.taskType().get() );
@@ -76,7 +76,7 @@ public interface ProxyUserContext
       {
          TaskEntity taskEntity = module.unitOfWorkFactory().currentUnitOfWork().get( TaskEntity.class, id );
 
-         context.playRoles( taskEntity );
+         context.set( taskEntity );
          return subContext( CaseContext.class );
       }
    }

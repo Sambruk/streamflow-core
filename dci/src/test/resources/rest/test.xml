@@ -180,7 +180,7 @@
             <dt>
                 <b>All Superinterfaces:</b>
             </dt>
-            <dd>org.qi4j.api.composite.Composite, se.streamsource.dci.context.Context,<a
+            <dd>org.qi4j.api.composite.Composite, se.streamsource.dci.context.Interactions,<a
                     href="http://java.sun.com/j2se/1.5.0/docs/api/java/io/Serializable.html" shape="rect"
                     title="class or interface in java.io">Serializable</a>, org.qi4j.api.composite.TransientComposite
             </dd>
@@ -208,7 +208,7 @@
             <b>RootContext</b>
         </pre>
         <dl>
-            <dt>extends se.streamsource.dci.context.Context</dt>
+            <dt>extends se.streamsource.dci.api.Interactions</dt>
         </dl>
 
 
@@ -345,11 +345,11 @@
                 </tr>
             </table>
              
-            <a name="methods_inherited_from_class_se.streamsource.dci.context.Context" shape="rect"/>
+            <a name="methods_inherited_from_class_se.streamsource.dci.api.Interactions" shape="rect"/>
             <table border="1" cellpadding="3" cellspacing="0" summary="" width="100%">
                 <tr bgcolor="#EEEEFF" class="TableSubHeadingColor">
                     <th align="left" colspan="1" rowspan="1">
-                        <b>Methods inherited from interface se.streamsource.dci.context.Context</b>
+                        <b>Methods inherited from interface se.streamsource.dci.api.Interactions</b>
                     </th>
                 </tr>
                 <tr bgcolor="white" class="TableRowColor">

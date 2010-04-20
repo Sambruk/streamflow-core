@@ -20,6 +20,7 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
+import se.streamsource.dci.api.InteractionsMixin;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.dci.value.LinksValue;
@@ -35,9 +36,8 @@ import se.streamsource.streamflow.web.domain.structure.organization.RolePolicy;
 import se.streamsource.streamflow.web.domain.structure.role.Role;
 import se.streamsource.streamflow.web.domain.structure.role.Roles;
 import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
-import se.streamsource.dci.context.Context;
-import se.streamsource.dci.context.ContextMixin;
-import se.streamsource.dci.context.SubContexts;
+import se.streamsource.dci.api.Interactions;
+import se.streamsource.dci.api.SubContexts;
 
 import static org.qi4j.api.query.QueryExpressions.orderBy;
 import static org.qi4j.api.query.QueryExpressions.templateFor;
@@ -47,7 +47,7 @@ import static org.qi4j.api.query.QueryExpressions.templateFor;
  */
 @Mixins(AdministratorsContext.Mixin.class)
 public interface AdministratorsContext
-   extends SubContexts<AdministratorContext>, Context
+   extends SubContexts<AdministratorContext>, Interactions
 {
    public LinksValue administrators();
 
@@ -56,7 +56,7 @@ public interface AdministratorsContext
    public LinksValue possiblegroups( StringValue query );
 
    abstract class Mixin
-      extends ContextMixin
+      extends InteractionsMixin
       implements AdministratorsContext
    {
       @Structure
@@ -64,9 +64,9 @@ public interface AdministratorsContext
 
       public LinksValue administrators()
       {
-         RolePolicy policy = context.role(RolePolicy.class );
+         RolePolicy policy = context.get(RolePolicy.class );
 
-         OwningOrganization org = context.role(OwningOrganization.class);
+         OwningOrganization org = context.get(OwningOrganization.class);
          Roles organization = org.organization().get();
          Role adminRole = organization.getAdministratorRole();
 
@@ -77,7 +77,7 @@ public interface AdministratorsContext
       {
          UnitOfWork unitOfWork = module.unitOfWorkFactory().currentUnitOfWork();
          Participant participant = unitOfWork.get( Participant.class, participantId.entity().get().identity() );
-         RolePolicy role = context.role( RolePolicy.class );
+         RolePolicy role = context.get( RolePolicy.class );
 
          OwningOrganization org = ((OwningOrganization)role);
          OrganizationEntity organization = (OrganizationEntity) org.organization().get();
@@ -88,9 +88,9 @@ public interface AdministratorsContext
 
       public LinksValue possibleusers( StringValue query )
       {
-         OrganizationQueries organization = context.role(OrganizationQueries.class);
+         OrganizationQueries organization = context.get(OrganizationQueries.class);
 
-         Role adminRole = context.role( Roles.class).getAdministratorRole();
+         Role adminRole = context.get( Roles.class).getAdministratorRole();
 
          Query<UserEntity> users = organization.findUsersByUsername( query.string().get() ).newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
          users = users.orderBy( orderBy( templateFor( UserAuthentication.Data.class ).userName() ) );
@@ -98,7 +98,7 @@ public interface AdministratorsContext
          LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
          linksBuilder.command("addadministrator");
 
-         RolePolicy policy = context.role(RolePolicy.class);
+         RolePolicy policy = context.get(RolePolicy.class);
 
          for (UserEntity user : users)
          {
@@ -114,17 +114,17 @@ public interface AdministratorsContext
 
       public LinksValue possiblegroups( StringValue query )
       {
-         OrganizationQueries organization = context.role(OrganizationQueries.class);
+         OrganizationQueries organization = context.get(OrganizationQueries.class);
 
          Query<GroupEntity> groups = organization.findGroupsByName( query.string().get() ).newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
          groups.orderBy( orderBy( templateFor( Describable.Data.class ).description() ) );
 
-         Role adminRole = context.role( Roles.class).getAdministratorRole();
+         Role adminRole = context.get( Roles.class).getAdministratorRole();
 
          LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
          linksBuilder.command("addadministrator");
 
-         RolePolicy policy = context.role(RolePolicy.class);
+         RolePolicy policy = context.get(RolePolicy.class);
 
          for (GroupEntity grp : groups)
          {
@@ -140,9 +140,9 @@ public interface AdministratorsContext
       public AdministratorContext context( String id )
       {
          Participant participant = module.unitOfWorkFactory().currentUnitOfWork().get( Participant.class, id );
-         context.playRoles( participant, Participant.class);
+         context.set( participant, Participant.class);
 
-         if(!context.role( RolePolicy.class ).hasRoles( participant ))
+         if(!context.get( RolePolicy.class ).hasRoles( participant ))
          {
             throw new IllegalArgumentException(id+" is not an administrator");
          }

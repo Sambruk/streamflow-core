@@ -28,6 +28,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
+import se.streamsource.dci.api.Interactions;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
@@ -36,9 +37,8 @@ import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.MemoryEventStoreService;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionEventAdapter;
 import se.streamsource.streamflow.web.context.RootContext;
-import se.streamsource.dci.context.Context;
-import se.streamsource.dci.context.InteractionContext;
-import se.streamsource.dci.context.SubContexts;
+import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.SubContexts;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -54,7 +54,7 @@ public class GenericSteps
 {
    EventCollector eventCollector;
 
-   InteractionContext context = new InteractionContext();
+   Context context = new Context();
 
    Object current;
 
@@ -138,11 +138,11 @@ public class GenericSteps
       eventCollector.events().clear();;
    }
 
-   // Context steps -------------------------------------------------
+   // Interactions steps -------------------------------------------------
    @Given("language $lang")
    public void givenLanguage( String lang )
    {
-      context.playRoles( new Locale(lang) );
+      context.set( new Locale(lang) );
    }
 
    @Given("root context")
@@ -161,14 +161,14 @@ public class GenericSteps
       } else
       {
          Method contextMethod = current.getClass().getMethod( name );
-         current = (Context) contextMethod.invoke( current );
+         current = (Interactions) contextMethod.invoke( current );
       }
    }
 
    @Given("previous context")
    public void givenPreviousContext()
    {
-      current = (Context) previous;
+      current = (Interactions) previous;
    }
 
    @Given("context for link nr $index")

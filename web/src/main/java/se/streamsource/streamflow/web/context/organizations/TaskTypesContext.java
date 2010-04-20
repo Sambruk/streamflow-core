@@ -18,27 +18,27 @@ package se.streamsource.streamflow.web.context.organizations;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
+import se.streamsource.dci.api.Interactions;
+import se.streamsource.dci.api.InteractionsMixin;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.web.domain.structure.tasktype.TaskType;
 import se.streamsource.streamflow.web.domain.structure.tasktype.TaskTypes;
-import se.streamsource.dci.context.Context;
-import se.streamsource.dci.context.ContextMixin;
-import se.streamsource.dci.context.IndexContext;
-import se.streamsource.dci.context.SubContexts;
+import se.streamsource.dci.api.IndexInteraction;
+import se.streamsource.dci.api.SubContexts;
 
 /**
  * JAVADOC
  */
 @Mixins(TaskTypesContext.Mixin.class)
 public interface TaskTypesContext
-   extends SubContexts<TaskTypeContext>, IndexContext<LinksValue>, Context
+   extends SubContexts<TaskTypeContext>, IndexInteraction<LinksValue>, Interactions
 {
    public void createtasktype( StringValue name );
 
    abstract class Mixin
-      extends ContextMixin
+      extends InteractionsMixin
       implements TaskTypesContext
    {
       @Structure
@@ -46,19 +46,19 @@ public interface TaskTypesContext
 
       public LinksValue index()
       {
-         TaskTypes.Data taskTypes = context.role(TaskTypes.Data.class);
+         TaskTypes.Data taskTypes = context.get(TaskTypes.Data.class);
          return new LinksBuilder(module.valueBuilderFactory()).rel( "tasktype" ).addDescribables( taskTypes.taskTypes()).newLinks();
       }
 
       public void createtasktype( StringValue name )
       {
-         TaskTypes taskTypes = context.role(TaskTypes.class);
+         TaskTypes taskTypes = context.get(TaskTypes.class);
          taskTypes.createTaskType( name.string().get() );
       }
 
       public TaskTypeContext context( String id )
       {
-         context.playRoles( module.unitOfWorkFactory().currentUnitOfWork().get( TaskType.class, id ));
+         context.set( module.unitOfWorkFactory().currentUnitOfWork().get( TaskType.class, id ));
 
          return subContext( TaskTypeContext.class );
       }

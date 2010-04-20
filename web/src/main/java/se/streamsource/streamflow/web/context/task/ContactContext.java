@@ -19,22 +19,22 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
+import se.streamsource.dci.api.DeleteInteraction;
+import se.streamsource.dci.api.Interactions;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.domain.contact.ContactAddressValue;
 import se.streamsource.streamflow.domain.contact.ContactEmailValue;
 import se.streamsource.streamflow.domain.contact.ContactPhoneValue;
 import se.streamsource.streamflow.domain.contact.ContactValue;
 import se.streamsource.streamflow.web.domain.structure.task.Contacts;
-import se.streamsource.dci.context.Context;
-import se.streamsource.dci.context.ContextMixin;
-import se.streamsource.dci.context.DeleteContext;
+import se.streamsource.dci.api.InteractionsMixin;
 
 /**
  * JAVADOC
  */
 @Mixins(ContactContext.Mixin.class)
 public interface ContactContext
-   extends DeleteContext, Context
+   extends DeleteInteraction, Interactions
 {
    public void changename( StringValue name );
    public void changenote( StringValue note );
@@ -45,7 +45,7 @@ public interface ContactContext
    public void changeemailaddress( ContactEmailValue emailValue );
 
    abstract class Mixin
-      extends ContextMixin
+      extends InteractionsMixin
       implements ContactContext
    {
       @Structure
@@ -53,17 +53,17 @@ public interface ContactContext
 
       public void delete()
       {
-         Contacts contacts = context.role(Contacts.class);
-         Integer index = context.role(Integer.class);
+         Contacts contacts = context.get(Contacts.class);
+         Integer index = context.get(Integer.class);
 
          contacts.deleteContact( index );
       }
 
       public void changename( StringValue name )
       {
-         Contacts contacts = context.role(Contacts.class);
-         Integer index = context.role(Integer.class);
-         ContactValue contact = context.role(ContactValue.class);
+         Contacts contacts = context.get(Contacts.class);
+         Integer index = context.get(Integer.class);
+         ContactValue contact = context.get(ContactValue.class);
 
          ValueBuilder<ContactValue> builder = contact.buildWith();
          builder.prototype().name().set( name.string().get() );
@@ -72,9 +72,9 @@ public interface ContactContext
 
       public void changenote( StringValue note )
       {
-         Contacts contacts = context.role(Contacts.class);
-         Integer index = context.role(Integer.class);
-         ContactValue contact = context.role(ContactValue.class);
+         Contacts contacts = context.get(Contacts.class);
+         Integer index = context.get(Integer.class);
+         ContactValue contact = context.get(ContactValue.class);
 
          ValueBuilder<ContactValue> builder = contact.buildWith();
          builder.prototype().note().set( note.string().get() );
@@ -83,9 +83,9 @@ public interface ContactContext
 
       public void changecontactid( StringValue contactId )
       {
-         Contacts contacts = context.role(Contacts.class);
-         Integer index = context.role(Integer.class);
-         ContactValue contact = context.role(ContactValue.class);
+         Contacts contacts = context.get(Contacts.class);
+         Integer index = context.get(Integer.class);
+         ContactValue contact = context.get(ContactValue.class);
 
          ValueBuilder<ContactValue> builder = contact.buildWith();
          builder.prototype().contactId().set( contactId.string().get() );
@@ -94,9 +94,9 @@ public interface ContactContext
 
       public void changecompany( StringValue company )
       {
-         Contacts contacts = context.role(Contacts.class);
-         Integer index = context.role(Integer.class);
-         ContactValue contact = context.role(ContactValue.class);
+         Contacts contacts = context.get(Contacts.class);
+         Integer index = context.get(Integer.class);
+         ContactValue contact = context.get(ContactValue.class);
 
          ValueBuilder<ContactValue> builder = contact.buildWith();
          builder.prototype().company().set( company.string().get() );
@@ -105,9 +105,9 @@ public interface ContactContext
 
       public void changephonenumber( ContactPhoneValue phoneValue )
       {
-         Contacts contacts = context.role(Contacts.class);
-         Integer index = context.role(Integer.class);
-         ContactValue contact = context.role(ContactValue.class);
+         Contacts contacts = context.get(Contacts.class);
+         Integer index = context.get(Integer.class);
+         ContactValue contact = context.get(ContactValue.class);
 
          ValueBuilder<ContactValue> builder = contact.buildWith();
 
@@ -127,9 +127,9 @@ public interface ContactContext
 
       public void changeaddress( ContactAddressValue addressValue )
       {
-         Contacts contacts = context.role(Contacts.class);
-         Integer index = context.role(Integer.class);
-         ContactValue contact = context.role(ContactValue.class);
+         Contacts contacts = context.get(Contacts.class);
+         Integer index = context.get(Integer.class);
+         ContactValue contact = context.get(ContactValue.class);
 
          ValueBuilder<ContactValue> builder = contact.buildWith();
 
@@ -149,9 +149,9 @@ public interface ContactContext
 
       public void changeemailaddress( ContactEmailValue emailValue )
       {
-         Contacts contacts = context.role(Contacts.class);
-         Integer index = context.role(Integer.class);
-         ContactValue contact = context.role(ContactValue.class);
+         Contacts contacts = context.get(Contacts.class);
+         Integer index = context.get(Integer.class);
+         ContactValue contact = context.get(ContactValue.class);
 
          ValueBuilder<ContactValue> builder = contact.buildWith();
 

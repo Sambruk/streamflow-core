@@ -18,27 +18,27 @@ package se.streamsource.streamflow.web.context.structure.labels;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
+import se.streamsource.dci.api.Interactions;
+import se.streamsource.dci.api.InteractionsMixin;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.label.Labels;
-import se.streamsource.dci.context.Context;
-import se.streamsource.dci.context.ContextMixin;
-import se.streamsource.dci.context.SubContexts;
+import se.streamsource.dci.api.SubContexts;
 
 /**
  * JAVADOC
  */
 @Mixins(LabelsContext.Mixin.class)
 public interface LabelsContext
-   extends Context, SubContexts<LabelContext>
+   extends Interactions, SubContexts<LabelContext>
 {
    LinksValue labels();
    void createlabel( StringValue name );
 
    abstract class Mixin
-      extends ContextMixin
+      extends InteractionsMixin
       implements LabelsContext
    {
       @Structure
@@ -46,19 +46,19 @@ public interface LabelsContext
 
       public LinksValue labels()
       {
-         return new LinksBuilder(module.valueBuilderFactory()).rel( "label" ).addDescribables( context.role(Labels.class).getLabels()).newLinks();
+         return new LinksBuilder(module.valueBuilderFactory()).rel( "label" ).addDescribables( context.get(Labels.class).getLabels()).newLinks();
       }
 
       public void createlabel( StringValue name )
       {
-         Labels labels = context.role(Labels.class);
+         Labels labels = context.get(Labels.class);
 
          labels.createLabel( name.string().get() );
       }
 
       public LabelContext context( String id )
       {
-         context.playRoles(module.unitOfWorkFactory().currentUnitOfWork().get( Label.class, id ));
+         context.set(module.unitOfWorkFactory().currentUnitOfWork().get( Label.class, id ));
 
          return subContext( LabelContext.class );
       }

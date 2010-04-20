@@ -16,9 +16,9 @@
 package se.streamsource.streamflow.web.context.users.workspace;
 
 import org.qi4j.api.mixin.Mixins;
-import se.streamsource.dci.context.Context;
-import se.streamsource.dci.context.ContextMixin;
-import se.streamsource.dci.context.SubContext;
+import se.streamsource.dci.api.Interactions;
+import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.SubContext;
 import se.streamsource.streamflow.web.context.gtd.AssignmentsContext;
 import se.streamsource.streamflow.web.context.gtd.DelegationsContext;
 import se.streamsource.streamflow.web.context.gtd.InboxContext;
@@ -29,7 +29,7 @@ import se.streamsource.streamflow.web.context.gtd.WaitingForContext;
  */
 @Mixins(WorkspaceProjectContext.Mixin.class)
 public interface WorkspaceProjectContext
-   extends Context
+   extends Interactions
 {
    @SubContext
    InboxContext inbox();
@@ -44,7 +44,7 @@ public interface WorkspaceProjectContext
    WaitingForContext waitingfor();
 
    abstract class Mixin
-      extends ContextMixin
+      extends InteractionsMixin
       implements WorkspaceProjectContext
    {
       public InboxContext inbox()

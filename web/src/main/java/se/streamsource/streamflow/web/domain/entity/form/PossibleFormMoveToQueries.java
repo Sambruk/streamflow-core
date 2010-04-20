@@ -32,7 +32,7 @@ import se.streamsource.streamflow.web.domain.structure.form.SelectedForms;
 @Mixins(PossibleFormMoveToQueries.Mixin.class)
 public interface PossibleFormMoveToQueries
 {
-   public void possibleMoveTo( LinksBuilder builder);
+   public void possibleMoveFormTo( LinksBuilder builder);
 
    abstract class Mixin
          implements PossibleFormMoveToQueries
@@ -40,7 +40,7 @@ public interface PossibleFormMoveToQueries
       @Structure
       Module module;
 
-      public void possibleMoveTo( LinksBuilder builder)
+      public void possibleMoveFormTo( LinksBuilder builder)
       {
          Query<Forms.Data> forms = module.queryBuilderFactory().newQueryBuilder( Forms.Data.class ).newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
 

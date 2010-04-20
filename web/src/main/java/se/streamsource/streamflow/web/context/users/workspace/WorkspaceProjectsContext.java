@@ -22,21 +22,21 @@ import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.web.domain.entity.user.ProjectQueries;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
-import se.streamsource.dci.context.Context;
-import se.streamsource.dci.context.ContextMixin;
-import se.streamsource.dci.context.SubContexts;
+import se.streamsource.dci.api.Interactions;
+import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.SubContexts;
 
 /**
  * JAVADOC
  */
 @Mixins(WorkspaceProjectsContext.Mixin.class)
 public interface WorkspaceProjectsContext
-   extends SubContexts<WorkspaceProjectContext>, Context
+   extends SubContexts<WorkspaceProjectContext>, Interactions
 {
    LinksValue projects();
 
    abstract class Mixin
-      extends ContextMixin
+      extends InteractionsMixin
       implements WorkspaceProjectsContext, SubContexts<WorkspaceProjectContext>
    {
       @Structure
@@ -45,14 +45,14 @@ public interface WorkspaceProjectsContext
       public LinksValue projects()
       {
          LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
-         ProjectQueries projectQueries = context.role( ProjectQueries.class);
+         ProjectQueries projectQueries = context.get( ProjectQueries.class);
          return linksBuilder.addDescribables( projectQueries.allProjects()).newLinks();
       }
 
       public WorkspaceProjectContext context( String id )
       {
          Project project = module.unitOfWorkFactory().currentUnitOfWork().get( Project.class, id );
-         context.playRoles( project, Project.class );
+         context.set( project);
 
          return subContext( WorkspaceProjectContext.class );
       }

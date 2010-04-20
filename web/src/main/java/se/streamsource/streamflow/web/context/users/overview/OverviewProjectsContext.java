@@ -18,25 +18,25 @@ package se.streamsource.streamflow.web.context.users.overview;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
+import se.streamsource.dci.api.Interactions;
+import se.streamsource.dci.api.InteractionsMixin;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
 import se.streamsource.streamflow.web.domain.entity.user.ProjectQueries;
-import se.streamsource.dci.context.Context;
-import se.streamsource.dci.context.ContextMixin;
-import se.streamsource.dci.context.SubContexts;
+import se.streamsource.dci.api.SubContexts;
 
 /**
  * JAVADOC
  */
 @Mixins(OverviewProjectsContext.Mixin.class)
 public interface OverviewProjectsContext
-   extends SubContexts<OverviewProjectContext>, Context
+   extends SubContexts<OverviewProjectContext>, Interactions
 {
    public LinksValue projects();
 
    abstract class Mixin
-      extends ContextMixin
+      extends InteractionsMixin
       implements OverviewProjectsContext
    {
       @Structure
@@ -44,13 +44,13 @@ public interface OverviewProjectsContext
 
       public LinksValue projects()
       {
-         ProjectQueries participant = context.role(ProjectQueries.class);
+         ProjectQueries participant = context.get(ProjectQueries.class);
          return new LinksBuilder(module.valueBuilderFactory()).addDescribables( participant.allProjects() ).newLinks();
       }
 
       public OverviewProjectContext context( String id )
       {
-         context.playRoles( module.unitOfWorkFactory().currentUnitOfWork().get( ProjectEntity.class, id ));
+         context.set( module.unitOfWorkFactory().currentUnitOfWork().get( ProjectEntity.class, id ));
          return subContext( OverviewProjectContext.class );
       }
    }

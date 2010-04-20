@@ -19,10 +19,10 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.dci.context.Context;
-import se.streamsource.dci.context.ContextMixin;
-import se.streamsource.dci.context.IndexContext;
-import se.streamsource.dci.context.SubContext;
+import se.streamsource.dci.api.IndexInteraction;
+import se.streamsource.dci.api.Interactions;
+import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.SubContext;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.resource.task.ProxyUserTaskDTO;
@@ -40,7 +40,7 @@ import se.streamsource.streamflow.web.domain.structure.task.Task;
  */
 @Mixins(CaseContext.Mixin.class)
 public interface CaseContext
-      extends IndexContext<ProxyUserTaskDTO>, Context
+      extends IndexInteraction<ProxyUserTaskDTO>, Interactions
 {
    // commands
    void changedescription( StringValue newDescription );
@@ -56,7 +56,7 @@ public interface CaseContext
    FormSubmissionsContext formdrafts();
 
    abstract class Mixin
-         extends ContextMixin
+         extends InteractionsMixin
          implements CaseContext
    {
       @Structure
@@ -64,11 +64,11 @@ public interface CaseContext
 
       public ProxyUserTaskDTO index()
       {
-         Task task = context.role( Task.class );
+         Task task = context.get( Task.class );
 
          ValueBuilder<ProxyUserTaskDTO> builder = vbf.newValueBuilder( ProxyUserTaskDTO.class );
          builder.prototype().description().set( task.getDescription() );
-         AccessPoint.Data accessPoint = context.role( AccessPoint.Data.class );
+         AccessPoint.Data accessPoint = context.get( AccessPoint.Data.class );
 
          builder.prototype().project().set( accessPoint.project().get().getDescription() );
          builder.prototype().taskType().set( accessPoint.taskType().get().getDescription() );
@@ -83,14 +83,14 @@ public interface CaseContext
 
       public void changedescription( StringValue newDescription )
       {
-         Describable describable = context.role( Describable.class );
+         Describable describable = context.get( Describable.class );
          describable.changeDescription( newDescription.string().get() );
       }
 
       public void sendtofunction()
       {
-         TaskEntity task = context.role(TaskEntity.class);
-         ProjectEntity project = (ProjectEntity) context.role( AccessPoint.Data.class ).project().get();
+         TaskEntity task = context.get(TaskEntity.class);
+         ProjectEntity project = (ProjectEntity) context.get( AccessPoint.Data.class ).project().get();
 
          task.unassign();
          task.sendTo( project );

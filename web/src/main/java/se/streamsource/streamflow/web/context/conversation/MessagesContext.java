@@ -18,10 +18,10 @@ package se.streamsource.streamflow.web.context.conversation;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.value.ValueBuilder;
-import se.streamsource.dci.context.Context;
-import se.streamsource.dci.context.ContextMixin;
-import se.streamsource.dci.context.IndexContext;
-import se.streamsource.dci.context.SubContexts;
+import se.streamsource.dci.api.Interactions;
+import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.IndexInteraction;
+import se.streamsource.dci.api.SubContexts;
 import se.streamsource.dci.value.*;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.domain.contact.Contactable;
@@ -38,19 +38,19 @@ import se.streamsource.streamflow.web.domain.structure.conversation.Messages;
  */
 @Mixins(MessagesContext.Mixin.class)
 public interface MessagesContext
-      extends SubContexts<MessageContext>, IndexContext<LinksValue>, Context
+      extends SubContexts<MessageContext>, IndexInteraction<LinksValue>, Interactions
 {
    public void addmessage( StringValue message );
 
    abstract class Mixin
-         extends ContextMixin
+         extends InteractionsMixin
          implements MessagesContext
    {
       public LinksValue index()
       {
          LinksBuilder links = new LinksBuilder( module.valueBuilderFactory() );
          ValueBuilder<MessageDTO> builder = module.valueBuilderFactory().newValueBuilder( MessageDTO.class );
-         ConversationEntity conversation = context.role( ConversationEntity.class );
+         ConversationEntity conversation = context.get( ConversationEntity.class );
 
          for (Message message : conversation.messages())
          {
@@ -71,14 +71,14 @@ public interface MessagesContext
 
       public void addmessage( StringValue message )
       {
-         Messages messages = context.role( Messages.class );
-         messages.createMessage( message.string().get(), context.role( ConversationParticipant.class ) );
+         Messages messages = context.get( Messages.class );
+         messages.createMessage( message.string().get(), context.get( ConversationParticipant.class ) );
       }
 
 
       public MessageContext context( String id )
       {
-         context.playRoles( module.unitOfWorkFactory().currentUnitOfWork().get( Message.class, id ) );
+         context.set( module.unitOfWorkFactory().currentUnitOfWork().get( Message.class, id ) );
          return subContext( MessageContext.class );
       }
    }

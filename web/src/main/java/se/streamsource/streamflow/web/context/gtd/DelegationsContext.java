@@ -19,12 +19,12 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
 import org.restlet.data.Reference;
+import se.streamsource.dci.api.Interactions;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.web.context.task.TasksContext;
 import se.streamsource.streamflow.web.domain.entity.gtd.DelegationsQueries;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Delegatable;
-import se.streamsource.dci.context.Context;
-import se.streamsource.dci.context.ContextMixin;
+import se.streamsource.dci.api.InteractionsMixin;
 
 import static org.qi4j.api.query.QueryExpressions.orderBy;
 import static org.qi4j.api.query.QueryExpressions.templateFor;
@@ -34,21 +34,21 @@ import static org.qi4j.api.query.QueryExpressions.templateFor;
  */
 @Mixins(DelegationsContext.Mixin.class)
 public interface DelegationsContext
-   extends Context
+   extends Interactions
 {
    LinksValue tasks();
 
    abstract class Mixin
-      extends ContextMixin
+      extends InteractionsMixin
       implements DelegationsContext
    {
       public LinksValue tasks( )
       {
-         DelegationsQueries delegations = context.role( DelegationsQueries.class);
+         DelegationsQueries delegations = context.get( DelegationsQueries.class);
          QueryBuilder<Delegatable> builder = delegations.delegations();
          Query query = builder.newQuery( module.unitOfWorkFactory().currentUnitOfWork() ).orderBy( orderBy( templateFor( Delegatable.Data.class ).delegatedOn() ) );
 
-         return TasksContext.Mixin.buildTaskList( query, module, context.role( Reference.class).getBaseRef().getPath() );
+         return TasksContext.Mixin.buildTaskList( query, module, context.get( Reference.class).getBaseRef().getPath() );
       }
    }
 }

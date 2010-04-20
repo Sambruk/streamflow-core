@@ -33,7 +33,7 @@ import org.restlet.representation.Variant;
 import org.restlet.representation.WriterRepresentation;
 import org.restlet.resource.ResourceException;
 import org.restlet.service.MetadataService;
-import se.streamsource.dci.context.InteractionContext;
+import se.streamsource.dci.api.Context;
 import se.streamsource.dci.restlet.server.velocity.ValueCompositeContext;
 import se.streamsource.dci.value.LinksValue;
 
@@ -80,7 +80,7 @@ public class DefaultResponseWriterFactory
       valueHtmlTemplate = velocity.getTemplate( "rest/template/value.htm" );
    }
 
-   public ResponseWriter createWriter( List<String> segments, Class resultType, InteractionContext context, Variant variant )
+   public ResponseWriter createWriter( List<String> segments, Class resultType, Context context, Variant variant )
          throws Exception
    {
       if (Representation.class.isAssignableFrom( resultType ))
@@ -177,13 +177,13 @@ public class DefaultResponseWriterFactory
    private class VelocityResponseWriter implements ResponseWriter
    {
       private Template template;
-      private InteractionContext interactionContext;
+      private Context context;
       private Variant variant;
 
-      public VelocityResponseWriter( Template template, InteractionContext interactionContext, Variant variant )
+      public VelocityResponseWriter( Template template, Context context, Variant variant )
       {
          this.template = template;
-         this.interactionContext = interactionContext;
+         this.context = context;
          this.variant = variant;
       }
 
@@ -197,7 +197,7 @@ public class DefaultResponseWriterFactory
                VelocityContext context = new VelocityContext();
                context.put( "request", request );
                context.put( "response", response );
-               context.put( "context", interactionContext );
+               context.put( "context", VelocityResponseWriter.this.context );
 
                Object contextResult = result;
 

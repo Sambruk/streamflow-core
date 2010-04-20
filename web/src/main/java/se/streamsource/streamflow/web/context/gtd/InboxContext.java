@@ -27,8 +27,8 @@ import se.streamsource.streamflow.web.domain.entity.gtd.Inbox;
 import se.streamsource.streamflow.web.domain.entity.gtd.InboxQueries;
 import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
 import se.streamsource.streamflow.web.domain.structure.task.Task;
-import se.streamsource.dci.context.Context;
-import se.streamsource.dci.context.ContextMixin;
+import se.streamsource.dci.api.Interactions;
+import se.streamsource.dci.api.InteractionsMixin;
 
 import static org.qi4j.api.query.QueryExpressions.orderBy;
 import static org.qi4j.api.query.QueryExpressions.templateFor;
@@ -38,14 +38,14 @@ import static org.qi4j.api.query.QueryExpressions.templateFor;
  */
 @Mixins(InboxContext.Mixin.class)
 public interface InboxContext
-   extends Context
+   extends Interactions
 {
    LinksValue tasks();
 
    void createtask();
 
    abstract class Mixin
-      extends ContextMixin
+      extends InteractionsMixin
       implements InboxContext
    {
       @Structure
@@ -53,17 +53,17 @@ public interface InboxContext
 
       public LinksValue tasks( )
       {
-         InboxQueries inbox = context.role( InboxQueries.class);
+         InboxQueries inbox = context.get( InboxQueries.class);
 
          QueryBuilder<Task> builder = inbox.inbox();
          Query<Task> query = builder.newQuery( module.unitOfWorkFactory().currentUnitOfWork() ).orderBy( orderBy( templateFor( CreatedOn.class ).createdOn() ) );
          
-         return TasksContext.Mixin.buildTaskList(query, module, context.role( Reference.class).getBaseRef().getPath());
+         return TasksContext.Mixin.buildTaskList(query, module, context.get( Reference.class).getBaseRef().getPath());
       }
 
       public void createtask()
       {
-         Inbox inbox = context.role( Inbox.class );
+         Inbox inbox = context.get( Inbox.class );
          inbox.createTask();
       }
    }

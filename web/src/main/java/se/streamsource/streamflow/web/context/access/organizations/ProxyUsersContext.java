@@ -16,8 +16,8 @@
 package se.streamsource.streamflow.web.context.access.organizations;
 
 import org.qi4j.api.mixin.Mixins;
-import se.streamsource.dci.context.Context;
-import se.streamsource.dci.context.ContextMixin;
+import se.streamsource.dci.api.Interactions;
+import se.streamsource.dci.api.InteractionsMixin;
 import se.streamsource.streamflow.resource.user.NewProxyUserCommand;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 
@@ -26,18 +26,18 @@ import se.streamsource.streamflow.web.domain.structure.organization.Organization
  */
 @Mixins(ProxyUsersContext.Mixin.class)
 public interface ProxyUsersContext
-   extends Context
+   extends Interactions
 {
    // commands
    void createproxyuser( NewProxyUserCommand proxyUser );
 
    abstract class Mixin
-      extends ContextMixin
+      extends InteractionsMixin
       implements ProxyUsersContext
    {
       public void createproxyuser( NewProxyUserCommand proxyUser )
       {
-         Organization organization = context.role( Organization.class );
+         Organization organization = context.get( Organization.class );
          organization.createProxyUser( proxyUser.name().get(), proxyUser.username().get(), proxyUser.password().get() );
       }
    }

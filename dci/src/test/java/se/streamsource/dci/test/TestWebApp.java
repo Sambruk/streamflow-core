@@ -15,6 +15,9 @@
 
 package se.streamsource.dci.test;
 
+import org.apache.log4j.Category;
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.PatternLayout;
 import org.restlet.Component;
 import org.restlet.data.Protocol;
 import org.slf4j.bridge.SLF4JBridgeHandler;
@@ -38,6 +41,8 @@ public class TestWebApp
    {
       // Install SL4J Bridge. This will eventually delegate to log4j for logging
       SLF4JBridgeHandler.install();
+
+      org.apache.log4j.Logger.getRootLogger().addAppender( new ConsoleAppender(new PatternLayout("%c{0} %n%m")) );
 
       component = new Component();
       component.getServers().add( Protocol.HTTP, 8080 );

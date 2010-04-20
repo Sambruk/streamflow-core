@@ -22,6 +22,7 @@ import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilder;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.client.StreamFlowResources;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
@@ -33,6 +34,8 @@ import se.streamsource.streamflow.client.ui.ConfirmationDialog;
 import se.streamsource.streamflow.client.ui.NameDialog;
 import se.streamsource.streamflow.client.ui.OptionsAction;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.ui.administration.label.SelectionDialog;
+import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FormModel;
 
 import javax.swing.ActionMap;
 import javax.swing.JButton;
@@ -61,7 +64,10 @@ public class TaskTypesView
    @Uses
    Iterable<ConfirmationDialog> confirmationDialog;
 
-   public JList projectList;
+   @Uses
+   ObjectBuilder<SelectionDialog> possibleMoveToDialogs;
+
+   public JList taskTypesList;
 
    public TaskTypesView( @Service ApplicationContext context, @Uses TaskTypesModel model )
    {
@@ -73,13 +79,14 @@ public class TaskTypesView
 
       JPopupMenu options = new JPopupMenu();
       options.add( am.get( "rename" ) );
+      options.add( am.get( "move" ) );
       options.add( am.get( "showUsages" ) );
       options.add( am.get( "remove" ) );
 
       JScrollPane scrollPane = new JScrollPane();
-      projectList = new JList( new EventListModel<LinkValue>( new SortedList<LinkValue>(model.getTaskTypeList(), new LinkComparator()) ) );
-      projectList.setCellRenderer( new LinkListCellRenderer() );
-      scrollPane.setViewportView( projectList );
+      taskTypesList = new JList( new EventListModel<LinkValue>( new SortedList<LinkValue>(model.getTaskTypeList(), new LinkComparator()) ) );
+      taskTypesList.setCellRenderer( new LinkListCellRenderer() );
+      scrollPane.setViewportView( taskTypesList );
       add( scrollPane, BorderLayout.CENTER );
 
       JPanel toolbar = new JPanel();
@@ -87,7 +94,7 @@ public class TaskTypesView
       toolbar.add( new JButton( new OptionsAction(options) ) );
       add( toolbar, BorderLayout.SOUTH );
 
-      projectList.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "remove" ), am.get("rename"), am.get("showUsages") ) );
+      taskTypesList.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "remove" ), am.get("rename"), am.get("showUsages") ) );
    }
 
    @Action
@@ -111,7 +118,7 @@ public class TaskTypesView
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamFlowResources.confirmation ) );
       if (dialog.isConfirmed())
       {
-         LinkValue selected = (LinkValue) projectList.getSelectedValue();
+         LinkValue selected = (LinkValue) taskTypesList.getSelectedValue();
          model.removeTaskType( selected.id().get() );
          model.refresh();
       }
@@ -125,7 +132,7 @@ public class TaskTypesView
 
       if (dialog.name() != null)
       {
-         LinkValue item = (LinkValue) projectList.getSelectedValue();
+         LinkValue item = (LinkValue) taskTypesList.getSelectedValue();
          model.getTaskTypeModel( item.id().get() ).changeDescription( dialog.name() );
          model.refresh();
       }
@@ -134,7 +141,7 @@ public class TaskTypesView
    @Action
    public void showUsages()
    {
-      LinkValue item = (LinkValue) projectList.getSelectedValue();
+      LinkValue item = (LinkValue) taskTypesList.getSelectedValue();
       EventList<LinkValue> usageList = model.getTaskTypeModel( item.id().get() ).usages();
 
       JList list = new JList();
@@ -146,9 +153,28 @@ public class TaskTypesView
       usageList.dispose();
    }
 
-   public JList getProjectList()
+   @Action
+   public void move()
    {
-      return projectList;
+      LinkValue selected = (LinkValue) taskTypesList.getSelectedValue();
+      TaskTypeModel taskTypeModel = model.getTaskTypeModel( selected.id().get() );
+      SelectionDialog dialog = possibleMoveToDialogs.use(taskTypeModel.getPossibleMoveTo()).newInstance();
+
+      dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.choose_move_to ) );
+
+      if (dialog.getSelectedLinks() != null)
+      {
+         for (LinkValue linkValue : dialog.getSelectedLinks())
+         {
+            taskTypeModel.moveTaskType( linkValue );
+            model.refresh();
+         }
+      }
+   }
+
+   public JList getTaskTypesList()
+   {
+      return taskTypesList;
    }
 
 }

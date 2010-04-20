@@ -18,6 +18,7 @@ package se.streamsource.streamflow.web.context.organizations.forms;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
+import se.streamsource.dci.api.InteractionsMixin;
 import se.streamsource.streamflow.domain.form.CommentFieldValue;
 import se.streamsource.streamflow.domain.form.CreateFieldDTO;
 import se.streamsource.streamflow.domain.form.DateFieldValue;
@@ -30,34 +31,33 @@ import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.web.domain.entity.form.FieldEntity;
 import se.streamsource.streamflow.web.domain.structure.form.Fields;
-import se.streamsource.dci.context.Context;
-import se.streamsource.dci.context.ContextMixin;
-import se.streamsource.dci.context.SubContexts;
+import se.streamsource.dci.api.Interactions;
+import se.streamsource.dci.api.SubContexts;
 
 /**
  * JAVADOC
  */
 @Mixins(FormFieldsContext.Mixin.class)
 public interface FormFieldsContext
-   extends SubContexts<FormFieldContext>, Context
+   extends SubContexts<FormFieldContext>, Interactions
 {
    public LinksValue fields();
    public void add( CreateFieldDTO createFieldDTO );
 
    abstract class Mixin
-      extends ContextMixin
+      extends InteractionsMixin
       implements FormFieldsContext
    {
       public LinksValue fields()
       {
-         Fields.Data fields = context.role(Fields.Data.class);
+         Fields.Data fields = context.get(Fields.Data.class);
 
          return new LinksBuilder( module.valueBuilderFactory() ).rel( "field" ).addDescribables( fields.fields() ).newLinks();
       }
 
       public void add( CreateFieldDTO createFieldDTO )
       {
-         Fields fields = context.role(Fields.class);
+         Fields fields = context.get(Fields.class);
 
          fields.createField( createFieldDTO.name().get(), getFieldValue( createFieldDTO.fieldType().get() ) );
       }
@@ -96,8 +96,8 @@ public interface FormFieldsContext
       public FormFieldContext context( String id )
       {
          FieldEntity field = module.unitOfWorkFactory().currentUnitOfWork().get( FieldEntity.class, id );
-         context.playRoles( field );
-         context.playRoles( field.fieldValue().get() );
+         context.set( field );
+         context.set( field.fieldValue().get() );
          return subContext( FormFieldContext.class );
       }
    }

@@ -20,15 +20,13 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.dci.context.ContextMixin;
-import se.streamsource.dci.context.DeleteContext;
-import se.streamsource.dci.context.InteractionConstraints;
+import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.DeleteInteraction;
 import se.streamsource.streamflow.domain.interaction.gtd.States;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.domain.interaction.gtd.Actions;
 import se.streamsource.streamflow.domain.structure.Removable;
-import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.web.domain.entity.task.PossibleActions;
 import se.streamsource.streamflow.web.domain.entity.task.TaskEntity;
@@ -60,7 +58,7 @@ import static se.streamsource.streamflow.domain.interaction.gtd.States.*;
  */
 @Mixins(TaskActionsContext.Mixin.class)
 public interface TaskActionsContext
-      extends DeleteContext // , InteractionConstraints
+      extends DeleteInteraction // , InteractionConstraints
 {
    // List possible actions
    public Actions actions();
@@ -129,7 +127,7 @@ public interface TaskActionsContext
    public void delete();
 
    abstract class Mixin
-         extends ContextMixin
+         extends InteractionsMixin
          implements TaskActionsContext
    {
       @Structure
@@ -144,8 +142,8 @@ public interface TaskActionsContext
          ValueBuilder<Actions> builder = vbf.newValueBuilder( se.streamsource.streamflow.domain.interaction.gtd.Actions.class );
          List<String> actions = builder.prototype().actions().get();
 
-         PossibleActions possibleActions = context.role( PossibleActions.class );
-         Actor actor = context.role(Actor.class);
+         PossibleActions possibleActions = context.get( PossibleActions.class );
+         Actor actor = context.get(Actor.class);
 
          possibleActions.addActions( actor, actions );
 
@@ -155,9 +153,9 @@ public interface TaskActionsContext
       public LinksValue possiblesendtoprojects()
       {
          LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() ).command( "sendto" );
-         List<Project> projects = context.role( TaskTypeQueries.class ).possibleProjects();
-         Ownable ownable = context.role(Ownable.class);
-         TaskType taskType = context.role( TypedTask.Data.class).taskType().get();
+         List<Project> projects = context.get( TaskTypeQueries.class ).possibleProjects();
+         Ownable ownable = context.get(Ownable.class);
+         TaskType taskType = context.get( TypedTask.Data.class).taskType().get();
          for (Project project : projects)
          {
             if (!ownable.isOwnedBy( (Owner) project ))
@@ -171,10 +169,10 @@ public interface TaskActionsContext
 
       public LinksValue possiblesendtousers()
       {
-         List<User> users = context.role( TaskTypeQueries.class ).possibleUsers();
+         List<User> users = context.get( TaskTypeQueries.class ).possibleUsers();
 
          LinksBuilder links = new LinksBuilder(module.valueBuilderFactory()).command( "sendto" );
-         Ownable ownable = context.role(Ownable.class);
+         Ownable ownable = context.get(Ownable.class);
 
          for (User user : users)
          {
@@ -191,9 +189,9 @@ public interface TaskActionsContext
       public LinksValue possibledelegateprojects()
       {
          LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() ).command( "delegate" );
-         List<Project> projects = context.role( TaskTypeQueries.class ).possibleProjects();
-         TaskType taskType = context.role( TypedTask.Data.class).taskType().get();
-         Ownable ownable = context.role(Ownable.class);
+         List<Project> projects = context.get( TaskTypeQueries.class ).possibleProjects();
+         TaskType taskType = context.get( TypedTask.Data.class).taskType().get();
+         Ownable ownable = context.get(Ownable.class);
          for (Project project : projects)
          {
             if (!ownable.isOwnedBy( (Owner) project ))
@@ -207,11 +205,11 @@ public interface TaskActionsContext
 
       public LinksValue possibledelegateusers()
       {
-         List<User> users = context.role( TaskTypeQueries.class ).possibleUsers();
+         List<User> users = context.get( TaskTypeQueries.class ).possibleUsers();
 
          LinksBuilder links = new LinksBuilder(module.valueBuilderFactory()).command( "delegate" );
 
-         Ownable ownable = context.role(Ownable.class);
+         Ownable ownable = context.get(Ownable.class);
          for (User user : users)
          {
             if (!ownable.isOwnedBy( (Owner) user ))
@@ -227,11 +225,11 @@ public interface TaskActionsContext
       // Commands
       public void accept()
       {
-         Assignable assignable = context.role( Assignable.class );
-         Ownable ownable = context.role( Ownable.class );
-         Delegatable.Data delegatable = context.role( Delegatable.Data.class );
+         Assignable assignable = context.get( Assignable.class );
+         Ownable ownable = context.get( Ownable.class );
+         Delegatable.Data delegatable = context.get( Delegatable.Data.class );
 
-         Actor actor = context.role(Actor.class);
+         Actor actor = context.get(Actor.class);
 
          if (!assignable.isAssigned())
          {
@@ -244,28 +242,23 @@ public interface TaskActionsContext
 
       public void assign()
       {
-         TaskEntity task = context.role(TaskEntity.class);
+         Assignable assignable = context.get(Assignable.class);
 
-         Assignee assignee = context.role(Actor.class);
+         Assignee assignee = context.get(Actor.class);
 
-         if (!task.isAssigned())
+         if (!assignable.isAssigned())
          {
-            task.assignTo( assignee );
+            assignable.assignTo( assignee );
          }
-
-         /*if ( task.isDelegated() )
-         {
-            task.sendTo( (Owner) task.delegatedTo().get() );
-         }*/
       }
 
       public void complete()
       {
-         TaskEntity task = context.role(TaskEntity.class);
+         TaskEntity task = context.get(TaskEntity.class);
 
          Owner owner = task.owner().get();
 
-         Actor actor = context.role(Actor.class);
+         Actor actor = context.get(Actor.class);
 
          if (!task.isAssigned())
          {
@@ -284,19 +277,19 @@ public interface TaskActionsContext
 
       public void done()
       {
-         TaskEntity task = context.role(TaskEntity.class);
+         TaskEntity task = context.get(TaskEntity.class);
 
          task.done();
       }
 
       public void onhold()
       {
-         context.role(Status.class).onHold();
+         context.get(Status.class).onHold();
       }
 
       public void sendto( EntityReferenceDTO entity )
       {
-         TaskEntity task = context.role(TaskEntity.class);
+         TaskEntity task = context.get(TaskEntity.class);
 
          Owner toOwner = uowf.currentUnitOfWork().get( Owner.class, entity.entity().get().identity() );
 
@@ -307,13 +300,13 @@ public interface TaskActionsContext
 
       public void delegate( EntityReferenceDTO entity )
       {
-         TaskEntity task = context.role(TaskEntity.class);
+         TaskEntity task = context.get(TaskEntity.class);
 
          Delegatee to = uowf.currentUnitOfWork().get( Delegatee.class, entity.entity().get().identity() );
 
          Owner owner = task.owner().get();
 
-         Actor actor = context.role(Actor.class);
+         Actor actor = context.get(Actor.class);
 
          if (task.isAssigned())
             task.unassign();
@@ -323,9 +316,9 @@ public interface TaskActionsContext
 
       public void drop()
       {
-         TaskEntity task = context.role(TaskEntity.class);
+         TaskEntity task = context.get(TaskEntity.class);
 
-         Actor actor = context.role(Actor.class);
+         Actor actor = context.get(Actor.class);
 
          if (!task.isAssigned())
          {
@@ -337,38 +330,38 @@ public interface TaskActionsContext
 
       public void reactivate()
       {
-         Status task = context.role(TaskEntity.class);
+         Status task = context.get(TaskEntity.class);
          task.reactivate();
       }
 
       public void redo()
       {
-         Status task = context.role(TaskEntity.class);
+         Status task = context.get(TaskEntity.class);
          task.redo();
       }
 
       public void reject()
       {
-         TaskEntity task = context.role(TaskEntity.class);
+         TaskEntity task = context.get(TaskEntity.class);
 
          task.rejectDelegation();
       }
 
       public void resume()
       {
-         context.role(Status.class).resume();
+         context.get(Status.class).resume();
       }
 
       public void unassign()
       {
-         Assignable task = context.role(TaskEntity.class);
+         Assignable task = context.get(TaskEntity.class);
 
          task.unassign();
       }
 
       public void delete()
       {
-         Removable task = context.role(TaskEntity.class);
+         Removable task = context.get(TaskEntity.class);
          task.deleteEntity();
       }
    }

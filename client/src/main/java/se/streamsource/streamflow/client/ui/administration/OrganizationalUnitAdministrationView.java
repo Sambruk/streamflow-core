@@ -18,9 +18,11 @@ package se.streamsource.streamflow.client.ui.administration;
 import org.qi4j.api.injection.scope.Uses;
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 import se.streamsource.streamflow.client.ui.administration.groups.GroupAdminView;
+import se.streamsource.streamflow.client.ui.administration.label.LabelsView;
 import se.streamsource.streamflow.client.ui.administration.label.SelectedLabelsView;
 import se.streamsource.streamflow.client.ui.administration.policy.AdministratorsView;
 import se.streamsource.streamflow.client.ui.administration.projects.ProjectAdminView;
+import se.streamsource.streamflow.client.ui.administration.tasktypes.TaskTypesAdminView;
 import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FormsAdminView;
 
 import javax.swing.*;
@@ -34,12 +36,16 @@ public class OrganizationalUnitAdministrationView
    public OrganizationalUnitAdministrationView( @Uses ProjectAdminView projectAdmin,
                                                 @Uses GroupAdminView groupAdmin,
                                                 @Uses FormsAdminView formsView,
-                                                @Uses SelectedLabelsView selectedLabels, 
+                                                @Uses TaskTypesAdminView taskTypesView,
+                                                @Uses LabelsView labels,
+                                                @Uses SelectedLabelsView selectedLabels,
                                                 @Uses AdministratorsView administratorsAdmin )
    {
       addTab( text( AdministrationResources.projects_tab ), projectAdmin );
       addTab( text( AdministrationResources.groups_tab ), groupAdmin );
       addTab( text( AdministrationResources.forms_tab ), formsView );
+      addTab( text( AdministrationResources.tasktypes_tab ), taskTypesView );
+      addTab( text( AdministrationResources.labels_tab ), labels );
       addTab( text( AdministrationResources.selected_labels_tab ), selectedLabels );
       addTab( text( AdministrationResources.administrators_tab ), administratorsAdmin );
    }

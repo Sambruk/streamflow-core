@@ -16,46 +16,46 @@
 package se.streamsource.streamflow.web.context.organizations;
 
 import org.qi4j.api.mixin.Mixins;
+import se.streamsource.dci.api.InteractionsMixin;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.web.domain.structure.role.Role;
 import se.streamsource.streamflow.web.domain.structure.role.Roles;
-import se.streamsource.dci.context.Context;
-import se.streamsource.dci.context.ContextMixin;
-import se.streamsource.dci.context.SubContexts;
+import se.streamsource.dci.api.Interactions;
+import se.streamsource.dci.api.SubContexts;
 
 /**
  * JAVADOC
  */
 @Mixins(RolesContext.Mixin.class)
 public interface RolesContext
-   extends SubContexts<RoleContext>, Context
+   extends SubContexts<RoleContext>, Interactions
 {
    LinksValue roles();
    void createrole( StringValue name );
 
    abstract class Mixin
-      extends ContextMixin
+      extends InteractionsMixin
       implements RolesContext
    {
       public LinksValue roles()
       {
-         Roles.Data roles = context.role( Roles.Data.class );
+         Roles.Data roles = context.get( Roles.Data.class );
 
          return new LinksBuilder( module.valueBuilderFactory() ).rel( "role" ).addDescribables( roles.roles() ).newLinks();
       }
 
       public void createrole( StringValue name )
       {
-         Roles roles = context.role(Roles.class);
+         Roles roles = context.get(Roles.class);
 
          roles.createRole( name.string().get() );
       }
 
       public RoleContext context( String id )
       {
-         context.playRoles( module.unitOfWorkFactory().currentUnitOfWork().get( Role.class, id ));
+         context.set( module.unitOfWorkFactory().currentUnitOfWork().get( Role.class, id ));
 
          return subContext( RoleContext.class );
       }

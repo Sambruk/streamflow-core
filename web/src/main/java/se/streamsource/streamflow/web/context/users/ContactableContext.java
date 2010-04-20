@@ -19,9 +19,9 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.dci.context.Context;
-import se.streamsource.dci.context.ContextMixin;
-import se.streamsource.dci.context.IndexContext;
+import se.streamsource.dci.api.Interactions;
+import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.IndexInteraction;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.domain.contact.ContactAddressValue;
 import se.streamsource.streamflow.domain.contact.ContactEmailValue;
@@ -34,7 +34,7 @@ import se.streamsource.streamflow.domain.contact.Contactable;
  */
 @Mixins(ContactableContext.Mixin.class)
 public interface ContactableContext
-   extends IndexContext<ContactValue>, Context
+   extends IndexInteraction<ContactValue>, Interactions
 {
    public void changename( StringValue name );
    public void changenote( StringValue note );
@@ -45,7 +45,7 @@ public interface ContactableContext
    public void changeemailaddress( ContactEmailValue emailValue );
 
    abstract class Mixin
-      extends ContextMixin
+      extends InteractionsMixin
       implements ContactableContext
    {
       @Structure
@@ -53,14 +53,14 @@ public interface ContactableContext
 
       public ContactValue index()
       {
-         Contactable contactable = context.role(Contactable.class);
+         Contactable contactable = context.get(Contactable.class);
          ContactValue contact = contactable.getContact();
          return contact;
       }
 
       public void changename( StringValue name )
       {
-         Contactable contactable = context.role(Contactable.class);
+         Contactable contactable = context.get(Contactable.class);
          ContactValue contact = contactable.getContact();
 
          ValueBuilder<ContactValue> builder = contact.buildWith();
@@ -71,7 +71,7 @@ public interface ContactableContext
 
       public void changenote( StringValue note )
       {
-         Contactable contactable = context.role(Contactable.class);
+         Contactable contactable = context.get(Contactable.class);
          ContactValue contact = contactable.getContact();
 
          ValueBuilder<ContactValue> builder = contact.buildWith();
@@ -82,7 +82,7 @@ public interface ContactableContext
 
       public void changecontactid( StringValue contactId )
       {
-         Contactable contactable = context.role(Contactable.class);
+         Contactable contactable = context.get(Contactable.class);
          ContactValue contact = contactable.getContact();
 
          ValueBuilder<ContactValue> builder = contact.buildWith();
@@ -93,7 +93,7 @@ public interface ContactableContext
 
       public void changecompany( StringValue company )
       {
-         Contactable contactable = context.role(Contactable.class);
+         Contactable contactable = context.get(Contactable.class);
          ContactValue contact = contactable.getContact();
 
          ValueBuilder<ContactValue> builder = contact.buildWith();
@@ -104,7 +104,7 @@ public interface ContactableContext
 
       public void changephonenumber( ContactPhoneValue phoneValue )
       {
-         Contactable contactable = context.role(Contactable.class);
+         Contactable contactable = context.get(Contactable.class);
          ContactValue contact = contactable.getContact();
 
          ValueBuilder<ContactValue> builder = contact.buildWith();
@@ -125,7 +125,7 @@ public interface ContactableContext
 
       public void changeaddress( ContactAddressValue addressValue )
       {
-         Contactable contactable = context.role(Contactable.class);
+         Contactable contactable = context.get(Contactable.class);
          ContactValue contact = contactable.getContact();
 
          ValueBuilder<ContactValue> builder = contact.buildWith();
@@ -146,7 +146,7 @@ public interface ContactableContext
 
       public void changeemailaddress( ContactEmailValue emailValue )
       {
-         Contactable contactable = context.role(Contactable.class);
+         Contactable contactable = context.get(Contactable.class);
          ContactValue contact = contactable.getContact();
 
          ValueBuilder<ContactValue> builder = contact.buildWith();

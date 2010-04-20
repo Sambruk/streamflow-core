@@ -19,13 +19,13 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
 import org.restlet.data.Reference;
+import se.streamsource.dci.api.InteractionsMixin;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.web.context.task.TasksContext;
 import se.streamsource.streamflow.web.domain.entity.gtd.AssignmentsQueries;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
 import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
-import se.streamsource.dci.context.Context;
-import se.streamsource.dci.context.ContextMixin;
+import se.streamsource.dci.api.Interactions;
 
 import static org.qi4j.api.query.QueryExpressions.orderBy;
 import static org.qi4j.api.query.QueryExpressions.templateFor;
@@ -35,21 +35,21 @@ import static org.qi4j.api.query.QueryExpressions.templateFor;
  */
 @Mixins(OverviewProjectAssignmentsContext.Mixin.class)
 public interface OverviewProjectAssignmentsContext
-   extends Context
+   extends Interactions
 {
    public LinksValue tasks();
 
    abstract class Mixin
-      extends ContextMixin
+      extends InteractionsMixin
       implements OverviewProjectAssignmentsContext
    {
       public LinksValue tasks()
       {
-         AssignmentsQueries assignmentsQueries = context.role(AssignmentsQueries.class);
+         AssignmentsQueries assignmentsQueries = context.get(AssignmentsQueries.class);
 
          QueryBuilder<Assignable> builder = assignmentsQueries.assignments( null );
          Query query = builder.newQuery( module.unitOfWorkFactory().currentUnitOfWork() ).orderBy( orderBy( templateFor( CreatedOn.class ).createdOn() ) );
-         return TasksContext.Mixin.buildTaskList( query, module, context.role( Reference.class).getBaseRef().getPath());
+         return TasksContext.Mixin.buildTaskList( query, module, context.get( Reference.class).getBaseRef().getPath());
       }
 
    }

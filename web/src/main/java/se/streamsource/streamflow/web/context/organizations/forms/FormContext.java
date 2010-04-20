@@ -20,6 +20,8 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
+import se.streamsource.dci.api.DeleteInteraction;
+import se.streamsource.dci.api.InteractionsMixin;
 import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.domain.form.FormValue;
@@ -28,10 +30,8 @@ import se.streamsource.streamflow.web.domain.entity.form.FormEntity;
 import se.streamsource.streamflow.web.domain.entity.form.PossibleFormMoveToQueries;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
 import se.streamsource.streamflow.web.domain.structure.form.Forms;
-import se.streamsource.dci.context.Context;
-import se.streamsource.dci.context.ContextMixin;
-import se.streamsource.dci.context.DeleteContext;
-import se.streamsource.dci.context.SubContext;
+import se.streamsource.dci.api.Interactions;
+import se.streamsource.dci.api.SubContext;
 import se.streamsource.streamflow.web.context.structure.DescribableContext;
 import se.streamsource.streamflow.web.context.structure.NotableContext;
 
@@ -40,7 +40,7 @@ import se.streamsource.streamflow.web.context.structure.NotableContext;
  */
 @Mixins(FormContext.Mixin.class)
 public interface FormContext
-   extends DeleteContext, DescribableContext, NotableContext, Context
+   extends DeleteInteraction, DescribableContext, NotableContext, Interactions
 {
    FormValue form();
 
@@ -52,7 +52,7 @@ public interface FormContext
    FormPagesContext pages();
 
    abstract class Mixin
-      extends ContextMixin
+      extends InteractionsMixin
       implements FormContext
    {
       @Structure
@@ -60,7 +60,7 @@ public interface FormContext
 
       public FormValue form()
       {
-         FormEntity form = context.role(FormEntity.class);
+         FormEntity form = context.get(FormEntity.class);
 
          ValueBuilder<FormValue> builder = module.valueBuilderFactory().newValueBuilder( FormValue.class );
 
@@ -75,21 +75,21 @@ public interface FormContext
       {
          LinksBuilder builder = new LinksBuilder(module.valueBuilderFactory());
          builder.command( "move" );
-         context.role( PossibleFormMoveToQueries.class).possibleMoveTo( builder );
+         context.get( PossibleFormMoveToQueries.class).possibleMoveFormTo( builder );
          return builder.newLinks();
       }
 
       public void move(EntityValue to)
       {
          Forms toForms = module.unitOfWorkFactory().currentUnitOfWork().get( Forms.class, to.entity().get() );
-         Form form = context.role(Form.class);
-         context.role( Forms.class ).moveForm(form, toForms);
+         Form form = context.get(Form.class);
+         context.get( Forms.class ).moveForm(form, toForms);
       }
 
       public void delete()
       {
-         Form form = context.role( Form.class);
-         Forms forms = context.role(Forms.class);
+         Form form = context.get( Form.class);
+         Forms forms = context.get(Forms.class);
          forms.removeForm( form );
       }
 

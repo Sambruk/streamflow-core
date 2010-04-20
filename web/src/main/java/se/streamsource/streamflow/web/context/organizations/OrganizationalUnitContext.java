@@ -20,18 +20,19 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
+import se.streamsource.dci.api.DeleteInteraction;
+import se.streamsource.dci.api.InteractionsMixin;
 import se.streamsource.streamflow.domain.organization.MergeOrganizationalUnitException;
 import se.streamsource.streamflow.domain.organization.MoveOrganizationalUnitException;
 import se.streamsource.streamflow.domain.organization.OpenProjectExistsException;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.web.context.organizations.forms.FormsContext;
+import se.streamsource.streamflow.web.context.structure.labels.LabelsContext;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnitRefactoring;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnits;
-import se.streamsource.dci.context.Context;
-import se.streamsource.dci.context.ContextMixin;
-import se.streamsource.dci.context.DeleteContext;
-import se.streamsource.dci.context.SubContext;
+import se.streamsource.dci.api.Interactions;
+import se.streamsource.dci.api.SubContext;
 import se.streamsource.streamflow.web.context.structure.DescribableContext;
 import se.streamsource.streamflow.web.context.structure.labels.SelectedLabelsContext;
 
@@ -40,7 +41,7 @@ import se.streamsource.streamflow.web.context.structure.labels.SelectedLabelsCon
  */
 @Mixins(OrganizationalUnitContext.Mixin.class)
 public interface OrganizationalUnitContext
-   extends DescribableContext, DeleteContext, Context
+   extends DescribableContext, DeleteInteraction, Interactions
 {
    public void move( EntityReferenceDTO moveValue ) throws ResourceException;
    public void merge( EntityReferenceDTO moveValue ) throws ResourceException;
@@ -58,13 +59,19 @@ public interface OrganizationalUnitContext
    FormsContext forms();
 
    @SubContext
+   TaskTypesContext tasktypes();
+
+   @SubContext
+   LabelsContext labels();
+
+   @SubContext
    SelectedLabelsContext selectedlabels();
 
    @SubContext
    OrganizationalUnitsContext organizationalunits();
 
    abstract class Mixin
-      extends ContextMixin
+      extends InteractionsMixin
       implements OrganizationalUnitContext
    {
       @Structure
@@ -72,7 +79,7 @@ public interface OrganizationalUnitContext
 
       public void move( EntityReferenceDTO moveValue ) throws ResourceException
       {
-         OrganizationalUnitRefactoring ou = context.role(OrganizationalUnitRefactoring.class);
+         OrganizationalUnitRefactoring ou = context.get(OrganizationalUnitRefactoring.class);
          OrganizationalUnits toEntity = uowf.currentUnitOfWork().get( OrganizationalUnits.class, moveValue.entity().get().identity() );
 
          try
@@ -86,7 +93,7 @@ public interface OrganizationalUnitContext
 
       public void merge( EntityReferenceDTO moveValue ) throws ResourceException
       {
-         OrganizationalUnitRefactoring ou = context.role(OrganizationalUnitRefactoring.class);
+         OrganizationalUnitRefactoring ou = context.get(OrganizationalUnitRefactoring.class);
          OrganizationalUnit toEntity = uowf.currentUnitOfWork().get( OrganizationalUnit.class, moveValue.entity().get().identity() );
 
          try
@@ -100,7 +107,7 @@ public interface OrganizationalUnitContext
 
       public void delete() throws ResourceException
       {
-         OrganizationalUnitRefactoring ou = context.role(OrganizationalUnitRefactoring.class);
+         OrganizationalUnitRefactoring ou = context.get(OrganizationalUnitRefactoring.class);
 
          try
          {
@@ -131,6 +138,16 @@ public interface OrganizationalUnitContext
       public FormsContext forms()
       {
          return subContext( FormsContext.class );
+      }
+
+      public TaskTypesContext tasktypes()
+      {
+         return subContext( TaskTypesContext.class );
+      }
+
+      public LabelsContext labels()
+      {
+         return subContext(LabelsContext.class);
       }
 
       public SelectedLabelsContext selectedlabels()

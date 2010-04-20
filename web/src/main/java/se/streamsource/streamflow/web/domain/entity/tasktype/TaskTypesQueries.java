@@ -19,14 +19,22 @@ import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.IdentityGenerator;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
 import org.qi4j.api.query.QueryBuilderFactory;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.domain.structure.Removable;
+import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
+import se.streamsource.streamflow.web.domain.Specification;
+import se.streamsource.streamflow.web.domain.structure.form.Forms;
+import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
+import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnits;
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganizationalUnit;
+import se.streamsource.streamflow.web.domain.structure.organization.Projects;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.tasktype.SelectedTaskTypes;
 import se.streamsource.streamflow.web.domain.structure.tasktype.TaskType;
@@ -42,6 +50,10 @@ public interface TaskTypesQueries
 {
    // Queries
    QueryBuilder<Project> possibleProjects( @Optional TaskType taskType );
+
+   void taskTypes( LinksBuilder builder, Specification<TaskType> specification );
+
+   void possibleMoveTaskTypeTo( LinksBuilder builder);
 
    TaskType getTaskTypeByName( String name );
 
@@ -59,6 +71,70 @@ public interface TaskTypesQueries
 
       @Structure
       QueryBuilderFactory qbf;
+
+      @This
+      Describable describable;
+
+      @This
+      OrganizationalUnits.Data ous;
+
+      public void taskTypes( LinksBuilder builder, Specification<TaskType> specification )
+      {
+         for (TaskType taskType : taskTypes())
+         {
+            builder.addDescribable( taskType, describable );
+         }
+
+         for (OrganizationalUnit organizationalUnit : ous.organizationalUnits())
+         {
+            taskTypesforOU( builder, specification, organizationalUnit );
+         }
+      }
+
+      private void taskTypesforOU( LinksBuilder builder, Specification<TaskType> specification, OrganizationalUnit organizationalUnit )
+      {
+         {
+            TaskTypes.Data taskTypes = (TaskTypes.Data) organizationalUnit;
+            for (TaskType taskType : taskTypes.taskTypes())
+            {
+               if (specification.valid( taskType ))
+                  builder.addDescribable( taskType, organizationalUnit );
+            }
+         }
+
+         Projects.Data projects = (Projects.Data)organizationalUnit;
+         for (Project project : projects.projects())
+         {
+            TaskTypes.Data taskTypes = (TaskTypes.Data) project;
+            for (TaskType taskType : taskTypes.taskTypes())
+            {
+               if (specification.valid( taskType ))
+                  builder.addDescribable( taskType, project );
+            }
+         }
+
+         // Sub-OU's
+         for (OrganizationalUnit ou : ((OrganizationalUnits.Data)organizationalUnit).organizationalUnits())
+         {
+            taskTypesforOU( builder, specification, ou );
+         }
+      }
+
+      public void possibleMoveTaskTypeTo( LinksBuilder builder)
+      {
+         builder.addDescribable( describable );
+
+         for (OrganizationalUnit organizationalUnit : ous.organizationalUnits())
+         {
+            builder.addDescribable( organizationalUnit );
+
+            Projects.Data projects = (Projects.Data)organizationalUnit;
+            for (Project project : projects.projects())
+            {
+               builder.addDescribable( project );
+            }
+         }
+      }
 
       public TaskType getTaskTypeByName( String name )
       {

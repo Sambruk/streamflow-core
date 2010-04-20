@@ -16,8 +16,10 @@
 package se.streamsource.streamflow.client.ui.administration.projects;
 
 import org.qi4j.api.injection.scope.Uses;
+import se.streamsource.streamflow.client.ui.administration.label.LabelsModel;
 import se.streamsource.streamflow.client.ui.administration.label.SelectedLabelsModel;
 import se.streamsource.streamflow.client.ui.administration.tasktypes.SelectedTaskTypesModel;
+import se.streamsource.streamflow.client.ui.administration.tasktypes.TaskTypesModel;
 import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FormsModel;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
@@ -38,7 +40,16 @@ public class ProjectModel
 
    private
    @Uses
+   TaskTypesModel taskTypesModel;
+
+   private
+   @Uses
+   LabelsModel labelsModel;
+
+   private
+   @Uses
    SelectedLabelsModel selectedLabelsModel;
+
    private
    @Uses
    SelectedTaskTypesModel selectedTaskTypesModel;
@@ -51,6 +62,16 @@ public class ProjectModel
    public FormsModel getFormsModel()
    {
       return formsModel;
+   }
+
+   public TaskTypesModel getTaskTypesModel()
+   {
+      return taskTypesModel;
+   }
+
+   public LabelsModel getLabelsModel()
+   {
+      return labelsModel;
    }
 
    public SelectedLabelsModel getSelectedLabelsModel()
@@ -67,7 +88,9 @@ public class ProjectModel
    {
       membersModel.notifyEvent( event );
       formsModel.notifyEvent( event );
+      taskTypesModel.notifyEvent( event );
       selectedLabelsModel.notifyEvent( event );
       selectedTaskTypesModel.notifyEvent( event );
    }
+
 }

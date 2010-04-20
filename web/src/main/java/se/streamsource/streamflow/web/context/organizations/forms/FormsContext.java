@@ -16,47 +16,47 @@
 package se.streamsource.streamflow.web.context.organizations.forms;
 
 import org.qi4j.api.mixin.Mixins;
-import se.streamsource.dci.context.IndexContext;
+import se.streamsource.dci.api.IndexInteraction;
+import se.streamsource.dci.api.Interactions;
+import se.streamsource.dci.api.InteractionsMixin;
 import se.streamsource.dci.value.*;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
 import se.streamsource.streamflow.web.domain.structure.form.Forms;
-import se.streamsource.dci.context.Context;
-import se.streamsource.dci.context.ContextMixin;
-import se.streamsource.dci.context.SubContexts;
+import se.streamsource.dci.api.SubContexts;
 
 /**
  * JAVADOC
  */
 @Mixins(FormsContext.Mixin.class)
 public interface FormsContext
-   extends SubContexts<FormContext>, IndexContext<LinksValue>, Context
+   extends SubContexts<FormContext>, IndexInteraction<LinksValue>, Interactions
 {
    void createform( StringValue formName );
 
 
    abstract class Mixin
-      extends ContextMixin
+      extends InteractionsMixin
       implements FormsContext
    {
       public LinksValue index()
       {
-         Forms.Data forms = context.role(Forms.Data.class);
+         Forms.Data forms = context.get(Forms.Data.class);
 
          return new LinksBuilder( module.valueBuilderFactory() ).rel("form").addDescribables( forms.forms() ).newLinks();
       }
 
       public void createform( StringValue formName )
       {
-         Forms forms = context.role(Forms.class);
+         Forms forms = context.get(Forms.class);
          Form form = forms.createForm();
          form.changeDescription( formName.string().get() );
       }
 
       public FormContext context( String id )
       {
-         context.playRoles(module.unitOfWorkFactory().currentUnitOfWork().get( Form.class, id ));
+         context.set(module.unitOfWorkFactory().currentUnitOfWork().get( Form.class, id ));
          return subContext( FormContext.class );
       }
    }

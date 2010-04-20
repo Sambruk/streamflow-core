@@ -16,16 +16,13 @@
 package se.streamsource.streamflow.web.context.access.projects;
 
 import org.qi4j.api.mixin.Mixins;
-import se.streamsource.dci.context.Context;
-import se.streamsource.dci.context.ContextMixin;
-import se.streamsource.dci.context.IndexContext;
-import se.streamsource.dci.context.SubContexts;
+import se.streamsource.dci.api.IndexInteraction;
+import se.streamsource.dci.api.Interactions;
+import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.SubContexts;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.StringValue;
-import se.streamsource.streamflow.domain.structure.Describable;
-import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.infrastructure.application.TitledLinksBuilder;
-import se.streamsource.streamflow.web.context.structure.DescribableContext;
 import se.streamsource.streamflow.web.domain.entity.project.ProjectLabelsQueries;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
@@ -41,28 +38,28 @@ import java.util.Map;
  */
 @Mixins(LabelsContext.Mixin.class)
 public interface LabelsContext
-   extends SubContexts<LabelsContext>, IndexContext<LinksValue>, Context
+   extends SubContexts<LabelsContext>, IndexInteraction<LinksValue>, Interactions
 {
    void createaccesspoint( StringValue name );
 
    abstract class Mixin
-      extends ContextMixin
+      extends InteractionsMixin
       implements LabelsContext
    {
       public LinksValue index()
       {
-         ProjectLabelsQueries labelsQueries = context.role( ProjectLabelsQueries.class );
+         ProjectLabelsQueries labelsQueries = context.get( ProjectLabelsQueries.class );
 
          TitledLinksBuilder linksBuilder = new TitledLinksBuilder( module.valueBuilderFactory() );
 
-         Map<Label,SelectedLabels> map = labelsQueries.possibleLabels( context.role( TaskType.class ) );
-         TaskType type = context.role( TaskType.class );
+         Map<Label,SelectedLabels> map = labelsQueries.possibleLabels( context.get( TaskType.class ) );
+         TaskType type = context.get( TaskType.class );
          StringBuilder title = new StringBuilder( type.getDescription() + ": " );
          boolean firstLabel = true;
 
          try
          {
-            List<Label> labels = context.roleList( Label.class );
+            List<Label> labels = context.getAll( Label.class );
             for (Label label : map.keySet())
             {
                if ( !labels.contains( label ) )
@@ -90,17 +87,17 @@ public interface LabelsContext
 
       public void createaccesspoint( StringValue name )
       {
-         Project project = context.role( Project.class );
-         TaskType taskType = context.role( TaskType.class );
-         List<Label> labels = context.roleList( Label.class );
+         Project project = context.get( Project.class );
+         TaskType taskType = context.get( TaskType.class );
+         List<Label> labels = context.getAll( Label.class );
 
-         AccessPoints accessPoints = context.role( AccessPoints.class );
+         AccessPoints accessPoints = context.get( AccessPoints.class );
          accessPoints.createAccessPoint( name.string().get(), project, taskType, labels );
       }
 
       public LabelsContext context( String id )
       {
-         context.playRoles( module.unitOfWorkFactory().currentUnitOfWork().get( Label.class, id ) );
+         context.set( module.unitOfWorkFactory().currentUnitOfWork().get( Label.class, id ) );
 
          return subContext( LabelsContext.class);
       }

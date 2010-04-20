@@ -16,23 +16,18 @@
 package se.streamsource.streamflow.web.context.conversation;
 
 import org.qi4j.api.mixin.Mixins;
-import se.streamsource.dci.context.Context;
-import se.streamsource.dci.context.ContextMixin;
-import se.streamsource.dci.context.DeleteContext;
-import se.streamsource.streamflow.web.domain.structure.conversation.Message;
-import se.streamsource.streamflow.web.domain.structure.conversation.Messages;
-import se.streamsource.streamflow.web.domain.structure.project.Member;
-import se.streamsource.streamflow.web.domain.structure.project.Members;
+import se.streamsource.dci.api.Interactions;
+import se.streamsource.dci.api.InteractionsMixin;
 
 /**
  * JAVADOC
  */
 @Mixins(MessageContext.Mixin.class)
 public interface MessageContext
-   extends Context
+   extends Interactions
 {
    abstract class Mixin
-      extends ContextMixin
+      extends InteractionsMixin
       implements MessageContext
    {
 

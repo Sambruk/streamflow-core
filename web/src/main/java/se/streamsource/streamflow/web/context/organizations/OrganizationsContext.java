@@ -19,25 +19,25 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import se.streamsource.dci.api.Interactions;
+import se.streamsource.dci.api.InteractionsMixin;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsQueries;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
-import se.streamsource.dci.context.Context;
-import se.streamsource.dci.context.ContextMixin;
-import se.streamsource.dci.context.IndexContext;
-import se.streamsource.dci.context.SubContexts;
+import se.streamsource.dci.api.IndexInteraction;
+import se.streamsource.dci.api.SubContexts;
 
 /**
  * JAVADOC
  */
 @Mixins(OrganizationsContext.Mixin.class)
 public interface OrganizationsContext
-   extends SubContexts<OrganizationContext>, IndexContext<LinksValue>, Context
+   extends SubContexts<OrganizationContext>, IndexInteraction<LinksValue>, Interactions
 {
    abstract class Mixin
-      extends ContextMixin
+      extends InteractionsMixin
       implements OrganizationsContext
    {
       @Structure
@@ -54,7 +54,7 @@ public interface OrganizationsContext
 
       public OrganizationContext context( String id )
       {
-         context.playRoles( uowf.currentUnitOfWork().get( Organization.class, id ));
+         context.set( uowf.currentUnitOfWork().get( Organization.class, id ));
          return subContext( OrganizationContext.class );
       }
    }

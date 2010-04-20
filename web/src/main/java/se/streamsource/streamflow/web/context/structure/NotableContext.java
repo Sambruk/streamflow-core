@@ -16,9 +16,9 @@
 package se.streamsource.streamflow.web.context.structure;
 
 import org.qi4j.api.mixin.Mixins;
+import se.streamsource.dci.api.InteractionsMixin;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.domain.structure.Notable;
-import se.streamsource.dci.context.ContextMixin;
 
 /**
  * JAVADOC
@@ -29,12 +29,12 @@ public interface NotableContext
    public void changenote( StringValue noteValue );
 
    abstract class Mixin
-      extends ContextMixin
+      extends InteractionsMixin
       implements NotableContext
    {
       public void changenote( StringValue noteValue )
       {
-         Notable notable = context.role( Notable.class );
+         Notable notable = context.get( Notable.class );
          notable.changeNote( noteValue.string().get() );
       }
    }

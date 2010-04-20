@@ -18,20 +18,20 @@ package se.streamsource.streamflow.web.resource;
 import org.qi4j.api.composite.TransientBuilderFactory;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import se.streamsource.dci.context.InteractionContext;
-import se.streamsource.dci.restlet.server.RootContextFactory;
+import se.streamsource.dci.api.Context;
+import se.streamsource.dci.restlet.server.RootInteractionsFactory;
 import se.streamsource.streamflow.web.context.RootContext;
 import se.streamsource.streamflow.web.domain.structure.user.User;
 
 import javax.security.auth.Subject;
 
 /**
- * The StreamFlow root context will
- * return the class RootContext defining the
+ * The StreamFlow root interactions will
+ * return the class RootInteractions defining the
  * root of the application
  */
 public class StreamFlowRootContextFactory
-   implements RootContextFactory
+   implements RootInteractionsFactory
 {
    @Structure
    TransientBuilderFactory tbf;
@@ -39,9 +39,9 @@ public class StreamFlowRootContextFactory
    @Structure
    UnitOfWorkFactory uowf;
 
-   public Object getRoot( InteractionContext context )
+   public Object getRoot( Context context )
    {
-      context.playRoles(uowf.currentUnitOfWork().get( User.class, context.role( Subject.class ).getPrincipals().iterator().next().getName()));
+      context.set(uowf.currentUnitOfWork().get( User.class, context.get( Subject.class ).getPrincipals().iterator().next().getName()));
       
       return tbf.newTransientBuilder( RootContext.class ).use( context ).newInstance();
    }

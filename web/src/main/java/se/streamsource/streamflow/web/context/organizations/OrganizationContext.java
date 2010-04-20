@@ -18,9 +18,9 @@ package se.streamsource.streamflow.web.context.organizations;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import se.streamsource.dci.context.Context;
-import se.streamsource.dci.context.ContextMixin;
-import se.streamsource.dci.context.SubContext;
+import se.streamsource.dci.api.Interactions;
+import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.SubContext;
 import se.streamsource.streamflow.web.context.organizations.forms.FormsContext;
 import se.streamsource.streamflow.web.context.structure.DescribableContext;
 import se.streamsource.streamflow.web.context.structure.labels.LabelsContext;
@@ -31,7 +31,7 @@ import se.streamsource.streamflow.web.context.structure.labels.SelectedLabelsCon
  */
 @Mixins(OrganizationContext.Mixin.class)
 public interface OrganizationContext
-   extends DescribableContext, Context
+   extends DescribableContext, Interactions
 {
    @SubContext
    AdministratorsContext administrators();
@@ -58,7 +58,7 @@ public interface OrganizationContext
    TaskTypesContext tasktypes();
 
    abstract class Mixin
-      extends ContextMixin
+      extends InteractionsMixin
       implements OrganizationContext
    {
       @Structure

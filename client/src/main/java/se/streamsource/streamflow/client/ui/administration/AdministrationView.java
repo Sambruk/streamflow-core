@@ -139,6 +139,8 @@ public class AdministrationView
                         ouAdminModel.groupsModel(),
                         ouAdminModel.projectsModel(),
                         ouAdminModel.formsModel(),
+                        ouAdminModel.taskTypesModel(),
+                        ouAdminModel.labelsModel(),
                         ouAdminModel.selectedLabelsModel(),
                         ouAdminModel.administratorsModel(),
                         AdministrationView.this ).newInstance();

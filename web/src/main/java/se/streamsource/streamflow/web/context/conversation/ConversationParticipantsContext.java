@@ -19,10 +19,10 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import se.streamsource.dci.context.Context;
-import se.streamsource.dci.context.ContextMixin;
-import se.streamsource.dci.context.IndexContext;
-import se.streamsource.dci.context.SubContexts;
+import se.streamsource.dci.api.Interactions;
+import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.IndexInteraction;
+import se.streamsource.dci.api.SubContexts;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
@@ -39,13 +39,13 @@ import java.util.List;
  */
 @Mixins(ConversationParticipantsContext.Mixin.class)
 public interface ConversationParticipantsContext
-   extends SubContexts<ConversationParticipantContext>, IndexContext<LinksValue>, Context
+   extends SubContexts<ConversationParticipantContext>, IndexInteraction<LinksValue>, Interactions
 {
    public void addparticipant( EntityReferenceDTO participantId);
    public LinksValue possibleparticipants();
 
    abstract class Mixin
-      extends ContextMixin
+      extends InteractionsMixin
       implements ConversationParticipantsContext
    {
       @Structure
@@ -53,7 +53,7 @@ public interface ConversationParticipantsContext
 
       public LinksValue index()
       {
-         return new LinksBuilder(module.valueBuilderFactory()).rel( "participant" ).addDescribables( context.role( ConversationParticipants.Data.class ).participants()).newLinks();
+         return new LinksBuilder(module.valueBuilderFactory()).rel( "participant" ).addDescribables( context.get( ConversationParticipants.Data.class ).participants()).newLinks();
       }
 
       public void addparticipant( EntityReferenceDTO participantId)
@@ -62,16 +62,16 @@ public interface ConversationParticipantsContext
 
          ConversationParticipant participant = uow.get( ConversationParticipant.class, participantId.entity().get().identity() );
 
-         ConversationParticipants participants = context.role(ConversationParticipants.class);
+         ConversationParticipants participants = context.get(ConversationParticipants.class);
 
          participants.addParticipant( participant );
       }
 
       public LinksValue possibleparticipants()
       {
-         Ownable.Data ownable = context.role(Ownable.Data.class);
+         Ownable.Data ownable = context.get(Ownable.Data.class);
          Owner owner = ownable.owner().get();
-         List<ConversationParticipant> possibleParticipants = context.role( ConversationParticipantsQueries.class).possibleParticipants(owner);
+         List<ConversationParticipant> possibleParticipants = context.get( ConversationParticipantsQueries.class).possibleParticipants(owner);
          LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() ).command( "addparticipant" );
 
          for (ConversationParticipant possibleParticipant : possibleParticipants)
@@ -86,7 +86,7 @@ public interface ConversationParticipantsContext
 
       public ConversationParticipantContext context( String id )
       {
-         context.playRoles(uowf.currentUnitOfWork().get( ConversationParticipant.class, id ));
+         context.set(uowf.currentUnitOfWork().get( ConversationParticipant.class, id ));
          return subContext( ConversationParticipantContext.class );
       }
    }

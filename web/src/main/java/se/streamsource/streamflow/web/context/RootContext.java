@@ -16,9 +16,9 @@
 package se.streamsource.streamflow.web.context;
 
 import org.qi4j.api.mixin.Mixins;
-import se.streamsource.dci.context.Context;
-import se.streamsource.dci.context.ContextMixin;
-import se.streamsource.dci.context.SubContext;
+import se.streamsource.dci.api.Interactions;
+import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.SubContext;
 import se.streamsource.streamflow.web.context.access.SurfaceContext;
 import se.streamsource.streamflow.web.context.organizations.OrganizationsContext;
 import se.streamsource.streamflow.web.context.task.TasksContext;
@@ -33,7 +33,7 @@ import se.streamsource.streamflow.web.domain.structure.user.Users;
  */
 @Mixins(RootContext.Mixin.class)
 public interface RootContext
-   extends Context
+   extends Interactions
 {
    /**
     * Users context. Here is where you access all users, and methods to create users.
@@ -54,12 +54,12 @@ public interface RootContext
    SurfaceContext surface();
 
    abstract class Mixin
-      extends ContextMixin
+      extends InteractionsMixin
       implements RootContext
    {
       public UsersContext users()
       {
-         context.playRoles(module.unitOfWorkFactory().currentUnitOfWork().get( Users.class, UsersEntity.USERS_ID ));
+         context.set(module.unitOfWorkFactory().currentUnitOfWork().get( Users.class, UsersEntity.USERS_ID ));
          return subContext( UsersContext.class );
       }
 
@@ -70,7 +70,7 @@ public interface RootContext
 
       public OrganizationsContext organizations()
       {
-         context.playRoles(module.unitOfWorkFactory().currentUnitOfWork().get( Organizations.class, OrganizationsEntity.ORGANIZATIONS_ID ));
+         context.set(module.unitOfWorkFactory().currentUnitOfWork().get( Organizations.class, OrganizationsEntity.ORGANIZATIONS_ID ));
          return subContext( OrganizationsContext.class );
       }
 

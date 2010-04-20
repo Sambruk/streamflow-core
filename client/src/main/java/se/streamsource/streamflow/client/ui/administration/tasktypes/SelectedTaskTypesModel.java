@@ -25,6 +25,7 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.LinksValue;
+import se.streamsource.dci.value.TitledLinkValue;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
@@ -67,12 +68,15 @@ public class SelectedTaskTypesModel
       }
    }
 
-   public EventList<LinkValue> getPossibleTaskTypes()
+   public EventList<TitledLinkValue> getPossibleTaskTypes()
    {
       try
       {
-         BasicEventList<LinkValue> possibleTaskTypes = new BasicEventList<LinkValue>();
-         possibleTaskTypes.addAll( client.query( "possibletasktypes", LinksValue.class ).links().get() );
+         BasicEventList<TitledLinkValue> possibleTaskTypes = new BasicEventList<TitledLinkValue>();
+         for (LinkValue linkValue : client.query( "possibletasktypes", LinksValue.class ).links().get())
+         {
+            possibleTaskTypes.add( (TitledLinkValue) linkValue);
+         }
          return possibleTaskTypes;
       } catch (ResourceException e)
       {

@@ -9,7 +9,7 @@
 
     <!-- This POM is ONLY to initiate the modules to be built. -->
     <properties>
-        <version.qi4j-core>1.1-STREAMFLOW-9-gd562c8e</version.qi4j-core>
+        <version.qi4j-core>1.1-SNAPSHOT</version.qi4j-core>
         <version.qi4j-lib>1.1-STREAMFLOW-3-g5ede899</version.qi4j-lib>
         <version.qi4j-ext>1.1-STREAMFLOW-13-gfb68542</version.qi4j-ext>
         <version.qi4j-tools>1.0</version.qi4j-tools>

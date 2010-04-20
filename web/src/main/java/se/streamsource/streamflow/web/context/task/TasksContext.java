@@ -21,6 +21,8 @@ import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.structure.Module;
 import org.restlet.data.Reference;
+import se.streamsource.dci.api.Interactions;
+import se.streamsource.dci.api.InteractionsMixin;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.dci.value.LinksValue;
@@ -29,23 +31,19 @@ import se.streamsource.streamflow.web.domain.entity.task.TaskEntity;
 import se.streamsource.streamflow.web.domain.entity.user.SearchTaskQueries;
 import se.streamsource.streamflow.web.domain.structure.task.Task;
 import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
-import se.streamsource.dci.context.Context;
-import se.streamsource.dci.context.ContextMixin;
-import se.streamsource.dci.context.SubContexts;
-
-import javax.security.auth.Subject;
+import se.streamsource.dci.api.SubContexts;
 
 /**
  * JAVADOC
  */
 @Mixins(TasksContext.Mixin.class)
 public interface TasksContext
-   extends SubContexts<TaskContext>, Context
+   extends SubContexts<TaskContext>, Interactions
 {
    LinksValue search( StringValue query);
 
    abstract class Mixin
-      extends ContextMixin
+      extends InteractionsMixin
       implements TasksContext
    {
       public static LinksValue buildTaskList(Query<Task> query, Module module, String basePath)
@@ -63,17 +61,17 @@ public interface TasksContext
 
       public LinksValue search( StringValue query )
       {
-         SearchTaskQueries taskQueries = context.role( SearchTaskQueries.class );
-         String name = context.role( UserAuthentication.Data.class ).userName().get();
+         SearchTaskQueries taskQueries = context.get( SearchTaskQueries.class );
+         String name = context.get( UserAuthentication.Data.class ).userName().get();
          Query<Task> taskQuery = taskQueries.search( query, name );
          taskQuery.orderBy( QueryExpressions.orderBy(QueryExpressions.templateFor( Describable.Data.class ).description()) );
-         return buildTaskList( taskQuery, module, context.role(Reference.class).getBaseRef().getPath());
+         return buildTaskList( taskQuery, module, context.get(Reference.class).getBaseRef().getPath());
       }
 
       public TaskContext context( String id )
       {
          TaskEntity task = module.unitOfWorkFactory().currentUnitOfWork().get( TaskEntity.class, id );
-         context.playRoles( task, TaskEntity.class );
+         context.set( task );
 
          return subContext( TaskContext.class);
       }

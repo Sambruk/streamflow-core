@@ -18,8 +18,10 @@ package se.streamsource.streamflow.client.ui.administration.projects;
 import org.qi4j.api.injection.scope.Uses;
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.ui.administration.label.LabelsView;
 import se.streamsource.streamflow.client.ui.administration.label.SelectedLabelsView;
 import se.streamsource.streamflow.client.ui.administration.tasktypes.SelectedTaskTypesView;
+import se.streamsource.streamflow.client.ui.administration.tasktypes.TaskTypesAdminView;
 import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FormsView;
 
 import javax.swing.*;
@@ -32,6 +34,8 @@ public class ProjectView
 {
    public ProjectView( @Uses ProjectMembersView membersView,
                        @Uses FormsView formsView,
+                       @Uses TaskTypesAdminView taskTypesAdminView,
+                       @Uses LabelsView labelsView,
                        @Uses SelectedLabelsView selectedLabelsView,
                        @Uses SelectedTaskTypesView selectedTaskTypesView )
    {
@@ -39,6 +43,8 @@ public class ProjectView
 
       addTab( text(AdministrationResources.members_tab), membersView );
       addTab( text(AdministrationResources.forms_tab), formsView );
+      addTab( text(AdministrationResources.tasktypes_tab), taskTypesAdminView );
+      addTab( text(AdministrationResources.labels_tab), labelsView );
       addTab( text(AdministrationResources.selected_labels_tab), selectedLabelsView );
       addTab( text(AdministrationResources.selected_tasktypes_tab), selectedTaskTypesView );
    }

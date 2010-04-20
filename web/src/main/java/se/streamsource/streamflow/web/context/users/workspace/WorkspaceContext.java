@@ -19,9 +19,9 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
-import se.streamsource.dci.context.Context;
-import se.streamsource.dci.context.ContextMixin;
-import se.streamsource.dci.context.SubContext;
+import se.streamsource.dci.api.Interactions;
+import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.SubContext;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.web.domain.entity.gtd.AssignmentsQueries;
@@ -39,7 +39,7 @@ import se.streamsource.streamflow.web.domain.structure.user.User;
  */
 @Mixins(WorkspaceContext.Mixin.class)
 public interface WorkspaceContext
-   extends Context
+   extends Interactions
 {
    LinksValue taskcounts();
 
@@ -50,7 +50,7 @@ public interface WorkspaceContext
    WorkspaceProjectsContext projects();
 
    abstract class Mixin
-      extends ContextMixin
+      extends InteractionsMixin
       implements WorkspaceContext
    {
       @Structure
@@ -62,18 +62,18 @@ public interface WorkspaceContext
 
          UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
 
-         String user = context.role( User.class ).toString();
-         builder.addLink( context.role( InboxQueries.class ).inbox().newQuery( uow ).count()+"", "inbox" );
-         builder.addLink( context.role( AssignmentsQueries.class ).assignments( context.role( Assignee.class) ).newQuery( uow ).count()+"", "assignments" );
-         builder.addLink( context.role( DelegationsQueries.class ).delegations().newQuery( uow ).count()+"", "delegations" );
-         builder.addLink( context.role( WaitingForQueries.class ).waitingFor(context.role( Delegator.class)).newQuery( uow ).count()+"", "waitingfor" );
+         String user = context.get( User.class ).toString();
+         builder.addLink( context.get( InboxQueries.class ).inbox().newQuery( uow ).count()+"", "inbox" );
+         builder.addLink( context.get( AssignmentsQueries.class ).assignments( context.get( Assignee.class) ).newQuery( uow ).count()+"", "assignments" );
+         builder.addLink( context.get( DelegationsQueries.class ).delegations().newQuery( uow ).count()+"", "delegations" );
+         builder.addLink( context.get( WaitingForQueries.class ).waitingFor(context.get( Delegator.class)).newQuery( uow ).count()+"", "waitingfor" );
 
-         for (Project project : context.role( ProjectQueries.class ).allProjects())
+         for (Project project : context.get( ProjectQueries.class ).allProjects())
          {
             builder.addLink( ((InboxQueries)project).inbox().newQuery( uow ).count()+"", project+"/inbox" );
-            builder.addLink( ((AssignmentsQueries)project).assignments( context.role( Assignee.class) ).newQuery( uow ).count()+"", project+"/assignments" );
+            builder.addLink( ((AssignmentsQueries)project).assignments( context.get( Assignee.class) ).newQuery( uow ).count()+"", project+"/assignments" );
             builder.addLink( (( DelegationsQueries)project).delegations().newQuery( uow ).count()+"", project+"/delegations" );
-            builder.addLink( (( WaitingForQueries )project).waitingFor(context.role( Delegator.class)).newQuery( uow ).count()+"", project+"/waitingfor" );
+            builder.addLink( (( WaitingForQueries )project).waitingFor(context.get( Delegator.class)).newQuery( uow ).count()+"", project+"/waitingfor" );
          }
 
          return builder.newLinks();

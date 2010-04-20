@@ -19,7 +19,6 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
-import se.streamsource.streamflow.client.ui.administration.label.LabelsModel;
 import se.streamsource.streamflow.client.ui.administration.AdministrationView;
 import se.streamsource.dci.value.LinkValue;
 
@@ -41,7 +40,6 @@ public class TaskTypesAdminView
 
    public TaskTypesAdminView( @Uses final TaskTypesView taskTypesView,
                               @Uses final TaskTypesModel taskTypesModel,
-                              @Uses final LabelsModel labelsModel,
                               @Uses final AdministrationView administrationView)
    {
       super();
@@ -51,7 +49,7 @@ public class TaskTypesAdminView
 
       setDividerLocation( 200 );
 
-      final JList list = taskTypesView.getProjectList();
+      final JList list = taskTypesView.getTaskTypesList();
       list.addListSelectionListener( new ListSelectionListener()
       {
          public void valueChanged( ListSelectionEvent e )
@@ -64,7 +62,7 @@ public class TaskTypesAdminView
                   LinkValue taskTypeLink = (LinkValue) list.getModel().getElementAt( idx );
                   TaskTypeModel taskTypeModel = taskTypesModel.getTaskTypeModel( taskTypeLink.id().get() );
                   TaskTypeView view = obf.newObjectBuilder( TaskTypeView.class ).use(
-                        taskTypeModel.getSelectedLabelsModel(), labelsModel, taskTypeModel.getFormsModel(), taskTypeModel.getSelectedFormsModel(), administrationView, taskTypeModel ).newInstance();
+                        taskTypeModel.getSelectedLabelsModel(), taskTypeModel.getLabelsModel(), taskTypeModel.getFormsModel(), taskTypeModel.getSelectedFormsModel(), administrationView, taskTypeModel ).newInstance();
                   setRightComponent( view );
                } else
                {

@@ -16,27 +16,27 @@
 package se.streamsource.streamflow.web.context.organizations;
 
 import org.qi4j.api.mixin.Mixins;
+import se.streamsource.dci.api.Interactions;
 import se.streamsource.streamflow.web.domain.structure.tasktype.SelectedTaskTypes;
 import se.streamsource.streamflow.web.domain.structure.tasktype.TaskType;
-import se.streamsource.dci.context.Context;
-import se.streamsource.dci.context.ContextMixin;
-import se.streamsource.dci.context.DeleteContext;
+import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.DeleteInteraction;
 
 /**
  * JAVADOC
  */
 @Mixins(SelectedTaskTypeContext.Mixin.class)
 public interface SelectedTaskTypeContext
-   extends DeleteContext, Context
+   extends DeleteInteraction, Interactions
 {
    abstract class Mixin
-      extends ContextMixin
+      extends InteractionsMixin
       implements SelectedTaskTypeContext
    {
       public void delete()
       {
-         SelectedTaskTypes taskTypes = context.role(SelectedTaskTypes.class);
-         TaskType taskType = context.role(TaskType.class);
+         SelectedTaskTypes taskTypes = context.get(SelectedTaskTypes.class);
+         TaskType taskType = context.get(TaskType.class);
          taskTypes.removeSelectedTaskType( taskType );
       }      
    }

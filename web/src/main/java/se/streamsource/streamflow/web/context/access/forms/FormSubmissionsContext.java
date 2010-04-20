@@ -17,10 +17,10 @@ package se.streamsource.streamflow.web.context.access.forms;
 
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.mixin.Mixins;
-import se.streamsource.dci.context.Context;
-import se.streamsource.dci.context.ContextMixin;
-import se.streamsource.dci.context.IndexContext;
-import se.streamsource.dci.context.SubContexts;
+import se.streamsource.dci.api.IndexInteraction;
+import se.streamsource.dci.api.Interactions;
+import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.SubContexts;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.web.domain.entity.form.FormSubmissionEntity;
@@ -32,18 +32,18 @@ import se.streamsource.streamflow.web.domain.structure.form.FormSubmissions;
  */
 @Mixins(FormSubmissionsContext.Mixin.class)
 public interface FormSubmissionsContext
-   extends Context, IndexContext<LinksValue>, SubContexts<FormSubmissionContext>
+   extends Interactions, IndexInteraction<LinksValue>, SubContexts<FormSubmissionContext>
 {
 
    FormSubmissionContext context( String id );
 
    abstract class Mixin
-      extends ContextMixin
+      extends InteractionsMixin
       implements FormSubmissionsContext
    {
       public LinksValue index()
       {
-         FormSubmissions.Data formSubmissions = context.role( FormSubmissions.Data.class );
+         FormSubmissions.Data formSubmissions = context.get( FormSubmissions.Data.class );
 
          LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() );
 
@@ -57,15 +57,15 @@ public interface FormSubmissionsContext
 
       public FormSubmissionContext context( String id )
       {
-         FormSubmissions.Data formSubmissions = context.role( FormSubmissions.Data.class );
+         FormSubmissions.Data formSubmissions = context.get( FormSubmissions.Data.class );
 
          for ( FormSubmission formSubmission : formSubmissions.formSubmissions() )
          {
             FormSubmissionEntity entity = (FormSubmissionEntity) formSubmission;
             if ( entity.identity().get().equals( id ))
             {
-               context.playRoles( formSubmission );
-               context.playRoles( formSubmission.getFormSubmission() );
+               context.set( formSubmission );
+               context.set( formSubmission.getFormSubmission() );
                return subContext( FormSubmissionContext.class );
             }
          }

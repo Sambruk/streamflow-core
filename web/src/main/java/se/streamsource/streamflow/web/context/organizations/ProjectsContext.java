@@ -16,46 +16,46 @@
 package se.streamsource.streamflow.web.context.organizations;
 
 import org.qi4j.api.mixin.Mixins;
+import se.streamsource.dci.api.IndexInteraction;
+import se.streamsource.dci.api.InteractionsMixin;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.web.domain.structure.organization.Projects;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
-import se.streamsource.dci.context.Context;
-import se.streamsource.dci.context.ContextMixin;
-import se.streamsource.dci.context.IndexContext;
-import se.streamsource.dci.context.SubContexts;
+import se.streamsource.dci.api.Interactions;
+import se.streamsource.dci.api.SubContexts;
 
 /**
  * JAVADOC
  */
 @Mixins(ProjectsContext.Mixin.class)
 public interface ProjectsContext
-   extends SubContexts<ProjectContext>, IndexContext<LinksValue>, Context
+   extends SubContexts<ProjectContext>, IndexInteraction<LinksValue>, Interactions
 {
    void createproject( StringValue name );
 
    abstract class Mixin
-      extends ContextMixin
+      extends InteractionsMixin
       implements ProjectsContext
    {
       public LinksValue index()
       {
-         Projects.Data projectsState = context.role(Projects.Data.class);
+         Projects.Data projectsState = context.get(Projects.Data.class);
 
          return new LinksBuilder( module.valueBuilderFactory() ).rel( "project" ).addDescribables( projectsState.projects() ).newLinks();
       }
 
       public void createproject( StringValue name )
       {
-         Projects projects = context.role(Projects.class);
+         Projects projects = context.get(Projects.class);
 
          projects.createProject( name.string().get() );
       }
 
       public ProjectContext context( String id )
       {
-         context.playRoles(module.unitOfWorkFactory().currentUnitOfWork().get( Project.class, id));
+         context.set(module.unitOfWorkFactory().currentUnitOfWork().get( Project.class, id));
          return subContext( ProjectContext.class );
       }
    }

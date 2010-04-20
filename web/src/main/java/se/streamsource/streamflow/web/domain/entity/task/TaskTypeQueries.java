@@ -24,6 +24,9 @@ import org.qi4j.api.query.QueryBuilderFactory;
 import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
+import se.streamsource.streamflow.domain.structure.Describable;
+import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
+import se.streamsource.streamflow.web.domain.Specification;
 import se.streamsource.streamflow.web.domain.entity.tasktype.TaskTypesQueries;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
@@ -51,7 +54,7 @@ import java.util.List;
 @Mixins(TaskTypeQueries.Mixin.class)
 public interface TaskTypeQueries
 {
-   List<TaskType> taskTypes();
+   void taskTypes( LinksBuilder builder);
 
    List<Project> possibleProjects();
 
@@ -78,36 +81,31 @@ public interface TaskTypeQueries
       @This
       Assignable assignable;
 
-      public List<TaskType> taskTypes()
+      public void taskTypes( LinksBuilder builder)
       {
          Owner owner = ownable.owner().get();
          if (owner instanceof OrganizationParticipations)
          {
             OrganizationParticipations.Data orgs = (OrganizationParticipations.Data) owner;
 
-            List<TaskType> taskTypes = new ArrayList<TaskType>( );
-
             for (Organization organization : orgs.organizations())
             {
                TaskTypes.Data taskTypesList = (TaskTypes.Data) organization;
                for (TaskType taskType : taskTypesList.taskTypes())
                {
-                  taskTypes.add( taskType );
+                  builder.addDescribable( taskType, organization );
                }
             }
-
-            return taskTypes;
          } else if (owner instanceof OwningOrganizationalUnit.Data)
          {
-            List<TaskType> taskTypes = new ArrayList<TaskType>( );
-
             if (assignable.isAssigned())
             {
                // Show only task types from project
                SelectedTaskTypes.Data selectedTaskTypes = (SelectedTaskTypes.Data) owner;
+               Describable describableOwner = (Describable) owner;
                for (TaskType taskType : selectedTaskTypes.selectedTaskTypes())
                {
-                  taskTypes.add( taskType );
+                  builder.addDescribable( taskType, describableOwner );
                }
             } else
             {
@@ -115,17 +113,15 @@ public interface TaskTypeQueries
                OrganizationalUnit ou = ouOwner.organizationalUnit().get();
                Organization org = ((OwningOrganization) ou).organization().get();
 
-               TaskTypes.Data taskTypesList = (TaskTypes.Data) org;
-               for (TaskType taskType : taskTypesList.taskTypes())
+               TaskTypesQueries taskTypesQueries = (TaskTypesQueries) org;
+               taskTypesQueries.taskTypes( builder, new Specification<TaskType>()
                {
-                  taskTypes.add( taskType );
-               }
+                  public boolean valid( TaskType instance )
+                  {
+                     return true;
+                  }
+               });
             }
-
-            return taskTypes;
-         } else
-         {
-            return Collections.emptyList();
          }
       }
 

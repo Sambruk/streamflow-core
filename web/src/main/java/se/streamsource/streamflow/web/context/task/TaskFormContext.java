@@ -22,33 +22,33 @@ import se.streamsource.streamflow.domain.form.FieldValueDTO;
 import se.streamsource.streamflow.domain.form.FormSubmissionValue;
 import se.streamsource.streamflow.domain.form.PageSubmissionValue;
 import se.streamsource.streamflow.web.domain.structure.form.FormSubmission;
-import se.streamsource.dci.context.Context;
-import se.streamsource.dci.context.ContextMixin;
+import se.streamsource.dci.api.Interactions;
+import se.streamsource.dci.api.InteractionsMixin;
 
 /**
  * JAVADOC
  */
 @Mixins(TaskFormContext.Mixin.class)
 public interface TaskFormContext
-   extends Context
+   extends Interactions
 {
    public FormSubmissionValue formsubmission();
    public void updatefield( FieldValueDTO field );
 
    abstract class Mixin
-      extends ContextMixin
+      extends InteractionsMixin
       implements TaskFormContext
    {
       public FormSubmissionValue formsubmission()
       {
-         FormSubmission formSubmission = context.role(FormSubmission.class);
+         FormSubmission formSubmission = context.get(FormSubmission.class);
 
          return formSubmission.getFormSubmission();
       }
 
       public void updatefield( FieldValueDTO field )
       {
-         FormSubmission formSubmission = context.role(FormSubmission.class);
+         FormSubmission formSubmission = context.get(FormSubmission.class);
 
          ValueBuilder<FormSubmissionValue> builder = formSubmission.getFormSubmission().buildWith();
 

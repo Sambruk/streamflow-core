@@ -31,7 +31,7 @@ import org.restlet.resource.ServerResource;
 import se.streamsource.streamflow.web.application.console.Console;
 import se.streamsource.streamflow.web.application.console.ConsoleResultValue;
 import se.streamsource.streamflow.web.application.console.ConsoleScriptValue;
-import se.streamsource.dci.infrastructure.web.TemplateUtil;
+import se.streamsource.streamflow.web.resource.admin.TemplateUtil;
 
 import java.io.IOException;
 import java.io.PrintWriter;

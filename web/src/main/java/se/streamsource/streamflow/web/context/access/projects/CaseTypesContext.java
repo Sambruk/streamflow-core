@@ -16,10 +16,10 @@
 package se.streamsource.streamflow.web.context.access.projects;
 
 import org.qi4j.api.mixin.Mixins;
-import se.streamsource.dci.context.Context;
-import se.streamsource.dci.context.ContextMixin;
-import se.streamsource.dci.context.IndexContext;
-import se.streamsource.dci.context.SubContexts;
+import se.streamsource.dci.api.IndexInteraction;
+import se.streamsource.dci.api.Interactions;
+import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.SubContexts;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.application.TitledLinksBuilder;
@@ -31,16 +31,16 @@ import se.streamsource.streamflow.web.domain.structure.tasktype.TaskType;
  */
 @Mixins(CaseTypesContext.Mixin.class)
 public interface CaseTypesContext
-   extends SubContexts<LabelsContext>, IndexContext<LinksValue>, Context
+   extends SubContexts<LabelsContext>, IndexInteraction<LinksValue>, Interactions
 {
    abstract class Mixin
-      extends ContextMixin
+      extends InteractionsMixin
       implements CaseTypesContext
    {
       public LinksValue index()
       {
-         SelectedTaskTypes.Data data = context.role( SelectedTaskTypes.Data.class );
-         Describable describable = context.role( Describable.class );
+         SelectedTaskTypes.Data data = context.get( SelectedTaskTypes.Data.class );
+         Describable describable = context.get( Describable.class );
 
          TitledLinksBuilder builder = new TitledLinksBuilder( module.valueBuilderFactory() );
 
@@ -52,7 +52,7 @@ public interface CaseTypesContext
 
       public LabelsContext context( String id )
       {
-         context.playRoles( module.unitOfWorkFactory().currentUnitOfWork().get( TaskType.class, id ) );
+         context.set( module.unitOfWorkFactory().currentUnitOfWork().get( TaskType.class, id ) );
 
          return subContext( LabelsContext.class);
       }

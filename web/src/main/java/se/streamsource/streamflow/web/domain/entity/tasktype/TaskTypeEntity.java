@@ -33,6 +33,7 @@ import se.streamsource.streamflow.web.domain.entity.form.PossibleFormsQueries;
 import se.streamsource.streamflow.web.domain.entity.label.PossibleLabelsQueries;
 import se.streamsource.streamflow.web.domain.structure.form.Forms;
 import se.streamsource.streamflow.web.domain.structure.form.SelectedForms;
+import se.streamsource.streamflow.web.domain.structure.label.Labels;
 import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
 import se.streamsource.streamflow.web.domain.structure.tasktype.SelectedTaskTypes;
 import se.streamsource.streamflow.web.domain.structure.tasktype.TaskType;
@@ -48,12 +49,12 @@ public interface TaskTypeEntity
       TaskType,
       Describable.Data,
       Notable.Data,
+      Labels.Data,
       SelectedLabels.Data,
       Forms.Data,
       SelectedForms.Data,
 
       // Queries
-      PossibleLabelsQueries,
       PossibleFormsQueries
 {
    abstract class RemovableConcern

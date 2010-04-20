@@ -19,6 +19,7 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
 import org.restlet.data.Reference;
+import se.streamsource.dci.api.InteractionsMixin;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.web.context.task.TasksContext;
 import se.streamsource.streamflow.web.domain.entity.gtd.AssignmentsQueries;
@@ -26,8 +27,7 @@ import se.streamsource.streamflow.web.domain.entity.gtd.Inbox;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
 import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
-import se.streamsource.dci.context.Context;
-import se.streamsource.dci.context.ContextMixin;
+import se.streamsource.dci.api.Interactions;
 
 import static org.qi4j.api.query.QueryExpressions.orderBy;
 import static org.qi4j.api.query.QueryExpressions.templateFor;
@@ -37,31 +37,31 @@ import static org.qi4j.api.query.QueryExpressions.templateFor;
  */
 @Mixins(AssignmentsContext.Mixin.class)
 public interface AssignmentsContext
-   extends Context
+   extends Interactions
 {
    LinksValue tasks();
 
    void createtask();
 
    abstract class Mixin
-      extends ContextMixin
+      extends InteractionsMixin
       implements AssignmentsContext
    {
       public LinksValue tasks( )
       {
-         AssignmentsQueries assignments = context.role( AssignmentsQueries.class);
+         AssignmentsQueries assignments = context.get( AssignmentsQueries.class);
 
-         QueryBuilder<Assignable> builder = assignments.assignments( context.role( Assignee.class ) );
+         QueryBuilder<Assignable> builder = assignments.assignments( context.get( Assignee.class ) );
          Query query = builder.newQuery( module.unitOfWorkFactory().currentUnitOfWork() ).orderBy( orderBy( templateFor( CreatedOn.class ).createdOn() ) );
-         return TasksContext.Mixin.buildTaskList( query, module, context.role( Reference.class).getBaseRef().getPath());
+         return TasksContext.Mixin.buildTaskList( query, module, context.get( Reference.class).getBaseRef().getPath());
       }
 
       public void createtask()
       {
-         Inbox inbox = context.role( Inbox.class );
+         Inbox inbox = context.get( Inbox.class );
          Assignable task = inbox.createTask();
 
-         task.assignTo( context.role(Assignee.class ) );
+         task.assignTo( context.get(Assignee.class ) );
       }
    }
 }

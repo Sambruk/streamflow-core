@@ -22,9 +22,9 @@ import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.streamflow.domain.contact.ContactValue;
 import se.streamsource.streamflow.resource.task.TaskContactsDTO;
 import se.streamsource.streamflow.web.domain.structure.task.Contacts;
-import se.streamsource.dci.context.Context;
-import se.streamsource.dci.context.ContextMixin;
-import se.streamsource.dci.context.SubContexts;
+import se.streamsource.dci.api.Interactions;
+import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.SubContexts;
 
 import java.util.List;
 
@@ -34,14 +34,14 @@ import java.util.List;
 @Mixins(ContactsContext.Mixin.class)
 public interface ContactsContext
    extends
-      SubContexts<ContactContext>, Context
+      SubContexts<ContactContext>, Interactions
 {
    public void add( ContactValue newContact );
 
    TaskContactsDTO contacts();
 
    abstract class Mixin
-      extends ContextMixin
+      extends InteractionsMixin
       implements ContactsContext
    {
       @Structure
@@ -53,7 +53,7 @@ public interface ContactsContext
          ValueBuilder<ContactValue> contactBuilder = module.valueBuilderFactory().newValueBuilder( ContactValue.class );
          List<ContactValue> list = builder.prototype().contacts().get();
 
-         Contacts.Data contacts = context.role( Contacts.Data.class );
+         Contacts.Data contacts = context.get( Contacts.Data.class );
 
          for (ContactValue contact : contacts.contacts().get())
          {
@@ -73,17 +73,17 @@ public interface ContactsContext
 
       public void add( ContactValue newContact )
       {
-         Contacts contacts = context.role(Contacts.class);
+         Contacts contacts = context.get(Contacts.class);
          contacts.addContact( newContact );
       }
 
       public ContactContext context( String id )
       {
          Integer index = Integer.decode( id );
-         context.playRoles( index, Integer.class);
+         context.set( index, Integer.class);
 
-         ContactValue contact = context.role( Contacts.Data.class ).contacts().get().get( index );
-         context.playRoles(contact, ContactValue.class);
+         ContactValue contact = context.get( Contacts.Data.class ).contacts().get().get( index );
+         context.set(contact, ContactValue.class);
 
          return subContext( ContactContext.class );
       }

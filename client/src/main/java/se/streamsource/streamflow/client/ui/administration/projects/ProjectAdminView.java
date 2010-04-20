@@ -21,9 +21,11 @@ import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.client.ui.administration.AdministrationView;
 import se.streamsource.streamflow.client.ui.administration.OrganizationalUnitAdministrationModel;
+import se.streamsource.streamflow.client.ui.administration.label.LabelsModel;
 import se.streamsource.streamflow.client.ui.administration.label.SelectedLabelsModel;
 import se.streamsource.streamflow.client.ui.administration.tasktypes.SelectedTaskTypesModel;
 import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
+import se.streamsource.streamflow.client.ui.administration.tasktypes.TaskTypesModel;
 import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FormsModel;
 
 import javax.swing.JList;
@@ -71,12 +73,16 @@ public class ProjectAdminView
                   ProjectModel projectModel = projectsModel.getProjectModel( projectValue.id().get() );
                   ProjectMembersModel membersModel = projectModel.getMembersModel();
                   FormsModel formsModel = projectModel.getFormsModel();
-                  SelectedLabelsModel labelsModel = projectModel.getSelectedLabelsModel();
+                  TaskTypesModel taskTypesModel = projectModel.getTaskTypesModel();
+                  LabelsModel labelsModel = projectModel.getLabelsModel();
+                  SelectedLabelsModel selectedLabelsModel = projectModel.getSelectedLabelsModel();
                   SelectedTaskTypesModel selectedTaskTypes = projectModel.getSelectedTaskTypes();
                   ProjectView view = obf.newObjectBuilder( ProjectView.class ).use(
                         membersModel,
                         labelsModel,
+                        selectedLabelsModel,
                         formsModel,
+                        taskTypesModel,
                         selectedTaskTypes,
                         organizationModel,
                         adminView ).newInstance();

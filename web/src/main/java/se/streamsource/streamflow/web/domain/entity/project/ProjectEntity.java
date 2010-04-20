@@ -44,6 +44,7 @@ import se.streamsource.streamflow.web.domain.interaction.gtd.Delegatee;
 import se.streamsource.streamflow.web.domain.interaction.gtd.IdGenerator;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.structure.form.Forms;
+import se.streamsource.streamflow.web.domain.structure.label.Labels;
 import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganization;
@@ -52,6 +53,7 @@ import se.streamsource.streamflow.web.domain.structure.project.Member;
 import se.streamsource.streamflow.web.domain.structure.project.Members;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.tasktype.SelectedTaskTypes;
+import se.streamsource.streamflow.web.domain.structure.tasktype.TaskTypes;
 
 /**
  * JAVADOC
@@ -65,12 +67,9 @@ public interface ProjectEntity
       Inbox,
 
       // Interactions
-      Describable,
       Delegatee,
       Owner,
-      SelectedLabels,
       IdGenerator,
-      SelectedTaskTypes,
 
       // Structure
       Members,
@@ -84,7 +83,9 @@ public interface ProjectEntity
       Describable.Data,
       OwningOrganizationalUnit.Data,
       Forms.Data,
+      Labels.Data,
       SelectedLabels.Data,
+      TaskTypes.Data,
       Removable.Data,
       SelectedTaskTypes.Data,
 
@@ -93,7 +94,6 @@ public interface ProjectEntity
       DelegationsQueries,
       InboxQueries,
       WaitingForQueries,
-      PossibleLabelsQueries,
       ProjectLabelsQueries
 {
    class ProjectIdGeneratorMixin

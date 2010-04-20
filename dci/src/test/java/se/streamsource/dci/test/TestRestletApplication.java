@@ -89,7 +89,7 @@ public class TestRestletApplication
    {
       getContext().setVerifier( verifier );
 
-      Restlet cqr = factory.newObject( CommandQueryRestlet.class );
+      Restlet cqr = factory.newObjectBuilder( CommandQueryRestlet.class ).use( getContext() ).newInstance();
 
 //      ViewFilter viewFilter = factory.newObjectBuilder( ViewFilter.class ).use( getContext(), cqr ).newInstance();
 

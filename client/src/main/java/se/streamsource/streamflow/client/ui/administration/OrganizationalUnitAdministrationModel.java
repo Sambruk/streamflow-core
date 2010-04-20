@@ -27,9 +27,11 @@ import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.ui.administration.groups.GroupsModel;
+import se.streamsource.streamflow.client.ui.administration.label.LabelsModel;
 import se.streamsource.streamflow.client.ui.administration.label.SelectedLabelsModel;
 import se.streamsource.streamflow.client.ui.administration.policy.AdministratorsModel;
 import se.streamsource.streamflow.client.ui.administration.projects.ProjectsModel;
+import se.streamsource.streamflow.client.ui.administration.tasktypes.TaskTypesModel;
 import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FormsModel;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
@@ -51,6 +53,8 @@ public class OrganizationalUnitAdministrationModel
    private GroupsModel groupsModel;
    private ProjectsModel projectsModel;
    private FormsModel formsModel;
+   private TaskTypesModel taskTypesModel;
+   private LabelsModel labelsModel;
    private SelectedLabelsModel selectedLabelsModel;
    private AdministratorsModel administratorsModel;
    private CommandQueryClient client;
@@ -62,13 +66,10 @@ public class OrganizationalUnitAdministrationModel
       groupsModel = obf.newObjectBuilder( GroupsModel.class ).use( client.getSubClient( "groups" )).newInstance();
       projectsModel = obf.newObjectBuilder( ProjectsModel.class ).use( client.getSubClient( "projects" ), this).newInstance();
       formsModel = obf.newObjectBuilder( FormsModel.class ).use( client.getSubClient( "forms" ), this).newInstance();
+      taskTypesModel = obf.newObjectBuilder( TaskTypesModel.class ).use( client.getSubClient( "tasktypes" ), this).newInstance();
+      labelsModel = obf.newObjectBuilder( LabelsModel.class ).use( client.getSubClient( "labels" ), this).newInstance();
       selectedLabelsModel = obf.newObjectBuilder( SelectedLabelsModel.class ).use( client.getSubClient( "selectedlabels" ), this).newInstance();
       administratorsModel = obf.newObjectBuilder( AdministratorsModel.class ).use( client.getSubClient( "administrators" )).newInstance();
-   }
-
-   public CommandQueryClient getOrganizationalUnit()
-   {
-      return client;
    }
 
    public GroupsModel groupsModel()
@@ -85,6 +86,16 @@ public class OrganizationalUnitAdministrationModel
    public FormsModel formsModel()
    {
       return formsModel;
+   }
+
+   public TaskTypesModel taskTypesModel()
+   {
+      return taskTypesModel;
+   }
+
+   public LabelsModel labelsModel()
+   {
+      return labelsModel;
    }
 
    public SelectedLabelsModel selectedLabelsModel()
@@ -195,4 +206,5 @@ public class OrganizationalUnitAdministrationModel
       formsModel.notifyEvent( event );
       administratorsModel.notifyEvent( event );
    }
+
 }

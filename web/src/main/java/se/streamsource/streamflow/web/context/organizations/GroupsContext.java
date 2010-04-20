@@ -18,28 +18,28 @@ package se.streamsource.streamflow.web.context.organizations;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
+import se.streamsource.dci.api.Interactions;
 import se.streamsource.dci.value.*;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.web.domain.entity.organization.GroupEntity;
 import se.streamsource.streamflow.web.domain.structure.group.Group;
 import se.streamsource.streamflow.web.domain.structure.group.Groups;
-import se.streamsource.dci.context.Context;
-import se.streamsource.dci.context.ContextMixin;
-import se.streamsource.dci.context.SubContexts;
+import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.SubContexts;
 
 /**
  * JAVADOC
  */
 @Mixins(GroupsContext.Mixin.class)
 public interface GroupsContext
-   extends SubContexts<GroupContext>, Context
+   extends SubContexts<GroupContext>, Interactions
 {
    public LinksValue groups();
    public void creategroup( StringValue name );
 
    abstract class Mixin
-      extends ContextMixin
+      extends InteractionsMixin
       implements GroupsContext
    {
       @Structure
@@ -47,24 +47,24 @@ public interface GroupsContext
 
       public LinksValue groups()
       {
-         Groups.Data groups = context.role(Groups.Data.class);
+         Groups.Data groups = context.get(Groups.Data.class);
 
          return new LinksBuilder( module.valueBuilderFactory() ).rel( "group" ).addDescribables( groups.groups() ).newLinks();
       }
 
       public void creategroup( StringValue name )
       {
-         Groups groups = context.role(Groups.class);
+         Groups groups = context.get(Groups.class);
          groups.createGroup( name.string().get() );
       }
 
       public GroupContext context( String id )
       {
          Group group = module.unitOfWorkFactory().currentUnitOfWork().get( GroupEntity.class, id );
-         if (!context.role(Groups.Data.class).groups().contains( group ))
+         if (!context.get(Groups.Data.class).groups().contains( group ))
             throw new IllegalArgumentException("Invalid group");
          
-         context.playRoles( group, GroupEntity.class);
+         context.set( group, GroupEntity.class);
 
          return subContext( GroupContext.class );
       }

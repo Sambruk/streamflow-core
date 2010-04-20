@@ -28,14 +28,14 @@ import se.streamsource.dci.restlet.server.DCIAssembler;
 import se.streamsource.dci.restlet.server.DefaultResponseWriterFactory;
 import se.streamsource.dci.restlet.server.NullCommandResult;
 import se.streamsource.dci.restlet.server.ResourceFinder;
-import se.streamsource.dci.test.context.RootContext;
-import se.streamsource.dci.test.context.file.FileContext;
-import se.streamsource.dci.test.context.file.FilesContext;
-import se.streamsource.dci.test.context.jmx.DomainContext;
-import se.streamsource.dci.test.context.jmx.JmxServerContext;
-import se.streamsource.dci.test.context.jmx.MBeanAttributeContext;
-import se.streamsource.dci.test.context.jmx.MBeanContext;
-import se.streamsource.dci.test.context.jmx.TabularDataValue;
+import se.streamsource.dci.test.interactions.RootInteractions;
+import se.streamsource.dci.test.interactions.file.FileInteractions;
+import se.streamsource.dci.test.interactions.file.FilesInteractions;
+import se.streamsource.dci.test.interactions.jmx.DomainInteractions;
+import se.streamsource.dci.test.interactions.jmx.JmxServerInteractions;
+import se.streamsource.dci.test.interactions.jmx.MBeanAttributeInteractions;
+import se.streamsource.dci.test.interactions.jmx.MBeanInteractions;
+import se.streamsource.dci.test.interactions.jmx.TabularDataValue;
 
 /**
  * JAVADOC
@@ -67,18 +67,18 @@ public class TestAssembler
 
    public void assemble( ModuleAssembly module ) throws AssemblyException
    {
-      module.importServices( TestRootContextFactory.class ).importedBy( NewObjectImporter.class );
-      module.addObjects( TestRootContextFactory.class );
+      module.importServices( TestRootInteractionsFactory.class ).importedBy( NewObjectImporter.class );
+      module.addObjects( TestRootInteractionsFactory.class );
 
       // Use defaults
       module.addObjects( DefaultResponseWriterFactory.class,
             NullCommandResult.class );
 
-      module.addTransients( RootContext.class,
-            FilesContext.class,
-            FileContext.class);
+      module.addTransients( RootInteractions.class,
+            FilesInteractions.class,
+            FileInteractions.class);
 
-      module.addObjects( JmxServerContext.class, DomainContext.class, MBeanContext.class, MBeanAttributeContext.class );
+      module.addObjects( JmxServerInteractions.class, DomainInteractions.class, MBeanInteractions.class, MBeanAttributeInteractions.class );
 
       module.addObjects( TestRestletApplication.class,
             ResourceFinder.class);

@@ -53,7 +53,7 @@ public class SelectedLabelsView
    Iterable<NameDialog> nameDialogs;
 
    @Uses
-   ObjectBuilder<SelectionDialog> labelsDialogs;
+   ObjectBuilder<GroupedSelectionDialog> labelsDialogs;
 
    public JList labelList;
 
@@ -85,7 +85,7 @@ public class SelectedLabelsView
    @Action
    public void add()
    {
-      SelectionDialog dialog = labelsDialogs.use( modelSelected.getPossibleLabels() ).newInstance();
+      GroupedSelectionDialog dialog = labelsDialogs.use( modelSelected.getPossibleLabels() ).newInstance();
 
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.choose_label_title ) );
 

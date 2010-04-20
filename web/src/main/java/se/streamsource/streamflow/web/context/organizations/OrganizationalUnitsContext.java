@@ -18,27 +18,27 @@ package se.streamsource.streamflow.web.context.organizations;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
+import se.streamsource.dci.api.IndexInteraction;
+import se.streamsource.dci.api.Interactions;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnits;
-import se.streamsource.dci.context.Context;
-import se.streamsource.dci.context.ContextMixin;
-import se.streamsource.dci.context.IndexContext;
-import se.streamsource.dci.context.SubContexts;
+import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.SubContexts;
 
 /**
  * JAVADOC
  */
 @Mixins(OrganizationalUnitsContext.Mixin.class)
 public interface OrganizationalUnitsContext
-   extends SubContexts<OrganizationalUnitContext>, IndexContext<LinksValue>, Context
+   extends SubContexts<OrganizationalUnitContext>, IndexInteraction<LinksValue>, Interactions
 {
    public void createorganizationalunit( StringValue value );
 
    abstract class Mixin
-      extends ContextMixin
+      extends InteractionsMixin
       implements OrganizationalUnitsContext
    {
 
@@ -47,20 +47,20 @@ public interface OrganizationalUnitsContext
 
       public LinksValue index()
       {
-         OrganizationalUnits.Data ous = context.role(OrganizationalUnits.Data.class);
+         OrganizationalUnits.Data ous = context.get(OrganizationalUnits.Data.class);
          return new LinksBuilder(module.valueBuilderFactory()).rel( "organizationalunit" ).addDescribables( ous.organizationalUnits() ).newLinks();
       }
 
       public void createorganizationalunit( StringValue value )
       {
-         OrganizationalUnits ous = context.role(OrganizationalUnits.class);
+         OrganizationalUnits ous = context.get(OrganizationalUnits.class);
 
          ous.createOrganizationalUnit( value.string().get() );
       }
 
       public OrganizationalUnitContext context( String id )
       {
-         context.playRoles(module.unitOfWorkFactory().currentUnitOfWork().get( OrganizationalUnit.class, id ));
+         context.set(module.unitOfWorkFactory().currentUnitOfWork().get( OrganizationalUnit.class, id ));
          return subContext( OrganizationalUnitContext.class );
       }
    }

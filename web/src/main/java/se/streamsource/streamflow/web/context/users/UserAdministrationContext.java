@@ -20,6 +20,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
+import se.streamsource.dci.api.InteractionsMixin;
 import se.streamsource.streamflow.domain.organization.AdministrationType;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.application.TreeNodeValue;
@@ -30,8 +31,7 @@ import se.streamsource.streamflow.web.domain.structure.group.Participant;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationParticipations;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnits;
 import se.streamsource.streamflow.web.domain.structure.organization.RolePolicy;
-import se.streamsource.dci.context.Context;
-import se.streamsource.dci.context.ContextMixin;
+import se.streamsource.dci.api.Interactions;
 
 import java.util.List;
 
@@ -40,12 +40,12 @@ import java.util.List;
  */
 @Mixins(UserAdministrationContext.Mixin.class)
 public interface UserAdministrationContext
-      extends Context
+      extends Interactions
 {
    TreeValue organizations();
 
    abstract class Mixin
-         extends ContextMixin
+         extends InteractionsMixin
          implements UserAdministrationContext
    {
       @Structure
@@ -54,7 +54,7 @@ public interface UserAdministrationContext
       public TreeValue organizations()
       {
          ValueBuilder<TreeValue> listBuilder = vbf.newValueBuilder( TreeValue.class );
-         OrganizationParticipations organizationParticipations = context.role(OrganizationParticipations.class);
+         OrganizationParticipations organizationParticipations = context.get(OrganizationParticipations.class);
          Participant participant = (Participant) organizationParticipations;
          List<TreeNodeValue> list = listBuilder.prototype().roots().get();
          OrganizationParticipations.Data state = (OrganizationParticipations.Data) organizationParticipations;

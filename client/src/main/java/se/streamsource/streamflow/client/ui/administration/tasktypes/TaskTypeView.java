@@ -19,6 +19,7 @@ import org.qi4j.api.injection.scope.Uses;
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.administration.form.SelectedFormsView;
+import se.streamsource.streamflow.client.ui.administration.label.LabelsView;
 import se.streamsource.streamflow.client.ui.administration.label.SelectedLabelsView;
 import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FormsAdminView;
 
@@ -30,14 +31,13 @@ import javax.swing.*;
 public class TaskTypeView
       extends JTabbedPane
 {
-   private TaskTypeModel taskTypeModel;
-
    public TaskTypeView( @Uses SelectedLabelsView selectedLabelsView ,
+                        @Uses LabelsView labelsView,
                         @Uses FormsAdminView formsView,
                         @Uses SelectedFormsView selectedFormsView,
                         @Uses TaskTypeModel taskTypeModel)
    {
-      this.taskTypeModel = taskTypeModel;
+      addTab( text( AdministrationResources.labels_tab ), labelsView );
       addTab( text( AdministrationResources.selected_labels_tab ), selectedLabelsView );
       addTab( text( AdministrationResources.forms_tab ), formsView );
       addTab( text( AdministrationResources.selected_forms_tab ), selectedFormsView );

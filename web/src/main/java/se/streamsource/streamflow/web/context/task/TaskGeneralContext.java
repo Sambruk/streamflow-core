@@ -22,11 +22,10 @@ import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.dci.context.Context;
-import se.streamsource.dci.context.ContextMixin;
-import se.streamsource.dci.context.IndexContext;
-import se.streamsource.dci.context.SubContext;
-import se.streamsource.dci.value.LinksValue;
+import se.streamsource.dci.api.IndexInteraction;
+import se.streamsource.dci.api.Interactions;
+import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.value.*;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.domain.structure.Notable;
@@ -37,6 +36,7 @@ import se.streamsource.streamflow.resource.roles.DateDTO;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.resource.task.TaskGeneralDTO;
 import se.streamsource.streamflow.web.context.structure.labels.LabelableContext;
+import se.streamsource.streamflow.web.domain.Specification;
 import se.streamsource.streamflow.web.domain.entity.task.TaskEntity;
 import se.streamsource.streamflow.web.domain.entity.task.TaskTypeQueries;
 import se.streamsource.streamflow.web.domain.interaction.gtd.DueOn;
@@ -45,6 +45,7 @@ import se.streamsource.streamflow.web.domain.structure.form.SelectedForms;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.tasktype.TaskType;
 import se.streamsource.streamflow.web.domain.structure.tasktype.TypedTask;
+import se.streamsource.dci.api.SubContext;
 
 import static se.streamsource.streamflow.domain.interaction.gtd.States.*;
 
@@ -53,9 +54,9 @@ import static se.streamsource.streamflow.domain.interaction.gtd.States.*;
  */
 @Mixins(TaskGeneralContext.Mixin.class)
 public interface TaskGeneralContext
-   extends 
-      IndexContext<TaskGeneralDTO>,
-      Context
+   extends
+      IndexInteraction<TaskGeneralDTO>,
+      Interactions
 {
    @RequiresStatus( { ACTIVE, DELEGATED } )
    void changedueon( DateDTO dueOnValue );
@@ -76,7 +77,7 @@ public interface TaskGeneralContext
    LabelableContext labels();
 
    abstract class Mixin
-      extends ContextMixin
+      extends InteractionsMixin
       implements TaskGeneralContext
    {
       @Structure
@@ -84,13 +85,13 @@ public interface TaskGeneralContext
 
       public void changedescription( StringValue stringValue )
       {
-         Describable describable = context.role( Describable.class );
+         Describable describable = context.get( Describable.class );
          describable.changeDescription( stringValue.string().get() );
       }
 
       public void changenote( StringValue noteValue )
       {
-         Notable notable = context.role( Notable.class );
+         Notable notable = context.get( Notable.class );
          notable.changeNote( noteValue.string().get() );
       }
 
@@ -98,7 +99,7 @@ public interface TaskGeneralContext
       {
          ValueBuilderFactory vbf = module.valueBuilderFactory();
          ValueBuilder<TaskGeneralDTO> builder = vbf.newValueBuilder( TaskGeneralDTO.class );
-         TaskEntity task = context.role( TaskEntity.class );
+         TaskEntity task = context.get( TaskEntity.class );
          builder.prototype().description().set( task.description().get() );
 
          ValueBuilder<ListValue> labelsBuilder = vbf.newValueBuilder( ListValue.class );
@@ -131,20 +132,24 @@ public interface TaskGeneralContext
 
       public void changedueon( DateDTO dueOnValue )
       {
-         DueOn dueOn = context.role(DueOn.class);
+         DueOn dueOn = context.get(DueOn.class);
          dueOn.dueOn( dueOnValue.date().get() );
       }
 
       public LinksValue possibletasktypes()
       {
-         TaskTypeQueries task = context.role(TaskTypeQueries.class);
-         return new LinksBuilder(module.valueBuilderFactory()).command( "tasktype" ).addDescribables( task.taskTypes()).newLinks();
+         TaskTypeQueries task = context.get(TaskTypeQueries.class);
+         LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() ).command( "tasktype" );
+
+         task.taskTypes(builder);
+
+         return builder.newLinks();
       }
 
       public void tasktype( EntityReferenceDTO dto )
       {
          UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
-         TypedTask task = context.role(TypedTask.class);
+         TypedTask task = context.get(TypedTask.class);
 
          EntityReference entityReference = dto.entity().get();
          if (entityReference != null)
@@ -157,7 +162,7 @@ public interface TaskGeneralContext
 
       public LinksValue possibleforms()
       {
-         TypedTask.Data typedTask = context.role(TypedTask.Data.class);
+         TypedTask.Data typedTask = context.get(TypedTask.Data.class);
 
          TaskType taskType = typedTask.taskType().get();
 

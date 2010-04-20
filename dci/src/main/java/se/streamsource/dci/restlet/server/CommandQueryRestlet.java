@@ -59,14 +59,14 @@ import org.restlet.resource.ResourceException;
 import org.restlet.security.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import se.streamsource.dci.context.Context;
-import se.streamsource.dci.context.ContextNotFoundException;
-import se.streamsource.dci.context.DeleteContext;
-import se.streamsource.dci.context.IndexContext;
-import se.streamsource.dci.context.InteractionConstraints;
-import se.streamsource.dci.context.InteractionContext;
-import se.streamsource.dci.context.SubContext;
-import se.streamsource.dci.context.SubContexts;
+import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.DeleteInteraction;
+import se.streamsource.dci.api.Interactions;
+import se.streamsource.dci.api.ContextNotFoundException;
+import se.streamsource.dci.api.IndexInteraction;
+import se.streamsource.dci.api.InteractionConstraints;
+import se.streamsource.dci.api.SubContext;
+import se.streamsource.dci.api.SubContexts;
 import se.streamsource.dci.value.IndexValue;
 
 import javax.security.auth.Subject;
@@ -107,7 +107,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * POST/PUT: post of form must be to an URL which does not end with "/".
  * The last segment is the name of the method to invoke and result is an EmptyRepresentation.
  * <p/>
- * DELETE: this translates into a call on DeleteContext.delete() on the given resource.
+ * DELETE: this translates into a call on DeleteInteraction.delete() on the given resource.
  */
 public class CommandQueryRestlet
       extends Restlet
@@ -133,7 +133,7 @@ public class CommandQueryRestlet
    private ResponseWriterFactory responseWriterFactory;
 
    @Service
-   private RootContextFactory rootContextFactory;
+   private RootInteractionsFactory rootInteractionsFactory;
 
    @Service
    private CommandResult commandResult;
@@ -157,14 +157,16 @@ public class CommandQueryRestlet
 
       UnitOfWork uow = uowf.newUnitOfWork( UsecaseBuilder.newUsecase( request.getResourceRef().getRemainingPart() ) );
 
-      InteractionContext interactionContext = new InteractionContext();
-      initContext( request, interactionContext );
+      Context context = new Context();
+      uow.metaInfo().set( context );
+      initContext( request, context );
 
-      // Find the context first
-      Object context = null;
+      // Find the interactions first
+      Object interactions = null;
       try
       {
-         context = getContext( rootContextFactory.getRoot( interactionContext ), segments );
+         interactions = getInteractions( rootInteractionsFactory.getRoot( context ), segments );
+         context = uow.metaInfo().get( Context.class ); // Get current context for this interaction
       } catch (Exception e)
       {
          uow.discard();
@@ -183,10 +185,10 @@ public class CommandQueryRestlet
       org.restlet.data.Method method = request.getMethod();
       if (method.equals( org.restlet.data.Method.GET ))
       {
-         get( request, response, context, interactionContext, segments );
+         get( request, response, interactions, context, segments );
       } else if (method.equals( org.restlet.data.Method.DELETE ))
       {
-         delete( request, response, context, interactionContext, segments );
+         delete( request, response, interactions, context, segments );
       } else if (method.equals( org.restlet.data.Method.POST) || method.equals( org.restlet.data.Method.PUT) )
       {
          // When doing POST/PUT we should try several times if there is a coflict when committing
@@ -195,21 +197,21 @@ public class CommandQueryRestlet
          {
             try
             {
-               post( request, response, context, interactionContext, segments );
+               post( request, response, interactions, context, segments );
                return;
             } catch (UnitOfWorkCompletionException e)
             {
                // Retry
                uow = uowf.newUnitOfWork( UsecaseBuilder.newUsecase( request.getResourceRef().getRemainingPart() ) );
 
-               interactionContext = new InteractionContext();
-               initContext( request, interactionContext );
+               context = new Context();
+               initContext( request, context );
 
                // Find the context again in the new UoW
-               context = null;
+               interactions = null;
                try
                {
-                  context = getContext( rootContextFactory.getRoot( interactionContext ), segments );
+                  interactions = getInteractions( rootInteractionsFactory.getRoot( context ), segments );
                } catch (Exception ex)
                {
                   uow.discard();
@@ -230,7 +232,7 @@ public class CommandQueryRestlet
       }*/
    }
 
-   private void get( Request request, Response response, Object context, InteractionContext interactionContext, List<String> segments )
+   private void get( Request request, Response response, Object interactions, Context context, List<String> segments )
    {
       try
       {
@@ -238,16 +240,16 @@ public class CommandQueryRestlet
 
          if (lastSegment.equals( "" ) || lastSegment.equals( "." ))
          {
-            // Show context info
-            ResponseWriter writer = responseWriterFactory.createWriter( segments, IndexValue.class, interactionContext, getVariant( request ) );
+            // Show interactions info
+            ResponseWriter writer = responseWriterFactory.createWriter( segments, IndexValue.class, context, getVariant( request ) );
 
-            contextInfo( request, response, context, interactionContext, writer );
+            contextInfo( request, response, interactions, context, writer );
          } else if (lastSegment.equals( "context" ))
          {
             String contextId = request.getResourceRef().getQueryAsForm().getFirstValue( "context" );
             if (contextId == null)
             {
-               ResponseWriter responseWriter = responseWriterFactory.createWriter( segments, Context.class, interactionContext, getVariant( request ) );
+               ResponseWriter responseWriter = responseWriterFactory.createWriter( segments, Interactions.class, context, getVariant( request ) );
 
                responseWriter.write( null, request, response );
             } else
@@ -258,14 +260,14 @@ public class CommandQueryRestlet
             }
          } else
          {
-            Method method = getInteractionMethod( context, lastSegment );
-            if (!constraints.isValid( method, interactionContext ))
+            Method method = getInteractionMethod( interactions, lastSegment );
+            if (!constraints.isValid( method, context ))
                throw new ResourceException( Status.CLIENT_ERROR_NOT_FOUND, "Interaction not valid" );
 
             // Check whether it's a command or query
             if (isCommandMethod( method ))
             {
-               ResponseWriter responseWriter = responseWriterFactory.createWriter( segments, ValueDescriptor.class, interactionContext, getVariant( request ) );
+               ResponseWriter responseWriter = responseWriterFactory.createWriter( segments, ValueDescriptor.class, context, getVariant( request ) );
 
                Class<? extends ValueComposite> valueType = (Class<? extends ValueComposite>) method.getParameterTypes()[0];
                ValueDescriptor valueDescriptor = module.valueDescriptor( valueType.getName() );
@@ -273,7 +275,7 @@ public class CommandQueryRestlet
                responseWriter.write( valueDescriptor, request, response );
             } else
             {
-               query( request, response, context, segments, interactionContext, method );
+               query( request, response, interactions, segments, context, method );
             }
          }
       } catch (ResourceException ex)
@@ -291,7 +293,7 @@ public class CommandQueryRestlet
       }
    }
 
-   private void post( Request request, Response response, Object context, InteractionContext interactionContext, List<String> segments )
+   private void post( Request request, Response response, Object interactions, Context context, List<String> segments )
          throws UnitOfWorkCompletionException
    {
       // POST on command -> perform interaction
@@ -301,18 +303,18 @@ public class CommandQueryRestlet
 
       try
       {
-         Method method = getInteractionMethod( context, lastSegment );
+         Method method = getInteractionMethod( interactions, lastSegment );
 
          if (method.getParameterTypes().length == 0)
          {
             // Invoke command
-            invoke( request, context, method, null );
+            invoke( request, interactions, method, null );
          } else
          {
             // Invoke command with parameters
             if (request.getEntity().getAvailableSize() == 0)
             {
-               ResponseWriter responseWriter = responseWriterFactory.createWriter( segments, ValueDescriptor.class, interactionContext, getVariant( request ) );
+               ResponseWriter responseWriter = responseWriterFactory.createWriter( segments, ValueDescriptor.class, context, getVariant( request ) );
 
                Class<? extends ValueComposite> valueType = (Class<? extends ValueComposite>) method.getParameterTypes()[0];
                ValueDescriptor valueDescriptor = module.valueDescriptor( valueType.getName() );
@@ -324,7 +326,7 @@ public class CommandQueryRestlet
             } else
             {
                Object[] args = getCommandArguments( request, method );
-               invoke( request, context, method, args );
+               invoke( request, interactions, method, args );
             }
          }
 
@@ -338,7 +340,7 @@ public class CommandQueryRestlet
 
          try
          {
-            responseWriter = responseWriterFactory.createWriter( segments, result.getClass(), interactionContext, variant );
+            responseWriter = responseWriterFactory.createWriter( segments, result.getClass(), context, variant );
          } catch (Exception e)
          {
             response.setStatus( Status.CLIENT_ERROR_NOT_FOUND, e.getMessage() );
@@ -359,13 +361,13 @@ public class CommandQueryRestlet
       }
    }
 
-   private void delete( Request request, Response response, Object context, InteractionContext interactionContext, List<String> segments  )
+   private void delete( Request request, Response response, Object interactions, Context context, List<String> segments  )
    {
-      DeleteContext deleteContext = (DeleteContext) context;
+      DeleteInteraction deleteInteraction = (DeleteInteraction) interactions;
 
       try
       {
-         deleteContext.delete();
+         deleteInteraction.delete();
 
          uowf.currentUnitOfWork().complete();
 
@@ -377,7 +379,7 @@ public class CommandQueryRestlet
 
          try
          {
-            responseWriter = responseWriterFactory.createWriter( segments, result.getClass(), interactionContext, variant );
+            responseWriter = responseWriterFactory.createWriter( segments, result.getClass(), context, variant );
          } catch (Exception e)
          {
             response.setStatus( Status.CLIENT_ERROR_NOT_FOUND, e.getMessage() );
@@ -394,11 +396,11 @@ public class CommandQueryRestlet
       }
    }
 
-   private void initContext( Request request, InteractionContext context )
+   private void initContext( Request request, Context context )
    {
-      context.playRoles( resolveRequestLocale( request ), Locale.class );
-      context.playRoles( request.getResourceRef(), Reference.class );
-      context.playRoles( getApplication(), Application.class );
+      context.set( resolveRequestLocale( request ), Locale.class );
+      context.set( request.getResourceRef(), Reference.class );
+      context.set( getApplication(), Application.class );
 
       Subject subject = new Subject();
       subject.getPrincipals().addAll( request.getClientInfo().getPrincipals() );
@@ -411,7 +413,7 @@ public class CommandQueryRestlet
       }
       subject.setReadOnly();
 
-      context.playRoles( subject );
+      context.set( subject );
    }
 
    protected Locale resolveRequestLocale( Request request )
@@ -443,17 +445,17 @@ public class CommandQueryRestlet
       return locale;
    }
 
-   private Object getContext( Object context, List<String> segments ) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, ResourceException
+   private Object getInteractions( Object interactions, List<String> segments ) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, ResourceException
    {
       for (int i = 0; i < segments.size() - 1; i++)
       {
          String segment = segments.get( i );
 
-         if (context instanceof SubContexts)
+         if (interactions instanceof SubContexts)
          {
             try
             {
-               context = ((SubContexts) context).context( URLDecoder.decode( segment, "UTF-8" ) );
+               interactions = ((SubContexts) interactions).context( URLDecoder.decode( segment, "UTF-8" ) );
                segments.set( i, "context" );
             } catch (ContextNotFoundException e)
             {
@@ -469,8 +471,8 @@ public class CommandQueryRestlet
          {
             try
             {
-               Method subContextMethod = context.getClass().getMethod( segment );
-               context = subContextMethod.invoke( context );
+               Method subContextMethod = interactions.getClass().getMethod( segment );
+               interactions = subContextMethod.invoke( interactions );
             } catch (NoSuchMethodException e)
             {
                throw new ResourceException( Status.CLIENT_ERROR_NOT_FOUND );
@@ -478,10 +480,10 @@ public class CommandQueryRestlet
          }
       }
 
-      return context;
+      return interactions;
    }
 
-   private void contextInfo( Request request, Response response, final Object resource, InteractionContext interactionContext, ResponseWriter writer ) throws IOException, ResourceException
+   private void contextInfo( Request request, Response response, final Object resource, Context context, ResponseWriter writer ) throws IOException, ResourceException
    {
       Iterable<Method> methods = getContextMethods( resource );
       final List<Method> queries = new ArrayList<Method>();
@@ -496,7 +498,7 @@ public class CommandQueryRestlet
       {
          if (!(method.getDeclaringClass().isAssignableFrom( TransientComposite.class )))
          {
-            if (methodConstraints.isValid( method, interactionContext ))
+            if (methodConstraints.isValid( method, context ))
                if (method.getAnnotation( SubContext.class ) != null || SubContexts.class.equals( method.getDeclaringClass() ))
                {
                   subResources.add( method );
@@ -510,7 +512,7 @@ public class CommandQueryRestlet
          }
       }
 
-      final Value index = resource instanceof IndexContext ? ((IndexContext) resource).index() : null;
+      final Value index = resource instanceof IndexInteraction ? ((IndexInteraction) resource).index() : null;
 
       ValueBuilder<IndexValue> builder = vbf.newValueBuilder( IndexValue.class );
 
@@ -570,7 +572,7 @@ public class CommandQueryRestlet
       if (methods == null)
       {
          methods = new ArrayList<Method>();
-         Method[] allMethods = resource instanceof Context ? resource.getClass().getInterfaces()[0].getMethods() : resource.getClass().getDeclaredMethods();
+         Method[] allMethods = resource instanceof Interactions ? resource.getClass().getInterfaces()[0].getMethods() : resource.getClass().getDeclaredMethods();
          for (Method allMethod : allMethods)
          {
             if (!allMethod.isSynthetic())
@@ -593,7 +595,7 @@ public class CommandQueryRestlet
       return false;
    }
 
-   private void query( Request request, Response response, Object resource, List<String> segments, InteractionContext interactionContext, Method queryMethod ) throws ResourceException
+   private void query( Request request, Response response, Object resource, List<String> segments, Context context, Method queryMethod ) throws ResourceException
    {
       // Check conditions (ETag/LastModified)
       // TODO Check annotations on method
@@ -615,7 +617,7 @@ public class CommandQueryRestlet
             returnType = (Class) genericType;
          }
 
-         responseWriter = responseWriterFactory.createWriter( segments, returnType, interactionContext, variant );
+         responseWriter = responseWriterFactory.createWriter( segments, returnType, context, variant );
       } catch (Exception e)
       {
          response.setStatus( Status.CLIENT_ERROR_NOT_FOUND, e.getMessage() );
@@ -643,7 +645,7 @@ public class CommandQueryRestlet
             {
                String formName = segments.get( segments.size()-1 )+"_form";
                segments.set(segments.size()-1, formName);
-               responseWriter = responseWriterFactory.createWriter( segments, ValueDescriptor.class, interactionContext, variant );
+               responseWriter = responseWriterFactory.createWriter( segments, ValueDescriptor.class, context, variant );
 
                Class<? extends ValueComposite> valueType = (Class<? extends ValueComposite>) queryMethod.getParameterTypes()[0];
                ValueDescriptor valueDescriptor = module.valueDescriptor( valueType.getName() );
@@ -815,7 +817,7 @@ public class CommandQueryRestlet
       if (methods == null)
       {
          methods = new ArrayList<Method>();
-         Method[] allMethods = context instanceof Context ? context.getClass().getInterfaces()[0].getMethods() : context.getClass().getDeclaredMethods();
+         Method[] allMethods = context instanceof Interactions ? context.getClass().getInterfaces()[0].getMethods() : context.getClass().getDeclaredMethods();
          for (Method allMethod : allMethods)
          {
             if (!allMethod.isSynthetic())
@@ -967,7 +969,7 @@ public class CommandQueryRestlet
             UnitOfWork uow = uowf.newUnitOfWork( UsecaseBuilder.newUsecase( getRequest().getResourceRef().getRemainingPart() ) );
             try
             {
-               InteractionContext interactionContext = new InteractionContext();
+               Context interactionContext = new Context();
                initContext( interactionContext );
                Object resource = getRoot(interactionContext);
 
@@ -1025,7 +1027,7 @@ public class CommandQueryRestlet
          // GET on operation
          try
          {
-            InteractionContext context = new InteractionContext();
+            Context context = new Context();
             initContext( context );
             Object resource = getRoot(context);
 
@@ -1063,7 +1065,7 @@ public class CommandQueryRestlet
    */
 
 /*
-   private void initContext( InteractionContext context )
+   private void initContext( Context context )
    {
       context.playRoles( resolveRequestLocale(), Locale.class );
       context.playRoles( getRequest().getResourceRef(), Reference.class );
@@ -1096,9 +1098,9 @@ public class CommandQueryRestlet
 */
 
 /*
-   protected abstract Object getRoot( InteractionContext context);
+   protected abstract Object getRoot( Context context);
 
-   private Representation resourceInfo( final Object resource, InteractionContext interactionContext ) throws IOException
+   private Representation resourceInfo( final Object resource, Context interactionContext ) throws IOException
    {
       MediaType responseType = getRequest().getClientInfo().getPreferredMediaType( Arrays.asList( MediaType.APPLICATION_JSON, MediaType.TEXT_HTML ) );
 
@@ -1129,7 +1131,7 @@ public class CommandQueryRestlet
          }
       }
 
-      final Value index = resource instanceof IndexContext ? ((IndexContext)resource).index() : null;
+      final Value index = resource instanceof IndexInteraction ? ((IndexInteraction)resource).index() : null;
 
       // JSON
       Representation rep = new WriterRepresentation( MediaType.APPLICATION_JSON )
@@ -1190,7 +1192,7 @@ public class CommandQueryRestlet
       if (methods == null)
       {
          methods = new ArrayList<Method>( );
-         Method[] allMethods = resource instanceof Context ? resource.getClass().getInterfaces()[0].getMethods() : resource.getClass().getDeclaredMethods();
+         Method[] allMethods = resource instanceof Interactions ? resource.getClass().getInterfaces()[0].getMethods() : resource.getClass().getDeclaredMethods();
          for (Method allMethod : allMethods)
          {
             if (!allMethod.isSynthetic())
@@ -1393,7 +1395,7 @@ public class CommandQueryRestlet
          // Find the resource first
          try
          {
-            InteractionContext context = new InteractionContext();
+            Context context = new Context();
             initContext( context );
             Object resource = getRoot(context);
 

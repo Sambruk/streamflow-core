@@ -19,7 +19,8 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import se.streamsource.dci.context.IndexContext;
+import se.streamsource.dci.api.IndexInteraction;
+import se.streamsource.dci.api.InteractionsMixin;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.domain.structure.Describable;
@@ -28,9 +29,8 @@ import se.streamsource.streamflow.web.domain.entity.task.TaskLabelsQueries;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.label.Labelable;
 import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
-import se.streamsource.dci.context.Context;
-import se.streamsource.dci.context.ContextMixin;
-import se.streamsource.dci.context.SubContexts;
+import se.streamsource.dci.api.Interactions;
+import se.streamsource.dci.api.SubContexts;
 
 import java.util.Map;
 
@@ -39,14 +39,14 @@ import java.util.Map;
  */
 @Mixins(LabelableContext.Mixin.class)
 public interface LabelableContext
-   extends SubContexts<LabeledContext>, IndexContext<LinksValue>, Context
+   extends SubContexts<LabeledContext>, IndexInteraction<LinksValue>, Interactions
 {
    LinksValue possiblelabels();
    
    void addlabel( EntityReferenceDTO reference );
 
    abstract class Mixin
-      extends ContextMixin
+      extends InteractionsMixin
       implements LabelableContext
    {
       @Structure
@@ -54,12 +54,12 @@ public interface LabelableContext
 
       public LinksValue index()
       {
-         return new LinksBuilder(module.valueBuilderFactory()).addDescribables( context.role(Labelable.Data.class).labels() ).newLinks();
+         return new LinksBuilder(module.valueBuilderFactory()).addDescribables( context.get(Labelable.Data.class).labels() ).newLinks();
       }
 
       public LinksValue possiblelabels()
       {
-         TaskLabelsQueries labels = context.role(TaskLabelsQueries.class);
+         TaskLabelsQueries labels = context.get(TaskLabelsQueries.class);
 
          LinksBuilder builder = new LinksBuilder(module.valueBuilderFactory()).command( "addlabel" );
          for (Map.Entry<Label, SelectedLabels> labelSelectedLabelsEntry : labels.possibleLabels().entrySet())
@@ -72,7 +72,7 @@ public interface LabelableContext
       public void addlabel( EntityReferenceDTO reference )
       {
          UnitOfWork uow = uowf.currentUnitOfWork();
-         Labelable labelable = context.role( Labelable.class );
+         Labelable labelable = context.get( Labelable.class );
          Label label = uow.get( Label.class, reference.entity().get().identity() );
 
          labelable.addLabel( label );
@@ -80,7 +80,7 @@ public interface LabelableContext
 
       public LabeledContext context( String id )
       {
-         context.playRoles(module.unitOfWorkFactory().currentUnitOfWork().get( Label.class, id ));
+         context.set(module.unitOfWorkFactory().currentUnitOfWork().get( Label.class, id ));
          return subContext( LabeledContext.class );
       }
    }
