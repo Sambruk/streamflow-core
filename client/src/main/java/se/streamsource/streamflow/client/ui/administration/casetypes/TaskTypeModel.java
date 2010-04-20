@@ -30,7 +30,6 @@ import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.administration.form.SelectedFormsModel;
-import se.streamsource.streamflow.client.ui.administration.label.LabelsModel;
 import se.streamsource.streamflow.client.ui.administration.tasktypes.forms.FormsModel;
 import se.streamsource.streamflow.client.ui.administration.label.SelectedLabelsModel;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
@@ -50,10 +49,6 @@ public class TaskTypeModel
    private
    @Uses
    CommandQueryClient client;
-
-   private
-   @Uses
-   LabelsModel labelsModel;
 
    private
    @Uses
@@ -79,11 +74,6 @@ public class TaskTypeModel
       {
          throw new OperationException( AdministrationResources.could_not_rename_project, e );
       }
-   }
-
-   public LabelsModel getLabelsModel()
-   {
-      return labelsModel;
    }
 
    public SelectedLabelsModel getSelectedLabelsModel()
@@ -133,27 +123,4 @@ public class TaskTypeModel
       }
    }
 
-   public EventList<LinkValue> getPossibleMoveTo()
-   {
-      try
-      {
-         BasicEventList<LinkValue> possibleLinks = new BasicEventList<LinkValue>();
-         possibleLinks.addAll( client.query( "possiblemoveto", LinksValue.class ).links().get() );
-         return possibleLinks;
-      } catch (ResourceException e)
-      {
-         throw new OperationException( AdministrationResources.could_not_refresh, e );
-      }
-   }
-
-   public void moveTaskType( LinkValue to)
-   {
-      try
-      {
-         client.postLink( to );
-      } catch (ResourceException e)
-      {
-         throw new OperationException(AdministrationResources.could_not_move, e);
-      }
-   }
 }

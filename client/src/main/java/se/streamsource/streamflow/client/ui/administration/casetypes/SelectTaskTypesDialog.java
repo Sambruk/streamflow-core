@@ -22,9 +22,7 @@ import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.dci.value.LinkValue;
-import se.streamsource.dci.value.TitledLinkValue;
 import se.streamsource.streamflow.client.infrastructure.ui.FilteredList;
-import se.streamsource.streamflow.client.infrastructure.ui.GroupedFilteredList;
 
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
@@ -37,10 +35,10 @@ import java.util.List;
 public class SelectTaskTypesDialog
       extends JPanel
 {
-   public GroupedFilteredList filteredList = new GroupedFilteredList();
+   public FilteredList filteredList = new FilteredList();
    public List<LinkValue> selected;
 
-   public SelectTaskTypesDialog( @Service ApplicationContext context, @Uses EventList<TitledLinkValue> list )
+   public SelectTaskTypesDialog( @Service ApplicationContext context, @Uses EventList<LinkValue> list )
    {
       setActionMap( context.getActionMap( this ) );
 
