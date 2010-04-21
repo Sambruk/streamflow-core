@@ -439,7 +439,7 @@
 
    <field name="contacts" type="json" indexed="false" stored="false"/>
    <field name="contactId" type="string" indexed="true" stored="true" multiValued="true"/>
-   <field name="name" type="string" indexed="true" stored="true" multiValued="true"/>
+   <field name="name" type="textgen" indexed="true" stored="true" multiValued="true"/>
    <field name="phoneNumbers" type="json" indexed="false" stored="false"/>
    <field name="phoneNumber" type="string" indexed="true" stored="true" multiValued="true"/> 
    <field name="emailAddresses" type="json" indexed="false" stored="false" />

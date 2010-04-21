@@ -100,7 +100,7 @@ public interface Delegatable
          if (delegatedTo().get() != null)
          {
             ownable.sendTo( delegatedFrom().get() );
-            rejectedDelegation( DomainEvent.CREATE );
+            cancelledDelegation( DomainEvent.CREATE );
          }
       }
 
