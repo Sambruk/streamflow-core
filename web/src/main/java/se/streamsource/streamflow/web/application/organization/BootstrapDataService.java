@@ -108,7 +108,10 @@ public interface BootstrapDataService
             {
                // Create default organization
                Organization ou = organizations.createOrganization( "Organization" );
-               uow.apply();
+               uow.complete();
+               uow = uowf.newUnitOfWork( newUsecase( "Bootstrap data" ) );
+               orgs = uow.get( organizations ).organizations().newQuery( uow );
+               admin = uow.get(admin);
             }
 
             for (OrganizationEntity org : orgs)

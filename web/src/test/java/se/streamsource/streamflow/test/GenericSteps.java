@@ -215,7 +215,7 @@ public class GenericSteps
 
       Object parameter = vbf.newValueFromJSON( commandMethod.getParameterTypes()[0], parameters );
       commandMethod.invoke( current, parameter );
-      uowf.currentUnitOfWork().apply();
+      uowf.currentUnitOfWork().complete();
    }
 
    @When("command $name without parameters")
@@ -223,7 +223,7 @@ public class GenericSteps
    {
       Method commandMethod = getMethod( name );
       previous = commandMethod.invoke( current );
-      uowf.currentUnitOfWork().apply();
+      uowf.currentUnitOfWork().complete();
    }
 
    @Then("result is $result")
