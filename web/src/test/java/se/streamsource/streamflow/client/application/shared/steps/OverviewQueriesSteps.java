@@ -43,7 +43,7 @@ public class OverviewQueriesSteps
    @When("overview is requested")
    public void requestOverview() throws UnitOfWorkCompletionException
    {
-      uowf.currentUnitOfWork().apply();
+      uowf.currentUnitOfWork().complete();
       summaryList = orgsSteps.givenUser.getProjectsSummary();
    }
 
