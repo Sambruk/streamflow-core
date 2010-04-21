@@ -17,6 +17,8 @@ package se.streamsource.streamflow.resource.user;
 
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
+import se.streamsource.streamflow.domain.user.Password;
+import se.streamsource.streamflow.domain.user.Username;
 
 /**
  * Command for creating a user
@@ -24,7 +26,9 @@ import org.qi4j.api.value.ValueComposite;
 public interface NewUserCommand
       extends ValueComposite
 {
+   @Username
    Property<String> username();
 
+   @Password
    Property<String> password();
 }

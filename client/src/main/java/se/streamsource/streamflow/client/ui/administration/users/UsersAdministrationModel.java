@@ -15,6 +15,7 @@
 
 package se.streamsource.streamflow.client.ui.administration.users;
 
+import org.qi4j.api.constraint.ConstraintViolationException;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilder;
@@ -30,6 +31,7 @@ import se.streamsource.streamflow.client.OperationException;
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.domain.user.Username;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
@@ -137,15 +139,11 @@ public class UsersAdministrationModel
       return columnNames[column];
    }
 
-   public void createUser( String username, String password )
+   public void createUser( NewUserCommand userCommand )
    {
       try
       {
-         ValueBuilder<NewUserCommand> builder = vbf.newValueBuilder( NewUserCommand.class );
-         builder.prototype().username().set( username );
-         builder.prototype().password().set( password );
-
-         client.postCommand( "createuser", builder.newInstance() );
+         client.postCommand( "createuser", userCommand );
       } catch (ResourceException e)
       {
          throw new OperationException( ErrorResources.valueOf( e.getMessage() ), e );

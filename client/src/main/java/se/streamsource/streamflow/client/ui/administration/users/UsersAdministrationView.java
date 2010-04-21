@@ -83,10 +83,14 @@ public class UsersAdministrationView
       CreateUserDialog dialog = userDialogs.iterator().next();
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.create_user_title ) );
 
-      if (dialog.username() != null && dialog.password() != null)
+      if ( dialog.userCommand() != null )
+      {
+         model.createUser( dialog.userCommand() );
+      }
+      /*if (dialog.username() != null && dialog.password() != null)
       {
          model.createUser( dialog.username(), dialog.password() );
-      }
+      } */
    }
 
    @org.jdesktop.application.Action
