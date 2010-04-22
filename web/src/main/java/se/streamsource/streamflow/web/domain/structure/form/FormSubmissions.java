@@ -24,8 +24,10 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
+import se.streamsource.streamflow.domain.form.CommentFieldValue;
 import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
 import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
+import se.streamsource.streamflow.domain.form.FieldValue;
 import se.streamsource.streamflow.domain.form.FormSubmissionValue;
 import se.streamsource.streamflow.domain.form.PageSubmissionValue;
 import se.streamsource.streamflow.domain.form.SubmittedFieldValue;
@@ -133,11 +135,16 @@ public interface FormSubmissions
             Fields.Data fieldEntities = (Fields.Data) page;
             for (Field field : fieldEntities.fields())
             {
+               FieldValue fieldValue = ((FieldValueDefinition.Data) field).fieldValue().get();
+
+               if (fieldValue instanceof CommentFieldValue)
+                  continue;
+
                valueBuilder.prototype().description().set( field.getDescription() );
                valueBuilder.prototype().note().set( field.getNote() );
                valueBuilder.prototype().field().set( EntityReference.getEntityReference( field ));
                valueBuilder.prototype().mandatory().set( field.getMandatory() );
-               valueBuilder.prototype().fieldValue().set( ((FieldValueDefinition.Data) field).fieldValue().get() );
+               valueBuilder.prototype().fieldValue().set( fieldValue );
 
                fieldBuilder.prototype().field().set( valueBuilder.newInstance() );
                fieldBuilder.prototype().value().set( getSubmittedValue( field, submittedFormValue ) );

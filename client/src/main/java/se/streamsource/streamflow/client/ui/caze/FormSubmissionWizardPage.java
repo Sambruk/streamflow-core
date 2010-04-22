@@ -56,7 +56,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import java.awt.BorderLayout;
+import java.text.DateFormat;
 import java.text.NumberFormat;
+import java.util.Locale;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Observer;
@@ -109,7 +111,9 @@ public class FormSubmissionWizardPage
             }
          } else if ( value.field().get().fieldValue().get() instanceof DateFieldValue)
          {
-            component = new JXDatePicker();
+            JXDatePicker datePicker = new JXDatePicker();
+            datePicker.setFormats( DateFormat.getDateInstance( DateFormat.MEDIUM, Locale.getDefault() ) );
+            component = datePicker;
          } else if ( value.field().get().fieldValue().get() instanceof NumberFieldValue)
          {
             NumberFieldValue field = (NumberFieldValue) value.field().get().fieldValue().get();
@@ -129,7 +133,9 @@ public class FormSubmissionWizardPage
             }
          } else if ( value.field().get().fieldValue().get() instanceof CommentFieldValue )
          {
-            bb.append( new JLabel( value.field().get().note().get() ) );
+            String comment = value.field().get().note().get();
+            comment = comment.replaceAll( "\n", "<br/>" );
+            bb.append( new JLabel( "<html>"+comment+"</html>" ) );
          }
 
          if ( component != null )

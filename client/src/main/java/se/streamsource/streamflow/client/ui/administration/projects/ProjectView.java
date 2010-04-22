@@ -19,6 +19,7 @@ import org.qi4j.api.injection.scope.Uses;
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypesAdminView;
+import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FormsAdminView;
 import se.streamsource.streamflow.client.ui.administration.label.LabelsView;
 import se.streamsource.streamflow.client.ui.administration.label.SelectedLabelsView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.SelectedCaseTypesView;
@@ -33,7 +34,7 @@ public class ProjectView
       extends JTabbedPane
 {
    public ProjectView( @Uses ProjectMembersView membersView,
-                       @Uses FormsView formsView,
+                       @Uses FormsAdminView formsView,
                        @Uses CaseTypesAdminView caseTypesAdminView,
                        @Uses LabelsView labelsView,
                        @Uses SelectedLabelsView selectedLabelsView,
