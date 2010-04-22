@@ -151,16 +151,18 @@ public class AdministrationOutlineView
       addRefreshWhenVisible();
       //addAncestorListener(refreshWhenVisible);
 
-      tree.getSelectionModel().addTreeSelectionListener( new SelectionActionEnabler( am.get( "changeDescription" ),
-                                                                                     am.get( "removeOrganizationalUnit" ),
-                                                                                     am.get( "moveOrganizationalUnit"),
-                                                                                     am.get( "mergeOrganizationalUnit"))
+      tree.getSelectionModel().addTreeSelectionListener( new SelectionActionEnabler(
+            am.get( "changeDescription" ),
+            am.get( "removeOrganizationalUnit" ),
+            am.get( "moveOrganizationalUnit"),
+            am.get( "mergeOrganizationalUnit"),
+            am.get( "createOrganizationalUnit"))
       {
          @Override
          public boolean isSelectedValueValid( javax.swing.Action action )
          {
             // TODO This should be done by asking for possible interactions on server instead
-            
+
             Object node = tree.getLastSelectedPathComponent();
 
             String name = ((ApplicationAction) action).getName();
@@ -170,10 +172,13 @@ public class AdministrationOutlineView
             } else if ("changeDescription".equals( name ))
             {
                return !(node instanceof AccountAdministrationNode);
+            } else if ("createOrganizationalUnit".equals( name ))
+            {
+               return !(node instanceof AccountAdministrationNode);
             }
 
 
-            
+
             return super.isSelectedValueValid( action );
          }
       });
