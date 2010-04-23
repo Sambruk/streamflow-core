@@ -55,12 +55,12 @@ public class AdministratorsModel
       return administrators;
    }
 
-   public void addAdministrator( String description )
+   public void addAdministrator( LinkValue link )
    {
       try
       {
          ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
-         builder.prototype().entity().set( EntityReference.parseEntityReference(description ));
+         builder.prototype().entity().set( EntityReference.parseEntityReference(link.id().get() ));
          client.postCommand( "addadministrator", builder.newInstance() );
          refresh();
 

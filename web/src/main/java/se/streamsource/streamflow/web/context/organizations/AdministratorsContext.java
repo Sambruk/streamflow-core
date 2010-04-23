@@ -52,8 +52,8 @@ public interface AdministratorsContext
    public LinksValue administrators();
 
    public void addadministrator( EntityReferenceDTO participantId );
-   public LinksValue possibleusers( StringValue query );
-   public LinksValue possiblegroups( StringValue query );
+   public LinksValue possibleusers();
+   public LinksValue possiblegroups();
 
    abstract class Mixin
       extends InteractionsMixin
@@ -86,17 +86,16 @@ public interface AdministratorsContext
          role.grantRole( participant, adminRole );
       }
 
-      public LinksValue possibleusers( StringValue query )
+      public LinksValue possibleusers()
       {
          OrganizationQueries organization = context.get(OrganizationQueries.class);
 
          Role adminRole = context.get( Roles.class).getAdministratorRole();
 
-         Query<UserEntity> users = organization.findUsersByUsername( query.string().get() ).newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
+         Query<UserEntity> users = organization.findUsersByUsername( "*" ).newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
          users = users.orderBy( orderBy( templateFor( UserAuthentication.Data.class ).userName() ) );
 
-         LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
-         linksBuilder.command("addadministrator");
+         LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() ).command("addadministrator");
 
          RolePolicy policy = context.get(RolePolicy.class);
 
@@ -104,25 +103,24 @@ public interface AdministratorsContext
          {
             if (!policy.participantHasRole(user, adminRole))
             {
-               linksBuilder.addDescribable(user);
+               String group = "" + Character.toUpperCase( user.getDescription().charAt( 0 ) );
+               linksBuilder.addDescribable(user, group);
             }
          }
 
          return linksBuilder.newLinks();
       }
 
-
-      public LinksValue possiblegroups( StringValue query )
+      public LinksValue possiblegroups()
       {
          OrganizationQueries organization = context.get(OrganizationQueries.class);
 
-         Query<GroupEntity> groups = organization.findGroupsByName( query.string().get() ).newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
+         Query<GroupEntity> groups = organization.findGroupsByName( "*" ).newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
          groups.orderBy( orderBy( templateFor( Describable.Data.class ).description() ) );
 
          Role adminRole = context.get( Roles.class).getAdministratorRole();
 
-         LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
-         linksBuilder.command("addadministrator");
+         LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() ).command("addadministrator");
 
          RolePolicy policy = context.get(RolePolicy.class);
 
@@ -130,7 +128,8 @@ public interface AdministratorsContext
          {
             if (!policy.participantHasRole( grp, adminRole ))
             {
-               linksBuilder.addDescribable( grp );
+               String group = "" + Character.toUpperCase( grp.getDescription().charAt( 0 ) );
+               linksBuilder.addDescribable( grp, group );
             }
          }
 

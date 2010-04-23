@@ -37,6 +37,7 @@ import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 import se.streamsource.streamflow.client.ui.ConfirmationDialog;
 import se.streamsource.streamflow.client.ui.SelectUsersAndGroupsDialog;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.ui.administration.UsersAndGroupsModel;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -58,18 +59,23 @@ public class ProjectMembersView
    @Uses
    ObjectBuilder<SelectUsersAndGroupsDialog> selectUsersAndGroups;
 
-   @Structure
-   ObjectBuilderFactory obf;
+   private ObjectBuilderFactory obf;
+   private UsersAndGroupsModel usersAndGroupsModel;
+
+
 
    public JXList membersList;
    private ProjectMembersModel membersModel;
 
    public ProjectMembersView( @Service ApplicationContext context,
-                              @Uses final ProjectMembersModel membersModel )
+                              @Uses final ProjectMembersModel membersModel,
+                              @Structure ObjectBuilderFactory obf)
    {
       super( new BorderLayout() );
       this.membersModel = membersModel;
+      this.obf = obf;
 
+      usersAndGroupsModel = obf.newObjectBuilder( UsersAndGroupsModel.class ).use( membersModel.getFilterResource() ).newInstance();
       setActionMap( context.getActionMap( this ) );
 
       membersList = new JXList( new EventListModel<LinkValue>(new SortedList<LinkValue>(membersModel.getMembers(), new LinkComparator())) );
@@ -92,12 +98,13 @@ public class ProjectMembersView
    @Action
    public void add()
    {
-      SelectUsersAndGroupsDialog dialog = selectUsersAndGroups.use( membersModel.getFilterResource() ).newInstance();
-      dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.add_user_or_group_title ) );
-      Set<String> members = dialog.getUsersAndGroups();
-      if (members != null)
+      SelectUsersAndGroupsDialog dialog = selectUsersAndGroups.use( usersAndGroupsModel ).newInstance();
+      dialogs.showOkCancelHelpDialog( this, dialog, i18n.text(AdministrationResources.add_user_or_group_title) );
+
+      Set<LinkValue> linkValueSet = dialog.getSelectedEntities();
+      if ( !linkValueSet.isEmpty() )
       {
-         membersModel.addMembers( members );
+         membersModel.addMembers( linkValueSet );
          membersModel.refresh();
       }
    }

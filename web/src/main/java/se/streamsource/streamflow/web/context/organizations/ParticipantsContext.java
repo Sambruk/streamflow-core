@@ -49,8 +49,8 @@ public interface ParticipantsContext
    extends SubContexts<ParticipantContext>, IndexInteraction<LinksValue>, Interactions
 {
    public void addparticipant( EntityReferenceDTO participantId);
-   public LinksValue possibleusers( StringValue query );
-   public LinksValue possiblegroups( StringValue query );
+   public LinksValue possibleusers();
+   public LinksValue possiblegroups();
 
    abstract class Mixin
       extends InteractionsMixin
@@ -75,13 +75,13 @@ public interface ParticipantsContext
          participants.addParticipant( participant );
       }
 
-      public LinksValue possibleusers( StringValue query )
+      public LinksValue possibleusers()
       {
          OwningOrganization org = context.get(OwningOrganization.class);
          OrganizationEntity organization = (OrganizationEntity) org.organization().get();
          Participants.Data participants = context.get(Participants.Data.class);
 
-         Query<UserEntity> users = organization.findUsersByUsername( query.string().get() ).newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
+         Query<UserEntity> users = organization.findUsersByUsername( "*" ).newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
          users = users.orderBy( orderBy( templateFor( UserAuthentication.Data.class ).userName() ) );
 
          LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
@@ -91,18 +91,19 @@ public interface ParticipantsContext
          {
             if (!participants.participants().contains( user ))
             {
-               linksBuilder.addDescribable( user );
+               String group = "" + Character.toUpperCase( user.getDescription().charAt( 0 ) );
+               linksBuilder.addDescribable( user, group );
             }
          }
 
          return linksBuilder.newLinks();
       }
 
-      public LinksValue possiblegroups( StringValue query )
+      public LinksValue possiblegroups()
       {
          OwningOrganization org = context.get(OwningOrganization.class);
 
-         Query<GroupEntity> groups = ((OrganizationQueries) org.organization().get()).findGroupsByName( query.string().get() ).newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
+         Query<GroupEntity> groups = ((OrganizationQueries) org.organization().get()).findGroupsByName( "*" ).newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
          groups.orderBy( orderBy( templateFor( Describable.Data.class ).description() ) );
 
          GroupEntity group = context.get(GroupEntity.class);
@@ -115,7 +116,8 @@ public interface ParticipantsContext
             if (!group.participants().contains( grp )
                   && !group.equals(grp))
             {
-               linksBuilder.addDescribable( grp );
+               String grouping = "" + Character.toUpperCase( grp.getDescription().charAt( 0 ) );
+               linksBuilder.addDescribable( grp, grouping );
             }
          }
 

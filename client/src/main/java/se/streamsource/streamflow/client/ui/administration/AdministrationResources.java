@@ -174,5 +174,6 @@ public enum AdministrationResources
    could_not_move,
    choose_move_to,
    could_not_perform_query,
+   search_users_or_groups, 
    members_tab
 }

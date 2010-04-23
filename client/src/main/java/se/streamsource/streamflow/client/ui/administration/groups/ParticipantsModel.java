@@ -33,6 +33,8 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 
+import java.util.Set;
+
 /**
  * JAVADOC
  */
@@ -52,14 +54,14 @@ public class ParticipantsModel
       return participants;
    }
 
-   public void addParticipants( Iterable<String> participants )
+   public void addParticipants( Set<LinkValue> participants )
    {
       try
       {
-         for (String value : participants)
+         for (LinkValue value : participants)
          {
             ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
-            builder.prototype().entity().set( EntityReference.parseEntityReference( value ) );
+            builder.prototype().entity().set( EntityReference.parseEntityReference( value.id().get() ) );
             client.postCommand( "addparticipant", builder.newInstance() );
          }
       } catch (ResourceException e)

@@ -15,6 +15,7 @@
 
 package se.streamsource.streamflow.client.ui;
 
+import ca.odell.glazedlists.EventList;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.util.WindowUtils;
@@ -26,17 +27,25 @@ import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.StringValue;
+import se.streamsource.dci.value.TitledLinkValue;
+import se.streamsource.streamflow.client.infrastructure.ui.GroupedFilteredList;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.ui.administration.UsersAndGroupsModel;
 import se.streamsource.streamflow.client.ui.administration.projects.members.TableMultipleSelectionModel;
 import se.streamsource.streamflow.client.ui.administration.projects.members.TableSelectionView;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -48,77 +57,55 @@ public class SelectUsersAndGroupsDialog
    private ValueBuilderFactory vbf;
 
    Dimension dialogSize = new Dimension( 600, 300 );
-   private TableSelectionView addGroupsView;
-   private TableSelectionView addUsersView;
+
+   private GroupedFilteredList groupList;
+   private GroupedFilteredList userList;
 
    private Set<String> usersAndGroups;
+   private Set<LinkValue> selectedEntities;
 
    public SelectUsersAndGroupsDialog( @Service ApplicationContext context,
-                                      final @Uses CommandQueryClient client,
+                                      @Uses UsersAndGroupsModel model,
                                       @Structure ObjectBuilderFactory obf,
                                       final @Structure ValueBuilderFactory vbf)
    {
-      super( new BorderLayout() );
-
+      super( new GridLayout(1, 2) );
       setActionMap( context.getActionMap( this ) );
+      setName( i18n.text( AdministrationResources.search_users_or_groups) );
 
-      TableMultipleSelectionModel usersModel = obf.newObject( TableMultipleSelectionModel.class );
-      this.addUsersView = obf.newObjectBuilder( TableSelectionView.class ).use( usersModel, i18n.text( AdministrationResources.search_users ) ).newInstance();
+      selectedEntities = new HashSet<LinkValue>();
+      EventList<TitledLinkValue> groups = model.getPossibleGroups();
 
-      TableMultipleSelectionModel groupsModel = obf.newObject( TableMultipleSelectionModel.class );
-      this.addGroupsView = obf.newObjectBuilder( TableSelectionView.class ).use( groupsModel, i18n.text( AdministrationResources.search_groups ) ).newInstance();
+      groupList = new GroupedFilteredList();
+      groupList.setEventList( groups );
 
-      addUsersView.getSearchInputField().addKeyListener( new KeyAdapter()
-      {
-         @Override
-         public void keyReleased( KeyEvent keyEvent )
-         {
-            try
-            {
-               ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
-               builder.prototype().string().set( addUsersView.searchText() );
-               LinksValue list = client.query( "possibleusers", builder.newInstance(), LinksValue.class );
-               addUsersView.getModel().setModel( list );
-            } catch (ResourceException e)
-            {
-               e.printStackTrace();
-            }
-         }
-      } );
+      add( new JScrollPane( groupList ));
 
-      addGroupsView.getSearchInputField().addKeyListener( new KeyAdapter()
-      {
-         @Override
-         public void keyReleased( KeyEvent keyEvent )
-         {
-            try
-            {
-               ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
-               builder.prototype().string().set( addGroupsView.searchText() );
-               LinksValue list = client.query( "possiblegroups", builder.newInstance(), LinksValue.class );
-               addGroupsView.getModel().setModel( list );
-            } catch (ResourceException e)
-            {
-               e.printStackTrace();
-            }
-         }
-      } );
+      userList = new GroupedFilteredList();
+      EventList<TitledLinkValue> users = model.getPossibleUsers();
 
-      JSplitPane dialog = new JSplitPane();
+      userList.setEventList(users);
 
-      dialog.setLeftComponent( addUsersView );
-      dialog.setRightComponent( addGroupsView );
-      dialog.setPreferredSize( dialogSize );
-      setPreferredSize( dialogSize );
-      add( dialog, BorderLayout.NORTH );
+      add( new JScrollPane( userList ));
+   }
+
+   public Set<LinkValue> getSelectedEntities()
+   {
+      return selectedEntities;
    }
 
    @Action
    public void execute()
    {
-      usersAndGroups = ((TableMultipleSelectionModel) addUsersView.getModel()).getSelected();
-      usersAndGroups.addAll( ((TableMultipleSelectionModel) addGroupsView.getModel()).getSelected() );
+      for (Object value : groupList.getList().getSelectedValues())
+      {
+         selectedEntities.add( (LinkValue) value );
+      }
 
+      for (Object value : userList.getList().getSelectedValues())
+      {
+         selectedEntities.add( (LinkValue) value );
+      }
       WindowUtils.findWindow( this ).dispose();
    }
 
@@ -126,10 +113,5 @@ public class SelectUsersAndGroupsDialog
    public void close()
    {
       WindowUtils.findWindow( this ).dispose();
-   }
-
-   public Set<String> getUsersAndGroups()
-   {
-      return usersAndGroups;
    }
 }

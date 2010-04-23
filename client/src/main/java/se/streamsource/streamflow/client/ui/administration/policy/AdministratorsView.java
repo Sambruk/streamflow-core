@@ -20,8 +20,10 @@ import ca.odell.glazedlists.swing.EventListModel;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilder;
+import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.client.StreamFlowResources;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
@@ -33,6 +35,7 @@ import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 import se.streamsource.streamflow.client.ui.ConfirmationDialog;
 import se.streamsource.streamflow.client.ui.SelectUsersAndGroupsDialog;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.ui.administration.UsersAndGroupsModel;
 
 import javax.swing.JButton;
 import javax.swing.JList;
@@ -56,13 +59,17 @@ public class AdministratorsView
 
    @Uses
    ObjectBuilder<SelectUsersAndGroupsDialog> selectUsersAndGroupsDialogs;
+   private UsersAndGroupsModel usersAndGroupsModel;
 
    public JList administratorList;
 
-   public AdministratorsView( @Service ApplicationContext context, @Uses final AdministratorsModel model )
+   public AdministratorsView( @Service ApplicationContext context,
+                              @Uses final AdministratorsModel model,
+                              @Structure ObjectBuilderFactory obf)
    {
       super( new BorderLayout() );
       this.model = model;
+      usersAndGroupsModel = obf.newObjectBuilder( UsersAndGroupsModel.class ).use( model.getFilterResource() ).newInstance();
 
       setActionMap( context.getActionMap( this ) );
 
@@ -82,12 +89,13 @@ public class AdministratorsView
    @Action
    public void add()
    {
-      SelectUsersAndGroupsDialog dialog = selectUsersAndGroupsDialogs.use( model.getFilterResource() ).newInstance();
+      SelectUsersAndGroupsDialog dialog = selectUsersAndGroupsDialogs.use( usersAndGroupsModel ).newInstance();
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.add_user_or_group_title ) );
-      Set<String> added = dialog.getUsersAndGroups();
-      if (added != null)
+
+      Set<LinkValue> linkValueSet = dialog.getSelectedEntities();
+      if ( !linkValueSet.isEmpty() )
       {
-         for (String identity : added)
+         for (LinkValue identity : linkValueSet)
          {
             model.addAdministrator( identity );
          }

@@ -77,15 +77,15 @@ public class ProjectMembersModel
       }
    }
 
-   public void addMembers( Set<String> newMembers )
+   public void addMembers( Set<LinkValue> linkValueSet )
    {
       try
       {
-         for (String value : newMembers)
+         for (LinkValue value : linkValueSet)
          {
 
             ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
-            builder.prototype().entity().set( EntityReference.parseEntityReference(value ));
+            builder.prototype().entity().set( EntityReference.parseEntityReference( value.id().get() ));
             client.postCommand( "addmember", builder.newInstance() );
          }
       } catch (ResourceException e)

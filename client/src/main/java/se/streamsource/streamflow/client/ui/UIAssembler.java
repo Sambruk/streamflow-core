@@ -21,6 +21,7 @@ import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import se.streamsource.streamflow.client.StreamFlowApplication;
 import se.streamsource.streamflow.client.infrastructure.ui.UIAssemblers;
+import se.streamsource.streamflow.client.ui.administration.UsersAndGroupsModel;
 import se.streamsource.streamflow.client.ui.administration.projects.members.TableMultipleSelectionModel;
 import se.streamsource.streamflow.client.ui.administration.projects.members.TableSingleSelectionModel;
 
@@ -53,7 +54,8 @@ public class UIAssembler
             ResetPasswordDialog.class );
 
       UIAssemblers.addModels( module, TableMultipleSelectionModel.class,
-            TableSingleSelectionModel.class );
+            TableSingleSelectionModel.class,
+            UsersAndGroupsModel.class );
 
       module.addObjects( DebugWindow.class );
 
