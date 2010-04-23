@@ -33,6 +33,11 @@ public class AssignIdSideEffect
       return result.isOwnedBy( owner );
    }
 
+   public boolean hasOwner()
+   {
+      return result.hasOwner();
+   }
+
    public void sendTo( Owner owner )
    {
       result.sendTo( owner );

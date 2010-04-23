@@ -29,9 +29,13 @@ import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.entity.user.SearchCaseQueries;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
 import se.streamsource.dci.api.SubContexts;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * JAVADOC
@@ -46,7 +50,7 @@ public interface CasesContext
       extends InteractionsMixin
       implements CasesContext
    {
-      public static LinksValue buildCaseList(Query<Case> query, Module module, String basePath)
+      public static LinksValue buildCaseList(Iterable<Case> query, Module module, String basePath)
       {
          LinksBuilder linksBuilder = new LinksBuilder(module.valueBuilderFactory()).path( basePath );
          for (Case aCase : query)
@@ -65,7 +69,15 @@ public interface CasesContext
          String name = context.get( UserAuthentication.Data.class ).userName().get();
          Query<Case> caseQuery = caseQueries.search( query, name );
          caseQuery.orderBy( QueryExpressions.orderBy(QueryExpressions.templateFor( Describable.Data.class ).description()) );
-         return buildCaseList( caseQuery, module, context.get(Reference.class).getBaseRef().getPath());
+
+         List<Case> filteredCases = new ArrayList<Case>( );
+         for (Case aCase : caseQuery)
+         {
+            if (((Ownable)aCase).hasOwner())
+               filteredCases.add( aCase );
+         }
+
+         return buildCaseList( filteredCases, module, context.get(Reference.class).getBaseRef().getPath());
       }
 
       public CaseContext context( String id )

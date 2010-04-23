@@ -31,6 +31,8 @@ public interface Ownable
 
    boolean isOwnedBy(Owner owner);
 
+   boolean hasOwner();
+
    interface Data
    {
       @Optional
@@ -48,6 +50,11 @@ public interface Ownable
       public void sendTo( Owner owner )
       {
          sentTo( DomainEvent.CREATE, owner );
+      }
+
+      public boolean hasOwner()
+      {
+         return owner().get() != null;
       }
 
       public boolean isOwnedBy( Owner owner )
