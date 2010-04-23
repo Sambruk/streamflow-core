@@ -35,12 +35,10 @@ import se.streamsource.streamflow.client.ui.caze.AssignmentsCaseTableFormatter;
 import se.streamsource.streamflow.client.ui.caze.CaseTableView;
 import se.streamsource.streamflow.client.ui.caze.CasesTableModel;
 import se.streamsource.streamflow.client.ui.caze.CasesView;
-import se.streamsource.streamflow.client.ui.caze.DelegationsCaseTableFormatter;
 import se.streamsource.streamflow.client.ui.search.SearchResultTableModel;
 import se.streamsource.streamflow.client.ui.caze.InboxCaseTableFormatter;
 import se.streamsource.streamflow.client.ui.caze.CasesDetailView2;
 import se.streamsource.streamflow.client.ui.caze.CasesModel;
-import se.streamsource.streamflow.client.ui.caze.WaitingForCaseTableFormatter;
 
 import javax.swing.Icon;
 import javax.swing.JButton;
@@ -150,14 +148,10 @@ public class WorkspaceView
                      return i18n.icon( Icons.project, i18n.ICON_24 );
                   else if (o instanceof WorkspaceProjectsNode)
                      return i18n.icon( Icons.projects, i18n.ICON_24 );
-                  else if (o instanceof WorkspaceUserInboxNode || o instanceof WorkspaceProjectInboxNode)
+                  else if (o instanceof WorkspaceUserDraftsNode || o instanceof WorkspaceProjectInboxNode)
                      return i18n.icon( Icons.inbox, i18n.ICON_16 );
-                  else if (o instanceof WorkspaceUserAssignmentsNode || o instanceof WorkspaceProjectAssignmentsNode)
+                  else if (o instanceof WorkspaceProjectAssignmentsNode)
                      return i18n.icon( Icons.assign, i18n.ICON_16 );
-                  else if (o instanceof WorkspaceUserDelegationsNode || o instanceof WorkspaceProjectDelegationsNode)
-                     return i18n.icon( Icons.delegate, i18n.ICON_16 );
-                  else if (o instanceof WorkspaceUserWaitingForNode || o instanceof WorkspaceProjectWaitingForNode)
-                     return i18n.icon( Icons.waitingfor, i18n.ICON_16 );
                   else
                      return NULL_ICON;
                }
@@ -172,13 +166,9 @@ public class WorkspaceView
                      return ((WorkspaceProjectNode) o).projectName();
                   else if (o instanceof WorkspaceProjectsNode)
                      return i18n.text( WorkspaceResources.projects_node );
-                  else if (o instanceof WorkspaceUserInboxNode || o instanceof WorkspaceProjectInboxNode)
+                  else if (o instanceof WorkspaceUserDraftsNode || o instanceof WorkspaceProjectInboxNode)
                      return o.toString();
-                  else if (o instanceof WorkspaceUserAssignmentsNode || o instanceof WorkspaceProjectAssignmentsNode)
-                     return o.toString();
-                  else if (o instanceof WorkspaceUserDelegationsNode || o instanceof WorkspaceProjectDelegationsNode)
-                     return o.toString();
-                  else if (o instanceof WorkspaceUserWaitingForNode || o instanceof WorkspaceProjectWaitingForNode)
+                  else if (o instanceof WorkspaceProjectAssignmentsNode)
                      return o.toString();
                   else
                      return "";
@@ -216,12 +206,12 @@ public class WorkspaceView
 
                JComponent view = null;
 
-               if (node instanceof WorkspaceUserInboxNode)
+               if (node instanceof WorkspaceUserDraftsNode)
                {
-                  WorkspaceUserInboxNode userInboxNode = (WorkspaceUserInboxNode) node;
-                  final CasesTableModel inboxModel = userInboxNode.caseTableModel();
+                  WorkspaceUserDraftsNode userDraftsNode = (WorkspaceUserDraftsNode) node;
+                  final CasesTableModel inboxModel = userDraftsNode.caseTableModel();
                   view = obf.newObjectBuilder( CaseTableView.class ).use( inboxModel, detailView,
-                        userInboxNode.getParent(), node,
+                        userDraftsNode.getParent(), node,
                         casesModel, new InboxCaseTableFormatter()
                   ).newInstance();
 
@@ -230,60 +220,6 @@ public class WorkspaceView
                      protected Object doInBackground() throws Exception
                      {
                         inboxModel.refresh();
-
-                        return null;
-                     }
-                  } );
-               } else if (node instanceof WorkspaceUserAssignmentsNode)
-               {
-                  WorkspaceUserAssignmentsNode userAssignmentsNode = (WorkspaceUserAssignmentsNode) node;
-                  final CasesTableModel assignmentsModel = userAssignmentsNode.caseTableModel();
-                  view = obf.newObjectBuilder( CaseTableView.class ).use( assignmentsModel, detailView,
-                        userAssignmentsNode.getParent(), node,
-                        casesModel, new AssignmentsCaseTableFormatter()
-                  ).newInstance();
-
-                  context.getTaskService().execute( new Task( context.getApplication() )
-                  {
-                     protected Object doInBackground() throws Exception
-                     {
-                        assignmentsModel.refresh();
-
-                        return null;
-                     }
-                  } );
-               } else if (node instanceof WorkspaceUserDelegationsNode)
-               {
-                  WorkspaceUserDelegationsNode userDelegationsNode = (WorkspaceUserDelegationsNode) node;
-                  final CasesTableModel delegationsModel = userDelegationsNode.caseTableModel();
-                  view = obf.newObjectBuilder( CaseTableView.class ).use( delegationsModel, detailView,
-                        userDelegationsNode.getParent(),
-                        casesModel,
-                        new DelegationsCaseTableFormatter() ).newInstance();
-
-                  context.getTaskService().execute( new Task( context.getApplication() )
-                  {
-                     protected Object doInBackground() throws Exception
-                     {
-                        delegationsModel.refresh();
-
-                        return null;
-                     }
-                  } );
-               } else if (node instanceof WorkspaceUserWaitingForNode)
-               {
-                  WorkspaceUserWaitingForNode userWaitingForNode = (WorkspaceUserWaitingForNode) node;
-                  final CasesTableModel waitingForModel = userWaitingForNode.caseTableModel();
-                  view = obf.newObjectBuilder( CaseTableView.class ).use( waitingForModel, detailView,
-                        userWaitingForNode.getParent(),
-                        casesModel,
-                        new WaitingForCaseTableFormatter() ).newInstance();
-
-                  context.getTaskService().execute( new Task( context.getApplication() )
-                  {
-                     protected Object doInBackground() throws Exception
-                     {
-                        waitingForModel.refresh();
 
                         return null;
                      }
@@ -326,43 +262,7 @@ public class WorkspaceView
                      }
                   } );
 
-               } else if (node instanceof WorkspaceProjectDelegationsNode)
-               {
-                  WorkspaceProjectDelegationsNode projectDelegationsNode = (WorkspaceProjectDelegationsNode) node;
-                  final CasesTableModel delegationsModel = projectDelegationsNode.caseTableModel();
-                  view = obf.newObjectBuilder( CaseTableView.class ).use( delegationsModel, detailView,
-                        projectDelegationsNode.getParent(),
-                        casesModel,
-                        new DelegationsCaseTableFormatter() ).newInstance();
-
-                  context.getTaskService().execute( new Task( context.getApplication() )
-                  {
-                     protected Object doInBackground() throws Exception
-                     {
-                        delegationsModel.refresh();
-
-                        return null;
-                     }
-                  } );
-               } else if (node instanceof WorkspaceProjectWaitingForNode)
-               {
-                  WorkspaceProjectWaitingForNode projectWaitingForNode = (WorkspaceProjectWaitingForNode) node;
-                  final CasesTableModel waitingForModel = projectWaitingForNode.caseTableModel();
-                  view = obf.newObjectBuilder( CaseTableView.class ).use( waitingForModel, detailView,
-                        projectWaitingForNode.getParent(),
-                        casesModel,
-                        new WaitingForCaseTableFormatter() ).newInstance();
-
-                  context.getTaskService().execute( new Task( context.getApplication() )
-                  {
-                     protected Object doInBackground() throws Exception
-                     {
-                        waitingForModel.refresh();
-
-                        return null;
-                     }
-                  } );
-               }
+               } 
 
                if (view != null)
                {

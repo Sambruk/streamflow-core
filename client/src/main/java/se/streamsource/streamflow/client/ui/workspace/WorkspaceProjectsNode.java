@@ -86,24 +86,16 @@ public class WorkspaceProjectsNode
             CommandQueryClient projectClient = projectsClient.getClient( project.href().get() );
             CommandQueryClient projectInboxClientResource = projectClient.getSubClient( "inbox" );
             CommandQueryClient projectAssignmentsClientResource = projectClient.getSubClient( "assignments" );
-            CommandQueryClient projectDelegationsClientResource = projectClient.getSubClient( "delegations" );
-            CommandQueryClient projectWaitingforClientResource = projectClient.getSubClient( "waitingfor" );
 
             CasesTableModel inboxModel = obf.newObjectBuilder( CasesTableModel.class ).use( projectInboxClientResource ).newInstance();
             CasesTableModel assignmentsModel = obf.newObjectBuilder( CasesTableModel.class ).use( projectAssignmentsClientResource ).newInstance();
-            CasesTableModel delegationsModel = obf.newObjectBuilder( CasesTableModel.class ).use( projectDelegationsClientResource ).newInstance();
-            CasesTableModel waitingForModel = obf.newObjectBuilder( CasesTableModel.class ).use( projectWaitingforClientResource ).newInstance();
 
             WorkspaceProjectInboxNode inboxNode = obf.newObjectBuilder( WorkspaceProjectInboxNode.class ).use( projectInboxClientResource, inboxModel ).newInstance();
             WorkspaceProjectAssignmentsNode assignmentsNode = obf.newObjectBuilder( WorkspaceProjectAssignmentsNode.class ).use( projectAssignmentsClientResource, assignmentsModel ).newInstance();
-            WorkspaceProjectDelegationsNode delegationsNode = obf.newObjectBuilder( WorkspaceProjectDelegationsNode.class ).use( projectDelegationsClientResource, delegationsModel ).newInstance();
-            WorkspaceProjectWaitingForNode waitingForNode = obf.newObjectBuilder( WorkspaceProjectWaitingForNode.class ).use( projectWaitingforClientResource, waitingForModel ).newInstance();
 
             add( obf.newObjectBuilder( WorkspaceProjectNode.class ).use( projectClient,
                   inboxNode,
                   assignmentsNode,
-                  delegationsNode,
-                  waitingForNode,
                   account.cases(),
                   project.text().get() ).newInstance() );
          }

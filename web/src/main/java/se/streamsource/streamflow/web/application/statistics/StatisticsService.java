@@ -131,8 +131,8 @@ public interface StatisticsService
                if (accept)
                {
                   String params = event.parameters().get();
-                  if (params.indexOf( "COMPLETED" ) != -1 ||
-                      params.indexOf( "ACTIVE" ) != -1)
+                  if (params.indexOf( "CLOSED" ) != -1 ||
+                      params.indexOf( "OPEN" ) != -1)
                      return true;
                }
 
@@ -160,7 +160,7 @@ public interface StatisticsService
                         new TransactionEventAdapter(
                               new EventVisitorFilter( completedFilter, eventCollector = new EventCollector() ) ) ) );
 
-            // Handle all stateChanged(COMPLETED) events
+            // Handle all stateChanged(CLOSED) events
             if (!eventCollector.events().isEmpty())
             {
                UnitOfWork uow = null;

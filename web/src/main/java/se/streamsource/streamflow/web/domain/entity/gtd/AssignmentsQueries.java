@@ -39,7 +39,7 @@ import org.qi4j.api.query.QueryBuilderFactory;
 import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.domain.interaction.gtd.States;
+import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
@@ -81,9 +81,8 @@ public interface AssignmentsQueries
          queryBuilder = queryBuilder.where( and(
                assignee == null ? isNotNull( assignedId ) : eq( assignedId, assignee ),
                eq( ownedId, owner ),
-               QueryExpressions.or(QueryExpressions.eq( templateFor( Status.Data.class ).status(), States.ACTIVE ),
-                                   QueryExpressions.eq( templateFor( Status.Data.class ).status(), States.DELEGATED ), 
-                                   QueryExpressions.eq( templateFor( Status.Data.class ).status(), States.ON_HOLD ) )));
+               QueryExpressions.or(QueryExpressions.eq( templateFor( Status.Data.class ).status(), CaseStates.OPEN ),
+                                   QueryExpressions.eq( templateFor( Status.Data.class ).status(), CaseStates.ON_HOLD ) )));
          return queryBuilder;
       }
 
@@ -95,7 +94,7 @@ public interface AssignmentsQueries
          Query<CaseEntity> assignmentsQuery = queryBuilder.where( and(
                isNotNull( assignedId ),
                eq( ownedId, owner ),
-               QueryExpressions.eq( templateFor( Status.Data.class ).status(), States.ACTIVE ) ) ).
+               QueryExpressions.eq( templateFor( Status.Data.class ).status(), CaseStates.OPEN ) ) ).
                newQuery( uowf.currentUnitOfWork() );
 
          return assignmentsQuery.count() > 0;

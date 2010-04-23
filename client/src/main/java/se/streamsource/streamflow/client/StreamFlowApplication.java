@@ -79,7 +79,7 @@ import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
  * Controller for the application
  */
 @ProxyActions({"cut", "copy", "paste",
-      "createCase", "complete", "assign", "drop", "forward", "delegate", // Case related proxy actions
+      "createDraft", "complete", "assign", "drop", "forward", // Case related proxy actions
       "find", "selectTree", "selectTable", "selectDetails"})
 public class StreamFlowApplication
       extends SingleFrameApplication

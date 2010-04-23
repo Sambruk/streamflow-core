@@ -35,8 +35,7 @@ public class OverviewAssembler
             OverviewNode.class,
             OverviewProjectsNode.class,
             OverviewProjectNode.class,
-            OverviewProjectAssignmentsNode.class,
-            OverviewProjectWaitingForNode.class ).visibleIn( Visibility.layer );
+            OverviewProjectAssignmentsNode.class).visibleIn( Visibility.layer );
 
       UIAssemblers.addMV( module,
             OverviewModel.class,

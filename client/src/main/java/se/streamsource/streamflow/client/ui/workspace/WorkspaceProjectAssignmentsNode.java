@@ -57,7 +57,7 @@ public class WorkspaceProjectAssignmentsNode
       return text;
    }
 
-   public void createCase()
+   public void createDraft()
    {
       try
       {

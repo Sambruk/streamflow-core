@@ -34,20 +34,15 @@ public enum WorkspaceResources
    email_label,
    address_label,
 
-   delegated_from_header,
-
-   delegated_on_header,
-   delegated_to_header,
    assigned_to_header,
 
    comment_text_label,
    comment_public_label,
    projects_node,
    inboxes_node,
+   drafts_node,
 
    assignments_node,
-   delegations_node,
-   waitingfor_node,
 
    general_tab,
    metadata_tab,

@@ -20,5 +20,5 @@ package se.streamsource.streamflow.client.ui.caze;
  */
 public interface CaseCreationNode
 {
-   void createCase();
+   void createDraft();
 }

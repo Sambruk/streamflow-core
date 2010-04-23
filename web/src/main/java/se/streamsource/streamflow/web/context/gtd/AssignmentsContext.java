@@ -19,15 +19,14 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
 import org.restlet.data.Reference;
+import se.streamsource.dci.api.Interactions;
 import se.streamsource.dci.api.InteractionsMixin;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.web.context.caze.CasesContext;
 import se.streamsource.streamflow.web.domain.entity.gtd.AssignmentsQueries;
-import se.streamsource.streamflow.web.domain.entity.gtd.Inbox;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
 import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
-import se.streamsource.dci.api.Interactions;
 
 import static org.qi4j.api.query.QueryExpressions.orderBy;
 import static org.qi4j.api.query.QueryExpressions.templateFor;
@@ -41,8 +40,6 @@ public interface AssignmentsContext
 {
    LinksValue cases();
 
-   void createcase();
-
    abstract class Mixin
       extends InteractionsMixin
       implements AssignmentsContext
@@ -54,14 +51,6 @@ public interface AssignmentsContext
          QueryBuilder<Assignable> builder = assignments.assignments( context.get( Assignee.class ) );
          Query query = builder.newQuery( module.unitOfWorkFactory().currentUnitOfWork() ).orderBy( orderBy( templateFor( CreatedOn.class ).createdOn() ) );
          return CasesContext.Mixin.buildCaseList( query, module, context.get( Reference.class).getBaseRef().getPath());
-      }
-
-      public void createcase()
-      {
-         Inbox inbox = context.get( Inbox.class );
-         Assignable caseEntity = inbox.createCase();
-
-         caseEntity.assignTo( context.get(Assignee.class ) );
       }
    }
 }

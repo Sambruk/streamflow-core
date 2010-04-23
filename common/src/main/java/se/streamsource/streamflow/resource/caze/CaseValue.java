@@ -19,7 +19,7 @@ import org.qi4j.api.common.Optional;
 import org.qi4j.api.property.Property;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.LinksValue;
-import se.streamsource.streamflow.domain.interaction.gtd.States;
+import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
 
 import java.util.Date;
 
@@ -37,8 +37,9 @@ public interface CaseValue
    @Optional
    Property<String> caseId();
 
-   Property<States> status();
+   Property<CaseStates> status();
 
+   @Optional
    Property<String> owner();
 
    Property<LinksValue> labels();
@@ -48,13 +49,4 @@ public interface CaseValue
 
    @Optional
    Property<String> assignedTo();
-
-   @Optional
-   Property<Date> delegatedOn();
-
-   @Optional
-   Property<String> delegatedFrom();
-
-   @Optional
-   Property<String> delegatedTo();
 }

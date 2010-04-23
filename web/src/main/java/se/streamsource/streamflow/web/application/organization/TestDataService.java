@@ -36,12 +36,13 @@ import se.streamsource.streamflow.domain.form.SelectionFieldValue;
 import se.streamsource.streamflow.domain.form.TextFieldValue;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.entity.conversation.ConversationEntity;
-import se.streamsource.streamflow.web.domain.entity.gtd.Inbox;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.entity.user.UsersEntity;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
+import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversation;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
 import se.streamsource.streamflow.web.domain.structure.form.FormSubmission;
@@ -54,7 +55,6 @@ import se.streamsource.streamflow.web.domain.structure.organization.Organization
 import se.streamsource.streamflow.web.domain.structure.project.Member;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.project.ProjectRole;
-import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.user.ProxyUser;
 import se.streamsource.streamflow.web.domain.structure.user.User;
 import se.streamsource.streamflow.web.domain.structure.user.Users;
@@ -62,7 +62,7 @@ import se.streamsource.streamflow.web.domain.structure.user.Users;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.qi4j.api.usecase.UsecaseBuilder.*;
+import static org.qi4j.api.usecase.UsecaseBuilder.newUsecase;
 
 /**
  * Generates test data
@@ -152,11 +152,12 @@ public interface TestDataService
          ProjectRole agent = organization.createProjectRole( "Agent" );
          ProjectRole manager = organization.createProjectRole( "Manager" );
 
-         // Create cases
+         // Create draft cases
          for (int i = 0; i < 30; i++)
          {
-            CaseEntity aCase = user.createCase();
+            CaseEntity aCase = user.createDraft();
             aCase.changeDescription( "Arbetsuppgift " + i );
+
             if (i>20)
             {
                aCase.assignTo( user );
@@ -275,16 +276,24 @@ public interface TestDataService
          invoicing.addMember( user );
 
          // Create cases
-         Case aCase = ((Inbox)project).createCase();
+         CaseEntity aCase = user.createDraft();
          aCase.changeDescription( "Arbetsuppgift 0" );
+         aCase.sendTo( (Owner) project );
 
          aCase.changeCaseType( bug );
+         aCase.open();
+
          FormSubmission formSubmission = aCase.createFormSubmission( statusForm );
          submitStatus( aCase, formSubmission, "Progress is slow", (Submitter) testUser );
          submitStatus( aCase, formSubmission, "Progress is getting better", (Submitter) someUser );
 
          for (int i = 1; i < 30; i++)
-            ((Inbox)project).createCase().changeDescription( "Arbetsuppgift " + i );
+         {
+            CaseEntity caze = user.createDraft();
+            caze.changeDescription( "Arbetsuppgift " + i );
+            caze.sendTo( (Owner) project );
+            caze.open();
+         }
 
          // Create labels
          for (int i = 1; i < 10; i++)
@@ -298,9 +307,11 @@ public interface TestDataService
 
          ProxyUser proxyUser = organization.createProxyUser( "User External", "mrx", "mrxmrx" );
 
-         CaseEntity case1 = proxyUser.createCase();
+         CaseEntity case1 = proxyUser.createDraft();
          case1.changeDescription( "No Salary" );
          case1.caseType().set( complaint );
+         case1.sendTo((Owner)project);
+         case1.open();
          for (Label label : labels)
          {
             case1.addLabel( label );

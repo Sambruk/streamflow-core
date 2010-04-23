@@ -32,7 +32,6 @@ import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.caze.CasesTableModel;
 import se.streamsource.streamflow.client.ui.caze.OverviewAssignmentsCaseTableFormatter;
 import se.streamsource.streamflow.client.ui.caze.CaseTableView;
-import se.streamsource.streamflow.client.ui.caze.OverviewWaitingForCaseTableFormatter;
 
 import javax.swing.AbstractAction;
 import javax.swing.Icon;
@@ -98,8 +97,6 @@ public class OverviewView
                      return i18n.icon( Icons.projects, i18n.ICON_24 );
                   else if (o instanceof OverviewProjectAssignmentsNode)
                      return i18n.icon( Icons.assign, i18n.ICON_16 );
-                  else if (o instanceof OverviewProjectWaitingForNode)
-                     return i18n.icon( Icons.waitingfor, i18n.ICON_16 );
                   else
                      return NULL_ICON;
                }
@@ -113,8 +110,6 @@ public class OverviewView
                   else if (o instanceof OverviewProjectsNode)
                      return i18n.text( OverviewResources.projects_node );
                   else if (o instanceof OverviewProjectAssignmentsNode)
-                     return o.toString();
-                  else if (o instanceof OverviewProjectWaitingForNode)
                      return o.toString();
                   else
                      return "";
@@ -199,26 +194,8 @@ public class OverviewView
                         return null;
                      }
                   } );
-               } else if (node instanceof OverviewProjectWaitingForNode)
-               {
-                  OverviewProjectWaitingForNode projectWaitingForNode = (OverviewProjectWaitingForNode) node;
-                  final CasesTableModel waitingForModel = projectWaitingForNode.caseTableModel();
-                  view = obf.newObjectBuilder( CaseTableView.class ).use(
-                        waitingForModel,
-                        projectWaitingForNode.getParent().getParent().getParent().getUserObject().cases(),
-                        new OverviewWaitingForCaseTableFormatter()).newInstance();
-
-                  context.getTaskService().execute( new Task( context.getApplication() )
-                  {
-                     protected Object doInBackground() throws Exception
-                     {
-                        waitingForModel.refresh();
-
-                        return null;
-                     }
-                  } );
                }
-
+               
                pane.setRightComponent( view );
             } else
             {

@@ -28,7 +28,7 @@ import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
-import se.streamsource.streamflow.domain.interaction.gtd.States;
+import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
@@ -60,7 +60,7 @@ public class CasesTableModel
    public CasesTableModel()
    {
       eventFilter = new EventVisitorFilter( this, "addedLabel", "removedLabel", "changedDescription", "changedCaseType", "changedStatus",
-            "sentTo","assignedTo","delegatedTo", "deletedEntity");
+            "sentTo","assignedTo", "deletedEntity");
    }
 
    public void notifyEvent( DomainEvent event )
@@ -103,12 +103,12 @@ public class CasesTableModel
                }
             }
             eventList.set( idx, valueBuilder.newInstance() );
-         } else if ("addedLabel,changedCaseType,sentTo,assignedTo,delegatedTo,deletedEntity".indexOf(eventName) != -1)
+         } else if ("addedLabel,changedCaseType,sentTo,assignedTo,deletedEntity".indexOf(eventName) != -1)
          {
             refresh();
          } else if (eventName.equals("changedStatus"))
          {
-            States newStatus = States.valueOf( EventParameters.getParameter( event, "param1" ));
+            CaseStates newStatus = CaseStates.valueOf( EventParameters.getParameter( event, "param1" ));
             updatedCase.status().set( newStatus );
             eventList.set( idx, valueBuilder.newInstance() );            
          }

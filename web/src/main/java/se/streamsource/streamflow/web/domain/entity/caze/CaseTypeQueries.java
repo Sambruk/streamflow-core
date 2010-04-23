@@ -34,6 +34,8 @@ import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseTypes;
 import se.streamsource.streamflow.web.domain.structure.casetype.SelectedCaseTypes;
+import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
+import se.streamsource.streamflow.web.domain.structure.created.Creator;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationParticipations;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
@@ -54,7 +56,7 @@ import java.util.List;
 @Mixins(CaseTypeQueries.Mixin.class)
 public interface CaseTypeQueries
 {
-   void caseTypes( LinksBuilder builder);
+   void possibleCaseTypes( LinksBuilder builder);
 
    List<Project> possibleProjects();
 
@@ -73,6 +75,9 @@ public interface CaseTypeQueries
       UnitOfWorkFactory uowf;
 
       @This
+      CreatedOn created; 
+
+      @This
       Ownable.Data ownable;
 
       @This
@@ -81,12 +86,12 @@ public interface CaseTypeQueries
       @This
       Assignable assignable;
 
-      public void caseTypes( LinksBuilder builder)
+      public void possibleCaseTypes( LinksBuilder builder)
       {
          Owner owner = ownable.owner().get();
-         if (owner instanceof OrganizationParticipations)
+         if (owner == null)
          {
-            OrganizationParticipations.Data orgs = (OrganizationParticipations.Data) owner;
+            OrganizationParticipations.Data orgs = (OrganizationParticipations.Data) created.createdBy().get();
 
             for (Organization organization : orgs.organizations())
             {
@@ -96,43 +101,27 @@ public interface CaseTypeQueries
                   builder.addDescribable( caseType, organization );
                }
             }
-         } else if (owner instanceof OwningOrganizationalUnit.Data)
+         } else
          {
-            if (assignable.isAssigned())
+            // Show only Case types from owning project
+            SelectedCaseTypes.Data selectedCaseTypes = (SelectedCaseTypes.Data) owner;
+            Describable describableOwner = (Describable) owner;
+            for (CaseType caseType : selectedCaseTypes.selectedCaseTypes())
             {
-               // Show only aCase types from project
-               SelectedCaseTypes.Data selectedCaseTypes = (SelectedCaseTypes.Data) owner;
-               Describable describableOwner = (Describable) owner;
-               for (CaseType caseType : selectedCaseTypes.selectedCaseTypes())
-               {
-                  builder.addDescribable( caseType, describableOwner );
-               }
-            } else
-            {
-               OwningOrganizationalUnit.Data ouOwner = (OwningOrganizationalUnit.Data) owner;
-               OrganizationalUnit ou = ouOwner.organizationalUnit().get();
-               Organization org = ((OwningOrganization) ou).organization().get();
-
-               CaseTypesQueries caseTypesQueries = (CaseTypesQueries) org;
-               caseTypesQueries.caseTypes( builder, new Specification<CaseType>()
-               {
-                  public boolean valid( CaseType instance )
-                  {
-                     return true;
-                  }
-               });
+               builder.addDescribable( caseType, describableOwner );
             }
          }
       }
 
       public List<Project> possibleProjects()
       {
-
-
          Owner owner = ownable.owner().get();
-         if (owner instanceof OrganizationParticipations)
+
+         if (owner == null)
          {
-            OrganizationParticipations.Data orgs = (OrganizationParticipations.Data) owner;
+            Creator creator = created.createdBy().get();
+
+            OrganizationParticipations.Data orgs = (OrganizationParticipations.Data) creator;
 
             List<Project> projects = new ArrayList<Project>( );
 

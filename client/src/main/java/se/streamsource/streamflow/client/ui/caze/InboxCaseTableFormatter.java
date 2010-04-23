@@ -17,7 +17,8 @@ package se.streamsource.streamflow.client.ui.caze;
 
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
-import se.streamsource.streamflow.domain.interaction.gtd.States;
+
+import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
 
 import java.util.Date;
 
@@ -38,7 +39,7 @@ public class InboxCaseTableFormatter
             String.class,
             String.class,
             Date.class,
-            States.class
+            CaseStates.class
             };
    }
 }

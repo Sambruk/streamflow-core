@@ -24,9 +24,6 @@ import se.streamsource.streamflow.web.domain.structure.created.Creator;
 public interface Actor
    extends
       Assignee,
-      Creator,
-      Delegator,
-      Delegatee,
-      Owner
+      Creator
 {
 }

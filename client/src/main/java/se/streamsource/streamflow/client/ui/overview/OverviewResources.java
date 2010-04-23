@@ -27,8 +27,6 @@ public enum OverviewResources
    description_column_header,
    created_column_header,
    assigned_to_column_header,
-   delegated_to_column_header,
-   waitingfor_node,
    project_column_header,
    inbox_column_header,
    assigned_column_header,

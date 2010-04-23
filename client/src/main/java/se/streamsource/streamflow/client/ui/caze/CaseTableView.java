@@ -36,7 +36,7 @@ import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.StreamFlowApplication;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import se.streamsource.streamflow.domain.interaction.gtd.States;
+import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
 import se.streamsource.streamflow.resource.caze.CaseValue;
 
 import javax.swing.Action;
@@ -139,7 +139,7 @@ public class CaseTableView
             return format.format( time );
          }
       } ) );
-      caseTable.setDefaultRenderer( States.class, new CaseStatusTableCellRenderer() );
+      caseTable.setDefaultRenderer( CaseStates.class, new CaseStatusTableCellRenderer() );
 
       caseTable.addHighlighter( HighlighterFactory.createAlternateStriping() );
 
@@ -154,7 +154,7 @@ public class CaseTableView
             if (componentAdapter != null)
             {
                Object value = componentAdapter.getValue( componentAdapter.getColumnCount() - 1 );
-               return value.equals( States.DROPPED) || value.equals( States.COMPLETED);
+               return value.equals( value.equals( CaseStates.CLOSED ));
             } else
             return false;
          }
@@ -257,7 +257,7 @@ public class CaseTableView
    @org.jdesktop.application.Action()
    public void createCase() throws ResourceException
    {
-      caseCreation.createCase();
+      caseCreation.createDraft();
       model.refresh();
 
       JXTable table = getCaseTable();

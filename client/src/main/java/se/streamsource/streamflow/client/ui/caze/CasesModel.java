@@ -79,7 +79,7 @@ public class CasesModel
       }
    };
 
-   private EventVisitorFilter eventFilter = new EventVisitorFilter( this, "deletedCase", "deletedAssignedCase", "deletedWaitingForCase" );
+   private EventVisitorFilter eventFilter = new EventVisitorFilter( this, "deletedCase", "deletedAssignedCase");
 
    public LinksValue search(String query) throws ResourceException
    {

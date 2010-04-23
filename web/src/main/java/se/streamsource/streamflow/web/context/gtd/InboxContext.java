@@ -21,14 +21,13 @@ import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.data.Reference;
-import se.streamsource.dci.value.LinksValue;
-import se.streamsource.streamflow.web.context.caze.CasesContext;
-import se.streamsource.streamflow.web.domain.entity.gtd.Inbox;
-import se.streamsource.streamflow.web.domain.entity.gtd.InboxQueries;
-import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
-import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.dci.api.Interactions;
 import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.value.LinksValue;
+import se.streamsource.streamflow.web.context.caze.CasesContext;
+import se.streamsource.streamflow.web.domain.entity.gtd.InboxQueries;
+import se.streamsource.streamflow.web.domain.structure.caze.Case;
+import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
 
 import static org.qi4j.api.query.QueryExpressions.orderBy;
 import static org.qi4j.api.query.QueryExpressions.templateFor;
@@ -41,8 +40,6 @@ public interface InboxContext
    extends Interactions
 {
    LinksValue cases();
-
-   void createcase();
 
    abstract class Mixin
       extends InteractionsMixin
@@ -59,12 +56,6 @@ public interface InboxContext
          Query<Case> query = builder.newQuery( module.unitOfWorkFactory().currentUnitOfWork() ).orderBy( orderBy( templateFor( CreatedOn.class ).createdOn() ) );
          
          return CasesContext.Mixin.buildCaseList(query, module, context.get( Reference.class).getBaseRef().getPath());
-      }
-
-      public void createcase()
-      {
-         Inbox inbox = context.get( Inbox.class );
-         inbox.createCase();
       }
    }
 }

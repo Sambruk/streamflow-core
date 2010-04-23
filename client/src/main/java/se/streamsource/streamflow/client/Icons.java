@@ -34,8 +34,6 @@ public enum Icons
 
    assign,
    forward,
-   delegate,
-   waitingfor,
 
    details,
    inbox,

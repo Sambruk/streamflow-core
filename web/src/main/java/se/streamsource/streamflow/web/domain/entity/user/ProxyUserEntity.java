@@ -17,6 +17,7 @@ package se.streamsource.streamflow.web.domain.entity.user;
 
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
+import se.streamsource.streamflow.web.domain.entity.gtd.DraftsQueries;
 import se.streamsource.streamflow.web.domain.entity.gtd.InboxQueries;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Actor;
 import se.streamsource.streamflow.web.domain.structure.user.ProxyUser;
@@ -32,7 +33,7 @@ public interface ProxyUserEntity
       Actor,
 
       //Queries
-      InboxQueries,
+      DraftsQueries,
 
       //Data
       Describable.Data

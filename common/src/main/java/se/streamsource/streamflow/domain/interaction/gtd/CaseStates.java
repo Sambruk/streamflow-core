@@ -16,14 +16,12 @@
 package se.streamsource.streamflow.domain.interaction.gtd;
 
 /**
- * JAVADOC
+ * States of a Case.
  */
-public enum States
+public enum CaseStates
 {
-   ACTIVE,
-   COMPLETED,
-   DONE,
-   DROPPED,
-   ON_HOLD,
-   DELEGATED
+   DRAFT,
+   OPEN,
+   CLOSED,
+   ON_HOLD
 }

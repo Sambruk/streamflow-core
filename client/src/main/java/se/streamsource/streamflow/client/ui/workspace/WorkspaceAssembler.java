@@ -35,23 +35,18 @@ public class WorkspaceAssembler
       module.addObjects(
             WorkspaceNode.class,
             WorkspaceUserNode.class,
-            WorkspaceUserInboxNode.class,
-            WorkspaceUserAssignmentsNode.class,
-            WorkspaceUserDelegationsNode.class,
-            WorkspaceUserWaitingForNode.class,
+            WorkspaceUserDraftsNode.class,
             WorkspaceProjectsNode.class,
             WorkspaceProjectNode.class,
             WorkspaceProjectInboxNode.class,
             WorkspaceProjectAssignmentsNode.class,
-            WorkspaceProjectDelegationsNode.class,
-            WorkspaceProjectWaitingForNode.class,
             RefreshCaseCountTask.class).visibleIn( Visibility.layer );
 
       UIAssemblers.addMV( module,
             WorkspaceModel.class,
             WorkspaceView.class );
 
-      UIAssemblers.addDialogs( module, SelectUserOrProjectDialog.class, FilterListDialog.class, GroupedFilterListDialog.class);
+      UIAssemblers.addDialogs( module, SelectProjectDialog.class, FilterListDialog.class, GroupedFilterListDialog.class);
 
    }
 }

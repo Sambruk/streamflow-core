@@ -19,72 +19,62 @@ import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
-import se.streamsource.streamflow.domain.interaction.gtd.States;
+import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.web.domain.MethodConstraintsConcern;
 
-import static se.streamsource.streamflow.domain.interaction.gtd.States.*;
-import static se.streamsource.streamflow.domain.interaction.gtd.States.ACTIVE;
-import static se.streamsource.streamflow.domain.interaction.gtd.States.ON_HOLD;
+import static se.streamsource.streamflow.domain.interaction.gtd.CaseStates.*;
+import static se.streamsource.streamflow.domain.interaction.gtd.CaseStates.OPEN;
+import static se.streamsource.streamflow.domain.interaction.gtd.CaseStates.ON_HOLD;
 
 /**
  * Status for a case. Possible transitions are:
- * Active -> Delegated, Completed, Dropped, Done
- * Done -> Active, Dropped, Completed
- * Completed -> Active
- * Dropped -> Active, Archived
- * Delegated -> Active, Done
+ * Draft -> Open
+ * Open -> Closed, On_hold
+ * Closed -> Open
+ * On_hold -> Open
  */
 @Concerns(MethodConstraintsConcern.class)
 @Mixins(Status.Mixin.class)
 public interface Status
 {
-   @RequiresStatus({ACTIVE, DONE})
-   void complete();
+   @RequiresStatus({DRAFT})
+   void open();
 
-   @RequiresStatus( {ACTIVE, DELEGATED} )
-   void done();
+   @RequiresStatus({OPEN})
+   void close();
 
-   @RequiresStatus({ACTIVE, DONE, DELEGATED})
-   void drop();
-
-   @RequiresStatus({ACTIVE, DELEGATED})
+   @RequiresStatus({OPEN})
    void onHold();
 
-   @RequiresStatus({COMPLETED, DROPPED, DELEGATED})
-   void reactivate();
-
-   @RequiresStatus(DONE)
-   void redo();
+   @RequiresStatus({CLOSED})
+   void reopen();
 
    @RequiresStatus({ON_HOLD})
    void resume();
 
-   @RequiresStatus({ACTIVE, DELEGATED})
-   void delegate();
-
-   boolean isStatus( States status );
+   boolean isStatus( CaseStates status );
 
    interface Data
    {
       @UseDefaults
-      Property<States> status();
+      Property<CaseStates> status();
 
-      void changedStatus( DomainEvent event, States status );
+      void changedStatus( DomainEvent event, CaseStates status );
    }
 
    abstract class Mixin
          implements Status, Data
    {
 
-      public void complete()
+      public void open()
       {
-         changedStatus( DomainEvent.CREATE, COMPLETED );
+         changedStatus( DomainEvent.CREATE, OPEN );
       }
 
-      public void drop()
+      public void close()
       {
-         changedStatus( DomainEvent.CREATE, DROPPED );
+         changedStatus( DomainEvent.CREATE, CLOSED );
       }
 
       public void onHold()
@@ -92,32 +82,17 @@ public interface Status
          changedStatus( DomainEvent.CREATE, ON_HOLD );
       }
 
-      public void done()
+      public void reopen()
       {
-         changedStatus( DomainEvent.CREATE, DONE );
-      }
-
-      public void reactivate()
-      {
-         changedStatus( DomainEvent.CREATE, ACTIVE );
-      }
-
-      public void redo()
-      {
-         changedStatus( DomainEvent.CREATE, ACTIVE );
+         changedStatus( DomainEvent.CREATE, OPEN );
       }
 
       public void resume()
       {
-         changedStatus( DomainEvent.CREATE, ACTIVE );
+         changedStatus( DomainEvent.CREATE, OPEN );
       }
 
-      public void delegate()
-      {
-         changedStatus( DomainEvent.CREATE, DELEGATED );
-      }
-
-      public boolean isStatus( States status )
+      public boolean isStatus( CaseStates status )
       {
          return status().get().equals(status);
       }

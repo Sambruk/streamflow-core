@@ -24,10 +24,9 @@ import se.streamsource.streamflow.domain.contact.Contactable;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
 import se.streamsource.streamflow.web.domain.entity.gtd.AssignmentsQueries;
-import se.streamsource.streamflow.web.domain.entity.gtd.DelegationsQueries;
-import se.streamsource.streamflow.web.domain.entity.gtd.Inbox;
+import se.streamsource.streamflow.web.domain.entity.gtd.Drafts;
+import se.streamsource.streamflow.web.domain.entity.gtd.DraftsQueries;
 import se.streamsource.streamflow.web.domain.entity.gtd.InboxQueries;
-import se.streamsource.streamflow.web.domain.entity.gtd.WaitingForQueries;
 import se.streamsource.streamflow.web.domain.interaction.comment.Commenter;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Actor;
 import se.streamsource.streamflow.web.domain.interaction.profile.MessageRecipient;
@@ -48,8 +47,8 @@ public interface UserEntity
       extends DomainEntity,
 
       // Interactions
+      Drafts,
       Actor,
-      Inbox,
       Authentication,
       MessageRecipient,
 
@@ -63,16 +62,14 @@ public interface UserEntity
       Submitter,
 
       // Queries
+      DraftsQueries,
       AssignmentsQueries,
-      DelegationsQueries,
       OverviewQueries,
       InboxQueries,
-      WaitingForQueries,
       ProjectQueries,
       SearchCaseQueries,
 
       // Data
-      Inbox.Data,
       Contactable.Data,
       OrganizationParticipations.Data,
       Describable.Data,

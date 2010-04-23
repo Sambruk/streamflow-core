@@ -16,7 +16,11 @@
 package se.streamsource.streamflow.client.ui.workspace;
 
 import org.qi4j.api.injection.scope.Uses;
+import org.restlet.resource.ResourceException;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.ui.caze.CaseCreationNode;
 import se.streamsource.streamflow.client.ui.caze.CasesTableModel;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
@@ -26,24 +30,21 @@ import javax.swing.tree.DefaultMutableTreeNode;
 /**
  * JAVADOC
  */
-public class WorkspaceUserWaitingForNode
+public class WorkspaceUserDraftsNode
       extends DefaultMutableTreeNode
-      implements EventListener
+      implements EventListener, CaseCreationNode
 {
+   @Uses
+   CommandQueryClient client;
+
    @Uses
    private CasesTableModel model;
 
-   @Override
-   public WorkspaceUserNode getParent()
-   {
-      return (WorkspaceUserNode) super.getParent();
-   }
-
-   @Override
    public String toString()
    {
-      String text = i18n.text( WorkspaceResources.waitingfor_node );
-      String count = getParent().getParent().getCaseCount( "waitingfor" );
+      String text = i18n.text( WorkspaceResources.drafts_node );
+
+      String count = getParent().getParent().getCaseCount( "drafts" );
       if (!count.equals(""))
       {
          text += " (" + count + ")";
@@ -53,6 +54,23 @@ public class WorkspaceUserWaitingForNode
       }
 
       return text;
+   }
+
+   public void createDraft()
+   {
+      try
+      {
+         client.postCommand( "createdraft" );
+      } catch (ResourceException e)
+      {
+         throw new OperationException(WorkspaceResources.could_not_perform_operation, e);
+      }
+   }
+
+   @Override
+   public WorkspaceUserNode getParent()
+   {
+      return (WorkspaceUserNode) super.getParent();
    }
 
    public CasesTableModel caseTableModel()

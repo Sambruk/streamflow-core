@@ -27,24 +27,22 @@ import se.streamsource.streamflow.web.domain.interaction.comment.Commentable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.AssignIdSideEffect;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.CompletableId;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Delegatable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.DueOn;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
+import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
+import se.streamsource.streamflow.web.domain.structure.caze.Case;
+import se.streamsource.streamflow.web.domain.structure.caze.Contacts;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversations;
 import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
 import se.streamsource.streamflow.web.domain.structure.form.FormSubmissions;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedForms;
 import se.streamsource.streamflow.web.domain.structure.label.Labelable;
-import se.streamsource.streamflow.web.domain.structure.caze.Contacts;
-import se.streamsource.streamflow.web.domain.structure.caze.Case;
-import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
 
 /**
  * JAVADOC
  */
 @SideEffects(AssignIdSideEffect.class)
-@Concerns( OwnershipConcern.class)
 public interface CaseEntity
       extends Case,
 
@@ -53,8 +51,6 @@ public interface CaseEntity
       Assignable.Data,
       Commentable,
       Commentable.Data,
-      Delegatable,
-      Delegatable.Data,
       Describable,
       Describable.Data,
       DueOn,

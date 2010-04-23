@@ -17,11 +17,9 @@ package se.streamsource.streamflow.web.domain.entity.caze;
 
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
-import se.streamsource.streamflow.domain.interaction.gtd.States;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Actor;
 import se.streamsource.streamflow.web.domain.structure.project.Member;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
-import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 
 import java.util.Collection;
 
@@ -42,266 +40,66 @@ public interface PossibleActions
 
       public void addActions( Actor actor, Collection<String> actions )
       {
-         // droped cases can be reactivated from anyone from anywhere
-         if( aCase.isStatus( States.DROPPED ) && !actions.contains( "reactivate" ))
+         switch (aCase.status().get())
          {
-            actions.add( "reactivate" );
-         }
-         
-         if (aCase.owner().get() instanceof Project)
-         {
-            // Project owned aCase
-            Project project = (Project) aCase.owner().get();
-            if (((Member) actor).isMember( project ))
+            case DRAFT:
             {
-               if (aCase.isAssignedTo( actor ))
+               if (aCase.createdBy().get().equals(actor))
                {
-                  if (aCase.isDelegated())
-                  {
-                     if (aCase.isStatus( States.ACTIVE ))
-                     {
-                        actions.add( "complete" );
-                        actions.add( "sendto" );
-                        actions.add( "delegate" );
-                        actions.add( "onhold" );
-                        actions.add( "drop" );
-                        actions.add( "delete" );
-                        actions.add( "unassign" );
-                     }
-                     // Assignments (delegated)
-                     else if (aCase.isStatus( States.DELEGATED ))
-                     {
-                        actions.add( "done" );
-                        actions.add( "reject" );
-                     }
-                     // Waiting for
-                     else if ( aCase.isStatus( States.DONE ))
-                     {
-                        actions.add( "complete" );
-                        actions.add( "redo" );
-                     } else if (aCase.isStatus( States.COMPLETED ))
-                     {
-                        actions.add( "reactivate" );
-                     }
-
-                  } else
-                  {
-                     // Assignments (mine)
-                     if (aCase.isStatus( States.ACTIVE ))
-                     {
-                        actions.add( "complete" );
-                        actions.add( "sendto" );
-                        actions.add( "delegate" );
-                        actions.add( "onhold" );
-                        actions.add( "drop" );
-                        actions.add( "delete" );
-                        actions.add( "unassign" );
-                     } else if (aCase.isStatus( States.COMPLETED ))
-                     {
-                        actions.add( "reactivate" );
-                     } else if (aCase.isStatus( States.ON_HOLD ))
-                     {
-                        actions.add( "resume" );
-                     }
-                  }
-               } else
-               {
-                  if (aCase.isDelegatedBy( actor ))
-                  {
-                     // WaitingFor (not assigned)
-                     if (aCase.isStatus( States.ACTIVE )
-                           || aCase.isStatus( States.DELEGATED ))
-                     {
-                        actions.add( "complete" );
-                        actions.add( "assign" );
-                        actions.add( "sendto" );
-                        actions.add( "delegate" );
-                        actions.add( "drop" );
-                        actions.add( "delete" );
-                     } else if (aCase.isStatus( States.DONE ))
-                     {
-                        actions.add( "complete" );
-                        actions.add( "redo" );
-                     } else if (aCase.isStatus( States.COMPLETED ))
-                     {
-                        actions.add( "reactivate" );
-                     }
-
-                  } else if (!aCase.isAssigned())
-                  {
-                     // Inbox
-                     if (aCase.isStatus( States.ACTIVE ))
-                     {
-                        actions.add( "complete" );
-
-                        CaseType type = aCase.caseType().get();
-                        if (type == null || project.hasSelectedCaseType( type ))
-                        {
-                           actions.add( "assign" );
-                        }
-                        
-                        actions.add( "sendto" );
-                        actions.add( "delegate" );
-                        actions.add( "drop" );
-                        actions.add( "delete" );
-                     }
-                  } else
-                  {
-                     // Someone else in my project is assigned to it
-                  }
-               }
-            } else
-            {
-               if (aCase.isDelegatedBy( actor ))
-               {
-                  // WaitingFor (assigned)
-                  if (aCase.isStatus( States.ACTIVE )
-                        || aCase.isStatus( States.DELEGATED ))
-                  {
-                     actions.add( "complete" );
-                     actions.add( "assign" );
+                   if (aCase.owner().get() != null)
+                     actions.add( "open" );
+                   else
                      actions.add( "sendto" );
-                     actions.add( "delegate" );
-                     actions.add( "drop" );
-                     actions.add( "delete" );
-                  } else if (aCase.isStatus( States.DONE ))
-                  {
-                     actions.add( "complete" );
-                     actions.add( "redo" );
-                  } else if (aCase.isStatus( States.COMPLETED ))
-                  {
-                     actions.add( "reactivate" );
-                  }
 
-               } else if (aCase.isDelegatedTo( actor ))
-               {
-                  // Delegations
-                  if (aCase.isStatus( States.DELEGATED ))
-                  {
-                     actions.add( "accept" );
-                     actions.add( "reject" );
-                     actions.add( "done" );
-                  }
+                  actions.add("delete");
                }
+
+               return;
             }
 
-         } else
-         {
-            // User actions
-            if (aCase.isOwnedBy( actor ))
+            case OPEN:
             {
-               if (aCase.isAssignedTo( actor ))
+               // Project owned aCase
+               Project project = (Project) aCase.owner().get();
+               if (((Member) actor).isMember( project ))
                {
-                  if (aCase.isDelegatedTo( actor ))
+                  if (aCase.isAssigned())
                   {
-                     if (aCase.isStatus( States.ACTIVE ) )
-                     {
-                        actions.add( "complete" );
-                        actions.add( "sendto" );
-                        actions.add( "delegate" );
-                        actions.add( "onhold" );
-                        actions.add( "drop" );
-                        actions.add( "delete" );
-                        actions.add( "unassign" );
-                     }
-                     // Assignments (delegated)
-                     else if (aCase.isStatus( States.DELEGATED ))
-                     {
-                        actions.add( "done" );
-                        actions.add( "reject" );
-                     } else if ( aCase.isStatus( States.DONE ))
-                     {
-                        actions.add( "complete" );
-                        actions.add( "redo" );
-                     } else if (aCase.isStatus( States.COMPLETED ))
-                     {
-                        actions.add( "reactivate" );
-                     }
+                     actions.add( "onhold" );
+                     actions.add( "unassign" );
                   } else
                   {
-                     // Assignments (mine)
-                     if (aCase.isStatus( States.ACTIVE )
-                           || aCase.isStatus( States.DELEGATED ))
-                     {
-                        actions.add( "complete" );
-                        actions.add( "sendto" );
-                        actions.add( "delegate" );
-                        actions.add( "onhold" );
-                        actions.add( "drop" );
-                        actions.add( "delete" );
-                        actions.add( "unassign" );
-                     } else if (aCase.isStatus( States.COMPLETED ))
-                     {
-                        actions.add( "reactivate" );
-                     } else if (aCase.isStatus( States.ON_HOLD ))
-                     {
-                        actions.add( "resume" );
-                     } else if ( aCase.isStatus( States.DONE ))
-                     {
-                        actions.add( "complete" );
-                        actions.add( "redo" );
-                     }
-                  }
-               } else
-               {
-                  if (aCase.isDelegatedBy( actor ))
-                  {
-                     // WaitingFor (not assigned)
-                     if (aCase.isStatus( States.ACTIVE )
-                           || aCase.isStatus( States.DELEGATED ))
-                     {
-                        actions.add( "complete" );
-                        actions.add( "assign" );
-                        actions.add( "sendto" );
-                        actions.add( "delegate" );
-                        actions.add( "drop" );
-                        actions.add( "delete" );
-                     }
-                  } else
-                  {
-                     // Inbox
-                     if (aCase.isStatus( States.ACTIVE ))
-                     {
-                        actions.add( "complete" );
-                        actions.add( "assign" );
-                        actions.add( "sendto" );
-                        actions.add( "delegate" );
-                        actions.add( "drop" );
-                        actions.add( "delete" );
-                     }
-                  }
-               }
-            } else
-            {
-               if (aCase.isDelegatedBy( actor ))
-               {
-                  // WaitingFor (assigned)
-                  if (aCase.isStatus( States.ACTIVE )
-                        || aCase.isStatus( States.DELEGATED ))
-                  {
-                     actions.add( "complete" );
-                     actions.add( "assign" );
-                     actions.add( "sendto" );
-                     actions.add( "delegate" );
-                     actions.add( "drop" );
-                     actions.add( "delete" );
-                  } else if (aCase.isStatus( States.DONE ))
-                  {
-                     actions.add( "complete" );
-                     actions.add( "redo" );
+                     actions.add("assign");
                   }
 
 
-               } else if (aCase.isDelegatedTo( actor ))
-               {
-                  // Delegations
-                  if (aCase.isStatus( States.DELEGATED ))
-                  {
-                     actions.add( "accept" );
-                     actions.add( "reject" );
-                     actions.add( "done" );
-                  }
+                  actions.add( "close" );
+                  actions.add( "delete" );
                }
+
+               return;
+            }
+
+            case CLOSED:
+            {
+               Project project = (Project) aCase.owner().get();
+               if (((Member) actor).isMember( project ))
+               {
+                  actions.add( "reopen" );
+               }
+
+               return;
+            }
+
+            case ON_HOLD:
+            {
+               Project project = (Project) aCase.owner().get();
+               if (((Member) actor).isMember( project ))
+               {
+                  actions.add( "resume" );
+               }
+
+               return;
             }
          }
       }

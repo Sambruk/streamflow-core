@@ -44,7 +44,6 @@ import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
 import se.streamsource.streamflow.infrastructure.event.source.OnEvents;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
-import se.streamsource.streamflow.web.domain.entity.gtd.Inbox;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
 import se.streamsource.streamflow.web.infrastructure.event.EventManagement;
 import se.streamsource.streamflow.web.infrastructure.index.EmbeddedSolrService;
@@ -462,30 +461,6 @@ public interface ManagerComposite
          ((Activatable) entityStore).passivate();
          removeDirectory( new File( fileConfig.dataDirectory(), "data" ) );
          ((Activatable) entityStore).activate();
-      }
-
-
-      public String generateTestData( int nrOfCases ) throws Exception
-      {
-         UnitOfWork uow = uowf.newUnitOfWork( UsecaseBuilder.newUsecase( "Generate test data" ) );
-
-         try
-         {
-            Inbox inbox = uow.get( Inbox.class, "administrator" );
-
-            for (int i = 0; i < nrOfCases; i++)
-            {
-               inbox.createCase().changeDescription( "Case " + i );
-            }
-
-            uow.complete();
-         } catch (Exception e)
-         {
-            uow.discard();
-            throw e;
-         }
-
-         return "Created " + nrOfCases + " in Administrators inbox";
       }
 
       public String databaseSize()

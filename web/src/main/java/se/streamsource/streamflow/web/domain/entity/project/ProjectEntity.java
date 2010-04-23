@@ -30,16 +30,10 @@ import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.domain.structure.Removable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
 import se.streamsource.streamflow.web.domain.entity.gtd.AssignmentsQueries;
-import se.streamsource.streamflow.web.domain.entity.gtd.DelegationsQueries;
-import se.streamsource.streamflow.web.domain.entity.gtd.Inbox;
 import se.streamsource.streamflow.web.domain.entity.gtd.InboxQueries;
-import se.streamsource.streamflow.web.domain.entity.gtd.WaitingForQueries;
-import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
 import se.streamsource.streamflow.web.domain.interaction.gtd.CompletableId;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Delegatable;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Delegatee;
 import se.streamsource.streamflow.web.domain.interaction.gtd.IdGenerator;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseTypes;
@@ -58,15 +52,12 @@ import se.streamsource.streamflow.web.domain.structure.project.Project;
  * JAVADOC
  */
 @SideEffects(ProjectEntity.RemoveMemberSideEffect.class)
-@Mixins({ProjectEntity.ProjectIdGeneratorMixin.class, ProjectEntity.DelegateeMixin.class})
+@Mixins({ProjectEntity.ProjectIdGeneratorMixin.class})
 @Concerns(ProjectEntity.RemovableConcern.class)
 public interface ProjectEntity
       extends DomainEntity,
 
-      Inbox,
-
       // Interactions
-      Delegatee,
       Owner,
       IdGenerator,
 
@@ -77,7 +68,6 @@ public interface ProjectEntity
       Removable,
 
       // Data
-      Inbox.Data,
       Members.Data,
       Describable.Data,
       OwningOrganizationalUnit.Data,
@@ -90,9 +80,7 @@ public interface ProjectEntity
 
       // Queries
       AssignmentsQueries,
-      DelegationsQueries,
       InboxQueries,
-      WaitingForQueries,
       ProjectLabelsQueries
 {
    class ProjectIdGeneratorMixin
@@ -105,17 +93,6 @@ public interface ProjectEntity
       {
          Organization organization = ((OwningOrganization) state.organizationalUnit().get()).organization().get();
          ((IdGenerator)organization).assignId( completable );
-      }
-   }
-
-   class DelegateeMixin
-      implements Delegatee
-   {
-      @This Project project;
-
-      public boolean isDelegatedTo( Delegatee delegatee )
-      {
-         return ((Member)delegatee).isMember( project );
       }
    }
 
@@ -164,26 +141,15 @@ public interface ProjectEntity
       @This
       AssignmentsQueries assignments;
 
-      @This
-      WaitingForQueries waitingFor;
-
-      @This
-      DelegationsQueries delegationsQueries;
-
       public boolean removeEntity()
       {
          if (inbox.inboxHasActiveCases()
-               || assignments.assignmentsHaveActiveCases()
-               || waitingFor.hasActiveOrDoneCases())
+               || assignments.assignmentsHaveActiveCases())
          {
-            throw new IllegalStateException( "Cannot remove project with ACTIVE cases." );
+            throw new IllegalStateException( "Cannot remove project with OPEN cases." );
 
          } else
          {
-            for (Delegatable delegatable : delegationsQueries.delegations().newQuery( uowf.currentUnitOfWork() ))
-            {
-               uowf.currentUnitOfWork().get( CaseEntity.class, ((Identity)delegatable).identity().get() ).rejectDelegation();
-            }
             members.removeAllMembers();
             return next.removeEntity();
          }

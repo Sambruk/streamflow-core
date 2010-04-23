@@ -17,7 +17,7 @@ package se.streamsource.streamflow.client.ui.workspace;
 
 import org.jdesktop.swingx.JXTable;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
-import se.streamsource.streamflow.domain.interaction.gtd.States;
+import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
 
 import javax.swing.Action;
 
@@ -40,6 +40,6 @@ public class CaseSelectionActionEnabler
    @Override
    public boolean isSelectedValueValid(Action action)
    {
-      return !((States) table.getValueAt( table.convertRowIndexToModel( table.getSelectedRow() ), completedColumn )).equals( States.COMPLETED );
+      return !((CaseStates) table.getValueAt( table.convertRowIndexToModel( table.getSelectedRow() ), completedColumn )).equals( CaseStates.CLOSED );
    }
 }

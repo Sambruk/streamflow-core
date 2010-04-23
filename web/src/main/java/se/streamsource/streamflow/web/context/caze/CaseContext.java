@@ -68,7 +68,8 @@ public interface CaseContext
             prototype.caseId().set( aCase.caseId().get() );
          prototype.href().set( basePath+"/cases/"+ aCase.identity().get()+"/" );
          prototype.rel().set( "case" );
-         prototype.owner().set( ((Describable) aCase.owner().get()).getDescription() );
+         if (aCase.owner().get() != null)
+            prototype.owner().set( ((Describable) aCase.owner().get()).getDescription() );
          prototype.status().set( aCase.status().get() );
          prototype.text().set( aCase.description().get() );
 
@@ -77,14 +78,6 @@ public interface CaseContext
 
          if (aCase.isAssigned())
             prototype.assignedTo().set( ((Describable) aCase.assignedTo().get()).getDescription() );
-
-         // Delegation
-         if (aCase.isDelegated())
-         {
-            prototype.delegatedFrom().set( ((Describable) aCase.delegatedFrom().get()).getDescription() );
-            prototype.delegatedTo().set( ((Describable) aCase.delegatedTo().get()).getDescription() );
-            prototype.delegatedOn().set( aCase.delegatedOn().get());
-         }
 
          // Labels
          LinksBuilder labelsBuilder = new LinksBuilder(module.valueBuilderFactory()).path( "labels" ).command( "delete" );

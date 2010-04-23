@@ -34,14 +34,12 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.domain.interaction.gtd.States;
+import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
 import se.streamsource.streamflow.resource.overview.ProjectSummaryDTO;
 import se.streamsource.streamflow.resource.overview.ProjectSummaryListDTO;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Delegatable;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Delegatee;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
@@ -94,18 +92,15 @@ public interface OverviewQueries
             QueryBuilder<CaseEntity> ownerQueryBuilder = qbf.newQueryBuilder( CaseEntity.class ).where(
                   eq( ownableId, (Owner) project ));
 
-            Association<Delegatee> delegatee = templateFor( Delegatable.Data.class ).delegatedTo();
-
             QueryBuilder<CaseEntity> inboxQueryBuilder = ownerQueryBuilder.where( and(
                   isNull( assigneeAssociation ),
-                  isNull( delegatee ),
-                  eq( templateFor( Status.Data.class ).status(), States.ACTIVE ) ) );
+                  eq( templateFor( Status.Data.class ).status(), CaseStates.OPEN ) ) );
             Query<CaseEntity> inboxQuery = inboxQueryBuilder.newQuery( uow );
 
 
             QueryBuilder<CaseEntity> assignedQueryBuilder = ownerQueryBuilder.where( and(
                   isNotNull( assigneeAssociation ),
-                  eq( templateFor( Status.Data.class ).status(), States.ACTIVE ) ) );
+                  eq( templateFor( Status.Data.class ).status(), CaseStates.OPEN ) ) );
             Query<CaseEntity> assignedQuery = assignedQueryBuilder.newQuery( uow );
 
             builderPrototype.project().set( project.getDescription() );

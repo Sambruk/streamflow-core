@@ -15,7 +15,7 @@
 
 package se.streamsource.streamflow.client.ui.caze;
 
-import se.streamsource.streamflow.domain.interaction.gtd.States;
+import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
 import se.streamsource.streamflow.resource.caze.CaseValue;
 
 import java.util.Date;
@@ -43,7 +43,7 @@ public class OverviewAssignmentsCaseTableFormatter
             String.class,
             String.class,
             Date.class,
-            States.class
+            CaseStates.class
             };
    }
 

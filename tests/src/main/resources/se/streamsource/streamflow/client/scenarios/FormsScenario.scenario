@@ -1,9 +1,0 @@
-Scenario: Form added and removed to/from project
-Given basic setup 1
-Given the organization
-Given casetype named casetype1
-When a form named SomeForm is created
-Then events createdForm,changedDescription occurred
-
-When a form is removed from casetype
-Then events removedForm occurred

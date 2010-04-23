@@ -20,9 +20,7 @@ import se.streamsource.dci.api.Interactions;
 import se.streamsource.dci.api.InteractionsMixin;
 import se.streamsource.dci.api.SubContext;
 import se.streamsource.streamflow.web.context.gtd.AssignmentsContext;
-import se.streamsource.streamflow.web.context.gtd.DelegationsContext;
 import se.streamsource.streamflow.web.context.gtd.InboxContext;
-import se.streamsource.streamflow.web.context.gtd.WaitingForContext;
 import se.streamsource.streamflow.web.context.structure.labels.LabelsContext;
 import se.streamsource.streamflow.web.context.users.UserAdministrationContext;
 
@@ -34,16 +32,7 @@ public interface WorkspaceUserContext
    extends Interactions
 {
    @SubContext
-   InboxContext inbox();
-
-   @SubContext
-   AssignmentsContext assignments();
-
-   @SubContext
-   DelegationsContext delegations();
-
-   @SubContext
-   WaitingForContext waitingfor();
+   DraftsContext drafts();
 
    @SubContext
    LabelsContext labels();
@@ -55,24 +44,9 @@ public interface WorkspaceUserContext
       extends InteractionsMixin
       implements WorkspaceUserContext
    {
-      public InboxContext inbox()
+      public DraftsContext drafts()
       {
-         return subContext( InboxContext.class );
-      }
-
-      public AssignmentsContext assignments()
-      {
-         return subContext( AssignmentsContext.class );
-      }
-
-      public DelegationsContext delegations()
-      {
-         return subContext( DelegationsContext.class );
-      }
-
-      public WaitingForContext waitingfor()
-      {
-         return subContext( WaitingForContext.class );
+         return subContext( DraftsContext.class );
       }
 
       public LabelsContext labels()

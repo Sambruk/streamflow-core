@@ -30,9 +30,6 @@ public interface OverviewProjectContext
    @SubContext
    OverviewProjectAssignmentsContext assignments();
 
-   @SubContext
-   OverviewProjectWaitingForContext waitingfor();
-
    abstract class Mixin
       extends InteractionsMixin
       implements OverviewProjectContext
@@ -40,11 +37,6 @@ public interface OverviewProjectContext
       public OverviewProjectAssignmentsContext assignments()
       {
          return subContext( OverviewProjectAssignmentsContext.class );
-      }
-
-      public OverviewProjectWaitingForContext waitingfor()
-      {
-         return subContext( OverviewProjectWaitingForContext.class );
       }
    }
 }

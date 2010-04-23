@@ -83,7 +83,7 @@ public interface Delegatable
          delegatedBy().set( delegator );
          delegatedOn().set( event.on().get() );
          delegatedFrom().set( delegatedFrom );
-         status.delegate();
+//         status.delegate();
       }
 
       public void rejectDelegation()
@@ -131,7 +131,7 @@ public interface Delegatable
          delegatedBy().set( null );
          delegatedOn().set( null );
          delegatedFrom().set( null );
-         status.reactivate();
+         status.reopen();
       }
 
       public void cancelledDelegation( DomainEvent event )

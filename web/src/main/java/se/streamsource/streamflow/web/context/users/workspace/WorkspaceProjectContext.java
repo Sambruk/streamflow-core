@@ -20,9 +20,7 @@ import se.streamsource.dci.api.Interactions;
 import se.streamsource.dci.api.InteractionsMixin;
 import se.streamsource.dci.api.SubContext;
 import se.streamsource.streamflow.web.context.gtd.AssignmentsContext;
-import se.streamsource.streamflow.web.context.gtd.DelegationsContext;
 import se.streamsource.streamflow.web.context.gtd.InboxContext;
-import se.streamsource.streamflow.web.context.gtd.WaitingForContext;
 
 /**
  * JAVADOC
@@ -37,12 +35,6 @@ public interface WorkspaceProjectContext
    @SubContext
    AssignmentsContext assignments();
 
-   @SubContext
-   DelegationsContext delegations();
-
-   @SubContext
-   WaitingForContext waitingfor();
-
    abstract class Mixin
       extends InteractionsMixin
       implements WorkspaceProjectContext
@@ -55,16 +47,6 @@ public interface WorkspaceProjectContext
       public AssignmentsContext assignments()
       {
          return subContext( AssignmentsContext.class );
-      }
-
-      public DelegationsContext delegations()
-      {
-         return subContext( DelegationsContext.class );
-      }
-
-      public WaitingForContext waitingfor()
-      {
-         return subContext( WaitingForContext.class );
       }
    }
 }

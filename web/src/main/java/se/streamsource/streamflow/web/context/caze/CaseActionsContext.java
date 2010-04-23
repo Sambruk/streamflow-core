@@ -20,13 +20,13 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.dci.api.InteractionsMixin;
 import se.streamsource.dci.api.DeleteInteraction;
-import se.streamsource.streamflow.domain.interaction.gtd.States;
-import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
+import se.streamsource.dci.api.InteractionsMixin;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.domain.interaction.gtd.Actions;
+import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
 import se.streamsource.streamflow.domain.structure.Removable;
+import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseTypeQueries;
@@ -34,24 +34,23 @@ import se.streamsource.streamflow.web.domain.entity.caze.PossibleActions;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Actor;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Delegatable;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Delegatee;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresAssigned;
-import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresDelegated;
 import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresOwner;
 import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresStatus;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
+import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
-import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
 import se.streamsource.streamflow.web.domain.structure.user.User;
 
 import java.util.List;
 
-import static se.streamsource.streamflow.domain.interaction.gtd.States.*;
+import static se.streamsource.streamflow.domain.interaction.gtd.CaseStates.CLOSED;
+import static se.streamsource.streamflow.domain.interaction.gtd.CaseStates.DRAFT;
+import static se.streamsource.streamflow.domain.interaction.gtd.CaseStates.OPEN;
 
 /**
  * JAVADOC
@@ -63,24 +62,9 @@ public interface CaseActionsContext
    // List possible actions
    public Actions actions();
 
-   public LinksValue possiblesendtoprojects();
-
-   @RequiresOwner(User.class)
-   public LinksValue possiblesendtousers();
-
-   public LinksValue possibledelegateprojects();
-
-   @RequiresOwner(User.class)
-   public LinksValue possibledelegateusers();
+   public LinksValue possiblesendto();
 
    // Commands
-
-   /**
-    * Accept a delegated case.
-    */
-   @RequiresDelegated(true)
-   public void accept();
-
    /**
     * Assign the case to the user invoking the method
     */
@@ -88,37 +72,29 @@ public interface CaseActionsContext
    public void assign();
 
    /**
-    * Mark the case as completed
+    * Mark the draft case as open
     */
-   @RequiresStatus({ACTIVE, DONE})
-   public void complete();
+   @RequiresStatus({DRAFT})
+   public void open();
 
    /**
-    * Mark the case as done.
+    * Mark the case as closed // TODO Add resolution here
     */
-   @RequiresStatus({ACTIVE})
-   public void done();
+   @RequiresStatus({OPEN})
+   public void close();
 
+   /**
+    * Mark the case as on-hold
+    */
+   @RequiresStatus({OPEN})
    public void onhold();
 
    public void sendto( EntityReferenceDTO entity );
 
-   @RequiresDelegated(false)
-   public void delegate( EntityReferenceDTO entity );
+   @RequiresStatus({CLOSED})
+   public void reopen();
 
-   @RequiresStatus({ACTIVE, DONE})
-   public void drop();
-
-   @RequiresStatus({COMPLETED, DROPPED})
-   public void reactivate();
-
-   @RequiresStatus({DONE})
-   public void redo();
-
-   @RequiresDelegated(true)
-   public void reject();
-
-   @RequiresStatus({States.ON_HOLD})
+   @RequiresStatus({CaseStates.ON_HOLD})
    public void resume();
 
    @RequiresAssigned(true)
@@ -150,7 +126,7 @@ public interface CaseActionsContext
          return builder.newInstance();
       }
 
-      public LinksValue possiblesendtoprojects()
+      public LinksValue possiblesendto()
       {
          LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() ).command( "sendto" );
          List<Project> projects = context.get( CaseTypeQueries.class ).possibleProjects();
@@ -167,79 +143,7 @@ public interface CaseActionsContext
          return builder.newLinks();
       }
 
-      public LinksValue possiblesendtousers()
-      {
-         List<User> users = context.get( CaseTypeQueries.class ).possibleUsers();
-
-         LinksBuilder links = new LinksBuilder(module.valueBuilderFactory()).command( "sendto" );
-         Ownable ownable = context.get(Ownable.class);
-
-         for (User user : users)
-         {
-            if (!ownable.isOwnedBy( (Owner) user ))
-            {
-               String group = "" + Character.toUpperCase( user.getDescription().charAt( 0 ) );
-               links.addDescribable( user, group );
-            }
-         }
-
-         return links.newLinks();
-      }
-
-      public LinksValue possibledelegateprojects()
-      {
-         LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() ).command( "delegate" );
-         List<Project> projects = context.get( CaseTypeQueries.class ).possibleProjects();
-         CaseType caseType = context.get( TypedCase.Data.class).caseType().get();
-         Ownable ownable = context.get(Ownable.class);
-         for (Project project : projects)
-         {
-            if (!ownable.isOwnedBy( (Owner) project ))
-            {
-               if (caseType == null || project.hasSelectedCaseType( caseType ))
-                  builder.addDescribable( project, ((OwningOrganizationalUnit.Data)project).organizationalUnit().get() );
-            }
-         }
-         return builder.newLinks();
-      }
-
-      public LinksValue possibledelegateusers()
-      {
-         List<User> users = context.get( CaseTypeQueries.class ).possibleUsers();
-
-         LinksBuilder links = new LinksBuilder(module.valueBuilderFactory()).command( "delegate" );
-
-         Ownable ownable = context.get(Ownable.class);
-         for (User user : users)
-         {
-            if (!ownable.isOwnedBy( (Owner) user ))
-            {
-               String group = "" + Character.toUpperCase( user.getDescription().charAt( 0 ) );
-               links.addDescribable( user, group );
-            }
-         }
-
-         return links.newLinks();
-      }
-
       // Commands
-      public void accept()
-      {
-         Assignable assignable = context.get( Assignable.class );
-         Ownable ownable = context.get( Ownable.class );
-         Delegatable.Data delegatable = context.get( Delegatable.Data.class );
-
-         Actor actor = context.get(Actor.class);
-
-         if (!assignable.isAssigned())
-         {
-            // Delegations
-            Owner owner = (Owner) delegatable.delegatedTo().get();
-            assignable.assignTo( actor );
-            ownable.sendTo( owner );
-         }
-      }
-
       public void assign()
       {
          Assignable assignable = context.get(Assignable.class);
@@ -252,34 +156,25 @@ public interface CaseActionsContext
          }
       }
 
-      public void complete()
+      public void open()
+      {
+         Status aCase = context.get( Status.class);
+
+         aCase.open();
+      }
+
+      public void close()
       {
          CaseEntity aCase = context.get( CaseEntity.class);
-
-         Owner owner = aCase.owner().get();
 
          Actor actor = context.get(Actor.class);
 
          if (!aCase.isAssigned())
          {
-            // Inbox or WaitingFor
-            if (aCase.isDelegatedBy( actor ))
-            {
-               aCase.sendTo( owner );
-
-            }
-
             aCase.assignTo( actor );
          }
 
-         aCase.complete();
-      }
-
-      public void done()
-      {
-         CaseEntity aCase = context.get( CaseEntity.class);
-
-         aCase.done();
+         aCase.close();
       }
 
       public void onhold()
@@ -298,53 +193,10 @@ public interface CaseActionsContext
          aCase.sendTo( toOwner );
       }
 
-      public void delegate( EntityReferenceDTO entity )
-      {
-         CaseEntity aCase = context.get( CaseEntity.class);
-
-         Delegatee to = uowf.currentUnitOfWork().get( Delegatee.class, entity.entity().get().identity() );
-
-         Owner owner = aCase.owner().get();
-
-         Actor actor = context.get(Actor.class);
-
-         if (aCase.isAssigned())
-            aCase.unassign();
-
-         aCase.delegateTo( to, actor, owner );
-      }
-
-      public void drop()
-      {
-         CaseEntity aCase = context.get( CaseEntity.class);
-
-         Actor actor = context.get(Actor.class);
-
-         if (!aCase.isAssigned())
-         {
-            aCase.assignTo( actor );
-         }
-
-         aCase.drop();
-      }
-
-      public void reactivate()
+      public void reopen()
       {
          Status caze = context.get( CaseEntity.class);
-         caze.reactivate();
-      }
-
-      public void redo()
-      {
-         Status caze = context.get( CaseEntity.class);
-         caze.redo();
-      }
-
-      public void reject()
-      {
-         CaseEntity aCase = context.get( CaseEntity.class);
-
-         aCase.rejectDelegation();
+         caze.reopen();
       }
 
       public void resume()

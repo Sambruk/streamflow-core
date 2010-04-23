@@ -32,16 +32,12 @@ public class WorkspaceProjectNode
    String projectName;
 
    public WorkspaceProjectNode(@Uses WorkspaceProjectInboxNode inbox,
-                                @Uses WorkspaceProjectAssignmentsNode assignments,
-                                @Uses WorkspaceProjectDelegationsNode delegations,
-                                @Uses WorkspaceProjectWaitingForNode waitingFor )
+                                @Uses WorkspaceProjectAssignmentsNode assignments)
    {
       super( null );
 
       add( inbox );
       add( assignments );
-      add( delegations );
-      add( waitingFor );
    }
 
    public String projectName()

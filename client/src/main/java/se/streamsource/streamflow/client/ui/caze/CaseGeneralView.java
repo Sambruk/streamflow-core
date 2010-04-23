@@ -67,7 +67,7 @@ import java.util.Observable;
 import java.util.Observer;
 
 import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.*;
-import static se.streamsource.streamflow.domain.interaction.gtd.States.*;
+import static se.streamsource.streamflow.domain.interaction.gtd.CaseStates.*;
 
 /**
  * JAVADOC
@@ -302,7 +302,7 @@ public class CaseGeneralView extends JScrollPane implements Observer
       notePane.getViewport().getView().setEnabled( model.getCommandEnabled( "changenote" ));
       caseTypeButton.setEnabled( model.getCommandEnabled( "casetype" ));
 
-      boolean enabled = model.getCaseStatus().equals( ACTIVE ) || model.getCaseStatus().equals( DELEGATED );
+      boolean enabled = model.getCaseStatus().equals( DRAFT ) || model.getCaseStatus().equals( OPEN );
       labelButton.setEnabled( enabled );
       labels.setEnabled( enabled );
       forms.setEnabled( enabled );

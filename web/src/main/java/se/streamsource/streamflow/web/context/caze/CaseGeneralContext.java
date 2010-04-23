@@ -46,7 +46,7 @@ import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
 import se.streamsource.dci.api.SubContext;
 
-import static se.streamsource.streamflow.domain.interaction.gtd.States.*;
+import static se.streamsource.streamflow.domain.interaction.gtd.CaseStates.*;
 
 /**
  * JAVADOC
@@ -57,16 +57,16 @@ public interface CaseGeneralContext
       IndexInteraction<CaseGeneralDTO>,
       Interactions
 {
-   @RequiresStatus( { ACTIVE, DELEGATED } )
+   @RequiresStatus( {DRAFT,OPEN } )
    void changedueon( DateDTO dueOnValue );
 
-   @RequiresStatus( { ACTIVE, DELEGATED } )
+   @RequiresStatus( {DRAFT,OPEN } )
    void casetype( EntityReferenceDTO dto );
 
-   @RequiresStatus({ ACTIVE, DELEGATED } )
+   @RequiresStatus({DRAFT,OPEN } )
    void changedescription( StringValue stringValue );
 
-   @RequiresStatus( { ACTIVE, DELEGATED } )
+   @RequiresStatus( {DRAFT,OPEN } )
    void changenote( StringValue noteValue );
 
    LinksValue possiblecasetypes();
@@ -140,7 +140,7 @@ public interface CaseGeneralContext
          CaseTypeQueries aCase = context.get( CaseTypeQueries.class);
          LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() ).command( "casetype" );
 
-         aCase.caseTypes(builder);
+         aCase.possibleCaseTypes(builder);
 
          return builder.newLinks();
       }

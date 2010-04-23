@@ -46,8 +46,6 @@ public interface Manager
 
    public String restore() throws Exception;
 
-   public String generateTestData( @Name("Nr of cases") int nrOfCases ) throws Exception;
-
    public String databaseSize();
 
    @Computed

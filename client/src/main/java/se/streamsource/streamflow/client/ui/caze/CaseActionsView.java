@@ -26,7 +26,7 @@ import se.streamsource.streamflow.client.StreamFlowResources;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.ConfirmationDialog;
-import se.streamsource.streamflow.client.ui.workspace.SelectUserOrProjectDialog;
+import se.streamsource.streamflow.client.ui.workspace.SelectProjectDialog;
 import se.streamsource.streamflow.domain.interaction.gtd.Actions;
 
 import javax.swing.ActionMap;
@@ -45,7 +45,7 @@ import java.awt.GridLayout;
 public class CaseActionsView extends JPanel
 {
 	@Uses
-	protected ObjectBuilder<SelectUserOrProjectDialog> userOrProjectSelectionDialog;
+	protected ObjectBuilder<SelectProjectDialog> projectSelectionDialog;
 
    @Uses
    private ObjectBuilder<ConfirmationDialog> confirmationDialog;
@@ -60,7 +60,7 @@ public class CaseActionsView extends JPanel
 
 	private JPanel actionsPanel = new JPanel();
 
-	public CaseActionsView(@Service ApplicationContext context)
+   public CaseActionsView(@Service ApplicationContext context)
 	{
 		setLayout(new BorderLayout());
       setBorder( new EmptyBorder( 5, 5, 5, 10 ) );
@@ -100,9 +100,9 @@ public class CaseActionsView extends JPanel
 
 	// Case actions
 	@Action
-	public void accept()
+	public void open()
 	{
-		model.accept();
+		model.open();
 		refresh();
 	}
 
@@ -114,25 +114,10 @@ public class CaseActionsView extends JPanel
 	}
 
 	@Action
-	public void complete()
+	public void close()
 	{
-		model.complete();
+		model.close();
 		refresh();
-	}
-
-	@Action
-	public void delegate()
-	{
-		SelectUserOrProjectDialog dialog = userOrProjectSelectionDialog.use(
-				model).newInstance();
-		dialogs.showOkCancelHelpDialog(this, dialog);
-
-		if (dialog.getSelected() != null)
-		{
-			model.delegate(dialog.getSelected());
-			refresh();
-		}
-
 	}
 
 	@Action
@@ -147,23 +132,9 @@ public class CaseActionsView extends JPanel
 	}
 
 	@Action
-	public void done()
-	{
-		model.done();
-		refresh();
-	}
-
-	@Action
-	public void drop()
-	{
-		model.drop();
-		refresh();
-	}
-
-	@Action
 	public void sendto()
 	{
-		SelectUserOrProjectDialog dialog = userOrProjectSelectionDialog.use(
+		SelectProjectDialog dialog = projectSelectionDialog.use(
 				model).newInstance();
 		dialogs.showOkCancelHelpDialog(this, dialog);
 
@@ -182,23 +153,9 @@ public class CaseActionsView extends JPanel
    }
 
 	@Action
-	public void redo()
+	public void reopen()
 	{
-		model.redo();
-		refresh();
-	}
-
-	@Action
-	public void reactivate()
-	{
-		model.reactivate();
-		refresh();
-	}
-
-	@Action
-	public void reject()
-	{
-		model.reject();
+		model.reopen();
 		refresh();
 	}
 

@@ -35,53 +35,37 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.QueryBuilder;
 import org.qi4j.api.query.QueryBuilderFactory;
 import org.qi4j.api.query.QueryExpressions;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.domain.interaction.gtd.States;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Delegatable;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Delegatee;
+import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
+import se.streamsource.streamflow.web.domain.structure.caze.Case;
+import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
+import se.streamsource.streamflow.web.domain.structure.created.Creator;
 
 import static org.qi4j.api.query.QueryExpressions.*;
 
-@Mixins(DelegationsQueries.Mixin.class)
-public interface DelegationsQueries
+@Mixins(DraftsQueries.Mixin.class)
+public interface DraftsQueries
 {
-   QueryBuilder<Delegatable> delegations();
+   QueryBuilder<Case> drafts();
 
    class Mixin
-         implements DelegationsQueries
+         implements DraftsQueries
    {
-
       @Structure
       QueryBuilderFactory qbf;
 
-      @Structure
-      ValueBuilderFactory vbf;
-
-      @Structure
-      UnitOfWorkFactory uowf;
-
       @This
-      Delegatee delegatee;
+      Creator creator;
 
-      public QueryBuilder<Delegatable> delegations()
+      public QueryBuilder<Case> drafts()
       {
-         // Find all Active cases delegated to "me"
-         QueryBuilder<Delegatable> queryBuilder = qbf.newQueryBuilder( Delegatable.class );
-         Association<Delegatee> delegatedTo = templateFor( Delegatable.Data.class ).delegatedTo();
-         Association<Assignee> assignee = templateFor( Assignable.Data.class ).assignedTo();
+         // Find all Draft cases with specific creator which have not yet been opened
+         QueryBuilder<Case> queryBuilder = qbf.newQueryBuilder( Case.class );
+         Association<Creator> createdId = templateFor( CreatedOn.class ).createdBy();
          queryBuilder = queryBuilder.where( and(
-               eq( delegatedTo, delegatee ),
-               isNull( assignee ),
-               or(
-                     QueryExpressions.eq( templateFor( Status.Data.class ).status(), States.ACTIVE ),
-                     eq( templateFor( Status.Data.class ).status(), States.DELEGATED ) ) ) );
-
+               eq( createdId, creator ),
+               QueryExpressions.eq( templateFor( Status.Data.class ).status(), CaseStates.DRAFT ) ) );
          return queryBuilder;
       }
-
    }
 }

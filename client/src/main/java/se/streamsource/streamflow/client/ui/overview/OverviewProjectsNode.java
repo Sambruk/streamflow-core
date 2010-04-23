@@ -82,14 +82,11 @@ public class OverviewProjectsNode
          {
             CommandQueryClient projectClientResource = client.getSubClient( project.id().get() );
             CommandQueryClient projectAssignmentsClientResource = projectClientResource.getSubClient( "assignments" );
-            CommandQueryClient projectWaitingforClientResource = projectClientResource.getSubClient( "waitingfor" );
 
             OverviewProjectAssignmentsNode assignmentsNode = obf.newObjectBuilder( OverviewProjectAssignmentsNode.class ).use( projectAssignmentsClientResource ).newInstance();
-            OverviewProjectWaitingForNode waitingForNode = obf.newObjectBuilder( OverviewProjectWaitingForNode.class ).use( projectWaitingforClientResource ).newInstance();
 
             add( obf.newObjectBuilder( OverviewProjectNode.class ).use( projectClientResource,
                   assignmentsNode,
-                  waitingForNode,
                   project.text().get() ).newInstance() );
          }
       } catch (ResourceException e)

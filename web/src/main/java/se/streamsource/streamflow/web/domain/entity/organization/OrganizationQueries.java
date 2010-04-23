@@ -25,10 +25,25 @@ import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.domain.structure.Removable;
 import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
+import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
+import se.streamsource.streamflow.web.domain.structure.casetype.CaseTypes;
+import se.streamsource.streamflow.web.domain.structure.form.Form;
+import se.streamsource.streamflow.web.domain.structure.form.Forms;
+import se.streamsource.streamflow.web.domain.structure.group.Group;
+import se.streamsource.streamflow.web.domain.structure.group.Groups;
+import se.streamsource.streamflow.web.domain.structure.label.Label;
+import se.streamsource.streamflow.web.domain.structure.label.Labels;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
+import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
+import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnits;
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganization;
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganizationalUnit;
+import se.streamsource.streamflow.web.domain.structure.organization.Projects;
+import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.qi4j.api.query.QueryExpressions.*;
 
@@ -40,6 +55,8 @@ public interface OrganizationQueries
    public QueryBuilder<GroupEntity> findGroupsByName( String query );
 
    public Query<ProjectEntity> findProjects( String query );
+
+   public void visitOrganization(OrganizationVisitor visitor);
 
    class Mixin
          implements OrganizationQueries
@@ -89,6 +106,19 @@ public interface OrganizationQueries
 
       public Query<ProjectEntity> findProjects( String query )
       {
+         final List<ProjectEntity> projects = new ArrayList<ProjectEntity>( );
+
+         visitOrganization( new OrganizationVisitor()
+         {
+            @Override
+            boolean visitProject( Project project )
+            {
+               projects.add( (ProjectEntity) project );
+
+               return true;
+            }
+         });
+
          QueryBuilder<ProjectEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder( ProjectEntity.class );
          queryBuilder = queryBuilder.where(
                and(
@@ -103,9 +133,110 @@ public interface OrganizationQueries
             );
          }
 
-         Query<ProjectEntity> projects = queryBuilder.newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
-         projects.orderBy( orderBy( templateFor( Describable.Data.class ).description() ) );
-         return projects;
+         Query<ProjectEntity> projectsQuery = queryBuilder.newQuery( projects );
+         projectsQuery.orderBy( orderBy( templateFor( Describable.Data.class ).description() ) );
+         return projectsQuery;
+      }
+
+      public void visitOrganization( OrganizationVisitor visitor )
+      {
+         if (!visitor.visitOrganization( org ))
+            return;
+
+         // Visit items on Organization
+         for (Label label : ((Labels.Data) org).labels())
+         {
+            if (!visitor.visitLabel( label ))
+               return;
+         }
+
+         for (Form form : ((Forms.Data)org).forms())
+         {
+            if (!visitor.visitForm( form ))
+               return;
+         }
+
+         for (CaseType caseType : ((CaseTypes.Data)org).caseTypes())
+         {
+            if (!visitor.visitCaseType( caseType ))
+               return;
+         }
+
+         for (OrganizationalUnit organizationalUnit : ((OrganizationalUnits.Data) org).organizationalUnits())
+         {
+            if (!visitOu(organizationalUnit, visitor))
+               return;
+         }
+      }
+
+      private boolean visitOu( OrganizationalUnit organizationalUnit, OrganizationVisitor visitor )
+      {
+         if (!visitor.visitOrganizationalUnit( organizationalUnit ))
+            return false;
+
+         for (Label label : ((Labels.Data) organizationalUnit).labels())
+         {
+            if (!visitor.visitLabel( label ))
+               return false;
+         }
+
+         for (Form form : ((Forms.Data)organizationalUnit).forms())
+         {
+            if (!visitor.visitForm( form ))
+               return false;
+         }
+
+         for (CaseType caseType : ((CaseTypes.Data)organizationalUnit).caseTypes())
+         {
+            if (!visitor.visitCaseType( caseType ))
+               return false;
+         }
+
+         for (Group group : ((Groups.Data) organizationalUnit).groups())
+         {
+            if (!visitor.visitGroup( group ))
+               return false;
+         }
+
+         for (Project project : ((Projects.Data) organizationalUnit).projects())
+         {
+            if (!visitProject(project, visitor))
+               return false;
+         }
+
+         for (OrganizationalUnit ou : ((OrganizationalUnits.Data) organizationalUnit).organizationalUnits())
+         {
+            if (!visitOu(ou, visitor))
+               return false;
+         }
+
+         return true;
+      }
+
+      private boolean visitProject( Project project, OrganizationVisitor visitor )
+      {
+         if (!visitor.visitProject( project ))
+            return false;
+
+         for (Label label : ((Labels.Data) project).labels())
+         {
+            if (!visitor.visitLabel( label ))
+               return false;
+         }
+
+         for (Form form : ((Forms.Data)project).forms())
+         {
+            if (!visitor.visitForm( form ))
+               return false;
+         }
+
+         for (CaseType caseType : ((CaseTypes.Data)project).caseTypes())
+         {
+            if (!visitor.visitCaseType( caseType ))
+               return false;
+         }
+
+         return true;
       }
    }
 }

@@ -31,14 +31,12 @@ public class OverviewProjectNode
    @Uses
    String projectName;
 
-   public OverviewProjectNode( @Uses OverviewProjectAssignmentsNode assignmentsNode,
-                               @Uses OverviewProjectWaitingForNode waitingForNode)
+   public OverviewProjectNode( @Uses OverviewProjectAssignmentsNode assignmentsNode)
    {
       super( null );
 
       add( assignmentsNode );
 
-      add( waitingForNode );
    }
 
    public String projectName()

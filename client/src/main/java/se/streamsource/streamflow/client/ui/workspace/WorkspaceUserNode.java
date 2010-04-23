@@ -22,7 +22,6 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreeNode;
 
 /**
  * JAVADOC
@@ -32,20 +31,11 @@ public class WorkspaceUserNode
       implements EventListener
 {
    public WorkspaceUserNode( @Uses AccountModel account,
-                             @Uses WorkspaceUserInboxNode inbox,
-                             @Uses WorkspaceUserAssignmentsNode assignments,
-                             @Uses WorkspaceUserDelegationsNode delegations,
-                             @Uses WorkspaceUserWaitingForNode waitingFor ) throws ResourceException
+                             @Uses WorkspaceUserDraftsNode drafts) throws ResourceException
    {
       super( account );
 
-      add( inbox );
-
-      add( assignments );
-
-      add( delegations );
-
-      add( waitingFor );
+      add( drafts );
    }
 
    public void notifyEvent( DomainEvent event )

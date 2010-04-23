@@ -48,18 +48,12 @@ public enum CaseResources
    could_not_update_field,
 
    // Case statuses
-   case_status_active_icon,
-   case_status_completed_icon,
-   case_status_done_icon,
-   case_status_dropped_icon,
+   case_status_open_icon,
+   case_status_closed_icon,
    case_status_on_hold_icon,
-   case_status_delegated_icon,
-   case_status_dropped_text,
-   case_status_active_text,
-   case_status_completed_text,
-   case_status_done_text,
+   case_status_draft_text,
+   case_status_closed_text,
    case_status_on_hold_text,
-   case_status_delegated_text,
 
    // Conversation
    could_not_remove_conversation_participant, 

@@ -61,7 +61,7 @@ public class CaseActionsModel
       {
          BasicEventList<TitledLinkValue> list = new BasicEventList<TitledLinkValue>();
 
-         LinksValue linksValue = client.query( "possiblesendtoprojects", LinksValue.class );
+         LinksValue linksValue = client.query( "possiblesendto", LinksValue.class );
          list.addAll( (Collection) linksValue.links().get() );
 
          return list;
@@ -71,28 +71,12 @@ public class CaseActionsModel
       }
    }
 
-   public EventList<TitledLinkValue> getPossibleUsers()
-   {
-      try
-      {
-         BasicEventList<TitledLinkValue> list = new BasicEventList<TitledLinkValue>();
-
-         LinksValue listValue = client.query( "possiblesendtousers", LinksValue.class );
-         list.addAll( (Collection) listValue.links().get() );
-
-         return list;
-      } catch (ResourceException e)
-      {
-         throw new OperationException( WorkspaceResources.could_not_refresh, e );
-      }
-   }
-
    // Actions
-   public void accept()
+   public void open()
    {
       try
       {
-         client.postCommand( "accept" );
+         client.putCommand( "open" );
       } catch (ResourceException e)
       {
          throw new OperationException(WorkspaceResources.could_not_perform_operation, e);
@@ -110,24 +94,11 @@ public class CaseActionsModel
       }
    }
 
-   public void complete()
+   public void close()
    {
       try
       {
-         client.putCommand( "complete" );
-      } catch (ResourceException e)
-      {
-         throw new OperationException(WorkspaceResources.could_not_perform_operation, e);
-      }
-   }
-
-   public void delegate(EntityReference to)
-   {
-      try
-      {
-         ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
-         builder.prototype().entity().set( to );
-         client.postCommand( "delegate", builder.newInstance() );
+         client.putCommand( "close" );
       } catch (ResourceException e)
       {
          throw new OperationException(WorkspaceResources.could_not_perform_operation, e);
@@ -146,28 +117,6 @@ public class CaseActionsModel
    }
 
 
-   public void done()
-   {
-      try
-      {
-         client.postCommand( "done" );
-      } catch (ResourceException e)
-      {
-         throw new OperationException(WorkspaceResources.could_not_perform_operation, e);
-      }
-   }
-
-   public void drop()
-   {
-      try
-      {
-         client.postCommand( "drop" );
-      } catch (ResourceException e)
-      {
-         throw new OperationException(WorkspaceResources.could_not_perform_operation, e);
-      }
-   }
-
    public void sendTo( EntityReference to)
    {
       try
@@ -181,33 +130,11 @@ public class CaseActionsModel
       }
    }
 
-   public void reactivate()
+   public void reopen()
    {
       try
       {
-         client.postCommand( "reactivate" );
-      } catch (ResourceException e)
-      {
-         throw new OperationException(WorkspaceResources.could_not_perform_operation, e);
-      }
-   }
-
-   public void reject()
-   {
-      try
-      {
-         client.postCommand( "reject" );
-      } catch (ResourceException e)
-      {
-         throw new OperationException(WorkspaceResources.could_not_perform_operation, e);
-      }
-   }
-
-   public void redo()
-   {
-      try
-      {
-         client.postCommand( "redo" );
+         client.postCommand( "reopen" );
       } catch (ResourceException e)
       {
          throw new OperationException(WorkspaceResources.could_not_perform_operation, e);

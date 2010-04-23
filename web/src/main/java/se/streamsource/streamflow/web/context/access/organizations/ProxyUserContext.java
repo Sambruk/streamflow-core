@@ -16,17 +16,17 @@
 package se.streamsource.streamflow.web.context.access.organizations;
 
 import org.qi4j.api.mixin.Mixins;
+import se.streamsource.dci.api.IndexInteraction;
 import se.streamsource.dci.api.Interactions;
 import se.streamsource.dci.api.InteractionsMixin;
-import se.streamsource.dci.api.IndexInteraction;
 import se.streamsource.dci.api.SubContexts;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.application.TitledLinksBuilder;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
-import se.streamsource.streamflow.web.domain.entity.gtd.Inbox;
-import se.streamsource.streamflow.web.domain.entity.gtd.InboxQueries;
+import se.streamsource.streamflow.web.domain.entity.gtd.Drafts;
+import se.streamsource.streamflow.web.domain.entity.gtd.DraftsQueries;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.organization.AccessPoint;
 
@@ -48,12 +48,12 @@ public interface ProxyUserContext
 
       public LinksValue index()
       {
-         InboxQueries inboxQueries = context.get( InboxQueries.class );
+         DraftsQueries draftsQueries = context.get( DraftsQueries.class );
          Describable describable = context.get( Describable.class );
 
          TitledLinksBuilder linksBuilder = new TitledLinksBuilder( module.valueBuilderFactory() );
 
-         linksBuilder.addDescribables( inboxQueries.inbox().newQuery( module.unitOfWorkFactory().currentUnitOfWork() ));
+         linksBuilder.addDescribables( draftsQueries.drafts().newQuery( module.unitOfWorkFactory().currentUnitOfWork() ));
          linksBuilder.addTitle( describable.getDescription() );
 
          return linksBuilder.newLinks();
@@ -61,9 +61,9 @@ public interface ProxyUserContext
 
       public void createcase( StringValue description )
       {
-         Inbox inbox = context.get( Inbox.class );
+         Drafts drafts = context.get( Drafts.class );
          AccessPoint.Data data = context.get( AccessPoint.Data.class );
-         CaseEntity caseEntity = inbox.createCase();
+         CaseEntity caseEntity = drafts.createDraft();
          caseEntity.changeDescription( description.string().get() );
          caseEntity.changeCaseType( data.caseType().get() );
          for (Label label : data.labels())

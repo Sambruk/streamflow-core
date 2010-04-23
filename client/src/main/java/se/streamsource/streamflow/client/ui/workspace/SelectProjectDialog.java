@@ -40,7 +40,7 @@ import java.awt.GridLayout;
 /**
  * JAVADOC
  */
-public class SelectUserOrProjectDialog
+public class SelectProjectDialog
       extends JPanel
 {
    Dimension dialogSize = new Dimension( 600, 300 );
@@ -49,11 +49,11 @@ public class SelectUserOrProjectDialog
    public GroupedFilteredList projectList;
    public GroupedFilteredList userList;
 
-   public SelectUserOrProjectDialog( final @Uses CaseActionsModel caseModel,
+   public SelectProjectDialog( final @Uses CaseActionsModel caseModel,
                                       @Service ApplicationContext context,
                                       @Structure ObjectBuilderFactory obf )
    {
-      super( new GridLayout(1, 2) );
+      super( );
 
       setName( i18n.text( WorkspaceResources.search_projects_users ) );
       setActionMap( context.getActionMap( this ) );
@@ -64,35 +64,6 @@ public class SelectUserOrProjectDialog
       projectList.setEventList( projects );
 
       add( new JScrollPane( projectList ));
-
-      userList = new GroupedFilteredList();
-      try
-      {
-         EventList<TitledLinkValue> users = caseModel.getPossibleUsers();
-
-         userList.setEventList(users);
-
-         add( new JScrollPane( userList ));
-      } catch (Exception e)
-      {
-         // Ignore. It is ok that you can't select user sometimes
-      }
-
-      projectList.getList().addListSelectionListener( new ListSelectionListener()
-      {
-         public void valueChanged( ListSelectionEvent e )
-         {
-            userList.getList().clearSelection();
-         }
-      });
-
-      userList.getList().addListSelectionListener( new ListSelectionListener()
-      {
-         public void valueChanged( ListSelectionEvent e )
-         {
-            projectList.getList().clearSelection();
-         }
-      });
    }
 
    public EntityReference getSelected()
@@ -104,8 +75,6 @@ public class SelectUserOrProjectDialog
    public void execute()
    {
       selected = (LinkValue) projectList.getList().getSelectedValue();
-      if (selected == null)
-         selected = (LinkValue) userList.getList().getSelectedValue();
 
       WindowUtils.findWindow( this ).dispose();
    }

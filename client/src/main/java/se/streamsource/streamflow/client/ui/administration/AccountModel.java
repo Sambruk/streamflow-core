@@ -32,18 +32,15 @@ import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.domain.individual.Account;
 import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
 import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
+import se.streamsource.streamflow.client.ui.caze.CaseResources;
 import se.streamsource.streamflow.client.ui.caze.CasesModel;
 import se.streamsource.streamflow.client.ui.caze.CasesTableModel;
 import se.streamsource.streamflow.client.ui.overview.OverviewModel;
 import se.streamsource.streamflow.client.ui.overview.OverviewProjectsNode;
 import se.streamsource.streamflow.client.ui.overview.OverviewSummaryModel;
 import se.streamsource.streamflow.client.ui.search.SearchResultTableModel;
-import se.streamsource.streamflow.client.ui.caze.CaseResources;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceModel;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceUserAssignmentsNode;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceUserDelegationsNode;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceUserInboxNode;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceUserWaitingForNode;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceUserDraftsNode;
 import se.streamsource.streamflow.domain.contact.ContactEmailValue;
 import se.streamsource.streamflow.domain.contact.ContactPhoneValue;
 import se.streamsource.streamflow.domain.contact.ContactValue;
@@ -302,42 +299,18 @@ public class AccountModel extends Observable implements EventListener
       if (workspaceModel == null)
       {
          CommandQueryClient resource = userResource();
-         CommandQueryClient userInboxClient = resource
+         CommandQueryClient userDraftsClient = resource
                .getSubClient("workspace").getSubClient("user").getSubClient(
-                     "inbox");
-         CasesTableModel inboxModel = obf.newObjectBuilder( CasesTableModel.class)
-               .use(userInboxClient).newInstance();
-         WorkspaceUserInboxNode userInboxNode = obf.newObjectBuilder(
-               WorkspaceUserInboxNode.class).use(inboxModel, userInboxClient)
+                     "drafts");
+         CasesTableModel draftsModel = obf.newObjectBuilder( CasesTableModel.class)
+               .use(userDraftsClient).newInstance();
+         WorkspaceUserDraftsNode userDraftsNode = obf.newObjectBuilder(
+               WorkspaceUserDraftsNode.class).use(draftsModel, userDraftsClient)
                .newInstance();
 
-         CommandQueryClient userAssignmentsClient = resource.getSubClient(
-               "workspace").getSubClient("user").getSubClient("assignments");
-         CasesTableModel assignmentsModel = obf.newObjectBuilder(
-               CasesTableModel.class).use(userAssignmentsClient).newInstance();
-         WorkspaceUserAssignmentsNode userAssignmentsNode = obf
-               .newObjectBuilder(WorkspaceUserAssignmentsNode.class).use(
-                     assignmentsModel, userAssignmentsClient).newInstance();
-
-         CommandQueryClient userDelegationsClient = resource.getSubClient(
-               "workspace").getSubClient("user").getSubClient("delegations");
-         CasesTableModel delegationsModel = obf.newObjectBuilder(
-               CasesTableModel.class).use(userDelegationsClient).newInstance();
-         WorkspaceUserDelegationsNode userDelegationsNode = obf
-               .newObjectBuilder(WorkspaceUserDelegationsNode.class).use(
-                     delegationsModel, userDelegationsClient).newInstance();
-
-         CommandQueryClient userWaitingForClient = resource.getSubClient(
-               "workspace").getSubClient("user").getSubClient("waitingfor");
-         CasesTableModel waitingForModel = obf.newObjectBuilder(
-               CasesTableModel.class).use(userWaitingForClient).newInstance();
-         WorkspaceUserWaitingForNode userWaitingForNode = obf.newObjectBuilder(
-               WorkspaceUserWaitingForNode.class).use(waitingForModel,
-               userWaitingForClient).newInstance();
-
          workspaceModel = obf.newObjectBuilder(WorkspaceModel.class).use(this,
-               resource, userInboxNode, userAssignmentsNode,
-               userDelegationsNode, userWaitingForNode, cases()).newInstance();
+               resource, userDraftsNode,
+               cases()).newInstance();
       }
 
       return workspaceModel;

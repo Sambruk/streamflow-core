@@ -37,11 +37,9 @@ import org.qi4j.api.query.QueryBuilderFactory;
 import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.domain.interaction.gtd.States;
+import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Delegatable;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Delegatee;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
@@ -72,21 +70,16 @@ public interface InboxQueries
       @This
       Owner owner;
 
-      @This
-      Inbox.Data inbox;
-
       public QueryBuilder<Case> inbox()
       {
-         // Find all Active cases with specific owner which have not yet been assigned
+         // Find all Open cases with specific owner which have not yet been assigned
          QueryBuilder<Case> queryBuilder = qbf.newQueryBuilder( Case.class );
          Association<Owner> ownableId = templateFor( Ownable.Data.class ).owner();
          Association<Assignee> assignee = templateFor( Assignable.Data.class ).assignedTo();
-         Association<Delegatee> delegatee = templateFor( Delegatable.Data.class ).delegatedTo();
          queryBuilder = queryBuilder.where( and(
                eq( ownableId, owner ),
                isNull( assignee ),
-               isNull( delegatee ),
-               QueryExpressions.eq( templateFor( Status.Data.class ).status(), States.ACTIVE ) ) );
+               QueryExpressions.eq( templateFor( Status.Data.class ).status(), CaseStates.OPEN ) ) );
          return queryBuilder;
       }
 
