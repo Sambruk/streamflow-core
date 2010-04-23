@@ -80,7 +80,7 @@ public class UsersAdministrationModel
       {
          users = client.query("users", UserEntityListDTO.class).users().get();
          fireTableDataChanged();
-      } catch (ResourceException e)
+       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_refresh_list_of_organizations, e );
       }
@@ -146,7 +146,14 @@ public class UsersAdministrationModel
          client.postCommand( "createuser", userCommand );
       } catch (ResourceException e)
       {
-         throw new OperationException( ErrorResources.valueOf( e.getMessage() ), e );
+         try
+         {
+            ErrorResources resources = ErrorResources.valueOf( e.getMessage() );
+            throw new OperationException( resources, e );
+         } catch (Throwable t)
+         {
+            throw new RuntimeException( e.getMessage(), e );
+         }
       }
    }
 
