@@ -2,12 +2,14 @@
 <!--
 
 
-    Copyright (c) 2009 Streamsource AB
-    All Rights Reserved.
+    Copyright 2009-2010 Streamsource AB
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
     Unless required by applicable law or agreed to in writing, software
     distributed under the License is distributed on an "AS IS" BASIS,
     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -85,6 +87,12 @@
                 <name>Sun Microsystems, Inc.</name>
                 <url>http://java.sun.com/products/JavaManagement/</url>
             </organization>
+            <licenses>
+                <license>
+                    <name>Sun Supplemental License Terms - binary distribution only</name>
+                    <url>http://java.sun.com/javase/technologies/core/mntr-mgmt/javamanagement/download.jsp</url>
+                </license>
+            </licenses>
         </project>
     </supplement>
     <supplement>
@@ -94,6 +102,22 @@
             <organization>
                 <name>Sun Microsystems, Inc</name>
                 <url>http://java.sun.com/products/JavaManagement/</url>
+            </organization>
+            <licenses>
+                <license>
+                    <name>Sun Supplemental License Terms - binary distribution only</name>
+                    <url>http://java.sun.com/javase/technologies/core/mntr-mgmt/javamanagement/download.jsp</url>
+                </license>
+            </licenses>
+        </project>
+    </supplement>
+    <supplement>
+        <project>
+            <groupId>dnsjava</groupId>
+            <artifactId>dnsjava</artifactId>
+            <organization>
+                <name>Brian Wellington</name>
+                <url>www.dnsjava.org</url>
             </organization>
         </project>
     </supplement>
@@ -105,6 +129,12 @@
                 <name>Sun Microsystems, Inc., JavaBeans Activation Framework (JAF)</name>
                 <url>http://java.sun.com/products/javabeans/jaf/index.jsp</url>
             </organization>
+            <licenses>
+                <license>
+                    <name>COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) Version 1.0</name>
+                    <url>/LICENSE.txt</url>
+                </license>
+            </licenses>
         </project>
     </supplement>
     <supplement>
@@ -112,9 +142,15 @@
             <groupId>javax.help</groupId>
             <artifactId>javahelp</artifactId>
             <organization>
-                <name>Sun Microsystems, Inc., JavaBeans Activation Framework (JAF)</name>
-                <url>http://java.sun.com/products/javahelp/</url>
+                <name>Sun Microsystems, Inc.</name>
+                <url>https://javahelp.dev.java.net/</url>
             </organization>
+            <licenses>
+                <license>
+                    <name>GNU Version 2.0</name>
+                    <url>https://javahelp.dev.java.net/license.txt</url>
+                </license>
+            </licenses>
         </project>
     </supplement>
     <supplement>
@@ -125,6 +161,12 @@
                 <name>Sun Microsystems, Inc., Java Message Service</name>
                 <url>http://java.sun.com/products/jms</url>
             </organization>
+            <licenses>
+                <license>
+                    <name>Sun Supplemental License Terms - binary distribution only</name>
+                    <url>http://java.sun.com/products/jms/docs.html</url>
+                </license>
+            </licenses>
         </project>
     </supplement>
     <supplement>
@@ -145,6 +187,12 @@
                 <name>SSun Microsystems, Inc.</name>
                 <url>http://java.sun.com/products/servlet/</url>
             </organization>
+            <licenses>
+                <license>
+                    <name>Sun Supplemental License Terms - binary distribution only</name>
+                    <url>http://java.sun.com/products/servlet/download.html</url>
+                </license>
+            </licenses>
         </project>
     </supplement>
     <supplement>
@@ -155,6 +203,12 @@
                 <name>JDBM Project</name>
                 <url>http://jdbm.sourceforge.net</url>
             </organization>
+            <licenses>
+                <license>
+                    <name>JDBM BSD-style license</name>
+                    <url>/LICENSE.txt</url>
+                </license>
+            </licenses>
         </project>
     </supplement>
     <supplement>
@@ -205,6 +259,12 @@
                 <name>JDesktop</name>
                 <url>https://appframework.dev.java.net</url>
             </organization>
+            <licenses>
+                <license>
+                    <name>LGPL</name>
+                    <url>http://www.gnu.org/copyleft/lesser.html</url>
+                </license>
+            </licenses>
         </project>
     </supplement>
     <supplement>
@@ -215,6 +275,12 @@
                 <name>JDesktop</name>
                 <url>https://swingworker.dev.java.net</url>
             </organization>
+            <licenses>
+                <license>
+                    <name>LGPL</name>
+                    <url>http://www.gnu.org/copyleft/lesser.html</url>
+                </license>
+            </licenses>
         </project>
     </supplement>
     <supplement>
@@ -395,6 +461,24 @@
                 <name>Noelios Technologies</name>
                 <url>http://www.restlet.org</url>
             </organization>
+            <licenses>
+                <license>
+                    <name>LGPL 3.0 license</name>
+                    <url>http://www.opensource.org/licenses/lgpl-3.0.html</url>
+                </license>
+                <license>
+                    <name>LGPL 2.1 license</name>
+                    <url>http://www.opensource.org/licenses/lgpl-2.1.php</url>
+                </license>
+                <license>
+                    <name>CDDL 1.0 license</name>
+                    <url>http://www.opensource.org/licenses/cddl1.php</url>
+                </license>
+                <license>
+                    <name>EPL 1.0 license</name>
+                    <url>http://www.opensource.org/licenses/eclipse-1.0.php</url>
+                </license>
+            </licenses>
         </project>
     </supplement>
     <supplement>
@@ -405,6 +489,24 @@
                 <name>Noelios Technologies</name>
                 <url>http://www.restlet.org</url>
             </organization>
+            <licenses>
+                <license>
+                    <name>LGPL 3.0 license</name>
+                    <url>http://www.opensource.org/licenses/lgpl-3.0.html</url>
+                </license>
+                <license>
+                    <name>LGPL 2.1 license</name>
+                    <url>http://www.opensource.org/licenses/lgpl-2.1.php</url>
+                </license>
+                <license>
+                    <name>CDDL 1.0 license</name>
+                    <url>http://www.opensource.org/licenses/cddl1.php</url>
+                </license>
+                <license>
+                    <name>EPL 1.0 license</name>
+                    <url>http://www.opensource.org/licenses/eclipse-1.0.php</url>
+                </license>
+            </licenses>
         </project>
     </supplement>
     <supplement>
@@ -415,6 +517,24 @@
                 <name>Noelios Technologies</name>
                 <url>http://www.restlet.org</url>
             </organization>
+            <licenses>
+                <license>
+                    <name>LGPL 3.0 license</name>
+                    <url>http://www.opensource.org/licenses/lgpl-3.0.html</url>
+                </license>
+                <license>
+                    <name>LGPL 2.1 license</name>
+                    <url>http://www.opensource.org/licenses/lgpl-2.1.php</url>
+                </license>
+                <license>
+                    <name>CDDL 1.0 license</name>
+                    <url>http://www.opensource.org/licenses/cddl1.php</url>
+                </license>
+                <license>
+                    <name>EPL 1.0 license</name>
+                    <url>http://www.opensource.org/licenses/eclipse-1.0.php</url>
+                </license>
+            </licenses>
         </project>
     </supplement>
     <supplement>
@@ -425,6 +545,24 @@
                 <name>Noelios Technologies</name>
                 <url>http://www.restlet.org</url>
             </organization>
+            <licenses>
+            <license>
+                <name>LGPL 3.0 license</name>
+                <url>http://www.opensource.org/licenses/lgpl-3.0.html</url>
+            </license>
+            <license>
+                <name>LGPL 2.1 license</name>
+                <url>http://www.opensource.org/licenses/lgpl-2.1.php</url>
+            </license>
+            <license>
+                <name>CDDL 1.0 license</name>
+                <url>http://www.opensource.org/licenses/cddl1.php</url>
+            </license>
+            <license>
+                <name>EPL 1.0 license</name>
+                <url>http://www.opensource.org/licenses/eclipse-1.0.php</url>
+            </license>
+        </licenses>
         </project>
     </supplement>
     <supplement>
@@ -439,12 +577,76 @@
     </supplement>
     <supplement>
         <project>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jul-to-slf4j</artifactId>
+            <licenses>
+                <license>
+                    <name>MIT License</name>
+                    <url>http://www.slf4j.org/license.html</url>
+                </license>
+            </licenses>
+        </project>
+    </supplement>
+    <supplement>
+        <project>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <licenses>
+                <license>
+                    <name>MIT License</name>
+                    <url>http://www.slf4j.org/license.html</url>
+                </license>
+            </licenses>
+        </project>
+    </supplement>
+    <supplement>
+        <project>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j</artifactId>
+            <licenses>
+                <license>
+                    <name>MIT License</name>
+                    <url>http://www.slf4j.org/license.html</url>
+                </license>
+            </licenses>
+        </project>
+    </supplement>
+    <supplement>
+        <project>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <licenses>
+                <license>
+                    <name>MIT License</name>
+                    <url>http://www.slf4j.org/license.html</url>
+                </license>
+            </licenses>
+        </project>
+    </supplement>
+    <supplement>
+        <project>
+            <groupId>org.subethamail</groupId>
+            <artifactId>subethasmtp</artifactId>
+            <organization>
+                <name>SubEtha SMTP</name>
+                <url>http://subethasmtp.googlecode.com</url>
+            </organization>
+        </project>
+    </supplement>
+    <supplement>
+        <project>
             <groupId>org.swinglabs</groupId>
             <artifactId>swingx</artifactId>
             <organization>
                 <name>Swinglabs</name>
-                <url>http://www.swinglabs.org/</url>
+                <url>https://swingx.dev.java.net/</url>
             </organization>
+            <licenses>
+                <license>
+                    <name>LGPL</name>
+                    <url>http://www.gnu.org/copyleft/lesser.html</url>
+                </license>
+            </licenses>
         </project>
     </supplement>
     <supplement>
@@ -453,8 +655,14 @@
             <artifactId>wizard</artifactId>
             <organization>
                 <name>Swinglabs</name>
-                <url>http://www.swinglabs.org/</url>
+                <url>https://wizard.dev.java.net/</url>
             </organization>
+            <licenses>
+                <license>
+                    <name>CDDL 1.0</name>
+                    <url>http://www.opensource.org/licenses/cddl1.php</url>
+                </license>
+            </licenses>
         </project>
     </supplement>
     <supplement>
@@ -465,6 +673,12 @@
                 <name>Apache Software Foundation</name>
                 <url>http://apache.org</url>
             </organization>
+            <licenses>
+                <license>
+                    <name>Apache License v1.1</name>
+                    <url>/LICENSE.txt</url>
+                </license>
+            </licenses>
         </project>
     </supplement>
     <supplement>
@@ -485,6 +699,16 @@
                 <name>Sun Java</name>
                 <url>http://java.sun.com</url>
             </organization>
+            <licenses>
+                <license>
+                    <name>GPL 2 license</name>
+                    <url>http://www.opensource.org/licenses/gpl-2.0.php</url>
+                </license>
+                <license>
+                    <name>CDDL 1.0 license</name>
+                    <url>http://www.opensource.org/licenses/cddl1.php</url>
+                </license>
+            </licenses>
         </project>
     </supplement>
     <supplement>
@@ -495,6 +719,12 @@
                 <name>Codehouse</name>
                 <url>http://woodstox.codehaus.org</url>
             </organization>
+            <licenses>
+                <license>
+                    <name>Apache License 2.0</name>
+                    <url>/LICENSE.txt</url>
+                </license>
+            </licenses>
         </project>
     </supplement>
 </supplementalDataModels>

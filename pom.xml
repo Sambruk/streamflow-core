@@ -140,7 +140,7 @@
         </contributor>
     </contributors>
 
-    <inceptionYear>2009</inceptionYear>
+    <inceptionYear>2009-2010</inceptionYear>
     <url>http://www.streamsource.se</url>
 
     <organization>
@@ -348,7 +348,6 @@
             <plugin>
                 <artifactId>maven-remote-resources-plugin</artifactId>
                 <version>1.1</version>
-
                 <executions>
                     <execution>
                         <id>process-remote-resources</id>
@@ -360,13 +359,12 @@
                             <resourceBundles>
                                 <resourceBundle>se.streamsource.streamflow:streamflow-jar-resource-bundle:1.0</resourceBundle>                                    
                             </resourceBundles>
-                                    <supplementalModelArtifacts>
-                                      <supplementalModelArtifact>se.streamsource.streamflow:dependency-resource-supplement:1.0</supplementalModelArtifact>
-                                    </supplementalModelArtifacts>
-                                    <supplementalModels>
-                                      <supplementalModel>supplemental-models.xml</supplementalModel>
-                                    </supplementalModels>
-                            
+                            <supplementalModelArtifacts>
+                                <supplementalModelArtifact>se.streamsource.streamflow:dependency-resource-supplement:1.0</supplementalModelArtifact>
+                            </supplementalModelArtifacts>
+                            <supplementalModels>
+                                <supplementalModel>supplemental-models.xml</supplementalModel>
+                            </supplementalModels>
                         </configuration>
                     </execution>
                 </executions>
