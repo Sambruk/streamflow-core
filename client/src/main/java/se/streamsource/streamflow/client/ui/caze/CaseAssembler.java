@@ -19,17 +19,16 @@ import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import se.streamsource.streamflow.client.infrastructure.ui.UIAssemblers;
-import se.streamsource.streamflow.client.ui.administration.projects.members.TableSelectionView;
 import se.streamsource.streamflow.client.ui.caze.conversations.AllParticipantsModel;
 import se.streamsource.streamflow.client.ui.caze.conversations.AllParticipantsView;
-import se.streamsource.streamflow.client.ui.caze.conversations.ConversationParticipantsView;
-import se.streamsource.streamflow.client.ui.caze.conversations.MessagesModel;
-import se.streamsource.streamflow.client.ui.caze.conversations.MessagesView;
 import se.streamsource.streamflow.client.ui.caze.conversations.ConversationModel;
 import se.streamsource.streamflow.client.ui.caze.conversations.ConversationParticipantsModel;
+import se.streamsource.streamflow.client.ui.caze.conversations.ConversationParticipantsView;
 import se.streamsource.streamflow.client.ui.caze.conversations.ConversationView;
 import se.streamsource.streamflow.client.ui.caze.conversations.ConversationsModel;
 import se.streamsource.streamflow.client.ui.caze.conversations.ConversationsView;
+import se.streamsource.streamflow.client.ui.caze.conversations.MessagesModel;
+import se.streamsource.streamflow.client.ui.caze.conversations.MessagesView;
 
 /**
  * JAVADOC
@@ -39,7 +38,7 @@ public class CaseAssembler
 {
    public void assemble( ModuleAssembly module ) throws AssemblyException
    {
-      UIAssemblers.addViews( module, CasesView.class, CasesDetailView2.class, TableSelectionView.class, ContactsAdminView.class,
+      UIAssemblers.addViews( module, CasesView.class, CasesDetailView2.class, ContactsAdminView.class,
             FormsAdminView.class, SubmittedFormsAdminView.class );
 
       UIAssemblers.addDialogs( module, AddCommentDialog.class, CaseLabelsDialog.class );

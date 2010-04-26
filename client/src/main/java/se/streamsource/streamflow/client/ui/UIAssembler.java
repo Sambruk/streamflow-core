@@ -22,8 +22,6 @@ import org.qi4j.bootstrap.ModuleAssembly;
 import se.streamsource.streamflow.client.StreamFlowApplication;
 import se.streamsource.streamflow.client.infrastructure.ui.UIAssemblers;
 import se.streamsource.streamflow.client.ui.administration.UsersAndGroupsModel;
-import se.streamsource.streamflow.client.ui.administration.projects.members.TableMultipleSelectionModel;
-import se.streamsource.streamflow.client.ui.administration.projects.members.TableSingleSelectionModel;
 
 import static org.qi4j.api.common.Visibility.*;
 
@@ -53,8 +51,7 @@ public class UIAssembler
             ConfirmationDialog.class,
             ResetPasswordDialog.class );
 
-      UIAssemblers.addModels( module, TableMultipleSelectionModel.class,
-            TableSingleSelectionModel.class,
+      UIAssemblers.addModels( module,
             UsersAndGroupsModel.class );
 
       module.addObjects( DebugWindow.class );
