@@ -20,6 +20,8 @@ package se.streamsource.streamflow.web.context.conversation;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.value.ValueBuilder;
+import org.restlet.data.Status;
+import org.restlet.resource.ResourceException;
 import se.streamsource.dci.api.Interactions;
 import se.streamsource.dci.api.InteractionsMixin;
 import se.streamsource.dci.api.IndexInteraction;
@@ -42,7 +44,7 @@ import se.streamsource.streamflow.web.domain.structure.conversation.Messages;
 public interface MessagesContext
       extends SubContexts<MessageContext>, IndexInteraction<LinksValue>, Interactions
 {
-   public void addmessage( StringValue message );
+   public void addmessage( StringValue message ) throws ResourceException;
 
    abstract class Mixin
          extends InteractionsMixin
@@ -71,10 +73,16 @@ public interface MessagesContext
          return links.newLinks();
       }
 
-      public void addmessage( StringValue message )
+      public void addmessage( StringValue message ) throws ResourceException
       {
-         Messages messages = context.get( Messages.class );
-         messages.createMessage( message.string().get(), context.get( ConversationParticipant.class ) );
+         try
+         {
+            Messages messages = context.get( Messages.class );
+            messages.createMessage( message.string().get(), context.get( ConversationParticipant.class ) );
+         } catch (IllegalArgumentException e)
+         {
+            throw new ResourceException( Status.CLIENT_ERROR_FORBIDDEN, e.getMessage() );
+         }
       }
 
 

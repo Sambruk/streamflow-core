@@ -358,8 +358,14 @@ public class CommandQueryRestlet
       {
          unitOfWork.discard();
          LoggerFactory.getLogger( getClass() ).warn( "Could not complete UnitOfWork " + unitOfWork.usecase().name(), e );
-         response.setStatus( Status.SERVER_ERROR_INTERNAL );
          response.setEntity( new StringRepresentation( e.getMessage() ) );
+         if ( e instanceof ResourceException)
+         {
+            response.setStatus(((ResourceException) e).getStatus());
+         } else
+         {
+            response.setStatus( Status.SERVER_ERROR_INTERNAL );
+         }
       }
    }
 
