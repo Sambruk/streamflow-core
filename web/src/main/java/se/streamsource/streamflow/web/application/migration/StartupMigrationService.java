@@ -55,9 +55,6 @@ public interface StartupMigrationService
       @Service
       EntityStore entityStore;
 
-      @Service
-      Reindexer reindexer;
-
       @Structure
       UnitOfWorkFactory uowf;
 
@@ -106,14 +103,6 @@ public interface StartupMigrationService
          }
          config.configuration().lastStartupVersion().set( application.version() );
          config.save();
-
-         // Perform reindex if needed
-         if (count[0] > 0)
-         {
-            logger.info( "Reindxing started" );
-            reindexer.reindex();
-            logger.info( "Reindxing completed" );
-         }
 
       }
 
