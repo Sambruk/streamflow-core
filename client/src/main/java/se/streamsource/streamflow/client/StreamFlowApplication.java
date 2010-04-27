@@ -230,8 +230,10 @@ public class StreamFlowApplication
             @Override
             protected int beforeHandle( Request request, Response response )
             {
+/*
                Logger.getLogger( LoggerCategories.STATUS ).info( StatusResources.loading.name() );
                Logger.getLogger( LoggerCategories.PROGRESS ).info( "loading" );
+*/
 
 /*
                     try
@@ -248,10 +250,12 @@ public class StreamFlowApplication
             @Override
             protected void afterHandle( Request request, Response response )
             {
+/*
                Logger.getLogger( LoggerCategories.STATUS ).info( StatusResources.ready.name() );
                Logger.getLogger( LoggerCategories.PROGRESS ).info( LoggerCategories.DONE );
 
                Logger.getLogger( LoggerCategories.HTTP ).info( request.getResourceRef().toString() + "->" + response.getStatus() );
+*/
 
                super.afterHandle( request, response );
             }

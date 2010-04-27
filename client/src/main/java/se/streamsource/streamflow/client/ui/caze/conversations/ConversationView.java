@@ -32,6 +32,7 @@ import javax.swing.text.html.HTMLEditorKit;
 
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
@@ -195,9 +196,9 @@ public class ConversationView extends JPanel
             model.getParticipantsModel().possibleParticipants() ).newInstance();
       dialogs.showOkCancelHelpDialog( addParticipants, dialog );
 
-      if(dialog.getSelected() != null )
+      for (EntityReference entityReference : dialog.getSelectedReferences())
       {
-         model.getParticipantsModel().addParticipant( dialog.getSelected() );
+         model.getParticipantsModel().addParticipant( entityReference );
       }
    }
 

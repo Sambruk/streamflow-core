@@ -17,6 +17,8 @@
 
 package se.streamsource.streamflow.client.ui.administration.organization;
 
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
@@ -25,6 +27,7 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.dci.value.LinksValue;
@@ -38,14 +41,10 @@ import java.util.List;
 import java.util.logging.Logger;
 
 public class OrganizationsModel
-      extends AbstractListModel
       implements EventListener, EventVisitor
 {
    @Structure
    ObjectBuilderFactory obf;
-
-   @Structure
-   ValueBuilderFactory vbf;
 
    private EventVisitorFilter eventFilter = new EventVisitorFilter( this, "createdOrganization", "createdUser" );
 
@@ -59,7 +58,7 @@ public class OrganizationsModel
       }
    };
 
-   private List<LinkValue> organizations;
+   private EventList<LinkValue> organizations = new BasicEventList<LinkValue>();
 
    private CommandQueryClient client;
 
@@ -69,22 +68,18 @@ public class OrganizationsModel
       this.refresh();
    }
 
-   public int getSize()
-   {
-      return organizations == null ? 0 : organizations.size();
-   }
 
-   public Object getElementAt( int index )
+   public EventList<LinkValue> getEventList()
    {
-      return organizations == null ? null : organizations.get( index );
+      return organizations;
    }
 
    public void refresh()
    {
       try
       {
-         organizations = client.query("index", LinksValue.class).links().get();
-         fireContentsChanged( this, 0, organizations.size() );
+         List<LinkValue> orgs = client.query("index", LinksValue.class).links().get();
+         EventListSynch.synchronize( orgs, organizations );
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_refresh, e );

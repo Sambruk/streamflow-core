@@ -67,7 +67,7 @@ import java.util.logging.Logger;
 
 /**
  * Generate statistics data to a JDBC database. This service
- * listens for domain events, and on "completed" it will put
+ * listens for domain events, and on "close" it will put
  * information about the case into the database.
  */
 @Mixins(StatisticsService.Mixin.class)
@@ -98,7 +98,7 @@ public interface StatisticsService
       public Logger logger;
       private Properties sql;
 
-      private EventSpecification completedFilter;
+      private EventSpecification closedFilter;
 
       private Usecase usecase = UsecaseBuilder.newUsecase( "Log statistics" );
 
@@ -124,24 +124,7 @@ public interface StatisticsService
          }
 
 
-         completedFilter = new EventQuery()
-         {
-            @Override
-            public boolean accept( DomainEvent event )
-            {
-               boolean accept = super.accept( event );
-               if (accept)
-               {
-                  String params = event.parameters().get();
-                  if (params.indexOf( "CLOSED" ) != -1 ||
-                      params.indexOf( "OPEN" ) != -1)
-                     return true;
-               }
-
-               return false;
-            }
-         }.withNames( "changedStatus", "statusChanged" )
-          .withUsecases( "complete", "reactivate" );
+         closedFilter = new EventQuery().withUsecases( "close", "reopen" );
 
          visit( null ); // Trigger a load
       }
@@ -160,7 +143,7 @@ public interface StatisticsService
             eventStore.transactionsAfter( config.configuration().lastEventDate().get(),
                   timestamp = new TransactionTimestampFilter( config.configuration().lastEventDate().get(),
                         new TransactionEventAdapter(
-                              new EventVisitorFilter( completedFilter, eventCollector = new EventCollector() ) ) ) );
+                              new EventVisitorFilter( closedFilter, eventCollector = new EventCollector() ) ) ) );
 
             // Handle all stateChanged(CLOSED) events
             if (!eventCollector.events().isEmpty())
@@ -190,9 +173,9 @@ public interface StatisticsService
                      Owner owner = aCase.owner().get();
                      if (owner instanceof Project)
                      {
-                        if (domainEvent.usecase().get().equals("complete"))
+                        if (domainEvent.usecase().get().equals("close"))
                         {
-                           PreparedStatement stmt = conn.prepareStatement( sql.getProperty( "completed.insert" ) );
+                           PreparedStatement stmt = conn.prepareStatement( sql.getProperty( "closed.insert" ) );
                            int idx = 1;
                            String id = aCase.identity().get();
                            stmt.setString( idx++, id );
@@ -253,7 +236,7 @@ public interface StatisticsService
                         } else
                         {
                            // Reactivated - remove statistics
-                           PreparedStatement stmt = conn.prepareStatement( sql.getProperty( "completed.delete" ) );
+                           PreparedStatement stmt = conn.prepareStatement( sql.getProperty( "closed.delete" ) );
                            String id = aCase.identity().get();
                            stmt.setString( 1, id );
                            stmt.executeUpdate();

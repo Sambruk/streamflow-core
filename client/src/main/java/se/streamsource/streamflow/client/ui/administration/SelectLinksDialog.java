@@ -17,6 +17,8 @@
 
 package se.streamsource.streamflow.client.ui.administration;
 
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.swing.EventListModel;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
@@ -42,7 +44,7 @@ public class SelectLinksDialog
    private JList list;
 
    public SelectLinksDialog( @Service ApplicationContext context,
-                                         @Uses LinksQueryListModel model,
+                                         @Uses EventList<LinkValue> model,
                                          @Structure ValueBuilderFactory vbf )
    {
       super( new BorderLayout() );
@@ -50,7 +52,7 @@ public class SelectLinksDialog
 
       setActionMap( context.getActionMap( this ) );
 
-      list = new JList( model );
+      list = new JList( new EventListModel<LinkValue>(model) );
       list.setCellRenderer( new LinkListCellRenderer() );
 
       JScrollPane scrollPane = new JScrollPane( list );

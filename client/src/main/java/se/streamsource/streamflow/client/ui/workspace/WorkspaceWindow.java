@@ -32,6 +32,7 @@ import se.streamsource.streamflow.client.ui.administration.AccountModel;
 import se.streamsource.streamflow.client.ui.menu.WorkspaceMenuBar;
 import se.streamsource.streamflow.client.ui.status.StatusBarView;
 
+import javax.swing.JPanel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.CardLayout;
@@ -66,8 +67,9 @@ public class WorkspaceWindow
       setFrame( frame );
       setMenuBar( menu );
 
-      JXStatusBar bar = new StatusBarView( getContext() );
-      setStatusBar( bar );
+//      JXStatusBar bar = new StatusBarView( getContext() );
+//      setStatusBar( bar );
+//      frame.setStatusBar( bar );
 
       frame.setPreferredSize( new Dimension( 1000, 700 ) );
       frame.pack();

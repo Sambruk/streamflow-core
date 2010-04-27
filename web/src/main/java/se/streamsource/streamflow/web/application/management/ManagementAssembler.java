@@ -47,7 +47,7 @@ public class ManagementAssembler
 
          module.addServices( JmxConnectorService.class ).identifiedBy( "jmxconnector" ).instantiateOnStartup();
 
-         module.addServices( ReindexerService.class ).identifiedBy( "reindexer" );
+         module.addServices( ReindexerService.class ).identifiedBy( "reindexer" ).visibleIn( Visibility.layer );
          module.addServices( ReindexOnStartupService.class ).instantiateOnStartup();
 
          module.addServices( EventManagerService.class, DomainEventPlayerService.class ).instantiateOnStartup();

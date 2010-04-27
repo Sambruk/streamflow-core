@@ -52,7 +52,6 @@ import java.util.logging.Logger;
  * JAVADOC
  */
 public class FieldsModel
-      extends AbstractListModel
       implements Refreshable, EventListener, EventVisitor
 {
    @Uses
@@ -103,24 +102,12 @@ public class FieldsModel
 
    private BasicEventList<ListItemValue> fieldsList = new BasicEventList<ListItemValue>();
 
-   public int getSize()
-   {
-      return fieldsList == null ? 0 : fieldsList.size();
-   }
-
-   public Object getElementAt( int index )
-   {
-      return fieldsList.get( index );
-   }
-
    public void refresh()
    {
       try
       {
          List<ListItemValue> list = ((ListValue)client.query( "pagessummary", ListValue.class ).buildWith().prototype()).items().get();
          EventListSynch.synchronize( list, fieldsList );
-
-         fireContentsChanged( this, 0, getSize() );
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_refresh_list_of_form_pages_and_fields, e );
@@ -239,7 +226,6 @@ public class FieldsModel
                // only update element
                String description = EventParameters.getParameter( event, "param1" );
                fieldsList.get( index ).description().set( description );
-               fireContentsChanged( this, index, index+1 );
             }
          }
          index++;

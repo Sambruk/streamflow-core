@@ -30,6 +30,7 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.usecase.Usecase;
 import org.qi4j.api.usecase.UsecaseBuilder;
+import org.qi4j.index.reindexer.Reindexer;
 import org.qi4j.spi.entity.EntityState;
 import org.qi4j.spi.entitystore.EntityStore;
 
@@ -54,6 +55,9 @@ public interface StartupMigrationService
       @Service
       EntityStore entityStore;
 
+      @Service
+      Reindexer reindexer;
+
       @Structure
       UnitOfWorkFactory uowf;
 
@@ -64,12 +68,12 @@ public interface StartupMigrationService
       public void activate() throws Exception
       {
          String lsv = config.configuration().lastStartupVersion().get();
+         final int[] count = new int[]{0};
          if (lsv != null && !lsv.equals( application.version() ))
          {
             // Migrate all data eagerly
             logger = Logger.getLogger( StartupMigrationService.class.getName() );
             logger.info( "Migrating data to new version" );
-            final int[] count = new int[]{0};
             final Usecase usecase = UsecaseBuilder.newUsecase( "Migrate data" );
             final UnitOfWork[] uow = new UnitOfWork[]{uowf.newUnitOfWork( usecase )};
 
@@ -100,9 +104,17 @@ public interface StartupMigrationService
             uow[0].complete();
             logger.info( "Migration finished. Checked " + count[0] + " entities" );
          }
-
          config.configuration().lastStartupVersion().set( application.version() );
          config.save();
+
+         // Perform reindex if needed
+         if (count[0] > 0)
+         {
+            logger.info( "Reindxing started" );
+            reindexer.reindex();
+            logger.info( "Reindxing completed" );
+         }
+
       }
 
       public void passivate() throws Exception

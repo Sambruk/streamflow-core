@@ -17,11 +17,13 @@
 
 package se.streamsource.streamflow.client.ui.administration.organization;
 
+import ca.odell.glazedlists.swing.EventListModel;
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
+import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.client.infrastructure.ui.LinkListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
 
@@ -45,7 +47,7 @@ public class OrganizationsView
       super( new BorderLayout() );
       this.model = model;
 
-      organizationsList = new JList( model );
+      organizationsList = new JList( new EventListModel<LinkValue>(model.getEventList()) );
 
       organizationsList.setCellRenderer( new LinkListCellRenderer() );
 

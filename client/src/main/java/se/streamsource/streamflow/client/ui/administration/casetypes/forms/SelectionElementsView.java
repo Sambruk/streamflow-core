@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.client.ui.administration.casetypes.forms;
 
+import ca.odell.glazedlists.swing.EventListModel;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.JXList;
 import org.qi4j.api.injection.scope.Service;
@@ -78,7 +79,7 @@ public class SelectionElementsView
       toolbar.add( new JButton( am.get( "rename" ) ) );
 
       model.refresh();
-      elementList = new JXList( model );
+      elementList = new JXList( new EventListModel<String>(model.getEventList()) );
       elementList.setCellRenderer( new DefaultListCellRenderer()
       {
          @Override

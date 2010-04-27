@@ -17,6 +17,8 @@
 
 package se.streamsource.streamflow.client.ui.administration.casetypes.forms;
 
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilder;
@@ -25,6 +27,7 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
@@ -40,7 +43,6 @@ import java.util.List;
  * JAVADOC
  */
 public class SelectionElementsModel
-      extends AbstractListModel
    implements Refreshable
 {
    @Uses
@@ -49,7 +51,12 @@ public class SelectionElementsModel
    @Structure
    ValueBuilderFactory vbf;
 
-   private List<String> elements;
+   private EventList<String> elements = new BasicEventList<String>();
+
+   public EventList<String> getEventList()
+   {
+      return elements;
+   }
 
    public void refresh()
    {
@@ -61,8 +68,8 @@ public class SelectionElementsModel
          if (field instanceof SelectionFieldValue)
          {
             SelectionFieldValue selectionField = (SelectionFieldValue) field;
-            elements = selectionField.values().get();
-            fireContentsChanged( this, 0, getSize() );
+            List<String> elts = selectionField.values().get();
+            EventListSynch.synchronize( elts, elements );
          }
       } catch (ResourceException e)
       {
@@ -127,15 +134,5 @@ public class SelectionElementsModel
       {
          throw new OperationException( AdministrationResources.could_not_add_field, e );
       }
-   }
-
-   public int getSize()
-   {
-      return elements == null ? 0 : elements.size();
-   }
-
-   public Object getElementAt( int row )
-   {
-      return elements.get( row );
    }
 }

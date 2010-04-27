@@ -285,7 +285,7 @@ public class CommandQueryRestlet
          logger.error( ex.getMessage(), ex );
          response.setStatus( ex.getStatus() );
          response.setEntity( new StringRepresentation(ex.getMessage()) );
-      } catch (Exception ex)
+      } catch (Throwable ex)
       {
          logger.error( ex.getMessage(), ex );
          response.setStatus( Status.SERVER_ERROR_INTERNAL );

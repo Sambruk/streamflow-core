@@ -34,6 +34,9 @@ import se.streamsource.streamflow.client.infrastructure.ui.GroupedFilteredList;
 import javax.swing.JPanel;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * JAVADOC
@@ -43,7 +46,7 @@ public class GroupedFilterListDialog
 {
    Dimension dialogSize = new Dimension( 600, 300 );
 
-   public LinkValue selected;
+   public List<LinkValue> selected = new ArrayList<LinkValue>();
    public GroupedFilteredList itemList;
 
    public GroupedFilterListDialog( @Uses String caption,
@@ -62,15 +65,30 @@ public class GroupedFilterListDialog
       add( itemList );
    }
 
-   public EntityReference getSelected()
+   public EntityReference getSelectedReference()
    {
-      return selected == null ? null : EntityReference.parseEntityReference( selected.id().get());
+      return selected.size() == 0 ? null : EntityReference.parseEntityReference( selected.get(0).id().get());
+   }
+
+   public EntityReference[] getSelectedReferences()
+   {
+      EntityReference[] refs = new EntityReference[selected.size()];
+      for (int i = 0; i < selected.size(); i++)
+      {
+         LinkValue linkValue = selected.get(i);
+         refs[i] = EntityReference.parseEntityReference( linkValue.id().get()); 
+      }
+      return refs;
    }
 
    @Action
    public void execute()
    {
-      selected = (LinkValue) itemList.getList().getSelectedValue();
+      selected = new ArrayList<LinkValue>();
+      for (Object o : itemList.getList().getSelectedValues())
+      {
+         selected.add( (LinkValue) o);
+      }
 
       WindowUtils.findWindow( this ).dispose();
    }

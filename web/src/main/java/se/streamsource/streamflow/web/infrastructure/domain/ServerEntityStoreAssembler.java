@@ -188,7 +188,7 @@ public class ServerEntityStoreAssembler
                   }
                }).end().
 
-               toVersion( "0.7.25" ).
+               toVersion( "0.7.25.1665" ).
                renameEntity( "se.streamsource.streamflow.web.domain.entity.task.TaskEntity","se.streamsource.streamflow.web.domain.entity.caze.CaseEntity" ).
                renameEntity( "se.streamsource.streamflow.web.domain.entity.tasktype.TaskTypeEntity", "se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity" ).
                forEntities( "se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity" ).
@@ -197,6 +197,33 @@ public class ServerEntityStoreAssembler
                forEntities( "se.streamsource.streamflow.web.domain.entity.caze.CaseEntity" ).
                   renameAssociation( "taskType", "caseType" ).
                   renameProperty( "taskId", "caseId" ).
+                  custom( new EntityMigrationOperation()
+                  {
+                     public boolean upgrade( JSONObject state, StateStore stateStore, Migrator migrator ) throws JSONException
+                     {
+                        String status = state.getJSONObject( "properties" ).getString( "status" );
+
+                        if (status.equals("ACTIVE"))
+                           status = "OPEN";
+                        else if (status.equals( "COMPLETED" ))
+                           status = "CLOSED";
+                        else if (status.equals("DROPPED"))
+                           status = "CLOSED";
+                        else if (status.equals("DONE"))
+                           status = "OPEN";
+                        else if (status.equals("DELEGATED"))
+                           status = "OPEN";
+
+                        state.getJSONObject( "properties" ).put( "status", status );
+
+                        return true;
+                     }
+
+                     public boolean downgrade( JSONObject state, StateStore stateStore, Migrator migrator ) throws JSONException
+                     {
+                        return false;
+                     }
+                  }).
                end().
                forEntities( "se.streamsource.streamflow.web.domain.entity.project.ProjectEntity" ).
                   renameManyAssociation( "selectedTaskTypes", "selectedCaseTypes" ).

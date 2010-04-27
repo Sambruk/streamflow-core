@@ -17,39 +17,46 @@
 
 package se.streamsource.streamflow.client.ui.administration;
 
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.LinkValue;
+import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
+import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 
-import javax.swing.AbstractListModel;
 import java.util.List;
 
 public class LinksQueryListModel
-      extends AbstractListModel
+      implements Refreshable
 {
-   private List<LinkValue> users;
+   private EventList<LinkValue> links = new BasicEventList<LinkValue>();
+   private CommandQueryClient client;
+   private String query;
 
    public LinksQueryListModel( @Uses CommandQueryClient client, @Uses String query )
    {
+      this.client = client;
+      this.query = query;
+   }
+
+   public EventList<LinkValue> getEventList()
+   {
+      return links;
+   }
+
+   public void refresh() throws OperationException
+   {
       try
       {
-         users = client.query( query, LinksValue.class ).links().get();
+         List<LinkValue> linkList = client.query( query, LinksValue.class ).links().get();
+         EventListSynch.synchronize( linkList, links );
       } catch (ResourceException e)
       {
-         throw new OperationException( AdministrationResources.could_not_get_users, e );
+         throw new OperationException( AdministrationResources.could_not_refresh, e );
       }
-   }
-
-   public int getSize()
-   {
-      return users == null ? 0 : users.size();
-   }
-
-   public Object getElementAt( int index )
-   {
-      return users == null ? null : users.get( index );
    }
 }

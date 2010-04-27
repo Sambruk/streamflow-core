@@ -97,7 +97,7 @@ public class OrganizationUsersView
       LinksQueryListModel dialogModel = obf.newObjectBuilder( LinksQueryListModel.class )
             .use( model.getClient(), "possibleusers" ).newInstance();
       SelectLinksDialog dialog = obf.newObjectBuilder( SelectLinksDialog.class )
-            .use( dialogModel ).newInstance();
+            .use( dialogModel.getEventList() ).newInstance();
       dialogs.showOkCancelHelpDialog(
             WindowUtils.findWindow( this ),
             dialog,

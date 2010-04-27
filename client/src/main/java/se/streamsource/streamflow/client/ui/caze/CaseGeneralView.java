@@ -344,9 +344,9 @@ public class CaseGeneralView extends JScrollPane implements Observer
             model.getPossibleCaseTypes() ).newInstance();
       dialogs.showOkCancelHelpDialog( caseTypeButton, dialog );
 
-      if (dialog.getSelected() != null)
+      if (dialog.getSelectedReference() != null)
       {
-         model.caseType( dialog.getSelected() );
+         model.caseType( dialog.getSelectedReference() );
          // refresh();
       }
    }

@@ -96,4 +96,13 @@
         <comment>Add column tasktype</comment>
         <sql>alter table completed add column tasktype VARCHAR(256) CHARACTER SET utf8 after assigned</sql>
     </changeSet>
+    <changeSet id="3" author="rickardoberg">
+        <renameTable oldTableName="completed" newTableName="cases"/>
+        <renameColumn tableName="cases"
+            oldColumnName="task_id" newColumnName="case_id" columnDataType="varchar(15)"/>
+        <renameColumn tableName="cases"
+            oldColumnName="completed_on" newColumnName="closed_on" columnDataType="datetime"/>
+        <renameColumn tableName="cases"
+            oldColumnName="tasktype" newColumnName="casetype" columnDataType="varchar(256)"/>
+    </changeSet>
 </databaseChangeLog>
