@@ -28,30 +28,25 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.TitledLinkValue;
+import se.streamsource.streamflow.client.infrastructure.ui.FilteredList;
 import se.streamsource.streamflow.client.infrastructure.ui.GroupedFilteredList;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import se.streamsource.streamflow.client.ui.caze.CaseActionsModel;
 
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import java.awt.Dimension;
-import java.awt.GridLayout;
+import javax.swing.ListSelectionModel;
 
 /**
  * JAVADOC
  */
-public class SelectProjectDialog
+public class SelectLinkDialog
       extends JPanel
 {
-   Dimension dialogSize = new Dimension( 600, 300 );
-
    public LinkValue selected;
-   public GroupedFilteredList projectList;
-   public GroupedFilteredList userList;
+   public JList list;
 
-   public SelectProjectDialog( final @Uses CaseActionsModel caseModel,
+   public SelectLinkDialog( final @Uses EventList<TitledLinkValue> links,
                                       @Service ApplicationContext context,
                                       @Structure ObjectBuilderFactory obf )
    {
@@ -60,23 +55,40 @@ public class SelectProjectDialog
       setName( i18n.text( WorkspaceResources.search_projects_users ) );
       setActionMap( context.getActionMap( this ) );
 
-      EventList<TitledLinkValue> projects = caseModel.getPossibleProjects();
+      GroupedFilteredList list = new GroupedFilteredList();
+      list.getList().setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
+      list.setEventList( links );
+      this.list = list.getList();
 
-      projectList = new GroupedFilteredList();
-      projectList.setEventList( projects );
-
-      add( new JScrollPane( projectList ));
+      add( new JScrollPane( list ));
    }
 
-   public EntityReference getSelected()
+   public SelectLinkDialog( final @Service ApplicationContext context,
+                                     @Uses EventList<LinkValue> links,
+                                      @Structure ObjectBuilderFactory obf )
    {
-      return selected == null ? null : EntityReference.parseEntityReference( selected.id().get());
+      super( );
+
+      setName( i18n.text( WorkspaceResources.search_projects_users ) );
+      setActionMap( context.getActionMap( this ) );
+
+      FilteredList list = new FilteredList();
+      list.getList().setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
+      list.setEventList( links );
+      this.list = list.getList();
+
+      add( new JScrollPane( list ));
+   }
+
+   public LinkValue getSelected()
+   {
+      return selected;
    }
 
    @Action
    public void execute()
    {
-      selected = (LinkValue) projectList.getList().getSelectedValue();
+      selected = (LinkValue) list.getSelectedValue();
 
       WindowUtils.findWindow( this ).dispose();
    }

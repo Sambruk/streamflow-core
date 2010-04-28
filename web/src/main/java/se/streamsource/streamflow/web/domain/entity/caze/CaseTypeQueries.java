@@ -30,6 +30,8 @@ import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.web.domain.Specification;
 import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypesQueries;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationQueries;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationVisitor;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
@@ -41,15 +43,19 @@ import se.streamsource.streamflow.web.domain.structure.created.Creator;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationParticipations;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
+import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnits;
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganization;
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganizationalUnit;
+import se.streamsource.streamflow.web.domain.structure.organization.Projects;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
 import se.streamsource.streamflow.web.domain.structure.user.User;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * JAVADOC
@@ -88,20 +94,77 @@ public interface CaseTypeQueries
       @This
       Assignable assignable;
 
-      public void possibleCaseTypes( LinksBuilder builder)
+      public void possibleCaseTypes( final LinksBuilder builder)
       {
          Owner owner = ownable.owner().get();
          if (owner == null)
          {
             OrganizationParticipations.Data orgs = (OrganizationParticipations.Data) created.createdBy().get();
 
-            for (Organization organization : orgs.organizations())
+            for (final Organization organization : orgs.organizations())
             {
-               CaseTypes.Data caseTypesList = (CaseTypes.Data) organization;
-               for (CaseType caseType : caseTypesList.caseTypes())
+               OrganizationQueries orgQueries = (OrganizationQueries) organization;
+
+               // Find out what case-types have been selected
+               final Set<CaseType> selectedCaseTypes = new HashSet<CaseType>( );
+               orgQueries.visitOrganization( new OrganizationVisitor()
                {
-                  builder.addDescribable( caseType, organization );
-               }
+                  @Override
+                  public boolean visitSelectedCaseType( CaseType caseType )
+                  {
+                     selectedCaseTypes.add( caseType );
+
+                     return super.visitSelectedCaseType( caseType );
+                  }
+               }, new OrganizationQueries.ClassSpecification(
+                     OrganizationalUnits.class,
+                     OrganizationalUnit.class,
+                     Projects.class,
+                     SelectedCaseTypes.class
+                     ));
+
+               orgQueries.visitOrganization( new OrganizationVisitor()
+               {
+                  Describable owner;
+
+                  @Override
+                  public boolean visitOrganization( Organization org )
+                  {
+                     owner = org;
+                     return super.visitOrganization( org );
+                  }
+
+                  @Override
+                  public boolean visitOrganizationalUnit( OrganizationalUnit ou )
+                  {
+                     owner = ou;
+                     return super.visitOrganizationalUnit( ou );
+                  }
+
+                  @Override
+                  public boolean visitProject( Project project )
+                  {
+                     owner = project;
+                     return super.visitProject( project );
+                  }
+
+                  @Override
+                  public boolean visitCaseType( CaseType caseType )
+                  {
+                     if (selectedCaseTypes.contains( caseType ))
+                        builder.addDescribable( caseType, owner );
+
+                     return super.visitCaseType( caseType );
+                  }
+               }, new OrganizationQueries.ClassSpecification(
+                     Organization.class,
+                     OrganizationalUnits.class,
+                     OrganizationalUnit.class,
+                     Projects.class,
+                     Project.class,
+                     CaseTypes.class,
+                     CaseType.class
+                     ));
             }
          } else
          {

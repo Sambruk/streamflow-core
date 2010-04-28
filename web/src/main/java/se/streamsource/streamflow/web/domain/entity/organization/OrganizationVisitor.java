@@ -18,6 +18,7 @@
 package se.streamsource.streamflow.web.domain.entity.organization;
 
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
+import se.streamsource.streamflow.web.domain.structure.casetype.Resolution;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
 import se.streamsource.streamflow.web.domain.structure.group.Group;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
@@ -30,37 +31,62 @@ import se.streamsource.streamflow.web.domain.structure.project.Project;
  */
 public class OrganizationVisitor
 {
-   boolean visitOrganization( Organization org)
+   public boolean visitOrganization( Organization org)
    {
       return true;
    }
 
-   boolean visitOrganizationalUnit( OrganizationalUnit ou)
+   public boolean visitOrganizationalUnit( OrganizationalUnit ou)
    {
       return true;
    }
 
-   boolean visitProject( Project project)
+   public boolean visitProject( Project project)
    {
       return true;
    }
 
-   boolean visitGroup( Group group)
+   public boolean visitGroup( Group group)
    {
       return true;
    }
 
-   boolean visitCaseType( CaseType caseType)
+   public boolean visitCaseType( CaseType caseType)
    {
       return true;
    }
 
-   boolean visitForm( Form form)
+   public boolean visitSelectedCaseType( CaseType caseType )
    {
       return true;
    }
 
-   boolean visitLabel( Label label)
+   public boolean visitForm( Form form)
+   {
+      return true;
+   }
+
+   public boolean visitSelectedForm( Form form )
+   {
+      return true;
+   }
+
+   public boolean visitLabel( Label label)
+   {
+      return true;
+   }
+
+   public boolean visitSelectedLabel( Label label )
+   {
+      return true;
+   }
+
+   public boolean visitResolution( Resolution resolution)
+   {
+      return true;
+   }
+
+   public boolean visitSelectedResolution( Resolution resolution )
    {
       return true;
    }

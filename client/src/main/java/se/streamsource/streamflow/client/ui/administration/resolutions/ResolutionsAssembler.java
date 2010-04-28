@@ -15,21 +15,28 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.domain.entity.casetype;
+package se.streamsource.streamflow.client.ui.administration.resolutions;
 
-import org.qi4j.api.common.Visibility;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
+import se.streamsource.streamflow.client.infrastructure.ui.UIAssemblers;
+import se.streamsource.streamflow.client.ui.administration.label.GroupedSelectionDialog;
+import se.streamsource.streamflow.client.ui.administration.label.LabelsModel;
+import se.streamsource.streamflow.client.ui.administration.label.LabelsView;
+import se.streamsource.streamflow.client.ui.administration.label.SelectedLabelsModel;
+import se.streamsource.streamflow.client.ui.administration.label.SelectedLabelsView;
+import se.streamsource.streamflow.client.ui.administration.label.SelectionDialog;
 
 /**
  * JAVADOC
  */
-public class CaseTypeAssembler
+public class ResolutionsAssembler
       implements Assembler
 {
    public void assemble( ModuleAssembly module ) throws AssemblyException
    {
-      module.addEntities( CaseTypeEntity.class, ResolutionEntity.class ).visibleIn( Visibility.application );
+      UIAssemblers.addMV( module, ResolutionsModel.class, ResolutionsView.class );
+      UIAssemblers.addMV( module, SelectedResolutionsModel.class, SelectedResolutionsView.class );
    }
 }

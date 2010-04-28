@@ -44,6 +44,7 @@ import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.entity.user.UsersEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
+import se.streamsource.streamflow.web.domain.structure.casetype.Resolution;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversation;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
@@ -124,15 +125,23 @@ public interface TestDataService
          Label major = organization.createLabel( "Major" );
          Label critical = organization.createLabel( "Critical" );
 
-         // Create aCase types
+         // Create case types
          CaseType newFeature = organization.createCaseType( "New feature" );
          CaseType bug = organization.createCaseType( "Bug" );
          bug.addSelectedLabel( minor );
          bug.addSelectedLabel( major );
          bug.addSelectedLabel( critical );
+         Resolution fixed = bug.createResolution( "Fixed" );
+         Resolution wontFix = bug.createResolution( "Won't fix" );
+         bug.addSelectedResolution( fixed );
+         bug.addSelectedResolution( wontFix );
          CaseType improvement = organization.createCaseType( "Improvement" );
          improvement.addSelectedLabel( minor );
          improvement.addSelectedLabel( major );
+         Resolution implemented = improvement.createResolution( "Implemented" );
+         Resolution rejected = improvement.createResolution( "Rejected" );
+         improvement.addSelectedResolution( implemented );
+         improvement.addSelectedResolution( rejected );
          CaseType complaint = organization.createCaseType( "Complaint" );
          CaseType passwordReset = organization.createCaseType( "Reset password" );
 
@@ -296,11 +305,6 @@ public interface TestDataService
             caze.sendTo( (Owner) project );
             caze.open();
          }
-
-         // Create labels
-         for (int i = 1; i < 10; i++)
-            user.createLabel( "Label " + i );
-
 
          // Access test data
          ArrayList<Label> labels = new ArrayList<Label>();

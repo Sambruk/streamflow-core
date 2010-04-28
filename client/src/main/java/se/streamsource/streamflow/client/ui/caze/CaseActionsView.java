@@ -17,18 +17,26 @@
 
 package se.streamsource.streamflow.client.ui.caze;
 
+import ca.odell.glazedlists.EventList;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilder;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import se.streamsource.dci.value.LinkValue;
+import se.streamsource.dci.value.TitledLinkValue;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
 import se.streamsource.streamflow.client.StreamFlowApplication;
 import se.streamsource.streamflow.client.StreamFlowResources;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.ConfirmationDialog;
-import se.streamsource.streamflow.client.ui.workspace.SelectProjectDialog;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.ui.administration.SelectLinksDialog;
+import se.streamsource.streamflow.client.ui.workspace.SelectLinkDialog;
 import se.streamsource.streamflow.domain.interaction.gtd.Actions;
 
 import javax.swing.ActionMap;
@@ -47,7 +55,7 @@ import java.awt.GridLayout;
 public class CaseActionsView extends JPanel
 {
 	@Uses
-	protected ObjectBuilder<SelectProjectDialog> projectSelectionDialog;
+	protected ObjectBuilder<SelectLinkDialog> projectSelectionDialog;
 
    @Uses
    private ObjectBuilder<ConfirmationDialog> confirmationDialog;
@@ -57,6 +65,9 @@ public class CaseActionsView extends JPanel
 
 	@Service
 	StreamFlowApplication controller;
+
+   @Structure
+   ObjectBuilderFactory obf;
 
 	private CaseActionsModel model;
 
@@ -118,8 +129,26 @@ public class CaseActionsView extends JPanel
 	@Action
 	public void close()
 	{
-		model.close();
-		refresh();
+      EventList<TitledLinkValue> resolutions = model.getPossibleResolutions();
+      if (resolutions.isEmpty())
+      {
+   		model.close();
+   		refresh();
+      } else
+      {
+         SelectLinkDialog dialog = obf.newObjectBuilder( SelectLinkDialog.class )
+               .use( resolutions ).newInstance();
+         dialogs.showOkCancelHelpDialog(
+               WindowUtils.findWindow( this ),
+               dialog,
+               i18n.text( AdministrationResources.resolve ) );
+
+         if (dialog.getSelected() != null)
+         {
+            model.resolve(dialog.getSelected());
+            refresh();
+         }
+      }
 	}
 
 	@Action
@@ -136,8 +165,8 @@ public class CaseActionsView extends JPanel
 	@Action
 	public void sendto()
 	{
-		SelectProjectDialog dialog = projectSelectionDialog.use(
-				model).newInstance();
+		SelectLinkDialog dialog = projectSelectionDialog.use(
+				model.getPossibleProjects()).newInstance();
 		dialogs.showOkCancelHelpDialog(this, dialog);
 
 		if (dialog.getSelected() != null)

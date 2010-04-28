@@ -24,11 +24,15 @@ import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.domain.interaction.gtd.Actions;
 import se.streamsource.dci.value.TitledLinkValue;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
+import se.streamsource.streamflow.infrastructure.event.source.EventVisitorFilter;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.BasicEventList;
@@ -45,6 +49,8 @@ public class CaseActionsModel
 
    @Uses
    private CommandQueryClient client;
+
+   EventVisitorFilter eventFilter;
 
    public Actions actions()
    {
@@ -64,6 +70,22 @@ public class CaseActionsModel
          BasicEventList<TitledLinkValue> list = new BasicEventList<TitledLinkValue>();
 
          LinksValue linksValue = client.query( "possiblesendto", LinksValue.class );
+         list.addAll( (Collection) linksValue.links().get() );
+
+         return list;
+      } catch (ResourceException e)
+      {
+         throw new OperationException( WorkspaceResources.could_not_refresh, e );
+      }
+   }
+
+   public EventList<TitledLinkValue> getPossibleResolutions()
+   {
+      try
+      {
+         BasicEventList<TitledLinkValue> list = new BasicEventList<TitledLinkValue>();
+
+         LinksValue linksValue = client.query( "possibleresolutions", LinksValue.class );
          list.addAll( (Collection) linksValue.links().get() );
 
          return list;
@@ -119,13 +141,11 @@ public class CaseActionsModel
    }
 
 
-   public void sendTo( EntityReference to)
+   public void sendTo( LinkValue linkValue)
    {
       try
       {
-         ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
-         builder.prototype().entity().set( to );
-         client.postCommand( "sendto", builder.newInstance() );
+         client.postLink( linkValue );
       } catch (ResourceException e)
       {
          throw new OperationException(WorkspaceResources.could_not_perform_operation, e);
@@ -170,6 +190,17 @@ public class CaseActionsModel
       try
       {
          client.postCommand( "resume" );
+      } catch (ResourceException e)
+      {
+         throw new OperationException(WorkspaceResources.could_not_perform_operation, e);
+      }
+   }
+
+   public void resolve( LinkValue linkValue )
+   {
+      try
+      {
+         client.postLink( linkValue );
       } catch (ResourceException e)
       {
          throw new OperationException(WorkspaceResources.could_not_perform_operation, e);

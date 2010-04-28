@@ -22,6 +22,8 @@ import se.streamsource.streamflow.client.ui.administration.AdministrationResourc
 import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FormsAdminView;
 import se.streamsource.streamflow.client.ui.administration.form.SelectedFormsView;
 import se.streamsource.streamflow.client.ui.administration.label.SelectedLabelsView;
+import se.streamsource.streamflow.client.ui.administration.resolutions.ResolutionsView;
+import se.streamsource.streamflow.client.ui.administration.resolutions.SelectedResolutionsView;
 
 import javax.swing.JTabbedPane;
 
@@ -33,15 +35,15 @@ import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 public class CaseTypeView
       extends JTabbedPane
 {
-   private CaseTypeModel caseTypeModel;
-
    public CaseTypeView( @Uses SelectedLabelsView selectedLabelsView ,
+                        @Uses ResolutionsView resolutionsView,
+                        @Uses SelectedResolutionsView selectedResolutionsView,
                         @Uses FormsAdminView formsView,
-                        @Uses SelectedFormsView selectedFormsView,
-                        @Uses CaseTypeModel caseTypeModel)
+                        @Uses SelectedFormsView selectedFormsView)
    {
-      this.caseTypeModel = caseTypeModel;
       addTab( text( AdministrationResources.selected_labels_tab ), selectedLabelsView );
+      addTab( text( AdministrationResources.resolutions_tab ), resolutionsView );
+      addTab( text( AdministrationResources.selected_resolutions_tab ), selectedResolutionsView );
       addTab( text( AdministrationResources.forms_tab ), formsView );
       addTab( text( AdministrationResources.selected_forms_tab ), selectedFormsView );
    }

@@ -176,7 +176,7 @@ public class CommandQueryRestlet
          response.setStatus( Status.SERVER_ERROR_INTERNAL );
       }
 
-      if (context == null)
+      if (interactions == null)
       {
          uow.discard();
          response.setStatus( Status.CLIENT_ERROR_NOT_FOUND );
@@ -269,6 +269,8 @@ public class CommandQueryRestlet
             // Check whether it's a command or query
             if (isCommandMethod( method ))
             {
+               // The method is shown in the form, so let's change it to POST
+               request.setMethod( org.restlet.data.Method.POST );
                ResponseWriter responseWriter = responseWriterFactory.createWriter( segments, ValueDescriptor.class, context, getVariant( request ) );
 
                Class<? extends ValueComposite> valueType = (Class<? extends ValueComposite>) method.getParameterTypes()[0];

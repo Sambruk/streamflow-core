@@ -32,6 +32,7 @@ import se.streamsource.streamflow.web.domain.interaction.gtd.CompletableId;
 import se.streamsource.streamflow.web.domain.interaction.gtd.DueOn;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
+import se.streamsource.streamflow.web.domain.structure.casetype.Resolvable;
 import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.caze.Contacts;
@@ -73,6 +74,7 @@ public interface CaseEntity
       Contacts.Data,
       Labelable.Data,
       Removable.Data,
+      Resolvable.Data,
       FormSubmissions.Data,
       SubmittedForms.Data,
       TypedCase.Data,

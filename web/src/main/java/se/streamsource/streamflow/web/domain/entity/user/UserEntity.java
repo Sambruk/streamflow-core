@@ -60,7 +60,6 @@ public interface UserEntity
       Contactable,
       ConversationParticipant,
       OrganizationParticipations,
-      Labels,
       Submitter,
 
       // Queries
@@ -75,7 +74,6 @@ public interface UserEntity
       Contactable.Data,
       OrganizationParticipations.Data,
       Describable.Data,
-      Labels.Data,
       Participation.Data,
       UserAuthentication.Data,
       MessageRecipient.Data

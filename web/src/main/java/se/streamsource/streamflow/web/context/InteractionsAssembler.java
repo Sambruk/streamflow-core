@@ -84,6 +84,10 @@ import se.streamsource.streamflow.web.context.structure.labels.LabeledContext;
 import se.streamsource.streamflow.web.context.structure.labels.LabelsContext;
 import se.streamsource.streamflow.web.context.structure.labels.SelectedLabelContext;
 import se.streamsource.streamflow.web.context.structure.labels.SelectedLabelsContext;
+import se.streamsource.streamflow.web.context.structure.resolutions.ResolutionContext;
+import se.streamsource.streamflow.web.context.structure.resolutions.ResolutionsContext;
+import se.streamsource.streamflow.web.context.structure.resolutions.SelectedResolutionContext;
+import se.streamsource.streamflow.web.context.structure.resolutions.SelectedResolutionsContext;
 import se.streamsource.streamflow.web.context.users.ContactableContext;
 import se.streamsource.streamflow.web.context.users.UserAdministrationContext;
 import se.streamsource.streamflow.web.context.users.UserContext;
@@ -156,6 +160,11 @@ public class InteractionsAssembler
             LabelsContext.class,
             SelectedLabelContext.class,
             SelectedLabelsContext.class,
+
+            ResolutionContext.class,
+            ResolutionsContext.class,
+            SelectedResolutionContext.class,
+            SelectedResolutionsContext.class,
 
             ContactableContext.class,
             UsersContext.class,

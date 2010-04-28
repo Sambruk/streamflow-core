@@ -176,6 +176,13 @@ public enum AdministrationResources
    could_not_move,
    choose_move_to,
    could_not_perform_query,
-   search_users_or_groups, 
+   search_users_or_groups,
+   could_not_create_resolution,
+   could_not_remove_resolution,
+   add_resolution_title,
+   resolutions_tab,
+   choose_resolution_title,
+   selected_resolutions_tab,
+   resolve, 
    members_tab
 }

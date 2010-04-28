@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.client.ui.administration.label;
+package se.streamsource.streamflow.client.ui.administration.resolutions;
 
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.SortedList;
@@ -36,6 +36,7 @@ import se.streamsource.streamflow.client.ui.ConfirmationDialog;
 import se.streamsource.streamflow.client.ui.NameDialog;
 import se.streamsource.streamflow.client.ui.OptionsAction;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.ui.administration.label.LabelsModel;
 
 import javax.swing.ActionMap;
 import javax.swing.JButton;
@@ -48,12 +49,12 @@ import java.awt.*;
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 
 /**
- * Admin of labels.
+ * Admin of resolutions.
  */
-public class LabelsView
+public class ResolutionsView
       extends JPanel
 {
-   LabelsModel model;
+   ResolutionsModel model;
 
    @Uses
    Iterable<NameDialog> nameDialogs;
@@ -64,9 +65,9 @@ public class LabelsView
    @Uses
    Iterable<ConfirmationDialog> confirmationDialog;
 
-   public JList labelList;
+   public JList list;
 
-   public LabelsView( @Service ApplicationContext context, @Uses LabelsModel model )
+   public ResolutionsView( @Service ApplicationContext context, @Uses ResolutionsModel model )
    {
       super( new BorderLayout() );
       this.model = model;
@@ -76,14 +77,14 @@ public class LabelsView
 
       JPopupMenu options = new JPopupMenu();
       options.add( am.get( "rename" ) );
-      options.add( am.get( "showUsages" ) );
+//      options.add( am.get( "showUsages" ) );
       options.add( am.get( "remove" ) );
 
       JScrollPane scrollPane = new JScrollPane();
-      EventList<LinkValue> itemValueEventList = new SortedList<LinkValue>( model.getLabelList(), new LinkComparator() );
-      labelList = new JList( new EventListModel<LinkValue>( itemValueEventList ) );
-      labelList.setCellRenderer( new LinkListCellRenderer() );
-      scrollPane.setViewportView( labelList );
+      EventList<LinkValue> itemValueEventList = new SortedList<LinkValue>( model.getEventList(), new LinkComparator() );
+      list = new JList( new EventListModel<LinkValue>( itemValueEventList ) );
+      list.setCellRenderer( new LinkListCellRenderer() );
+      scrollPane.setViewportView( list );
       add( scrollPane, BorderLayout.CENTER );
 
       JPanel toolbar = new JPanel();
@@ -91,7 +92,7 @@ public class LabelsView
       toolbar.add( new JButton( new OptionsAction(options) ) );
       add( toolbar, BorderLayout.SOUTH );
 
-      labelList.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "remove" ), am.get( "rename" ), am.get( "showUsages" ) ) );
+      list.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "remove" ), am.get( "rename" ), am.get( "showUsages" ) ) );
 
       addAncestorListener( new RefreshWhenVisible( model, this ) );
    }
@@ -101,12 +102,12 @@ public class LabelsView
    {
       NameDialog dialog = nameDialogs.iterator().next();
 
-      dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.add_label_title ) );
+      dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.add_resolution_title ) );
 
       if (dialog.name() != null)
       {
-         labelList.clearSelection();
-         model.createLabel( dialog.name() );
+         list.clearSelection();
+         model.create( dialog.name() );
          model.refresh();
       }
    }
@@ -118,8 +119,8 @@ public class LabelsView
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamFlowResources.confirmation ) );
       if (dialog.isConfirmed())
       {
-         LinkValue selected = (LinkValue) labelList.getSelectedValue();
-         model.removeLabel( selected );
+         LinkValue selected = (LinkValue) list.getSelectedValue();
+         model.remove( selected );
          model.refresh();
       }
    }
@@ -127,7 +128,7 @@ public class LabelsView
    @Action
    public void showUsages()
    {
-      LinkValue item = (LinkValue) labelList.getSelectedValue();
+      LinkValue item = (LinkValue) list.getSelectedValue();
       EventList<LinkValue> usageList = model.usages( item );
 
       JList list = new JList();
@@ -147,7 +148,7 @@ public class LabelsView
 
       if (dialog.name() != null)
       {
-         model.changeDescription( (LinkValue)labelList.getSelectedValue(), dialog.name() );
+         model.changeDescription( (LinkValue) list.getSelectedValue(), dialog.name() );
          model.refresh();
       }
    }

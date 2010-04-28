@@ -20,6 +20,7 @@ package se.streamsource.streamflow.web.domain.entity.caze;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Actor;
+import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.project.Member;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 
@@ -74,7 +75,7 @@ public interface PossibleActions
                      actions.add("assign");
                   }
 
-
+                  CaseType caseType = aCase.caseType().get();
                   actions.add( "close" );
                   actions.add( "delete" );
                }

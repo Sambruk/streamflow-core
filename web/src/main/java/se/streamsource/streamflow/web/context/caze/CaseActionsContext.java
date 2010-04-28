@@ -43,6 +43,8 @@ import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresOwner;
 import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresStatus;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
+import se.streamsource.streamflow.web.domain.structure.casetype.Resolution;
+import se.streamsource.streamflow.web.domain.structure.casetype.Resolvable;
 import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
@@ -66,6 +68,8 @@ public interface CaseActionsContext
 
    public LinksValue possiblesendto();
 
+   public LinksValue possibleresolutions();
+
    // Commands
    /**
     * Assign the case to the user invoking the method
@@ -80,10 +84,17 @@ public interface CaseActionsContext
    public void open();
 
    /**
-    * Mark the case as closed // TODO Add resolution here
+    * Mark the case as closed
     */
    @RequiresStatus({OPEN})
    public void close();
+
+
+   /**
+    * Mark the case as resolved and closed
+    */
+   @RequiresStatus({OPEN})
+   public void resolve(EntityReferenceDTO resolution);
 
    /**
     * Mark the case as on-hold
@@ -145,6 +156,18 @@ public interface CaseActionsContext
          return builder.newLinks();
       }
 
+      public LinksValue possibleresolutions()
+      {
+         LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() ).command( "resolve" );
+         CaseType type = context.get( TypedCase.Data.class ).caseType().get();
+         if (type != null)
+         {
+            Iterable<Resolution> resolutions = type.getSelectedResolutions();
+            builder.addDescribables( resolutions );
+         }
+         return builder.newLinks();
+      }
+
       // Commands
       public void assign()
       {
@@ -177,6 +200,26 @@ public interface CaseActionsContext
          }
 
          aCase.close();
+      }
+
+      public void resolve(EntityReferenceDTO resolutionDTO)
+      {
+         Resolution resolution = uowf.currentUnitOfWork().get( Resolution.class, resolutionDTO.entity().get().identity() );
+
+         Assignable assignable = context.get( Assignable.class);
+         Resolvable resolvable = context.get( Resolvable.class);
+         Status status = context.get( Status.class);
+
+         Actor actor = context.get(Actor.class);
+
+         if (!assignable.isAssigned())
+         {
+            assignable.assignTo( actor );
+         }
+
+         resolvable.resolve( resolution );
+
+         status.close();
       }
 
       public void onhold()

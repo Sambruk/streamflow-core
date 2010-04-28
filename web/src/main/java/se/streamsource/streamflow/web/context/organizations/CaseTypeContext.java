@@ -26,6 +26,8 @@ import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.web.context.organizations.forms.SelectedFormsContext;
 import se.streamsource.streamflow.web.context.structure.labels.LabelsContext;
+import se.streamsource.streamflow.web.context.structure.resolutions.ResolutionsContext;
+import se.streamsource.streamflow.web.context.structure.resolutions.SelectedResolutionsContext;
 import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypesQueries;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseTypes;
@@ -57,6 +59,12 @@ public interface CaseTypeContext
 
    @SubContext
    SelectedLabelsContext selectedlabels();
+
+   @SubContext
+   ResolutionsContext resolutions();
+
+   @SubContext
+   SelectedResolutionsContext selectedresolutions();
 
    LinksValue possiblemoveto();
 
@@ -105,6 +113,16 @@ public interface CaseTypeContext
       public SelectedLabelsContext selectedlabels()
       {
          return subContext( SelectedLabelsContext.class );
+      }
+
+      public ResolutionsContext resolutions()
+      {
+         return subContext( ResolutionsContext.class );
+      }
+
+      public SelectedResolutionsContext selectedresolutions()
+      {
+         return subContext( SelectedResolutionsContext.class );
       }
 
       public LinksValue possiblemoveto()

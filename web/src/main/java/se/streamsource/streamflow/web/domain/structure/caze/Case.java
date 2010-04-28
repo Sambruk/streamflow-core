@@ -19,6 +19,7 @@ package se.streamsource.streamflow.web.domain.structure.caze;
 
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.domain.structure.Removable;
+import se.streamsource.streamflow.web.domain.structure.casetype.Resolvable;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationOwner;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversations;
 import se.streamsource.streamflow.web.domain.structure.form.FormSubmissions;
@@ -37,6 +38,7 @@ public interface Case
       Describable,
       Labelable,
       Removable,
+      Resolvable,
       SubmittedForms,
       FormSubmissions,
       TypedCase

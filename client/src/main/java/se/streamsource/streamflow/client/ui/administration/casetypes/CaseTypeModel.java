@@ -34,6 +34,8 @@ import se.streamsource.streamflow.client.ui.administration.AdministrationResourc
 import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FormsModel;
 import se.streamsource.streamflow.client.ui.administration.form.SelectedFormsModel;
 import se.streamsource.streamflow.client.ui.administration.label.SelectedLabelsModel;
+import se.streamsource.streamflow.client.ui.administration.resolutions.ResolutionsModel;
+import se.streamsource.streamflow.client.ui.administration.resolutions.SelectedResolutionsModel;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 
@@ -61,6 +63,14 @@ public class CaseTypeModel
 
    private
    @Uses
+   ResolutionsModel resolutionsModel;
+
+   private
+   @Uses
+   SelectedResolutionsModel selectedResolutionsModel;
+
+   private
+   @Uses
    SelectedFormsModel selectedFormsModel;
 
    public void changeDescription( String newName )
@@ -80,6 +90,16 @@ public class CaseTypeModel
    public SelectedLabelsModel getSelectedLabelsModel()
    {
       return selectedLabelsModel;
+   }
+
+   public ResolutionsModel getResolutionsModel()
+   {
+      return resolutionsModel;
+   }
+
+   public SelectedResolutionsModel getSelectedResolutionsModel()
+   {
+      return selectedResolutionsModel;
    }
 
    public FormsModel getFormsModel()

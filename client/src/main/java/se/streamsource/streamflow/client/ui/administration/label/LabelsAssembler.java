@@ -33,7 +33,5 @@ public class LabelsAssembler
       UIAssemblers.addMV( module, LabelsModel.class, LabelsView.class );
 
       UIAssemblers.addMV( module, SelectedLabelsModel.class, SelectedLabelsView.class );
-
-      UIAssemblers.addViews( module, GroupedSelectionDialog.class, SelectionDialog.class );
    }
 }

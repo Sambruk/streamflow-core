@@ -15,15 +15,17 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.context.organizations.forms;
+package se.streamsource.streamflow.web.context.structure.resolutions;
 
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.unitofwork.UnitOfWork;
+import org.qi4j.api.structure.Module;
 import se.streamsource.dci.api.IndexInteraction;
 import se.streamsource.dci.api.Interactions;
 import se.streamsource.dci.api.InteractionsMixin;
 import se.streamsource.dci.api.SubContexts;
 import se.streamsource.dci.value.LinksValue;
+import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
@@ -31,10 +33,9 @@ import se.streamsource.streamflow.web.domain.entity.organization.OrganizationQue
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationVisitor;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseTypes;
-import se.streamsource.streamflow.web.domain.structure.form.Form;
-import se.streamsource.streamflow.web.domain.structure.form.Forms;
-import se.streamsource.streamflow.web.domain.structure.form.SelectedForms;
-import se.streamsource.streamflow.web.domain.structure.organization.Organization;
+import se.streamsource.streamflow.web.domain.structure.casetype.Resolution;
+import se.streamsource.streamflow.web.domain.structure.casetype.Resolutions;
+import se.streamsource.streamflow.web.domain.structure.casetype.SelectedResolutions;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnits;
 import se.streamsource.streamflow.web.domain.structure.organization.Projects;
@@ -43,45 +44,38 @@ import se.streamsource.streamflow.web.domain.structure.project.Project;
 /**
  * JAVADOC
  */
-@Mixins(SelectedFormsContext.Mixin.class)
-public interface SelectedFormsContext
-   extends SubContexts<SelectedFormContext>, IndexInteraction<LinksValue>, Interactions
+@Mixins(SelectedResolutionsContext.Mixin.class)
+public interface SelectedResolutionsContext
+   extends SubContexts<SelectedResolutionContext>, IndexInteraction<LinksValue>, Interactions
 {
-   public LinksValue possibleforms();
-
-   public void addform( EntityReferenceDTO caseTypeDTO );
+   public LinksValue possibleresolutions();
+   public void createresolution( StringValue name );
+   public void addresolution( EntityReferenceDTO resolutionDTO );
 
    abstract class Mixin
-      extends InteractionsMixin
-      implements SelectedFormsContext
+         extends InteractionsMixin
+         implements SelectedResolutionsContext
    {
+      @Structure
+      Module module;
+
       public LinksValue index()
       {
-         SelectedForms.Data forms = context.get(SelectedForms.Data.class);
+         SelectedResolutions.Data resolutions = context.get(SelectedResolutions.Data.class);
 
-         return new LinksBuilder( module.valueBuilderFactory() ).rel("selectedform").addDescribables( forms.selectedForms() ).newLinks();
+         return new LinksBuilder( module.valueBuilderFactory() ).rel( "resolution" ).addDescribables( resolutions.selectedResolutions() ).newLinks();
       }
 
-      public LinksValue possibleforms()
+      public LinksValue possibleresolutions()
       {
          OrganizationQueries organizationQueries = context.get(OrganizationQueries.class);
+         final SelectedResolutions.Data selectedResolutions = context.get(SelectedResolutions.Data.class);
 
-         final SelectedForms.Data selectedForms = context.get(SelectedForms.Data.class);
-
-         final LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() ).command( "addform" );
-
+         final LinksBuilder builder = new LinksBuilder(module.valueBuilderFactory()).command( "addresolution" );
          organizationQueries.visitOrganization( new OrganizationVisitor()
          {
 
             Describable owner;
-
-            @Override
-            public boolean visitOrganization( Organization org )
-            {
-               owner = org;
-
-               return super.visitOrganization( org );
-            }
 
             @Override
             public boolean visitOrganizationalUnit( OrganizationalUnit ou )
@@ -108,40 +102,44 @@ public interface SelectedFormsContext
             }
 
             @Override
-            public boolean visitForm( Form form )
+            public boolean visitResolution( Resolution resolution )
             {
-               if (!selectedForms.selectedForms().contains( form ))
-                  builder.addDescribable( form, owner );
+               if (!selectedResolutions.selectedResolutions().contains( resolution ))
+                  builder.addDescribable( resolution, owner );
 
                return true;
             }
          }, new OrganizationQueries.ClassSpecification(
-               Organization.class,
                OrganizationalUnits.class,
                OrganizationalUnit.class,
                Projects.class,
-               Project.class,
                CaseTypes.class,
                CaseType.class,
-               Forms.class));
-
+               Resolutions.class));
          return builder.newLinks();
       }
 
-      public void addform( EntityReferenceDTO formDTO )
+      public void createresolution( StringValue name )
       {
-         UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
+         Resolutions resolutions = context.get(Resolutions.class);
+         SelectedResolutions selectedResolutions = context.get(SelectedResolutions.class);
 
-         SelectedForms selectedForms = context.get(SelectedForms.class);
-         Form form = uow.get( Form.class, formDTO.entity().get().identity() );
-
-         selectedForms.addSelectedForm( form );
+         Resolution resolution = resolutions.createResolution( name.string().get() );
+         selectedResolutions.addSelectedResolution( resolution );
       }
 
-      public SelectedFormContext context( String id )
+      public void addresolution( EntityReferenceDTO resolutionDTO )
       {
-         context.set( module.unitOfWorkFactory().currentUnitOfWork().get( Form.class, id ));
-         return subContext( SelectedFormContext.class );
+         SelectedResolutions resolutions = context.get( SelectedResolutions.class);
+         Resolution resolution = module.unitOfWorkFactory().currentUnitOfWork().get( Resolution.class, resolutionDTO.entity().get().identity() );
+
+         resolutions.addSelectedResolution( resolution );
+      }
+
+      public SelectedResolutionContext context( String id )
+      {
+         context.set( module.unitOfWorkFactory().currentUnitOfWork().get(Resolution.class, id ));
+         return subContext( SelectedResolutionContext.class );
       }
    }
 }

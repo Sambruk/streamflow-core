@@ -48,7 +48,7 @@ public class WorkspaceAssembler
             WorkspaceModel.class,
             WorkspaceView.class );
 
-      UIAssemblers.addDialogs( module, SelectProjectDialog.class, FilterListDialog.class, GroupedFilterListDialog.class);
+      UIAssemblers.addDialogs( module, SelectLinkDialog.class, FilterListDialog.class, GroupedFilterListDialog.class);
 
    }
 }

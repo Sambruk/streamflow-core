@@ -37,6 +37,8 @@ import se.streamsource.streamflow.client.ui.administration.AdministrationResourc
 import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FormsModel;
 import se.streamsource.streamflow.client.ui.administration.form.SelectedFormsModel;
 import se.streamsource.streamflow.client.ui.administration.label.SelectedLabelsModel;
+import se.streamsource.streamflow.client.ui.administration.resolutions.ResolutionsModel;
+import se.streamsource.streamflow.client.ui.administration.resolutions.SelectedResolutionsModel;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 
@@ -63,10 +65,18 @@ public class CaseTypesModel
       {
          CommandQueryClient caseTypeClient = client.getSubClient( key );
          SelectedLabelsModel selectedLabelsModel = obf.newObjectBuilder( SelectedLabelsModel.class ).use( caseTypeClient.getSubClient( "selectedlabels" ) ).newInstance();
+         ResolutionsModel resolutionsModel = obf.newObjectBuilder( ResolutionsModel.class ).use( caseTypeClient.getSubClient( "resolutions" ) ).newInstance();
+         SelectedResolutionsModel selectedResolutionsModel = obf.newObjectBuilder( SelectedResolutionsModel.class ).use( caseTypeClient.getSubClient( "selectedresolutions" ) ).newInstance();
          FormsModel formsModel = obf.newObjectBuilder( FormsModel.class ).use( caseTypeClient.getSubClient( "forms" ) ).newInstance();
          SelectedFormsModel selectedFormsModel = obf.newObjectBuilder( SelectedFormsModel.class ).use( caseTypeClient.getSubClient( "selectedforms" ) ).newInstance();
 
-         return obf.newObjectBuilder( CaseTypeModel.class ).use( selectedLabelsModel, formsModel, selectedFormsModel, caseTypeClient ).newInstance();
+         return obf.newObjectBuilder( CaseTypeModel.class ).use(
+               selectedLabelsModel,
+               formsModel,
+               selectedFormsModel,
+               resolutionsModel,
+               selectedResolutionsModel, 
+               caseTypeClient ).newInstance();
       }
    };
 

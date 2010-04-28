@@ -29,32 +29,20 @@ import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.domain.structure.Notable;
 import se.streamsource.streamflow.domain.structure.Removable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
-import se.streamsource.streamflow.web.domain.structure.casetype.Resolutions;
-import se.streamsource.streamflow.web.domain.structure.casetype.SelectedCaseTypes;
+import se.streamsource.streamflow.web.domain.structure.casetype.Resolution;
 import se.streamsource.streamflow.web.domain.structure.casetype.SelectedResolutions;
-import se.streamsource.streamflow.web.domain.structure.form.Forms;
-import se.streamsource.streamflow.web.domain.structure.form.SelectedForms;
-import se.streamsource.streamflow.web.domain.structure.label.Labels;
-import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
-import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 
 /**
  * JAVADOC
  */
-@Concerns(CaseTypeEntity.RemovableConcern.class)
-public interface CaseTypeEntity
+@Concerns(ResolutionEntity.RemovableConcern.class)
+public interface ResolutionEntity
       extends DomainEntity,
 
       // Structure
-      CaseType,
+      Resolution,
       Describable.Data,
-      Notable.Data,
-      Labels.Data,
-      SelectedLabels.Data,
-      Forms.Data,
-      SelectedForms.Data,
-      Resolutions.Data,
-      SelectedResolutions.Data
+      Notable.Data
 {
    abstract class RemovableConcern
       extends ConcernOf<Removable>
@@ -67,7 +55,7 @@ public interface CaseTypeEntity
       UnitOfWorkFactory uowf;
 
       @This
-      CaseType caseType;
+      Resolution resolution;
 
       public boolean removeEntity()
       {
@@ -77,14 +65,14 @@ public interface CaseTypeEntity
          if (removed)
          {
             {
-               SelectedCaseTypes.Data selectedCaseTypes = QueryExpressions.templateFor( SelectedCaseTypes.Data.class );
-               Query<SelectedCaseTypes> caseTypeUsages = qbf.newQueryBuilder( SelectedCaseTypes.class ).
-                     where( QueryExpressions.contains(selectedCaseTypes.selectedCaseTypes(), caseType )).
+               SelectedResolutions.Data selectedResolutions = QueryExpressions.templateFor( SelectedResolutions.Data.class );
+               Query<SelectedResolutions> resolutionUsages = qbf.newQueryBuilder( SelectedResolutions.class ).
+                     where( QueryExpressions.contains(selectedResolutions.selectedResolutions(), resolution )).
                      newQuery( uowf.currentUnitOfWork() );
 
-               for (SelectedCaseTypes caseTypeUsage : caseTypeUsages)
+               for (SelectedResolutions resolutionUsage : resolutionUsages)
                {
-                  caseTypeUsage.removeSelectedCaseType( caseType );
+                  resolutionUsage.removeSelectedResolution( resolution );
                }
             }
          }
@@ -98,4 +86,3 @@ public interface CaseTypeEntity
       }
    }
 }
-

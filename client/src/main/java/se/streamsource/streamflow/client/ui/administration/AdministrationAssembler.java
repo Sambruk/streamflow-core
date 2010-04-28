@@ -24,7 +24,10 @@ import org.qi4j.bootstrap.ModuleAssembly;
 import se.streamsource.streamflow.client.infrastructure.ui.UIAssemblers;
 import se.streamsource.streamflow.client.ui.administration.form.FormsAssembler;
 import se.streamsource.streamflow.client.ui.administration.groups.GroupAdministrationAssembler;
+import se.streamsource.streamflow.client.ui.administration.label.GroupedSelectionDialog;
 import se.streamsource.streamflow.client.ui.administration.label.LabelsAssembler;
+import se.streamsource.streamflow.client.ui.administration.resolutions.ResolutionsAssembler;
+import se.streamsource.streamflow.client.ui.administration.label.SelectionDialog;
 import se.streamsource.streamflow.client.ui.administration.organization.OrganizationsAdministrationAssembler;
 import se.streamsource.streamflow.client.ui.administration.policy.AdministratorAdministrationAssembler;
 import se.streamsource.streamflow.client.ui.administration.projects.ProjectAdministrationAssembler;
@@ -75,6 +78,8 @@ public class AdministrationAssembler
 
       UIAssemblers.addModels( module, LinksQueryListModel.class );
 
+      UIAssemblers.addViews( module, GroupedSelectionDialog.class, SelectionDialog.class );
+
       // Other administration modules
       new LabelsAssembler().assemble( module.layerAssembly().moduleAssembly( "Labels" ) );
       new UserAdministrationAssembler().assemble( module.layerAssembly().moduleAssembly( "Users" ) );
@@ -82,6 +87,7 @@ public class AdministrationAssembler
       new GroupAdministrationAssembler().assemble( module.layerAssembly().moduleAssembly( "Groups" ) );
       new ProjectAdministrationAssembler().assemble( module.layerAssembly().moduleAssembly( "Projects" ) );
       new CaseTypeAdministrationAssembler().assemble( module.layerAssembly().moduleAssembly( "Case types" ) );
+      new ResolutionsAssembler().assemble( module.layerAssembly().moduleAssembly( "Resolutions" ) );
       new RoleAdministrationAssembler().assemble( module.layerAssembly().moduleAssembly( "Roles" ) );
       new FormsAssembler().assemble( module.layerAssembly().moduleAssembly( "Forms" ) );
       new AdministratorAdministrationAssembler().assemble( module.layerAssembly().moduleAssembly( "Administrators" ) );
