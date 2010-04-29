@@ -32,6 +32,8 @@ import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.spi.Qi4jSPI;
 import org.qi4j.spi.structure.ModuleSPI;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
@@ -45,7 +47,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.logging.Logger;
 
 import static java.util.Collections.*;
 
@@ -89,7 +90,7 @@ public interface EventSourceService
 
       public void activate() throws Exception
       {
-         logger = Logger.getLogger( identity.identity().get() );
+         logger = LoggerFactory.getLogger( getClass().getName() );
          eventNotifier = Executors.newSingleThreadExecutor();
       }
 
@@ -136,7 +137,14 @@ public interface EventSourceService
                      {
                         for (final TransactionVisitor listener : listeners)
                         {
-                           listener.visit( transaction );
+                           try
+                           {
+                              listener.visit( transaction );
+                           } catch (Exception e)
+                           {
+                              logger.error( "Could not visit EventListener", e );
+
+                           }
                         }
                      }
                   }
