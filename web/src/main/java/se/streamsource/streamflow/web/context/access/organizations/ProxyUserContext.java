@@ -29,8 +29,11 @@ import se.streamsource.streamflow.infrastructure.application.TitledLinksBuilder;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.entity.gtd.Drafts;
 import se.streamsource.streamflow.web.domain.entity.gtd.DraftsQueries;
+import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.organization.AccessPoint;
+import se.streamsource.streamflow.web.domain.structure.user.ProxyUser;
+import se.streamsource.streamflow.web.domain.structure.user.User;
 
 /**
  * JAVADOC
@@ -65,9 +68,12 @@ public interface ProxyUserContext
       {
          Drafts drafts = context.get( Drafts.class );
          AccessPoint.Data data = context.get( AccessPoint.Data.class );
+         ProxyUser creator = context.get( ProxyUser.class );
          CaseEntity caseEntity = drafts.createDraft();
          caseEntity.changeDescription( description.string().get() );
          caseEntity.changeCaseType( data.caseType().get() );
+         caseEntity.createdBy().set( creator );
+
          for (Label label : data.labels())
          {
             caseEntity.addLabel( label );

@@ -33,7 +33,7 @@ public interface CreatedOn
    @Immutable
    Property<Date> createdOn();
 
-   @Immutable
+   //@Immutable
    @Optional
    Association<Creator> createdBy();
 }

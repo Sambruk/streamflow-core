@@ -19,6 +19,7 @@ package se.streamsource.streamflow.web.domain.structure.user;
 
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.web.domain.entity.gtd.Drafts;
+import se.streamsource.streamflow.web.domain.structure.created.Creator;
 import se.streamsource.streamflow.web.domain.structure.form.Submitter;
 
 /**
@@ -29,6 +30,6 @@ import se.streamsource.streamflow.web.domain.structure.form.Submitter;
  * in this system.
  */
 public interface ProxyUser
-   extends Describable, UserAuthentication, Drafts, Submitter
+   extends Describable, UserAuthentication, Drafts, Submitter, Creator
 {
 }

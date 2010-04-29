@@ -96,6 +96,7 @@ public interface CaseContext
 
          aCase.unassign();
          aCase.sendTo( project );
+         aCase.open();
       }
 
       public SubmittedFormsContext submittedforms()
