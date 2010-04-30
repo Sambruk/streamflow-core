@@ -23,6 +23,7 @@ import org.qi4j.api.value.ValueBuilder;
 import org.restlet.data.Reference;
 import se.streamsource.dci.api.Interactions;
 import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.resource.caze.CaseValue;
@@ -80,6 +81,9 @@ public interface CaseContext
 
          if (aCase.isAssigned())
             prototype.assignedTo().set( ((Describable) aCase.assignedTo().get()).getDescription() );
+
+         if (aCase.isStatus( CaseStates.CLOSED ) && aCase.resolution().get() != null)
+            prototype.resolution().set( aCase.resolution().get().getDescription() );
 
          // Labels
          LinksBuilder labelsBuilder = new LinksBuilder(module.valueBuilderFactory()).path( "labels" ).command( "delete" );

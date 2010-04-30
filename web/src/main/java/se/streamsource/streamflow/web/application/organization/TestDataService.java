@@ -167,7 +167,7 @@ public interface TestDataService
          for (int i = 0; i < 30; i++)
          {
             CaseEntity aCase = user.createDraft();
-            aCase.changeDescription( "Arbetsuppgift " + i );
+            aCase.changeDescription( "Ärende " + i );
 
             if (i>20)
             {
@@ -288,7 +288,7 @@ public interface TestDataService
 
          // Create cases
          CaseEntity aCase = user.createDraft();
-         aCase.changeDescription( "Arbetsuppgift 0" );
+         aCase.changeDescription( "Ärende 0" );
          aCase.sendTo( (Owner) project );
 
          aCase.changeCaseType( bug );

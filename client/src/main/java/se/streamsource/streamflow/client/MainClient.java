@@ -35,6 +35,7 @@ public class MainClient
    public void start( String... args ) throws IllegalAccessException, UnsupportedLookAndFeelException, InstantiationException, ClassNotFoundException
    {
       // Set system properties
+//      UIManager.setLookAndFeel("com.jgoodies.looks.windows.WindowsLookAndFeel");
       System.setProperty( "com.apple.mrj.application.apple.menu.about.name", "StreamFlow" );
       System.setProperty( "apple.laf.useScreenMenuBar", "true" );
       System.setProperty( "dock:name", "StreamFlow" );

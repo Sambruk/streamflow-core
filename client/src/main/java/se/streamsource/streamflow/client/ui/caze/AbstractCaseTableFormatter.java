@@ -85,7 +85,7 @@ public abstract class AbstractCaseTableFormatter
          }
 
          case 1:
-            return caseValue.caseType().get();
+            return caseValue.caseType().get() == null ? null : (caseValue.caseType().get() + (caseValue.resolution().get() == null ? "" : "("+caseValue.resolution().get()+")"));
 
          case 2:
             return caseValue.creationDate().get();

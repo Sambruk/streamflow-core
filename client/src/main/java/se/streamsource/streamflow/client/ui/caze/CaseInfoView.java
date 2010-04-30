@@ -62,7 +62,6 @@ public class CaseInfoView extends JPanel implements Observer
       Font boldFont = description.getFont().deriveFont( Font.BOLD );
       description.setFont( boldFont );
       caseId.setFont( boldFont );
-      caseType.setFont( boldFont );
       created.setFont( boldFont );
       owner.setFont( boldFont );
 
@@ -73,7 +72,6 @@ public class CaseInfoView extends JPanel implements Observer
       add(statusPanel);
       add(description);
       add( caseId );
-      add(new JLabel(i18n.text( WorkspaceResources.casetype_column_header ) + ":"));
       add( caseType );
       add(new JLabel(i18n.text( WorkspaceResources.created_column_header )+":"));
       add(created);
@@ -110,8 +108,10 @@ public class CaseInfoView extends JPanel implements Observer
 
       caseId.setText( aCase.caseId().get() != null ? "(#"+ aCase.caseId().get()+")" : "" );
 
-      caseType.setText( aCase.caseType().get() != null ? aCase.caseType().get() : "" );
-
+      if (aCase.caseType().get() != null)
+         caseType.setText( "<html>"+i18n.text( WorkspaceResources.casetype_column_header ) + ":<b>"+aCase.caseType().get() +(aCase.resolution().get() != null ? "("+aCase.resolution().get()+")" : "")+"</b></html>");
+      else
+         caseType.setText( "" );
 
       created.setText(format.format( aCase.creationDate().get())+(aCase.createdBy().get() != null ? "("+ aCase.createdBy().get()+")":""));
       owner.setText( aCase.owner().get() );

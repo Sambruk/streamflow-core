@@ -51,4 +51,7 @@ public interface CaseValue
 
    @Optional
    Property<String> assignedTo();
+
+   @Optional
+   Property<String> resolution();
 }

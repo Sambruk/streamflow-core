@@ -60,7 +60,8 @@ public interface DataSourceService
 
       @Structure
       UnitOfWorkFactory uowf;
-      public Logger logger = LoggerFactory.getLogger( DataSourceService.class );
+
+      Logger logger = LoggerFactory.getLogger( DataSourceService.class );
 
       public void activate() throws Exception
       {

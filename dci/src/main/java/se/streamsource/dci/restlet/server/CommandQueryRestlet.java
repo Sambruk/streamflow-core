@@ -141,7 +141,8 @@ public class CommandQueryRestlet
    private CommandResult commandResult;
 
    private Map<Class, List<Method>> contextClassMethods = new ConcurrentHashMap<Class, List<Method>>();
-   public Logger logger = LoggerFactory.getLogger( getClass().getName() );
+
+   Logger logger = LoggerFactory.getLogger( getClass().getName() );
 
    public CommandQueryRestlet(@Uses org.restlet.Context context)
    {
