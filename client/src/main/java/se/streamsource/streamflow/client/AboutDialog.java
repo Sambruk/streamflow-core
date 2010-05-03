@@ -22,9 +22,12 @@ import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.swingx.util.WindowUtils;
 
+import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextPane;
+import javax.swing.border.BevelBorder;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -47,11 +50,23 @@ public class AboutDialog
          InputStream is = getClass().getResourceAsStream( "/version.properties" );
          Properties p = IOUtil.readProperties( is );
 
-         box.add( new JLabel( "Version: " + p.getProperty( "application.version" ) ) );
-         box.add( new JLabel( "BuildKey: " + p.getProperty( "application.buildKey" ) ) );
-         box.add( new JLabel( "BuildNumber: " + p.getProperty( "application.buildNumber" ) ) );
-         box.add( new JLabel( "Revision: " + p.getProperty( "application.revision" ) ) );
-
+         JTextPane txt = new JTextPane( );
+         txt.setEditable( false );
+         txt.setBorder( BorderFactory.createBevelBorder( BevelBorder.LOWERED) );
+         txt.setContentType( "text/html" );
+         txt.setText( "<html><body><h2> "+ p.getProperty( "application.header" ) +"&#0153;</h2>" +
+              " Version: " + p.getProperty( "application.version" ) + "<br>" +
+              " BuildKey: " + p.getProperty( "application.buildKey" ) + "<br>" +
+              " BuildNumber: " + p.getProperty( "application.buildNumber" ) + "<br>" +
+              " Revision: " + p.getProperty( "application.revision" ) + "<br><br>" +
+              " This is the Innoveta project edition of Streamsource AB’s Streamflow product.<br>" +
+              " Licensed under the Apache License, Version 2.0,<br>" +
+              " see http://www.apache.org/licenses/LICENSE-2.0<br><br>" +
+              " Streamflow contains software<br>" +
+              " that is licensed by third parties to Streamsource AB<br>" +
+              " and protected by copyright.</body></html>"
+         );
+         box.add( txt );
 
       } catch (IOException e)
       {

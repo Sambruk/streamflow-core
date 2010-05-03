@@ -3,14 +3,13 @@
 // Version 2.0
 // ------------------------------------------------------------------
 
-${project.name}
-Copyright ${project.inceptionYear} ${project.organization.name}
+${product}(tm)
+Copyright ${project.inceptionYear} ${company}
 
 Streamsource AB (Swedish organization number 556777-9896), Hans Michelsensgatan 9, S-211 20 Malmö, Sweden
-This is the Innoveta project edition of the Streamsource Streamflow product.
+This is the Innoveta project edition of ${company}'s ${product} product.
 
-This product includes software developed by
-${project.organization.name}.
+This product includes software developed by ${company}.
 
 
 #foreach ( $project in $projects )

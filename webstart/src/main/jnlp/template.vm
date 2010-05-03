@@ -19,12 +19,12 @@
     codebase="$$codebase"
     href="$outputFile">
   <information>
-    <title>StreamFlow</title>
-    <homepage href="http://www.streamsource.se"/>
-    <vendor>StreamSource</vendor>
-    <description kind="one-line">StreamFlow client</description>
-    <description kind="short">This is the StreamFlow client</description>
-    <description kind="tooltip">StreamFlow</description>
+    <title>Streamflow&#0153;</title>
+    <homepage href="${project.url}"/>
+    <vendor>${project.organization.name}</vendor>
+    <description kind="one-line">${project.organization.name}&#0153; Client</description>
+    <description kind="short">This is the ${project.organization.name} client</description>
+    <description kind="tooltip">${project.organization.name}</description>
     <icon
       width="48"
       height="48"

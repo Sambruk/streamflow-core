@@ -31,7 +31,7 @@
 "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-    <title>StreamFlow client</title>
+    <title>Streamflow&#0153; Client</title>
     <link rel="stylesheet" type="text/css" href="css/stylesheet.css"/>
 </head>
 
@@ -40,7 +40,7 @@
 <ul class="home-download all_os ">
     <li class="all_os">
         <a class="download-link download-streamflow" href="webstart/streamflow.jnlp">
- 		<span><strong>Ladda ner StreamFlow</strong> 
+ 		<span><strong>Ladda ner Streamflow&#0153;</strong> 
  		<em>${application_version}</em> 
  		<em class="download-lang">F&ouml;r alla operativsystem</em></span>
         </a>

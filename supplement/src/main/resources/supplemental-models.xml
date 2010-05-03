@@ -62,7 +62,7 @@
     <supplement>
         <project>
             <groupId>com.jgoodies</groupId>
-            <artifactId>Looks</artifactId>
+            <artifactId>looks</artifactId>
             <organization>
                 <name>JGoodies Looks</name>
                 <url>https://looks.dev.java.net/</url>
