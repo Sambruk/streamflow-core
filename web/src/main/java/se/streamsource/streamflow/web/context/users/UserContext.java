@@ -68,9 +68,9 @@ public interface UserContext extends Interactions, IndexInteraction<LinksValue>
       public LinksValue index()
       {
          return new LinksBuilder(module.valueBuilderFactory()).
-               addLink("Drafts","drafts", "drafts", "workspace/user/drafts/cases").
-               addLink("Inbox","inbox", "inbox", "workspace/user/inbox/cases").
-               addLink("Assignments", "assignments", "assignments","workspace/user/assignments/cases").
+               addLink("Drafts","drafts", "drafts", "workspace/user/drafts/cases", null).
+               addLink("Inbox","inbox", "inbox", "workspace/user/inbox/cases", null).
+               addLink("Assignments", "assignments", "assignments","workspace/user/assignments/cases", null).
                newLinks();
       }
 

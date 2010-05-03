@@ -55,4 +55,10 @@ public interface LinkValue
     */
    @Optional
    Property<String> rel();
+
+   /**
+    * These are the classes of the link, typically to help categorize the link. Space-separated list.
+    */
+   @Optional
+   Property<String> classes();
 }

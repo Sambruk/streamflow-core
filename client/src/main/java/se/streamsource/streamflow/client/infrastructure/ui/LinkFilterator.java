@@ -33,7 +33,11 @@ public class LinkFilterator
    {
       strings.add( linkValue.text().get() );
 
+      if (linkValue.classes().get() != null)
+         strings.add(linkValue.classes().get());
+
       if (linkValue instanceof TitledLinkValue)
          strings.add( ((TitledLinkValue) linkValue).title().get() );
+
    }
 }

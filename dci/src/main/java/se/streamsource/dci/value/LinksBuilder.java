@@ -105,19 +105,20 @@ public class LinksBuilder
       }
    }
 
-   public LinksBuilder addLink( String description, String id, String rel, String href )
+   public LinksBuilder addLink( String description, String id, String rel, String href, String classes )
    {
       linkBuilder.prototype().text().set( description );
       linkBuilder.prototype().id().set( id );
       linkBuilder.prototype().rel().set( rel );
       linkBuilder.prototype().href().set( href );
+      linkBuilder.prototype().classes().set( classes );
 
       addLink(linkBuilder.newInstance());
 
       return this;
    }
 
-   public LinksBuilder addLink( String description, EntityReference ref, String title )
+   public LinksBuilder addLink( String description, EntityReference ref, String title, String classes )
    {
       if (titledLinkBuilder == null)
          titledLinkBuilder = vbf.newValueBuilder( TitledLinkValue.class );
@@ -132,6 +133,8 @@ public class LinksBuilder
       titledLinkBuilder.prototype().rel().set( rel );
 
       titledLinkBuilder.prototype().title().set( title );
+
+      titledLinkBuilder.prototype().classes().set( classes );
 
       linksBuilder.prototype().links().get().add( titledLinkBuilder.newInstance() );
 

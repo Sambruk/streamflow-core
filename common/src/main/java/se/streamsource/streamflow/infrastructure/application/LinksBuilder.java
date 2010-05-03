@@ -79,16 +79,16 @@ public class LinksBuilder
    }
 
    @Override
-   public LinksBuilder addLink( String description, String id, String rel, String href )
+   public LinksBuilder addLink( String description, String id, String rel, String href, String classes )
    {
-      super.addLink( description, id, rel, href );
+      super.addLink( description, id, rel, href, classes );
       return this;
    }
 
    @Override
-   public LinksBuilder addLink( String description, EntityReference ref, String title )
+   public LinksBuilder addLink( String description, EntityReference ref, String title, String classes )
    {
-      super.addLink( description, ref, title );
+      super.addLink( description, ref, title, classes );
       return this;
    }
 
@@ -115,7 +115,13 @@ public class LinksBuilder
 
    public LinksBuilder addDescribable( Describable item, String group )
    {
-      addLink( item.getDescription(), EntityReference.getEntityReference( item ), group );
+      addLink( item.getDescription(), EntityReference.getEntityReference( item ), group, null );
+      return this;
+   }
+
+   public LinksBuilder addDescribable( Describable item, String group, String classes )
+   {
+      addLink( item.getDescription(), EntityReference.getEntityReference( item ), group, classes );
       return this;
    }
 

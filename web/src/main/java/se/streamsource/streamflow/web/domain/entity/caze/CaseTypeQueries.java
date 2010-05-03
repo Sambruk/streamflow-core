@@ -40,6 +40,8 @@ import se.streamsource.streamflow.web.domain.structure.casetype.CaseTypes;
 import se.streamsource.streamflow.web.domain.structure.casetype.SelectedCaseTypes;
 import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
 import se.streamsource.streamflow.web.domain.structure.created.Creator;
+import se.streamsource.streamflow.web.domain.structure.label.Label;
+import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationParticipations;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
@@ -126,6 +128,7 @@ public interface CaseTypeQueries
                orgQueries.visitOrganization( new OrganizationVisitor()
                {
                   Describable owner;
+                  StringBuilder string = new StringBuilder();
 
                   @Override
                   public boolean visitOrganization( Organization org )
@@ -152,7 +155,17 @@ public interface CaseTypeQueries
                   public boolean visitCaseType( CaseType caseType )
                   {
                      if (selectedCaseTypes.contains( caseType ))
-                        builder.addDescribable( caseType, owner );
+                     {
+                        // Build up list of labels as classes
+                        string.setLength( 0 );
+                        SelectedLabels.Data selectedLabels = (SelectedLabels.Data) caseType;
+                        for (Label label : selectedLabels.selectedLabels())
+                        {
+                           string.append( label.getDescription() ).append( ' ' );
+                        }
+
+                        builder.addDescribable( caseType,  owner.getDescription(), string.toString() );
+                     }
 
                      return super.visitCaseType( caseType );
                   }
@@ -171,9 +184,18 @@ public interface CaseTypeQueries
             // Show only Case types from owning project
             SelectedCaseTypes.Data selectedCaseTypes = (SelectedCaseTypes.Data) owner;
             Describable describableOwner = (Describable) owner;
+            StringBuilder string = new StringBuilder();
             for (CaseType caseType : selectedCaseTypes.selectedCaseTypes())
             {
-               builder.addDescribable( caseType, describableOwner );
+               // Build up list of labels as classes
+               string.setLength( 0 );
+               SelectedLabels.Data selectedLabels = (SelectedLabels.Data) caseType;
+               for (Label label : selectedLabels.selectedLabels())
+               {
+                  string.append( label.getDescription() ).append( ' ' );
+               }
+
+               builder.addDescribable( caseType, describableOwner.getDescription(), string.toString() );
             }
          }
       }
