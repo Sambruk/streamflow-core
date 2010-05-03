@@ -32,6 +32,7 @@ import se.streamsource.streamflow.client.StreamFlowResources;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.LinkComparator;
 import se.streamsource.streamflow.client.infrastructure.ui.LinkListCellRenderer;
+import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
@@ -89,6 +90,8 @@ public class OrganizationUsersView
       add( toolbar, BorderLayout.SOUTH );
 
       participantList.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "remove" ) ) );
+
+      new RefreshWhenVisible( model, this );
    }
 
    @org.jdesktop.application.Action

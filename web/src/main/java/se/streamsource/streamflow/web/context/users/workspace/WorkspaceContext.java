@@ -48,6 +48,9 @@ public interface WorkspaceContext
    @SubContext
    WorkspaceProjectsContext projects();
 
+   @SubContext
+   SavedSearchesContext savedsearches();
+
    abstract class Mixin
       extends InteractionsMixin
       implements WorkspaceContext
@@ -80,6 +83,11 @@ public interface WorkspaceContext
       public WorkspaceProjectsContext projects()
       {
          return subContext( WorkspaceProjectsContext.class );
+      }
+
+      public SavedSearchesContext savedsearches()
+      {
+         return subContext( SavedSearchesContext.class );
       }
    }
 

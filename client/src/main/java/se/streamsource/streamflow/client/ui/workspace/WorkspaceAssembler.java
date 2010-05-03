@@ -48,6 +48,8 @@ public class WorkspaceAssembler
             WorkspaceModel.class,
             WorkspaceView.class );
 
+      UIAssemblers.addMV( module, SavedSearchesModel.class, SavedSearchesView.class );
+
       UIAssemblers.addDialogs( module, SelectLinkDialog.class, FilterListDialog.class, GroupedFilterListDialog.class);
 
    }

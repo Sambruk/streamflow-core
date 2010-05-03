@@ -36,24 +36,22 @@ import java.util.List;
 public class LinksListModel
       implements Refreshable, EventListener
 {
-   private CommandQueryClient client;
+   protected CommandQueryClient client;
    private String query;
 
-   private List<LinkValue> links;
-   private BasicEventList<LinkValue> eventList = new BasicEventList<LinkValue>();
+   protected BasicEventList<LinkValue> eventList = new BasicEventList<LinkValue>();
 
    public LinksListModel(@Uses CommandQueryClient client, @Uses String query)
    {
       this.client = client;
       this.query = query;
-      refresh();
    }
 
    public void refresh()
    {
       try
       {
-         links = client.query(query, LinksValue.class).links().get();
+         List<LinkValue> links = client.query(query, LinksValue.class).links().get();
          EventListSynch.synchronize( links, eventList );
       } catch (ResourceException e)
       {

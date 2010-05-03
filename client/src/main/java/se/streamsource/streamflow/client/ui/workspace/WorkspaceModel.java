@@ -18,6 +18,7 @@
 package se.streamsource.streamflow.client.ui.workspace;
 
 import org.qi4j.api.injection.scope.Uses;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
@@ -34,10 +35,12 @@ public class WorkspaceModel
       implements EventListener, EventVisitor
 {
    public EventVisitorFilter eventHandlerFilter;
+   private SavedSearchesModel savedSearches;
 
-   public WorkspaceModel( @Uses WorkspaceNode node )
+   public WorkspaceModel( @Uses WorkspaceNode node, @Uses SavedSearchesModel savedSearches)
    {
       super( node );
+      this.savedSearches = savedSearches;
 
       eventHandlerFilter = new EventVisitorFilter( this, "joinedProject", "leftProject", "joinedGroup", "leftGroup",
             "createdProject", "removedProject" );
@@ -47,6 +50,11 @@ public class WorkspaceModel
    public WorkspaceNode getRoot()
    {
       return (WorkspaceNode) super.getRoot();
+   }
+
+   public SavedSearchesModel getSavedSearches()
+   {
+      return savedSearches;
    }
 
    public void notifyEvent( DomainEvent event )

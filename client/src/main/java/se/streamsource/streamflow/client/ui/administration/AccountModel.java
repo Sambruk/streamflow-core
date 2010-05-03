@@ -310,6 +310,9 @@ public class AccountModel extends Observable implements EventListener
                WorkspaceUserDraftsNode.class).use(draftsModel, userDraftsClient)
                .newInstance();
 
+         CommandQueryClient savedSearchesClient = resource.getClient( "searches" );
+
+
          workspaceModel = obf.newObjectBuilder(WorkspaceModel.class).use(this,
                resource, userDraftsNode,
                cases()).newInstance();

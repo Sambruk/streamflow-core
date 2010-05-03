@@ -105,4 +105,18 @@
         <renameColumn tableName="cases"
             oldColumnName="tasktype" newColumnName="casetype" columnDataType="varchar(256)"/>
     </changeSet>
+    <changeSet id="4" author="rickardoberg">
+        <addColumn tableName="cases">
+            <column name="resolution" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet id="5" author="rickardoberg">
+        <addColumn tableName="cases">
+            <column name="casetype_owner" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

@@ -21,6 +21,6 @@ package se.streamsource.streamflow.web.domain.structure.form;
  * JAVADOC
  */
 public interface Field
-      extends FieldTemplate, FieldSynchronization
+      extends FieldTemplate
 {
 }

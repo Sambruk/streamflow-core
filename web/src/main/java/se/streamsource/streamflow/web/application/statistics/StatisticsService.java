@@ -19,10 +19,14 @@ package se.streamsource.streamflow.web.application.statistics;
 
 import org.qi4j.api.Qi4j;
 import org.qi4j.api.configuration.Configuration;
+import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.query.QueryBuilder;
+import org.qi4j.api.query.QueryBuilderFactory;
+import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.unitofwork.NoSuchEntityException;
@@ -45,6 +49,9 @@ import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
+import se.streamsource.streamflow.web.domain.structure.casetype.CaseTypes;
+import se.streamsource.streamflow.web.domain.structure.casetype.Resolution;
+import se.streamsource.streamflow.web.domain.structure.casetype.Resolvable;
 import se.streamsource.streamflow.web.domain.structure.group.Group;
 import se.streamsource.streamflow.web.domain.structure.group.Participation;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
@@ -92,6 +99,9 @@ public interface StatisticsService
       @Structure
       UnitOfWorkFactory uowf;
 
+      @Structure
+      QueryBuilderFactory qbf;
+
       @This
       Configuration<StatisticsConfiguration> config;
 
@@ -124,7 +134,7 @@ public interface StatisticsService
          }
 
 
-         closedFilter = new EventQuery().withUsecases( "close", "reopen" );
+         closedFilter = new EventQuery().withUsecases( "close", "reopen", "resolve" ).withNames( "changedStatus" );
 
          visit( null ); // Trigger a load
       }
@@ -173,7 +183,7 @@ public interface StatisticsService
                      Owner owner = aCase.owner().get();
                      if (owner instanceof Project)
                      {
-                        if (domainEvent.usecase().get().equals("close"))
+                        if (domainEvent.usecase().get().equals("close") || domainEvent.usecase().get().equals("resolve"))
                         {
                            PreparedStatement stmt = conn.prepareStatement( sql.getProperty( "closed.insert" ) );
                            int idx = 1;
@@ -218,7 +228,27 @@ public interface StatisticsService
 
                            stmt.setString( idx++, groupName );
 
-                           stmt.setString( idx, organizationalUnit.getDescription() );
+                           stmt.setString( idx++, organizationalUnit.getDescription() );
+
+                           Resolution resolution = aCase.resolution().get();
+                           if (resolution != null)
+                           {
+                              stmt.setString( idx, resolution.getDescription());
+                           }
+                           else
+                              stmt.setString(idx, null);
+                           idx++;
+
+                           if (caseType != null)
+                           {
+                              QueryBuilder<Describable> caseOwnerQuery = qbf.newQueryBuilder( Describable.class );
+                              ManyAssociation<CaseType> caseTypes = QueryExpressions.templateFor( CaseTypes.Data.class ).caseTypes();
+                              Describable caseTypeOwner = caseOwnerQuery.where( QueryExpressions.contains(caseTypes, caseType)).newQuery( uow ).find();
+                              stmt.setString( idx, caseTypeOwner.getDescription());
+                           }
+                           else
+                              stmt.setString(idx, null);
+                           idx++;
 
                            stmt.executeUpdate();
                            stmt.close();
