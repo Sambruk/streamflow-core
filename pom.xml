@@ -358,6 +358,7 @@
                         <configuration>
                             <properties>
                                 <product>${application.header}</product>
+                                <subproduct>.</subproduct>
                                 <company>${project.organization.name}</company>
                             </properties>
                             <runOnlyAtExecutionRoot>false</runOnlyAtExecutionRoot>

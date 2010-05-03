@@ -3,7 +3,7 @@
 // Version 2.0
 // ------------------------------------------------------------------
 
-${product}(tm)
+${product}(tm) ${subproduct}
 Copyright ${project.inceptionYear} ${company}
 
 Streamsource AB (Swedish organization number 556777-9896), Hans Michelsensgatan 9, S-211 20 Malmö, Sweden
