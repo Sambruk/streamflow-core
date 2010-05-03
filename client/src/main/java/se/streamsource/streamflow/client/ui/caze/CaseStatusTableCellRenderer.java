@@ -44,6 +44,12 @@ public class CaseStatusTableCellRenderer extends DefaultTableCellRenderer
       {
          setIcon( i18n.icon( CaseResources.case_status_open_icon,
                i18n.ICON_16 ) );
+         setName( i18n.text( CaseResources.case_status_open_text ) );
+         setToolTipText( i18n.text( CaseResources.case_status_draft_text ) );
+      } else if (value.equals( CaseStates.DRAFT ))
+      {
+         setIcon( i18n.icon( CaseResources.case_status_draft_icon,
+               i18n.ICON_16 ) );
          setName( i18n.text( CaseResources.case_status_draft_text ) );
          setToolTipText( i18n.text( CaseResources.case_status_draft_text ) );
       } else if (value.equals( CaseStates.CLOSED ))

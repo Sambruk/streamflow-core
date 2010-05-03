@@ -71,11 +71,13 @@ public enum WorkspaceResources
    forms_label,
    could_not_refresh,
    chose_casetype,
+   chose_labels,
    mandatory_field_missing,
    could_not_get_form_submission,
    could_not_discard_form_submission,
    owner,
    choose_case,
    change_password_title,
-   welcome, choose_message_delivery_type
+   welcome, 
+   choose_message_delivery_type
 }

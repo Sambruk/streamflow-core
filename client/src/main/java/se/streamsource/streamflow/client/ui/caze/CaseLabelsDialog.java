@@ -25,6 +25,8 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.client.infrastructure.ui.GroupedFilteredList;
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.dci.value.TitledLinkValue;
 
 import javax.swing.*;
@@ -44,7 +46,7 @@ public class CaseLabelsDialog
    public CaseLabelsDialog( @Service ApplicationContext context, @Uses EventList<TitledLinkValue> list )
    {
       setActionMap( context.getActionMap( this ) );
-
+      setName( i18n.text(WorkspaceResources.chose_labels ));
       setLayout( new BorderLayout() );
 
       filteredList.setEventList( list );

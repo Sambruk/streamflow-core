@@ -94,9 +94,9 @@ public class OverviewView
                public Icon getIcon( Object o )
                {
                   if (o instanceof OverviewProjectNode)
-                     return i18n.icon( Icons.project, i18n.ICON_24 );
+                     return i18n.icon( Icons.project, i18n.ICON_16 );
                   else if (o instanceof OverviewProjectsNode)
-                     return i18n.icon( Icons.projects, i18n.ICON_24 );
+                     return i18n.icon( Icons.projects, i18n.ICON_16 );
                   else if (o instanceof OverviewProjectAssignmentsNode)
                      return i18n.icon( Icons.assign, i18n.ICON_16 );
                   else

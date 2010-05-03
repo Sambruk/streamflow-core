@@ -100,11 +100,11 @@ public class AdministrationOutlineView
                public Icon getIcon( Object o )
                {
                   if (o instanceof AccountAdministrationNode)
-                     return i18n.icon( Icons.account, i18n.ICON_24 );
+                     return i18n.icon( Icons.account, i18n.ICON_16 );
                   else if (o instanceof OrganizationalUnitAdministrationNode)
-                     return i18n.icon( Icons.organization, i18n.ICON_24 );
+                     return i18n.icon( Icons.organizationalUnit, i18n.ICON_16 );
                   else if (o instanceof OrganizationAdministrationNode)
-                     return i18n.icon( Icons.account, i18n.ICON_24 );
+                     return i18n.icon( Icons.organization, i18n.ICON_16 );
                   else
                      return NULL_ICON;
                }

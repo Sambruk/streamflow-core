@@ -153,11 +153,11 @@ public class WorkspaceView
                public Icon getIcon( Object o )
                {
                   if (o instanceof WorkspaceUserNode)
-                     return i18n.icon( Icons.user, i18n.ICON_24 );
+                     return i18n.icon( Icons.user, i18n.ICON_16 );
                   else if (o instanceof WorkspaceProjectNode)
-                     return i18n.icon( Icons.project, i18n.ICON_24 );
+                     return i18n.icon( Icons.project, i18n.ICON_16 );
                   else if (o instanceof WorkspaceProjectsNode)
-                     return i18n.icon( Icons.projects, i18n.ICON_24 );
+                     return i18n.icon( Icons.projects, i18n.ICON_16 );
                   else if (o instanceof WorkspaceUserDraftsNode || o instanceof WorkspaceProjectInboxNode)
                      return i18n.icon( Icons.inbox, i18n.ICON_16 );
                   else if (o instanceof WorkspaceProjectAssignmentsNode)
