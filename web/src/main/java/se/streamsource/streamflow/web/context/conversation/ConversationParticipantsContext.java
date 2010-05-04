@@ -73,13 +73,17 @@ public interface ConversationParticipantsContext
       {
          Ownable.Data ownable = context.get(Ownable.Data.class);
          Owner owner = ownable.owner().get();
-         List<ConversationParticipant> possibleParticipants = context.get( ConversationParticipantsQueries.class).possibleParticipants(owner);
          LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() ).command( "addparticipant" );
 
-         for (ConversationParticipant possibleParticipant : possibleParticipants)
+         if (owner != null)
          {
-            String group = "" + Character.toUpperCase( possibleParticipant.getDescription().charAt( 0 ) );
-            linksBuilder.addDescribable( possibleParticipant, group );
+            List<ConversationParticipant> possibleParticipants = context.get( ConversationParticipantsQueries.class).possibleParticipants(owner);
+
+            for (ConversationParticipant possibleParticipant : possibleParticipants)
+            {
+               String group = "" + Character.toUpperCase( possibleParticipant.getDescription().charAt( 0 ) );
+               linksBuilder.addDescribable( possibleParticipant, group );
+            }
          }
 
          return linksBuilder.newLinks();
