@@ -199,7 +199,7 @@ public class AdministrationOutlineView
       Object node = tree.getSelectionPath().getLastPathComponent();
 
       NameDialog dialog = nameDialogs.iterator().next();
-      dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.create_ou_title ) );
+      dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.change_ou_title ) );
       if (dialog.name() != null)
       {
          if (node instanceof MutableTreeNode)
