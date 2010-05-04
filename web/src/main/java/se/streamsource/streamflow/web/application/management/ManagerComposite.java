@@ -38,6 +38,7 @@ import org.qi4j.index.reindexer.Reindexer;
 import org.qi4j.spi.entity.EntityState;
 import org.qi4j.spi.entitystore.EntityStore;
 import org.qi4j.spi.query.EntityFinder;
+import org.qi4j.spi.structure.ModuleSPI;
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
 import se.streamsource.streamflow.infrastructure.event.DomainEventFactory;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
@@ -132,7 +133,7 @@ public interface ManagerComposite
       UnitOfWorkFactory uowf;
 
       @Structure
-      Module module;
+      ModuleSPI module;
 
       private int failedLogins;
 

@@ -33,6 +33,7 @@ import org.qi4j.api.usecase.UsecaseBuilder;
 import org.qi4j.index.reindexer.Reindexer;
 import org.qi4j.spi.entity.EntityState;
 import org.qi4j.spi.entitystore.EntityStore;
+import org.qi4j.spi.structure.ModuleSPI;
 
 import java.util.logging.Logger;
 
@@ -59,7 +60,7 @@ public interface StartupMigrationService
       UnitOfWorkFactory uowf;
 
       @Structure
-      Module module;
+      ModuleSPI module;
       public Logger logger;
 
       public void activate() throws Exception
