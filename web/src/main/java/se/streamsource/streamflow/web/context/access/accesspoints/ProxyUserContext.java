@@ -33,7 +33,7 @@ import se.streamsource.streamflow.web.domain.entity.gtd.DraftsQueries;
  */
 @Mixins(ProxyUserContext.Mixin.class)
 public interface ProxyUserContext
-   extends Interactions, IndexInteraction<LinksValue>
+   extends Interactions
 {
    @SubContext
    EndUsersContext endusers(); 
@@ -42,20 +42,6 @@ public interface ProxyUserContext
       extends InteractionsMixin
       implements ProxyUserContext
    {
-
-      public LinksValue index()
-      {
-         DraftsQueries draftsQueries = context.get( DraftsQueries.class );
-         Describable describable = context.get( Describable.class );
-
-         TitledLinksBuilder linksBuilder = new TitledLinksBuilder( module.valueBuilderFactory() );
-
-         linksBuilder.addDescribables( draftsQueries.drafts().newQuery( module.unitOfWorkFactory().currentUnitOfWork() ));
-         linksBuilder.addTitle( describable.getDescription() );
-
-         return linksBuilder.newLinks();
-      }
-
       public EndUsersContext endusers()
       {
          return subContext( EndUsersContext.class );

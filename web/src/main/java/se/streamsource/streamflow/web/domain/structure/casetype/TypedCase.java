@@ -50,7 +50,7 @@ public interface TypedCase
       public void changedCaseType( DomainEvent event, @Optional CaseType caseType )
       {
          CaseType currentCaseType = caseType().get();
-         if ((currentCaseType == null && caseType != null) || !currentCaseType.equals( caseType ))
+         if ((currentCaseType == null && caseType != null) || (currentCaseType!=null && !currentCaseType.equals( caseType )))
          {
             labelable.retainLabels( currentCaseType, caseType );
 

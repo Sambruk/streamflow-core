@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.web.domain.structure.organization;
 
+import org.qi4j.api.entity.association.Association;
 import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
@@ -40,8 +41,8 @@ public interface AccessPoint
 
    interface Data
    {
-      Property<Project> project();
-      Property<CaseType> caseType();
+      Association<Project> project();
+      Association<CaseType> caseType();
       ManyAssociation<Label> labels();
 
       void addedProject( DomainEvent event, Project project );
