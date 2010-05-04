@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.web.domain.structure.conversation;
 
+import org.qi4j.api.entity.Aggregated;
 import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.entity.Identity;
 import org.qi4j.api.entity.IdentityGenerator;
@@ -40,6 +41,7 @@ public interface Conversations
 
    interface Data
    {
+      @Aggregated
       ManyAssociation<Conversation> conversations();
 
       Conversation createdConversation( DomainEvent event, String id, Creator creator );
