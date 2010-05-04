@@ -35,6 +35,9 @@ import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 public class CaseTypeView
       extends JTabbedPane
 {
+   @Uses
+   CaseTypeModel model;
+
    public CaseTypeView( @Uses SelectedLabelsView selectedLabelsView ,
                         @Uses ResolutionsView resolutionsView,
                         @Uses SelectedResolutionsView selectedResolutionsView,

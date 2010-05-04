@@ -126,7 +126,7 @@ public class FormsView
          if (selected != null)
          {
             model.removeForm( selected );
-            model.formModels.clear();
+            model.formModels.remove( selected.id().get() );
             formList.clearSelection();
          }
       }

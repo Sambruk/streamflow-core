@@ -116,6 +116,9 @@ public class CaseTypeModel
    {
       selectedLabelsModel.notifyEvent( event );
       formsModel.notifyEvent( event );
+      resolutionsModel.notifyEvent( event );
+      selectedResolutionsModel.notifyEvent( event );
+      selectedFormsModel.notifyEvent( event );
    }
 
    public void remove()

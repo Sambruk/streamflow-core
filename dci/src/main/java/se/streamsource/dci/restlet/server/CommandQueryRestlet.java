@@ -158,7 +158,7 @@ public class CommandQueryRestlet
       Reference ref = request.getResourceRef();
       List<String> segments = ref.getScheme().equals( "riap" ) ? ref.getRelativeRef( new Reference( "riap://application/" ) ).getSegments() : ref.getRelativeRef().getSegments();
 
-      UnitOfWork uow = uowf.newUnitOfWork( UsecaseBuilder.newUsecase( request.getResourceRef().getLastSegment() ) );
+      UnitOfWork uow = uowf.newUnitOfWork( UsecaseBuilder.newUsecase( getUsecaseName( request ) ) );
 
       Context context = new Context();
       uow.metaInfo().set( context );
@@ -205,7 +205,7 @@ public class CommandQueryRestlet
             } catch (UnitOfWorkCompletionException e)
             {
                // Retry
-               uow = uowf.newUnitOfWork( UsecaseBuilder.newUsecase( request.getResourceRef().getLastSegment() ) );
+               uow = uowf.newUnitOfWork( UsecaseBuilder.newUsecase( getUsecaseName( request ) ) );
 
                context = new Context();
                initContext( request, context );
@@ -233,6 +233,14 @@ public class CommandQueryRestlet
       { TODO
          head( request, response, context, interactionContext );
       }*/
+   }
+
+   private String getUsecaseName( Request request )
+   {
+      if (request.getMethod().equals( org.restlet.data.Method.DELETE ))
+         return "delete";
+      else
+         return request.getResourceRef().getLastSegment();
    }
 
    private void get( Request request, Response response, Object interactions, Context context, List<String> segments )

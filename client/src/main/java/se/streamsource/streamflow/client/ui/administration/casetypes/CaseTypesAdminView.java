@@ -66,6 +66,7 @@ public class CaseTypesAdminView
                   LinkValue caseTypeLink = (LinkValue) list.getModel().getElementAt( idx );
                   CaseTypeModel caseTypeModel = caseTypesModel.getCaseTypeModel( caseTypeLink.id().get() );
                   CaseTypeView view = obf.newObjectBuilder( CaseTypeView.class ).use(
+                        caseTypeModel,
                         caseTypeModel.getSelectedLabelsModel(), labelsModel,
                         caseTypeModel.getFormsModel(),
                         caseTypeModel.getSelectedFormsModel(),

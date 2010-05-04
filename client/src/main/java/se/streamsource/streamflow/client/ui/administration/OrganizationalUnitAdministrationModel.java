@@ -206,7 +206,9 @@ public class OrganizationalUnitAdministrationModel
       groupsModel.notifyEvent( event );
       projectsModel.notifyEvent( event );
       formsModel.notifyEvent( event );
+      caseTypesModel.notifyEvent( event );
+      labelsModel.notifyEvent( event );
+      selectedLabelsModel.notifyEvent( event );
       administratorsModel.notifyEvent( event );
    }
-
 }

@@ -62,9 +62,9 @@ public class FormsModel
 
    private EventVisitorFilter eventFilter;
 
-   public FormsModel()
+   public FormsModel(@Uses CommandQueryClient client)
    {
-      eventFilter = new EventVisitorFilter( this, "createdForm", "removedForm", "changedDescription" );
+      eventFilter = new EventVisitorFilter( client.getReference().getParentRef().getLastSegment(), this, "createdForm", "removedForm", "changedDescription" );
    }
 
    WeakModelMap<String, FormModel> formModels = new WeakModelMap<String, FormModel>()
