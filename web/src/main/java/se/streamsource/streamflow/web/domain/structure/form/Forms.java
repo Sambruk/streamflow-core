@@ -18,6 +18,7 @@
 package se.streamsource.streamflow.web.domain.structure.form;
 
 import org.qi4j.api.common.Optional;
+import org.qi4j.api.entity.Aggregated;
 import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.entity.Identity;
 import org.qi4j.api.entity.IdentityGenerator;
@@ -45,6 +46,7 @@ public interface Forms
 
    interface Data
    {
+      @Aggregated
       ManyAssociation<Form> forms();
 
       Form createdForm( DomainEvent event, String id);

@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.web.domain.structure.form;
 
+import org.qi4j.api.entity.Aggregated;
 import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.entity.Identity;
 import org.qi4j.api.entity.IdentityGenerator;
@@ -46,6 +47,7 @@ public interface Pages
 
    interface Data
    {
+      @Aggregated
       ManyAssociation<Page> pages();
 
       Page createdPage( DomainEvent event, String id );

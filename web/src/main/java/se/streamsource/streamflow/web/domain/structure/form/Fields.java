@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.web.domain.structure.form;
 
+import org.qi4j.api.entity.Aggregated;
 import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.entity.Identity;
 import org.qi4j.api.entity.IdentityGenerator;
@@ -47,6 +48,7 @@ public interface Fields
 
    interface Data
    {
+      @Aggregated
       ManyAssociation<Field> fields();
 
       Field createdField( DomainEvent event, String id, FieldValue value );
