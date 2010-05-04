@@ -23,6 +23,8 @@ import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
+import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
+import se.streamsource.streamflow.web.domain.structure.created.Creator;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.label.Labelable;
 import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
@@ -48,6 +50,9 @@ public interface CaseLabelsQueries
       Ownable.Data ownable;
 
       @This
+      CreatedOn created;
+
+      @This
       TypedCase.Data type;
 
       @This
@@ -70,7 +75,7 @@ public interface CaseLabelsQueries
             addLabels( labels, type.caseType().get());
          }
 
-         if (ownable.owner().get() instanceof OwningOrganizationalUnit.Data)
+         if (ownable.owner().get() != null)
          {
             // Add labels from OU
             OwningOrganizationalUnit.Data ownerOU = (OwningOrganizationalUnit.Data) ownable.owner().get();
@@ -81,14 +86,18 @@ public interface CaseLabelsQueries
             OwningOrganization ownerOrg = (OwningOrganization) ou;
             Organization org = ownerOrg.organization().get();
             addLabels( labels, org );
-         } else if (ownable.owner().get() instanceof OrganizationParticipations.Data)
+         } else
          {
-            // Add labels from Organizations that user is member of
-            OrganizationParticipations.Data orgs = (OrganizationParticipations.Data) ownable.owner().get();
-
-            for (Organization organization : orgs.organizations())
+            // Add labels from Organizations that creator is member of
+            Creator creator = created.createdBy().get();
+            if (creator instanceof OrganizationParticipations)
             {
-               addLabels(labels, organization);
+               OrganizationParticipations.Data orgs = (OrganizationParticipations.Data) creator;
+
+               for (Organization organization : orgs.organizations())
+               {
+                  addLabels(labels, organization);
+               }
             }
          }
 

@@ -32,6 +32,7 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.ListSelectionEvent;
 import java.awt.BorderLayout;
@@ -99,9 +100,26 @@ public class GroupedFilteredList
       {
          public void listChanged( ListEvent<LinkValue> linkValueListEvent )
          {
-            if (textFilteredIssues.size() == 1)
+            if (list.getModel().getSize() > 0)
             {
-               list.setSelectedIndex( 1 );
+               for (int i = 0; i < list.getModel().getSize(); i++)
+               {
+                  if (list.getModel().getElementAt( i ) != null)
+                  {
+                     final int idx = i;
+
+                     SwingUtilities.invokeLater( new Runnable()
+                     {
+                        public void run()
+                        {
+                           list.setSelectedIndex( idx );
+                        }
+                     });
+
+                     break;
+                  }
+               }
+
             }
          }
       });
