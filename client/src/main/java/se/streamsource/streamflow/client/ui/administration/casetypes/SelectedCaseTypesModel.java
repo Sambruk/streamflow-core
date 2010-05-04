@@ -28,6 +28,7 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.LinksValue;
+import se.streamsource.dci.value.TitledLinkValue;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
@@ -35,6 +36,9 @@ import se.streamsource.streamflow.client.ui.administration.AdministrationResourc
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
+
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Management of selected casetypes on a project
@@ -69,12 +73,16 @@ public class SelectedCaseTypesModel
       }
    }
 
-   public EventList<LinkValue> getPossibleCaseTypes()
+   public EventList<TitledLinkValue> getPossibleCaseTypes()
    {
       try
       {
-         BasicEventList<LinkValue> possibleCaseTypes = new BasicEventList<LinkValue>();
-         possibleCaseTypes.addAll( client.query( "possiblecasetypes", LinksValue.class ).links().get() );
+         BasicEventList<TitledLinkValue> possibleCaseTypes = new BasicEventList<TitledLinkValue>();
+         List<LinkValue> valueList = client.query( "possiblecasetypes", LinksValue.class ).links().get();
+         for (LinkValue linkValue : valueList)
+         {
+            possibleCaseTypes.add( (TitledLinkValue) linkValue );
+         }
          return possibleCaseTypes;
       } catch (ResourceException e)
       {
