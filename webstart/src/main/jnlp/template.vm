@@ -19,7 +19,7 @@
     codebase="$$codebase"
     href="$outputFile">
   <information>
-    <title>Streamflow&#0153;</title>
+    <title>Streamflow(tm)</title>
     <homepage href="${project.url}"/>
     <vendor>${project.organization.name}</vendor>
     <description kind="one-line">${project.organization.name}&#0153; Client</description>
