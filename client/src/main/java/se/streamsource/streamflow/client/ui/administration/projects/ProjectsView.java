@@ -119,7 +119,7 @@ public class ProjectsView
    public void rename()
    {
       NameDialog dialog = nameDialogs.iterator().next();
-      dialogs.showOkCancelHelpDialog( this, dialog );
+      dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.change_project_title ) );
 
       if (dialog.name() != null)
       {
