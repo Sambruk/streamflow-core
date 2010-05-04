@@ -104,7 +104,7 @@ public class GroupedFilteredList
             {
                for (int i = 0; i < list.getModel().getSize(); i++)
                {
-                  if (list.getModel().getElementAt( i ) != null)
+                  if (list.getModel().getElementAt( i ) != null && list.getModel().getElementAt( i ) instanceof LinkValue)
                   {
                      final int idx = i;
 
