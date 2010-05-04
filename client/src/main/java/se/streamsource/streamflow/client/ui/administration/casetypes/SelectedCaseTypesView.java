@@ -86,7 +86,7 @@ public class SelectedCaseTypesView
    {
       SelectCaseTypesDialog dialog = caseTypesDialogs.use( modelSelected.getPossibleCaseTypes() ).newInstance();
 
-      dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.add_casetype_title ) );
+      dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.choose_casetypes_title ) );
 
       if (dialog.getSelectedCaseTypes() != null)
       {
