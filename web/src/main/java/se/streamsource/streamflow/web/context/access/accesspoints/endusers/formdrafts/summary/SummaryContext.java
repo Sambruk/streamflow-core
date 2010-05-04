@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.context.access.forms;
+package se.streamsource.streamflow.web.context.access.accesspoints.endusers.formdrafts.summary;
 
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.value.ValueBuilder;
@@ -26,13 +26,13 @@ import se.streamsource.streamflow.domain.form.FormSubmissionValue;
 import se.streamsource.streamflow.resource.roles.IntegerDTO;
 import se.streamsource.streamflow.web.domain.structure.form.FormSubmission;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedForms;
-import se.streamsource.streamflow.web.domain.structure.user.ProxyUser;
+import se.streamsource.streamflow.web.domain.structure.user.AnonymousEndUser;
 
 /**
  * JAVADOC
  */
-@Mixins(FormSummaryContext.Mixin.class)
-public interface FormSummaryContext
+@Mixins(SummaryContext.Mixin.class)
+public interface SummaryContext
    extends Interactions, IndexInteraction<FormSubmissionValue>
 {
 
@@ -42,7 +42,7 @@ public interface FormSummaryContext
 
    abstract class Mixin
       extends InteractionsMixin
-      implements FormSummaryContext
+      implements SummaryContext
    {
       public FormSubmissionValue index()
       {
@@ -53,7 +53,7 @@ public interface FormSummaryContext
       {
          SubmittedForms submittedForms = context.get( SubmittedForms.class );
          FormSubmission formSubmission = context.get( FormSubmission.class );
-         ProxyUser user = context.get( ProxyUser.class );
+         AnonymousEndUser user = context.get( AnonymousEndUser.class );
          submittedForms.submitForm( formSubmission, user );
       }
 

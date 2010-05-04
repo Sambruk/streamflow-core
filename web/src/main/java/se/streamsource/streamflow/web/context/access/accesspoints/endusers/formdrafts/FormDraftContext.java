@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.context.access.forms;
+package se.streamsource.streamflow.web.context.access.accesspoints.endusers.formdrafts;
 
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.mixin.Mixins;
@@ -31,6 +31,7 @@ import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
 import se.streamsource.streamflow.domain.form.FormSubmissionValue;
 import se.streamsource.streamflow.domain.form.PageSubmissionValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
+import se.streamsource.streamflow.web.context.access.accesspoints.endusers.formdrafts.summary.SummaryContext;
 import se.streamsource.streamflow.web.domain.structure.form.FormSubmission;
 
 import java.util.Map;
@@ -39,8 +40,8 @@ import java.util.Set;
 /**
  * JAVADOC
  */
-@Mixins(FormSubmissionContext.Mixin.class)
-public interface FormSubmissionContext
+@Mixins(FormDraftContext.Mixin.class)
+public interface FormDraftContext
    extends Interactions, IndexInteraction<PageSubmissionValue>
 {
    // queries
@@ -57,13 +58,13 @@ public interface FormSubmissionContext
 
    @SubContext
    @HasNextPage(false)
-   FormSummaryContext summary();
+   SummaryContext summary();
 
    void discard();
 
    abstract class Mixin
       extends InteractionsMixin
-      implements FormSubmissionContext
+      implements FormDraftContext
    {
       public PageSubmissionValue index()
       {
@@ -173,10 +174,10 @@ public interface FormSubmissionContext
          context.set( newFormValue );
       }
 
-      public FormSummaryContext summary()
+      public SummaryContext summary()
       {
          context.set( this );
-         return subContext( FormSummaryContext.class );
+         return subContext( SummaryContext.class );
       }
 
       public void discard()

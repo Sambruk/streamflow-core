@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.context.access.forms;
+package se.streamsource.streamflow.web.context.access.accesspoints.endusers.formdrafts;
 
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.mixin.Mixins;
@@ -32,16 +32,16 @@ import se.streamsource.streamflow.web.domain.structure.form.FormSubmissions;
 /**
  * JAVADOC
  */
-@Mixins(FormSubmissionsContext.Mixin.class)
-public interface FormSubmissionsContext
-   extends Interactions, IndexInteraction<LinksValue>, SubContexts<FormSubmissionContext>
+@Mixins(FormDraftsContext.Mixin.class)
+public interface FormDraftsContext
+   extends Interactions, IndexInteraction<LinksValue>, SubContexts<FormDraftContext>
 {
 
-   FormSubmissionContext context( String id );
+   FormDraftContext context( String id );
 
    abstract class Mixin
       extends InteractionsMixin
-      implements FormSubmissionsContext
+      implements FormDraftsContext
    {
       public LinksValue index()
       {
@@ -57,7 +57,7 @@ public interface FormSubmissionsContext
          return builder.newLinks();
       }
 
-      public FormSubmissionContext context( String id )
+      public FormDraftContext context( String id )
       {
          FormSubmissions.Data formSubmissions = context.get( FormSubmissions.Data.class );
 
@@ -68,7 +68,7 @@ public interface FormSubmissionsContext
             {
                context.set( formSubmission );
                context.set( formSubmission.getFormSubmission() );
-               return subContext( FormSubmissionContext.class );
+               return subContext( FormDraftContext.class );
             }
          }
          return null;

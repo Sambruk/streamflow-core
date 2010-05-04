@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.context.access.organizations;
+package se.streamsource.streamflow.web.context.access.accesspoints.endusers;
 
 import org.qi4j.api.mixin.Mixins;
 import se.streamsource.dci.api.IndexInteraction;
@@ -23,48 +23,49 @@ import se.streamsource.dci.api.Interactions;
 import se.streamsource.dci.api.InteractionsMixin;
 import se.streamsource.dci.api.SubContexts;
 import se.streamsource.dci.value.LinksValue;
-import se.streamsource.streamflow.domain.structure.Describable;
+import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.infrastructure.application.TitledLinksBuilder;
-import se.streamsource.streamflow.web.domain.entity.user.ProxyUserEntity;
-import se.streamsource.streamflow.web.domain.structure.user.ProxyUser;
-import se.streamsource.streamflow.web.domain.structure.user.ProxyUsers;
+import se.streamsource.streamflow.web.domain.structure.user.AnonymousEndUser;
+import se.streamsource.streamflow.web.domain.structure.user.EndUsers;
 
 /**
  * JAVADOC
  */
-@Mixins(AccessPointContext.Mixin.class)
-public interface AccessPointContext
-   extends SubContexts<ProxyUserContext>, IndexInteraction<LinksValue>, Interactions
+@Mixins(EndUsersContext.Mixin.class)
+public interface EndUsersContext
+   extends SubContexts<EndUserContext>, Interactions, IndexInteraction<LinksValue>
 {
+   // command
+   void createenduser( StringValue name );
+
    abstract class Mixin
       extends InteractionsMixin
-      implements AccessPointContext
+      implements EndUsersContext
    {
+
       public LinksValue index()
       {
-         ProxyUsers.Data data = context.get( ProxyUsers.Data.class );
-         Describable describable = context.get( Describable.class );
+         EndUsers.Data data = context.get( EndUsers.Data.class );
 
          TitledLinksBuilder linksBuilder = new TitledLinksBuilder( module.valueBuilderFactory() );
 
-         linksBuilder.addDescribables( data.proxyUsers() );
-         linksBuilder.addTitle( describable.getDescription() );
+         linksBuilder.addDescribables( data.anonymousEndUsers() );
 
          return linksBuilder.newLinks();
       }
 
-      public ProxyUserContext context( String id )
+      public void createenduser( StringValue name )
       {
-         ProxyUsers.Data data = context.get( ProxyUsers.Data.class );
-         for (ProxyUser proxyUser : data.proxyUsers() )
-         {
-            ProxyUserEntity entity = (ProxyUserEntity) proxyUser;
-            if ( entity.identity().get().equals( id ) )
-            {
-               context.set( proxyUser );
-            }
-         }
-         return subContext( ProxyUserContext.class);
+         EndUsers endUsers = context.get( EndUsers.class );
+         endUsers.createAnonymousEndUser( name.string().get() );
+      }
+
+      public EndUserContext context( String id)
+      {
+         AnonymousEndUser endUser = module.unitOfWorkFactory().currentUnitOfWork().get( AnonymousEndUser.class, id );
+
+         context.set( endUser );
+         return subContext( EndUserContext.class );
       }
    }
 }

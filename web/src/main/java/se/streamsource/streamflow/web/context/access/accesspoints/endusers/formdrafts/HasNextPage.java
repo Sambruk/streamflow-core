@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.context.access.forms;
+package se.streamsource.streamflow.web.context.access.accesspoints.endusers.formdrafts;
 
 import org.qi4j.api.constraint.ConstraintDeclaration;
 import org.qi4j.api.constraint.Constraints;
@@ -29,15 +29,18 @@ import java.lang.annotation.RetentionPolicy;
  */
 @ConstraintDeclaration
 @Retention(RetentionPolicy.RUNTIME)
-@Constraints(HasPreviousPage.Constraint.class)
-public @interface HasPreviousPage
+@Constraints(HasNextPage.Constraint.class)
+public @interface HasNextPage
 {
+   public abstract boolean value() default true;
+
    public class Constraint
-         implements org.qi4j.api.constraint.Constraint<HasPreviousPage, FormSubmissionValue>
+         implements org.qi4j.api.constraint.Constraint<HasNextPage, FormSubmissionValue>
    {
-      public boolean isValid( HasPreviousPage page, FormSubmissionValue value )
+      public boolean isValid( HasNextPage page, FormSubmissionValue value )
       {
-         return !(value.currentPage().get() == 0);
+         boolean lastPage = value.pages().get().size()-1 == value.currentPage().get();
+         return page.value() != lastPage;
       }
    }
 }

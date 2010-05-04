@@ -58,6 +58,7 @@ import se.streamsource.streamflow.web.domain.structure.organization.Organization
 import se.streamsource.streamflow.web.domain.structure.project.Member;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.project.ProjectRole;
+import se.streamsource.streamflow.web.domain.structure.user.AnonymousEndUser;
 import se.streamsource.streamflow.web.domain.structure.user.ProxyUser;
 import se.streamsource.streamflow.web.domain.structure.user.User;
 import se.streamsource.streamflow.web.domain.structure.user.Users;
@@ -311,9 +312,11 @@ public interface TestDataService
          labels.add( question );
          organization.createAccessPoint( "ComplaintAccess", invoicing, complaint, labels );
 
-         ProxyUser proxyUser = organization.createProxyUser( "User External", "mrx", "mrxmrx" );
+         ProxyUser proxyUser = organization.createProxyUser( "Citizens Portal", "jkgp", "jkgpxxxx" );
 
-         CaseEntity case1 = proxyUser.createDraft();
+         AnonymousEndUser endUser = proxyUser.createAnonymousEndUser( "Kalle K." );
+
+         CaseEntity case1 = endUser.createDraft();
          case1.changeDescription( "No Salary" );
          case1.caseType().set( complaint );
          case1.sendTo((Owner)project);

@@ -15,21 +15,27 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.domain.structure.user;
+package se.streamsource.streamflow.web.domain.entity.user;
 
 import se.streamsource.streamflow.domain.structure.Describable;
-import se.streamsource.streamflow.web.domain.entity.gtd.Drafts;
-import se.streamsource.streamflow.web.domain.structure.created.Creator;
-import se.streamsource.streamflow.web.domain.structure.form.Submitter;
+import se.streamsource.streamflow.web.domain.entity.DomainEntity;
+import se.streamsource.streamflow.web.domain.entity.gtd.DraftsQueries;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Actor;
+import se.streamsource.streamflow.web.domain.structure.user.AnonymousEndUser;
+import se.streamsource.streamflow.web.domain.structure.user.ProxyUser;
+import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
 
 /**
- * A ProxyUser represents an entire external system. Actual users
- * are federated under this user. This means that only the ProxyUser
- * needs to have an actual login to the system. It will then provide
- * the identity of the user in the external system, which can then be an Actor
- * in this system.
+ * JAVADOC
  */
-public interface ProxyUser
-   extends Describable, UserAuthentication, EndUsers
+public interface AnonymousEndUserEntity
+   extends AnonymousEndUser,
+      DomainEntity,
+
+      //Queries
+      DraftsQueries,
+
+      //Data
+      Describable.Data
 {
 }

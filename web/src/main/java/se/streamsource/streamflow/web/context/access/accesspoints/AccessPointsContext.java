@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.context.access.organizations;
+package se.streamsource.streamflow.web.context.access.accesspoints;
 
 import org.qi4j.api.mixin.Mixins;
 import se.streamsource.dci.api.IndexInteraction;

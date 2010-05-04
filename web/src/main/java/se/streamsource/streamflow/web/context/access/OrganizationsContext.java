@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.context.access.organizations;
+package se.streamsource.streamflow.web.context.access;
 
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;

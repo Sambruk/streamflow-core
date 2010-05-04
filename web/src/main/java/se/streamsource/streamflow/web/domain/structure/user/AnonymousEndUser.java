@@ -23,13 +23,8 @@ import se.streamsource.streamflow.web.domain.structure.created.Creator;
 import se.streamsource.streamflow.web.domain.structure.form.Submitter;
 
 /**
- * A ProxyUser represents an entire external system. Actual users
- * are federated under this user. This means that only the ProxyUser
- * needs to have an actual login to the system. It will then provide
- * the identity of the user in the external system, which can then be an Actor
- * in this system.
  */
-public interface ProxyUser
-   extends Describable, UserAuthentication, EndUsers
+public interface AnonymousEndUser
+   extends Describable, Drafts, Submitter, Creator
 {
 }

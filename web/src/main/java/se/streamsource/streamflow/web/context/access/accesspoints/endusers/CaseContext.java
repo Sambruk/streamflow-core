@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.context.access.organizations;
+package se.streamsource.streamflow.web.context.access.accesspoints.endusers;
 
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
@@ -28,9 +28,9 @@ import se.streamsource.dci.api.SubContext;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.resource.caze.ProxyUserCaseDTO;
-import se.streamsource.streamflow.web.context.access.forms.FormSubmissionsContext;
-import se.streamsource.streamflow.web.context.access.forms.RequiredFormsContext;
-import se.streamsource.streamflow.web.context.access.forms.SubmittedFormsContext;
+import se.streamsource.streamflow.web.context.access.accesspoints.endusers.formdrafts.FormDraftsContext;
+import se.streamsource.streamflow.web.context.access.accesspoints.endusers.submittedforms.SubmittedFormsContext;
+import se.streamsource.streamflow.web.context.access.accesspoints.endusers.requiredforms.RequiredFormsContext;
 import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
@@ -55,7 +55,7 @@ public interface CaseContext
    RequiredFormsContext requiredforms();
 
    @SubContext
-   FormSubmissionsContext formdrafts();
+   FormDraftsContext formdrafts();
 
    abstract class Mixin
          extends InteractionsMixin
@@ -110,9 +110,9 @@ public interface CaseContext
          return subContext( RequiredFormsContext.class );
       }
 
-      public FormSubmissionsContext formdrafts()
+      public FormDraftsContext formdrafts()
       {
-         return subContext( FormSubmissionsContext.class );
+         return subContext( FormDraftsContext.class );
       }
    }
 }

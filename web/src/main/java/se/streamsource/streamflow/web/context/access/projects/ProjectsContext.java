@@ -46,7 +46,7 @@ public interface ProjectsContext
       public LinksValue index()
       {
          OrganizationQueries organizationQueries = context.get( OrganizationQueries.class );
-         Query<ProjectEntity> projects = organizationQueries.findProjects( "" );
+         Query<ProjectEntity> projects = organizationQueries.findProjects( "*" );
          projects = projects.orderBy( orderBy( templateFor( Describable.Data.class ).description() ) );
 
          LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );

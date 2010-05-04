@@ -15,32 +15,31 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.context.access.organizations;
+package se.streamsource.streamflow.web.context.access.accesspoints.endusers.submittedforms;
 
 import org.qi4j.api.mixin.Mixins;
 import se.streamsource.dci.api.Interactions;
 import se.streamsource.dci.api.InteractionsMixin;
-import se.streamsource.streamflow.resource.user.NewProxyUserCommand;
-import se.streamsource.streamflow.web.domain.structure.organization.Organization;
+import se.streamsource.dci.api.IndexInteraction;
+import se.streamsource.streamflow.resource.caze.SubmittedFormsListDTO;
+import se.streamsource.streamflow.web.domain.entity.form.SubmittedFormsQueries;
 
 /**
  * JAVADOC
  */
-@Mixins(ProxyUsersContext.Mixin.class)
-public interface ProxyUsersContext
-   extends Interactions
+@Mixins(SubmittedFormsContext.Mixin.class)
+public interface SubmittedFormsContext
+   extends Interactions, IndexInteraction<SubmittedFormsListDTO>
 {
-   // commands
-   void createproxyuser( NewProxyUserCommand proxyUser );
 
    abstract class Mixin
       extends InteractionsMixin
-      implements ProxyUsersContext
+      implements SubmittedFormsContext
    {
-      public void createproxyuser( NewProxyUserCommand proxyUser )
+      public SubmittedFormsListDTO index()
       {
-         Organization organization = context.get( Organization.class );
-         organization.createProxyUser( proxyUser.name().get(), proxyUser.username().get(), proxyUser.password().get() );
+         SubmittedFormsQueries forms = context.get( SubmittedFormsQueries.class );
+         return forms.getSubmittedForms();
       }
    }
 }

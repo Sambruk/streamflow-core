@@ -21,7 +21,7 @@ import org.qi4j.api.mixin.Mixins;
 import se.streamsource.dci.api.Interactions;
 import se.streamsource.dci.api.InteractionsMixin;
 import se.streamsource.dci.api.SubContext;
-import se.streamsource.streamflow.web.context.access.organizations.OrganizationsContext;
+import se.streamsource.streamflow.web.context.access.OrganizationsContext;
 
 /**
  * JAVADOC
