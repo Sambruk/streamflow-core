@@ -98,9 +98,6 @@ public class CaseTableView
       MacOsUIWrapper.convertAccelerators(context.getActionMap(
 				CaseTableView.class, this));
 
-      // Toolbar
-      JPanel toolbar = new JPanel();
-
       // Table
       EventJXTableModel tableModel = new EventJXTableModel(model.getEventList(), tableFormat);
       caseTable = new JXTable( tableModel );
@@ -114,8 +111,6 @@ public class CaseTableView
                   .getDefaultFocusTraversalKeys( KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS ) );
 
       JScrollPane caseScrollPane = new JScrollPane( caseTable );
-
-      add( toolbar, BorderLayout.NORTH );
 
       caseTable.getColumn( 1 ).setPreferredWidth( 150 );
       caseTable.getColumn( 1 ).setMaxWidth( 150 );
@@ -161,8 +156,6 @@ public class CaseTableView
             return false;
          }
       }, p ) );
-
-      buildToolbar( toolbar );
 
       caseTable.getSelectionModel().addListSelectionListener( new ListSelectionListener()
       {
@@ -215,13 +208,6 @@ public class CaseTableView
       } );
    }
 
-   protected void buildToolbar( JPanel toolbar )
-   {
-      if (caseCreation != null)
-         addToolbarButton( toolbar, "createCase" );
-      addToolbarButton( toolbar, "refresh" );
-   }
-
    protected Action addToolbarButton( JPanel toolbar, String name )
    {
       ActionMap am = getActionMap();
@@ -245,6 +231,11 @@ public class CaseTableView
    public CasesDetailView2 getCaseDetails()
    {
       return detailsView;
+   }
+
+   public CasesTableModel getModel()
+   {
+      return model;
    }
 
    public CaseValue getSelectedCase()
@@ -274,11 +265,5 @@ public class CaseTableView
             detailsView.requestFocusInWindow();
          }
       } );
-   }
-
-   @org.jdesktop.application.Action
-   public void refresh() throws ResourceException
-   {
-      model.refresh();
    }
 }

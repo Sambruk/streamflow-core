@@ -28,9 +28,12 @@ import java.awt.*;
 public class CasesView
    extends JPanel
 {
+   private CaseTableView caseTableView;
+
    public CasesView(@Uses CaseTableView caseTableView, @Uses CasesDetailView2 detailsView)
    {
       super(new BorderLayout());
+      this.caseTableView = caseTableView;
 
       final JSplitPane splitPane = new JSplitPane( JSplitPane.VERTICAL_SPLIT );
       splitPane.setOneTouchExpandable( true );
@@ -42,4 +45,10 @@ public class CasesView
 
       splitPane.setDividerLocation( 1D );
    }
+
+   public CaseTableView getCaseTableView()
+   {
+      return caseTableView;
+   }
 }
+

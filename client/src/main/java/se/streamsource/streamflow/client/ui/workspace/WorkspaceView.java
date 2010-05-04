@@ -20,6 +20,7 @@ package se.streamsource.streamflow.client.ui.workspace;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
+import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.JXTree;
 import org.jdesktop.swingx.renderer.DefaultTreeRenderer;
 import org.jdesktop.swingx.renderer.IconValue;
@@ -34,6 +35,7 @@ import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.administration.AccountModel;
 import se.streamsource.streamflow.client.ui.caze.AssignmentsCaseTableFormatter;
+import se.streamsource.streamflow.client.ui.caze.CaseCreationNode;
 import se.streamsource.streamflow.client.ui.caze.CaseTableView;
 import se.streamsource.streamflow.client.ui.caze.CasesTableModel;
 import se.streamsource.streamflow.client.ui.caze.CasesView;
@@ -114,6 +116,10 @@ public class WorkspaceView
       getInputMap( WHEN_IN_FOCUSED_WINDOW ).put( KeyStroke.getKeyStroke( KeyEvent.VK_DOWN, KeyEvent.ALT_DOWN_MASK + Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() ), "selectDetails" );
       setActionMap( context.getActionMap( this ) );
 
+      JPanel contextToolbar = new JPanel();
+      contextToolbar.add( new JButton( getActionMap().get( "createCase" ) ) );
+      contextToolbar.add( new JButton( getActionMap().get( "refresh" ) ) );
+      contextToolbar.add( new JButton( getActionMap().get( "showSearch" ) ) );
 
       contextPanel = new JPanel( new BorderLayout() );
       selectContextButton = new JButton( getActionMap().get( "selectContext" ) );
@@ -121,7 +127,7 @@ public class WorkspaceView
       selectedContext = new JLabel();
       selectedContext.setFont( selectedContext.getFont().deriveFont( Font.ITALIC ) );
       contextPanel.add( selectedContext, BorderLayout.CENTER );
-      contextPanel.add( new JButton( getActionMap().get( "showSearch" ) ), BorderLayout.EAST );
+      contextPanel.add( contextToolbar, BorderLayout.EAST );
 
       searchPanel = new JPanel(new BorderLayout());
       searchField = new JTextField();
@@ -464,5 +470,35 @@ public class WorkspaceView
          ttv.getCaseDetails().requestFocusInWindow();
       } else
          currentSelection.requestFocusInWindow();
+   }
+
+   @Action
+   public void createCase()
+   {
+      TreePath path = workspaceTree.getSelectionPath();
+      if (path != null)
+      {
+         Object node = path.getLastPathComponent();
+
+         if (node instanceof CaseCreationNode)
+         {
+            ((CaseCreationNode)node).createDraft();
+            refresh();
+            CasesView currentCases = (CasesView) currentSelection;
+            JXTable caseTable = currentCases.getCaseTableView().getCaseTable();
+            caseTable.getSelectionModel().setSelectionInterval( caseTable.getRowCount()-1, caseTable.getRowCount()-1 );
+         }
+      }
+
+   }
+
+   @Action
+   public void refresh()
+   {
+      if (currentSelection instanceof CasesView)
+      {
+         CasesView currentCases = (CasesView) currentSelection;
+         currentCases.getCaseTableView().getModel().refresh();
+      }
    }
 }

@@ -25,9 +25,12 @@ import se.streamsource.dci.api.Interactions;
 import se.streamsource.dci.api.InteractionsMixin;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.web.context.caze.CasesContext;
+import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.entity.gtd.AssignmentsQueries;
+import se.streamsource.streamflow.web.domain.entity.gtd.Drafts;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
 
 import static org.qi4j.api.query.QueryExpressions.orderBy;
@@ -42,6 +45,8 @@ public interface AssignmentsContext
 {
    LinksValue cases();
 
+   public void createcase();
+
    abstract class Mixin
       extends InteractionsMixin
       implements AssignmentsContext
@@ -53,6 +58,19 @@ public interface AssignmentsContext
          QueryBuilder<Assignable> builder = assignments.assignments( context.get( Assignee.class ) );
          Query query = builder.newQuery( module.unitOfWorkFactory().currentUnitOfWork() ).orderBy( orderBy( templateFor( CreatedOn.class ).createdOn() ) );
          return CasesContext.Mixin.buildCaseList( query, module, context.get( Reference.class).getBaseRef().getPath());
+      }
+
+      public void createcase()
+      {
+         Drafts drafts = context.get( Drafts.class );
+         CaseEntity caze = drafts.createDraft();
+
+         Owner owner = context.get( Owner.class);
+         caze.sendTo( owner );
+
+         caze.open();
+
+         caze.assignTo( context.get(Assignee.class) );
       }
    }
 }
