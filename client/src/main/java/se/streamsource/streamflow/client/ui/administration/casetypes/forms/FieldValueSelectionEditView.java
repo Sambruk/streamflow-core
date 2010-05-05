@@ -18,6 +18,7 @@
 package se.streamsource.streamflow.client.ui.administration.casetypes.forms;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.factories.Borders;
 import com.jgoodies.forms.layout.FormLayout;
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
@@ -58,7 +59,8 @@ public class FieldValueSelectionEditView
             "200dlu", "" );
 
       DefaultFormBuilder formBuilder = new DefaultFormBuilder( formLayout, fieldPanel );
-      formBuilder.setDefaultDialogBorder();
+      formBuilder.setBorder(Borders.createEmptyBorder("4dlu, 4dlu, 4dlu, 4dlu"));
+
       fieldDefinitionBinder = new StateBinder();
       fieldDefinitionBinder.setResourceMap( context.getResourceMap( getClass() ) );
       FieldDefinitionValue fieldDefinitionTemplate = fieldDefinitionBinder.bindingTemplate( FieldDefinitionValue.class );

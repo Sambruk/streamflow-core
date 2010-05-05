@@ -17,8 +17,20 @@
 
 package se.streamsource.streamflow.client.ui.administration.casetypes.forms;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
+import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.TEXTAREA;
+import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.TEXTFIELD;
+
+import java.awt.BorderLayout;
+import java.util.Observable;
+import java.util.Observer;
+
+import javax.swing.BorderFactory;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JSplitPane;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
@@ -28,6 +40,7 @@ import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
+
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
@@ -44,17 +57,9 @@ import se.streamsource.streamflow.domain.form.TextFieldValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.PageListItemValue;
 
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JSplitPane;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import java.awt.*;
-import java.util.Observable;
-import java.util.Observer;
-
-import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.TEXTAREA;
-import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.TEXTFIELD;
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.factories.Borders;
+import com.jgoodies.forms.layout.FormLayout;
 
 
 /**
@@ -77,6 +82,8 @@ public class FormEditAdminView
       super();
 
       this.model = model;
+      setBorder(BorderFactory.createEmptyBorder());      
+      
       JPanel formAttributePanel = new JPanel( new BorderLayout() );
       JPanel leftPanel = new JPanel( new BorderLayout() );
       leftPanel.add( formAttributePanel, BorderLayout.CENTER );
@@ -87,7 +94,8 @@ public class FormEditAdminView
             "200dlu", "" );
 
       DefaultFormBuilder formBuilder = new DefaultFormBuilder( formLayout, formAttributePanel );
-      formBuilder.setDefaultDialogBorder();
+//      formBuilder.setDefaultDialogBorder();
+      formBuilder.setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
 
       formValueBinder = new StateBinder();
       formValueBinder.setResourceMap( context.getResourceMap( getClass() ) );

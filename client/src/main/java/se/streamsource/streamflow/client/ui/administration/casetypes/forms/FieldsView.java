@@ -21,6 +21,9 @@ import ca.odell.glazedlists.EventList;
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
+
+import com.jgoodies.forms.factories.Borders;
+
 import se.streamsource.streamflow.client.StreamFlowResources;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.GroupedList;
@@ -68,6 +71,8 @@ public class FieldsView
    {
       super( new BorderLayout() );
       this.model = model;
+      setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
+      
       JScrollPane scrollPanel = new JScrollPane();
       ActionMap am = context.getActionMap( this );
 

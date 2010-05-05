@@ -22,6 +22,9 @@ import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.JXList;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
+
+import com.jgoodies.forms.factories.Borders;
+
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
@@ -64,6 +67,8 @@ public class SelectionElementsView
    {
       super( new BorderLayout() );
       this.model = model;
+      setBorder(Borders.createEmptyBorder("4dlu, 4dlu, 4dlu, 4dlu"));
+
       JScrollPane scrollPanel = new JScrollPane();
       ActionMap am = context.getActionMap( this );
 
