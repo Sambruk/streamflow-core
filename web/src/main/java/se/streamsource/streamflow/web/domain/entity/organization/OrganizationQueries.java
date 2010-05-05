@@ -126,7 +126,7 @@ public interface OrganizationQueries
 
                return true;
             }
-         }, new ClassSpecification(OrganizationalUnits.class, Projects.class, Projects.class));
+         }, new ClassSpecification(OrganizationalUnits.class, Projects.class, Project.class));
 
          QueryBuilder<ProjectEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder( ProjectEntity.class );
          queryBuilder = queryBuilder.where(
