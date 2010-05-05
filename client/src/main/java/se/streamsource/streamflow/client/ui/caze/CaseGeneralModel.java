@@ -17,9 +17,8 @@
 
 package se.streamsource.streamflow.client.ui.caze;
 
-import java.util.Date;
-import java.util.Observable;
-
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
@@ -27,12 +26,15 @@ import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
-
 import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.dci.value.*;
+import se.streamsource.dci.value.IndexValue;
+import se.streamsource.dci.value.LinkValue;
+import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.StringValue;
+import se.streamsource.dci.value.TitledLinkValue;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.domain.interaction.gtd.Actions;
 import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
@@ -43,8 +45,9 @@ import se.streamsource.streamflow.infrastructure.event.source.EventVisitorFilter
 import se.streamsource.streamflow.resource.caze.CaseGeneralDTO;
 import se.streamsource.streamflow.resource.roles.DateDTO;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
-import ca.odell.glazedlists.BasicEventList;
-import ca.odell.glazedlists.EventList;
+
+import java.util.Date;
+import java.util.Observable;
 
 /**
  * Model for the general info about a case.
@@ -131,21 +134,6 @@ public class CaseGeneralModel extends Observable implements Refreshable,
       }
    }
 
-   public void changeCaseType(EntityReference caseType)
-   {
-      try
-      {
-         ValueBuilder<EntityReferenceDTO> builder = vbf
-               .newValueBuilder(EntityReferenceDTO.class);
-         builder.prototype().entity().set(caseType);
-         client.postCommand("changecasetype", builder.newInstance());
-      } catch (ResourceException e)
-      {
-         throw new OperationException( CaseResources.could_not_remove_label,
-               e);
-      }
-   }
-
    public CaseLabelsModel labelsModel()
    {
       return caseLabelsModel;
@@ -161,6 +149,13 @@ public class CaseGeneralModel extends Observable implements Refreshable,
       try
       {
          BasicEventList<LinkValue> list = new BasicEventList<LinkValue>();
+         // adding empty row to be able to remove a chosen caseType
+         ValueBuilder<TitledLinkValue> empty = vbf.newValueBuilder( TitledLinkValue.class );
+         empty.prototype().title().set( i18n.text( WorkspaceResources.none_text ) );
+         empty.prototype().text().set( "" );
+         empty.prototype().id().set(  "" );
+         empty.prototype().href().set( "" );
+         list.add(  empty.newInstance() );
 
          LinksValue listValue = client.query("possiblecasetypes",
                LinksValue.class);

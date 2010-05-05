@@ -72,7 +72,8 @@ public interface PossibleActions
                      actions.add( "unassign" );
                   } else
                   {
-                     actions.add("assign");
+                     actions.add( "assign" );
+                     actions.add(  "sendto" );
                   }
 
                   CaseType caseType = aCase.caseType().get();

@@ -78,6 +78,6 @@ public enum WorkspaceResources
    owner,
    choose_case,
    change_password_title,
-   welcome, 
-   choose_message_delivery_type
+   welcome,
+   none_text, choose_message_delivery_type
 }
