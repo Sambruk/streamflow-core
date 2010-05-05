@@ -24,6 +24,9 @@ import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilder;
+
+import com.jgoodies.forms.factories.Borders;
+
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.LinkComparator;
@@ -67,6 +70,7 @@ public class SelectedFormsView
    {
       super( new BorderLayout() );
       this.modelSelected = modelSelected;
+      setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
 
       ActionMap am = context.getActionMap( this );
       setActionMap( am );

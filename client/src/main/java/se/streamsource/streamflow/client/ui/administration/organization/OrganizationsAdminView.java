@@ -20,8 +20,12 @@ package se.streamsource.streamflow.client.ui.administration.organization;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
+
+import com.jgoodies.forms.factories.Borders;
+
 import se.streamsource.dci.value.LinkValue;
 
+import javax.swing.BorderFactory;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
@@ -43,6 +47,7 @@ public class OrganizationsAdminView
 
       setLeftComponent( organizationsView );
       setRightComponent( new JPanel() );
+      setBorder(BorderFactory.createEmptyBorder());
 
       setDividerLocation( 250 );
 

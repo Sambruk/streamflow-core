@@ -25,6 +25,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.ui.administration.AdministrationView;
 import se.streamsource.streamflow.client.ui.administration.label.LabelsModel;
 
+import javax.swing.BorderFactory;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
@@ -50,6 +51,7 @@ public class CaseTypesAdminView
 
       setLeftComponent( caseTypesView );
       setRightComponent( new JPanel() );
+      setBorder(BorderFactory.createEmptyBorder());
 
       setDividerLocation( 200 );
 

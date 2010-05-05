@@ -23,6 +23,7 @@ import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.client.ui.administration.AdministrationView;
 
+import javax.swing.BorderFactory;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
@@ -47,6 +48,7 @@ public class FormsAdminView
 
       setLeftComponent( formsView );
       setRightComponent( new JPanel() );
+      setBorder(BorderFactory.createEmptyBorder());
 
       setDividerLocation( 200 );
 

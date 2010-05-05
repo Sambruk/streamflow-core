@@ -17,6 +17,23 @@
 
 package se.streamsource.streamflow.client.ui.administration;
 
+import static java.util.Arrays.asList;
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
+
+import java.awt.BorderLayout;
+import java.util.ArrayList;
+
+import javax.swing.ActionMap;
+import javax.swing.BorderFactory;
+import javax.swing.Icon;
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
+import javax.swing.JTree;
+import javax.swing.tree.MutableTreeNode;
+
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationAction;
 import org.jdesktop.application.ApplicationContext;
@@ -30,6 +47,7 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
+
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.StreamFlowResources;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
@@ -39,21 +57,6 @@ import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.ConfirmationDialog;
 import se.streamsource.streamflow.client.ui.NameDialog;
 import se.streamsource.streamflow.client.ui.OptionsAction;
-
-import javax.swing.ActionMap;
-import javax.swing.BorderFactory;
-import javax.swing.Icon;
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JSeparator;
-import javax.swing.JTree;
-import javax.swing.tree.MutableTreeNode;
-import java.awt.*;
-import java.util.ArrayList;
-
-import static java.util.Arrays.asList;
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 
 /**
  * JAVADOC
@@ -132,7 +135,7 @@ public class AdministrationOutlineView
       JPanel toolbar = new JPanel();
       toolbar.setBorder( BorderFactory.createEtchedBorder() );
 
-      add( BorderLayout.CENTER, tree );
+      add( BorderLayout.CENTER, new JScrollPane(tree) );
 
       final ActionMap am = context.getActionMap( this );
 

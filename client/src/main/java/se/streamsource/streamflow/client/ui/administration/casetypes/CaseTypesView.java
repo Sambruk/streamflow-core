@@ -24,6 +24,9 @@ import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
+
+import com.jgoodies.forms.factories.Borders;
+
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.client.StreamFlowResources;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
@@ -69,6 +72,7 @@ public class CaseTypesView
    {
       super( new BorderLayout() );
       this.model = model;
+      setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
 
       ActionMap am = context.getActionMap( this );
       setActionMap( am );
@@ -83,6 +87,7 @@ public class CaseTypesView
       projectList.setCellRenderer( new LinkListCellRenderer() );
       scrollPane.setViewportView( projectList );
       add( scrollPane, BorderLayout.CENTER );
+
 
       JPanel toolbar = new JPanel();
       toolbar.add( new JButton( am.get( "add" ) ) );

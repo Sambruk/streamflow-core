@@ -17,20 +17,25 @@
 
 package se.streamsource.streamflow.client.ui.administration.casetypes.forms;
 
+import java.awt.BorderLayout;
+import java.util.Observable;
+import java.util.Observer;
+
+import javax.swing.ActionMap;
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
+
 import se.streamsource.streamflow.client.ui.administration.AdministrationView;
 
-import javax.swing.ActionMap;
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
-import java.awt.*;
-import java.util.Observable;
-import java.util.Observer;
+import com.jgoodies.forms.factories.Borders;
 
 /**
  * JAVADOC
@@ -52,6 +57,8 @@ public class FormView
    {
       super( new BorderLayout() );
       this.model = model;
+      setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
+      
       model.refresh();
       ActionMap am = context.getActionMap( this );
 
@@ -63,7 +70,7 @@ public class FormView
       textArea.setLineWrap( true );
       textArea.setWrapStyleWord( true );
       textArea.setEditable( false );
-      add( textArea, BorderLayout.CENTER );
+      add( new JScrollPane(textArea), BorderLayout.CENTER );
       add( new JButton( am.get( "edit" ) ), BorderLayout.SOUTH );
 
    }

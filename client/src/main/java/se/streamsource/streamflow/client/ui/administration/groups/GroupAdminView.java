@@ -20,11 +20,15 @@ package se.streamsource.streamflow.client.ui.administration.groups;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilder;
 import org.restlet.resource.ResourceException;
+
+import com.jgoodies.forms.factories.Borders;
+
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 
+import javax.swing.BorderFactory;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
@@ -45,6 +49,8 @@ public class GroupAdminView
                           @Uses final GroupsModel groupsModel )
    {
       super();
+      setBorder(BorderFactory.createEmptyBorder());
+
 
       setLeftComponent( groupsView );
       setRightComponent( new JPanel() );

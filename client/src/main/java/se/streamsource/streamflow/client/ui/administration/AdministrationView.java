@@ -26,9 +26,13 @@ import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
+
+import com.jgoodies.forms.factories.Borders;
+
 import se.streamsource.streamflow.client.ui.administration.organization.OrganizationsTabbedView;
 import se.streamsource.streamflow.resource.user.UserEntityListDTO;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
@@ -67,9 +71,9 @@ public class AdministrationView
       this.adminOutlineView = adminOutlineView;
 
       setLayout( viewSwitch );
+      setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
 
       detailView = new JPanel( new BorderLayout() );
-
 
       add( mainView, "main" );
       add( detailView, "detail" );
@@ -79,6 +83,7 @@ public class AdministrationView
       setMinimumSize( new Dimension( 800, 600 ) );
       setPreferredSize( getMinimumSize() );
 
+      mainView.setBorder(BorderFactory.createEmptyBorder());
       mainView.setOneTouchExpandable( true );
 
       mainView.setLeftComponent( adminOutlineView );

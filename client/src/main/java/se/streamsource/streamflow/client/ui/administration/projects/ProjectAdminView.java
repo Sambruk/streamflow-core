@@ -30,6 +30,7 @@ import se.streamsource.streamflow.client.ui.administration.casetypes.SelectedCas
 import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FormsModel;
 
+import javax.swing.BorderFactory;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
@@ -56,6 +57,7 @@ public class ProjectAdminView
       super();
       this.projectsModel = projectsModel;
 
+      setBorder(BorderFactory.createEmptyBorder());
       setLeftComponent( projectsView );
       setRightComponent( new JPanel() );
 

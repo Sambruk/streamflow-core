@@ -17,12 +17,22 @@
 
 package se.streamsource.streamflow.client.ui.administration.projects;
 
-import ca.odell.glazedlists.SortedList;
-import ca.odell.glazedlists.swing.EventListModel;
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
+
+import java.awt.BorderLayout;
+
+import javax.swing.ActionMap;
+import javax.swing.JButton;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
+
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.client.StreamFlowResources;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
@@ -34,16 +44,10 @@ import se.streamsource.streamflow.client.ui.ConfirmationDialog;
 import se.streamsource.streamflow.client.ui.NameDialog;
 import se.streamsource.streamflow.client.ui.OptionsAction;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import ca.odell.glazedlists.SortedList;
+import ca.odell.glazedlists.swing.EventListModel;
 
-import javax.swing.ActionMap;
-import javax.swing.JButton;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-import java.awt.*;
-
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
+import com.jgoodies.forms.factories.Borders;
 
 /**
  * JAVADOC
@@ -68,6 +72,8 @@ public class ProjectsView
    {
       super( new BorderLayout() );
       this.model = model;
+      
+      setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
 
       ActionMap am = context.getActionMap( this );
       setActionMap( am );
