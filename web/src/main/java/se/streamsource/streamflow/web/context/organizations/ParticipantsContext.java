@@ -31,10 +31,15 @@ import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.web.domain.entity.organization.GroupEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationQueries;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationVisitor;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
+import se.streamsource.streamflow.web.domain.structure.group.Group;
+import se.streamsource.streamflow.web.domain.structure.group.Groups;
 import se.streamsource.streamflow.web.domain.structure.group.Participant;
 import se.streamsource.streamflow.web.domain.structure.group.Participants;
+import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnits;
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganization;
+import se.streamsource.streamflow.web.domain.structure.project.Member;
 import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
 import se.streamsource.dci.api.InteractionsMixin;
 import se.streamsource.dci.api.IndexInteraction;
@@ -103,25 +108,28 @@ public interface ParticipantsContext
 
       public LinksValue possiblegroups()
       {
-         OwningOrganization org = context.get(OwningOrganization.class);
+         OrganizationQueries org = context.get(OrganizationQueries.class);
 
-         Query<GroupEntity> groups = ((OrganizationQueries) org.organization().get()).findGroupsByName( "*" ).newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
-         groups.orderBy( orderBy( templateFor( Describable.Data.class ).description() ) );
+         final GroupEntity group = context.get(GroupEntity.class);
 
-         GroupEntity group = context.get(GroupEntity.class);
-
-         LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
+         final LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
          linksBuilder.command("addparticipant");
 
-         for (GroupEntity grp : groups)
+         org.visitOrganization( new OrganizationVisitor()
          {
-            if (!group.participants().contains( grp )
-                  && !group.equals(grp))
+            @Override
+            public boolean visitGroup( Group grp )
             {
-               String grouping = "" + Character.toUpperCase( grp.getDescription().charAt( 0 ) );
-               linksBuilder.addDescribable( grp, grouping );
+               if (!group.participants().contains( grp )
+                     && !group.equals(grp))
+               {
+                  String grouping = "" + Character.toUpperCase( grp.getDescription().charAt( 0 ) );
+                  linksBuilder.addDescribable( grp, grouping );
+               }
+
+               return true;
             }
-         }
+         }, new OrganizationQueries.ClassSpecification( OrganizationalUnits.class, Groups.class));
 
          return linksBuilder.newLinks();
       }

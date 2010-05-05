@@ -61,10 +61,6 @@ public interface OrganizationQueries
 {
    public QueryBuilder<UserEntity> findUsersByUsername( String query );
 
-   public QueryBuilder<GroupEntity> findGroupsByName( String query );
-
-   public Query<ProjectEntity> findProjects( String query );
-
    public void visitOrganization(OrganizationVisitor visitor, Specification<Class> typeSelector);
 
    class Mixin
@@ -94,57 +90,6 @@ public interface OrganizationQueries
          }
 
          return queryBuilder;
-      }
-
-      public QueryBuilder<GroupEntity> findGroupsByName( String query )
-      {
-         // TODO Ensure that the group is a member of this organization somehow
-         QueryBuilder<GroupEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder( GroupEntity.class );
-         queryBuilder = queryBuilder.where(
-               eq( templateFor( Removable.Data.class ).removed(), false ) );
-
-         if (query.length() > 0)
-         {
-            queryBuilder = queryBuilder.where(
-                  matches( templateFor( Describable.Data.class ).description(), "^" + query )
-            );
-         }
-
-         return queryBuilder;
-      }
-
-      public Query<ProjectEntity> findProjects( String query )
-      {
-         final List<ProjectEntity> projects = new ArrayList<ProjectEntity>( );
-
-         visitOrganization( new OrganizationVisitor()
-         {
-            @Override
-            public boolean visitProject( Project project )
-            {
-               projects.add( (ProjectEntity) project );
-
-               return true;
-            }
-         }, new ClassSpecification(OrganizationalUnits.class, Projects.class, Project.class));
-
-         QueryBuilder<ProjectEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder( ProjectEntity.class );
-         queryBuilder = queryBuilder.where(
-               and(
-                  eq( templateFor( Removable.Data.class ).removed(), false ),
-                  eq( templateFor( OwningOrganization.class,
-                                   templateFor( OwningOrganizationalUnit.Data.class).organizationalUnit().get()).organization(), org)));
-
-         if (query.length() > 0)
-         {
-            queryBuilder = queryBuilder.where(
-                  matches( templateFor( Describable.Data.class ).description(), "^" + query )
-            );
-         }
-
-         Query<ProjectEntity> projectsQuery = queryBuilder.newQuery( projects );
-         projectsQuery.orderBy( orderBy( templateFor( Describable.Data.class ).description() ) );
-         return projectsQuery;
       }
 
       public void visitOrganization( OrganizationVisitor visitor, Specification<Class> typeSpecification)

@@ -27,8 +27,14 @@ import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationQueries;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationVisitor;
 import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
+import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnits;
+import se.streamsource.streamflow.web.domain.structure.organization.Projects;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.qi4j.api.query.QueryExpressions.*;
 
@@ -45,13 +51,18 @@ public interface ProjectsContext
    {
       public LinksValue index()
       {
+         final LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
          OrganizationQueries organizationQueries = context.get( OrganizationQueries.class );
-         Query<ProjectEntity> projects = organizationQueries.findProjects( "*" );
-         projects = projects.orderBy( orderBy( templateFor( Describable.Data.class ).description() ) );
+         organizationQueries.visitOrganization( new OrganizationVisitor()
+         {
+            @Override
+            public boolean visitProject( Project project )
+            {
+               linksBuilder.addDescribable( project );
 
-         LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
-
-         linksBuilder.addDescribables( projects );
+               return true;
+            }
+         }, new OrganizationQueries.ClassSpecification( OrganizationalUnits.class, Projects.class, Project.class));
 
          return linksBuilder.newLinks();
       }

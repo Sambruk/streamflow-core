@@ -31,8 +31,12 @@ import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.web.domain.entity.organization.GroupEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationQueries;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationVisitor;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
+import se.streamsource.streamflow.web.domain.structure.group.Group;
+import se.streamsource.streamflow.web.domain.structure.group.Groups;
 import se.streamsource.streamflow.web.domain.structure.group.Participant;
+import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnits;
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganization;
 import se.streamsource.streamflow.web.domain.structure.organization.RolePolicy;
 import se.streamsource.streamflow.web.domain.structure.role.Role;
@@ -115,25 +119,27 @@ public interface AdministratorsContext
 
       public LinksValue possiblegroups()
       {
+         final LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() ).command("addadministrator");
+
+         final Role adminRole = context.get( Roles.class).getAdministratorRole();
+         final RolePolicy policy = context.get(RolePolicy.class);
+
          OrganizationQueries organization = context.get(OrganizationQueries.class);
 
-         Query<GroupEntity> groups = organization.findGroupsByName( "*" ).newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
-         groups.orderBy( orderBy( templateFor( Describable.Data.class ).description() ) );
-
-         Role adminRole = context.get( Roles.class).getAdministratorRole();
-
-         LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() ).command("addadministrator");
-
-         RolePolicy policy = context.get(RolePolicy.class);
-
-         for (GroupEntity grp : groups)
+         organization.visitOrganization( new OrganizationVisitor()
          {
-            if (!policy.participantHasRole( grp, adminRole ))
+            @Override
+            public boolean visitGroup( Group grp )
             {
-               String group = "" + Character.toUpperCase( grp.getDescription().charAt( 0 ) );
-               linksBuilder.addDescribable( grp, group );
+               if (!policy.participantHasRole( grp, adminRole ))
+               {
+                  String group = "" + Character.toUpperCase( grp.getDescription().charAt( 0 ) );
+                  linksBuilder.addDescribable( grp, group );
+               }
+
+               return true;
             }
-         }
+         }, new OrganizationQueries.ClassSpecification( OrganizationalUnits.class, Groups.class));
 
          return linksBuilder.newLinks();
       }
