@@ -39,11 +39,11 @@
                         <keypass>secret</keypass>
                         <storepass>secret</storepass>
                         <!--sigfile>m2m2m2</sigfile-->
-                        <alias>alias</alias>
+                        <alias>streamflowdev</alias>
                         <validity>180</validity>
                         <dnameCn>www.streamsource.se</dnameCn>
-                        <dnameOu>None</dnameOu>
-                        <dnameO>StreamSource</dnameO>
+                        <dnameOu>Streamflow Development</dnameOu>
+                        <dnameO>Streamsource AB</dnameO>
                         <dnameC>Sweden</dnameC>
                         <verify>false</verify>
                         <keystoreConfig>
