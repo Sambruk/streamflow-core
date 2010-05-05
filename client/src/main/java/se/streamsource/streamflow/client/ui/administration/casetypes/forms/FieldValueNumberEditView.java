@@ -57,7 +57,8 @@ public class FieldValueNumberEditView
 
       JPanel fieldPanel = new JPanel();
       FormLayout formLayout = new FormLayout(
-            "200dlu", "" );
+            "45dlu, 5dlu, 150dlu:grow",
+            "pref, pref, pref, pref, 5dlu, top:70dlu:grow" );
 
       DefaultFormBuilder formBuilder = new DefaultFormBuilder( formLayout, fieldPanel );
       formBuilder.setBorder(Borders.createEmptyBorder("4dlu, 4dlu, 4dlu, 4dlu"));
@@ -73,11 +74,33 @@ public class FieldValueNumberEditView
       BindingFormBuilder bb = new BindingFormBuilder( formBuilder, fieldDefinitionBinder );
 
       formBuilder.append( i18n.text( AdministrationResources.type_label ), new JLabel( i18n.text( AdministrationResources.number_field_type ) ) );
+      formBuilder.nextLine();
 
-      bb.appendLine( AdministrationResources.mandatory, CHECKBOX, fieldDefinitionTemplate.mandatory() ).
-            appendLine( AdministrationResources.integer_label, CHECKBOX, fieldValueTemplate.integer(), fieldValueBinder ).
-            appendLine( AdministrationResources.name_label, TEXTFIELD, fieldDefinitionTemplate.description() ).
-            appendLine( AdministrationResources.description_label, TEXTAREA, fieldDefinitionTemplate.note() );
+      formBuilder.add(new JLabel(i18n.text(AdministrationResources.mandatory)));
+      formBuilder.nextColumn(2);
+      formBuilder.add(fieldDefinitionBinder.bind( CHECKBOX.newField(), fieldDefinitionTemplate.mandatory() ) );
+      formBuilder.nextLine();
+
+      formBuilder.add(new JLabel(i18n.text(AdministrationResources.integer_label)));
+      formBuilder.nextColumn(2);
+      formBuilder.add(fieldValueBinder.bind( CHECKBOX.newField(), fieldValueTemplate.integer() ) );
+      formBuilder.nextLine();
+
+      formBuilder.add(new JLabel(i18n.text(AdministrationResources.name_label)));
+      formBuilder.nextColumn(2);
+      formBuilder.add(fieldDefinitionBinder.bind( TEXTFIELD.newField(), fieldDefinitionTemplate.description() ) );
+      formBuilder.nextLine(2);
+
+      formBuilder.add(new JLabel(i18n.text(AdministrationResources.description_label)));
+      formBuilder.nextColumn(2);
+      formBuilder.add(fieldDefinitionBinder.bind( TEXTAREA.newField(), fieldDefinitionTemplate.note() ) );
+
+//      formBuilder.append( i18n.text( AdministrationResources.type_label ), new JLabel( i18n.text( AdministrationResources.number_field_type ) ) );
+//
+//      bb.appendLine( AdministrationResources.mandatory, CHECKBOX, fieldDefinitionTemplate.mandatory() ).
+//            appendLine( AdministrationResources.integer_label, CHECKBOX, fieldValueTemplate.integer(), fieldValueBinder ).
+//            appendLine( AdministrationResources.name_label, TEXTFIELD, fieldDefinitionTemplate.description() ).
+//            appendLine( AdministrationResources.description_label, TEXTAREA, fieldDefinitionTemplate.note() );
 
       FieldValueObserver observer = obf.newObjectBuilder( FieldValueObserver.class ).use( model ).newInstance();
       fieldValueBinder.addObserver( observer );

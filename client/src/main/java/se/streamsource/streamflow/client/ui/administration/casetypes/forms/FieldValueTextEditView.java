@@ -29,12 +29,15 @@ import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
 import se.streamsource.streamflow.domain.form.TextFieldValue;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+
 import java.awt.*;
 
 import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.*;
@@ -56,7 +59,9 @@ public class FieldValueTextEditView
       JPanel panel = new JPanel( new BorderLayout() );
 
       JPanel fieldPanel = new JPanel();
-      FormLayout formLayout = new FormLayout( "200dlu", "" );
+      FormLayout formLayout = new FormLayout(
+            "45dlu, 5dlu, 150dlu:grow",
+            "pref, pref, pref, pref, pref, 5dlu, top:70dlu:grow" );
 
       DefaultFormBuilder formBuilder = new DefaultFormBuilder( formLayout, fieldPanel );
       formBuilder.setBorder(Borders.createEmptyBorder("4dlu, 4dlu, 4dlu, 4dlu"));
@@ -72,12 +77,32 @@ public class FieldValueTextEditView
       BindingFormBuilder bb = new BindingFormBuilder( formBuilder, fieldDefinitionBinder );
 
       formBuilder.append( i18n.text( AdministrationResources.type_label ), new JLabel( i18n.text( AdministrationResources.text_field_type ) ) );
+      formBuilder.nextLine();
 
-      bb.appendLine( AdministrationResources.mandatory, CHECKBOX, fieldDefinitionTemplate.mandatory() ).
-            appendLine( AdministrationResources.width_label, TEXTFIELD, fieldValueTemplate.width(), fieldValueBinder).
-            appendLine( AdministrationResources.rows_label, TEXTFIELD, fieldValueTemplate.rows(), fieldValueBinder).
-            appendLine( AdministrationResources.name_label, TEXTFIELD, fieldDefinitionTemplate.description() ).
-            appendLine( AdministrationResources.description_label, TEXTAREA, fieldDefinitionTemplate.note() );
+      formBuilder.add(new JLabel(i18n.text(AdministrationResources.mandatory)));
+      formBuilder.nextColumn(2);
+      formBuilder.add(fieldDefinitionBinder.bind( CHECKBOX.newField(), fieldDefinitionTemplate.mandatory() ) );
+      formBuilder.nextLine();
+
+      formBuilder.add(new JLabel(i18n.text(AdministrationResources.width_label)));
+      formBuilder.nextColumn(2);
+      formBuilder.add(fieldValueBinder.bind( TEXTFIELD.newField(), fieldValueTemplate.width() ) );
+      formBuilder.nextLine();
+
+      formBuilder.add(new JLabel(i18n.text(AdministrationResources.rows_label)));
+      formBuilder.nextColumn(2);
+      formBuilder.add(fieldValueBinder.bind( TEXTFIELD.newField(), fieldValueTemplate.rows() ) );
+      formBuilder.nextLine();
+
+      formBuilder.add(new JLabel(i18n.text(AdministrationResources.name_label)));
+      formBuilder.nextColumn(2);
+      formBuilder.add(fieldDefinitionBinder.bind( TEXTFIELD.newField(), fieldDefinitionTemplate.description() ) );
+      formBuilder.nextLine(2);
+
+      formBuilder.add(new JLabel(i18n.text(AdministrationResources.description_label)));
+      formBuilder.nextColumn(2);
+      formBuilder.add(fieldDefinitionBinder.bind( TEXTAREA.newField(), fieldDefinitionTemplate.note() ) );
+      formBuilder.nextLine();
 
       FieldValueObserver observer = obf.newObjectBuilder( FieldValueObserver.class ).use( model ).newInstance();
       fieldValueBinder.addObserver( observer );

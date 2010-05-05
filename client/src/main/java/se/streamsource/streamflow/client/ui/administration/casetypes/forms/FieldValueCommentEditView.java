@@ -37,6 +37,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import java.awt.*;
 
+import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.CHECKBOX;
 import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.TEXTAREA;
 import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.TEXTFIELD;
 
@@ -57,7 +58,8 @@ public class FieldValueCommentEditView
 
       JPanel fieldPanel = new JPanel();
       FormLayout formLayout = new FormLayout(
-            "200dlu", "" );
+            "45dlu, 5dlu, 150dlu:grow",
+            "pref, pref, 5dlu, top:70dlu:grow" );
 
       DefaultFormBuilder formBuilder = new DefaultFormBuilder( formLayout, fieldPanel );
       formBuilder.setBorder(Borders.createEmptyBorder("4dlu, 4dlu, 4dlu, 4dlu"));
@@ -73,9 +75,21 @@ public class FieldValueCommentEditView
       BindingFormBuilder bb = new BindingFormBuilder( formBuilder, fieldDefinitionBinder );
 
       formBuilder.append( i18n.text( AdministrationResources.type_label ), new JLabel( i18n.text( AdministrationResources.comment_field_type ) ) );
+      formBuilder.nextLine();
 
-      bb.appendLine( AdministrationResources.name_label, TEXTFIELD, fieldDefinitionTemplate.description() ).
-            appendLine( AdministrationResources.comment_label, TEXTAREA, fieldDefinitionTemplate.note() );
+      formBuilder.add(new JLabel(i18n.text(AdministrationResources.name_label)));
+      formBuilder.nextColumn(2);
+      formBuilder.add(fieldDefinitionBinder.bind( TEXTFIELD.newField(), fieldDefinitionTemplate.description() ) );
+      formBuilder.nextLine(2);
+
+      formBuilder.add(new JLabel(i18n.text(AdministrationResources.comment_label)));
+      formBuilder.nextColumn(2);
+      formBuilder.add(fieldDefinitionBinder.bind( TEXTAREA.newField(), fieldDefinitionTemplate.note() ) );
+
+//      formBuilder.append( i18n.text( AdministrationResources.type_label ), new JLabel( i18n.text( AdministrationResources.comment_field_type ) ) );
+//
+//      bb.appendLine( AdministrationResources.name_label, TEXTFIELD, fieldDefinitionTemplate.description() ).
+//            appendLine( AdministrationResources.comment_label, TEXTAREA, fieldDefinitionTemplate.note() );
 
       FieldValueObserver observer = obf.newObjectBuilder( FieldValueObserver.class ).use( model ).newInstance();
       fieldValueBinder.addObserver( observer );

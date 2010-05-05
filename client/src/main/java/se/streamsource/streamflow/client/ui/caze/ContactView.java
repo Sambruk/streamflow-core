@@ -83,7 +83,6 @@ public class ContactView
       scrollPane.getVerticalScrollBar().setUnitIncrement(30);
       scrollPane.setBorder(BorderFactory.createEmptyBorder());
       DefaultFormBuilder builder = new DefaultFormBuilder( formLayout, form );
-//      builder.setDefaultDialogBorder();
 
       contactBinder = new StateBinder();
       contactBinder.setResourceMap( appContext.getResourceMap( getClass() ) );
