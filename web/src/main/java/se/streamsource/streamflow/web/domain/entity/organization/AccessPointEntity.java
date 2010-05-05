@@ -18,6 +18,7 @@
 package se.streamsource.streamflow.web.domain.entity.organization;
 
 import se.streamsource.streamflow.domain.structure.Describable;
+import se.streamsource.streamflow.domain.structure.Removable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.IdGenerator;
 import se.streamsource.streamflow.web.domain.structure.organization.AccessPoint;
@@ -31,10 +32,11 @@ public interface AccessPointEntity
 
       // Interactions
       IdGenerator,
-      IdGenerator.Data,
-      AccessPoint.Data,
 
       // Data
-      Describable.Data
-{
+      Describable.Data,
+      IdGenerator.Data,
+      AccessPoint.Data,
+      Removable.Data
+      {
 }
