@@ -49,11 +49,14 @@ public interface PossibleActions
             {
                if (aCase.createdBy().get().equals(actor))
                {
-                   if (aCase.owner().get() != null)
+                   if (aCase.owner().get() != null){
                      actions.add( "open" );
-                   else
                      actions.add( "sendto" );
 
+                   } else {
+
+                      actions.add( "sendto" );
+                   }
                   actions.add("delete");
                }
 
