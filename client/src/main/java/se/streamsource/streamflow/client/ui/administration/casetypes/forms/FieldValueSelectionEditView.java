@@ -59,7 +59,7 @@ public class FieldValueSelectionEditView
 //            "200dlu", "" );
       FormLayout formLayout = new FormLayout(
             "45dlu, 5dlu, 150dlu:grow",
-            "pref, pref, pref, 5dlu, top:70dlu, pref" );
+            "pref, pref, pref, 5dlu, top:110dlu, pref" );
 
       DefaultFormBuilder formBuilder = new DefaultFormBuilder( formLayout, fieldPanel );
       formBuilder.setBorder(Borders.createEmptyBorder("4dlu, 4dlu, 4dlu, 4dlu"));
