@@ -23,6 +23,9 @@ import org.jdesktop.swingx.JXList;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.object.ObjectBuilderFactory;
+
+import com.jgoodies.forms.factories.Borders;
+
 import se.streamsource.streamflow.client.StreamFlowApplication;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.resource.caze.SubmittedFormListDTO;
@@ -60,6 +63,7 @@ public class CaseSubmittedFormsView
       ActionMap am = context.getActionMap( this );
       setActionMap( am );
       setMinimumSize( new Dimension( 150, 0 ) );
+      this.setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
 
       submittedForms = new JXList();
       submittedForms.setPreferredSize( new Dimension( 150, 1000 ) );

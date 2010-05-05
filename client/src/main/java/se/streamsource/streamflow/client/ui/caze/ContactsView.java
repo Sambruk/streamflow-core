@@ -23,6 +23,9 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.restlet.resource.ResourceException;
+
+import com.jgoodies.forms.factories.Borders;
+
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import se.streamsource.streamflow.client.infrastructure.ui.UncaughtExceptionHandler;
@@ -62,6 +65,7 @@ public class ContactsView
       setMaximumSize( new Dimension(200,1000) );
 
       contactView = obf.newObject( ContactView.class );
+      this.setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
 
       contacts = new JList();
       contacts.setPreferredSize( new Dimension(200,1000) );

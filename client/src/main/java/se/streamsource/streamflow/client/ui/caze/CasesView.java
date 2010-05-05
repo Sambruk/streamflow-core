@@ -34,7 +34,7 @@ public class CasesView
    {
       super(new BorderLayout());
       this.caseTableView = caseTableView;
-
+      
       final JSplitPane splitPane = new JSplitPane( JSplitPane.VERTICAL_SPLIT );
       splitPane.setOneTouchExpandable( true );
       add( splitPane, BorderLayout.CENTER );
@@ -44,6 +44,7 @@ public class CasesView
       splitPane.setResizeWeight( 0.27D );
 
       splitPane.setDividerLocation( 1D );
+      splitPane.setBorder(BorderFactory.createEmptyBorder());
    }
 
    public CaseTableView getCaseTableView()

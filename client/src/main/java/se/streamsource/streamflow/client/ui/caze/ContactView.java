@@ -24,6 +24,7 @@ import java.awt.CardLayout;
 import java.util.Observable;
 import java.util.Observer;
 
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -45,6 +46,7 @@ import se.streamsource.streamflow.domain.contact.ContactPhoneValue;
 import se.streamsource.streamflow.domain.contact.ContactValue;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.factories.Borders;
 import com.jgoodies.forms.layout.FormLayout;
 
 /**
@@ -74,11 +76,14 @@ public class ContactView
       FormLayout formLayout = new FormLayout(
             "70dlu, 5dlu, 150dlu:grow",
             "pref, pref, pref, pref, pref, pref, 5dlu, top:70dlu:grow" );
+      this.setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
+
       form = new JPanel();
       JScrollPane scrollPane = new JScrollPane( form );
       scrollPane.getVerticalScrollBar().setUnitIncrement(30);
+      scrollPane.setBorder(BorderFactory.createEmptyBorder());
       DefaultFormBuilder builder = new DefaultFormBuilder( formLayout, form );
-      builder.setDefaultDialogBorder();
+//      builder.setDefaultDialogBorder();
 
       contactBinder = new StateBinder();
       contactBinder.setResourceMap( appContext.getResourceMap( getClass() ) );

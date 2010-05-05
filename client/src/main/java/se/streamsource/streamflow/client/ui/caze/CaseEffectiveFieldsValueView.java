@@ -17,19 +17,23 @@
 
 package se.streamsource.streamflow.client.ui.caze;
 
-import org.jdesktop.application.ApplicationContext;
-import org.jdesktop.swingx.JXTable;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.value.ValueBuilder;
-import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
-import se.streamsource.streamflow.client.infrastructure.ui.ToolTipTableCellRenderer;
-import se.streamsource.streamflow.domain.contact.ContactValue;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
 
 import javax.swing.ActionMap;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
+
+import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.swingx.JXTable;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.value.ValueBuilder;
+
+import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
+import se.streamsource.streamflow.client.infrastructure.ui.ToolTipTableCellRenderer;
+import se.streamsource.streamflow.domain.contact.ContactValue;
+
+import com.jgoodies.forms.factories.Borders;
 
 /**
  * JAVADOC
@@ -48,6 +52,7 @@ public class CaseEffectiveFieldsValueView
       ActionMap am = context.getActionMap( this );
       setActionMap( am );
       setMinimumSize( new Dimension( 150, 0 ) );
+      this.setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
 
       effectiveValueTable = new JXTable();
       effectiveValueTable.setDefaultRenderer( Object.class, new ToolTipTableCellRenderer() );

@@ -39,6 +39,8 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilder;
 import org.qi4j.api.object.ObjectBuilderFactory;
 
+import com.jgoodies.forms.factories.Borders;
+
 import se.streamsource.streamflow.client.MacOsUIWrapper;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
@@ -78,6 +80,7 @@ public class ConversationView extends JPanel
 
       add( initTop(), BorderLayout.NORTH );
 
+      this.setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
       messagesView = obf.newObjectBuilder( MessagesView.class ).newInstance();
       messagesView.setContentType( "text/html" );
       ((HTMLEditorKit) messagesView.getEditorKit()).setAutoFormSubmission( false );

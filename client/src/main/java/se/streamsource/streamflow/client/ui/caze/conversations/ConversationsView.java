@@ -27,6 +27,9 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.restlet.resource.ResourceException;
+
+import com.jgoodies.forms.factories.Borders;
+
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
@@ -76,6 +79,8 @@ public class ConversationsView
       setActionMap(context.getActionMap( this ));
       MacOsUIWrapper.convertAccelerators( getActionMap() );
       this.context = context;
+      this.setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
+
       JPanel left = new JPanel( new BorderLayout() );
       left.setPreferredSize( new Dimension(200, 100) );
       final CardLayout cards = new CardLayout();

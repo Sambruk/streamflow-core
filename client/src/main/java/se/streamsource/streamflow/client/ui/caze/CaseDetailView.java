@@ -27,6 +27,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.caze.conversations.ConversationsView;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 
+import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import java.awt.BorderLayout;
@@ -64,6 +65,7 @@ public class CaseDetailView
 
       this.actionsView = actionsView;
       tabs.setFocusable( true );
+      this.setBorder(BorderFactory.createEmptyBorder());
 
       this.conversationsView = conversationsView;
       this.generalView = generalView;

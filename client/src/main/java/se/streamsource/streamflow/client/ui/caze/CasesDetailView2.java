@@ -30,6 +30,7 @@ import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
 import se.streamsource.streamflow.infrastructure.event.source.ForEvents;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
 
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import java.awt.CardLayout;
@@ -53,6 +54,7 @@ public class CasesDetailView2
    public CasesDetailView2( @Uses CaseDetailView current, @Service EventSource events )
    {
       setLayout(layout );
+      setBorder(BorderFactory.createEmptyBorder());
 
       add( new JLabel( i18n.text( WorkspaceResources.choose_case ), JLabel.CENTER), "blank" );
       add( current, "detail" );
