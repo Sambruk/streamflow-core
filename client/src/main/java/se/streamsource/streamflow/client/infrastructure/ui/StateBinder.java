@@ -28,12 +28,28 @@ import org.qi4j.api.property.Property;
 import org.qi4j.api.util.DateFunctions;
 import org.qi4j.runtime.composite.ConstraintsCheck;
 import org.qi4j.runtime.property.PropertyInstance;
-import se.streamsource.streamflow.client.ui.caze.MultiSelectPanel;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.ui.caze.MultiSelectPanel;
+import se.streamsource.streamflow.client.ui.caze.RemovableLabel;
 
-import javax.swing.*;
+import javax.swing.InputVerifier;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JFormattedTextField;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPasswordField;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.text.JTextComponent;
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Dialog;
+import java.awt.Frame;
+import java.awt.KeyboardFocusManager;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -79,7 +95,8 @@ public class StateBinder
             JCheckBox.class,
             JXDatePicker.class,
             JComboBox.class,
-            MultiSelectPanel.class );
+            MultiSelectPanel.class,
+            RemovableLabel.class);
 
       errorMessages = ResourceBundle.getBundle( getClass().getName() );
    }
@@ -451,6 +468,18 @@ public class StateBinder
             });
 
             return binding;
+         } else if ( component instanceof RemovableLabel )
+         {
+            final RemovableLabel removableLabel = (RemovableLabel) component;
+            removableLabel.addActionListener( new ActionListener(){
+
+               public void actionPerformed( ActionEvent e )
+               {
+                  removableLabel.setListItemValue( null );
+                  binding.updateProperty( null );
+               }
+            });
+            return binding;
          }
 
 
@@ -497,7 +526,12 @@ public class StateBinder
          {
             MultiSelectPanel multi = (MultiSelectPanel) component;
             multi.setChecked( (String) value );
+         } else if ( component instanceof RemovableLabel )
+         {
+            RemovableLabel removableLabel = (RemovableLabel) component;
+            removableLabel.setText( (String)value );
          }
+
       }
    }
 

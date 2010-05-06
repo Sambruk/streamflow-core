@@ -153,7 +153,7 @@ public interface CaseGeneralContext
          TypedCase aCase = context.get( TypedCase.class);
 
          EntityReference entityReference = dto.entity().get();
-         if (entityReference != null && !"".equals( entityReference.identity()) )
+         if (entityReference != null )
          {
             CaseType caseType = uow.get( CaseType.class, entityReference.identity() );
             aCase.changeCaseType( caseType );

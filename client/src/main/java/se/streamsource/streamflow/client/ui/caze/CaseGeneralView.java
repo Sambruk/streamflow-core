@@ -17,13 +17,44 @@
 
 package se.streamsource.streamflow.client.ui.caze;
 
-import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.DATEPICKER;
-import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.TEXTAREA;
-import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.TEXTFIELD;
-import static se.streamsource.streamflow.domain.interaction.gtd.CaseStates.DRAFT;
-import static se.streamsource.streamflow.domain.interaction.gtd.CaseStates.OPEN;
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.factories.Borders;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.Sizes;
+import org.jdesktop.application.Action;
+import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.swingx.JXDatePicker;
+import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilder;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueBuilder;
+import se.streamsource.dci.value.LinkValue;
+import se.streamsource.streamflow.client.MacOsUIWrapper;
+import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
+import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
+import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
+import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
+import se.streamsource.streamflow.client.infrastructure.ui.UncaughtExceptionHandler;
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.ui.workspace.GroupedFilterListDialog;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.infrastructure.application.ListItemValue;
+import se.streamsource.streamflow.resource.caze.CaseGeneralDTO;
 
-import java.awt.Color;
+import javax.swing.ActionMap;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.KeyStroke;
+import javax.swing.LayoutFocusTraversalPolicy;
+import javax.swing.SwingConstants;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -38,46 +69,8 @@ import java.util.Locale;
 import java.util.Observable;
 import java.util.Observer;
 
-import javax.swing.ActionMap;
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import javax.swing.KeyStroke;
-import javax.swing.LayoutFocusTraversalPolicy;
-import javax.swing.SwingConstants;
-
-import org.jdesktop.application.Action;
-import org.jdesktop.application.ApplicationContext;
-import org.jdesktop.swingx.JXDatePicker;
-import org.qi4j.api.entity.EntityReference;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilder;
-import org.qi4j.api.property.Property;
-import org.qi4j.api.value.ValueBuilder;
-
-import se.streamsource.dci.value.LinkValue;
-import se.streamsource.streamflow.client.MacOsUIWrapper;
-import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
-import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
-import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
-import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
-import se.streamsource.streamflow.client.infrastructure.ui.UncaughtExceptionHandler;
-import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import se.streamsource.streamflow.client.ui.workspace.GroupedFilterListDialog;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
-import se.streamsource.streamflow.resource.caze.CaseGeneralDTO;
-
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.factories.Borders;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.Sizes;
+import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.*;
+import static se.streamsource.streamflow.domain.interaction.gtd.CaseStates.*;
 
 /**
  * JAVADOC
@@ -109,7 +102,7 @@ public class CaseGeneralView extends JScrollPane implements Observer
    public CaseLabelsView labels;
    public PossibleFormsView forms;
    public RefreshWhenVisible refresher;
-   public JLabel selectedCaseType = new JLabel();
+   public RemovableLabel selectedCaseType = new RemovableLabel();
    public JButton caseTypeButton;
    public JButton labelButton;
 
@@ -179,6 +172,16 @@ public class CaseGeneralView extends JScrollPane implements Observer
       rightBuilder.nextColumn();
       rightBuilder.nextColumn();
       rightBuilder.add( selectedCaseType );
+      /*selectedCaseType.addActionListener( new ActionListener(){
+
+         public void actionPerformed( ActionEvent e )
+         {
+            model.removeCaseType();
+            selectedCaseType.setVisible( false );
+         }
+      });*/
+
+
       rightBuilder.nextLine();
 
       // Select labels
@@ -300,7 +303,10 @@ public class CaseGeneralView extends JScrollPane implements Observer
 
       ListItemValue value = general.caseType().get();
       selectedCaseType
-            .setText( value == null ? "" : value.description().get() );
+            .setListItemValue( value );
+
+      selectedCaseType.setVisible( value == null ? false : true );
+      
 
       caseGeneralModel.addObserver( this );
 
@@ -336,12 +342,17 @@ public class CaseGeneralView extends JScrollPane implements Observer
          } else if (property.qualifiedName().name().equals( "dueOn" ))
          {
             model.changeDueOn( (Date) property.get() );
+         } else if (property.qualifiedName().name().equals( "caseType" ))
+         {
+            model.caseType( null );
+            selectedCaseType.setVisible( false );
          }
-      } else
+      } else                                              
       {
-         ListItemValue value = model.getGeneral().caseType().get();
-         selectedCaseType.setText( value == null ? "" : value.description()
-               .get() );
+         if(model.getGeneral().caseType().get() != null )
+         {
+            selectedCaseType.setListItemValue( model.getGeneral().caseType().get() );
+         }
          forms.setFormsModel( model.formsModel() );
       }
    }

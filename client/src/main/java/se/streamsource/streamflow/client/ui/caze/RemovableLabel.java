@@ -44,12 +44,16 @@ public class RemovableLabel extends JPanel
    ListItemValue itemValue;
    JButton button;
    private LinkValue link;
+   private JXLabel label;
 
    /** Button orientation left*/
    public static final int LEFT = 0;
    /** Button orientation right*/
    public static final int RIGHT = 1;
 
+   public RemovableLabel(){
+      initComponents( RemovableLabel.RIGHT );
+   }
 
    public RemovableLabel( ListItemValue itemValue )
    {
@@ -78,7 +82,17 @@ public class RemovableLabel extends JPanel
       setFocusable( true );
       this.setRequestFocusEnabled( true );
 
-      JXLabel label = new JXLabel(  itemValue != null ? itemValue.description().get() : link.text().get() );
+      if( itemValue != null )
+      {
+         label = new JXLabel( itemValue.description().get() );
+      } else if ( link != null )
+      {
+         label = new JXLabel( link.text().get() );
+      } else
+      {
+         label = new JXLabel();
+      }
+
       button = new JButton( i18n.icon( Icons.drop, 12 ) );
       button.setBorder( new EmptyBorder( new Insets( 0, 0, 0, 0 ) ) );
       button.setFocusable( false );
@@ -100,6 +114,10 @@ public class RemovableLabel extends JPanel
       addFocusListener( this );
       addKeyListener( this );
       addMouseListener( this );
+
+      if( label.getText() == null || "".equals( label.getText() )){
+         this.setVisible( false );
+      }
    }
 
    @Override
@@ -172,5 +190,23 @@ public class RemovableLabel extends JPanel
 
    public void mouseExited( MouseEvent e )
    {
+   }
+
+   public void setText( String text ){
+      label.setText( text );
+      if( text != null)
+      {
+         this.setVisible( true );
+      }
+   }
+
+   public void setListItemValue( ListItemValue itemValue )
+   {
+      this.itemValue = itemValue;
+      if( itemValue != null )
+      {
+        label.setText( this.itemValue.description().get() );
+        this.setVisible( true );
+      }
    }
 }
