@@ -59,6 +59,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.Insets;
 import java.awt.KeyboardFocusManager;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
@@ -169,9 +170,10 @@ public class CaseGeneralView extends JScrollPane implements Observer
       caseTypeButton.setHorizontalAlignment( SwingConstants.LEFT );
       rightBuilder.setExtent( 1, 1 );
       rightBuilder.add( caseTypeButton );
-      rightBuilder.nextColumn();
-      rightBuilder.nextColumn();
-      rightBuilder.add( selectedCaseType );
+      //rightBuilder.nextColumn();
+      //rightBuilder.nextColumn();
+      rightBuilder.add( selectedCaseType,
+            new CellConstraints( 3,2,1,1, CellConstraints.LEFT, CellConstraints.BOTTOM, new Insets(5,0,0,0) ) );
       
       rightBuilder.nextLine();
 
