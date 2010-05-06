@@ -207,6 +207,7 @@ public class RemovableLabel extends JPanel
       {
         label.setText( this.itemValue.description().get() );
         this.setVisible( true );
-      }
+      } 
+
    }
 }

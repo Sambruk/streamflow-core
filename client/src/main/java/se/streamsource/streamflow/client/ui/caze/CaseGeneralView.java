@@ -342,10 +342,13 @@ public class CaseGeneralView extends JScrollPane implements Observer
          }
       } else                                              
       {
-         if(model.getGeneral().caseType().get() != null )
+         CaseGeneralDTO general = model.getGeneral();
+         valueBuilder = general.buildWith();
+         caseBinder.updateWith( general );
+         /*if(model.getGeneral().caseType().get() != null )
          {
             selectedCaseType.setListItemValue( model.getGeneral().caseType().get() );
-         }
+         }*/
          forms.setFormsModel( model.formsModel() );
       }
    }

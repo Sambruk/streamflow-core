@@ -475,7 +475,7 @@ public class StateBinder
 
                public void actionPerformed( ActionEvent e )
                {
-                  removableLabel.setListItemValue( null );
+                  //removableLabel.setListItemValue( null );
                   binding.updateProperty( null );
                }
             });
