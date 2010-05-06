@@ -172,16 +172,7 @@ public class CaseGeneralView extends JScrollPane implements Observer
       rightBuilder.nextColumn();
       rightBuilder.nextColumn();
       rightBuilder.add( selectedCaseType );
-      /*selectedCaseType.addActionListener( new ActionListener(){
-
-         public void actionPerformed( ActionEvent e )
-         {
-            model.removeCaseType();
-            selectedCaseType.setVisible( false );
-         }
-      });*/
-
-
+      
       rightBuilder.nextLine();
 
       // Select labels

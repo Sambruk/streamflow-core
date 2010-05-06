@@ -274,15 +274,4 @@ public class CaseGeneralModel extends Observable implements Refreshable,
    {
       return general.status().get();
    }
-
-   public void removeCaseType() {
-      try
-      {
-         client.putCommand("removecasetype");
-      } catch (ResourceException e)
-      {
-         throw new OperationException( CaseResources.could_not_remove_type,
-               e);
-      }
-   }
 }
