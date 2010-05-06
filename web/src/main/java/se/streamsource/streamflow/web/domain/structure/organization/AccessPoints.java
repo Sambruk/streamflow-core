@@ -44,6 +44,8 @@ public interface AccessPoints
 {
    AccessPoint createAccessPoint( String name, Project project, CaseType caseType, @Optional List<Label> labels );
 
+   boolean removeAccessPoint( AccessPoint accessPoint ); 
+
    interface Data
    {
       @Aggregated
@@ -52,6 +54,8 @@ public interface AccessPoints
       AccessPoint createdAccessPoint( DomainEvent event, String id, Project project, CaseType caseType, @Optional List<Label> labels );
 
       void addedAccessPoint( DomainEvent event, AccessPoint accessPoint );
+
+      void removedAccessPoint( DomainEvent event, AccessPoint accessPoint );
    }
 
    abstract class Mixin
@@ -86,5 +90,14 @@ public interface AccessPoints
          return entityBuilder.newInstance();
       }
 
+      public boolean removeAccessPoint( AccessPoint accessPoint )
+      {
+         if (!accessPoints().contains( accessPoint ))
+            return false;
+
+         removedAccessPoint( DomainEvent.CREATE, accessPoint );
+         accessPoint.removeEntity();
+         return true;
+      }
    }
 }

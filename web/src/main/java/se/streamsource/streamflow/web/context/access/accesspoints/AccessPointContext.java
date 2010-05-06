@@ -17,30 +17,61 @@
 
 package se.streamsource.streamflow.web.context.access.accesspoints;
 
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.value.ValueBuilder;
+import org.restlet.resource.ResourceException;
+import se.streamsource.dci.api.DeleteInteraction;
 import se.streamsource.dci.api.IndexInteraction;
 import se.streamsource.dci.api.Interactions;
 import se.streamsource.dci.api.InteractionsMixin;
 import se.streamsource.dci.api.SubContexts;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.domain.structure.Describable;
+import se.streamsource.streamflow.infrastructure.application.AccessPointValue;
 import se.streamsource.streamflow.infrastructure.application.TitledLinksBuilder;
 import se.streamsource.streamflow.web.context.access.accesspoints.ProxyUserContext;
 import se.streamsource.streamflow.web.domain.entity.user.ProxyUserEntity;
+import se.streamsource.streamflow.web.domain.structure.label.Label;
+import se.streamsource.streamflow.web.domain.structure.organization.AccessPoint;
+import se.streamsource.streamflow.web.domain.structure.organization.AccessPoints;
 import se.streamsource.streamflow.web.domain.structure.user.ProxyUser;
 import se.streamsource.streamflow.web.domain.structure.user.ProxyUsers;
+
+import java.util.ArrayList;
 
 /**
  * JAVADOC
  */
 @Mixins(AccessPointContext.Mixin.class)
 public interface AccessPointContext
-   extends SubContexts<ProxyUserContext>, IndexInteraction<LinksValue>, Interactions
+   extends SubContexts<ProxyUserContext>, IndexInteraction<LinksValue>, Interactions, DeleteInteraction
 {
+   AccessPointValue accesspoint();
+
    abstract class Mixin
       extends InteractionsMixin
       implements AccessPointContext
    {
+      public AccessPointValue accesspoint()
+      {
+         ValueBuilder<AccessPointValue> builder = module.valueBuilderFactory().newValueBuilder( AccessPointValue.class );
+         AccessPoint accessPoint = context.get( AccessPoint.class );
+         AccessPoint.Data data = context.get( AccessPoint.Data.class );
+         builder.prototype().entity().set( EntityReference.getEntityReference( accessPoint ));
+         builder.prototype().name().set( accessPoint.getDescription() );
+         builder.prototype().project().set( data.project().get().getDescription() );
+         builder.prototype().caseType().set( data.caseType().get().getDescription() );
+
+         builder.prototype().labels().set( new ArrayList<String>() );
+         for (Label label : data.labels())
+         {
+            builder.prototype().labels().get().add( label.getDescription() );
+         }
+
+         return builder.newInstance();
+      }
+
       public LinksValue index()
       {
          ProxyUsers.Data data = context.get( ProxyUsers.Data.class );
@@ -66,6 +97,14 @@ public interface AccessPointContext
             }
          }
          return subContext( ProxyUserContext.class);
+      }
+
+      public void delete() throws ResourceException
+      {
+         AccessPoint accessPoint = context.get( AccessPoint.class );
+         AccessPoints accessPoints = context.get( AccessPoints.class );
+
+         accessPoints.removeAccessPoint( accessPoint );
       }
    }
 }

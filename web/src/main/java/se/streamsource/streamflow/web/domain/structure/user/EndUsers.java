@@ -34,14 +34,14 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 @Mixins(EndUsers.Mixin.class)
 public interface EndUsers
 {
-   AnonymousEndUser createAnonymousEndUser( String name );
+   AnonymousEndUser createAnonymousEndUser( );
 
    interface Data
    {
       @Aggregated
       ManyAssociation<AnonymousEndUser> anonymousEndUsers();
 
-      AnonymousEndUser createdAnonymousEndUser( DomainEvent event, String name );
+      AnonymousEndUser createdAnonymousEndUser( DomainEvent event );
    }
 
    abstract class Mixin
@@ -50,16 +50,14 @@ public interface EndUsers
       @Structure
       UnitOfWorkFactory uowf;
 
-      public AnonymousEndUser createAnonymousEndUser( String name )
+      public AnonymousEndUser createAnonymousEndUser( )
       {
-         return createdAnonymousEndUser( DomainEvent.CREATE, name );
+         return createdAnonymousEndUser( DomainEvent.CREATE );
       }
 
-      public AnonymousEndUser createdAnonymousEndUser( DomainEvent event, String name )
+      public AnonymousEndUser createdAnonymousEndUser( DomainEvent event )
       {
          EntityBuilder<AnonymousEndUser> builder = uowf.currentUnitOfWork().newEntityBuilder( AnonymousEndUser.class );
-         Describable.Data desc = builder.instanceFor( Describable.Data.class );
-         desc.description().set( name );
 
          AnonymousEndUser user = builder.newInstance();
 

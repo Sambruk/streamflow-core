@@ -25,6 +25,6 @@ import se.streamsource.streamflow.web.domain.structure.form.Submitter;
 /**
  */
 public interface AnonymousEndUser
-   extends Describable, Drafts, Submitter, Creator
+   extends Drafts, Submitter, Creator
 {
 }

@@ -33,9 +33,7 @@ public interface AnonymousEndUserEntity
       DomainEntity,
 
       //Queries
-      DraftsQueries,
-
-      //Data
-      Describable.Data
+      DraftsQueries
 {
+   public static final String COOKIE_NAME = "SURFACE_ANONMOUS_END_USER";
 }

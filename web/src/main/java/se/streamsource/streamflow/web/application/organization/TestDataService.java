@@ -314,6 +314,7 @@ public interface TestDataService
 
          ProxyUser proxyUser = organization.createProxyUser( "Citizens Portal", "jkgp", "jkgpxxxx" );
 
+         /*
          AnonymousEndUser endUser = proxyUser.createAnonymousEndUser( "Kalle K." );
 
          CaseEntity case1 = endUser.createDraft();
@@ -326,6 +327,7 @@ public interface TestDataService
             case1.addLabel( label );
          }
 
+*/
 
          uow.complete();
       }

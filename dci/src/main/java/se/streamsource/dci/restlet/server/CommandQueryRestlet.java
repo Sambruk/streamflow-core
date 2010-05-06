@@ -324,21 +324,22 @@ public class CommandQueryRestlet
             invoke( request, interactions, method, null );
          } else
          {
+            Class valueType = method.getParameterTypes()[0];
             // Invoke command with parameters
-            if (request.getEntity().getAvailableSize() == 0)
+            if (request.getEntity().getAvailableSize() == 0 && valueType != Response.class )
             {
                ResponseWriter responseWriter = responseWriterFactory.createWriter( segments, ValueDescriptor.class, context, getVariant( request ) );
 
-               Class<? extends ValueComposite> valueType = (Class<? extends ValueComposite>) method.getParameterTypes()[0];
                ValueDescriptor valueDescriptor = module.valueDescriptor( valueType.getName() );
                responseWriter.write( valueDescriptor, request, response );
 
                unitOfWork.discard();
 
                return;
+
             } else
             {
-               Object[] args = getCommandArguments( request, method );
+               Object[] args = getCommandArguments( request, response, method );
                invoke( request, interactions, method, args );
             }
          }
@@ -657,7 +658,8 @@ public class CommandQueryRestlet
       } else
       {
          Form form = request.getResourceRef().getQueryAsForm();
-         if (form.size() == 0)
+         Class valueType = queryMethod.getParameterTypes()[0];
+         if (form.size() == 0 && valueType != Response.class )
          {
             // Show form
             try
@@ -666,7 +668,6 @@ public class CommandQueryRestlet
                segments.set(segments.size()-1, formName);
                responseWriter = responseWriterFactory.createWriter( segments, ValueDescriptor.class, context, variant );
 
-               Class<? extends ValueComposite> valueType = (Class<? extends ValueComposite>) queryMethod.getParameterTypes()[0];
                ValueDescriptor valueDescriptor = module.valueDescriptor( valueType.getName() );
 
                responseWriter.write( valueDescriptor, request, response );
@@ -678,7 +679,7 @@ public class CommandQueryRestlet
          } else
          {
             // Invoke form with parameters
-            Object[] args = getQueryArguments( request, queryMethod );
+            Object[] args = getQueryArguments( request, response, queryMethod );
             Object queryResult = invoke( request, resource, queryMethod, args );
             responseWriter.write( queryResult, request, response );
          }
@@ -689,7 +690,7 @@ public class CommandQueryRestlet
    {
       List<Language> possibleLanguages = Arrays.asList( Language.ENGLISH );
       Language language = request.getClientInfo().getPreferredLanguage( possibleLanguages );
-      
+
       if (language == null)
          language = Language.ENGLISH;
 
@@ -741,7 +742,7 @@ public class CommandQueryRestlet
       }
    }
 
-   private Object[] getQueryArguments( Request request, Method method )
+   private Object[] getQueryArguments( Request request, Response response, Method method )
          throws ResourceException
    {
       Object[] args = new Object[method.getParameterTypes().length];
@@ -766,6 +767,9 @@ public class CommandQueryRestlet
             } else if (Form.class.equals( method.getParameterTypes()[0] ))
             {
                args[0] = asForm;
+            } else if (Response.class.equals( method.getParameterTypes()[0] ))
+            {
+               args[0] = response;
             }
          } else
          {
@@ -848,7 +852,7 @@ public class CommandQueryRestlet
       return methods;
    }
 
-   private Object[] getCommandArguments( Request request, Method method ) throws ResourceException
+   private Object[] getCommandArguments( Request request, Response response, Method method ) throws ResourceException
    {
       if (method.getParameterTypes().length > 0)
       {
@@ -856,6 +860,10 @@ public class CommandQueryRestlet
 
          Class<? extends ValueComposite> commandType = (Class<? extends ValueComposite>) method.getParameterTypes()[0];
 
+         if (method.getParameterTypes()[0].equals( Response.class ))
+         {
+            return new Object[]{response};
+         }
          MediaType type = request.getEntity().getMediaType();
          if (type == null)
          {
