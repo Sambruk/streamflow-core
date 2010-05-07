@@ -18,6 +18,7 @@
 package se.streamsource.streamflow.web.domain.entity.user;
 
 import se.streamsource.streamflow.domain.structure.Describable;
+import se.streamsource.streamflow.domain.structure.Removable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
 import se.streamsource.streamflow.web.domain.entity.gtd.DraftsQueries;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Actor;
@@ -32,8 +33,11 @@ public interface AnonymousEndUserEntity
    extends AnonymousEndUser,
       DomainEntity,
 
+      // Data
+      Removable.Data,
+      Describable.Data,
+
       //Queries
       DraftsQueries
 {
-   public static final String COOKIE_NAME = "SURFACE_ANONMOUS_END_USER";
 }

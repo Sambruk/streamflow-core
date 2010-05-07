@@ -19,6 +19,7 @@ package se.streamsource.streamflow.web.domain.structure.user;
 
 import org.qi4j.api.entity.Aggregated;
 import org.qi4j.api.entity.EntityBuilder;
+import org.qi4j.api.entity.Identity;
 import org.qi4j.api.entity.IdentityGenerator;
 import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Service;
@@ -27,6 +28,7 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.web.domain.structure.project.Project;
 
 /**
  * JAVADOC
@@ -36,12 +38,20 @@ public interface EndUsers
 {
    AnonymousEndUser createAnonymousEndUser( );
 
+   boolean removeAnonymousEndUser( AnonymousEndUser user );
+
+   void addAnonymousEndUser( AnonymousEndUser user);
+
    interface Data
    {
       @Aggregated
       ManyAssociation<AnonymousEndUser> anonymousEndUsers();
 
-      AnonymousEndUser createdAnonymousEndUser( DomainEvent event );
+      AnonymousEndUser createdAnonymousEndUser( DomainEvent event, String id );
+
+      void removedAnonymousEndUser( DomainEvent event, AnonymousEndUser user );
+
+      void addedAnonymousEndUser( DomainEvent event, AnonymousEndUser user );
    }
 
    abstract class Mixin
@@ -50,20 +60,43 @@ public interface EndUsers
       @Structure
       UnitOfWorkFactory uowf;
 
+      @Service
+      IdentityGenerator idgen;
+
       public AnonymousEndUser createAnonymousEndUser( )
       {
-         return createdAnonymousEndUser( DomainEvent.CREATE );
+         String id = idgen.generate( Identity.class );
+
+         AnonymousEndUser anonymousEndUser = createdAnonymousEndUser( DomainEvent.CREATE, id );
+         addedAnonymousEndUser( DomainEvent.CREATE, anonymousEndUser );
+
+         return anonymousEndUser;
       }
 
-      public AnonymousEndUser createdAnonymousEndUser( DomainEvent event )
+      public AnonymousEndUser createdAnonymousEndUser( DomainEvent event, String id )
       {
-         EntityBuilder<AnonymousEndUser> builder = uowf.currentUnitOfWork().newEntityBuilder( AnonymousEndUser.class );
+         EntityBuilder<AnonymousEndUser> builder = uowf.currentUnitOfWork().newEntityBuilder( AnonymousEndUser.class, id );
+         return builder.newInstance();
+      }
 
-         AnonymousEndUser user = builder.newInstance();
+      public void addAnonymousEndUser( AnonymousEndUser user )
+      {
 
-         anonymousEndUsers().add( user );
+         if (anonymousEndUsers().contains( user ))
+         {
+            return;
+         }
+         addedAnonymousEndUser( DomainEvent.CREATE, user );
+      }
 
-         return user;
+      public boolean removeAnonymousEndUser( AnonymousEndUser user )
+      {
+         if (!anonymousEndUsers().contains( user ))
+            return false;
+
+         removedAnonymousEndUser( DomainEvent.CREATE, user );
+         user.removeEntity();
+         return true;
       }
    }
 }

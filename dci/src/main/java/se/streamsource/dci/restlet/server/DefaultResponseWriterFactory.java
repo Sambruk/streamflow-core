@@ -38,6 +38,7 @@ import org.restlet.resource.ResourceException;
 import org.restlet.service.MetadataService;
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.restlet.server.velocity.ValueCompositeContext;
+import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.LinksValue;
 
 import java.io.File;
@@ -86,7 +87,10 @@ public class DefaultResponseWriterFactory
    public ResponseWriter createWriter( List<String> segments, Class resultType, Context context, Variant variant )
          throws Exception
    {
-      if (Representation.class.isAssignableFrom( resultType ))
+      if (LinkValue.class.isAssignableFrom( resultType ) && !variant.getMediaType().equals( MediaType.APPLICATION_JSON ))
+      {
+         return new RedirectResponseWriter();
+      } else if (Representation.class.isAssignableFrom( resultType ))
       {
          // Return representation as-is
          // TODO refactor this into its own factory

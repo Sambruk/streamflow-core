@@ -52,12 +52,10 @@ public interface EndUserContext
       public LinksValue index()
       {
          DraftsQueries draftsQueries = context.get( DraftsQueries.class );
-         Describable describable = context.get( Describable.class );
 
          TitledLinksBuilder linksBuilder = new TitledLinksBuilder( module.valueBuilderFactory() );
 
          linksBuilder.addDescribables( draftsQueries.drafts().newQuery( module.unitOfWorkFactory().currentUnitOfWork() ));
-         linksBuilder.addTitle( describable.getDescription() );
 
          return linksBuilder.newLinks();
       }

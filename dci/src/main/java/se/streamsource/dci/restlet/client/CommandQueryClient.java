@@ -164,6 +164,12 @@ public final class CommandQueryClient
    public void postCommand( String operation, Representation commandRepresentation )
          throws ResourceException
    {
+      postCommand( operation, commandRepresentation, responseHandler );
+   }
+
+   public void postCommand( String operation, Representation commandRepresentation, ResponseHandler responseHandler )
+         throws ResourceException
+   {
       Reference ref = new Reference( reference.toUri().toString()+operation );
       ClientResource client = new ClientResource( ref );
       ClientInfo info = new ClientInfo();
