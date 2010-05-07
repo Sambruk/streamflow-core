@@ -76,7 +76,8 @@ public enum WorkspaceResources
    could_not_get_form_submission,
    could_not_discard_form_submission,
    owner,
-   choose_case,
+   choose_case, 
+   choose_owner_title,
    change_password_title,
    welcome,
    none_text, choose_message_delivery_type

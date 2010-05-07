@@ -37,6 +37,7 @@ import se.streamsource.streamflow.client.ui.ConfirmationDialog;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.administration.SelectLinksDialog;
 import se.streamsource.streamflow.client.ui.workspace.SelectLinkDialog;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.domain.interaction.gtd.Actions;
 
 import javax.swing.ActionMap;
@@ -167,7 +168,7 @@ public class CaseActionsView extends JPanel
 	{
 		SelectLinkDialog dialog = projectSelectionDialog.use(
 				model.getPossibleProjects()).newInstance();
-		dialogs.showOkCancelHelpDialog(this, dialog);
+		dialogs.showOkCancelHelpDialog(this, dialog, i18n.text( WorkspaceResources.choose_owner_title ));
 
 		if (dialog.getSelected() != null)
 		{
