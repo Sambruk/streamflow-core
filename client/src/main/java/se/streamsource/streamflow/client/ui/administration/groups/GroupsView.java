@@ -128,7 +128,7 @@ public class GroupsView
    public void rename()
    {
       NameDialog dialog = nameDialogs.iterator().next();
-      dialogs.showOkCancelHelpDialog( this, dialog );
+      dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.rename_group_title ) );
 
       if (dialog.name() != null)
       {

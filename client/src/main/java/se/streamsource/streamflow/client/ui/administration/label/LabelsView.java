@@ -147,7 +147,7 @@ public class LabelsView
    public void rename()
    {
       NameDialog dialog = nameDialogs.iterator().next();
-      dialogs.showOkCancelHelpDialog( this, dialog );
+      dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.rename_label_title ) );
 
       if (dialog.name() != null)
       {
