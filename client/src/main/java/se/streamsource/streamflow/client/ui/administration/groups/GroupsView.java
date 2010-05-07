@@ -17,24 +17,15 @@
 
 package se.streamsource.streamflow.client.ui.administration.groups;
 
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
-
-import java.awt.BorderLayout;
-
-import javax.swing.ActionMap;
-import javax.swing.JButton;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-
+import ca.odell.glazedlists.SortedList;
+import ca.odell.glazedlists.swing.EventListModel;
+import com.jgoodies.forms.factories.Borders;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
-
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.client.StreamFlowResources;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
@@ -46,10 +37,16 @@ import se.streamsource.streamflow.client.ui.ConfirmationDialog;
 import se.streamsource.streamflow.client.ui.NameDialog;
 import se.streamsource.streamflow.client.ui.OptionsAction;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
-import ca.odell.glazedlists.SortedList;
-import ca.odell.glazedlists.swing.EventListModel;
 
-import com.jgoodies.forms.factories.Borders;
+import javax.swing.ActionMap;
+import javax.swing.JButton;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import java.awt.BorderLayout;
+
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 
 /**
  * JAVADOC
@@ -132,7 +129,7 @@ public class GroupsView
 
       if (dialog.name() != null)
       {
-         model.changeDescription( groupList.getSelectedIndex(), dialog.name() );
+         model.changeDescription( (LinkValue)groupList.getSelectedValue(), dialog.name() );
       }
    }
 

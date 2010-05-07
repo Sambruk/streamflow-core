@@ -18,7 +18,6 @@
 package se.streamsource.streamflow.client.ui.workspace;
 
 import org.qi4j.api.injection.scope.Uses;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
@@ -43,7 +42,7 @@ public class WorkspaceModel
       this.savedSearches = savedSearches;
 
       eventHandlerFilter = new EventVisitorFilter( this, "joinedProject", "leftProject", "joinedGroup", "leftGroup",
-            "createdProject", "removedProject" );
+            "createdProject", "removedProject", "changedDescription" );
    }
 
    @Override

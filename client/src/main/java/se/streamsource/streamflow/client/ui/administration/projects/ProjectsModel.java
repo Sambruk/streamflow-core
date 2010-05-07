@@ -134,14 +134,14 @@ public class ProjectsModel
       }
    }
 
-   public void changeDescription( int selectedIndex, String newName )
+   public void changeDescription( LinkValue link, String newName )
    {
       ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
       builder.prototype().string().set( newName );
 
       try
       {
-         client.getSubClient( projects.get( selectedIndex ).id().get() ).putCommand( "changedescription", builder.newInstance() );
+         client.getSubClient( link.id().get() ).putCommand( "changedescription", builder.newInstance() );
       } catch (ResourceException e)
       {
          if (Status.CLIENT_ERROR_CONFLICT.equals( e.getStatus() ))
