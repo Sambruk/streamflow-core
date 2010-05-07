@@ -124,6 +124,7 @@ public class RemovableLabel extends JPanel
    public void setEnabled( boolean enabled )
    {
       button.setEnabled( enabled );
+      label.setEnabled( enabled );
       super.setEnabled( enabled );
    }
 

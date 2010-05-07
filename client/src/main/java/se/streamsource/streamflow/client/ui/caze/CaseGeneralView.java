@@ -312,6 +312,7 @@ public class CaseGeneralView extends JScrollPane implements Observer
       descriptionField.setEnabled( model.getCommandEnabled( "changedescription" ));
       notePane.getViewport().getView().setEnabled( model.getCommandEnabled( "changenote" ));
       caseTypeButton.setEnabled( model.getCommandEnabled( "casetype" ));
+      selectedCaseType.setEnabled( model.getCommandEnabled(  "casetype" ));
 
       boolean enabled = model.getCaseStatus().equals( DRAFT ) || model.getCaseStatus().equals( OPEN );
       labelButton.setEnabled( enabled );
