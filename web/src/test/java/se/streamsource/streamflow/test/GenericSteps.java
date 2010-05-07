@@ -137,7 +137,7 @@ public class GenericSteps
    @When("events are cleared")
    public void clearEvents()
    {
-      eventCollector.events().clear();;
+      eventCollector.events().clear();
    }
 
    // Interactions steps -------------------------------------------------
@@ -151,6 +151,7 @@ public class GenericSteps
    public void givenRootContext()
    {
       current = tbf.newTransientBuilder( RootContext.class ).use( context ).newInstance();
+      context = new Context();
    }
 
    @Given("subcontext $name")

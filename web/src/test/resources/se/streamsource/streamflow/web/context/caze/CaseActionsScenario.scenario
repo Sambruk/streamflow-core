@@ -1,0 +1,14 @@
+Scenario: Create new draft
+
+GivenScenarios: orgsetup.scenario
+
+Given root context
+Given subcontext users
+Given subcontext user1
+Given subcontext workspace
+Given subcontext user
+Given subcontext drafts
+
+When command createdraft without parameters
+
+Then no events occurred

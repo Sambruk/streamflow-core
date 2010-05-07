@@ -151,6 +151,8 @@ public class WorkspaceView
             .getValue( javax.swing.Action.ACCELERATOR_KEY ),
             JComponent.WHEN_IN_FOCUSED_WINDOW );
 
+      MacOsUIWrapper.convertAccelerators(getActionMap());
+      
       JPanel contextToolbar = new JPanel();
       contextToolbar.add( createCaseButton );
       contextToolbar.add( refreshButton);

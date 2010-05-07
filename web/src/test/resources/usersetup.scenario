@@ -1,16 +1,24 @@
-Scenario: set up users
+Scenario: set up user1
 Given root context
 Given subcontext users
-
 When command createuser with
 {"username":"user1","password":"password1"}
+Then no events occurred
 
-And command createuser with
+Scenario: set up user2
+Given root context
+Given subcontext users
+When command createuser with
 {"username":"user2","password":"password2"}
+Then no events occurred
 
-And command createuser with
+Scenario: set up disabled user
+Given root context
+Given subcontext users
+When command createuser with
 {"username":"disableduser","password":"password3"}
 
+Scenario: join user1
 Given root context
 Given subcontext organizations
 
@@ -19,6 +27,6 @@ Given context for link nr 0
 Given subcontext users
 
 When command join with
-{"entity":"disableduser"}
+{"entity":"user1"}
 
 Then no events occurred

@@ -18,7 +18,9 @@
 package se.streamsource.streamflow.test;
 
 import org.jbehave.scenario.annotations.AfterScenario;
+import org.jbehave.scenario.annotations.AfterStory;
 import org.jbehave.scenario.annotations.BeforeScenario;
+import org.jbehave.scenario.annotations.BeforeStory;
 import org.jbehave.scenario.steps.CandidateStep;
 import org.jbehave.scenario.steps.CandidateSteps;
 import org.jbehave.scenario.steps.Steps;
@@ -61,11 +63,11 @@ public class BeforeAndAfterWebDomainApplicationSteps
       {
          Energy4Java is = new Energy4Java();
 
-         Class[] stepClasses = new Class[steps.length + 1];
+         Class[] stepClasses = new Class[theSteps.length + 1];
          stepClasses[0] = getClass();
-         for (int i = 0; i < steps.length; i++)
+         for (int i = 0; i < theSteps.length; i++)
          {
-            CandidateSteps step = steps[i];
+            CandidateSteps step = theSteps[i];
             stepClasses[i + 1] = step.getClass();
          }
 
@@ -74,7 +76,7 @@ public class BeforeAndAfterWebDomainApplicationSteps
 
          Module module = app.findModule( "Application", "Test" );
 
-         for (CandidateSteps step : steps)
+         for (CandidateSteps step : theSteps)
          {
             Class<CandidateSteps> aClass = (Class<CandidateSteps>) step.getClass();
             ObjectBuilder<CandidateSteps> builder = module.objectBuilderFactory().newObjectBuilder( aClass );
@@ -101,10 +103,15 @@ public class BeforeAndAfterWebDomainApplicationSteps
 
    private GenericSteps genericSteps;
 
+   @BeforeStory
+   public void newApplication() throws Exception
+   {
+      app.activate();
+   }
+
    @BeforeScenario
    public void newUnitOfWork() throws Exception
    {
-      app.activate();
       uow = uowf.newUnitOfWork();
    }
 
@@ -121,10 +128,15 @@ public class BeforeAndAfterWebDomainApplicationSteps
    }
 
    @AfterScenario
-   public void passivateApplication() throws Exception
+   public void completeUnitOfWork() throws Exception
    {
-      uow.complete();
+      if (uow.isOpen())
+         uow.complete();
+   }
 
+   @AfterStory
+   public void closeApplication() throws Exception
+   {
       app.passivate();
    }
 }

@@ -302,7 +302,7 @@ public interface TestDataService
          for (int i = 1; i < 30; i++)
          {
             CaseEntity caze = user.createDraft();
-            caze.changeDescription( "Arbetsuppgift " + i );
+            caze.changeDescription( "Ärende " + i );
             caze.sendTo( (Owner) project );
             caze.open();
          }

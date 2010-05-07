@@ -169,6 +169,7 @@ public interface SearchCaseQueries
             if (queryBuilder.length() != 0)
             {
                queryBuilder.append( " type:se.streamsource.streamflow.web.domain.entity.caze.CaseEntity" );
+               queryBuilder.append( " !status:DRAFT" );
                Query<Case> cases = module.queryBuilderFactory()
                      .newNamedQuery( Case.class, uow, "solrquery" ).setVariable( "query", queryBuilder.toString() );
                return cases;

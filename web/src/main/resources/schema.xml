@@ -458,6 +458,8 @@
 
    <field name="createdOn" type="date" indexed="true" stored="true" />
 
+   <field name="status" type="string" indexed="true" stored="true" />
+
    <!--
    <field name="sku" type="textTight" indexed="true" stored="true" omitNorms="true"/>
    <field name="name" type="textgen" indexed="true" stored="true"/>
