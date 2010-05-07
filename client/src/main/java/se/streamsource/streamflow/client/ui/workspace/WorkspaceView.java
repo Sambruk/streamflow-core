@@ -17,37 +17,15 @@
 
 package se.streamsource.streamflow.client.ui.workspace;
 
-import org.jdesktop.application.Action;
-import org.jdesktop.application.ApplicationContext;
-import org.jdesktop.application.Task;
-import org.jdesktop.swingx.JXTable;
-import org.jdesktop.swingx.JXTree;
-import org.jdesktop.swingx.renderer.DefaultTreeRenderer;
-import org.jdesktop.swingx.renderer.IconValue;
-import org.jdesktop.swingx.renderer.StringValue;
-import org.jdesktop.swingx.renderer.WrappingIconPanel;
-import org.jdesktop.swingx.renderer.WrappingProvider;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.object.ObjectBuilderFactory;
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.Component;
+import java.awt.Font;
+import java.awt.Point;
+import java.awt.Toolkit;
+import java.awt.event.KeyEvent;
 
-import com.jgoodies.forms.factories.Borders;
-
-import se.streamsource.streamflow.client.Icons;
-import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import se.streamsource.streamflow.client.ui.administration.AccountModel;
-import se.streamsource.streamflow.client.ui.caze.AssignmentsCaseTableFormatter;
-import se.streamsource.streamflow.client.ui.caze.CaseCreationNode;
-import se.streamsource.streamflow.client.ui.caze.CaseTableView;
-import se.streamsource.streamflow.client.ui.caze.CasesTableModel;
-import se.streamsource.streamflow.client.ui.caze.CasesView;
-import se.streamsource.streamflow.client.ui.search.SearchResultTableModel;
-import se.streamsource.streamflow.client.ui.caze.InboxCaseTableFormatter;
-import se.streamsource.streamflow.client.ui.caze.CasesDetailView2;
-import se.streamsource.streamflow.client.ui.caze.CasesModel;
-
-import javax.swing.BorderFactory;
+import javax.swing.ActionMap;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -68,13 +46,37 @@ import javax.swing.event.TreeWillExpandListener;
 import javax.swing.tree.ExpandVetoException;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import java.awt.Component;
-import java.awt.Font;
-import java.awt.Point;
-import java.awt.Toolkit;
-import java.awt.event.KeyEvent;
+
+import org.jdesktop.application.Action;
+import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Task;
+import org.jdesktop.swingx.JXTable;
+import org.jdesktop.swingx.JXTree;
+import org.jdesktop.swingx.renderer.DefaultTreeRenderer;
+import org.jdesktop.swingx.renderer.IconValue;
+import org.jdesktop.swingx.renderer.StringValue;
+import org.jdesktop.swingx.renderer.WrappingIconPanel;
+import org.jdesktop.swingx.renderer.WrappingProvider;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.object.ObjectBuilderFactory;
+
+import se.streamsource.streamflow.client.Icons;
+import se.streamsource.streamflow.client.MacOsUIWrapper;
+import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.ui.administration.AccountModel;
+import se.streamsource.streamflow.client.ui.caze.AssignmentsCaseTableFormatter;
+import se.streamsource.streamflow.client.ui.caze.CaseCreationNode;
+import se.streamsource.streamflow.client.ui.caze.CaseTableView;
+import se.streamsource.streamflow.client.ui.caze.CasesDetailView2;
+import se.streamsource.streamflow.client.ui.caze.CasesModel;
+import se.streamsource.streamflow.client.ui.caze.CasesTableModel;
+import se.streamsource.streamflow.client.ui.caze.CasesView;
+import se.streamsource.streamflow.client.ui.caze.InboxCaseTableFormatter;
+import se.streamsource.streamflow.client.ui.search.SearchResultTableModel;
+
+import com.jgoodies.forms.factories.Borders;
 
 /**
  * JAVADOC
@@ -120,11 +122,39 @@ public class WorkspaceView
       getInputMap( WHEN_IN_FOCUSED_WINDOW ).put( KeyStroke.getKeyStroke( KeyEvent.VK_UP, KeyEvent.ALT_DOWN_MASK + Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() ), "selectTable" );
       getInputMap( WHEN_IN_FOCUSED_WINDOW ).put( KeyStroke.getKeyStroke( KeyEvent.VK_DOWN, KeyEvent.ALT_DOWN_MASK + Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() ), "selectDetails" );
       setActionMap( context.getActionMap( this ) );
+      MacOsUIWrapper.convertAccelerators( context.getActionMap(
+            WorkspaceView.class, this ));
+
+      ActionMap am = getActionMap();
+
+      // Create Case
+      javax.swing.Action createCaseAction = am.get( "createCase" );
+      JButton createCaseButton = new JButton( createCaseAction );
+//      NotificationGlassPane.registerButton(createCaseButton);
+      createCaseButton.registerKeyboardAction( createCaseAction, (KeyStroke) createCaseAction
+            .getValue( javax.swing.Action.ACCELERATOR_KEY ),
+            JComponent.WHEN_IN_FOCUSED_WINDOW );
+
+      // Create Case
+      javax.swing.Action refreshAction = am.get( "refresh" );
+      JButton refreshButton = new JButton( refreshAction );
+//      NotificationGlassPane.registerButton(refreshButton);
+      refreshButton.registerKeyboardAction( refreshAction, (KeyStroke) refreshAction
+            .getValue( javax.swing.Action.ACCELERATOR_KEY ),
+            JComponent.WHEN_IN_FOCUSED_WINDOW );
+
+      // Create Case
+      javax.swing.Action showSearchAction = am.get( "showSearch" );
+      JButton showSearchButton = new JButton( showSearchAction );
+//      NotificationGlassPane.registerButton(showSearchButton);
+      showSearchButton.registerKeyboardAction( showSearchAction, (KeyStroke) showSearchAction
+            .getValue( javax.swing.Action.ACCELERATOR_KEY ),
+            JComponent.WHEN_IN_FOCUSED_WINDOW );
 
       JPanel contextToolbar = new JPanel();
-      contextToolbar.add( new JButton( getActionMap().get( "createCase" ) ) );
-      contextToolbar.add( new JButton( getActionMap().get( "refresh" ) ) );
-      contextToolbar.add( new JButton( getActionMap().get( "showSearch" ) ) );
+      contextToolbar.add( createCaseButton );
+      contextToolbar.add( refreshButton);
+      contextToolbar.add( showSearchButton );
 
       contextPanel = new JPanel( new BorderLayout() );
       selectContextButton = new JButton( getActionMap().get( "selectContext" ) );
