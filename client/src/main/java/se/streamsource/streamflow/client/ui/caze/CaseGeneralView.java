@@ -322,8 +322,6 @@ public class CaseGeneralView extends JScrollPane implements Observer
 
    public void update( Observable o, Object arg )
    {
-      updateEnabled();
-
       if (o == caseBinder)
       {
          Property property = (Property) arg;
@@ -346,12 +344,11 @@ public class CaseGeneralView extends JScrollPane implements Observer
          CaseGeneralDTO general = model.getGeneral();
          valueBuilder = general.buildWith();
          caseBinder.updateWith( general );
-         /*if(model.getGeneral().caseType().get() != null )
-         {
-            selectedCaseType.setListItemValue( model.getGeneral().caseType().get() );
-         }*/
+
          forms.setFormsModel( model.formsModel() );
       }
+
+      updateEnabled();
    }
 
    @Action
