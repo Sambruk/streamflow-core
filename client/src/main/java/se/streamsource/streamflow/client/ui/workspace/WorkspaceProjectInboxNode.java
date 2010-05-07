@@ -18,8 +18,11 @@
 package se.streamsource.streamflow.client.ui.workspace;
 
 import org.qi4j.api.injection.scope.Uses;
+import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.streamflow.client.ui.caze.CaseCreationNode;
 import se.streamsource.streamflow.client.ui.caze.CasesTableModel;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
@@ -32,7 +35,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 
 public class WorkspaceProjectInboxNode
       extends DefaultMutableTreeNode
-      implements EventListener
+      implements EventListener, CaseCreationNode
 {
    @Uses
    CommandQueryClient client;
@@ -70,5 +73,16 @@ public class WorkspaceProjectInboxNode
    public void notifyEvent( DomainEvent event )
    {
       model.notifyEvent( event );
+   }
+
+   public void createDraft()
+   {
+      try
+      {
+         client.postCommand( "createcase" );
+      } catch (ResourceException e)
+      {
+         throw new OperationException(WorkspaceResources.could_not_perform_operation, e);
+      }
    }
 }
