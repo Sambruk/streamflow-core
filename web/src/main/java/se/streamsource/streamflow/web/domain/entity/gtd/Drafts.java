@@ -60,6 +60,8 @@ public interface Drafts
       @Service
       IdentityGenerator idGenerator;
 
+      @This Creator creator;
+
       public CaseEntity createDraft()
       {
          CaseEntity aCase = createdCase( DomainEvent.CREATE, idGenerator.generate( Identity.class ) );
@@ -74,14 +76,8 @@ public interface Drafts
          CreatedOn createdOn = builder.instanceFor( CreatedOn.class );
          createdOn.createdOn().set( event.on().get() );
 
-         try
-         {
-            Creator creator = uowf.currentUnitOfWork().get( Creator.class, event.by().get() );
-            createdOn.createdBy().set( creator );
-         } catch (NoSuchEntityException e)
-         {
-            // Ignore
-         }
+         createdOn.createdBy().set( creator );
+
          return builder.newInstance();
       }
    }

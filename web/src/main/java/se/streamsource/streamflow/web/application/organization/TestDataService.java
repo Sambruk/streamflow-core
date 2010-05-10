@@ -36,6 +36,7 @@ import se.streamsource.streamflow.domain.form.NumberFieldValue;
 import se.streamsource.streamflow.domain.form.PageSubmissionValue;
 import se.streamsource.streamflow.domain.form.SelectionFieldValue;
 import se.streamsource.streamflow.domain.form.TextFieldValue;
+import se.streamsource.streamflow.web.application.security.StreamFlowPrincipal;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.entity.conversation.ConversationEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
@@ -63,6 +64,8 @@ import se.streamsource.streamflow.web.domain.structure.user.ProxyUser;
 import se.streamsource.streamflow.web.domain.structure.user.User;
 import se.streamsource.streamflow.web.domain.structure.user.Users;
 
+import javax.security.auth.Subject;
+import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -89,11 +92,17 @@ public interface TestDataService
 
       public void activate() throws Exception
       {
-         UnitOfWork uow = uowf.newUnitOfWork( newUsecase( "Test data" ) );
+         Subject subject = new Subject();
+         subject.getPrincipals().add( new StreamFlowPrincipal("administrator") );
+         Subject.doAs( subject, new PrivilegedExceptionAction()
+         {
+            public Object run() throws Exception
+            {
+               UnitOfWork uow = uowf.newUnitOfWork( newUsecase( "Test data" ) );
 
-         UserEntity user = uow.get( UserEntity.class, UserEntity.ADMINISTRATOR_USERNAME );
+               UserEntity user = uow.get( UserEntity.class, UserEntity.ADMINISTRATOR_USERNAME );
 
-         Organizations orgs = uow.get( Organizations.class, OrganizationsEntity.ORGANIZATIONS_ID );
+                        Organizations orgs = uow.get( Organizations.class, OrganizationsEntity.ORGANIZATIONS_ID );
          Users users = uow.get( Users.class, UsersEntity.USERS_ID );
 
          User testUser = users.createUser( "testuser", "testuser" );
@@ -328,8 +337,12 @@ public interface TestDataService
          }
 
 */
+               uow.complete();
 
-         uow.complete();
+               return null;
+            }
+         });
+
       }
 
       private void submitStatus( Case aCase, FormSubmission formSubmission, String status, Submitter submitter )

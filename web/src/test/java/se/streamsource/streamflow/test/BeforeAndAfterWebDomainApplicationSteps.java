@@ -24,6 +24,7 @@ import org.jbehave.scenario.annotations.BeforeStory;
 import org.jbehave.scenario.steps.CandidateStep;
 import org.jbehave.scenario.steps.CandidateSteps;
 import org.jbehave.scenario.steps.Steps;
+import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.object.ObjectBuilder;
 import org.qi4j.api.structure.Module;
@@ -33,6 +34,9 @@ import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.Energy4Java;
 import org.qi4j.spi.Qi4jSPI;
 import org.qi4j.spi.structure.ApplicationSPI;
+import se.streamsource.streamflow.infrastructure.event.source.EventCollector;
+import se.streamsource.streamflow.infrastructure.event.source.EventSource;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionEventAdapter;
 import se.streamsource.streamflow.test.GenericSteps;
 
 import java.util.ArrayList;
@@ -80,11 +84,10 @@ public class BeforeAndAfterWebDomainApplicationSteps
          {
             Class<CandidateSteps> aClass = (Class<CandidateSteps>) step.getClass();
             ObjectBuilder<CandidateSteps> builder = module.objectBuilderFactory().newObjectBuilder( aClass );
-            builder.use( steps );
+            builder.use( steps, eventCollector );
             builder.injectTo( step );
          }
 
-         genericSteps.clearEvents();
          module.objectBuilderFactory().newObjectBuilder( BeforeAndAfterWebDomainApplicationSteps.class ).injectTo( this );
       } catch (AssemblyException e)
       {
@@ -98,21 +101,30 @@ public class BeforeAndAfterWebDomainApplicationSteps
    @Structure
    protected Qi4jSPI spi;
 
+   @Service
+   protected EventSource eventSource;
+
    protected ApplicationSPI app;
    protected UnitOfWork uow;
 
    private GenericSteps genericSteps;
 
+   EventCollector eventCollector = new EventCollector();
+
    @BeforeStory
    public void newApplication() throws Exception
    {
       app.activate();
+
+      eventSource.registerListener( new TransactionEventAdapter(eventCollector));
    }
 
    @BeforeScenario
    public void newUnitOfWork() throws Exception
    {
       uow = uowf.newUnitOfWork();
+
+      eventCollector.events().clear();
    }
 
    @Override
@@ -130,6 +142,7 @@ public class BeforeAndAfterWebDomainApplicationSteps
    @AfterScenario
    public void completeUnitOfWork() throws Exception
    {
+
       if (uow.isOpen())
          uow.complete();
    }

@@ -20,6 +20,7 @@ package se.streamsource.streamflow.web.context.users.workspace;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
+import se.streamsource.dci.api.IndexInteraction;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.web.domain.entity.user.ProjectQueries;
@@ -33,9 +34,8 @@ import se.streamsource.dci.api.SubContexts;
  */
 @Mixins(WorkspaceProjectsContext.Mixin.class)
 public interface WorkspaceProjectsContext
-   extends SubContexts<WorkspaceProjectContext>, Interactions
+   extends SubContexts<WorkspaceProjectContext>, IndexInteraction<LinksValue>, Interactions
 {
-   LinksValue projects();
 
    abstract class Mixin
       extends InteractionsMixin
@@ -44,7 +44,7 @@ public interface WorkspaceProjectsContext
       @Structure
       Module module;
 
-      public LinksValue projects()
+      public LinksValue index()
       {
          LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
          ProjectQueries projectQueries = context.get( ProjectQueries.class);

@@ -77,7 +77,7 @@ public class WorkspaceProjectsNode
       {
          CommandQueryClient user = account.userResource();
          CommandQueryClient projectsClient = user.getSubClient( "workspace" ).getSubClient( "projects" );
-         LinksValue projects = projectsClient.query( "projects", LinksValue.class ).<LinksValue>buildWith().prototype();
+         LinksValue projects = projectsClient.query( "index", LinksValue.class ).<LinksValue>buildWith().prototype();
 
          super.removeAllChildren();
 

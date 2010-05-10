@@ -3,12 +3,9 @@ Scenario: set up organization
 GivenScenarios: usersetup.scenario
 
 Given root context
-Given subcontext organizations
-When query index without parameters
-Given context for link nr 0
-Given subcontext organizationalunits
+Given subcontext organizations/Organization/organizationalunits
 
 When command createorganizationalunit with
 {"string":"OU1"}
 
-Then no events occurred
+Then events createdOrganizationalUnit,addedOrganizationalUnit,changedDescription occurred

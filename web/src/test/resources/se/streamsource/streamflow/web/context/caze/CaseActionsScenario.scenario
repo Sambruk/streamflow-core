@@ -1,14 +1,139 @@
 Scenario: Create new draft
 
-GivenScenarios: orgsetup.scenario
+GivenScenarios: casetypesetup.scenario
 
 Given root context
-Given subcontext users
-Given subcontext user1
-Given subcontext workspace
-Given subcontext user
-Given subcontext drafts
+Given subcontext users/user1/workspace/user/drafts
 
 When command createdraft without parameters
 
-Then no events occurred
+Then events createdCase,addedContact occurred
+
+Scenario: Name draft
+
+Given root context
+Given reference http://localhost/streamflow/
+Given subcontext users/user1/workspace/user/drafts
+When query cases without parameters
+Given root context
+Given subcontext cases
+Given context for link nr 0
+Given subcontext general
+When command changedescription with
+{"string":"Case1"}
+
+Then events changedDescription occurred
+
+Scenario: check actions
+Given root context
+Given reference http://localhost/streamflow/
+Given subcontext users/user1/workspace/user/drafts
+When query cases without parameters
+Given root context
+Given user user1
+Given subcontext cases
+Given context for link named Case1
+When query actions without parameters
+Then result is {"actions":["sendto","delete"]}
+
+Scenario: Send to project
+Given root context
+Given reference http://localhost/streamflow/
+Given subcontext users/user1/workspace/user/drafts
+When query cases without parameters
+Given root context
+Given subcontext cases
+Given context for link named Case1
+
+When query possiblesendto without parameters
+When link command sendto with Project1
+
+Then events sentTo,changedDate,setCounter,assignedCaseId occurred
+
+Scenario: check draft actions
+Given root context
+Given reference http://localhost/streamflow/
+Given subcontext users/user1/workspace/user/drafts
+When query cases without parameters
+Given root context
+Given user user1
+Given subcontext cases
+Given context for link named Case1
+When query actions without parameters
+Then result is {"actions":["open","sendto","delete"]}
+
+Scenario: Select casetype
+Given root context
+Given reference http://localhost/streamflow/
+Given subcontext users/user1/workspace/user/drafts
+When query cases without parameters
+Given root context
+Given subcontext cases
+Given context for link named Case1
+
+Given subcontext general
+When query possiblecasetypes without parameters
+When link command casetype with CaseType1
+Then events changedCaseType occurred
+
+Scenario: Add label
+Given root context
+Given reference http://localhost/streamflow/
+Given subcontext users/user1/workspace/user/drafts
+When query cases without parameters
+Given root context
+Given subcontext cases
+Given context for link named Case1
+
+Given subcontext general/labels
+When query possiblelabels without parameters
+When link command addlabel with CaseLabel1
+Then events addedLabel occurred
+
+Scenario: Open case
+Given root context
+Given reference http://localhost/streamflow/
+Given subcontext users/user1/workspace/user/drafts
+When query cases without parameters
+Given root context
+Given subcontext cases
+Given context for link named Case1
+
+When command open without parameters
+Then events changedStatus occurred
+
+Scenario: check open actions
+Given root context
+Given reference http://localhost/streamflow/
+Given subcontext users/user1/workspace/projects/Project1/inbox/
+When query cases without parameters
+Given root context
+Given user user1
+Given subcontext cases
+Given context for link named Case1
+When query actions without parameters
+Then result is {"actions":["assign","sendto","close","delete"]}
+
+Scenario: assign case
+Given root context
+Given reference http://localhost/streamflow/
+Given subcontext users/user1/workspace/projects/Project1/inbox/
+When query cases without parameters
+Given root context
+Given user user1
+Given subcontext cases
+Given context for link named Case1
+When command assign without parameters
+Then events assignedTo occurred
+
+Scenario: close case
+Given root context
+Given reference http://localhost/streamflow/
+Given subcontext users/user1/workspace/projects/Project1/assignments/
+When query cases without parameters
+Given root context
+Given user user1
+Given subcontext cases
+Given context for link named Case1
+When command close without parameters
+Then events changedStatus occurred

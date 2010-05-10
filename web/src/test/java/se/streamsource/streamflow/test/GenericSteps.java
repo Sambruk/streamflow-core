@@ -27,20 +27,22 @@ import org.junit.Assert;
 import org.qi4j.api.composite.TransientBuilderFactory;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
+import org.restlet.data.Reference;
+import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.IndexInteraction;
 import se.streamsource.dci.api.Interactions;
+import se.streamsource.dci.api.SubContexts;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.source.EventCollector;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
-import se.streamsource.streamflow.infrastructure.event.source.MemoryEventStoreService;
-import se.streamsource.streamflow.infrastructure.event.source.TransactionEventAdapter;
 import se.streamsource.streamflow.web.context.RootContext;
-import se.streamsource.dci.api.Context;
-import se.streamsource.dci.api.SubContexts;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Actor;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -48,7 +50,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.equalTo;
 
 
 public class GenericSteps
@@ -65,19 +67,15 @@ public class GenericSteps
    @Structure
    UnitOfWorkFactory uowf;
 
-   @Service
-   MemoryEventStoreService eventService;
-
    @Structure
    TransientBuilderFactory tbf;
 
    @Structure
    ValueBuilderFactory vbf;
-   public Object previous;
 
-   public void init( @Service EventSource eventSource )
+   public void init( @Service EventSource eventSource, @Uses EventCollector eventCollector )
    {
-      eventSource.registerListener( new TransactionEventAdapter(eventCollector = new EventCollector()));
+      this.eventCollector = eventCollector;
    }
 
    public void setThrowable( Throwable throwable )
@@ -96,8 +94,6 @@ public class GenericSteps
          Assert.fail( "Exception was thrown" );
       }
 
-      Ensure.ensureThat( throwable, CoreMatchers.nullValue() );
-
       List<DomainEvent> events = eventCollector.events();
       if (events == null)
          events = Collections.emptyList();
@@ -109,14 +105,12 @@ public class GenericSteps
          comma = ",";
       }
       Ensure.ensureThat( eventNames, CoreMatchers.equalTo( expectedEvents ) );
-
-      clearEvents();
    }
 
    @Then("no events occurred")
    public void noEvents()
    {
-      Ensure.ensureThat( eventService.getEvents(), CoreMatchers.nullValue() );
+      Ensure.ensureThat( eventCollector.events().isEmpty(), CoreMatchers.is( true ) );
    }
 
    @Then("$exceptionName is thrown")
@@ -134,12 +128,6 @@ public class GenericSteps
       Ensure.ensureThat( throwable, CoreMatchers.nullValue() );
    }
 
-   @When("events are cleared")
-   public void clearEvents()
-   {
-      eventCollector.events().clear();
-   }
-
    // Interactions steps -------------------------------------------------
    @Given("language $lang")
    public void givenLanguage( String lang )
@@ -147,31 +135,51 @@ public class GenericSteps
       context.set( new Locale(lang) );
    }
 
+   @Given("reference $ref")
+   public void givenReference( String ref )
+   {
+      Reference baseRef = new Reference( ref );
+      context.set( new Reference(baseRef, baseRef.getPath()) );
+   }
+
+   @Given("user $name")
+   public void givenUser(String name)
+   {
+      Actor actor = uowf.currentUnitOfWork().get( Actor.class, name );
+      context.set( actor );
+   }
+
    @Given("root context")
    public void givenRootContext()
    {
-      current = tbf.newTransientBuilder( RootContext.class ).use( context ).newInstance();
       context = new Context();
+      current = tbf.newTransientBuilder( RootContext.class ).use( context ).newInstance();
    }
 
    @Given("subcontext $name")
    public void givenSubContext( String name ) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException
    {
-      if (current instanceof SubContexts)
+      for (String path : name.split( "/" ))
       {
-         SubContexts subContexts = (SubContexts) current;
-         current = subContexts.context( name );
-      } else
-      {
-         Method contextMethod = current.getClass().getMethod( name );
-         current = (Interactions) contextMethod.invoke( current );
-      }
-   }
+         if (current instanceof SubContexts)
+         {
+            SubContexts subContexts = (SubContexts) current;
 
-   @Given("previous context")
-   public void givenPreviousContext()
-   {
-      current = (Interactions) previous;
+            if (current instanceof IndexInteraction)
+            {
+               IndexInteraction index = (IndexInteraction) current;
+               LinksValue links = (LinksValue) index.index();
+               LinkValue link = findLink( path, links );
+               path = link.id().get();
+            }
+
+            current = subContexts.context( path );
+         } else
+         {
+            Method contextMethod = current.getClass().getMethod( path );
+            current = (Interactions) contextMethod.invoke( current );
+         }
+      }
    }
 
    @Given("context for link nr $index")
@@ -184,16 +192,8 @@ public class GenericSteps
    @Given("context for link named $name")
    public void givenLinkNamed(String name)
    {
-      for (LinkValue linkValue : ((LinksValue) result).links().get())
-      {
-         if (linkValue.text().get().equals(name))
-         {
-            current = linkValue;
-            break;
-         }
-      }
-
-      throw new IllegalArgumentException("No link found named "+name);
+      LinkValue linkValue = findLink( name, ((LinksValue) result) );
+      current = ((SubContexts)current).context( linkValue.id().get() );
    }
 
    @When("query $name with $parameters")
@@ -225,8 +225,16 @@ public class GenericSteps
    public void whenCommand( String name ) throws InvocationTargetException, IllegalAccessException, UnitOfWorkCompletionException
    {
       Method commandMethod = getMethod( name );
-      previous = commandMethod.invoke( current );
+      commandMethod.invoke( current );
       uowf.currentUnitOfWork().complete();
+   }
+
+   @When("link command $name with $link")
+   public void whenCommandWithLinkNamed(String name, String link) throws InvocationTargetException, UnitOfWorkCompletionException, IllegalAccessException
+   {
+      LinkValue linkValue = findLink( link, ((LinksValue) result) );
+
+      whenCommand( name, "{\"entity\":\""+linkValue.id().get()+"\"}" );
    }
 
    @Then("result is $result")
@@ -250,6 +258,29 @@ public class GenericSteps
          if (method.getName().equals( name ))
             return method;
       }
-      throw new IllegalArgumentException( "No method called " + name + " found in " + current.getClass().getName() );
+      throw new IllegalArgumentException( "No method called " + name + " found in " + current.getClass().getInterfaces()[0].getName() );
+   }
+
+   private LinkValue findLink( String name, LinksValue links )
+   {
+      String names = null;
+      for (LinkValue linkValue : links.links().get())
+      {
+         if (linkValue.text().get().equals(name))
+         {
+            return linkValue;
+         } else
+         {
+            if (names == null)
+               names = linkValue.text().get();
+            else
+               names+=","+linkValue.text().get();
+         }
+      }
+
+      if (names == null)
+         throw new IllegalArgumentException("No link found named "+name+". List was empty");
+      else
+         throw new IllegalArgumentException("No link found named "+name+". Available names:"+names);
    }
 }
