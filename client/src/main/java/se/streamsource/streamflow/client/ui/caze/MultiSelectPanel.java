@@ -17,8 +17,12 @@
 
 package se.streamsource.streamflow.client.ui.caze;
 
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
+
 import javax.swing.JPanel;
 import javax.swing.JCheckBox;
+import java.awt.BorderLayout;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
@@ -32,15 +36,22 @@ public class MultiSelectPanel extends JPanel
 
    public MultiSelectPanel( List<String> elements )
    {
-      super(new FlowLayout( FlowLayout.LEFT ) );
+      super();
+
+      JPanel panel = new JPanel( new BorderLayout( ));
+      FormLayout formLayout = new FormLayout( "200dlu", "" );
+      DefaultFormBuilder formBuilder = new DefaultFormBuilder( formLayout, panel );
 
       checkBoxMap = new HashMap<String, JCheckBox>();
       for (String element : elements)
       {
          JCheckBox checkBox = new JCheckBox( element );
          checkBoxMap.put( element, checkBox );
-         add( checkBox );
+         formBuilder.append( checkBox );
+         formBuilder.nextLine();
       }
+
+      add( panel, BorderLayout.CENTER );
    }
 
    public void addActionPerformedListener( ActionListener listener )
