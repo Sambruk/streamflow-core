@@ -81,7 +81,8 @@ public class ProjectAdminView
                   LabelsModel labelsModel = projectModel.getLabelsModel();
                   SelectedLabelsModel selectedLabelsModel = projectModel.getSelectedLabelsModel();
                   SelectedCaseTypesModel selectedCaseTypes = projectModel.getSelectedCaseTypes();
-                  ProjectView view = obf.newObjectBuilder( ProjectView.class ).use(
+                  ProjectView view = obf.newObjectBuilder( ProjectView.class ).use( 
+                        projectModel,
                         membersModel,
                         labelsModel,
                         selectedLabelsModel,

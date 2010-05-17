@@ -18,16 +18,16 @@
 package se.streamsource.streamflow.client.ui.administration.projects;
 
 import org.qi4j.api.injection.scope.Uses;
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypesAdminView;
+import se.streamsource.streamflow.client.ui.administration.casetypes.SelectedCaseTypesView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FormsAdminView;
 import se.streamsource.streamflow.client.ui.administration.label.LabelsView;
 import se.streamsource.streamflow.client.ui.administration.label.SelectedLabelsView;
-import se.streamsource.streamflow.client.ui.administration.casetypes.SelectedCaseTypesView;
-import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FormsView;
 
-import javax.swing.*;
+import javax.swing.JTabbedPane;
+
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 
 /**
  * JAVADOC
@@ -35,6 +35,10 @@ import javax.swing.*;
 public class ProjectView
       extends JTabbedPane
 {
+   // Used for keeping the weak model map reference alive!!!
+   @Uses
+   ProjectModel projectModel;
+
    public ProjectView( @Uses ProjectMembersView membersView,
                        @Uses FormsAdminView formsView,
                        @Uses CaseTypesAdminView caseTypesAdminView,
@@ -43,7 +47,7 @@ public class ProjectView
                        @Uses SelectedCaseTypesView selectedCaseTypesView )
    {
       super();
-
+      
       addTab( text(AdministrationResources.members_tab), membersView );
       addTab( text(AdministrationResources.forms_tab), formsView );
       addTab( text(AdministrationResources.casetypes_tab ), caseTypesAdminView );
