@@ -57,10 +57,12 @@ public class CaseEffectiveFieldsValueView
       effectiveValueTable = new JXTable();
       effectiveValueTable.setDefaultRenderer( Object.class, new ToolTipTableCellRenderer() );
 
-      JScrollPane submittedFormsScollPane = new JScrollPane();
-      submittedFormsScollPane.setViewportView( effectiveValueTable );
+      JScrollPane effectiveFields = new JScrollPane();
 
-      add( submittedFormsScollPane, BorderLayout.CENTER );
+      effectiveFields.setVerticalScrollBarPolicy( JScrollPane.VERTICAL_SCROLLBAR_ALWAYS );
+      effectiveFields.setViewportView( effectiveValueTable );
+
+      add( effectiveFields, BorderLayout.CENTER );
 
       refresher = new RefreshWhenVisible( this );
       addAncestorListener( refresher );

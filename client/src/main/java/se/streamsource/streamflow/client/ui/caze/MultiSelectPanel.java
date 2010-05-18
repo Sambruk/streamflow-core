@@ -20,14 +20,13 @@ package se.streamsource.streamflow.client.ui.caze;
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 
-import javax.swing.JPanel;
 import javax.swing.JCheckBox;
+import javax.swing.JPanel;
 import java.awt.BorderLayout;
+import java.awt.event.ActionListener;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
-import java.awt.FlowLayout;
-import java.awt.event.ActionListener;
 
 public class MultiSelectPanel extends JPanel
 {
@@ -36,8 +35,6 @@ public class MultiSelectPanel extends JPanel
 
    public MultiSelectPanel( List<String> elements )
    {
-      super();
-
       JPanel panel = new JPanel( new BorderLayout( ));
       FormLayout formLayout = new FormLayout( "200dlu", "" );
       DefaultFormBuilder formBuilder = new DefaultFormBuilder( formLayout, panel );
