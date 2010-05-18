@@ -59,7 +59,6 @@ public class CaseEffectiveFieldsValueView
 
       JScrollPane effectiveFields = new JScrollPane();
 
-      effectiveFields.setVerticalScrollBarPolicy( JScrollPane.VERTICAL_SCROLLBAR_ALWAYS );
       effectiveFields.setViewportView( effectiveValueTable );
 
       add( effectiveFields, BorderLayout.CENTER );

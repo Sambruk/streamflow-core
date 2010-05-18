@@ -71,6 +71,7 @@ public class CaseEffectiveFieldsValueModel
       try
       {
          effectiveFields = client.query( "effectivefields", EffectiveFieldsDTO.class ).effectiveFields().get();
+         fireTableStructureChanged();
       } catch (Exception e)
       {
          throw new OperationException( CaseResources.could_not_refresh, e );
