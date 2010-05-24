@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.web;
 
+import org.osgi.framework.BundleContext;
 import org.qi4j.bootstrap.ApplicationAssembler;
 import org.qi4j.bootstrap.ApplicationAssembly;
 import org.qi4j.bootstrap.ApplicationAssemblyFactory;
@@ -52,6 +53,7 @@ import se.streamsource.streamflow.web.infrastructure.domain.ServerEntityStoreAss
 import se.streamsource.streamflow.web.infrastructure.event.EventAssembler;
 import se.streamsource.streamflow.web.infrastructure.index.EmbeddedSolrAssembler;
 import se.streamsource.streamflow.web.resource.ServerResourceAssembler;
+import se.streamsource.streamflow.web.rest.OSGiWebAssembler;
 import se.streamsource.streamflow.web.rest.StreamFlowRestAssembler;
 
 /**
@@ -70,7 +72,12 @@ public class StreamFlowWebAssembler
    public ApplicationAssembly assemble( ApplicationAssemblyFactory applicationFactory ) throws AssemblyException
    {
       ApplicationAssembly assembly = applicationFactory.newApplicationAssembly();
-      assembly.setName( "StreamFlowServer" );
+      assembly.setName( "StreamflowServer" );
+
+      for (Object serviceObject : serviceObjects)
+      {
+         assembly.setMetaInfo( serviceObject );
+      }
 
       // Version name rules: x.y.sprint.revision
       assembly.setVersion( "0.7.25.1665" );
@@ -100,11 +107,6 @@ public class StreamFlowWebAssembler
 
       assembleConfigurationLayer( configurationLayer );
 
-      for (Object serviceObject : serviceObjects)
-      {
-         assembly.setMetaInfo( serviceObject );
-      }
-
       return assembly;
    }
 
@@ -128,6 +130,8 @@ public class StreamFlowWebAssembler
       ModuleAssembly restModule = webLayer.moduleAssembly( "REST" );
       new StreamFlowRestAssembler().assemble( restModule );
       new ServerResourceAssembler().assemble( restModule );
+
+      new OSGiWebAssembler().assemble( webLayer.moduleAssembly("OSGi" ));
    }
 
    protected void assembleApplicationLayer( LayerAssembly appLayer ) throws AssemblyException

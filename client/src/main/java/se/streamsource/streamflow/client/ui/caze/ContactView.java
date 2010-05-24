@@ -20,16 +20,19 @@ package se.streamsource.streamflow.client.ui.caze;
 import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.TEXTAREA;
 import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.TEXTFIELD;
 
-import java.awt.CardLayout;
+import java.awt.*;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
+import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.property.Property;
@@ -48,6 +51,7 @@ import se.streamsource.streamflow.domain.contact.ContactValue;
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.factories.Borders;
 import com.jgoodies.forms.layout.FormLayout;
+import se.streamsource.streamflow.resource.caze.ContactsDTO;
 
 /**
  * JAVADOC
@@ -67,6 +71,8 @@ public class ContactView
    private CardLayout layout = new CardLayout();
    JTextField defaultFocusField;
    public JPanel form;
+   public JTextField addressField = (JTextField) TEXTFIELD.newField();
+   public JTextField phoneField = (JTextField) TEXTFIELD.newField();
 
    public ContactView( @Service ApplicationContext appContext )
    {
@@ -75,7 +81,7 @@ public class ContactView
       setActionMap( appContext.getActionMap( this ) );
       FormLayout formLayout = new FormLayout(
             "70dlu, 5dlu, 150dlu:grow",
-            "pref, pref, pref, pref, pref, pref, 5dlu, top:70dlu:grow" );
+            "pref, pref, pref, pref, pref, pref, 5dlu, top:70dlu:grow, pref, pref" );
       this.setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
 
       form = new JPanel();
@@ -106,11 +112,11 @@ public class ContactView
       builder.nextLine();
       builder.add(new JLabel(i18n.text(WorkspaceResources.phone_label)));
       builder.nextColumn(2);
-      builder.add(phoneNumberBinder.bind( TEXTFIELD.newField(), phoneTemplate.phoneNumber() ) );
+      builder.add(phoneNumberBinder.bind( phoneField, phoneTemplate.phoneNumber() ) );
       builder.nextLine();
       builder.add(new JLabel(i18n.text(WorkspaceResources.address_label)));
       builder.nextColumn(2);
-      builder.add(addressBinder.bind( TEXTFIELD.newField(), addressTemplate.address() ) );
+      builder.add(addressBinder.bind( addressField, addressTemplate.address() ) );
       builder.nextLine();
       builder.add(new JLabel(i18n.text(WorkspaceResources.email_label)));
       builder.nextColumn(2);
@@ -127,7 +133,12 @@ public class ContactView
       builder.add(new JLabel(i18n.text(WorkspaceResources.note_label)));
       builder.nextColumn(2);
       builder.add(contactBinder.bind( TEXTAREA.newField(), template.note() ) );
-      
+
+      builder.nextLine(2);
+      builder.add(new JLabel(i18n.text(WorkspaceResources.lookup_contact_label )));
+      builder.nextColumn(2);
+      builder.add(new JButton(getActionMap().get( "lookupContact" )) );
+
       contactBinder.addObserver( this );
       phoneNumberBinder.addObserver( this );
       addressBinder.addObserver( this );
@@ -224,6 +235,39 @@ public class ContactView
          {
             throw new OperationException( CaseResources.could_not_change_contact_id, e );
          }
+      }
+   }
+
+   @Action
+   public void lookupContact()
+   {
+      try
+      {
+         ContactsDTO contacts = model.searchContacts();
+
+         for (ContactValue contactValue : contacts.contacts().get())
+         {
+            for (ContactPhoneValue contactPhoneValue : contactValue.phoneNumbers().get())
+            {
+               if (!contactPhoneValue.phoneNumber().get().equals("") && model.getPhoneNumber().phoneNumber().get().equals(""))
+               {
+                  phoneField.setText( contactPhoneValue.phoneNumber().get() );
+               }
+            }
+
+            List<ContactAddressValue> addressValues = contactValue.addresses().get();
+            for (ContactAddressValue addressValue : addressValues)
+            {
+               if (!addressValue.address().get().equals("") && model.getAddress().address().get().equals(""))
+               {
+                  addressField.setText( addressValue.address().get() );
+               }
+            }
+         }
+
+      } catch (ResourceException e)
+      {
+         e.printStackTrace();
       }
    }
 }

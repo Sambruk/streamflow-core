@@ -1,0 +1,45 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>se.streamsource.streamflow</groupId>
+        <artifactId>streamflow</artifactId>
+        <version>1.1-SNAPSHOT</version>
+    </parent>
+    <artifactId>streamflow-server-plugin-api</artifactId>
+    <groupId>se.streamsource.streamflow</groupId>
+    <version>1.1-SNAPSHOT</version>
+    <packaging>bundle</packaging>
+    <name>StreamFlow server plugin API</name>
+    <description>StreamFlow server plugin API</description>
+    <properties>
+        <deploy.dir>${glassfish.domain}/streamflow</deploy.dir>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Export-Package>se.streamsource.streamflow.server.plugin</Export-Package>
+                        <Import-Package>*;version=0.0</Import-Package>
+                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+                    </instructions>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <!-- Domain -->
+        <dependency>
+            <groupId>se.streamsource.streamflow</groupId>
+            <artifactId>streamflow-common</artifactId>
+        </dependency>
+    </dependencies>
+</project>

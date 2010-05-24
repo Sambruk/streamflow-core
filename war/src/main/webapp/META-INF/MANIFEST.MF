@@ -1,0 +1,5 @@
+Bundle-ClassPath                        WEB-INF/classes/
+Bundle-ManifestVersion                  2
+Bundle-SymbolicName                     streamflow
+Bundle-Version                          1.0.0.SNAPSHOT
+Web-ContextPath                         /streamflow

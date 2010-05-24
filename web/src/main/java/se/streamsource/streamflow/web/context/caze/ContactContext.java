@@ -17,8 +17,11 @@
 
 package se.streamsource.streamflow.web.context.caze;
 
+import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.service.ServiceImporterException;
+import org.qi4j.api.service.ServiceReference;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.dci.api.DeleteInteraction;
@@ -28,8 +31,13 @@ import se.streamsource.streamflow.domain.contact.ContactAddressValue;
 import se.streamsource.streamflow.domain.contact.ContactEmailValue;
 import se.streamsource.streamflow.domain.contact.ContactPhoneValue;
 import se.streamsource.streamflow.domain.contact.ContactValue;
+import se.streamsource.streamflow.resource.caze.ContactsDTO;
+import se.streamsource.streamflow.server.plugin.ContactLookup;
+import se.streamsource.streamflow.web.context.ServiceAvailable;
 import se.streamsource.streamflow.web.domain.structure.caze.Contacts;
 import se.streamsource.dci.api.InteractionsMixin;
+
+import java.util.List;
 
 /**
  * JAVADOC
@@ -46,12 +54,18 @@ public interface ContactContext
    public void changeaddress( ContactAddressValue addressValue );
    public void changeemailaddress( ContactEmailValue emailValue );
 
+   @ServiceAvailable(ContactLookup.class)
+   public ContactsDTO searchcontacts();
+
    abstract class Mixin
       extends InteractionsMixin
       implements ContactContext
    {
       @Structure
       ValueBuilderFactory vbf;
+
+      @Service
+      ServiceReference<ContactLookup> contactLookup;
 
       public void delete()
       {
@@ -170,6 +184,29 @@ public interface ContactContext
 
 
          contacts.updateContact( index, builder.newInstance() );
+      }
+
+      public ContactsDTO searchcontacts()
+      {
+         ContactValue contact = context.get(ContactValue.class);
+         ValueBuilder<ContactsDTO> builder = vbf.newValueBuilder( ContactsDTO.class );
+
+         try
+         {
+            ContactLookup lookup = contactLookup.get();
+            Iterable<ContactValue> possibleContacts = lookup.lookup( contact );
+            List<ContactValue> contactList = builder.prototype().contacts().get();
+
+            for (ContactValue possibleContact : possibleContacts)
+            {
+               contactList.add( possibleContact );
+            }
+            return builder.newInstance();
+         } catch (ServiceImporterException e)
+         {
+            // Not available at this time
+            return builder.newInstance();
+         }
       }
    }
 }

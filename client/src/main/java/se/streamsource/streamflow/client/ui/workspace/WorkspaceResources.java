@@ -80,5 +80,7 @@ public enum WorkspaceResources
    choose_owner_title,
    change_password_title,
    welcome,
-   none_text, choose_message_delivery_type
+   none_text,
+   lookup_contact_label,
+   choose_message_delivery_type
 }

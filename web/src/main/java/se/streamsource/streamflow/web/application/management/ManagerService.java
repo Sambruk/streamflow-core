@@ -116,7 +116,7 @@ public interface ManagerService
          manager.activate();
 
          // Register the Model MBean in the MBean Server
-         objectName = new ObjectName( "StreamFlow:name=Manager" );
+         objectName = new ObjectName( "Streamflow:name=Manager" );
          server.registerMBean( mbean, objectName );
 
          // Expose configurable services
@@ -153,12 +153,10 @@ public interface ManagerService
 
             MBeanInfo mbeanInfo = new MBeanInfo( serviceClass, name, attributes.toArray( new MBeanAttributeInfo[attributes.size()] ), null, operations.toArray( new MBeanOperationInfo[operations.size()] ), null );
             Object mbean = new ConfigurableService( configurableService, mbeanInfo, name, properties );
-            ObjectName configurableServiceName = new ObjectName( "StreamFlow:name=" + name );
+            ObjectName configurableServiceName = new ObjectName( "Streamflow:name=" + name );
             server.registerMBean( mbean, configurableServiceName );
             configurableServiceNames.add( configurableServiceName );
          }
-
-
       }
 
       public void passivate() throws Exception

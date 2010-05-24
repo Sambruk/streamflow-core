@@ -17,10 +17,12 @@
 
 package se.streamsource.dci.api;
 
+import org.qi4j.api.common.ConstructionException;
 import org.qi4j.api.constraint.Constraint;
 import org.qi4j.api.constraint.ConstraintDeclaration;
 import org.qi4j.api.constraint.Constraints;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.object.NoSuchObjectException;
 import org.qi4j.api.object.ObjectBuilderFactory;
 
 import java.lang.annotation.Annotation;
@@ -95,7 +97,14 @@ public class InteractionConstraintsService
             InteractionConstraint<Annotation> constraint = null;
             try
             {
-               constraint = constraintClass.newInstance();
+               try
+               {
+                  constraint = obf.newObject( constraintClass );
+               } catch (NoSuchObjectException e)
+               {
+                  constraint = constraintClass.newInstance();
+               }
+
             } catch (Exception e)
             {
                continue; // Skip this constraint

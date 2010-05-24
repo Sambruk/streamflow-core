@@ -112,7 +112,7 @@ public interface MailService
 
          if (config.configuration().useSSL().get())
          {
-            Security.addProvider( new com.sun.net.ssl.internal.ssl.Provider() );
+//            Security.addProvider( new com.sun.net.ssl.internal.ssl.Provider() );
             props.put( "mail.smtp.host", config.configuration().smtphost().get() );
             props.put( "mail.smtp.auth", "true" );
             props.put( "mail.smtp.port", config.configuration().smtpport().get() );

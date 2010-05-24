@@ -17,13 +17,19 @@
 
 package se.streamsource.streamflow.web;
 
+import org.apache.log4j.xml.DOMConfigurator;
 import org.restlet.Component;
+import org.restlet.Context;
+import org.restlet.Request;
+import org.restlet.Response;
+import org.restlet.Restlet;
 import org.restlet.data.Protocol;
-import org.slf4j.bridge.SLF4JBridgeHandler;
+import org.restlet.routing.Filter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import se.streamsource.streamflow.web.rest.StreamFlowRestApplication;
 
-import java.util.logging.Logger;
-import java.util.logging.Handler;
+import java.net.URL;
 
 /**
  * JAVADOC
@@ -31,6 +37,8 @@ import java.util.logging.Handler;
 public class MainWeb
 {
    private Component component;
+   public StreamFlowRestApplication application;
+   public Logger logger;
 
    public static void main( String[] args ) throws Exception
    {
@@ -39,6 +47,7 @@ public class MainWeb
 
    public void start() throws Exception
    {
+/*
       // Remove default handlers - we do our own logging!
       for (Handler handler : Logger.getLogger( "" ).getHandlers())
       {
@@ -47,18 +56,68 @@ public class MainWeb
 
       // Install SL4J Bridge. This will eventually delegate to log4j for logging
       SLF4JBridgeHandler.install();
+*/
 
-      component = new Component();
-      component.getServers().add( Protocol.HTTP, 8040 );
-      component.getClients().add( Protocol.CLAP );
-      component.getClients().add( Protocol.FILE );
-      StreamFlowRestApplication application = new StreamFlowRestApplication( component.getContext().createChildContext() );
-      component.getDefaultHost().attach( "/streamflow/streamflow", application );
-      component.start();
+      URL logConfig = getClass().getResource( "/log4j.xml" );
+      DOMConfigurator.configure( logConfig );
+
+      logger = LoggerFactory.getLogger( getClass() );
+      logger.info("Starting Streamflow");
+      logger.info( "Classloader current:"+Thread.currentThread().getContextClassLoader()+" class:"+getClass().getClassLoader() );
+
+      Thread.currentThread().setContextClassLoader( getClass().getClassLoader() );
+
+      try
+      {
+         component = new Component();
+         component.getClients().add( Protocol.CLAP );
+         component.getClients().add( Protocol.FILE );
+         application = new StreamFlowRestApplication( component.getContext().createChildContext() );
+
+         // TODO Could we make it available some other way?
+         component.getDefaultHost().attach( "/streamflow/streamflow", application );
+         component.start();
+         logger.info("Started Streamflow");
+      } catch (Exception e)
+      {
+         logger.info("Could not start Streamflow");
+
+         if (component != null)
+            component.stop();
+         throw e;
+      } finally
+      {
+         Thread.currentThread().setContextClassLoader( null );
+      }
+   }
+
+   public Restlet getApplication()
+   {
+      // Set context classloader so that resources are taken from this bundle
+      return new Filter(application.getContext(), application)
+      {
+         @Override
+         protected int doHandle( Request request, Response response )
+         {
+            Thread thread = Thread.currentThread();
+            ClassLoader oldCL = thread.getContextClassLoader();
+            thread.setContextClassLoader(getClass().getClassLoader() );
+
+            try
+            {
+               return super.doHandle( request, response );
+            } finally
+            {
+               thread.setContextClassLoader( oldCL );
+            }
+         }
+      };
    }
 
    public void stop() throws Exception
    {
+      logger.info("Stopping Streamflow");
       component.stop();
+      logger.info("Stopped Streamflow");
    }
 }

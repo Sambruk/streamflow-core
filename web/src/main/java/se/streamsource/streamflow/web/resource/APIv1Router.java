@@ -77,7 +77,7 @@ public class APIv1Router
       attach( "/admin/console", createServerResourceFinder( ConsoleServerResource.class ) );
 
       // Version info
-      Directory directory = new Directory( getContext(), "clap://class/static/" );
+      Directory directory = new Directory( getContext(), "clap://thread/static/" );
       directory.setListingAllowed( true );
       attach( "/static", directory );
    }

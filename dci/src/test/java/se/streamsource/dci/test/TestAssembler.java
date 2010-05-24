@@ -26,6 +26,7 @@ import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.spi.service.importer.NewObjectImporter;
 import org.restlet.Restlet;
+import se.streamsource.dci.api.InteractionConstraintsService;
 import se.streamsource.dci.restlet.server.DCIAssembler;
 import se.streamsource.dci.restlet.server.DefaultResponseWriterFactory;
 import se.streamsource.dci.restlet.server.NullCommandResult;
@@ -58,6 +59,12 @@ public class TestAssembler
       ModuleAssembly assembly1 = assembly.layerAssembly( "Web" ).moduleAssembly( "REST" );
       assemble( assembly1 );
       new DCIAssembler().assemble( assembly1 );
+
+      assembly1.importServices( InteractionConstraintsService.class ).
+            importedBy( NewObjectImporter.class ).
+            visibleIn( Visibility.application );
+      assembly1.addObjects( InteractionConstraintsService.class );
+
 
       for (Object service : services)
       {

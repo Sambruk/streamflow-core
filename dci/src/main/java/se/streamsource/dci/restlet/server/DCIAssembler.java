@@ -46,11 +46,6 @@ public class DCIAssembler
       module.addObjects( VelocityEngine.class,
             CommandQueryRestlet.class);
 
-      module.importServices( InteractionConstraintsService.class ).
-            importedBy( NewObjectImporter.class ).
-            visibleIn( Visibility.application );
-      module.addObjects( InteractionConstraintsService.class );
-
       module.importServices( MetadataService.class );
 
       module.addValues( IndexValue.class, EntityValue.class, LinksValue.class, LinkValue.class, StringValue.class );

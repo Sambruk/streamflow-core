@@ -10,11 +10,12 @@
 
     <!-- This POM is ONLY to initiate the modules to be built. -->
     <properties>
-        <version.qi4j-core>1.1-SNAPSHOT</version.qi4j-core>
-        <version.qi4j-lib>1.1-STREAMFLOW-3-g5ede899</version.qi4j-lib>
+        <version.qi4j-core>1.2-SNAPSHOT</version.qi4j-core>
+        <version.qi4j-lib>1.1-SNAPSHOT</version.qi4j-lib>
         <version.qi4j-ext>1.1-SNAPSHOT</version.qi4j-ext>
         <version.qi4j-tools>1.0</version.qi4j-tools>
         <version.restlet>2.0-STREAMFLOW-20091006.210103</version.restlet>
+        <version.slf4j>1.6.0</version.slf4j>
         <application.header>Streamflow</application.header>
     </properties>
 
@@ -23,16 +24,30 @@
             <id>nexus</id>
             <url>http://waybuild.gotdns.com/nexus/content/groups/public</url>
         </repository>
+        <repository>
+            <id>java.net</id>
+            <name>GlassFish Maven Repository</name>
+            <url>http://download.java.net/maven/glassfish</url>
+        </repository>
+        <repository>
+            <id>codehaus</id>
+            <name>Codehaus Maven Repository</name>
+            <url>http://repository.codehaus.org/org/codehaus</url>
+        </repository>
     </repositories>
 
     <modules>
         <module>common</module>
         <module>dci</module>
         <module>client</module>
+        <module>serverplugin</module>
+        <module>web-dependencies</module>
         <module>web</module>
         <module>tests</module>
         <module>webstart</module>
         <module>war</module>
+        <module>helloworldplugin</module>
+        <!--        <module>server</module> -->
         <module>help</module>
     </modules>
 
@@ -157,6 +172,7 @@
     </organization>
 
     <build>
+
         <extensions>
             <extension>
                 <groupId>org.apache.maven.wagon</groupId>
@@ -257,60 +273,6 @@
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>com.agilejava.docbkx</groupId>
-                <artifactId>docbkx-maven-plugin</artifactId>
-                <version>2.0.6</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>generate-html</goal>
-                            <goal>generate-pdf</goal>
-                        </goals>
-                        <phase>pre-site</phase>
-                    </execution>
-                </executions>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.docbook</groupId>
-                        <artifactId>docbook-xml</artifactId>
-                        <version>4.4</version>
-                        <scope>runtime</scope>
-                    </dependency>
-                </dependencies>
-                <configuration>
-                    <includes>index.xml</includes>
-                    <chunkedOutput>true</chunkedOutput>
-                    <htmlStylesheet>css/html.css</htmlStylesheet>
-                    <xincludeSupported>true</xincludeSupported>
-                    <htmlCustomization>src/docbkx/resources/xsl/html_chunk.xsl</htmlCustomization>
-                    <foCustomization>src/docbkx/resources/xsl/fopdf.xsl</foCustomization>
-                    <entities>
-                        <entity>
-                            <name>version</name>
-                            <value>${pom.version}</value>
-                        </entity>
-                    </entities>
-                    <postProcess>
-                        <copy todir="target/site/reference">
-                            <fileset dir="target/docbkx">
-                                <include name="**/*.html"/>
-                                <include name="**/*.pdf"/>
-                            </fileset>
-                        </copy>
-                        <copy todir="target/site/reference/html">
-                            <fileset dir="src/docbkx/resources">
-                                <include name="**/*.css"/>
-                                <include name="**/*.png"/>
-                                <include name="**/*.gif"/>
-                                <include name="**/*.jpg"/>
-                            </fileset>
-                        </copy>
-                        <move file="target/site/reference/pdf/index.pdf"
-                              tofile="target/site/reference/pdf/streamflow-reference.pdf" failonerror="false"/>
-                    </postProcess>
-                </configuration>
-            </plugin>
-            <plugin>
                 <inherited>false</inherited>
                 <groupId>com.mycila.maven-license-plugin</groupId>
                 <artifactId>maven-license-plugin</artifactId>
@@ -371,12 +333,10 @@
                             </properties>
                             <runOnlyAtExecutionRoot>false</runOnlyAtExecutionRoot>
                             <resourceBundles>
-                                <resourceBundle>se.streamsource.streamflow:streamflow-jar-resource-bundle:1.0
-                                </resourceBundle>
+                                <resourceBundle>se.streamsource.streamflow:streamflow-jar-resource-bundle:1.0</resourceBundle>                                    
                             </resourceBundles>
                             <supplementalModelArtifacts>
-                                <supplementalModelArtifact>se.streamsource.streamflow:dependency-resource-supplement:1.0
-                                </supplementalModelArtifact>
+                                <supplementalModelArtifact>se.streamsource.streamflow:dependency-resource-supplement:1.0</supplementalModelArtifact>
                             </supplementalModelArtifacts>
                             <supplementalModels>
                                 <supplementalModel>supplemental-models.xml</supplementalModel>
@@ -384,15 +344,6 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.2-beta-5</version>
-                <configuration>
-                    <descriptors>
-                        <descriptor>src/main/resources/dist-pkg.xml</descriptor>
-                    </descriptors>
-                </configuration>
             </plugin>
         </plugins>
         <resources>
@@ -469,6 +420,11 @@
                 <artifactId>streamflow-dci</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>se.streamsource.streamflow</groupId>
+                <artifactId>streamflow-server-plugin-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
 
             <!-- Qi4j -->
@@ -506,6 +462,23 @@
                 <groupId>org.qi4j.library</groupId>
                 <artifactId>qi4j-lib-constraints</artifactId>
                 <version>${version.qi4j-lib}</version>
+            </dependency>
+
+            <!-- Other -->
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${version.slf4j}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.osgi</groupId>
+                <artifactId>org.osgi.core</artifactId>
+                <version>4.2.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.osgi</groupId>
+                <artifactId>org.osgi.compendium</artifactId>
+                <version>4.2.0</version>
             </dependency>
 
             <!-- REST -->
@@ -578,11 +551,7 @@
                 <artifactId>log4j</artifactId>
                 <version>1.2.14</version>
             </dependency>
-            <dependency>
-                <groupId>org.osgi</groupId>
-                <artifactId>org.osgi.core</artifactId>
-                <version>4.0.0</version>
-            </dependency>
+
             <!-- Test -->
             <dependency>
                 <groupId>junit</groupId>
@@ -603,4 +572,38 @@
             -->
         </dependencies>
     </dependencyManagement>
+
+    <profiles>
+        <profile>
+            <id>glassfish</id>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <artifactId>maven-antrun-plugin</artifactId>
+                            <executions>
+                                <execution>
+                                    <id>deploy-streamflow</id>
+                                    <phase>install</phase>
+                                    <goals>
+                                        <goal>run</goal>
+                                    </goals>
+                                    <configuration>
+                                        <tasks>
+                                            <echo message="Deploying ${basedir}/target/${project.artifactId}-${project.version}.jar to ${deploy.dir}}"></echo>
+                                            <copy todir="${deploy.dir}"
+                                                  preservelastmodified="true">
+                                                <fileset
+                                                        file="${basedir}/target/${project.artifactId}-${project.version}.*"/>
+                                            </copy>
+                                        </tasks>
+                                    </configuration>
+                                </execution>
+                            </executions>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
+        </profile>
+    </profiles>
 </project>

@@ -23,6 +23,7 @@ import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.spi.service.importer.NewObjectImporter;
 import se.streamsource.dci.api.InteractionConstraintsService;
+import se.streamsource.streamflow.server.plugin.ContactLookup;
 import se.streamsource.streamflow.web.context.access.SurfaceContext;
 import se.streamsource.streamflow.web.context.access.accesspoints.AccessPointContext;
 import se.streamsource.streamflow.web.context.access.accesspoints.ProxyUserContext;
@@ -42,6 +43,7 @@ import se.streamsource.streamflow.web.context.caze.CaseGeneralContext;
 import se.streamsource.streamflow.web.context.caze.CasesContext;
 import se.streamsource.streamflow.web.context.caze.ContactContext;
 import se.streamsource.streamflow.web.context.caze.ContactsContext;
+import se.streamsource.streamflow.web.context.ServiceAvailable;
 import se.streamsource.streamflow.web.context.conversation.ConversationContext;
 import se.streamsource.streamflow.web.context.conversation.ConversationParticipantContext;
 import se.streamsource.streamflow.web.context.conversation.ConversationParticipantsContext;
@@ -103,6 +105,7 @@ import se.streamsource.streamflow.web.context.users.workspace.WorkspaceContext;
 import se.streamsource.streamflow.web.context.users.workspace.WorkspaceProjectContext;
 import se.streamsource.streamflow.web.context.users.workspace.WorkspaceProjectsContext;
 import se.streamsource.streamflow.web.context.users.workspace.WorkspaceUserContext;
+import se.streamsource.streamflow.web.infrastructure.osgi.OSGiServiceImporter;
 
 /**
  * JAVADOC
@@ -117,9 +120,13 @@ public class InteractionsAssembler
             visibleIn( Visibility.application );
       moduleAssembly.addObjects( InteractionConstraintsService.class );
 
-      moduleAssembly.addObjects( RequiresPermission.RequiresPermissionConstraint.class );
+      moduleAssembly.addObjects( RequiresPermission.RequiresPermissionConstraint.class,
+            ServiceAvailable.ServiceAvailableConstraint.class);
 
-      // Only expose the root the upper layers
+      // Import plugins from OSGi
+      moduleAssembly.importServices( ContactLookup.class ).importedBy( OSGiServiceImporter.class );
+
+      // Only expose the root to the upper layers
       moduleAssembly.addTransients(
             RootContext.class).visibleIn( Visibility.application);
 

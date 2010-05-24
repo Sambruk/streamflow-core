@@ -28,6 +28,7 @@ import se.streamsource.streamflow.domain.contact.ContactAddressValue;
 import se.streamsource.streamflow.domain.contact.ContactEmailValue;
 import se.streamsource.streamflow.domain.contact.ContactPhoneValue;
 import se.streamsource.streamflow.domain.contact.ContactValue;
+import se.streamsource.streamflow.resource.caze.ContactsDTO;
 
 /**
  * Model for a contact of a case
@@ -113,4 +114,8 @@ public class ContactModel
       client.putCommand( "changeemailaddress", builder.newInstance() );
    }
 
+   public ContactsDTO searchContacts() throws ResourceException
+   {
+      return client.query( "searchcontacts", ContactsDTO.class );
+   }
 }

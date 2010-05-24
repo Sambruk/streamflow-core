@@ -1,0 +1,29 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>se.streamsource.streamflow</groupId>
+        <artifactId>streamflow</artifactId>
+        <version>1.1-SNAPSHOT</version>
+    </parent>
+
+    <groupId>se.streamsource.streamflow</groupId>
+    <artifactId>streamflow-server</artifactId>
+    <version>1.1-SNAPSHOT</version>
+
+    <packaging>pom</packaging>
+    <name>StreamFlow Server</name>
+    <description>StreamFlow Server packaging</description>
+    <dependencies>
+        <!-- StreamFlow -->
+        <dependency>
+            <groupId>se.streamsource.streamflow</groupId>
+            <artifactId>streamflow-war</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>se.streamsource.streamflow</groupId>
+            <artifactId>streamflow-help-sv_gov</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
+</project>

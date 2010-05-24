@@ -17,11 +17,13 @@
 
 --%>
 
-<%@page import="info.aduna.io.IOUtil,java.io.InputStream,java.util.Properties" %>
+<%@page import="java.io.InputStream,java.util.Properties" %>
 
 <%
     InputStream is = getClass().getResourceAsStream("/version.properties");
-    Properties p = IOUtil.readProperties(is);
+    Properties p = new Properties();
+    p.load(is);
+    is.close();
     pageContext.setAttribute("application_version", p.getProperty("application.version"));
     pageContext.setAttribute("application_buildKey", p.getProperty("application.buildKey"));
     pageContext.setAttribute("application_buildNumber", p.getProperty("application.buildNumber"));

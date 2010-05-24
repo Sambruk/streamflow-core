@@ -17,6 +17,8 @@
 
 package se.streamsource.streamflow.web.rest;
 
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleReference;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
@@ -107,7 +109,7 @@ public class StreamFlowRestApplication
    {
       try
       {
-// Start Qi4j
+         // Start Qi4j
          Energy4Java is = new Energy4Java();
          app = is.newApplication( new StreamFlowWebAssembler( this, getMetadataService() ) );
 
