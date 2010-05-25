@@ -61,7 +61,7 @@ public class EventsCommandResult
    @Structure
    protected ValueBuilderFactory vbf;
 
-   public ThreadLocal<TransactionEvents> transactions = new ThreadLocal<TransactionEvents>();
+   private TransactionEvents transactions;
 
    public EventsCommandResult( @Service EventSource source) throws Exception
    {
@@ -70,22 +70,20 @@ public class EventsCommandResult
 
    public Object getResult()
    {
-      TransactionEvents tx = transactions.get();
-      transactions.set(null);
-      if (tx == null)
+      if (transactions == null)
       {
          ValueBuilder<TransactionEvents> builder = vbf.newValueBuilder( TransactionEvents.class );
          builder.prototype().timestamp().set( System.currentTimeMillis() );
-         tx = builder.newInstance();
+         transactions = builder.newInstance();
       }
 
-      return tx;
+      return transactions;
    }
 
 
    public boolean visit( TransactionEvents transaction )
    {
-      transactions.set(transaction );
+      transactions = transaction;
 
       return true;
    }

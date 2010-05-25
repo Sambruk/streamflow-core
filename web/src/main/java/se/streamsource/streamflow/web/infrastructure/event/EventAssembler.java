@@ -40,7 +40,6 @@ public class EventAssembler
       module.addValues( TransactionEvents.class, DomainEvent.class ).visibleIn( Visibility.application );
       module.addServices( EventSourceService.class ).identifiedBy( "eventsource" ).visibleIn( Visibility.application );
       module.addServices( DomainEventFactoryService.class ).visibleIn( Visibility.application );
-      module.addServices( CommandEventListenerService.class ).visibleIn( Visibility.application );
       module.addObjects( TimeService.class );
       module.importServices( TimeService.class ).importedBy( NewObjectImporter.class );
 

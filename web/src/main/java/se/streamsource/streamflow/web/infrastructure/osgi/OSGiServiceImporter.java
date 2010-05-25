@@ -17,9 +17,14 @@
 
 package se.streamsource.streamflow.web.infrastructure.osgi;
 
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleEvent;
+import org.osgi.framework.BundleListener;
 import org.osgi.framework.BundleReference;
 import org.osgi.framework.ServiceReference;
+import org.osgi.util.tracker.ServiceTracker;
+import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.service.ImportedServiceDescriptor;
 import org.qi4j.api.service.ServiceImporter;
 import org.qi4j.api.service.ServiceImporterException;
@@ -37,11 +42,14 @@ import java.util.Map;
 public class OSGiServiceImporter
       implements ServiceImporter
 {
-   BundleContext context = BundleReference.class.cast( Restlet.class.getClassLoader() ).getBundle().getBundleContext();
+   @Service
+   OSGiServices services;
 
-   public Object importService( ImportedServiceDescriptor serviceDescriptor ) throws ServiceImporterException
+   public Object importService( final ImportedServiceDescriptor serviceDescriptor ) throws ServiceImporterException
    {
-      OSGiInvocationHandler handler = new OSGiInvocationHandler(context, serviceDescriptor.type().getName());
+      final ServiceTracker serviceTracker = services.getServiceTracker( serviceDescriptor.type().getName() );
+
+      OSGiInvocationHandler handler = new OSGiInvocationHandler(serviceTracker);
       Object proxy = Proxy.newProxyInstance( serviceDescriptor.type().getClassLoader(),
             new Class[]{serviceDescriptor.type()},
             handler);
@@ -51,19 +59,17 @@ public class OSGiServiceImporter
    public boolean isActive( Object instance )
    {
       OSGiInvocationHandler handler = (OSGiInvocationHandler) Proxy.getInvocationHandler( instance );
-      return handler.getInstance() != null;
+      return handler.isActive();
    }
 
    static class OSGiInvocationHandler
       implements InvocationHandler
    {
-      BundleContext context;
-      private String type;
+      private ServiceTracker serviceTracker;
 
-      OSGiInvocationHandler( BundleContext context, String type )
+      OSGiInvocationHandler( ServiceTracker serviceTracker )
       {
-         this.context = context;
-         this.type = type;
+         this.serviceTracker = serviceTracker;
       }
 
       public Object invoke( Object proxy, Method method, Object[] args ) throws Throwable
@@ -78,10 +84,19 @@ public class OSGiServiceImporter
 
       public Object getInstance()
       {
-         ServiceReference ref = context.getServiceReference( type );
-         if (ref == null)
+         try
+         {
+            return serviceTracker.waitForService( 5000 );
+         } catch (InterruptedException e)
+         {
+            // No such service found
             return null;
-         return context.getService( ref );
+         }
+      }
+
+      public boolean isActive()
+      {
+         return serviceTracker.size() > 0;
       }
    }
 }

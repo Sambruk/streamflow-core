@@ -18,6 +18,7 @@
 package se.streamsource.streamflow.web;
 
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleReference;
 import org.qi4j.bootstrap.ApplicationAssembler;
 import org.qi4j.bootstrap.ApplicationAssembly;
 import org.qi4j.bootstrap.ApplicationAssemblyFactory;
@@ -52,6 +53,7 @@ import se.streamsource.streamflow.web.infrastructure.domain.EntityFinderAssemble
 import se.streamsource.streamflow.web.infrastructure.domain.ServerEntityStoreAssembler;
 import se.streamsource.streamflow.web.infrastructure.event.EventAssembler;
 import se.streamsource.streamflow.web.infrastructure.index.EmbeddedSolrAssembler;
+import se.streamsource.streamflow.web.infrastructure.osgi.OSGiServiceImporterAssembler;
 import se.streamsource.streamflow.web.resource.ServerResourceAssembler;
 import se.streamsource.streamflow.web.rest.OSGiWebAssembler;
 import se.streamsource.streamflow.web.rest.StreamFlowRestAssembler;
@@ -79,6 +81,14 @@ public class StreamFlowWebAssembler
          assembly.setMetaInfo( serviceObject );
       }
 
+      // Make bundle context available as application metainfo
+      ClassLoader classLoader = getClass().getClassLoader();
+      if (classLoader instanceof BundleReference)
+      {
+         BundleContext context = BundleReference.class.cast( classLoader ).getBundle().getBundleContext();
+         assembly.setMetaInfo( context );
+      }
+
       // Version name rules: x.y.sprint.revision
       assembly.setVersion( "0.7.25.1665" );
 
@@ -91,7 +101,7 @@ public class StreamFlowWebAssembler
 
       webLayer.uses( appLayer, contextLayer, domainLayer, domainInfrastructureLayer );
       appLayer.uses( contextLayer, domainLayer, domainInfrastructureLayer, configurationLayer );
-      contextLayer.uses(domainLayer);
+      contextLayer.uses(domainLayer, domainInfrastructureLayer);
       domainLayer.uses( domainInfrastructureLayer );
       domainInfrastructureLayer.uses( configurationLayer );
 
@@ -122,6 +132,7 @@ public class StreamFlowWebAssembler
       new EntityFinderAssembler().assemble( domainInfrastructureLayer.moduleAssembly( "Entity Finder" ) );
       new EventAssembler().assemble( domainInfrastructureLayer.moduleAssembly( "Events" ) );
       new EmbeddedSolrAssembler().assemble( domainInfrastructureLayer.moduleAssembly( "Search Engine" ));
+      new OSGiServiceImporterAssembler().assemble( domainInfrastructureLayer.moduleAssembly("OSGi Services" ));
    }
 
 

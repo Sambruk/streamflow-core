@@ -48,7 +48,7 @@ public class StreamflowServlet
    {
       super.init();
       this.adapter = new ServletAdapter( getServletContext() );
-      ctx = BundleReference.class.cast( Restlet.class.getClassLoader() ).getBundle().getBundleContext();
+      ctx = BundleReference.class.cast( StreamflowServlet.class.getClassLoader() ).getBundle().getBundleContext();
       tracker = new ServiceTracker( ctx, Restlet.class.getName(), null)
       {
          @Override

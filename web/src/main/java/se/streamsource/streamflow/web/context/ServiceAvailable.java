@@ -46,7 +46,6 @@ public @interface ServiceAvailable
       public boolean isValid( ServiceAvailable serviceAvailable, Context context )
       {
          ServiceReference ref = finder.findService( serviceAvailable.value() );
-         ref.get();
          return ref.isActive();
       }
    }

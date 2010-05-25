@@ -62,6 +62,7 @@ public class StreamFlowRestApplication
    @Structure
    ApplicationSPI app;
 
+/*
    Thread shutdownHook = new Thread()
    {
       @Override
@@ -79,6 +80,7 @@ public class StreamFlowRestApplication
       }
    };
 
+*/
    public StreamFlowRestApplication( @Uses Context parentContext ) throws Exception
    {
       super( parentContext );
@@ -96,9 +98,9 @@ public class StreamFlowRestApplication
       getContext().setVerifier( verifier );
       getContext().setEnroler( enroler );
 
-      Router api = factory.newObjectBuilder( APIv1Router.class ).use( getContext() ).newInstance();
-
       Router versions = new Router( getContext() );
+
+      Router api = factory.newObjectBuilder( APIv1Router.class ).use( getContext() ).newInstance();
       versions.attach( "/v1", api );
 
       return versions;
@@ -117,7 +119,7 @@ public class StreamFlowRestApplication
 
          app.findModule( "Web", "REST" ).objectBuilderFactory().newObjectBuilder( StreamFlowRestApplication.class ).injectTo( this );
 
-         Runtime.getRuntime().addShutdownHook( shutdownHook );
+//         Runtime.getRuntime().addShutdownHook( shutdownHook );
 
          super.start();
       } catch (Exception e)
@@ -135,6 +137,6 @@ public class StreamFlowRestApplication
       Logger.getLogger( "streamflow" ).info( "Passivating StreamFlow" );
       app.passivate();
 
-      Runtime.getRuntime().removeShutdownHook( shutdownHook );
+//      Runtime.getRuntime().removeShutdownHook( shutdownHook );
    }
 }

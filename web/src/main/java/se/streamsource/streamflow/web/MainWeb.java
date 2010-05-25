@@ -63,7 +63,6 @@ public class MainWeb
 
       logger = LoggerFactory.getLogger( getClass() );
       logger.info("Starting Streamflow");
-      logger.info( "Classloader current:"+Thread.currentThread().getContextClassLoader()+" class:"+getClass().getClassLoader() );
 
       Thread.currentThread().setContextClassLoader( getClass().getClassLoader() );
 
@@ -85,6 +84,13 @@ public class MainWeb
          if (component != null)
             component.stop();
          throw e;
+      } catch (Throwable e)
+      {
+         logger.info("Could not start Streamflow");
+
+         if (component != null)
+            component.stop();
+         throw (RuntimeException) e;
       } finally
       {
          Thread.currentThread().setContextClassLoader( null );
@@ -94,24 +100,7 @@ public class MainWeb
    public Restlet getApplication()
    {
       // Set context classloader so that resources are taken from this bundle
-      return new Filter(application.getContext(), application)
-      {
-         @Override
-         protected int doHandle( Request request, Response response )
-         {
-            Thread thread = Thread.currentThread();
-            ClassLoader oldCL = thread.getContextClassLoader();
-            thread.setContextClassLoader(getClass().getClassLoader() );
-
-            try
-            {
-               return super.doHandle( request, response );
-            } finally
-            {
-               thread.setContextClassLoader( oldCL );
-            }
-         }
-      };
+      return new ClassLoaderFilter(application.getContext(), application);
    }
 
    public void stop() throws Exception
@@ -119,5 +108,34 @@ public class MainWeb
       logger.info("Stopping Streamflow");
       component.stop();
       logger.info("Stopped Streamflow");
+   }
+
+   static class ClassLoaderFilter
+      extends Filter
+   {
+      private ClassLoader cl;
+
+      ClassLoaderFilter( Context context, Restlet next )
+      {
+         super( context, next );
+
+         cl = getClass().getClassLoader();
+      }
+
+      @Override
+      protected int doHandle( Request request, Response response )
+      {
+         Thread thread = Thread.currentThread();
+         ClassLoader oldCL = thread.getContextClassLoader();
+         thread.setContextClassLoader( cl );
+
+         try
+         {
+            return super.doHandle( request, response );
+         } finally
+         {
+            thread.setContextClassLoader( oldCL );
+         }
+      }
    }
 }
