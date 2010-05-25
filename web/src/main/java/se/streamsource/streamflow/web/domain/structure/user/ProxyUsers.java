@@ -23,10 +23,12 @@ import org.qi4j.api.entity.IdentityGenerator;
 import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 
 /**
  * JAVADOC
@@ -54,6 +56,9 @@ public interface ProxyUsers
       @Structure
       UnitOfWorkFactory uowf;
 
+      @This
+      Organization organization;
+
       public ProxyUser createProxyUser( String name, String username, String password )
       {
          return createdProxyUser( DomainEvent.CREATE, name, username, password );
@@ -61,7 +66,8 @@ public interface ProxyUsers
 
       public ProxyUser createdProxyUser( DomainEvent event, String name, String username, String password )
       {
-         EntityBuilder<ProxyUser> builder = uowf.currentUnitOfWork().newEntityBuilder( ProxyUser.class );
+         EntityBuilder<ProxyUser> builder = uowf.currentUnitOfWork().newEntityBuilder( ProxyUser.class, username );
+         builder.instance().organization().set( organization );
          UserAuthentication.Data userEntity = builder.instanceFor( UserAuthentication.Data.class );
          userEntity.userName().set( username );
          userEntity.hashedPassword().set( userEntity.hashPassword( password ) );

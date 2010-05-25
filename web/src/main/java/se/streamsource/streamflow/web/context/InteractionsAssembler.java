@@ -24,18 +24,19 @@ import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.spi.service.importer.NewObjectImporter;
 import se.streamsource.dci.api.InteractionConstraintsService;
 import se.streamsource.streamflow.server.plugin.ContactLookup;
-import se.streamsource.streamflow.web.context.access.SurfaceContext;
-import se.streamsource.streamflow.web.context.access.accesspoints.AccessPointContext;
-import se.streamsource.streamflow.web.context.access.accesspoints.ProxyUserContext;
-import se.streamsource.streamflow.web.context.access.accesspoints.endusers.EndUserContext;
-import se.streamsource.streamflow.web.context.access.accesspoints.endusers.EndUsersContext;
-import se.streamsource.streamflow.web.context.access.accesspoints.endusers.formdrafts.FormDraftsContext;
-import se.streamsource.streamflow.web.context.access.accesspoints.endusers.submittedforms.SubmittedFormsContext;
-import se.streamsource.streamflow.web.context.access.accesspoints.endusers.formdrafts.FormDraftContext;
-import se.streamsource.streamflow.web.context.access.accesspoints.endusers.formdrafts.summary.SummaryContext;
-import se.streamsource.streamflow.web.context.access.accesspoints.endusers.requiredforms.RequiredFormsContext;
-import se.streamsource.streamflow.web.context.access.accesspoints.AccessPointsContext;
-import se.streamsource.streamflow.web.context.access.proxyusers.ProxyUsersContext;
+import se.streamsource.streamflow.web.context.surface.SurfaceContext;
+import se.streamsource.streamflow.web.context.surface.accesspoints.AccessPointContext;
+import se.streamsource.streamflow.web.context.surface.accesspoints.AccessPointsContext;
+import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.EndUserContext;
+import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.formdrafts.FormDraftContext;
+import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.formdrafts.summary.SummaryContext;
+import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.submittedforms.SubmittedFormsContext;
+import se.streamsource.streamflow.web.context.surface.administration.organizations.proxyusers.ProxyUserContext;
+import se.streamsource.streamflow.web.context.surface.administration.organizations.proxyusers.ProxyUsersContext;
+import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.EndUsersContext;
+import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.formdrafts.FormDraftsContext;
+import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.requiredforms.RequiredFormsContext;
+import se.streamsource.streamflow.web.context.surface.administration.AdministrationContext;
 import se.streamsource.streamflow.web.context.caze.CaseContext;
 import se.streamsource.streamflow.web.context.caze.CaseFormContext;
 import se.streamsource.streamflow.web.context.caze.CaseFormsContext;
@@ -211,12 +212,12 @@ public class InteractionsAssembler
 
             // Surface
             SurfaceContext.class,
-            se.streamsource.streamflow.web.context.access.OrganizationContext.class,
-            se.streamsource.streamflow.web.context.access.projects.ProjectsContext.class,
-            se.streamsource.streamflow.web.context.access.projects.CaseTypesContext.class,
-            se.streamsource.streamflow.web.context.access.projects.LabelsContext.class,
-            se.streamsource.streamflow.web.context.access.OrganizationsContext.class,
-            se.streamsource.streamflow.web.context.access.accesspoints.endusers.CaseContext.class,
+            se.streamsource.streamflow.web.context.surface.administration.organizations.OrganizationContext.class,
+            se.streamsource.streamflow.web.context.surface.administration.organizations.projects.ProjectsContext.class,
+            se.streamsource.streamflow.web.context.surface.administration.organizations.projects.CaseTypesContext.class,
+            se.streamsource.streamflow.web.context.surface.administration.organizations.projects.LabelsContext.class,
+            se.streamsource.streamflow.web.context.surface.administration.organizations.OrganizationsContext.class,
+            se.streamsource.streamflow.web.context.surface.accesspoints.endusers.CaseContext.class,
             EndUserContext.class,
             EndUsersContext.class,
             SubmittedFormsContext.class,
@@ -224,8 +225,11 @@ public class InteractionsAssembler
             FormDraftsContext.class,
             FormDraftContext.class,
             SummaryContext.class,
+            AdministrationContext.class,
             AccessPointsContext.class,
             AccessPointContext.class,
+            se.streamsource.streamflow.web.context.surface.administration.organizations.accesspoints.AccessPointContext.class,
+            se.streamsource.streamflow.web.context.surface.administration.organizations.accesspoints.AccessPointsContext.class,
             ProxyUserContext.class,
             ProxyUsersContext.class
             );

@@ -21,7 +21,7 @@ import org.qi4j.api.mixin.Mixins;
 import se.streamsource.dci.api.Interactions;
 import se.streamsource.dci.api.InteractionsMixin;
 import se.streamsource.dci.api.SubContext;
-import se.streamsource.streamflow.web.context.access.SurfaceContext;
+import se.streamsource.streamflow.web.context.surface.SurfaceContext;
 import se.streamsource.streamflow.web.context.caze.CasesContext;
 import se.streamsource.streamflow.web.context.organizations.OrganizationsContext;
 import se.streamsource.streamflow.web.context.users.UsersContext;
@@ -78,6 +78,7 @@ public interface RootContext
 
       public SurfaceContext surface()
       {
+         context.set(module.unitOfWorkFactory().currentUnitOfWork().get( Users.class, UsersEntity.USERS_ID ));
          return subContext( SurfaceContext.class );
       }
    }

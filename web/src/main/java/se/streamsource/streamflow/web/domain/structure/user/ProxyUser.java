@@ -21,6 +21,7 @@ import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.web.domain.entity.gtd.Drafts;
 import se.streamsource.streamflow.web.domain.structure.created.Creator;
 import se.streamsource.streamflow.web.domain.structure.form.Submitter;
+import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganization;
 
 /**
  * A ProxyUser represents an entire external system. Actual users
@@ -30,6 +31,6 @@ import se.streamsource.streamflow.web.domain.structure.form.Submitter;
  * in this system.
  */
 public interface ProxyUser
-   extends Describable, UserAuthentication, EndUsers
+   extends Describable, UserAuthentication, EndUsers, OwningOrganization
 {
 }
