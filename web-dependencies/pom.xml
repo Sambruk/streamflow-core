@@ -202,6 +202,17 @@
             <version>1.0.1</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.codehaus.woodstox</groupId>
+            <artifactId>wstx-asl</artifactId>
+            <version>3.2.7</version>
+        </dependency>
+        <dependency>
+            <groupId>woodstox</groupId>
+            <artifactId>wstx-asl</artifactId>
+            <version>3.2.7</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
 </project>
