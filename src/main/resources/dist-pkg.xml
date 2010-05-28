@@ -34,13 +34,32 @@ http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0 ">
         <fileSet>
             <directory>war/target/classes</directory>
             <outputDirectory>.</outputDirectory>
+            <includes>
+                <include>**/LICENSE</include>
+                <include>**/NOTICE</include>
+            </includes>
         </fileSet>
     </fileSets>
     <files>
         <file>
             <source>war/target/streamflow-war-${project.version}.war</source>
-            <outputDirectory>.</outputDirectory>
-            <destName>streamflow.war</destName>
+            <outputDirectory>streamflow</outputDirectory>
+        </file>
+        <file>
+            <source>web/target/streamflow-web-${project.version}.jar</source>
+            <outputDirectory>streamflow</outputDirectory>
+        </file>
+        <file>
+            <source>web-dependencies/target/streamflow-web-dependencies-${project.version}.jar</source>
+            <outputDirectory>streamflow</outputDirectory>
+        </file>
+        <file>
+            <source>serverplugin/target/streamflow-server-plugin-api-${project.version}.jar</source>
+            <outputDirectory>streamflow</outputDirectory>
+        </file>
+        <file>
+            <source>helloworldplugin/target/streamflow-helloworld-plugin-${project.version}.jar</source>
+            <outputDirectory>plugins</outputDirectory>
         </file>
         <file>
             <source>src/main/resources/StreamflowReleaseNotes.pdf</source>
