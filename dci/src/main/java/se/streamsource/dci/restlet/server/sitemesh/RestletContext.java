@@ -57,7 +57,8 @@ public class RestletContext
          response = context.getServerDispatcher().handle(decorationRequest);
       } else
       {
-         response = context.getClientDispatcher().get( decoratorPath );
+         Request request = new Request(Method.GET, decoratorPath);
+         response = context.getClientDispatcher().handle( request );
       }
 
       if (response.getStatus().equals( Status.CLIENT_ERROR_NOT_FOUND ))

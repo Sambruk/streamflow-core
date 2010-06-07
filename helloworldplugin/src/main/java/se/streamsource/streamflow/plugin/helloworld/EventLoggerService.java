@@ -35,8 +35,7 @@ import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor
  * JAVADOC
  */
 public class EventLoggerService
-   extends Verifier
-   implements BundleActivator, ServiceTrackerCustomizer, TransactionVisitor
+   implements BundleActivator, ServiceTrackerCustomizer, TransactionVisitor, Verifier
 {
    private BundleContext bundleContext;
    public EventSource source;
@@ -84,7 +83,6 @@ public class EventLoggerService
       return true;
    }
 
-   @Override
    public int verify( Request request, Response response )
    {
       return 0;

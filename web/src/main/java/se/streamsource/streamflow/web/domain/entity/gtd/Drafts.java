@@ -29,6 +29,7 @@ import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.domain.contact.ContactValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.web.domain.entity.RoleMixin;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
@@ -49,7 +50,8 @@ public interface Drafts
    }
 
    abstract class Mixin
-         implements Drafts, Data
+      extends RoleMixin<Data>
+      implements Drafts, Data
    {
       @Structure
       ValueBuilderFactory vbf;
@@ -64,7 +66,7 @@ public interface Drafts
 
       public CaseEntity createDraft()
       {
-         CaseEntity aCase = createdCase( DomainEvent.CREATE, idGenerator.generate( Identity.class ) );
+         CaseEntity aCase = data.createdCase( DomainEvent.CREATE, idGenerator.generate( Identity.class ) );
          aCase.addContact( vbf.newValue( ContactValue.class ) );
 
          return aCase;

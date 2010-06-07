@@ -28,6 +28,8 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.usecase.Usecase;
 import org.qi4j.api.usecase.UsecaseBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import se.streamsource.streamflow.domain.contact.ContactEmailValue;
 import se.streamsource.streamflow.domain.contact.Contactable;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
@@ -51,14 +53,10 @@ import javax.mail.Transport;
 import javax.mail.URLName;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import java.security.Security;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Properties;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
 
 /**
  * Send and receive mail. This service
@@ -90,7 +88,7 @@ public interface MailService
 
       public void activate() throws Exception
       {
-         logger = Logger.getLogger( MailService.class.getName() );
+         logger = LoggerFactory.getLogger( MailService.class );
          logger.info( "Initializing ..." );
 
          // Authenticator
@@ -141,15 +139,17 @@ public interface MailService
                + delay
                + " min  SleepPeriod: "
                + (sleep == 0 ? 10 : sleep) + " min" );
-         mailReceiver = Executors.newSingleThreadScheduledExecutor();
-         mailReceiver.scheduleAtFixedRate( this, delay, (sleep == 0 ? 10 : sleep), TimeUnit.MINUTES );
+ //        mailReceiver = Executors.newSingleThreadScheduledExecutor();
+//         mailReceiver.scheduleAtFixedRate( this, delay, (sleep == 0 ? 10 : sleep), TimeUnit.MINUTES );
 
          logger.info( "Done" );
       }
 
       public void passivate() throws Exception
       {
-         mailReceiver.shutdown();
+//         mailReceiver.shutdown();
+//           mailReceiver.awaitTermination( 30, TimeUnit.SECONDS );
+           logger.info( "Mail service shutdown" );
       }
 
       public void sendNotification( DomainEvent event ) throws Exception
@@ -179,7 +179,7 @@ public interface MailService
          {
 
 
-            Session session = Session.getDefaultInstance( props, authenticator );
+            Session session = Session.getInstance( props, authenticator );
 
             session.setDebug( config.configuration().debug().get() );
 

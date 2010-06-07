@@ -20,6 +20,7 @@ package se.streamsource.streamflow.web.context;
 import org.qi4j.api.common.Visibility;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
+import org.qi4j.bootstrap.ImportedServiceDeclaration;
 import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.spi.service.importer.NewObjectImporter;
 import se.streamsource.dci.api.InteractionConstraintsService;
@@ -126,6 +127,7 @@ public class InteractionsAssembler
 
       // Import plugins from OSGi
       moduleAssembly.importServices( ContactLookup.class ).importedBy( OSGiServiceImporter.class );
+//      moduleAssembly.importServices( ContactLookup.class ).importedBy( ImportedServiceDeclaration.INSTANCE );
 
       // Only expose the root to the upper layers
       moduleAssembly.addTransients(

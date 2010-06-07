@@ -18,12 +18,16 @@
 package se.streamsource.streamflow.web;
 
 import org.apache.log4j.xml.DOMConfigurator;
+import org.restlet.Application;
 import org.restlet.Component;
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.data.Protocol;
+import org.restlet.engine.http.HttpRequest;
+import org.restlet.engine.http.HttpResponse;
+import org.restlet.resource.ServerResource;
 import org.restlet.routing.Filter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,20 +77,19 @@ public class MainWeb
          component.getClients().add( Protocol.FILE );
          application = new StreamFlowRestApplication( component.getContext().createChildContext() );
 
-         // TODO Could we make it available some other way?
          component.getDefaultHost().attach( "/streamflow/streamflow", application );
          component.start();
          logger.info("Started Streamflow");
       } catch (Exception e)
       {
-         logger.info("Could not start Streamflow");
+         logger.info("Could not start Streamflow", e);
 
          if (component != null)
             component.stop();
          throw e;
       } catch (Throwable e)
       {
-         logger.info("Could not start Streamflow");
+         logger.info("Could not start Streamflow", e);
 
          if (component != null)
             component.stop();
@@ -134,6 +137,10 @@ public class MainWeb
             return super.doHandle( request, response );
          } finally
          {
+            HttpResponse.setCurrent( null );
+            Context.setCurrent( null );
+            Application.setCurrent( null );
+
             thread.setContextClassLoader( oldCL );
          }
       }

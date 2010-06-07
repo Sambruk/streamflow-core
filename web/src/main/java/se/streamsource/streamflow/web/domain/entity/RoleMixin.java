@@ -15,25 +15,15 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.application.security;
+package se.streamsource.streamflow.web.domain.entity;
 
-import org.restlet.data.ClientInfo;
-import org.restlet.security.Enroler;
-import org.restlet.security.User;
+import org.qi4j.api.injection.scope.This;
 
 /**
- * Accept login if user with the given username has the given password
- * in the StreamFlow user database.
+ * Base class for role mixins
  */
-public class DefaultEnroler
-      implements Enroler
+public class RoleMixin<T>
 {
-   public void enrole( ClientInfo clientInfo )
-   {
-      User user = clientInfo.getUser();
-      if (user != null)
-      {
-         clientInfo.getPrincipals().add( new StreamFlowPrincipal( user.getIdentifier() ) );
-      }
-   }
+   @This
+   protected T data;
 }

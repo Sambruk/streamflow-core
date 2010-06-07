@@ -20,6 +20,7 @@ package se.streamsource.streamflow.web.infrastructure.index;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.common.SolrInputDocument;
+import org.apache.solr.core.SolrCore;
 import org.apache.solr.schema.SchemaField;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -68,7 +69,14 @@ public class SolrEntityIndexerMixin
    public void activate() throws Exception
    {
       server = solr.getSolrServer();
-      indexedFields = solr.getSolrCore().getSchema().getFields();
+      SolrCore solrCore = solr.getSolrCore();
+      try
+      {
+         indexedFields = solrCore.getSchema().getFields();
+      } finally
+      {
+         solrCore.close();
+      }
    }
 
    public void passivate() throws Exception

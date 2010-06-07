@@ -62,25 +62,6 @@ public class StreamFlowRestApplication
    @Structure
    ApplicationSPI app;
 
-/*
-   Thread shutdownHook = new Thread()
-   {
-      @Override
-      public void run()
-      {
-         try
-         {
-            System.out.println( "SHUTDOWN" );
-            Logger.getLogger( "streamflow" ).info( "VM shutdown; passivating StreamFlow" );
-            app.passivate();
-         } catch (Exception e)
-         {
-            e.printStackTrace();
-         }
-      }
-   };
-
-*/
    public StreamFlowRestApplication( @Uses Context parentContext ) throws Exception
    {
       super( parentContext );
@@ -95,8 +76,8 @@ public class StreamFlowRestApplication
    @Override
    public Restlet createInboundRoot()
    {
-      getContext().setVerifier( verifier );
-      getContext().setEnroler( enroler );
+      getContext().setDefaultVerifier( verifier );
+      getContext().setDefaultEnroler( enroler );
 
       Router versions = new Router( getContext() );
 
@@ -109,34 +90,37 @@ public class StreamFlowRestApplication
    @Override
    public void start() throws Exception
    {
-      try
+      if (isStopped())
       {
-         // Start Qi4j
-         Energy4Java is = new Energy4Java();
-         app = is.newApplication( new StreamFlowWebAssembler( this, getMetadataService() ) );
+         try
+         {
+            // Start Qi4j
+            Energy4Java is = new Energy4Java();
+            app = is.newApplication( new StreamFlowWebAssembler( this, getMetadataService() ) );
+            app = is.newApplication( new StreamFlowWebAssembler( getMetadataService() ) );
 
-         app.activate();
+            app.activate();
 
-         app.findModule( "Web", "REST" ).objectBuilderFactory().newObjectBuilder( StreamFlowRestApplication.class ).injectTo( this );
+            app.findModule( "Web", "REST" ).objectBuilderFactory().newObjectBuilder( StreamFlowRestApplication.class ).injectTo( this );
 
-//         Runtime.getRuntime().addShutdownHook( shutdownHook );
-
-         super.start();
-      } catch (Exception e)
-      {
-         e.printStackTrace();
-         throw e;
+            super.start();
+         } catch (Exception e)
+         {
+            e.printStackTrace();
+            throw e;
+         }
       }
    }
 
    @Override
    public void stop() throws Exception
    {
-      super.stop();
+      if (isStarted())
+      {
+         super.stop();
 
-      Logger.getLogger( "streamflow" ).info( "Passivating StreamFlow" );
-      app.passivate();
-
-//      Runtime.getRuntime().removeShutdownHook( shutdownHook );
+         Logger.getLogger( "streamflow" ).info( "Passivating StreamFlow" );
+         app.passivate();
+      }
    }
 }

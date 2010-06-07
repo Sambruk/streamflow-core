@@ -39,9 +39,9 @@ public class StreamflowServlet
       extends HttpServlet
 {
    private ServletAdapter adapter;
-   public ServiceTracker tracker;
-   public BundleContext ctx;
-   public Logger logger = LoggerFactory.getLogger( getClass() );
+   private ServiceTracker tracker;
+   private BundleContext ctx;
+   private Logger logger = LoggerFactory.getLogger( getClass() );
 
    @Override
    public void init() throws ServletException
@@ -54,7 +54,7 @@ public class StreamflowServlet
          @Override
          public Object addingService( ServiceReference reference )
          {
-            adapter.setTarget( (Restlet) ctx.getService( reference) );
+            adapter.setNext( (Restlet) ctx.getService( reference) );
             logger.info( "Streamflow application is online" );
             return super.addingService( reference );
          }
@@ -62,15 +62,14 @@ public class StreamflowServlet
          @Override
          public void modifiedService( ServiceReference reference, Object service )
          {
-            adapter.setTarget( null );
-            adapter.setTarget( (Restlet) ctx.getService( reference) );
+            adapter.setNext( (Restlet) ctx.getService( reference) );
             super.modifiedService( reference, service );
          }
 
          @Override
          public void removedService( ServiceReference reference, Object service )
          {
-            adapter.setTarget( null );
+            adapter.setNext( null );
             logger.info( "Streamflow application is offline" );
             super.removedService( reference, service );
          }
@@ -88,7 +87,7 @@ public class StreamflowServlet
    protected void service( HttpServletRequest req, HttpServletResponse res )
          throws ServletException, IOException
    {
-      if (adapter.getTarget() == null)
+      if (adapter.getNext() == null)
       {
          res.setStatus( HttpServletResponse.SC_SERVICE_UNAVAILABLE );
          return;

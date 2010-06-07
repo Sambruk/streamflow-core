@@ -79,10 +79,22 @@ import java.util.zip.GZIPOutputStream;
  */
 @Mixins(ManagerComposite.ManagerMixin.class)
 public interface ManagerComposite
-      extends Manager, Activatable, TransientComposite
+      extends Manager, TransientComposite
 {
+   void start()
+       throws Exception;
+
+   /**
+    * This is invoked on the service when the instance is being passivated
+    *
+    * @throws Exception if the service could not be passivated
+    */
+   void stop()
+       throws Exception;
+
+
    abstract class ManagerMixin
-         implements Manager, Activatable
+         implements ManagerComposite
    {
       private static final long ONE_DAY = 1000 * 3600 * 24;
 //        private static final long ONE_DAY = 1000 * 60*10; // Ten minutes
@@ -142,7 +154,7 @@ public interface ManagerComposite
 
       public TransactionVisitor failedLoginListener;
 
-      public void activate() throws Exception
+      public void start() throws Exception
       {
          exports = new File( fileConfig.dataDirectory(), "exports" );
          if (!exports.exists() && !exports.mkdirs())
@@ -162,7 +174,7 @@ public interface ManagerComposite
          source.registerListener( failedLoginListener );
       }
 
-      public void passivate() throws Exception
+      public void stop() throws Exception
       {
          source.unregisterListener( failedLoginListener );
       }
@@ -173,6 +185,7 @@ public interface ManagerComposite
       {
          // Delete current index
          removeRdfRepository();
+
          // Remove Lucene index
          removeSolrLuceneIndex();
 

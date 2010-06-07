@@ -113,7 +113,7 @@ public interface ManagerService
          manager = managerBuilder.newInstance();
          CompositeMBean mbean = mbeanBuilder.use( manager, Manager.class, bundle ).newInstance();
 
-         manager.activate();
+         manager.start();
 
          // Register the Model MBean in the MBean Server
          objectName = new ObjectName( "Streamflow:name=Manager" );
@@ -161,7 +161,7 @@ public interface ManagerService
 
       public void passivate() throws Exception
       {
-         manager.passivate();
+         manager.stop();
 
          server.unregisterMBean( objectName );
          for (ObjectName configurableServiceName : configurableServiceNames)

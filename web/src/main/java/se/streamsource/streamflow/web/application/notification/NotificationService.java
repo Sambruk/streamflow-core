@@ -40,9 +40,9 @@ import se.streamsource.streamflow.infrastructure.event.source.EventVisitorFilter
 import se.streamsource.streamflow.infrastructure.event.source.TransactionEventAdapter;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionTimestampFilter;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
+import se.streamsource.streamflow.web.application.mail.MailService;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.interaction.profile.MessageRecipient;
-import se.streamsource.streamflow.web.application.mail.MailService;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -82,76 +82,92 @@ public interface NotificationService
       private EventSpecification userNotificationFilter;
 
       private Usecase usecase = UsecaseBuilder.newUsecase( "Notify" );
+      public TransactionVisitor subscriber;
 
       public void activate() throws Exception
       {
          logger = Logger.getLogger( NotificationService.class.getName() );
 
          logger.info( "Starting ..." );
+
          try
          {
-            source.registerListener( this );
+            subscriber = new NotificationSubscriber();
+            source.registerListener( subscriber );
          } catch (Exception e)
          {
             e.printStackTrace();
             throw e;
          }
 
-
          userNotificationFilter = new EventQuery().withNames( "receivedMessage" );
 
-         visit( null ); // Trigger a load
+         checkNotifications();
          logger.info( "Started" );
       }
 
       public void passivate() throws Exception
       {
-         source.unregisterListener( this );
+         source.unregisterListener( subscriber );
       }
 
       public boolean visit( TransactionEvents transaction )
       {
          if (config.configuration().enabled().get())
          {
-            TransactionTimestampFilter timestamp;
-            EventCollector eventCollector;
-            eventStore.transactionsAfter( config.configuration().lastEventDate().get(),
-                  timestamp = new TransactionTimestampFilter( config.configuration().lastEventDate().get(),
-                        new TransactionEventAdapter(
-                              new EventVisitorFilter( userNotificationFilter, eventCollector = new EventCollector() ) ) ) );
-
-            // Handle all receivedMessage events
-            if (!eventCollector.events().isEmpty())
-            {
-               UnitOfWork uow = null;
-
-               try
-               {
-                  uow = uowf.newUnitOfWork( usecase );
-
-                  for (DomainEvent domainEvent : eventCollector.events())
-                  {
-                     UserEntity user = uow.get( UserEntity.class, domainEvent.entity().get());
-
-                     if( ((MessageRecipient.Data)user).delivery().get().equals( MessageRecipient.MessageDeliveryTypes.email))
-                     {
-                        mail.sendNotification( domainEvent );
-                     }
-                  }
-
-                  config.configuration().lastEventDate().set( timestamp.lastTimestamp() );
-                  config.save();
-               } catch (Exception e)
-               {
-                  logger.log( Level.SEVERE, "Could not send notification", e );
-               } finally
-               {
-                  uow.discard();
-               }
-            }
+            checkNotifications();
          }
 
-         return true;
+         return false;
+      }
+
+      protected void checkNotifications()
+      {
+         TransactionTimestampFilter timestamp;
+         EventCollector eventCollector;
+         eventStore.transactionsAfter( config.configuration().lastEventDate().get(),
+               timestamp = new TransactionTimestampFilter( config.configuration().lastEventDate().get(),
+                     new TransactionEventAdapter(
+                           new EventVisitorFilter( userNotificationFilter, eventCollector = new EventCollector() ) ) ) );
+
+         // Handle all receivedMessage events
+         if (!eventCollector.events().isEmpty())
+         {
+            UnitOfWork uow = null;
+
+            try
+            {
+               uow = uowf.newUnitOfWork( usecase );
+
+               for (DomainEvent domainEvent : eventCollector.events())
+               {
+                  UserEntity user = uow.get( UserEntity.class, domainEvent.entity().get() );
+
+                  if (((MessageRecipient.Data) user).delivery().get().equals( MessageRecipient.MessageDeliveryTypes.email ))
+                  {
+                     mail.sendNotification( domainEvent );
+                  }
+               }
+
+               config.configuration().lastEventDate().set( timestamp.lastTimestamp() );
+               config.save();
+            } catch (Exception e)
+            {
+               logger.log( Level.SEVERE, "Could not send notification", e );
+            } finally
+            {
+               uow.discard();
+            }
+         }
+      }
+
+      class NotificationSubscriber
+            implements TransactionVisitor
+      {
+         public boolean visit( TransactionEvents transaction )
+         {
+            return Mixin.this.visit( transaction );
+         }
       }
    }
 }

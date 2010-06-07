@@ -41,7 +41,7 @@ public interface DomainEvent
       extends ValueComposite, Identity
 {
    // Dummy event to be used when calling event methods from commands
-   public static final DomainEvent CREATE = new DomainEventDummy();
+   public static DomainEvent CREATE = new DomainEventDummy();
 
    // Usecase
 

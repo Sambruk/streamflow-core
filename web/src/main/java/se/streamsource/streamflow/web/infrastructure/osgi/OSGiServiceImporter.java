@@ -17,24 +17,13 @@
 
 package se.streamsource.streamflow.web.infrastructure.osgi;
 
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleEvent;
-import org.osgi.framework.BundleListener;
-import org.osgi.framework.BundleReference;
-import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.service.ImportedServiceDescriptor;
 import org.qi4j.api.service.ServiceImporter;
 import org.qi4j.api.service.ServiceImporterException;
-import org.restlet.Restlet;
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
 * Import a service from OSGi and expose in the Qi4j application.
@@ -62,41 +51,4 @@ public class OSGiServiceImporter
       return handler.isActive();
    }
 
-   static class OSGiInvocationHandler
-      implements InvocationHandler
-   {
-      private ServiceTracker serviceTracker;
-
-      OSGiInvocationHandler( ServiceTracker serviceTracker )
-      {
-         this.serviceTracker = serviceTracker;
-      }
-
-      public Object invoke( Object proxy, Method method, Object[] args ) throws Throwable
-      {
-         Object instance = getInstance();
-
-         if (instance == null)
-            throw new ServiceImporterException("OSGi service is currently not available");
-
-         return method.invoke( instance, args );
-      }
-
-      public Object getInstance()
-      {
-         try
-         {
-            return serviceTracker.waitForService( 5000 );
-         } catch (InterruptedException e)
-         {
-            // No such service found
-            return null;
-         }
-      }
-
-      public boolean isActive()
-      {
-         return serviceTracker.size() > 0;
-      }
-   }
 }

@@ -26,13 +26,16 @@ import org.osgi.framework.ServiceRegistration;
 import org.osgi.util.tracker.BundleTracker;
 import org.restlet.Restlet;
 import org.slf4j.LoggerFactory;
+import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.web.MainWeb;
 
 import java.util.Dictionary;
 import java.util.Properties;
 
 /**
- * JAVADOC
+ * Activator for Streamflow. Start Streamflow application and register as Restlet service
+ * in OSGi.
  */
 public class StreamFlowActivator implements BundleActivator
 {

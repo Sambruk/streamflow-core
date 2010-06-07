@@ -42,7 +42,8 @@ public interface ResolutionEntity
       // Structure
       Resolution,
       Describable.Data,
-      Notable.Data
+      Notable.Data,
+      Removable.Data
 {
    abstract class RemovableConcern
       extends ConcernOf<Removable>

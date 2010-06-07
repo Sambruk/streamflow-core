@@ -93,11 +93,12 @@ public interface ErrorLogService
          Logger.getLogger( "" ).removeHandler( this );
          executor.shutdown();
          server.unregisterMBean( objectName );
+         objectName = null;
       }
 
       public void publish( LogRecord record )
       {
-         if (!isLoggable( record ))
+         if (!isLoggable( record ) || objectName == null)
             return;
 
          String source = sourceMappings.get( record.getLoggerName() );

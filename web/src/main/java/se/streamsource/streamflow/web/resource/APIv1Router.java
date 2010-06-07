@@ -30,7 +30,9 @@ import org.restlet.Restlet;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.resource.Directory;
 import org.restlet.resource.ServerResource;
+import org.restlet.routing.Route;
 import org.restlet.routing.Router;
+import org.restlet.routing.Template;
 import org.restlet.security.Authenticator;
 import org.restlet.security.ChallengeAuthenticator;
 import se.streamsource.dci.restlet.server.CommandQueryRestlet;
@@ -56,7 +58,7 @@ public class APIv1Router
       Authenticator auth = new ChallengeAuthenticator( getContext(), ChallengeScheme.HTTP_BASIC, "StreamFlow" );
       auth.setNext( cqr );
 
-      attach(new ExtensionMediaTypeFilter( getContext(), auth));
+      attachDefault( new ExtensionMediaTypeFilter( getContext(), auth) );
 
 /*
       attach(new ExtensionMediaTypeFilter( getContext(), factory.newObjectBuilder( EventsCommandResult.class).use(getContext(),

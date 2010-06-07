@@ -20,6 +20,7 @@ package se.streamsource.streamflow.web.infrastructure.index;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
 import org.apache.solr.core.CoreContainer;
+import org.apache.solr.core.SolrConfig;
 import org.apache.solr.core.SolrCore;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.mixin.Mixins;
@@ -28,6 +29,7 @@ import org.qi4j.api.service.ServiceComposite;
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
 
 import java.io.File;
+import java.lang.reflect.Field;
 
 @Mixins(EmbeddedSolrService.EmbeddedSolrServiceMixin.class)
 public interface EmbeddedSolrService extends Activatable, ServiceComposite
@@ -61,6 +63,13 @@ public interface EmbeddedSolrService extends Activatable, ServiceComposite
       public void passivate() throws Exception
       {
          coreContainer.shutdown();
+
+         // Clear instance fields for GC purposes
+         Field instanceField = SolrCore.class.getDeclaredField( "instance" );
+         instanceField.setAccessible( true );
+         instanceField.set( null, null );
+
+         SolrConfig.config = null;
       }
 
       public SolrServer getSolrServer()

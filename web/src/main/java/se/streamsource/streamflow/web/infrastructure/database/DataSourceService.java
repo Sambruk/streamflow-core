@@ -118,10 +118,14 @@ public interface DataSourceService
                pools.put( importedServiceDescriptor.identity(), pool );
             } catch (Exception e)
             {
+               uow.discard();
+
                throw new ServiceImporterException(e);
             }
 
             // Test the pool
+            ClassLoader cl = Thread.currentThread().getContextClassLoader();
+            Thread.currentThread().setContextClassLoader( null );
             try
             {
                pool.getConnection().close();
@@ -129,6 +133,9 @@ public interface DataSourceService
             } catch (SQLException e)
             {
                logger.warn("Database for DataSource is not currently available");
+            } finally
+            {
+               Thread.currentThread().setContextClassLoader( cl );
             }
          }
          return pool;

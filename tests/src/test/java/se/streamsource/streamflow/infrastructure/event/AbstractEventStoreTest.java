@@ -153,7 +153,7 @@ public abstract class AbstractEventStoreTest
 
    @Concerns(EventCreationConcern.class)
    @Mixins(TestEntity.TestMixin.class)
-   interface TestEntity
+   public interface TestEntity
          extends EntityComposite
    {
       void somethingHappened( DomainEvent event, String parameter1 );

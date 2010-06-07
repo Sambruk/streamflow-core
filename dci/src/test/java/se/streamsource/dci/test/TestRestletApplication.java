@@ -89,7 +89,7 @@ public class TestRestletApplication
    @Override
    public Restlet createInboundRoot()
    {
-      getContext().setVerifier( verifier );
+      getContext().setDefaultVerifier( verifier );
 
       Restlet cqr = factory.newObjectBuilder( CommandQueryRestlet.class ).use( getContext() ).newInstance();
 

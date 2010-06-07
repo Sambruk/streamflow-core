@@ -49,9 +49,9 @@ import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
+import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseTypes;
 import se.streamsource.streamflow.web.domain.structure.casetype.Resolution;
-import se.streamsource.streamflow.web.domain.structure.casetype.Resolvable;
 import se.streamsource.streamflow.web.domain.structure.group.Group;
 import se.streamsource.streamflow.web.domain.structure.group.Participation;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
@@ -61,7 +61,6 @@ import se.streamsource.streamflow.web.domain.structure.organization.OwningOrgani
 import se.streamsource.streamflow.web.domain.structure.project.Member;
 import se.streamsource.streamflow.web.domain.structure.project.Members;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
-import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 
 import javax.sql.DataSource;
 import java.io.InputStream;
@@ -136,7 +135,7 @@ public interface StatisticsService
 
          closedFilter = new EventQuery().withUsecases( "close", "reopen", "resolve" ).withNames( "changedStatus" );
 
-         visit( null ); // Trigger a load
+         getStatistics();
       }
 
       public void passivate() throws Exception
@@ -144,182 +143,185 @@ public interface StatisticsService
          source.unregisterListener( this );
       }
 
-      public boolean visit( TransactionEvents transaction )
+      public boolean visit( TransactionEvents transxaction )
       {
          if (config.configuration().enabled().get())
          {
-            TransactionTimestampFilter timestamp;
-            EventCollector eventCollector;
-            eventStore.transactionsAfter( config.configuration().lastEventDate().get(),
-                  timestamp = new TransactionTimestampFilter( config.configuration().lastEventDate().get(),
-                        new TransactionEventAdapter(
-                              new EventVisitorFilter( closedFilter, eventCollector = new EventCollector() ) ) ) );
+            getStatistics();
+         }
 
-            // Handle all stateChanged(CLOSED) events
-            if (!eventCollector.events().isEmpty())
+         return false;
+      }
+
+      protected void getStatistics()
+      {
+         TransactionTimestampFilter timestamp;
+         EventCollector eventCollector;
+         eventStore.transactionsAfter( config.configuration().lastEventDate().get(),
+               timestamp = new TransactionTimestampFilter( config.configuration().lastEventDate().get(),
+                     new TransactionEventAdapter(
+                           new EventVisitorFilter( closedFilter, eventCollector = new EventCollector() ) ) ) );
+
+         // Handle all stateChanged(CLOSED) events
+         if (!eventCollector.events().isEmpty())
+         {
+            UnitOfWork uow = null;
+            Connection conn = null;
+            try
             {
-               UnitOfWork uow = null;
-               Connection conn = null;
-               try
+
+               uow = uowf.newUnitOfWork( usecase );
+               conn = dataSource.getConnection();
+               conn.setAutoCommit( false );
+
+               for (DomainEvent domainEvent : eventCollector.events())
                {
-
-                  uow = uowf.newUnitOfWork( usecase );
-                  conn = dataSource.getConnection();
-                  conn.setAutoCommit( false );
-
-                  for (DomainEvent domainEvent : eventCollector.events())
+                  CaseEntity aCase = null;
+                  try
                   {
-                     CaseEntity aCase = null;
-                     try
-                     {
-                        aCase = uow.get( CaseEntity.class, domainEvent.entity().get() );
-                     } catch (NoSuchEntityException e)
-                     {
-                        // Entity has been removed
-                        continue;
-                     }
+                     aCase = uow.get( CaseEntity.class, domainEvent.entity().get() );
+                  } catch (NoSuchEntityException e)
+                  {
+                     // Entity has been removed
+                     continue;
+                  }
 
-                     // Only save statistics for cases in projects
-                     Owner owner = aCase.owner().get();
-                     if (owner instanceof Project)
+                  // Only save statistics for cases in projects
+                  Owner owner = aCase.owner().get();
+                  if (owner instanceof Project)
+                  {
+                     if (domainEvent.usecase().get().equals( "close" ) || domainEvent.usecase().get().equals( "resolve" ))
                      {
-                        if (domainEvent.usecase().get().equals("close") || domainEvent.usecase().get().equals("resolve"))
+                        PreparedStatement stmt = conn.prepareStatement( sql.getProperty( "closed.insert" ) );
+                        int idx = 1;
+                        String id = aCase.identity().get();
+                        stmt.setString( idx++, id );
+                        stmt.setString( idx++, aCase.caseId().get() );
+                        stmt.setString( idx++, aCase.description().get() );
+                        stmt.setString( idx++, aCase.note().get() );
+                        stmt.setTimestamp( idx++, new java.sql.Timestamp( aCase.createdOn().get().getTime() ) );
+                        stmt.setTimestamp( idx++, new java.sql.Timestamp( domainEvent.on().get().getTime() ) );
+                        stmt.setLong( idx++, domainEvent.on().get().getTime() - aCase.createdOn().get().getTime() );
+                        Assignee assignee = aCase.assignedTo().get();
+                        if (assignee == null)
+                           continue;
+
+                        stmt.setString( idx++, ((Describable) assignee).getDescription() );
+
+                        CaseType caseType = aCase.caseType().get();
+                        if (caseType != null)
+                           stmt.setString( idx, caseType.getDescription() );
+                        else
+                           stmt.setString( idx, null );
+                        idx++;
+
+                        stmt.setString( idx++, ((Describable) owner).getDescription() );
+                        OwningOrganizationalUnit.Data po = (OwningOrganizationalUnit.Data) owner;
+                        OrganizationalUnit organizationalUnit = po.organizationalUnit().get();
+
+                        // Figure out which group the user belongs to
+                        Participation.Data participant = (Participation.Data) assignee;
+                        String groupName = null;
+                        findgroup:
+                        for (Group group : participant.groups())
                         {
-                           PreparedStatement stmt = conn.prepareStatement( sql.getProperty( "closed.insert" ) );
-                           int idx = 1;
-                           String id = aCase.identity().get();
-                           stmt.setString( idx++, id );
-                           stmt.setString( idx++, aCase.caseId().get() );
-                           stmt.setString( idx++, aCase.description().get() );
-                           stmt.setString( idx++, aCase.note().get() );
-                           stmt.setTimestamp( idx++, new java.sql.Timestamp( aCase.createdOn().get().getTime() ) );
-                           stmt.setTimestamp( idx++, new java.sql.Timestamp( domainEvent.on().get().getTime() ) );
-                           stmt.setLong( idx++, domainEvent.on().get().getTime() - aCase.createdOn().get().getTime() );
-                           Assignee assignee = aCase.assignedTo().get();
-                           if (assignee == null)
-                              continue;
-
-                           stmt.setString( idx++, ((Describable)assignee).getDescription() );
-
-                           CaseType caseType = aCase.caseType().get();
-                           if (caseType != null)
-                              stmt.setString( idx, caseType.getDescription());
-                           else
-                              stmt.setString( idx, null );
-                           idx++;
-
-                           stmt.setString( idx++, ((Describable)owner).getDescription() );
-                           OwningOrganizationalUnit.Data po = (OwningOrganizationalUnit.Data) owner;
-                           OrganizationalUnit organizationalUnit = po.organizationalUnit().get();
-
-                           // Figure out which group the user belongs to
-                           Participation.Data participant = (Participation.Data) assignee;
-                           String groupName = null;
-                           findgroup:
-                           for (Group group : participant.groups())
+                           Members.Data members = (Members.Data) owner;
+                           if (members.members().contains( (Member) group ))
                            {
-                              Members.Data members = (Members.Data) owner;
-                              if (members.members().contains( (Member) group ))
-                              {
-                                 groupName = group.getDescription();
-                                 break findgroup;
-                              }
+                              groupName = group.getDescription();
+                              break findgroup;
                            }
+                        }
 
-                           stmt.setString( idx++, groupName );
+                        stmt.setString( idx++, groupName );
 
-                           stmt.setString( idx++, organizationalUnit.getDescription() );
+                        stmt.setString( idx++, organizationalUnit.getDescription() );
 
-                           Resolution resolution = aCase.resolution().get();
-                           if (resolution != null)
-                           {
-                              stmt.setString( idx, resolution.getDescription());
-                           }
-                           else
-                              stmt.setString(idx, null);
-                           idx++;
-
-                           if (caseType != null)
-                           {
-                              QueryBuilder<Describable> caseOwnerQuery = qbf.newQueryBuilder( Describable.class );
-                              ManyAssociation<CaseType> caseTypes = QueryExpressions.templateFor( CaseTypes.Data.class ).caseTypes();
-                              Describable caseTypeOwner = caseOwnerQuery.where( QueryExpressions.contains(caseTypes, caseType)).newQuery( uow ).find();
-                              stmt.setString( idx, caseTypeOwner.getDescription());
-                           }
-                           else
-                              stmt.setString(idx, null);
-                           idx++;
-
-                           stmt.executeUpdate();
-                           stmt.close();
-
-                           // Add Label information
-                           Labelable.Data labelable = aCase;
-                           for (Label labelEntity : labelable.labels())
-                           {
-                              stmt = conn.prepareStatement( sql.getProperty( "labels.insert" ) );
-                              stmt.setString( 1, id );
-                              stmt.setString( 2, labelEntity.getDescription() );
-                              stmt.executeUpdate();
-                              stmt.close();
-                           }
+                        Resolution resolution = aCase.resolution().get();
+                        if (resolution != null)
+                        {
+                           stmt.setString( idx, resolution.getDescription() );
                         } else
-                        {
-                           // Reactivated - remove statistics
-                           PreparedStatement stmt = conn.prepareStatement( sql.getProperty( "closed.delete" ) );
-                           String id = aCase.identity().get();
-                           stmt.setString( 1, id );
-                           stmt.executeUpdate();
-                           stmt.close();
+                           stmt.setString( idx, null );
+                        idx++;
 
-                           stmt = conn.prepareStatement( sql.getProperty("labels.delete" ));
-                           stmt.setString(1, id);
+                        if (caseType != null)
+                        {
+                           QueryBuilder<Describable> caseOwnerQuery = qbf.newQueryBuilder( Describable.class );
+                           ManyAssociation<CaseType> caseTypes = QueryExpressions.templateFor( CaseTypes.Data.class ).caseTypes();
+                           Describable caseTypeOwner = caseOwnerQuery.where( QueryExpressions.contains( caseTypes, caseType ) ).newQuery( uow ).find();
+                           stmt.setString( idx, caseTypeOwner.getDescription() );
+                        } else
+                           stmt.setString( idx, null );
+                        idx++;
+
+                        stmt.executeUpdate();
+                        stmt.close();
+
+                        // Add Label information
+                        Labelable.Data labelable = aCase;
+                        for (Label labelEntity : labelable.labels())
+                        {
+                           stmt = conn.prepareStatement( sql.getProperty( "labels.insert" ) );
+                           stmt.setString( 1, id );
+                           stmt.setString( 2, labelEntity.getDescription() );
                            stmt.executeUpdate();
                            stmt.close();
                         }
-                     }
-                  }
+                     } else
+                     {
+                        // Reactivated - remove statistics
+                        PreparedStatement stmt = conn.prepareStatement( sql.getProperty( "closed.delete" ) );
+                        String id = aCase.identity().get();
+                        stmt.setString( 1, id );
+                        stmt.executeUpdate();
+                        stmt.close();
 
-                  conn.commit();
-
-                  config.configuration().lastEventDate().set( timestamp.lastTimestamp() );
-                  config.save();
-               } catch (Exception e)
-               {
-                  logger.log( Level.SEVERE, "Could not log statistics", e );
-                  if (conn != null)
-                  {
-                     try
-                     {
-                        conn.rollback();
-                     } catch (SQLException e1)
-                     {
-                        logger.log( Level.SEVERE, "Could not rollback", e );
-                     }
-                  }
-               } finally
-               {
-                  if (uow != null)
-                  {
-                     uow.discard();
-                  }
-
-                  if (conn != null)
-                  {
-                     try
-                     {
-                        conn.close();
-                     } catch (SQLException e)
-                     {
-                        // Ignore
+                        stmt = conn.prepareStatement( sql.getProperty( "labels.delete" ) );
+                        stmt.setString( 1, id );
+                        stmt.executeUpdate();
+                        stmt.close();
                      }
                   }
                }
 
-            }
-         }
+               conn.commit();
 
-         return true;
+               config.configuration().lastEventDate().set( timestamp.lastTimestamp() );
+               config.save();
+            } catch (Exception e)
+            {
+               logger.log( Level.SEVERE, "Could not log statistics", e );
+               if (conn != null)
+               {
+                  try
+                  {
+                     conn.rollback();
+                  } catch (SQLException e1)
+                  {
+                     logger.log( Level.SEVERE, "Could not rollback", e );
+                  }
+               }
+            } finally
+            {
+               if (uow != null)
+               {
+                  uow.discard();
+               }
+
+               if (conn != null)
+               {
+                  try
+                  {
+                     conn.close();
+                  } catch (SQLException e)
+                  {
+                     // Ignore
+                  }
+               }
+            }
+
+         }
       }
    }
 }

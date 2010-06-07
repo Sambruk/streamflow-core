@@ -84,7 +84,23 @@ public class ConfigurationAssembler
       } else if (mode.equals( Application.Mode.production ))
       {
          // Preferences storage
-         module.addServices( PreferencesEntityStoreService.class ).setMetaInfo( new PreferencesEntityStoreInfo( Preferences.userRoot().node( "streamsource/streamflow/web" ) ) );
+
+         // We have to do some CL twiddling since the Preferences impl might start a timer thread with our
+         // classloader as contextclassloader = BAD!
+//         System.setProperty( "java.util.prefs.PreferencesFactory", "java.util.prefs.FileSystemPreferencesFactory");
+
+         ClassLoader cl = Thread.currentThread().getContextClassLoader();
+         Thread.currentThread().setContextClassLoader( null );
+         Preferences node;
+         try
+         {
+            node =  Preferences.userRoot().node( "streamsource/streamflow/web" );
+         } finally
+         {
+            Thread.currentThread().setContextClassLoader( cl );
+         }
+
+         module.addServices( PreferencesEntityStoreService.class ).setMetaInfo( new PreferencesEntityStoreInfo( node ) );
       }
 
    }

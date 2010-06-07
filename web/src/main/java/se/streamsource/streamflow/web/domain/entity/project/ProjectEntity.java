@@ -67,7 +67,6 @@ public interface ProjectEntity
       Members,
       Project,
       OwningOrganizationalUnit,
-      Removable,
 
       // Data
       Members.Data,

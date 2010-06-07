@@ -41,16 +41,6 @@
     </supplement>
     <supplement>
         <project>
-            <groupId>cglib</groupId>
-            <artifactId>cglib-nodep</artifactId>
-            <organization>
-                <name>Code Generation Library</name>
-                <url>http://cglib.sourceforge.net/</url>
-            </organization>
-        </project>
-    </supplement>
-    <supplement>
-        <project>
             <groupId>com.jgoodies</groupId>
             <artifactId>forms</artifactId>
             <organization>

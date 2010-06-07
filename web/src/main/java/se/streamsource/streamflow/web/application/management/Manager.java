@@ -55,5 +55,4 @@ public interface Manager
 
    @Immutable
    Property<String> version();
-
 }
