@@ -31,6 +31,8 @@ import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
 import se.streamsource.streamflow.domain.form.FormSubmissionValue;
 import se.streamsource.streamflow.domain.form.PageSubmissionValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
+import se.streamsource.streamflow.resource.caze.FieldDTO;
+import se.streamsource.streamflow.resource.roles.IntegerDTO;
 import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.formdrafts.summary.SummaryContext;
 import se.streamsource.streamflow.web.domain.structure.form.FormSubmission;
 
@@ -51,10 +53,16 @@ public interface FormDraftContext
    @HasNextPage
    void next(Representation rep);
 
+   @HasNextPage
+   void nextpage( IntegerDTO page );
+
    @HasPreviousPage
    void previous(Representation rep);
 
-   void updatefield( FieldSubmissionValue newFieldValue );
+   @HasPreviousPage
+   void previouspage(IntegerDTO page);
+
+   void updatefield( FieldDTO field );
 
    @SubContext
    @HasNextPage(false)
@@ -89,6 +97,20 @@ public interface FormDraftContext
          }
 
          return builder.newLinks();
+      }
+
+      public void nextpage( IntegerDTO page )
+      {
+         ValueBuilder<FormSubmissionValue> builder = incrementPage( 1 );
+
+         updateFormSubmission( builder );
+      }
+
+      public void previouspage(IntegerDTO page)
+      {
+         ValueBuilder<FormSubmissionValue> builder = incrementPage( -1 );
+
+         updateFormSubmission( builder );
       }
 
       public void next( Representation rep)
@@ -140,20 +162,39 @@ public interface FormDraftContext
          }
       }
 
-      public void updatefield( FieldSubmissionValue newFieldValue )
+      public void updatefield( FieldDTO field )
       {
-         ValueBuilder<FormSubmissionValue> builder = getFormSubmissionValueBuilder();
+         FormSubmissionValue formValue = context.get( FormSubmissionValue.class );
 
+         PageSubmissionValue value = formValue.pages().get().get( formValue.currentPage().get() );
 
-         PageSubmissionValue pageValue = builder.prototype().pages().get().remove( builder.prototype().currentPage().get().intValue() );
+         ValueBuilder<FieldSubmissionValue> builder = null;
 
-         for (FieldSubmissionValue value : pageValue.fields().get())
+         for (FieldSubmissionValue fieldSubmissionValue : value.fields().get())
          {
-            if ( value.field().get().field().get().equals( newFieldValue.field().get().field().get() ) )
+            if ( fieldSubmissionValue.field().get().field().get().identity().equals( field.field().get() ) )
             {
-               value.value().set( newFieldValue.value().get() );
-               builder.prototype().pages().get().add( builder.prototype().currentPage().get(), pageValue );
-               updateFormSubmission( builder );
+               builder = module.valueBuilderFactory().newValueBuilder( FieldSubmissionValue.class ).withPrototype( fieldSubmissionValue );
+               builder.prototype().value().set( field.value().get() );
+            }
+         }
+
+         if ( builder == null )
+            return;
+
+         FieldSubmissionValue newFieldValue = builder.newInstance();
+
+         ValueBuilder<FormSubmissionValue> formBuilder = getFormSubmissionValueBuilder();
+
+         PageSubmissionValue pageValue = formBuilder.prototype().pages().get().remove( formBuilder.prototype().currentPage().get().intValue() );
+
+         for (FieldSubmissionValue fieldValue : pageValue.fields().get())
+         {
+            if ( fieldValue.field().get().field().get().equals( newFieldValue.field().get().field().get() ) )
+            {
+               fieldValue.value().set( newFieldValue.value().get() );
+               formBuilder.prototype().pages().get().add( formBuilder.prototype().currentPage().get(), pageValue );
+               updateFormSubmission( formBuilder );
                return;
             }
          }

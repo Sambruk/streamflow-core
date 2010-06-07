@@ -24,8 +24,7 @@ import se.streamsource.dci.api.InteractionsMixin;
 import se.streamsource.dci.api.SubContexts;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.StringValue;
-import se.streamsource.streamflow.infrastructure.application.TitledLinksBuilder;
-import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.CaseContext;
+import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.entity.gtd.Drafts;
 import se.streamsource.streamflow.web.domain.entity.gtd.DraftsQueries;
@@ -52,7 +51,7 @@ public interface EndUserContext
       {
          DraftsQueries draftsQueries = context.get( DraftsQueries.class );
 
-         TitledLinksBuilder linksBuilder = new TitledLinksBuilder( module.valueBuilderFactory() );
+         LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
 
          linksBuilder.addDescribables( draftsQueries.drafts().newQuery( module.unitOfWorkFactory().currentUnitOfWork() ));
 
