@@ -61,9 +61,9 @@ http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0 ">
             <source>helloworldplugin/target/streamflow-helloworld-plugin-${project.version}.jar</source>
             <outputDirectory>plugins</outputDirectory>
         </file>
-        <file>
+        <!-- <file>
             <source>src/main/resources/StreamflowReleaseNotes.pdf</source>
             <outputDirectory>.</outputDirectory>
-        </file>
+        </file> -->
     </files>
 </assembly>
