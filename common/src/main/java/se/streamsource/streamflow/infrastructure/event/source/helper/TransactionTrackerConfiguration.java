@@ -15,17 +15,31 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.application.notification;
+package se.streamsource.streamflow.infrastructure.event.source.helper;
 
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.configuration.ConfigurationComposite;
 import org.qi4j.api.property.Property;
-import se.streamsource.streamflow.infrastructure.event.source.helper.TransactionTrackerConfiguration;
 
 /**
- * Configuration for the NotificationService.
+ * Configuration that a service doing event tracking must have. Let the configuration
+ * of the service extend this one.
  */
-public interface NotificationConfiguration
-      extends TransactionTrackerConfiguration
+public interface TransactionTrackerConfiguration
+   extends ConfigurationComposite
 {
+   /**
+    * Determine whether transaction notifications should be sent or not.
+    *
+    * @return
+    */
+   @UseDefaults
+   Property<Boolean> enabled();
+
+   /**
+    * A timestamp when the last transaction was fetched.
+    * @return
+    */
+   @UseDefaults
+   Property<Long> lastEventDate();
 }

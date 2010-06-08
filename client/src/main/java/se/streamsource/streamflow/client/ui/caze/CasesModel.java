@@ -32,8 +32,8 @@ import se.streamsource.streamflow.client.ui.search.SearchTerms;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
-import se.streamsource.streamflow.infrastructure.event.source.EventVisitorFilter;
-import se.streamsource.streamflow.infrastructure.event.source.EventParameters;
+import se.streamsource.streamflow.infrastructure.event.source.helper.EventVisitorFilter;
+import se.streamsource.streamflow.infrastructure.event.source.helper.EventParameters;
 
 /**
  * Model that keeps track of all case models

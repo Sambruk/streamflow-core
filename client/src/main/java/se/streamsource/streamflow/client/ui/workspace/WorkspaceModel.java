@@ -21,7 +21,7 @@ import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
-import se.streamsource.streamflow.infrastructure.event.source.EventVisitorFilter;
+import se.streamsource.streamflow.infrastructure.event.source.helper.EventVisitorFilter;
 
 import javax.swing.tree.DefaultTreeModel;
 import java.util.logging.Logger;

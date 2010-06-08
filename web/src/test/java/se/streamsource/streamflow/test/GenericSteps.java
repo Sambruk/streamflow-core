@@ -39,7 +39,7 @@ import se.streamsource.dci.api.SubContexts;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.source.EventCollector;
+import se.streamsource.streamflow.infrastructure.event.source.helper.EventCollector;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.web.context.RootContext;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Actor;

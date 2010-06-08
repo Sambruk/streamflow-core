@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.infrastructure.event.source;
+package se.streamsource.streamflow.infrastructure.event.source.helper;
 
 import org.json.JSONException;
 import org.json.JSONObject;

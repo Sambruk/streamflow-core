@@ -34,9 +34,9 @@ import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.Energy4Java;
 import org.qi4j.spi.Qi4jSPI;
 import org.qi4j.spi.structure.ApplicationSPI;
-import se.streamsource.streamflow.infrastructure.event.source.EventCollector;
+import se.streamsource.streamflow.infrastructure.event.source.helper.EventCollector;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
-import se.streamsource.streamflow.infrastructure.event.source.TransactionEventAdapter;
+import se.streamsource.streamflow.infrastructure.event.source.helper.TransactionEventAdapter;
 import se.streamsource.streamflow.test.GenericSteps;
 
 import java.util.ArrayList;

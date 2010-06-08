@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.infrastructure.event.source;
+package se.streamsource.streamflow.infrastructure.event.source.helper;
 
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
 
 /**
  * Takes a list of TransactionEvents and filters them according to a given event specification.

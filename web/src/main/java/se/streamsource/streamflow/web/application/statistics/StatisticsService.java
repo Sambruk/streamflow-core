@@ -37,15 +37,16 @@ import org.qi4j.api.usecase.UsecaseBuilder;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
-import se.streamsource.streamflow.infrastructure.event.source.EventCollector;
-import se.streamsource.streamflow.infrastructure.event.source.EventQuery;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.EventSpecification;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
-import se.streamsource.streamflow.infrastructure.event.source.EventVisitorFilter;
-import se.streamsource.streamflow.infrastructure.event.source.TransactionEventAdapter;
-import se.streamsource.streamflow.infrastructure.event.source.TransactionTimestampFilter;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
+import se.streamsource.streamflow.infrastructure.event.source.helper.EventCollector;
+import se.streamsource.streamflow.infrastructure.event.source.helper.EventQuery;
+import se.streamsource.streamflow.infrastructure.event.source.helper.EventVisitorFilter;
+import se.streamsource.streamflow.infrastructure.event.source.helper.TransactionEventAdapter;
+import se.streamsource.streamflow.infrastructure.event.source.helper.TransactionTimestampFilter;
+import se.streamsource.streamflow.infrastructure.event.source.helper.TransactionTracker;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
@@ -104,7 +105,8 @@ public interface StatisticsService
       @This
       Configuration<StatisticsConfiguration> config;
 
-      public Logger logger;
+      private TransactionTracker tracker;
+      private Logger logger;
       private Properties sql;
 
       private EventSpecification closedFilter;
@@ -135,32 +137,21 @@ public interface StatisticsService
 
          closedFilter = new EventQuery().withUsecases( "close", "reopen", "resolve" ).withNames( "changedStatus" );
 
-         getStatistics();
+         tracker = new TransactionTracker( eventStore, source, config, this );
+         tracker.start();
       }
 
       public void passivate() throws Exception
       {
-         source.unregisterListener( this );
+         tracker.stop();
       }
 
-      public boolean visit( TransactionEvents transxaction )
+      public boolean visit( TransactionEvents transaction )
       {
-         if (config.configuration().enabled().get())
-         {
-            getStatistics();
-         }
-
-         return false;
-      }
-
-      protected void getStatistics()
-      {
-         TransactionTimestampFilter timestamp;
          EventCollector eventCollector;
-         eventStore.transactionsAfter( config.configuration().lastEventDate().get(),
-               timestamp = new TransactionTimestampFilter( config.configuration().lastEventDate().get(),
-                     new TransactionEventAdapter(
-                           new EventVisitorFilter( closedFilter, eventCollector = new EventCollector() ) ) ) );
+
+         new TransactionEventAdapter(
+               new EventVisitorFilter( closedFilter, eventCollector = new EventCollector() ) ).visit( transaction );
 
          // Handle all stateChanged(CLOSED) events
          if (!eventCollector.events().isEmpty())
@@ -286,9 +277,6 @@ public interface StatisticsService
                }
 
                conn.commit();
-
-               config.configuration().lastEventDate().set( timestamp.lastTimestamp() );
-               config.save();
             } catch (Exception e)
             {
                logger.log( Level.SEVERE, "Could not log statistics", e );
@@ -301,6 +289,8 @@ public interface StatisticsService
                   {
                      logger.log( Level.SEVERE, "Could not rollback", e );
                   }
+
+                  return false;
                }
             } finally
             {
@@ -322,6 +312,8 @@ public interface StatisticsService
             }
 
          }
+
+         return true;
       }
    }
 }

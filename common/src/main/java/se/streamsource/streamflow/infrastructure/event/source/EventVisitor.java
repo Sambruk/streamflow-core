@@ -20,9 +20,15 @@ package se.streamsource.streamflow.infrastructure.event.source;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 /**
- * JAVADOC
+ * Visitor for a single DomainEvent in a TransactionEvents.
  */
 public interface EventVisitor
 {
+   /**
+    * Visit and handle a single DomainEvent.
+    *
+    * @param event the event
+    * @return true if the event could be handled, false if not
+    */
    boolean visit( DomainEvent event );
 }

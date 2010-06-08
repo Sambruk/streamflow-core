@@ -19,6 +19,7 @@ package se.streamsource.streamflow.infrastructure.event.source;
 
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
+import se.streamsource.streamflow.infrastructure.event.source.helper.AllEventsSpecification;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -20,29 +20,12 @@ package se.streamsource.streamflow.web.application.statistics;
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.configuration.ConfigurationComposite;
 import org.qi4j.api.property.Property;
+import se.streamsource.streamflow.infrastructure.event.source.helper.TransactionTrackerConfiguration;
 
 /**
  * Configuration for the StatisticsService.
  */
 public interface StatisticsConfiguration
-      extends ConfigurationComposite
+      extends TransactionTrackerConfiguration
 {
-   /**
-    * Deterrmine whether statistics should be saved or not.
-    *
-    * @return
-    */
-   @UseDefaults
-   Property<Boolean> enabled();
-
-   /**
-    * Date of last event to have generated statistics. If
-    * there are events available after this date but before
-    * now, then they should be sent to the statistics service
-    * in order to get it "up to date".
-    *
-    * @return
-    */
-   @UseDefaults
-   Property<Long> lastEventDate();
 }

@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.infrastructure.event.source;
+package se.streamsource.streamflow.infrastructure.event.source.helper;
 
-import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,19 +26,19 @@ import java.util.List;
 /**
  * JAVADOC
  */
-public class TransactionCollector
-      implements TransactionVisitor
+public class EventCollector
+      implements EventVisitor
 {
-   List<TransactionEvents> transactions = new ArrayList<TransactionEvents>();
+   List<DomainEvent> events = new ArrayList<DomainEvent>();
 
-   public boolean visit( TransactionEvents transaction )
+   public boolean visit( DomainEvent event )
    {
-      transactions.add( transaction );
+      events.add( event );
       return true;
    }
 
-   public Iterable<TransactionEvents> transactions()
+   public List<DomainEvent> events()
    {
-      return transactions;
+      return events;
    }
 }

@@ -31,15 +31,17 @@ import org.qi4j.api.usecase.Usecase;
 import org.qi4j.api.usecase.UsecaseBuilder;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
-import se.streamsource.streamflow.infrastructure.event.source.EventCollector;
-import se.streamsource.streamflow.infrastructure.event.source.EventQuery;
+import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
+import se.streamsource.streamflow.infrastructure.event.source.helper.EventCollector;
+import se.streamsource.streamflow.infrastructure.event.source.helper.EventQuery;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.EventSpecification;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
-import se.streamsource.streamflow.infrastructure.event.source.EventVisitorFilter;
-import se.streamsource.streamflow.infrastructure.event.source.TransactionEventAdapter;
-import se.streamsource.streamflow.infrastructure.event.source.TransactionTimestampFilter;
+import se.streamsource.streamflow.infrastructure.event.source.helper.EventVisitorFilter;
+import se.streamsource.streamflow.infrastructure.event.source.helper.TransactionEventAdapter;
+import se.streamsource.streamflow.infrastructure.event.source.helper.TransactionTimestampFilter;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
+import se.streamsource.streamflow.infrastructure.event.source.helper.TransactionTracker;
 import se.streamsource.streamflow.web.application.mail.MailService;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.interaction.profile.MessageRecipient;
@@ -84,90 +86,59 @@ public interface NotificationService
       private Usecase usecase = UsecaseBuilder.newUsecase( "Notify" );
       public TransactionVisitor subscriber;
 
+      private TransactionTracker tracker;
+
       public void activate() throws Exception
       {
          logger = Logger.getLogger( NotificationService.class.getName() );
 
          logger.info( "Starting ..." );
 
-         try
-         {
-            subscriber = new NotificationSubscriber();
-            source.registerListener( subscriber );
-         } catch (Exception e)
-         {
-            e.printStackTrace();
-            throw e;
-         }
-
          userNotificationFilter = new EventQuery().withNames( "receivedMessage" );
 
-         checkNotifications();
+         tracker = new TransactionTracker( eventStore, source, config, this );
+         tracker.start();
+
          logger.info( "Started" );
       }
 
       public void passivate() throws Exception
       {
-         source.unregisterListener( subscriber );
+         tracker.start();
       }
 
       public boolean visit( TransactionEvents transaction )
       {
-         if (config.configuration().enabled().get())
-         {
-            checkNotifications();
-         }
-
-         return false;
-      }
-
-      protected void checkNotifications()
-      {
-         TransactionTimestampFilter timestamp;
-         EventCollector eventCollector;
-         eventStore.transactionsAfter( config.configuration().lastEventDate().get(),
-               timestamp = new TransactionTimestampFilter( config.configuration().lastEventDate().get(),
-                     new TransactionEventAdapter(
-                           new EventVisitorFilter( userNotificationFilter, eventCollector = new EventCollector() ) ) ) );
-
-         // Handle all receivedMessage events
-         if (!eventCollector.events().isEmpty())
-         {
-            UnitOfWork uow = null;
-
-            try
-            {
-               uow = uowf.newUnitOfWork( usecase );
-
-               for (DomainEvent domainEvent : eventCollector.events())
+         return new TransactionEventAdapter(
+               new EventVisitorFilter( userNotificationFilter, new EventVisitor()
                {
-                  UserEntity user = uow.get( UserEntity.class, domainEvent.entity().get() );
-
-                  if (((MessageRecipient.Data) user).delivery().get().equals( MessageRecipient.MessageDeliveryTypes.email ))
+                  public boolean visit( DomainEvent event )
                   {
-                     mail.sendNotification( domainEvent );
+                     UnitOfWork uow = null;
+
+                     try
+                     {
+                        uow = uowf.newUnitOfWork( usecase );
+
+                        UserEntity user = uow.get( UserEntity.class, event.entity().get() );
+
+                        if (user.delivery().get().equals( MessageRecipient.MessageDeliveryTypes.email ))
+                        {
+                           mail.sendNotification( event );
+                        }
+                     } catch (Exception e)
+                     {
+                        logger.log( Level.SEVERE, "Could not send notification", e );
+
+                        return false;
+                     } finally
+                     {
+                        uow.discard();
+                     }
+
+                     return true;
                   }
-               }
-
-               config.configuration().lastEventDate().set( timestamp.lastTimestamp() );
-               config.save();
-            } catch (Exception e)
-            {
-               logger.log( Level.SEVERE, "Could not send notification", e );
-            } finally
-            {
-               uow.discard();
-            }
-         }
-      }
-
-      class NotificationSubscriber
-            implements TransactionVisitor
-      {
-         public boolean visit( TransactionEvents transaction )
-         {
-            return Mixin.this.visit( transaction );
-         }
+               } )).visit( transaction );
       }
    }
 }

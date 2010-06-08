@@ -23,11 +23,11 @@ import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
-import se.streamsource.streamflow.infrastructure.event.source.AllEventsSpecification;
+import se.streamsource.streamflow.infrastructure.event.source.helper.AllEventsSpecification;
 import se.streamsource.streamflow.infrastructure.event.source.EventFilter;
 import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
-import se.streamsource.streamflow.infrastructure.event.source.TransactionEventAdapter;
+import se.streamsource.streamflow.infrastructure.event.source.helper.TransactionEventAdapter;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
 
 import javax.management.MBeanException;
@@ -92,7 +92,7 @@ public interface EventManagerService
          source.unregisterListener( this );
       }
 
-      public synchronized boolean visit( TransactionEvents transaction )
+      public final synchronized boolean visit( TransactionEvents transaction )
       {
          new TransactionEventAdapter( new EventVisitor()
          {

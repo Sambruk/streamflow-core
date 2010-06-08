@@ -35,7 +35,7 @@ import org.qi4j.test.AbstractQi4jTest;
 import org.qi4j.test.EntityTestAssembler;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
-import se.streamsource.streamflow.infrastructure.event.source.TransactionTimestampFilter;
+import se.streamsource.streamflow.infrastructure.event.source.helper.TransactionTimestampFilter;
 
 /**
  * JAVADOC

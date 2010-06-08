@@ -15,38 +15,30 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.infrastructure.event.source;
+package se.streamsource.streamflow.infrastructure.event.source.helper;
 
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
+import se.streamsource.streamflow.infrastructure.event.source.EventSpecification;
+import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
+import se.streamsource.streamflow.infrastructure.event.source.helper.TransactionEventAdapter;
 
 /**
  * JAVADOC
  */
-public abstract class OnEvents
-      implements TransactionVisitor, Runnable
+public class ForEvents
+      implements TransactionVisitor
 {
-   EventSpecification specification;
+   private EventVisitorFilter filter;
 
-   public OnEvents( String... eventNames )
+   public ForEvents( EventSpecification specification, EventVisitor visitor )
    {
-      specification = new EventQuery().withNames( eventNames );
+      filter = new EventVisitorFilter( specification, visitor );
    }
 
    public boolean visit( TransactionEvents transaction )
    {
-      EventMatcher handler = new EventMatcher( specification )
-      {
-         @Override
-         public void run()
-         {
-            OnEvents.this.run();
-         }
-      };
-      new TransactionEventAdapter( handler ).visit( transaction );
-
-      if (handler.matches())
-         handler.run();
-
+      new TransactionEventAdapter( filter ).visit( transaction );
       return false;
    }
 }

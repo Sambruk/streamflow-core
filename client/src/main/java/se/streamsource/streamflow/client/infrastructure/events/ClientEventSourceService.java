@@ -22,7 +22,7 @@ import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
-import se.streamsource.streamflow.infrastructure.event.source.TransactionCollector;
+import se.streamsource.streamflow.infrastructure.event.source.helper.TransactionCollector;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
 
 import java.io.Reader;

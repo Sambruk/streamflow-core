@@ -25,7 +25,7 @@ import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.spi.service.importer.NewObjectImporter;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.DomainEventFactoryService;
-import se.streamsource.streamflow.infrastructure.event.source.MemoryEventStoreService;
+import se.streamsource.streamflow.infrastructure.event.source.memory.MemoryEventStoreService;
 import se.streamsource.streamflow.infrastructure.event.TimeService;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 

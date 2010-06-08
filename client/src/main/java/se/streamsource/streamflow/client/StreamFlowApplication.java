@@ -52,13 +52,12 @@ import se.streamsource.streamflow.client.ui.administration.ProfileDialog;
 import se.streamsource.streamflow.client.ui.menu.AccountsDialog;
 import se.streamsource.streamflow.client.ui.menu.AccountsModel;
 import se.streamsource.streamflow.client.ui.overview.OverviewWindow;
-import se.streamsource.streamflow.client.ui.status.StatusResources;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceWindow;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.source.AllEventsSpecification;
+import se.streamsource.streamflow.infrastructure.event.source.helper.AllEventsSpecification;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
-import se.streamsource.streamflow.infrastructure.event.source.ForEvents;
+import se.streamsource.streamflow.infrastructure.event.source.helper.ForEvents;
 
 import javax.swing.JComponent;
 import javax.swing.JLabel;

@@ -18,7 +18,9 @@
 package se.streamsource.streamflow.infrastructure.event.source;
 
 /**
- * Source of events
+ * Source of event transactions. Registering with a source will
+ * allow the subscriber to get callbacks when new transactions
+ * are available.
  */
 public interface EventSource
 {
