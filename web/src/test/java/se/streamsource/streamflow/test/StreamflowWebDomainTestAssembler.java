@@ -23,20 +23,20 @@ import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
-import se.streamsource.streamflow.web.StreamFlowWebAssembler;
+import se.streamsource.streamflow.web.StreamflowWebAssembler;
 import se.streamsource.streamflow.web.application.organization.BootstrapAssembler;
 
 /**
  * JAVADOC
  */
-public class StreamFlowWebDomainTestAssembler
-      extends StreamFlowWebAssembler
+public class StreamflowWebDomainTestAssembler
+      extends StreamflowWebAssembler
 {
    private Class[] testClass;
    private Object[] serviceObjects;
 
 
-   public StreamFlowWebDomainTestAssembler( Class[] testClass, Object... serviceObjects )
+   public StreamflowWebDomainTestAssembler( Class[] testClass, Object... serviceObjects )
    {
       this.serviceObjects = serviceObjects;
       this.testClass = testClass;

@@ -261,7 +261,7 @@ public class StreamflowApplication
          };
 
          Energy4Java is = new Energy4Java();
-         app = is.newApplication( new StreamFlowClientAssembler( this,
+         app = is.newApplication( new StreamflowClientAssembler( this,
                org.jdesktop.application.Application.getInstance().getContext(),
                restlet ) );
 

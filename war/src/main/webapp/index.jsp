@@ -49,7 +49,7 @@
     </li>
 </ul>
 
-<!--<a href="webstart/streamflow.jnlp">StreamFlow client</a><br />-->
+<!--<a href="webstart/streamflow.jnlp">Streamflow client</a><br />-->
 
 <div id="foot">
     <ul id="versioninfo">

@@ -26,7 +26,7 @@ import se.streamsource.dci.value.TitledLinkValue;
 import se.streamsource.streamflow.domain.structure.Describable;
 
 /**
- * Builder for making it easier to create LinksValue/LinkValue in a StreamFlow context
+ * Builder for making it easier to create LinksValue/LinkValue in a Streamflow context
  */
 public class LinksBuilder
    extends se.streamsource.dci.value.LinksBuilder

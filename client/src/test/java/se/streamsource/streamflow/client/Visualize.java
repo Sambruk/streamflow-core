@@ -20,7 +20,7 @@ package se.streamsource.streamflow.client;
 import org.qi4j.bootstrap.AssemblyException;
 
 /**
- * Run this to start Envisage to visualize the StreamFlow client application.
+ * Run this to start Envisage to visualize the Streamflow client application.
  */
 public class Visualize
 {
@@ -28,7 +28,7 @@ public class Visualize
    {
 /*
         Energy4Java is = new Energy4Java();
-        ApplicationModelSPI app = is.newApplicationModel(new StreamFlowClientAssembler());
+        ApplicationModelSPI app = is.newApplicationModel(new StreamflowClientAssembler());
         new Envisage().run(app);
 */
    }

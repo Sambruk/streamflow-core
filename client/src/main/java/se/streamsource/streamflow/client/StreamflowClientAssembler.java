@@ -43,12 +43,12 @@ import se.streamsource.streamflow.resource.CommonResourceAssembler;
 /**
  * JAVADOC
  */
-public class StreamFlowClientAssembler
+public class StreamflowClientAssembler
       implements ApplicationAssembler
 {
    Object[] serviceObjects;
 
-   public StreamFlowClientAssembler( Object... serviceObjects )
+   public StreamflowClientAssembler( Object... serviceObjects )
    {
       this.serviceObjects = serviceObjects;
    }
@@ -56,7 +56,7 @@ public class StreamFlowClientAssembler
    public ApplicationAssembly assemble( ApplicationAssemblyFactory applicationFactory ) throws AssemblyException
    {
       ApplicationAssembly assembly = applicationFactory.newApplicationAssembly();
-      assembly.setName( "StreamFlowClient" );
+      assembly.setName( "StreamflowClient" );
       assembly.setVersion( "0.1" );
 
       // Create layers

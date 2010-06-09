@@ -76,7 +76,7 @@ public class BeforeAndAfterWebDomainApplicationSteps
          }
 
 //            Client restlet = new Client(Protocol.HTTP);
-         app = is.newApplication( new StreamFlowWebDomainTestAssembler( stepClasses, genericSteps ) );
+         app = is.newApplication( new StreamflowWebDomainTestAssembler( stepClasses, genericSteps ) );
 
          Module module = app.findModule( "Application", "Test" );
 

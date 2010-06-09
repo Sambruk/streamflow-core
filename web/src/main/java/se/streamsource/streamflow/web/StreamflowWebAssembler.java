@@ -61,12 +61,12 @@ import se.streamsource.streamflow.web.rest.StreamFlowRestAssembler;
 /**
  * JAVADOC
  */
-public class StreamFlowWebAssembler
+public class StreamflowWebAssembler
       implements ApplicationAssembler
 {
    private Object[] serviceObjects;
 
-   public StreamFlowWebAssembler( Object... serviceObjects )
+   public StreamflowWebAssembler( Object... serviceObjects )
    {
       this.serviceObjects = serviceObjects;
    }

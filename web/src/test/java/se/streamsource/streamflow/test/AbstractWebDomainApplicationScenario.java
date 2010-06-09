@@ -27,7 +27,7 @@ import org.jbehave.scenario.steps.CandidateSteps;
 /**
  * Base class for web domain scenarios.
  * <p/>
- * Before scenario starts it starts the StreamFlow web server,
+ * Before scenario starts it starts the Streamflow web server,
  * with all steps being registered as objects in the Domain layer. Then
  * all steps are executed. After the scenario the application is passivated,
  * and the web server is stopped.

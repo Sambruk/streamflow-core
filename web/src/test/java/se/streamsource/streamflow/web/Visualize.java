@@ -30,7 +30,7 @@ public class Visualize
    public static void main( String[] args ) throws AssemblyException
    {
       Energy4Java is = new Energy4Java();
-      ApplicationModelSPI app = is.newApplicationModel( new StreamFlowWebAssembler() );
+      ApplicationModelSPI app = is.newApplicationModel( new StreamflowWebAssembler() );
       new Envisage().run( app );
    }
 }

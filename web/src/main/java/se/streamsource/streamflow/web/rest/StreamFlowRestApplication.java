@@ -17,8 +17,6 @@
 
 package se.streamsource.streamflow.web.rest;
 
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleReference;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
@@ -34,7 +32,7 @@ import org.restlet.data.MediaType;
 import org.restlet.routing.Router;
 import org.restlet.security.Enroler;
 import org.restlet.security.Verifier;
-import se.streamsource.streamflow.web.StreamFlowWebAssembler;
+import se.streamsource.streamflow.web.StreamflowWebAssembler;
 import se.streamsource.streamflow.web.application.security.DefaultEnroler;
 import se.streamsource.streamflow.web.resource.APIv1Router;
 
@@ -96,8 +94,8 @@ public class StreamFlowRestApplication
          {
             // Start Qi4j
             Energy4Java is = new Energy4Java();
-            app = is.newApplication( new StreamFlowWebAssembler( this, getMetadataService() ) );
-            app = is.newApplication( new StreamFlowWebAssembler( getMetadataService() ) );
+            app = is.newApplication( new StreamflowWebAssembler( this, getMetadataService() ) );
+            app = is.newApplication( new StreamflowWebAssembler( getMetadataService() ) );
 
             app.activate();
 

@@ -36,9 +36,9 @@ public class MainClient
    {
       // Set system properties
 //      UIManager.setLookAndFeel("com.jgoodies.looks.windows.WindowsLookAndFeel");
-      System.setProperty( "com.apple.mrj.application.apple.menu.about.name", "StreamFlow" );
+      System.setProperty( "com.apple.mrj.application.apple.menu.about.name", "Streamflow" );
       System.setProperty( "apple.laf.useScreenMenuBar", "true" );
-      System.setProperty( "dock:name", "StreamFlow" );
+      System.setProperty( "dock:name", "Streamflow" );
       Locale.setDefault( new Locale( "sv", "SE", "gov" ) );
 //        Locale.setDefault(Locale.ENGLISH);
 

@@ -3,7 +3,7 @@
                          "http://java.sun.com/products/javahelp/helpset_2_0.dtd">
 
 <helpset version="2.0" xml:lang="en">
-	<title>StreamFlow Beta</title>
+	<title>Streamflow Beta</title>
 	<maps>
 		<homeID>intro1</homeID>
 		<mapref location="map.xml"/>
@@ -35,10 +35,10 @@
 		<data engine="com.sun.java.help.search.DefaultSearchEngine">JavaHelpSearch</data>
 	</view>
 	<presentation default="true" displayviews="true" displayviewimages="true">
-		<name>StreamFlow</name>
+		<name>Streamflow</name>
 		<size width="700" height="600" />
 		<location x="10" y="10" />
-		<title>StreamFlow Help Beta</title>
+		<title>Streamflow Help Beta</title>
 		<image>help2</image>
 		<toolbar>
 			<helpaction image="nav_left_blue1">javax.help.BackAction</helpaction>
