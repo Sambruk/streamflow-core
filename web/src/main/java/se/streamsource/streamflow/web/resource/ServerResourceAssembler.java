@@ -19,9 +19,7 @@ package se.streamsource.streamflow.web.resource;
 
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
-import org.qi4j.bootstrap.ImportedServiceDeclaration;
 import org.qi4j.bootstrap.ModuleAssembly;
-import org.qi4j.spi.service.importer.NewObjectImporter;
 import se.streamsource.dci.restlet.server.DCIAssembler;
 import se.streamsource.dci.restlet.server.DefaultResponseWriterFactory;
 import se.streamsource.streamflow.web.resource.admin.ConsoleServerResource;
@@ -40,12 +38,12 @@ public class ServerResourceAssembler
       module.addObjects( DefaultResponseWriterFactory.class, EventsCommandResult.class );
       new DCIAssembler().assemble( module );
 
-      module.importServices( StreamFlowRootContextFactory.class ).importedBy( NEW_OBJECT );
+      module.importServices( StreamflowRootContextFactory.class ).importedBy( NEW_OBJECT );
 
       // Resources
       module.addObjects(
             APIv1Router.class,
-            StreamFlowRootContextFactory.class,
+            StreamflowRootContextFactory.class,
 
             // Events
             EventsServerResource.class,

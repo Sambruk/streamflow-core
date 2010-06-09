@@ -36,7 +36,7 @@ import se.streamsource.streamflow.domain.form.NumberFieldValue;
 import se.streamsource.streamflow.domain.form.PageSubmissionValue;
 import se.streamsource.streamflow.domain.form.SelectionFieldValue;
 import se.streamsource.streamflow.domain.form.TextFieldValue;
-import se.streamsource.streamflow.web.application.security.StreamFlowPrincipal;
+import se.streamsource.streamflow.web.application.security.StreamflowPrincipal;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.entity.conversation.ConversationEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
@@ -59,7 +59,6 @@ import se.streamsource.streamflow.web.domain.structure.organization.Organization
 import se.streamsource.streamflow.web.domain.structure.project.Member;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.project.ProjectRole;
-import se.streamsource.streamflow.web.domain.structure.user.AnonymousEndUser;
 import se.streamsource.streamflow.web.domain.structure.user.ProxyUser;
 import se.streamsource.streamflow.web.domain.structure.user.User;
 import se.streamsource.streamflow.web.domain.structure.user.Users;
@@ -93,7 +92,7 @@ public interface TestDataService
       public void activate() throws Exception
       {
          Subject subject = new Subject();
-         subject.getPrincipals().add( new StreamFlowPrincipal("administrator") );
+         subject.getPrincipals().add( new StreamflowPrincipal("administrator") );
          Subject.doAs( subject, new PrivilegedExceptionAction()
          {
             public Object run() throws Exception
@@ -195,7 +194,7 @@ public interface TestDataService
 
 
                // Create project
-               Project project = jayway.createProject( "StreamFlow" );
+               Project project = jayway.createProject( "Streamflow" );
 
                project.addSelectedCaseType( newFeature );
                project.addSelectedCaseType( bug );

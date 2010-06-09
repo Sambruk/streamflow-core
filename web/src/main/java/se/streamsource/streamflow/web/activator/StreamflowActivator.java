@@ -37,7 +37,7 @@ import java.util.Properties;
  * Activator for Streamflow. Start Streamflow application and register as Restlet service
  * in OSGi.
  */
-public class StreamFlowActivator implements BundleActivator
+public class StreamflowActivator implements BundleActivator
 {
    public MainWeb mainWeb;
    public ServiceRegistration reg;

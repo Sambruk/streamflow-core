@@ -23,7 +23,7 @@ import org.restlet.security.User;
 
 /**
  * Accept login if user with the given username has the given password
- * in the StreamFlow user database.
+ * in the Streamflow user database.
  */
 public class DefaultEnroler
       implements Enroler
@@ -33,7 +33,7 @@ public class DefaultEnroler
       User user = clientInfo.getUser();
       if (user != null)
       {
-         clientInfo.getPrincipals().add( new StreamFlowPrincipal( user.getIdentifier() ) );
+         clientInfo.getPrincipals().add( new StreamflowPrincipal( user.getIdentifier() ) );
       }
    }
 }

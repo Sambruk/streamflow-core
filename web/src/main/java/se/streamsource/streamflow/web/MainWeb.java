@@ -25,13 +25,11 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.data.Protocol;
-import org.restlet.engine.http.HttpRequest;
 import org.restlet.engine.http.HttpResponse;
-import org.restlet.resource.ServerResource;
 import org.restlet.routing.Filter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import se.streamsource.streamflow.web.rest.StreamFlowRestApplication;
+import se.streamsource.streamflow.web.rest.StreamflowRestApplication;
 
 import java.net.URL;
 
@@ -41,7 +39,7 @@ import java.net.URL;
 public class MainWeb
 {
    private Component component;
-   public StreamFlowRestApplication application;
+   public StreamflowRestApplication application;
    public Logger logger;
 
    public static void main( String[] args ) throws Exception
@@ -75,7 +73,7 @@ public class MainWeb
          component = new Component();
          component.getClients().add( Protocol.CLAP );
          component.getClients().add( Protocol.FILE );
-         application = new StreamFlowRestApplication( component.getContext().createChildContext() );
+         application = new StreamflowRestApplication( component.getContext().createChildContext() );
 
          component.getDefaultHost().attach( "/streamflow/streamflow", application );
          component.start();

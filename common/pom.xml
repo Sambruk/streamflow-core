@@ -9,8 +9,8 @@
     <groupId>se.streamsource.streamflow</groupId>
     <version>1.1-SNAPSHOT</version>
     <packaging>jar</packaging>
-    <name>StreamFlow common</name>
-    <description>StreamFlow common</description>
+    <name>Streamflow common</name>
+    <description>Streamflow common</description>
     <dependencies>
         <dependency>
             <groupId>org.qi4j.core</groupId>

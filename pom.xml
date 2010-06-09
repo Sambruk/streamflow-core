@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>se.streamsource.streamflow</groupId>
     <artifactId>streamflow</artifactId>
-    <name>StreamFlow (Build POM)</name>
+    <name>Streamflow (Build POM)</name>
     <version>1.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
@@ -387,7 +387,7 @@
                 <configuration>
                     <aggregate>true</aggregate>
                     <breakiterator>true</breakiterator>
-                    <header>StreamFlow</header>
+                    <header>Streamflow</header>
                     <quiet>true</quiet>
                     <stylesheetfile>${project.parent.basedir}/src/main/javadoc/javadoc.css</stylesheetfile>
                     <overview>${project.parent.basedir}/src/main/javadoc/overview.html</overview>

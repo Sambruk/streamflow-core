@@ -54,7 +54,7 @@ import java.util.logging.Logger;
  * to register the connector. The service is configured by changing the
  * settings in the JmxConnectorConfiguration.
  * <p/>
- * Authentication is done using the "administrator" account in StreamFlow.
+ * Authentication is done using the "administrator" account in Streamflow.
  */
 @Mixins(JmxConnectorService.JmxConnectorMixin.class)
 public interface JmxConnectorService
@@ -92,7 +92,7 @@ public interface JmxConnectorService
                   "service:jmx:rmi://" + hostName + ":" + jmxAgentPort
                         + "/jndi/rmi://" + hostName + ":" + jmxAgentPort + "/jmxrmi" );
             Map env = new HashMap();
-            env.put( JMXConnectorServer.AUTHENTICATOR, new StreamFlowJmxAuthenticator() );
+            env.put( JMXConnectorServer.AUTHENTICATOR, new StreamflowJmxAuthenticator() );
 
             try
             {
@@ -122,7 +122,7 @@ public interface JmxConnectorService
          }
       }
 
-      class StreamFlowJmxAuthenticator implements JMXAuthenticator
+      class StreamflowJmxAuthenticator implements JMXAuthenticator
       {
 
          public Subject authenticate( Object credentials )

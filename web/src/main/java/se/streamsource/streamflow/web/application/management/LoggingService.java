@@ -65,7 +65,7 @@ public interface LoggingService
          // General logging
          File generalLog = new File(fileConfig.logDirectory(), "streamflow.log");
          Logger.getRootLogger().addAppender( new DailyRollingFileAppender(new PatternLayout("%d %5p %c{1} - %m%n"), generalLog.getAbsolutePath(), "'.'yyyy-ww" ));
-         logger.info( "Logging StreamFlow messages:"+generalLog );
+         logger.info( "Logging Streamflow messages:"+generalLog );
 
       }
 

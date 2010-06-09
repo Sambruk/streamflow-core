@@ -56,7 +56,7 @@ import se.streamsource.streamflow.web.infrastructure.index.EmbeddedSolrAssembler
 import se.streamsource.streamflow.web.infrastructure.osgi.OSGiServiceImporterAssembler;
 import se.streamsource.streamflow.web.resource.ServerResourceAssembler;
 import se.streamsource.streamflow.web.rest.OSGiWebAssembler;
-import se.streamsource.streamflow.web.rest.StreamFlowRestAssembler;
+import se.streamsource.streamflow.web.rest.StreamflowRestAssembler;
 
 /**
  * JAVADOC
@@ -139,7 +139,7 @@ public class StreamflowWebAssembler
    protected void assembleWebLayer( LayerAssembly webLayer ) throws AssemblyException
    {
       ModuleAssembly restModule = webLayer.moduleAssembly( "REST" );
-      new StreamFlowRestAssembler().assemble( restModule );
+      new StreamflowRestAssembler().assemble( restModule );
       new ServerResourceAssembler().assemble( restModule );
 
       new OSGiWebAssembler().assemble( webLayer.moduleAssembly("OSGi" ));

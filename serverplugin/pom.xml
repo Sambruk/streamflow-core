@@ -9,8 +9,8 @@
     <groupId>se.streamsource.streamflow</groupId>
     <version>1.1-SNAPSHOT</version>
     <packaging>bundle</packaging>
-    <name>StreamFlow server plugin API</name>
-    <description>StreamFlow server plugin API</description>
+    <name>Streamflow server plugin API</name>
+    <description>Streamflow server plugin API</description>
     <properties>
         <deploy.dir>${glassfish.domain}/streamflow</deploy.dir>
     </properties>

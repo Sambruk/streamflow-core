@@ -65,7 +65,7 @@ import java.util.Properties;
 import java.util.ResourceBundle;
 
 /**
- * JMX Management for StreamFlow. Exposes all configurable services as MBeans,
+ * JMX Management for Streamflow. Exposes all configurable services as MBeans,
  * as well as the default ManagerComposite
  */
 @Mixins(ManagerService.Mixin.class)

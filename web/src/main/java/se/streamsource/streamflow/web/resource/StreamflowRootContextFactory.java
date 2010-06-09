@@ -28,11 +28,11 @@ import se.streamsource.streamflow.web.domain.structure.user.User;
 import javax.security.auth.Subject;
 
 /**
- * The StreamFlow root interactions will
+ * The Streamflow root interactions will
  * return the class RootInteractions defining the
  * root of the application
  */
-public class StreamFlowRootContextFactory
+public class StreamflowRootContextFactory
    implements RootInteractionsFactory
 {
    @Structure

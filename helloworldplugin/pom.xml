@@ -9,8 +9,8 @@
     <groupId>se.streamsource.streamflow</groupId>
     <version>1.1-SNAPSHOT</version>
     <packaging>bundle</packaging>
-    <name>StreamFlow HelloWorld plugin</name>
-    <description>StreamFlow HelloWorld plugin</description>
+    <name>Streamflow HelloWorld plugin</name>
+    <description>Streamflow HelloWorld plugin</description>
     <properties>
         <deploy.dir>${glassfish.domain}/plugins</deploy.dir>
     </properties>

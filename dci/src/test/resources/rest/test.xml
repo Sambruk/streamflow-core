@@ -3,14 +3,14 @@
     <head>
         <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
         <title>
-            RootContext (StreamFlow web 0.5-SNAPSHOT API)
+            RootContext (Streamflow web 0.5-SNAPSHOT API)
         </title>
         <meta content="se.streamsource.streamflow.web.context.RootContext interface" name="keywords"/>
         <link href="../../../../../javadoc.css" rel="stylesheet" title="Style" type="text/css"/>
         <script type="text/javascript">
             function windowTitle()
             {
-            parent.document.title="RootContext (StreamFlow web 0.5-SNAPSHOT API)";
+            parent.document.title="RootContext (Streamflow web 0.5-SNAPSHOT API)";
             }
         </script>
     </head>
@@ -98,7 +98,7 @@
                 </td>
                 <td align="right" colspan="1" rowspan="3" valign="top">
                     <em>
-                        StreamFlow
+                        Streamflow
                     </em>
                 </td>
             </tr>
@@ -541,7 +541,7 @@
                 </td>
                 <td align="right" colspan="1" rowspan="3" valign="top">
                     <em>
-                        StreamFlow
+                        Streamflow
                     </em>
                 </td>
             </tr>

@@ -6,7 +6,7 @@
 
     <groupId>se.streamsource.streamflow</groupId>
     <artifactId>dependency-resource-supplement</artifactId>
-    <name>StreamFlow Resource Supplement</name>
+    <name>Streamflow Resource Supplement</name>
     <version>1.0</version>
 
     

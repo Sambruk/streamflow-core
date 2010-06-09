@@ -29,7 +29,7 @@ import se.streamsource.streamflow.web.domain.interaction.security.Authentication
 
 /**
  * Accept login if user with the given username has the given password
- * in the StreamFlow user database.
+ * in the Streamflow user database.
  */
 public class PasswordVerifierService
       extends SecretVerifier

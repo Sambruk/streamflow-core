@@ -41,7 +41,7 @@ import java.util.logging.Logger;
 /**
  * JAVADOC
  */
-public class StreamFlowRestApplication
+public class StreamflowRestApplication
       extends Application
 {
    public static final MediaType APPLICATION_SPARQL_JSON = new MediaType( "application/sparql-results+json", "SPARQL JSON" );
@@ -60,7 +60,7 @@ public class StreamFlowRestApplication
    @Structure
    ApplicationSPI app;
 
-   public StreamFlowRestApplication( @Uses Context parentContext ) throws Exception
+   public StreamflowRestApplication( @Uses Context parentContext ) throws Exception
    {
       super( parentContext );
 
@@ -99,7 +99,7 @@ public class StreamFlowRestApplication
 
             app.activate();
 
-            app.findModule( "Web", "REST" ).objectBuilderFactory().newObjectBuilder( StreamFlowRestApplication.class ).injectTo( this );
+            app.findModule( "Web", "REST" ).objectBuilderFactory().newObjectBuilder( StreamflowRestApplication.class ).injectTo( this );
 
             super.start();
          } catch (Exception e)
@@ -117,7 +117,7 @@ public class StreamFlowRestApplication
       {
          super.stop();
 
-         Logger.getLogger( "streamflow" ).info( "Passivating StreamFlow" );
+         Logger.getLogger( "streamflow" ).info( "Passivating Streamflow" );
          app.passivate();
       }
    }

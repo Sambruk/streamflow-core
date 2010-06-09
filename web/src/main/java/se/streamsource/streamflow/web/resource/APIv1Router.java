@@ -30,9 +30,7 @@ import org.restlet.Restlet;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.resource.Directory;
 import org.restlet.resource.ServerResource;
-import org.restlet.routing.Route;
 import org.restlet.routing.Router;
-import org.restlet.routing.Template;
 import org.restlet.security.Authenticator;
 import org.restlet.security.ChallengeAuthenticator;
 import se.streamsource.dci.restlet.server.CommandQueryRestlet;
@@ -41,7 +39,7 @@ import se.streamsource.streamflow.web.resource.admin.ConsoleServerResource;
 import se.streamsource.streamflow.web.resource.events.EventsServerResource;
 
 /**
- * Router for v1 of the StreamFlow REST API.
+ * Router for v1 of the Streamflow REST API.
  */
 public class APIv1Router
       extends Router
@@ -55,14 +53,14 @@ public class APIv1Router
 
       Restlet cqr = factory.newObjectBuilder( CommandQueryRestlet.class ).use(context).newInstance();
 
-      Authenticator auth = new ChallengeAuthenticator( getContext(), ChallengeScheme.HTTP_BASIC, "StreamFlow" );
+      Authenticator auth = new ChallengeAuthenticator( getContext(), ChallengeScheme.HTTP_BASIC, "Streamflow" );
       auth.setNext( cqr );
 
       attachDefault( new ExtensionMediaTypeFilter( getContext(), auth) );
 
 /*
       attach(new ExtensionMediaTypeFilter( getContext(), factory.newObjectBuilder( EventsCommandResult.class).use(getContext(),
-            factory.newObjectBuilder( ViewFilter.class).use(getContext(), createServerResourceFinder( StreamFlowRootContextFactory.class )).newInstance()).newInstance()));
+            factory.newObjectBuilder( ViewFilter.class).use(getContext(), createServerResourceFinder( StreamflowRootContextFactory.class )).newInstance()).newInstance()));
 */
       // Events
       attach( "/events", createServerResourceFinder( EventsServerResource.class ) );
@@ -96,7 +94,7 @@ public class APIv1Router
 
       if (secure)
       {
-         Authenticator auth = new ChallengeAuthenticator( getContext(), ChallengeScheme.HTTP_BASIC, "StreamFlow" );
+         Authenticator auth = new ChallengeAuthenticator( getContext(), ChallengeScheme.HTTP_BASIC, "Streamflow" );
          auth.setNext( finder );
          return auth;
       } else

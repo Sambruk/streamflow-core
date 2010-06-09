@@ -11,8 +11,8 @@
     <version>1.1-SNAPSHOT</version>
 
     <packaging>pom</packaging>
-    <name>StreamFlow JavaWebStart client</name>
-    <description>StreamFlow JavaWebStart packaging</description>
+    <name>Streamflow JavaWebStart client</name>
+    <description>Streamflow JavaWebStart packaging</description>
     <build>
         <plugins>
             <!-- Build WebStart package -->
@@ -63,7 +63,7 @@
         </plugins>
     </build>
     <dependencies>
-        <!-- StreamFlow -->
+        <!-- Streamflow -->
         <dependency>
             <groupId>se.streamsource.streamflow</groupId>
             <artifactId>streamflow-client</artifactId>

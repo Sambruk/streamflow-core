@@ -32,12 +32,12 @@ import se.streamsource.dci.restlet.server.ResourceFinder;
 /**
  * JAVADOC
  */
-public class StreamFlowRestAssembler
+public class StreamflowRestAssembler
       implements Assembler
 {
    public void assemble( ModuleAssembly module ) throws AssemblyException
    {
-      module.addObjects( StreamFlowRestApplication.class,
+      module.addObjects( StreamflowRestApplication.class,
             ResourceFinder.class,
             EntityStateSerializer.class,
             EntityTypeSerializer.class );

@@ -27,7 +27,7 @@ import java.io.IOException;
 import java.text.ParseException;
 
 /**
- * Management methods for StreamFlow. These operations are available
+ * Management methods for Streamflow. These operations are available
  * through JMX.
  */
 public interface Manager

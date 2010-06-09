@@ -10,8 +10,8 @@
     <groupId>se.streamsource.streamflow</groupId>
     <version>1.1-SNAPSHOT</version>
     <packaging>bundle</packaging>
-    <name>StreamFlow web</name>
-    <description>StreamFlow web application</description>
+    <name>Streamflow web</name>
+    <description>Streamflow web application</description>
     <properties>
         <deploy.dir>${glassfish.domain}/streamflow</deploy.dir>
     </properties>
@@ -30,7 +30,7 @@
                             org.qi4j.spi.composite;org.apache.lucene.index;org.apache.solr.spelling;org.apache.solr.update;org.apache.solr.highlight;org.apache.solr.handler;org.apache.solr.handler.admin;org.apache.solr.handler.component;org.apache.solr.request;org.apache.solr.schema;org.apache.solr.analysis;org.apache.solr.search;org.apache.solr.search.function;com.mysql.jdbc;*;version=0.0
                         </Import-Package>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-                        <Bundle-Activator>se.streamsource.streamflow.web.activator.StreamFlowActivator
+                        <Bundle-Activator>se.streamsource.streamflow.web.activator.StreamflowActivator
                         </Bundle-Activator>
                     </instructions>
                 </configuration>

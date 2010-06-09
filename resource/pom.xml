@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>se.streamsource.streamflow</groupId>
     <artifactId>streamflow-jar-resource-bundle</artifactId>
-    <name>StreamFlow License Bundle</name>
+    <name>Streamflow License Bundle</name>
     <version>1.0</version>
 
     <build>
