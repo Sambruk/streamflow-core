@@ -20,7 +20,7 @@ package se.streamsource.streamflow.client.ui;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
-import se.streamsource.streamflow.client.StreamFlowResources;
+import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 
 import javax.swing.JLabel;
@@ -42,7 +42,7 @@ public class ConfirmationDialog
       setActionMap( context.getActionMap( this ) );
 
       JPanel dialog = new JPanel( new BorderLayout() );
-      dialog.add( new JLabel( i18n.text( StreamFlowResources.proceed_label ) ), BorderLayout.CENTER );
+      dialog.add( new JLabel( i18n.text( StreamflowResources.proceed_label ) ), BorderLayout.CENTER );
       add( dialog, BorderLayout.NORTH );
    }
 

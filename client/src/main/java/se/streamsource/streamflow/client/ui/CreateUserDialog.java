@@ -32,19 +32,15 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 
-import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.application.error.ErrorResources;
-import se.streamsource.streamflow.client.StreamFlowResources;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
-import se.streamsource.streamflow.domain.user.Password;
-import se.streamsource.streamflow.domain.user.Username;
 import se.streamsource.streamflow.resource.user.NewUserCommand;
 
 /**

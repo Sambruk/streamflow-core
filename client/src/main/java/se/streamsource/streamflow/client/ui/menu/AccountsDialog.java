@@ -31,7 +31,7 @@ import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.StreamFlowResources;
+import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
@@ -170,7 +170,7 @@ public class AccountsDialog
    public void remove() throws UnitOfWorkCompletionException
    {
       ConfirmationDialog dialog = confirmationDialog.iterator().next();
-      dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamFlowResources.confirmation ) );
+      dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation ) );
       if (dialog.isConfirmed())
       {
          model.removeAccount( accountList.getSelectedIndex() );

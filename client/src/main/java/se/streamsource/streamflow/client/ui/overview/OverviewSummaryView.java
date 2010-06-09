@@ -27,9 +27,10 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.client.StreamFlowApplication;
-import se.streamsource.streamflow.client.StreamFlowResources;
+import se.streamsource.streamflow.client.StreamflowApplication;
+import se.streamsource.streamflow.client.StreamflowResources;
 import static se.streamsource.streamflow.client.ui.overview.OverviewResources.*;
+
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.FileNameExtensionFilter;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
@@ -63,7 +64,7 @@ public class OverviewSummaryView extends JPanel
    protected DialogService dialogs;
 
    @Service
-   protected StreamFlowApplication application;
+   protected StreamflowApplication application;
 
    protected JXTable overviewSummaryTable;
    protected OverviewSummaryModel model;
@@ -199,7 +200,7 @@ public class OverviewSummaryView extends JPanel
       fileChooser.setFileSelectionMode( JFileChooser.FILES_ONLY );
       fileChooser.setMultiSelectionEnabled( false );
       fileChooser.addChoosableFileFilter( new FileNameExtensionFilter(
-            text( StreamFlowResources.excel_file ), true, "xls" ) );
+            text( StreamflowResources.excel_file ), true, "xls" ) );
       int returnVal = fileChooser.showSaveDialog( OverviewSummaryView.this );
       if (returnVal != JFileChooser.APPROVE_OPTION)
       {
@@ -229,14 +230,14 @@ public class OverviewSummaryView extends JPanel
 
       // Show export confirmation to user and give option to open file.
 //		JXLabel confirmLabel = new JXLabel(i18n
-//				.text(StreamFlowResources.export_data_file_with_open_option), (Icon)i18n
+//				.text(StreamflowResources.export_data_file_with_open_option), (Icon)i18n
 //				.icon(Icons.metadata), JXLabel.LEFT);
 //		dialogs.showOkCancelHelpDialog(WindowUtils.findWindow(this),
-//				confirmLabel, text(StreamFlowResources.export_completed));
+//				confirmLabel, text(StreamflowResources.export_completed));
 
       int response = JOptionPane.showConfirmDialog( OverviewSummaryView.this,
-            text( StreamFlowResources.export_data_file_with_open_option ),
-            text( StreamFlowResources.export_completed ),
+            text( StreamflowResources.export_data_file_with_open_option ),
+            text( StreamflowResources.export_completed ),
             JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE );
       // <html>The data was successfully exported to:<br/><br/>"
       // + file.getAbsolutePath()

@@ -25,8 +25,9 @@ import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.application.error.ErrorResources;
 import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.StreamFlowApplication;
-import se.streamsource.streamflow.client.StreamFlowResources;
+import se.streamsource.streamflow.client.StreamflowApplication;
+import se.streamsource.streamflow.client.StreamflowResources;
+
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 
 import javax.swing.*;
@@ -42,7 +43,7 @@ public class UncaughtExceptionHandler implements Thread.UncaughtExceptionHandler
 {
    private
    @Service
-   StreamFlowApplication main;
+   StreamflowApplication main;
 
    public void uncaughtException( Throwable e )
    {
@@ -77,7 +78,7 @@ public class UncaughtExceptionHandler implements Thread.UncaughtExceptionHandler
                   if (re.getStatus().equals( Status.CLIENT_ERROR_FORBIDDEN ))
                   {
                      // User is not allowed to do this operation
-                     JXDialog dialog = new JXDialog( frame, new JLabel( i18n.text( StreamFlowResources.operation_not_permitted ) ) );
+                     JXDialog dialog = new JXDialog( frame, new JLabel( i18n.text( StreamflowResources.operation_not_permitted ) ) );
                      dialog.setLocationRelativeTo( frame );
                      dialog.pack();
                      dialog.setVisible( true );
@@ -110,7 +111,7 @@ public class UncaughtExceptionHandler implements Thread.UncaughtExceptionHandler
                   if (message != null)
                   {
                      message = HtmlErrorMessageExtractor.parse( ex.getMessage() );
-                     showErrorDialog( ex, frame, text( StreamFlowResources.valueOf( HtmlErrorMessageExtractor.parse( ex.getMessage() ) ) ) );
+                     showErrorDialog( ex, frame, text( StreamflowResources.valueOf( HtmlErrorMessageExtractor.parse( ex.getMessage() ) ) ) );
                   } else
                   {
                      // once again in case the resource enum does not exist

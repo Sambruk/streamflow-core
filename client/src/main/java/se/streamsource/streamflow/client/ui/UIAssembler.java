@@ -21,7 +21,7 @@ import org.jdesktop.application.ApplicationContext;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
-import se.streamsource.streamflow.client.StreamFlowApplication;
+import se.streamsource.streamflow.client.StreamflowApplication;
 import se.streamsource.streamflow.client.infrastructure.ui.UIAssemblers;
 import se.streamsource.streamflow.client.ui.administration.UsersAndGroupsModel;
 
@@ -36,12 +36,12 @@ public class UIAssembler
    public void assemble( ModuleAssembly module ) throws AssemblyException
    {
       module.addObjects(
-            StreamFlowApplication.class,
+            StreamflowApplication.class,
             AccountSelector.class
       );
 
       // SAF objects
-      module.importServices( StreamFlowApplication.class, ApplicationContext.class, AccountSelector.class ).visibleIn( layer );
+      module.importServices( StreamflowApplication.class, ApplicationContext.class, AccountSelector.class ).visibleIn( layer );
 
 
       module.addServices( DummyDataService.class ).instantiateOnStartup();

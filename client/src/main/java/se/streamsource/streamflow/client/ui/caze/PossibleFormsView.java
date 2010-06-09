@@ -29,7 +29,7 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.client.StreamFlowApplication;
+import se.streamsource.streamflow.client.StreamflowApplication;
 import se.streamsource.streamflow.client.infrastructure.ui.ModifiedFlowLayout;
 import se.streamsource.dci.value.LinkValue;
 
@@ -49,7 +49,7 @@ public class PossibleFormsView extends JPanel implements ListEventListener, Acti
 
    private
    @Service
-   StreamFlowApplication main;
+   StreamflowApplication main;
 
    private PossibleFormsModel modelForms;
 

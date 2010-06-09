@@ -49,7 +49,7 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 
 import se.streamsource.streamflow.client.Icons;
-import se.streamsource.streamflow.client.StreamFlowResources;
+import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
@@ -250,7 +250,7 @@ public class AdministrationOutlineView
          OrganizationalUnitAdministrationNode orgNode = (OrganizationalUnitAdministrationNode) node;
 
          ConfirmationDialog dialog = confirmationDialog.iterator().next();
-         dialogs.showOkCancelHelpDialog( this, dialog, text( StreamFlowResources.confirmation ) );
+         dialogs.showOkCancelHelpDialog( this, dialog, text( StreamflowResources.confirmation ) );
          if (dialog.isConfirmed())
          {
             ArrayList<Integer> expandedRows = new ArrayList<Integer>();

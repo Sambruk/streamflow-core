@@ -21,23 +21,14 @@ import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
-import org.jdesktop.swingx.JXDialog;
 import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.constraint.ConstraintViolationException;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import org.restlet.Restlet;
-import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.StreamFlowApplication;
 import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
-import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
-import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
-import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import se.streamsource.streamflow.client.ui.administration.AccountResources;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 
 import javax.swing.JFrame;
@@ -45,12 +36,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
-import javax.swing.JPopupMenu;
 import javax.swing.JTextField;
-import javax.swing.Popup;
-import javax.swing.PopupFactory;
-
-import java.awt.Window;
 
 import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.*;
 

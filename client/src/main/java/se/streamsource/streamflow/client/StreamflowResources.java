@@ -20,7 +20,7 @@ package se.streamsource.streamflow.client;
 /**
  * i18n resources that don't fit in any of the other resource enumerations.
  */
-public enum StreamFlowResources
+public enum StreamflowResources
 {
    startup_error,
    could_not_process_events,

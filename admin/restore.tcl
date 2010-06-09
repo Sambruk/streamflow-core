@@ -20,5 +20,5 @@
 # the /backup directory before running this
 
 source "connect.tcl"
-puts [jmx_invoke -m StreamFlow:name=Manager restore]
+puts [jmx_invoke -m Streamflow:name=Manager restore]
 exit

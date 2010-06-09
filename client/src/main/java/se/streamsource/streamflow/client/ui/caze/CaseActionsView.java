@@ -26,16 +26,14 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilder;
 import org.qi4j.api.object.ObjectBuilderFactory;
-import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.TitledLinkValue;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
-import se.streamsource.streamflow.client.StreamFlowApplication;
-import se.streamsource.streamflow.client.StreamFlowResources;
+import se.streamsource.streamflow.client.StreamflowApplication;
+import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.ConfirmationDialog;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
-import se.streamsource.streamflow.client.ui.administration.SelectLinksDialog;
 import se.streamsource.streamflow.client.ui.workspace.SelectLinkDialog;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.domain.interaction.gtd.Actions;
@@ -65,7 +63,7 @@ public class CaseActionsView extends JPanel
 	DialogService dialogs;
 
 	@Service
-	StreamFlowApplication controller;
+   StreamflowApplication controller;
 
    @Structure
    ObjectBuilderFactory obf;
@@ -156,7 +154,7 @@ public class CaseActionsView extends JPanel
 	public void delete()
 	{
       ConfirmationDialog dialog = confirmationDialog.newInstance();
-      dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamFlowResources.confirmation) );
+      dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation) );
       if( dialog.isConfirmed())
       {
 		   model.delete();

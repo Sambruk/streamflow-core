@@ -15,8 +15,8 @@
 -- limitations under the License.
 --
 
-# Database creation script for StreamFlow
-# Create the StreamFlow database along with 
+# Database creation script for Streamflow
+# Create the Streamflow database along with 
 # a "streamflow" user that has access to it
 CREATE DATABASE streamflow
   DEFAULT CHARACTER SET utf8

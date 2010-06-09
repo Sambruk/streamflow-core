@@ -17,7 +17,7 @@
 #
 
 
-# Backup StreamFlow EntityStore,EventDiff and/or statistics database
+# Backup Streamflow EntityStore,EventDiff and/or statistics database
 SFDIR=/usr/share/tomcat6
 BACKUPDEST="$2"
 

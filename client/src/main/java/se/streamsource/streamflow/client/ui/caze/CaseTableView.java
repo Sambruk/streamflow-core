@@ -28,7 +28,6 @@ import java.util.Date;
 
 import javax.swing.Action;
 import javax.swing.ActionMap;
-import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -57,7 +56,7 @@ import org.restlet.resource.ResourceException;
 
 import se.streamsource.streamflow.client.MacOsUIWrapper;
 import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.StreamFlowApplication;
+import se.streamsource.streamflow.client.StreamflowApplication;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
@@ -75,7 +74,7 @@ public class CaseTableView
    protected DialogService dialogs;
 
    @Service
-   protected StreamFlowApplication application;
+   protected StreamflowApplication application;
 
    protected JXTable caseTable;
    protected CaseCreationNode caseCreation;

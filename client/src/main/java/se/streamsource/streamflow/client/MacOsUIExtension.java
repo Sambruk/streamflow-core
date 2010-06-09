@@ -27,9 +27,9 @@ import com.apple.eawt.ApplicationEvent;
 
 public class MacOsUIExtension
 {
-   private StreamFlowApplication application;
+   private StreamflowApplication application;
 
-   public MacOsUIExtension( StreamFlowApplication application )
+   public MacOsUIExtension( StreamflowApplication application )
    {
       this.application = application;
    }

@@ -42,7 +42,7 @@ public class MainClient
       Locale.setDefault( new Locale( "sv", "SE", "gov" ) );
 //        Locale.setDefault(Locale.ENGLISH);
 
-      org.jdesktop.application.Application.launch( StreamFlowApplication.class, args );
+      org.jdesktop.application.Application.launch( StreamflowApplication.class, args );
 
       Logger.getLogger( "status" ).setAdditivity( false );
       Logger.getLogger( "progress" ).setAdditivity( false );
@@ -50,6 +50,6 @@ public class MainClient
 
    public void stop()
    {
-      org.jdesktop.application.Application.getInstance( StreamFlowApplication.class ).exit();
+      org.jdesktop.application.Application.getInstance( StreamflowApplication.class ).exit();
    }
 }

@@ -36,7 +36,7 @@ import org.qi4j.api.object.ObjectBuilderFactory;
 import org.restlet.resource.ResourceException;
 
 import se.streamsource.dci.value.LinkValue;
-import se.streamsource.streamflow.client.StreamFlowResources;
+import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.LinkComparator;
 import se.streamsource.streamflow.client.infrastructure.ui.LinkListCellRenderer;
@@ -113,7 +113,7 @@ public class ParticipantsView
    public void remove() throws ResourceException
    {
       ConfirmationDialog dialog = confirmationDialog.iterator().next();
-      dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamFlowResources.confirmation ) );
+      dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation ) );
       if (dialog.isConfirmed())
       {
          LinkValue value = (LinkValue) participantList.getSelectedValue();

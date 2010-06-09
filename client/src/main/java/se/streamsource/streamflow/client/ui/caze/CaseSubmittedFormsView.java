@@ -26,7 +26,7 @@ import org.qi4j.api.object.ObjectBuilderFactory;
 
 import com.jgoodies.forms.factories.Borders;
 
-import se.streamsource.streamflow.client.StreamFlowApplication;
+import se.streamsource.streamflow.client.StreamflowApplication;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.resource.caze.SubmittedFormListDTO;
 
@@ -51,7 +51,7 @@ public class CaseSubmittedFormsView
 
    private
    @Service
-   StreamFlowApplication main;
+   StreamflowApplication main;
 
 
    public EventListModel eventListModel;

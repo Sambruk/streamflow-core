@@ -82,7 +82,7 @@ import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 @ProxyActions({"cut", "copy", "paste",
       "createDraft", "complete", "assign", "drop", "forward", // Case related proxy actions
       "find", "selectTree", "selectTable", "selectDetails"})
-public class StreamFlowApplication
+public class StreamflowApplication
       extends SingleFrameApplication
 {
    public static ValueType DOMAIN_EVENT_TYPE;
@@ -123,11 +123,11 @@ public class StreamFlowApplication
    private ForEvents subscriber;
    public ApplicationSPI app;
 
-   public StreamFlowApplication()
+   public StreamflowApplication()
    {
       super();
 
-      getContext().getResourceManager().setApplicationBundleNames( Arrays.asList( "se.streamsource.streamflow.client.resources.StreamFlowApplication" ) );
+      getContext().getResourceManager().setApplicationBundleNames( Arrays.asList( "se.streamsource.streamflow.client.resources.StreamflowApplication" ) );
    }
 
    public void init( @Uses final AccountsModel accountsModel,
@@ -154,9 +154,9 @@ public class StreamFlowApplication
 
       
       // General UI settings
-      String toolTipDismissDelay = i18n.text( StreamFlowResources.tooltip_delay_dismiss );
-      String toolTipInitialDelay = i18n.text( StreamFlowResources.tooltip_delay_initial );
-      String toolTipReshowDelay = i18n.text( StreamFlowResources.tooltip_delay_reshow );
+      String toolTipDismissDelay = i18n.text( StreamflowResources.tooltip_delay_dismiss );
+      String toolTipInitialDelay = i18n.text( StreamflowResources.tooltip_delay_initial );
+      String toolTipReshowDelay = i18n.text( StreamflowResources.tooltip_delay_reshow );
       if(toolTipInitialDelay != null && !toolTipInitialDelay.trim().equals(""))
       {
          ToolTipManager.sharedInstance().setInitialDelay(Integer.parseInt(toolTipInitialDelay));
@@ -211,7 +211,7 @@ public class StreamFlowApplication
       {
          public void valueChanged( ListSelectionEvent e )
          {
-            StreamFlowApplication.this.getContext().getActionMap().get( "myProfile" ).setEnabled( !accountSelector.getSelectionModel().isSelectionEmpty() );
+            StreamflowApplication.this.getContext().getActionMap().get( "myProfile" ).setEnabled( !accountSelector.getSelectionModel().isSelectionEmpty() );
          }
       });
    }
@@ -270,7 +270,7 @@ public class StreamFlowApplication
          app.activate();
       } catch (Throwable e)
       {
-         JXErrorPane.showDialog( getMainFrame(), new ErrorInfo( i18n.text( StreamFlowResources.startup_error ), e.getMessage(), null, "#error", e, Level.SEVERE, Collections.<String, String>emptyMap() ) );
+         JXErrorPane.showDialog( getMainFrame(), new ErrorInfo( i18n.text( StreamflowResources.startup_error ), e.getMessage(), null, "#error", e, Level.SEVERE, Collections.<String, String>emptyMap() ) );
          shutdown();
       }
 

@@ -28,7 +28,7 @@ import org.qi4j.api.injection.scope.Uses;
 import com.jgoodies.forms.factories.Borders;
 
 import se.streamsource.dci.value.LinkValue;
-import se.streamsource.streamflow.client.StreamFlowResources;
+import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.LinkComparator;
 import se.streamsource.streamflow.client.infrastructure.ui.LinkListCellRenderer;
@@ -115,7 +115,7 @@ public class CaseTypesView
    public void remove()
    {
       ConfirmationDialog dialog = confirmationDialog.iterator().next();
-      dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamFlowResources.confirmation ) );
+      dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation ) );
       if (dialog.isConfirmed())
       {
          LinkValue selected = (LinkValue) projectList.getSelectedValue();

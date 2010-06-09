@@ -21,5 +21,5 @@
 # system and then remove it.
 
 source "connect.tcl"
-puts [jmx_invoke -m StreamFlow:name=Manager backup]
+puts [jmx_invoke -m Streamflow:name=Manager backup]
 exit

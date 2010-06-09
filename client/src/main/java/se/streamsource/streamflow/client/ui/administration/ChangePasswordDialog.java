@@ -30,8 +30,6 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.value.ValueBuilderFactory;
 
-import se.streamsource.streamflow.client.StreamFlowResources;
-import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
