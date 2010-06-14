@@ -328,15 +328,23 @@ public class CommandQueryRestlet
             // Invoke command with parameters
             if (request.getEntity().getAvailableSize() == 0 && valueType != Response.class )
             {
-               ResponseWriter responseWriter = responseWriterFactory.createWriter( segments, ValueDescriptor.class, context, getVariant( request ) );
+               if (request.getResourceRef().hasQuery())
+               {
+                  // Get POST parameters from the URL query parameters
+                  Object[] args = getQueryArguments( request, response, method );
+                  invoke(request, interactions, method, args);
+               } else
+               {
+                  // No entity and no query was used -> show input form
+                  ResponseWriter responseWriter = responseWriterFactory.createWriter( segments, ValueDescriptor.class, context, getVariant( request ) );
 
-               ValueDescriptor valueDescriptor = module.valueDescriptor( valueType.getName() );
-               responseWriter.write( valueDescriptor, request, response );
+                  ValueDescriptor valueDescriptor = module.valueDescriptor( valueType.getName() );
+                  responseWriter.write( valueDescriptor, request, response );
 
-               unitOfWork.discard();
+                  unitOfWork.discard();
 
-               return;
-
+                  return;
+               }
             } else
             {
                Object[] args = getCommandArguments( request, response, method );
@@ -609,7 +617,8 @@ public class CommandQueryRestlet
       if (!method.getReturnType().equals( Void.TYPE ))
          return false;
 
-      if (method.getParameterTypes().length == 0 || (method.getParameterTypes().length == 1 && Value.class.isAssignableFrom( method.getParameterTypes()[0] )))
+      if (method.getParameterTypes().length == 0 ||
+          (method.getParameterTypes().length == 1 && (Value.class.isAssignableFrom( method.getParameterTypes()[0] ) || Response.class.isAssignableFrom( method.getParameterTypes()[0] ))))
          return true;
 
       return false;
@@ -878,8 +887,8 @@ public class CommandQueryRestlet
                return new Object[]{request.getEntity()};
             } else if (method.getParameterTypes()[0].equals( Form.class ))
             {
-               // Command method takes Representation as input
-               return new Object[]{request.getEntityAsForm()};
+               // Command method takes Form as input
+               return new Object[]{new Form(request.getEntity())};
             } else
             {
                // Need to parse input into ValueComposite
