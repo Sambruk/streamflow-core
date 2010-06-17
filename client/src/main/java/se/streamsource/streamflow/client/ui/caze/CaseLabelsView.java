@@ -19,11 +19,10 @@ package se.streamsource.streamflow.client.ui.caze;
 
 import ca.odell.glazedlists.event.ListEvent;
 import ca.odell.glazedlists.event.ListEventListener;
-import se.streamsource.streamflow.client.infrastructure.ui.ModifiedFlowLayout;
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
+import org.qi4j.api.entity.EntityReference;
+import se.streamsource.dci.value.LinkValue;
 
 import javax.swing.JPanel;
-import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -33,17 +32,12 @@ public class CaseLabelsView extends JPanel implements ListEventListener, ActionL
 {
    private CaseLabelsModel modelCase;
 
-   private JPanel labelPanel;
+   private boolean useBorders;
 
    public CaseLabelsView()
    {
-      setLayout( new BorderLayout() );
-
-      labelPanel = new JPanel( new ModifiedFlowLayout( FlowLayout.LEFT ) );
-      //labelPanel.setBorder(BorderFactory.createLineBorder(Color.RED, 1));
-      //setBorder(BorderFactory.createLineBorder(Color.BLUE, 1));
-
-      add( labelPanel, BorderLayout.SOUTH );
+      setLayout( new FlowLayout( FlowLayout.LEFT ) );
+      //setBorder( BorderFactory.createLineBorder( Color.BLUE, 1));
    }
 
    public void setLabelsModel( CaseLabelsModel modelCase )
@@ -55,24 +49,25 @@ public class CaseLabelsView extends JPanel implements ListEventListener, ActionL
 
    private void initComponents()
    {
-      labelPanel.removeAll();
+      removeAll();
 
       for (int i = 0; i < modelCase.getLabels().size(); i++)
       {
-         ListItemValue itemValue = modelCase.getLabels().get( i );
-         RemovableLabel label = new RemovableLabel( itemValue );
+         LinkValue linkValue = modelCase.getLabels().get( i );
+         RemovableLabel label = new RemovableLabel( linkValue, useBorders );
          label.addActionListener( this );
-         labelPanel.add( label );
+
+         add( label );
       }
 
-      labelPanel.revalidate();
-      labelPanel.repaint();
+      revalidate();
+      repaint();
 
    }
 
    public void setEnabled( boolean enabled )
    {
-      for (Component component : labelPanel.getComponents())
+      for (Component component : getComponents())
       {
          component.setEnabled( enabled );
       }
@@ -87,6 +82,11 @@ public class CaseLabelsView extends JPanel implements ListEventListener, ActionL
    {
       Component component = ((Component) e.getSource());
       RemovableLabel label = (RemovableLabel) component.getParent();
-      modelCase.removeLabel( label.item().entity().get() );
+      modelCase.removeLabel( EntityReference.parseEntityReference( label.link().id().get() ) );
+   }
+
+   public void useBorders( boolean useBorders )
+   {
+      this.useBorders = useBorders;
    }
 }

@@ -31,6 +31,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
@@ -62,6 +63,7 @@ public class CaseDetailView
    {
       super(new BorderLayout());
       this.infoView = infoView;
+      this.infoView.setPreferredSize( new Dimension( 800,50 ));
 
       this.actionsView = actionsView;
       tabs.setFocusable( true );

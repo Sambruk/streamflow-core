@@ -29,11 +29,13 @@ import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypesModel;
+import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FormsModel;
 import se.streamsource.streamflow.client.ui.administration.label.LabelsModel;
 import se.streamsource.streamflow.client.ui.administration.label.SelectedLabelsModel;
 import se.streamsource.streamflow.client.ui.administration.policy.AdministratorsModel;
 import se.streamsource.streamflow.client.ui.administration.roles.RolesModel;
-import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FormsModel;
+import se.streamsource.streamflow.client.ui.administration.surface.AccessPointsModel;
+import se.streamsource.streamflow.client.ui.administration.surface.ProxyUsersModel;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 
@@ -53,6 +55,8 @@ public class OrganizationAdministrationModel
    private SelectedLabelsModel selectedLabelsModel;
    private FormsModel formsModel;
    private CaseTypesModel caseTypesModel;
+   private AccessPointsModel accessPointsModel;
+   private ProxyUsersModel proxyUsersModel;
    private CommandQueryClient client;
 
    public OrganizationAdministrationModel( @Structure ObjectBuilderFactory obf, @Uses CommandQueryClient client)
@@ -66,6 +70,8 @@ public class OrganizationAdministrationModel
       formsModel = obf.newObjectBuilder( FormsModel.class ).use( client.getSubClient( "forms")).newInstance();
       caseTypesModel = obf.newObjectBuilder( CaseTypesModel.class ).use( client.getSubClient( "casetypes" )).newInstance();
       administratorsModel = obf.newObjectBuilder( AdministratorsModel.class ).use( client.getSubClient( "administrators" )).newInstance();
+      accessPointsModel = obf.newObjectBuilder( AccessPointsModel.class ).use(  client.getSubClient( "accesspoints" )).newInstance();
+      proxyUsersModel = obf.newObjectBuilder( ProxyUsersModel.class ).use( client.getSubClient( "proxyusers" )).newInstance();
    }
 
    public RolesModel rolesModel()
@@ -150,5 +156,17 @@ public class OrganizationAdministrationModel
       formsModel.notifyEvent( event );
       administratorsModel.notifyEvent( event );
       caseTypesModel.notifyEvent( event );
+      accessPointsModel.notifyEvent( event );
+      proxyUsersModel.notifyEvent( event );
+   }
+
+   public AccessPointsModel accessPointsModel()
+   {
+      return accessPointsModel;    
+   }
+
+   public ProxyUsersModel proxyUsersModel()
+   {
+      return proxyUsersModel;
    }
 }

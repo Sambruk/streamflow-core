@@ -18,16 +18,17 @@
 package se.streamsource.streamflow.client.ui.administration;
 
 import org.qi4j.api.injection.scope.Uses;
+import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypesAdminView;
+import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FormsAdminView;
 import se.streamsource.streamflow.client.ui.administration.label.LabelsView;
 import se.streamsource.streamflow.client.ui.administration.label.SelectedLabelsView;
 import se.streamsource.streamflow.client.ui.administration.policy.AdministratorsView;
 import se.streamsource.streamflow.client.ui.administration.roles.RolesView;
-import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypesAdminView;
-import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FormsAdminView;
+import se.streamsource.streamflow.client.ui.administration.surface.SurfaceAdministrationView;
 
 import javax.swing.JTabbedPane;
 
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 
 /**
  * JAVADOC
@@ -40,6 +41,7 @@ public class OrganizationAdministrationView
                                           @Uses FormsAdminView formsView,
                                           @Uses RolesView rolesView,
                                           @Uses CaseTypesAdminView caseTypesView,
+                                          @Uses SurfaceAdministrationView surface,
                                           @Uses AdministratorsView administratorsAdmin
    )
    {
@@ -48,6 +50,7 @@ public class OrganizationAdministrationView
       addTab( text( AdministrationResources.forms_tab ), formsView );
       addTab( text( AdministrationResources.casetypes_tab ), caseTypesView );
 //        addTab( text( AdministrationResources.roles_tab ), rolesView );
+      addTab( text( AdministrationResources.surface_tab ), surface );
       addTab( text( AdministrationResources.administrators_tab ), administratorsAdmin );
    }
 }

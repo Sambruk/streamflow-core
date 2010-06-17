@@ -27,6 +27,9 @@ import se.streamsource.streamflow.web.context.organizations.forms.FormsContext;
 import se.streamsource.streamflow.web.context.structure.DescribableContext;
 import se.streamsource.streamflow.web.context.structure.labels.LabelsContext;
 import se.streamsource.streamflow.web.context.structure.labels.SelectedLabelsContext;
+import se.streamsource.streamflow.web.context.surface.administration.organizations.accesspoints.AccessPointsContext;
+import se.streamsource.streamflow.web.context.surface.administration.organizations.projects.ProjectsContext;
+import se.streamsource.streamflow.web.context.surface.administration.organizations.proxyusers.ProxyUsersContext;
 
 /**
  * JAVADOC
@@ -58,6 +61,12 @@ public interface OrganizationContext
 
    @SubContext
    CaseTypesContext casetypes();
+
+   @SubContext
+   AccessPointsContext accesspoints();
+
+   @SubContext
+   ProxyUsersContext proxyusers();
 
    abstract class Mixin
       extends InteractionsMixin
@@ -117,5 +126,14 @@ public interface OrganizationContext
          return subContext( CaseTypesContext.class );
       }
 
+            public AccessPointsContext accesspoints()
+      {
+         return subContext( AccessPointsContext.class );
+      }
+
+      public ProxyUsersContext proxyusers()
+      {
+         return subContext( ProxyUsersContext.class );
+      }
    }
 }

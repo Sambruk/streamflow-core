@@ -29,12 +29,16 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.client.StreamflowApplication;
-import se.streamsource.streamflow.client.infrastructure.ui.ModifiedFlowLayout;
 import se.streamsource.dci.value.LinkValue;
+import se.streamsource.streamflow.client.StreamflowApplication;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.BorderFactory;
+import javax.swing.JPanel;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Map;
@@ -53,15 +57,9 @@ public class PossibleFormsView extends JPanel implements ListEventListener, Acti
 
    private PossibleFormsModel modelForms;
 
-   private JPanel formPanel;
-
    public PossibleFormsView()
    {
-      setLayout( new BorderLayout() );
-
-      formPanel = new JPanel( new ModifiedFlowLayout( FlowLayout.LEFT ) );
-
-      add( formPanel, BorderLayout.SOUTH );
+      setLayout( new FlowLayout() );
    }
 
    public void setFormsModel( PossibleFormsModel modelForm )
@@ -73,7 +71,7 @@ public class PossibleFormsView extends JPanel implements ListEventListener, Acti
 
    private void initComponents()
    {
-      formPanel.removeAll();
+      removeAll();
 
       EventList<LinkValue> formList = modelForms.getForms();
       if (formList.size() > 0)
@@ -85,18 +83,18 @@ public class PossibleFormsView extends JPanel implements ListEventListener, Acti
       {
          PossibleFormView formView = new PossibleFormView( itemValue );
          formView.addActionListener( this );
-         formPanel.add( formView );
+         add( formView );
       }
 
-      formPanel.revalidate();
-      formPanel.repaint();
+      revalidate();
+      repaint();
 
    }
 
    @Override
    public void setEnabled( boolean enabled )
    {
-      for (Component component : formPanel.getComponents())
+      for (Component component : getComponents())
       {
          component.setEnabled( enabled );
       }

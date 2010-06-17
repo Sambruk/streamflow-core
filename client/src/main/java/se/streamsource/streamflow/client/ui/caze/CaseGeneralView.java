@@ -41,7 +41,6 @@ import se.streamsource.streamflow.client.infrastructure.ui.UncaughtExceptionHand
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.workspace.GroupedFilterListDialog;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.resource.caze.CaseGeneralDTO;
 
 import javax.swing.ActionMap;
@@ -124,9 +123,9 @@ public class CaseGeneralView extends JScrollPane implements Observer
       {
          public Object toComponent( Object value )
          {
-            if (value instanceof ListItemValue)
+            if (value instanceof LinkValue)
             {
-               return ((ListItemValue) value).description().get();
+               return ((LinkValue) value).text().get();
             } else
                return value;
          }
@@ -141,7 +140,7 @@ public class CaseGeneralView extends JScrollPane implements Observer
             .bindingTemplate( CaseGeneralDTO.class );
 
       // Layout and form for the right panel
-      FormLayout rightLayout = new FormLayout( "80dlu, 5dlu, 150:grow", "pref, pref, pref, pref, pref, pref, pref, pref" );
+      FormLayout rightLayout = new FormLayout( "80dlu, 5dlu, 150:grow", "pref, pref, default, pref, pref, pref, pref" );
 
       rightForm = new JPanel( rightLayout );
       rightForm.setFocusable( false );
@@ -186,10 +185,12 @@ public class CaseGeneralView extends JScrollPane implements Observer
             JComponent.WHEN_IN_FOCUSED_WINDOW );
 
       labelButton.setHorizontalAlignment( SwingConstants.LEFT );
-      rightBuilder.add( labelButton );
-      rightBuilder.nextLine();
-      rightBuilder.setExtent( 3, 1 );
-      rightBuilder.add( labels );
+      rightBuilder.add( labelButton,
+            new CellConstraints( 1,3,1,1, CellConstraints.FILL, CellConstraints.TOP, new Insets(5,0,0,0) ) );
+
+      labels.setPreferredSize( new Dimension( 500, 80 ));
+      rightBuilder.add( labels,
+            new CellConstraints( 3,3,1,1, CellConstraints.LEFT, CellConstraints.TOP, new Insets(5,0,0,0) ) );
       rightBuilder.nextLine();
 
       // Due date
@@ -202,10 +203,13 @@ public class CaseGeneralView extends JScrollPane implements Observer
       rightBuilder.nextLine();
 
       // Forms
-      rightBuilder.setExtent( 3, 1 );
-      rightBuilder.add( new JLabel( i18n.text( WorkspaceResources.forms_label ) ) );
+      rightBuilder.add( new JLabel( i18n.text( WorkspaceResources.forms_label ) ),
+            cc.xy( 1, 5, CellConstraints.FILL, CellConstraints.TOP ));
       rightBuilder.nextLine();
-      rightBuilder.add( forms );
+      forms.setPreferredSize( new Dimension( 500, 80 ) );
+      rightBuilder.add( forms,
+            new CellConstraints( 3,5,1,1, CellConstraints.LEFT, CellConstraints.TOP, new Insets(5,0,0,0) ) );
+
       rightBuilder.nextLine();
 
       // Limit pickable dates to future
@@ -294,9 +298,9 @@ public class CaseGeneralView extends JScrollPane implements Observer
       labels.setLabelsModel( model.labelsModel() );
       forms.setFormsModel( model.formsModel() );
 
-      ListItemValue value = general.caseType().get();
+      LinkValue value = general.caseType().get();
       selectedCaseType
-            .setListItemValue( value );
+            .setLinkValue( value );
 
       selectedCaseType.setVisible( value == null ? false : true );
       

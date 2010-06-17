@@ -50,6 +50,7 @@ public class UIAssembler
       UIAssemblers.addDialogs( module, NameDialog.class,
             SelectUsersAndGroupsDialog.class,
             CreateUserDialog.class,
+            CreateProxyUserDialog.class,
             ConfirmationDialog.class,
             ResetPasswordDialog.class );
 

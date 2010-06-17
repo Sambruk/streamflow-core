@@ -17,19 +17,7 @@
 
 package se.streamsource.streamflow.client.ui.caze.conversations;
 
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextPane;
-import javax.swing.KeyStroke;
-import javax.swing.text.html.HTMLEditorKit;
-
+import com.jgoodies.forms.factories.Borders;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.entity.EntityReference;
@@ -38,14 +26,23 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilder;
 import org.qi4j.api.object.ObjectBuilderFactory;
-
-import com.jgoodies.forms.factories.Borders;
-
 import se.streamsource.streamflow.client.MacOsUIWrapper;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.caze.CaseResources;
 import se.streamsource.streamflow.client.ui.workspace.GroupedFilterListDialog;
+
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextPane;
+import javax.swing.KeyStroke;
+import javax.swing.text.html.HTMLEditorKit;
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 
 public class ConversationView extends JPanel
 {
@@ -99,7 +96,8 @@ public class ConversationView extends JPanel
       topPanel = new JPanel( new BorderLayout() );
 
       participantsView = obf.newObjectBuilder( ConversationParticipantsView.class ).newInstance();
-
+      participantsView.setPreferredSize( new Dimension( 800, 50 ) );
+      
       javax.swing.Action addParticipantsAction = getActionMap().get(
             "addParticipants" );
       addParticipants = new JButton( addParticipantsAction );

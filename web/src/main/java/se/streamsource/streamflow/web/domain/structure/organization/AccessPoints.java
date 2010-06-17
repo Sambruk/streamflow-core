@@ -28,9 +28,9 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
-import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 
 import java.util.List;
 
@@ -40,11 +40,14 @@ import static se.streamsource.streamflow.infrastructure.event.DomainEvent.*;
  * JAVADOC
  */
 @Mixins(AccessPoints.Mixin.class)
-public interface AccessPoints
+public interface
+      AccessPoints
 {
+   void createAccessPoint( String name );
+
    AccessPoint createAccessPoint( String name, Project project, CaseType caseType, @Optional List<Label> labels );
 
-   boolean removeAccessPoint( AccessPoint accessPoint ); 
+   boolean removeAccessPoint( AccessPoint accessPoint );
 
    interface Data
    {
@@ -69,7 +72,7 @@ public interface AccessPoints
 
       public AccessPoint createAccessPoint( String name, Project project, CaseType caseType, @Optional List<Label> labels )
       {
-         AccessPoint ap = createdAccessPoint( CREATE, idGen.generate( Identity.class), project, caseType, labels );
+         AccessPoint ap = createdAccessPoint( CREATE, idGen.generate( Identity.class ), project, caseType, labels );
 
          addedAccessPoint( CREATE, ap );
          ap.changeDescription( name );
@@ -77,7 +80,32 @@ public interface AccessPoints
          return ap;
       }
 
-      public AccessPoint createdAccessPoint( DomainEvent event, String id, Project project, CaseType caseType, @Optional List<Label> labels  )
+      public void createAccessPoint( String name )
+      {
+         // Check if access point already exists
+         List<AccessPoint> accessPoints = accessPoints().toList();
+         for (AccessPoint accessPoint : accessPoints)
+         {
+            if (accessPoint.getDescription().equals( name ))
+            {
+               throw new IllegalArgumentException( "accesspoint_already_exists" );
+            }
+         }
+
+         AccessPoint ap = createdAccessPoint( CREATE, idGen.generate( Identity.class ) );
+
+         addedAccessPoint( CREATE, ap );
+         ap.changeDescription( name );
+      }
+
+      public AccessPoint createdAccessPoint( DomainEvent event, String id )
+      {
+         EntityBuilder<AccessPoint> entityBuilder = uowf.currentUnitOfWork().newEntityBuilder( AccessPoint.class, id );
+
+         return entityBuilder.newInstance();
+      }
+
+      public AccessPoint createdAccessPoint( DomainEvent event, String id, Project project, CaseType caseType, @Optional List<Label> labels )
       {
          EntityBuilder<AccessPoint> entityBuilder = uowf.currentUnitOfWork().newEntityBuilder( AccessPoint.class, id );
          entityBuilder.instance().addProject( project );

@@ -137,6 +137,8 @@ public class AdministrationView
                         organizationAdministrationModel.labelsModel(),
                         organizationAdministrationModel.formsModel(),
                         organizationAdministrationModel.selectedLabelsModel(),
+                        organizationAdministrationModel.accessPointsModel(),
+                        organizationAdministrationModel.proxyUsersModel(),
                         AdministrationView.this ).newInstance();
                } else if (node instanceof OrganizationalUnitAdministrationNode)
                {

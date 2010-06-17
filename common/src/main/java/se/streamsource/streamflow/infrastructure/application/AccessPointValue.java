@@ -18,12 +18,10 @@
 package se.streamsource.streamflow.infrastructure.application;
 
 import org.qi4j.api.common.Optional;
-import org.qi4j.api.common.UseDefaults;
-import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
-
-import java.util.List;
+import se.streamsource.dci.value.LinkValue;
+import se.streamsource.dci.value.LinksValue;
 
 /**
  * Link value
@@ -31,12 +29,14 @@ import java.util.List;
 public interface AccessPointValue
       extends ValueComposite
 {
-   Property<EntityReference> entity();
-   Property<String> name();
-   Property<String> project();
-   Property<String> caseType();
+   Property<LinkValue> accessPoint();
 
    @Optional
-   @UseDefaults
-   Property<List<String>> labels();
+   Property<LinkValue> project();
+
+   @Optional
+   Property<LinkValue> caseType();
+
+   @Optional
+   Property<LinksValue> labels();
 }

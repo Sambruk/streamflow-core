@@ -17,15 +17,27 @@
 
 package se.streamsource.streamflow.web.domain.entity.organization;
 
+import org.qi4j.api.concern.ConcernOf;
+import org.qi4j.api.concern.Concerns;
+import org.qi4j.api.injection.scope.This;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.domain.structure.Removable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.IdGenerator;
+import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
+import se.streamsource.streamflow.web.domain.structure.label.Label;
+import se.streamsource.streamflow.web.domain.structure.label.Labelable;
 import se.streamsource.streamflow.web.domain.structure.organization.AccessPoint;
+import se.streamsource.streamflow.web.domain.structure.project.Project;
+
+import java.util.List;
 
 /**
  * an Access Point
  */
+@Concerns({AccessPointEntity.AddProjectConcern.class,
+           AccessPointEntity.AddCaseTypeConcern.class,
+           AccessPointEntity.RemoveCaseTypeConcern.class})
 public interface AccessPointEntity
       extends DomainEntity,
       AccessPoint,
@@ -37,6 +49,56 @@ public interface AccessPointEntity
       Describable.Data,
       IdGenerator.Data,
       AccessPoint.Data,
+      Labelable.Data,
       Removable.Data
+{
+   abstract class AddProjectConcern
+      extends ConcernOf<AccessPoint>
+      implements AccessPoint
+   {
+
+      public void addProject( Project project )
       {
+         next.addProject( project );
+         removeCaseType( );
+
+      }
+   }
+
+   abstract class AddCaseTypeConcern
+      extends ConcernOf<AccessPoint>
+      implements AccessPoint
+   {
+      @This
+      Labelable.Data labels;
+
+      public void addCaseType( CaseType caseType )
+      {
+         next.addCaseType( caseType );
+         List<Label> labelList = labels.labels().toList();
+         for( Label label : labelList )
+         {
+            removeLabel( label );
+         }
+      }
+   }
+
+   abstract class RemoveCaseTypeConcern
+      extends ConcernOf<AccessPoint>
+      implements AccessPoint
+   {
+      @This
+      Labelable.Data labels;
+
+      public void removeCaseType( )
+      {
+         next.removeCaseType( );
+         List<Label> labelList = labels.labels().toList();
+         for( Label label : labelList )
+         {
+            removeLabel( label );
+         }
+      }
+   }
+
 }

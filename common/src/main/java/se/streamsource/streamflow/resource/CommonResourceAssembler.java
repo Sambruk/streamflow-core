@@ -21,7 +21,11 @@ import org.qi4j.api.common.Visibility;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
-import se.streamsource.dci.value.*;
+import se.streamsource.dci.value.LinkValue;
+import se.streamsource.dci.value.LinksValue;
+import se.streamsource.dci.value.StringValue;
+import se.streamsource.dci.value.TitledLinkValue;
+import se.streamsource.dci.value.TitledLinksValue;
 import se.streamsource.streamflow.infrastructure.application.AccessPointValue;
 import se.streamsource.streamflow.infrastructure.application.GroupedListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
@@ -31,7 +35,16 @@ import se.streamsource.streamflow.infrastructure.application.ResourceValue;
 import se.streamsource.streamflow.infrastructure.application.TreeNodeValue;
 import se.streamsource.streamflow.infrastructure.application.TreeValue;
 import se.streamsource.streamflow.resource.caze.CaseGeneralDTO;
+import se.streamsource.streamflow.resource.caze.CaseValue;
+import se.streamsource.streamflow.resource.caze.CasesQuery;
 import se.streamsource.streamflow.resource.caze.ContactsDTO;
+import se.streamsource.streamflow.resource.caze.EffectiveFieldDTO;
+import se.streamsource.streamflow.resource.caze.EffectiveFieldsDTO;
+import se.streamsource.streamflow.resource.caze.FieldDTO;
+import se.streamsource.streamflow.resource.caze.ProxyUserCaseDTO;
+import se.streamsource.streamflow.resource.caze.SubmittedFormDTO;
+import se.streamsource.streamflow.resource.caze.SubmittedFormListDTO;
+import se.streamsource.streamflow.resource.caze.SubmittedFormsListDTO;
 import se.streamsource.streamflow.resource.comment.CommentDTO;
 import se.streamsource.streamflow.resource.comment.CommentsDTO;
 import se.streamsource.streamflow.resource.comment.NewCommentCommand;
@@ -44,18 +57,11 @@ import se.streamsource.streamflow.resource.roles.DateDTO;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.resource.roles.IntegerDTO;
 import se.streamsource.streamflow.resource.roles.NamedIndexDTO;
-import se.streamsource.streamflow.resource.caze.EffectiveFieldDTO;
-import se.streamsource.streamflow.resource.caze.EffectiveFieldsDTO;
-import se.streamsource.streamflow.resource.caze.FieldDTO;
-import se.streamsource.streamflow.resource.caze.ProxyUserCaseDTO;
-import se.streamsource.streamflow.resource.caze.SubmittedFormDTO;
-import se.streamsource.streamflow.resource.caze.SubmittedFormListDTO;
-import se.streamsource.streamflow.resource.caze.SubmittedFormsListDTO;
-import se.streamsource.streamflow.resource.caze.CaseValue;
-import se.streamsource.streamflow.resource.caze.CasesQuery;
 import se.streamsource.streamflow.resource.user.ChangePasswordCommand;
 import se.streamsource.streamflow.resource.user.NewProxyUserCommand;
 import se.streamsource.streamflow.resource.user.NewUserCommand;
+import se.streamsource.streamflow.resource.user.ProxyUserDTO;
+import se.streamsource.streamflow.resource.user.ProxyUserListDTO;
 import se.streamsource.streamflow.resource.user.RegisterUserCommand;
 import se.streamsource.streamflow.resource.user.ResetPasswordCommand;
 import se.streamsource.streamflow.resource.user.UserEntityDTO;
@@ -117,6 +123,8 @@ public class CommonResourceAssembler
             SubmittedFormListDTO.class,
             SubmittedFormsListDTO.class,
             UserEntityListDTO.class,
-            UserEntityDTO.class ).visibleIn( Visibility.application );
+            UserEntityDTO.class,
+            ProxyUserListDTO.class,
+            ProxyUserDTO.class).visibleIn( Visibility.application );
    }
 }

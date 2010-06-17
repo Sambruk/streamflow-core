@@ -17,25 +17,31 @@
 
 package se.streamsource.streamflow.web.context.surface.administration.organizations.proxyusers;
 
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.dci.api.ContextNotFoundException;
 import se.streamsource.dci.api.IndexInteraction;
 import se.streamsource.dci.api.Interactions;
 import se.streamsource.dci.api.InteractionsMixin;
 import se.streamsource.dci.api.SubContexts;
-import se.streamsource.dci.value.LinksValue;
-import se.streamsource.streamflow.infrastructure.application.TitledLinksBuilder;
+import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.resource.user.NewProxyUserCommand;
+import se.streamsource.streamflow.resource.user.ProxyUserDTO;
+import se.streamsource.streamflow.resource.user.ProxyUserListDTO;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 import se.streamsource.streamflow.web.domain.structure.user.ProxyUser;
 import se.streamsource.streamflow.web.domain.structure.user.ProxyUsers;
+import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
+
+import java.util.List;
 
 /**
  * JAVADOC
  */
 @Mixins(ProxyUsersContext.Mixin.class)
 public interface ProxyUsersContext
-   extends Interactions, IndexInteraction<LinksValue>, SubContexts<ProxyUserContext>
+   extends Interactions, IndexInteraction<ProxyUserListDTO>, SubContexts<ProxyUserContext>
 {
    // commands
    void createproxyuser( NewProxyUserCommand proxyUser );
@@ -50,16 +56,25 @@ public interface ProxyUsersContext
          organization.createProxyUser( proxyUser.name().get(), proxyUser.username().get(), proxyUser.password().get() );
       }
 
-      public LinksValue index()
+      public ProxyUserListDTO index()
       {
          ProxyUsers.Data data = context.get( ProxyUsers.Data.class );
 
-         TitledLinksBuilder titledLinksBuilder = new TitledLinksBuilder( module.valueBuilderFactory() );
+         ValueBuilder<ProxyUserListDTO> listBuilder = module.valueBuilderFactory().newValueBuilder( ProxyUserListDTO.class );
 
-         titledLinksBuilder.addDescribables( data.proxyUsers() );
-         titledLinksBuilder.addTitle( context.get( Organization.class ).getDescription() );
+         ValueBuilder<ProxyUserDTO> builder = module.valueBuilderFactory().newValueBuilder( ProxyUserDTO.class );
 
-         return titledLinksBuilder.newLinks();
+         List<ProxyUser> proxyUsers = data.proxyUsers().toList();
+         for( ProxyUser proxyUser : proxyUsers)
+         {
+            builder.prototype().entity().set( EntityReference.getEntityReference( proxyUser ) );
+            builder.prototype().disabled().set( ((UserAuthentication.Data)proxyUser).disabled().get() );
+            builder.prototype().username().set( ((Describable)proxyUser).getDescription() );
+
+            listBuilder.prototype().users().get().add( builder.newInstance() );
+         }
+
+         return listBuilder.newInstance();
       }
 
       public ProxyUserContext context( String id ) throws ContextNotFoundException

@@ -20,6 +20,8 @@ package se.streamsource.streamflow.client.ui.administration.users;
 import org.jdesktop.application.ApplicationActionMap;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.JXTable;
+import org.jdesktop.swingx.renderer.CheckBoxProvider;
+import org.jdesktop.swingx.renderer.DefaultTableRenderer;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
@@ -60,9 +62,9 @@ public class UsersAdministrationView
 
       this.model = model;
       usersTable = new JXTable( model );
-      //usersTable.getColumn( 0 ).setCellRenderer( new DefaultTableRenderer( new CheckBoxProvider() ) );
-      //usersTable.getColumn( 0 ).setMaxWidth( 30 );
-      //usersTable.getColumn( 0 ).setResizable( false );
+      usersTable.getColumn( 0 ).setCellRenderer( new DefaultTableRenderer( new CheckBoxProvider() ) );
+      usersTable.getColumn( 0 ).setMaxWidth( 30 );
+      usersTable.getColumn( 0 ).setResizable( false );
       usersTable.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "resetPassword" ) ) );
 
       JScrollPane scroll = new JScrollPane();

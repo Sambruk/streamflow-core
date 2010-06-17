@@ -46,6 +46,8 @@ public interface EmbeddedSolrService extends Activatable, ServiceComposite
       public CoreContainer coreContainer;
       public EmbeddedSolrServer server;
 
+      private SolrCore core;
+
       public void activate() throws Exception
       {
          File directory = new File( fileConfig.dataDirectory() + "/solr" );
@@ -58,10 +60,12 @@ public interface EmbeddedSolrService extends Activatable, ServiceComposite
          CoreContainer.Initializer initializer = new CoreContainer.Initializer();
          coreContainer = initializer.initialize();
          server = new EmbeddedSolrServer( coreContainer, "" );
+         core = coreContainer.getCore( "" );
       }
 
       public void passivate() throws Exception
       {
+         core.closeSearcher();
          coreContainer.shutdown();
 
          // Clear instance fields for GC purposes
@@ -79,7 +83,7 @@ public interface EmbeddedSolrService extends Activatable, ServiceComposite
 
       public SolrCore getSolrCore()
       {
-         return coreContainer.getCore( "" );
+         return core;
       }
    }
 }

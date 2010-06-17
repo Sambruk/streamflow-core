@@ -29,6 +29,7 @@ import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.entity.gtd.Drafts;
 import se.streamsource.streamflow.web.domain.entity.gtd.DraftsQueries;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
+import se.streamsource.streamflow.web.domain.structure.label.Labelable;
 import se.streamsource.streamflow.web.domain.structure.organization.AccessPoint;
 import se.streamsource.streamflow.web.domain.structure.user.AnonymousEndUser;
 
@@ -62,13 +63,14 @@ public interface EndUserContext
       {
          Drafts drafts = context.get( Drafts.class );
          AccessPoint.Data data = context.get( AccessPoint.Data.class );
+         Labelable.Data labelsData = context.get( Labelable.Data.class );
          AnonymousEndUser creator = context.get( AnonymousEndUser.class );
          CaseEntity caseEntity = drafts.createDraft();
          caseEntity.changeDescription( description.string().get() );
          caseEntity.changeCaseType( data.caseType().get() );
          caseEntity.createdBy().set( creator );
 
-         for (Label label : data.labels())
+         for (Label label : labelsData.labels())
          {
             caseEntity.addLabel( label );
          }

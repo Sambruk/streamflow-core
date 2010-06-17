@@ -82,5 +82,5 @@ public enum WorkspaceResources
    welcome,
    none_text,
    lookup_contact_label,
-   choose_message_delivery_type
+   chose_project, choose_message_delivery_type
 }

@@ -20,11 +20,10 @@ package se.streamsource.streamflow.client.ui.caze.conversations;
 import ca.odell.glazedlists.event.ListEvent;
 import ca.odell.glazedlists.event.ListEventListener;
 import se.streamsource.dci.value.LinkValue;
-import se.streamsource.streamflow.client.infrastructure.ui.ModifiedFlowLayout;
 import se.streamsource.streamflow.client.ui.caze.RemovableLabel;
 
+import javax.swing.BorderFactory;
 import javax.swing.JPanel;
-import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -32,19 +31,13 @@ import java.awt.event.ActionListener;
 
 public class ConversationParticipantsView extends JPanel implements ListEventListener, ActionListener
 {
-   
+
    ConversationParticipantsModel model;
-
-   private JPanel labelPanel;
-
 
    public ConversationParticipantsView()
    {
-      setLayout( new BorderLayout() );
-
-      labelPanel = new JPanel( new ModifiedFlowLayout(FlowLayout.LEFT) );
-
-      add( labelPanel, BorderLayout.CENTER );
+      setLayout( new FlowLayout( FlowLayout.LEFT ) );
+      setBorder( BorderFactory.createEmptyBorder( 0, 0, 0, 0 ) );
 
    }
 
@@ -58,18 +51,18 @@ public class ConversationParticipantsView extends JPanel implements ListEventLis
 
    private void initComponents()
    {
-      labelPanel.removeAll();
+      removeAll();
 
       for (int i = 0; i < model.participants().size(); i++)
       {
          LinkValue link = model.participants().get( i );
          RemovableLabel label = new RemovableLabel( link, new FlowLayout( FlowLayout.LEFT, 2, 1 ), RemovableLabel.LEFT );
          label.addActionListener( this );
-         labelPanel.add( label );
+         add( label );
       }
 
-      labelPanel.revalidate();
-      labelPanel.repaint();
+      revalidate();
+      repaint();
 
    }
 

@@ -27,6 +27,7 @@ import se.streamsource.dci.api.SubContext;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.EndUsersContext;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
+import se.streamsource.streamflow.web.domain.structure.label.Labelable;
 import se.streamsource.streamflow.web.domain.structure.organization.AccessPoint;
 
 /**
@@ -34,30 +35,31 @@ import se.streamsource.streamflow.web.domain.structure.organization.AccessPoint;
  */
 @Mixins(AccessPointContext.Mixin.class)
 public interface AccessPointContext
-   extends IndexInteraction<StringValue>, Interactions
+      extends IndexInteraction<StringValue>, Interactions
 {
    @SubContext
    EndUsersContext endusers();
 
 
    abstract class Mixin
-      extends InteractionsMixin
-      implements AccessPointContext
+         extends InteractionsMixin
+         implements AccessPointContext
    {
       public StringValue index()
       {
          ValueBuilder<StringValue> builder = module.valueBuilderFactory().newValueBuilder( StringValue.class );
-         StringBuilder sb = new StringBuilder( );
+         StringBuilder sb = new StringBuilder();
          AccessPoint accessPoint = context.get( AccessPoint.class );
          AccessPoint.Data data = context.get( AccessPoint.Data.class );
+         Labelable.Data labelsData = context.get( Labelable.Data.class );
          sb.append( accessPoint.getDescription() ).append( "(" ).append( EntityReference.getEntityReference( accessPoint ) ).append( ")" );
-         sb.append( ": Project="  );
+         sb.append( ": Project=" );
          sb.append( data.project().get().getDescription() );
          sb.append( ", Case Type=" );
          sb.append( data.caseType().get().getDescription() );
          sb.append( ", Label(s)=" );
 
-         for (Label label : data.labels())
+         for (Label label : labelsData.labels())
          {
             sb.append( label.getDescription() );
             sb.append( " " );

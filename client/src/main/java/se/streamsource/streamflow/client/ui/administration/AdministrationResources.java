@@ -189,6 +189,23 @@ public enum AdministrationResources
    resolutions_tab,
    choose_resolution_title,
    selected_resolutions_tab,
-   resolve, 
-   members_tab
+   resolve,
+   surface_tab,
+   accesspoints_tab,
+   proxyusers_tab,
+   add_accesspoint_title,
+   change_accesspoint_title,
+   could_not_remove_accesspoint,
+   could_not_create_accesspoint_name_already_exists,
+   could_not_create_accesspoint,
+   could_not_rename_accesspoint_name_already_exists,
+   could_not_rename_accesspoint,
+   add_proxyuser_title,
+   change_proxyuser_title,
+   proxyuser_name_already_exists,
+   could_not_create_proxyuser,
+   could_not_rename_proxyuser,
+   members_tab,
+   could_not_reset_password, remove_proxyuser_title, could_not_remove_proxyuser;
+
 }

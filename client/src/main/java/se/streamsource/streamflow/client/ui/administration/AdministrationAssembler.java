@@ -22,17 +22,18 @@ import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import se.streamsource.streamflow.client.infrastructure.ui.UIAssemblers;
+import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypeAdministrationAssembler;
 import se.streamsource.streamflow.client.ui.administration.form.FormsAssembler;
 import se.streamsource.streamflow.client.ui.administration.groups.GroupAdministrationAssembler;
 import se.streamsource.streamflow.client.ui.administration.label.GroupedSelectionDialog;
 import se.streamsource.streamflow.client.ui.administration.label.LabelsAssembler;
-import se.streamsource.streamflow.client.ui.administration.resolutions.ResolutionsAssembler;
 import se.streamsource.streamflow.client.ui.administration.label.SelectionDialog;
 import se.streamsource.streamflow.client.ui.administration.organization.OrganizationsAdministrationAssembler;
 import se.streamsource.streamflow.client.ui.administration.policy.AdministratorAdministrationAssembler;
 import se.streamsource.streamflow.client.ui.administration.projects.ProjectAdministrationAssembler;
+import se.streamsource.streamflow.client.ui.administration.resolutions.ResolutionsAssembler;
 import se.streamsource.streamflow.client.ui.administration.roles.RoleAdministrationAssembler;
-import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypeAdministrationAssembler;
+import se.streamsource.streamflow.client.ui.administration.surface.SurfaceAdministrationAssembler;
 import se.streamsource.streamflow.client.ui.administration.users.UserAdministrationAssembler;
 import se.streamsource.streamflow.client.ui.workspace.TestConnectionTask;
 
@@ -91,5 +92,6 @@ public class AdministrationAssembler
       new RoleAdministrationAssembler().assemble( module.layerAssembly().moduleAssembly( "Roles" ) );
       new FormsAssembler().assemble( module.layerAssembly().moduleAssembly( "Forms" ) );
       new AdministratorAdministrationAssembler().assemble( module.layerAssembly().moduleAssembly( "Administrators" ) );
+      new SurfaceAdministrationAssembler().assemble( module.layerAssembly().moduleAssembly( "Surface" ) );
    }
 }

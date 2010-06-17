@@ -19,14 +19,18 @@ package se.streamsource.streamflow.web.domain.structure.user;
 
 import org.qi4j.api.entity.Aggregated;
 import org.qi4j.api.entity.EntityBuilder;
+import org.qi4j.api.entity.Identity;
 import org.qi4j.api.entity.IdentityGenerator;
 import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.query.QueryBuilderFactory;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.domain.structure.Describable;
+import se.streamsource.streamflow.domain.user.Password;
+import se.streamsource.streamflow.domain.user.Username;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 
@@ -37,14 +41,16 @@ import se.streamsource.streamflow.web.domain.structure.organization.Organization
 public interface ProxyUsers
 {
    // Commands
-   ProxyUser createProxyUser( String name, String username, String password );
+
+   ProxyUser createProxyUser( String name, @Username String username, @Password String password )
+         throws IllegalArgumentException;
 
    interface Data
    {
       @Aggregated
       ManyAssociation<ProxyUser> proxyUsers();
 
-      ProxyUser createdProxyUser( DomainEvent event, String name, String username, String password );
+      ProxyUser createdProxyUser( DomainEvent event, String id, String name, String username, String password );
    }
 
    abstract class Mixin
@@ -56,17 +62,21 @@ public interface ProxyUsers
       @Structure
       UnitOfWorkFactory uowf;
 
+      @Structure
+      QueryBuilderFactory qbf;
+
       @This
       Organization organization;
 
       public ProxyUser createProxyUser( String name, String username, String password )
+            throws IllegalArgumentException
       {
-         return createdProxyUser( DomainEvent.CREATE, name, username, password );
+         return createdProxyUser( DomainEvent.CREATE, idGen.generate( Identity.class ), name, username, password );
       }
 
-      public ProxyUser createdProxyUser( DomainEvent event, String name, String username, String password )
+      public ProxyUser createdProxyUser( DomainEvent event, String id, String name, String username, String password )
       {
-         EntityBuilder<ProxyUser> builder = uowf.currentUnitOfWork().newEntityBuilder( ProxyUser.class, username );
+         EntityBuilder<ProxyUser> builder = uowf.currentUnitOfWork().newEntityBuilder( ProxyUser.class, id );
          builder.instance().organization().set( organization );
          UserAuthentication.Data userEntity = builder.instanceFor( UserAuthentication.Data.class );
          userEntity.userName().set( username );

@@ -21,9 +21,7 @@ import org.qi4j.api.mixin.Mixins;
 import se.streamsource.dci.api.Interactions;
 import se.streamsource.dci.api.InteractionsMixin;
 import se.streamsource.dci.api.SubContext;
-import se.streamsource.streamflow.web.context.RequiresPermission;
 import se.streamsource.streamflow.web.context.surface.accesspoints.AccessPointsContext;
-import se.streamsource.streamflow.web.context.surface.administration.AdministrationContext;
 
 /**
  * JAVADOC
@@ -32,9 +30,9 @@ import se.streamsource.streamflow.web.context.surface.administration.Administrat
 public interface SurfaceContext
       extends Interactions
 {
-   @RequiresPermission("administrator")
+   /*@RequiresPermission("administrator")
    @SubContext
-   AdministrationContext administration();
+   AdministrationContext administration();*/
 
    @SubContext
    AccessPointsContext accesspoints();
@@ -44,10 +42,10 @@ public interface SurfaceContext
          implements SurfaceContext
    {
 
-      public AdministrationContext administration()
+      /*public AdministrationContext administration()
       {
          return subContext( AdministrationContext.class );
-      }
+      }*/
 
       public AccessPointsContext accesspoints()
       {

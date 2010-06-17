@@ -15,41 +15,20 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.resource.caze;
+package se.streamsource.streamflow.resource.user;
 
-import org.qi4j.api.common.Optional;
+import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
-import org.qi4j.library.constraints.annotation.MaxLength;
-import se.streamsource.dci.value.LinkValue;
-import se.streamsource.dci.value.LinksValue;
-import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
 
-import java.util.Date;
+import java.util.List;
 
 /**
- * General information about a case
+ * List of proxy users
  */
-public interface CaseGeneralDTO
+public interface ProxyUserListDTO
       extends ValueComposite
 {
-   @Optional
-   Property<String> caseId();
-
-   @Optional
-   Property<LinkValue> caseType();
-
-   Property<LinksValue> labels();
-
-   @MaxLength(50)
-   Property<String> description();
-
-   Property<String> note();
-
-   Property<Date> creationDate();
-
-   Property<CaseStates> status();
-
-   @Optional
-   Property<Date> dueOn();
+   @UseDefaults
+   Property<List<ProxyUserDTO>> users();
 }

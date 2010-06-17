@@ -25,31 +25,31 @@ import se.streamsource.dci.api.IndexInteraction;
 import se.streamsource.dci.api.Interactions;
 import se.streamsource.dci.api.InteractionsMixin;
 import se.streamsource.dci.value.StringValue;
-import se.streamsource.streamflow.resource.user.ChangePasswordCommand;
 import se.streamsource.streamflow.web.domain.structure.user.ProxyUser;
+import se.streamsource.streamflow.web.domain.structure.user.ProxyUsers;
 import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
-import se.streamsource.streamflow.web.domain.structure.user.WrongPasswordException;
 
 /**
  * JAVADOC
  */
 @Mixins(ProxyUserContext.Mixin.class)
 public interface ProxyUserContext
-   extends Interactions, DeleteInteraction, IndexInteraction<StringValue>
+      extends Interactions, DeleteInteraction, IndexInteraction<StringValue>
 {
    void resetpassword( StringValue newPassword );
 
-   void changepassword( ChangePasswordCommand command ) throws WrongPasswordException;
+   void changeenabled();
 
    abstract class Mixin
-      extends InteractionsMixin
-      implements ProxyUserContext
+         extends InteractionsMixin
+         implements ProxyUserContext
    {
-      public void changepassword( ChangePasswordCommand command ) throws WrongPasswordException
-      {
-         UserAuthentication authentication = context.get( UserAuthentication.class );
 
-         authentication.changePassword( command.oldPassword().get(), command.newPassword().get() );
+      public void changeenabled()
+      {
+         UserAuthentication userAuth = context.get( UserAuthentication.class );
+         UserAuthentication.Data userAuthData = context.get( UserAuthentication.Data.class );
+         userAuth.changeEnabled( userAuthData.disabled().get() );
       }
 
       public void resetpassword( StringValue newPassword )
@@ -61,7 +61,17 @@ public interface ProxyUserContext
 
       public void delete() throws ResourceException
       {
-         // TODO
+         ProxyUsers.Data proxyUsers = context.get( ProxyUsers.Data.class );
+         ProxyUser proxyUser = context.get( ProxyUser.class );
+         UserAuthentication userAuth = context.get( UserAuthentication.class );
+         UserAuthentication.Data userAuthData = context.get( UserAuthentication.Data.class );
+
+         if (proxyUsers.proxyUsers().contains( proxyUser ))
+         {
+            proxyUsers.proxyUsers().remove( proxyUser );
+         }
+         //disable login for proxy user
+         userAuth.changeEnabled( userAuthData.disabled().get() );
       }
 
       public StringValue index()
@@ -70,7 +80,7 @@ public interface ProxyUserContext
 
          ValueBuilder<StringValue> builder = module.valueBuilderFactory().newValueBuilder( StringValue.class );
 
-         builder.prototype().string().set( user.getDescription() + " (" + ((UserAuthentication.Data)user).userName().get()+')');
+         builder.prototype().string().set( user.getDescription() + " (" + ((UserAuthentication.Data) user).userName().get() + ')' );
          return builder.newInstance();
       }
    }

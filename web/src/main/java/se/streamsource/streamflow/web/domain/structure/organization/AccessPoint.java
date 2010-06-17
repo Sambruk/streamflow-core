@@ -17,15 +17,14 @@
 
 package se.streamsource.streamflow.web.domain.structure.organization;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.association.Association;
-import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.property.Property;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.domain.structure.Removable;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
-import se.streamsource.streamflow.web.domain.structure.label.Label;
+import se.streamsource.streamflow.web.domain.structure.label.Labelable;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 
 /**
@@ -34,21 +33,23 @@ import se.streamsource.streamflow.web.domain.structure.project.Project;
 @Mixins(AccessPoint.Mixin.class)
 public interface AccessPoint
       extends
-      Describable, Removable
+      Labelable, Describable, Removable
 {
    void addProject( Project project );
    void addCaseType( CaseType caseType );
-   void addLabel( Label label );
+   void removeCaseType();
 
    interface Data
    {
+      @Optional
       Association<Project> project();
+
+      @Optional
       Association<CaseType> caseType();
-      ManyAssociation<Label> labels();
 
       void addedProject( DomainEvent event, Project project );
       void addedCaseType( DomainEvent event, CaseType caseType );
-      void addedLabel( DomainEvent event, Label label );
+      void removedCaseType( DomainEvent event, CaseType caseType );
    }
 
    abstract class Mixin
@@ -74,17 +75,17 @@ public interface AccessPoint
          caseType().set( caseType );
       }
 
-      public void addLabel( Label label )
+      public void removeCaseType()
       {
-         if ( !labels().contains( label ) )
+         if( caseType().get() != null )
          {
-            addedLabel( DomainEvent.CREATE, label );
+            removedCaseType( DomainEvent.CREATE, caseType().get() );
          }
       }
 
-      public void addedLabel( DomainEvent event, Label label )
+      public void removedCaseType( DomainEvent event, CaseType caseType )
       {
-         labels().add( label );
+         caseType().set( null );
       }
    }
 }

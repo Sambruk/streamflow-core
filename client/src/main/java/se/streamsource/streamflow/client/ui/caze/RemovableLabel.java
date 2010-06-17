@@ -18,10 +18,9 @@
 package se.streamsource.streamflow.client.ui.caze;
 
 import org.jdesktop.swingx.JXLabel;
+import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import se.streamsource.dci.value.LinkValue;
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -41,51 +40,59 @@ import java.awt.event.MouseListener;
 public class RemovableLabel extends JPanel
       implements FocusListener, KeyListener, MouseListener
 {
-   ListItemValue itemValue;
    JButton button;
    private LinkValue link;
    private JXLabel label;
+   private boolean useBorder = false;
 
-   /** Button orientation left*/
+   /**
+    * Button orientation left
+    */
    public static final int LEFT = 0;
-   /** Button orientation right*/
+   /**
+    * Button orientation right
+    */
    public static final int RIGHT = 1;
 
-   public RemovableLabel(){
+   public RemovableLabel()
+   {
       initComponents( RemovableLabel.RIGHT );
    }
 
-   public RemovableLabel( ListItemValue itemValue )
-   {
-      super( new FlowLayout( FlowLayout.LEFT, 2, 1 ) );
-      this.itemValue = itemValue;
-
-      initComponents(RemovableLabel.RIGHT);
-   }
-
-   public RemovableLabel( LinkValue link)
+   public RemovableLabel( LinkValue link )
    {
       this( link, new FlowLayout( FlowLayout.LEFT, 2, 1 ), RIGHT );
 
    }
 
-   public RemovableLabel( LinkValue link, FlowLayout layout , int buttonOrientation)
+   public RemovableLabel( LinkValue link, boolean useBorder )
+   {
+      this( link, new FlowLayout( FlowLayout.LEFT, 2, 1 ), RIGHT );
+      this.useBorder = useBorder;
+   }
+
+   public RemovableLabel( LinkValue link, FlowLayout layout, int buttonOrientation )
    {
       super( layout );
       this.link = link;
-      initComponents(buttonOrientation);
+      initComponents( buttonOrientation );
+   }
+
+   public RemovableLabel( LinkValue link, FlowLayout layout, int buttonOrientation, boolean useBorder )
+   {
+      super( layout );
+      this.link = link;
+      this.useBorder = useBorder;
+      initComponents( buttonOrientation );
    }
 
 
-   private void initComponents( int buttonOrientation)
+   private void initComponents( int buttonOrientation )
    {
       setFocusable( true );
       this.setRequestFocusEnabled( true );
 
-      if( itemValue != null )
-      {
-         label = new JXLabel( itemValue.description().get() );
-      } else if ( link != null )
+      if (link != null)
       {
          label = new JXLabel( link.text().get() );
       } else
@@ -97,7 +104,8 @@ public class RemovableLabel extends JPanel
       button.setBorder( new EmptyBorder( new Insets( 0, 0, 0, 0 ) ) );
       button.setFocusable( false );
 
-      switch (buttonOrientation) {
+      switch (buttonOrientation)
+      {
 
          case RIGHT:
             this.add( label );
@@ -109,13 +117,17 @@ public class RemovableLabel extends JPanel
             this.add( label );
             break;
       }
-      setBorder( BorderFactory.createEtchedBorder() );
+      if (useBorder)
+      {
+         setBorder( BorderFactory.createEtchedBorder() );
+      }
 
       addFocusListener( this );
       addKeyListener( this );
       addMouseListener( this );
 
-      if( label.getText() == null || "".equals( label.getText() )){
+      if (label.getText() == null || "".equals( label.getText() ))
+      {
          this.setVisible( false );
       }
    }
@@ -126,11 +138,6 @@ public class RemovableLabel extends JPanel
       button.setEnabled( enabled );
       label.setEnabled( enabled );
       super.setEnabled( enabled );
-   }
-
-   public ListItemValue item()
-   {
-      return itemValue;
    }
 
    public LinkValue link()
@@ -145,13 +152,25 @@ public class RemovableLabel extends JPanel
 
    public void focusGained( FocusEvent e )
    {
-      setBorder( BorderFactory.createEtchedBorder( Color.LIGHT_GRAY, Color.BLUE ) );
+      if (useBorder)
+      {
+         setBorder( BorderFactory.createEtchedBorder( Color.LIGHT_GRAY, Color.BLUE ) );
+      } else
+      {
+         setBorder( BorderFactory.createLineBorder( Color.GRAY, 1 ) );
+      }
       repaint();
    }
 
    public void focusLost( FocusEvent e )
    {
-      setBorder( BorderFactory.createEtchedBorder() );
+      if (useBorder)
+      {
+         setBorder( BorderFactory.createEtchedBorder() );
+      } else
+      {
+         setBorder( null );
+      }
       repaint();
    }
 
@@ -193,22 +212,22 @@ public class RemovableLabel extends JPanel
    {
    }
 
-   public void setText( String text ){
+   public void setText( String text )
+   {
       label.setText( text );
-      if( text != null)
+      if (text != null)
       {
          this.setVisible( true );
       }
    }
 
-   public void setListItemValue( ListItemValue itemValue )
+   public void setLinkValue( LinkValue link )
    {
-      this.itemValue = itemValue;
-      if( itemValue != null )
+      this.link = link;
+      if (link != null)
       {
-        label.setText( this.itemValue.description().get() );
-        this.setVisible( true );
-      } 
-
+         label.setText( this.link.text().get() );
+         this.setVisible( true );
+      }
    }
 }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.client.ui.administration.users;
+package se.streamsource.streamflow.client.ui.administration.surface;
 
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
@@ -26,6 +26,7 @@ import org.restlet.representation.FileRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.application.error.ErrorResources;
 import se.streamsource.streamflow.client.OperationException;
@@ -34,9 +35,10 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
 import se.streamsource.streamflow.infrastructure.event.source.helper.EventVisitorFilter;
-import se.streamsource.streamflow.resource.user.NewUserCommand;
+import se.streamsource.streamflow.resource.user.NewProxyUserCommand;
+import se.streamsource.streamflow.resource.user.ProxyUserDTO;
+import se.streamsource.streamflow.resource.user.ProxyUserListDTO;
 import se.streamsource.streamflow.resource.user.UserEntityDTO;
-import se.streamsource.streamflow.resource.user.UserEntityListDTO;
 
 import javax.swing.table.AbstractTableModel;
 import java.io.File;
@@ -45,32 +47,29 @@ import java.util.logging.Logger;
 
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 
-public class UsersAdministrationModel
+public class ProxyUsersModel
       extends AbstractTableModel
       implements EventListener, EventVisitor
 {
    @Structure
    ValueBuilderFactory vbf;
 
-   private List<UserEntityDTO> users;
+   private List<ProxyUserDTO> proxyUsers;
 
    private String[] columnNames;
    private Class[] columnClasses;
    private boolean[] columnEditable;
 
-   private EventVisitorFilter eventFilter = new EventVisitorFilter( this, "createdUser", "changedEnabled" );
+   private EventVisitorFilter eventFilter = new EventVisitorFilter( this, "createdProxyUser", "changedEnabled" );
 
    private CommandQueryClient client;
 
-   public UsersAdministrationModel( @Uses CommandQueryClient client ) throws ResourceException
+   public ProxyUsersModel( @Uses CommandQueryClient client ) throws ResourceException
    {
       this.client = client;
       columnNames = new String[]{text( AdministrationResources.user_enabled_label ), text( AdministrationResources.username_label )};
-      //columnNames = new String[]{text( AdministrationResources.username_label )};
       columnClasses = new Class[]{Boolean.class, String.class};
-      //columnClasses = new Class[]{String.class};
       columnEditable = new boolean[]{true, false};
-      //columnEditable = new boolean[]{false};
       refresh();
    }
 
@@ -78,34 +77,32 @@ public class UsersAdministrationModel
    {
       try
       {
-         users = client.query("users", UserEntityListDTO.class).users().get();
+         proxyUsers = client.query("index", ProxyUserListDTO.class).users().get();
          fireTableDataChanged();
        } catch (ResourceException e)
       {
-         throw new OperationException( AdministrationResources.could_not_refresh_list_of_organizations, e );
+         throw new OperationException( AdministrationResources.could_not_refresh, e );
       }
    }
 
    public int getRowCount()
    {
-      return users == null ? 0 : users.size();
+      return proxyUsers == null ? 0 : proxyUsers.size();
    }
 
    public int getColumnCount()
    {
       return 2;
-      //return 1;
    }
 
    public Object getValueAt( int row, int column )
    {
-      //return users == null ? "" : users.get( row ).username().get();
       switch (column)
       {
          case 0:
-            return users != null && !users.get( row ).disabled().get();
+            return proxyUsers != null && !proxyUsers.get( row ).disabled().get();
          default:
-            return users == null ? "" : users.get( row ).username().get();
+            return proxyUsers == null ? "" : proxyUsers.get( row ).username().get();
       }
    }
 
@@ -116,8 +113,8 @@ public class UsersAdministrationModel
       switch (column)
       {
          case 0:
-            UserEntityDTO user = users.get( rowIndex );
-            changeDisabled( user );
+            ProxyUserDTO user = proxyUsers.get( rowIndex );
+            changeEnabled( user );
       }
    }
 
@@ -139,11 +136,11 @@ public class UsersAdministrationModel
       return columnNames[column];
    }
 
-   public void createUser( NewUserCommand userCommand )
+   public void createProxyUser( NewProxyUserCommand proxyUserCommand )
    {
       try
       {
-         client.postCommand( "createuser", userCommand );
+         client.postCommand( "createproxyuser", proxyUserCommand );
       } catch (ResourceException e)
       {
          try
@@ -158,33 +155,14 @@ public class UsersAdministrationModel
    }
 
 
-   public void changeDisabled( UserEntityDTO user )
+   public void changeEnabled( ProxyUserDTO proxyUser )
    {
       try
       {
-         client.getSubClient(user.entity().get().identity()).postCommand( "changedisabled" );
+         client.getSubClient( proxyUser.entity().get().identity() ).postCommand( "changeenabled" );
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_change_user_disabled, e );
-      }
-   }
-
-   public void importUsers( File f )
-   {
-      try
-      {
-         MediaType type = f.getName().endsWith( ".xls" )
-               ? MediaType.APPLICATION_EXCEL
-               : MediaType.TEXT_CSV;
-
-         Representation representation = new FileRepresentation( f, type );
-
-         client.postCommand( "importusers", representation );
-
-      } catch (ResourceException e)
-      {
-         throw new RuntimeException( e.getMessage(), e );
-
       }
    }
 
@@ -195,7 +173,7 @@ public class UsersAdministrationModel
 
    public boolean visit( DomainEvent event )
    {
-      Logger.getLogger( "administration" ).info( "Refresh organizations users" );
+      Logger.getLogger( "administration" ).info( "Refresh proxy users" );
       refresh();
 
       return false;
@@ -208,10 +186,22 @@ public class UsersAdministrationModel
          ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
          builder.prototype().string().set( password );
 
-         client.getSubClient( users.get( index ).entity().get().identity() ).putCommand( "resetpassword", builder.newInstance() );
+         client.getSubClient( proxyUsers.get( index ).entity().get().identity() ).putCommand( "resetpassword", builder.newInstance() );
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.reset_password_failed, e );
       }
+   }
+
+      public void remove( int index )
+   {
+      try
+      {
+         client.getSubClient( proxyUsers.get( index ).entity().get().identity() ).putCommand( "delete" );
+      } catch (ResourceException e)
+      {
+         throw new OperationException( AdministrationResources.could_not_remove_proxyuser, e );
+      }
+      refresh();
    }
 }

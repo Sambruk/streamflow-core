@@ -27,13 +27,13 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.dci.api.IndexInteraction;
 import se.streamsource.dci.api.Interactions;
 import se.streamsource.dci.api.InteractionsMixin;
-import se.streamsource.dci.value.*;
+import se.streamsource.dci.api.SubContext;
+import se.streamsource.dci.value.LinkValue;
+import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.domain.structure.Notable;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
-import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.resource.caze.CaseGeneralDTO;
 import se.streamsource.streamflow.resource.roles.DateDTO;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
@@ -43,10 +43,8 @@ import se.streamsource.streamflow.web.domain.entity.caze.CaseTypeQueries;
 import se.streamsource.streamflow.web.domain.interaction.gtd.DueOn;
 import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresStatus;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
-import se.streamsource.streamflow.web.domain.structure.form.SelectedForms;
-import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
-import se.streamsource.dci.api.SubContext;
+import se.streamsource.streamflow.web.domain.structure.form.SelectedForms;
 
 import static se.streamsource.streamflow.domain.interaction.gtd.CaseStates.*;
 
@@ -103,25 +101,29 @@ public interface CaseGeneralContext
          CaseEntity aCase = context.get( CaseEntity.class );
          builder.prototype().description().set( aCase.description().get() );
 
-         ValueBuilder<ListValue> labelsBuilder = vbf.newValueBuilder( ListValue.class );
-         ValueBuilder<ListItemValue> labelsItemBuilder = vbf.newValueBuilder( ListItemValue.class );
-         for (Label label : aCase.labels())
+         //ValueBuilder<ListValue> labelsBuilder = vbf.newValueBuilder( ListValue.class );
+         //ValueBuilder<ListItemValue> labelsItemBuilder = vbf.newValueBuilder( ListItemValue.class );
+         LinksBuilder labelsBuilder = new LinksBuilder( module.valueBuilderFactory() );
+         labelsBuilder.addDescribables( aCase.labels() );
+         /*for (Label label : aCase.labels())
          {
             labelsItemBuilder.prototype().entity().set( EntityReference.getEntityReference( label ) );
             labelsItemBuilder.prototype().description().set( label.getDescription() );
             labelsBuilder.prototype().items().get().add( labelsItemBuilder.newInstance() );
-         }
+         } */
 
          CaseType caseType = aCase.caseType().get();
          if (caseType != null)
          {
-            ValueBuilder<ListItemValue> caseTypeBuilder = vbf.newValueBuilder( ListItemValue.class );
-            caseTypeBuilder.prototype().description().set( caseType.getDescription() );
-            caseTypeBuilder.prototype().entity().set( EntityReference.getEntityReference( caseType ) );
+            ValueBuilder<LinkValue> caseTypeBuilder = vbf.newValueBuilder( LinkValue.class );
+
+            caseTypeBuilder.prototype().text().set( caseType.getDescription() );
+            caseTypeBuilder.prototype().id().set( EntityReference.getEntityReference( caseType ).identity() );
+            caseTypeBuilder.prototype().href().set( EntityReference.getEntityReference( caseType ).identity() );
             builder.prototype().caseType().set( caseTypeBuilder.newInstance() );
          }
 
-         builder.prototype().labels().set( labelsBuilder.newInstance() );
+         builder.prototype().labels().set( labelsBuilder.newLinks() );
          builder.prototype().note().set( aCase.note().get() );
          builder.prototype().creationDate().set( aCase.createdOn().get() );
          builder.prototype().caseId().set( aCase.caseId().get() );

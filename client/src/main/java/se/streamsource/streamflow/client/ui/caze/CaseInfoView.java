@@ -19,7 +19,6 @@ package se.streamsource.streamflow.client.ui.caze;
 
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
-import se.streamsource.streamflow.client.infrastructure.ui.ModifiedFlowLayout;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.resource.caze.CaseValue;
@@ -42,7 +41,7 @@ public class CaseInfoView extends JPanel implements Observer
 {
    SimpleDateFormat format = new SimpleDateFormat();
 
-	CaseInfoModel model;
+   CaseInfoModel model;
 
    private JLabel caseId = new JLabel();
    private JLabel caseType = new JLabel();
@@ -55,9 +54,10 @@ public class CaseInfoView extends JPanel implements Observer
    private JTable fakeTable;
    private JPanel statusPanel = new JPanel();
 
-   public CaseInfoView(@Service ApplicationContext appContext)
-	{
-      super(new ModifiedFlowLayout(FlowLayout.LEFT));
+   public CaseInfoView( @Service ApplicationContext appContext )
+   {
+      super( new FlowLayout( FlowLayout.LEFT, 1, 1 ) );
+      setBorder( BorderFactory.createEmptyBorder(0,0,0,0) );
 
       Font boldFont = description.getFont().deriveFont( Font.BOLD );
       description.setFont( boldFont );
@@ -65,62 +65,62 @@ public class CaseInfoView extends JPanel implements Observer
       created.setFont( boldFont );
       owner.setFont( boldFont );
 
-      setFont( getFont().deriveFont(getFont().getSize()-2 ));
+      setFont( getFont().deriveFont( getFont().getSize() - 2 ) );
 
       fakeTable = new JTable();
       statusRenderer = new CaseStatusTableCellRenderer();
-      add(statusPanel);
-      add(description);
+      add( statusPanel );
+      add( description );
       add( caseId );
       add( caseType );
-      add(new JLabel(i18n.text( WorkspaceResources.created_column_header )+":"));
-      add(created);
-      add(new JLabel(i18n.text( WorkspaceResources.owner )+":"));
-      add(owner);
-      add(assignedTo);
+      add( new JLabel( i18n.text( WorkspaceResources.created_column_header ) + ":" ) );
+      add( created );
+      add( new JLabel( i18n.text( WorkspaceResources.owner ) + ":" ) );
+      add( owner );
+      add( assignedTo );
 
-	}
+   }
 
    public void setModel( CaseInfoModel caseInfoModel )
-	{
-		if (model != null)
-			model.deleteObserver(this);
+   {
+      if (model != null)
+         model.deleteObserver( this );
 
-		model = caseInfoModel;
+      model = caseInfoModel;
 
-		caseInfoModel.addObserver(this);
+      caseInfoModel.addObserver( this );
 
-      update(null, null);
+      update( null, null );
 
 
-	}
+   }
 
-	public void update(Observable o, Object arg)
-	{
+   public void update( Observable o, Object arg )
+   {
       CaseValue aCase = model.getInfo();
 
       statusPanel.removeAll();
       JComponent comp = (JComponent) statusRenderer.getTableCellRendererComponent( fakeTable, aCase.status().get(), false, false, 0, 0 );
-      comp.setBorder( BorderFactory.createEtchedBorder());
+      comp.setBorder( BorderFactory.createEtchedBorder() );
       statusPanel.add( comp );
 
-      description.setText( aCase.text().get());
+      description.setText( aCase.text().get() );
 
-      caseId.setText( aCase.caseId().get() != null ? "(#"+ aCase.caseId().get()+")" : "" );
+      caseId.setText( aCase.caseId().get() != null ? "(#" + aCase.caseId().get() + ")" : "" );
 
       if (aCase.caseType().get() != null)
-         caseType.setText( "<html>"+i18n.text( WorkspaceResources.casetype_column_header ) + ":<b>"+aCase.caseType().get() +(aCase.resolution().get() != null ? "("+aCase.resolution().get()+")" : "")+"</b></html>");
+         caseType.setText( "<html>" + i18n.text( WorkspaceResources.casetype_column_header ) + ":<b>" + aCase.caseType().get() + (aCase.resolution().get() != null ? "(" + aCase.resolution().get() + ")" : "") + "</b></html>" );
       else
          caseType.setText( "" );
 
-      created.setText(format.format( aCase.creationDate().get())+(aCase.createdBy().get() != null ? "("+ aCase.createdBy().get()+")":""));
+      created.setText( format.format( aCase.creationDate().get() ) + (aCase.createdBy().get() != null ? "(" + aCase.createdBy().get() + ")" : "") );
       owner.setText( aCase.owner().get() );
 
       if (aCase.assignedTo().get() == null)
          assignedTo.setText( "" );
       else
-         assignedTo.setText( "<html>"+i18n.text(WorkspaceResources.assigned_to_header )+":<b>"+ aCase.assignedTo().get()+"</b></html>");
+         assignedTo.setText( "<html>" + i18n.text( WorkspaceResources.assigned_to_header ) + ":<b>" + aCase.assignedTo().get() + "</b></html>" );
 
       this.repaint();
-	}
+   }
 }

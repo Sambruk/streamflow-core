@@ -25,43 +25,88 @@ import se.streamsource.dci.api.DeleteInteraction;
 import se.streamsource.dci.api.IndexInteraction;
 import se.streamsource.dci.api.Interactions;
 import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.SubContext;
+import se.streamsource.dci.value.LinkValue;
+import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.StringValue;
+import se.streamsource.streamflow.domain.structure.Describable;
+import se.streamsource.streamflow.infrastructure.application.AccessPointValue;
+import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
+import se.streamsource.streamflow.web.context.structure.labels.LabelableContext;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationQueries;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationVisitor;
+import se.streamsource.streamflow.web.domain.entity.project.ProjectLabelsQueries;
+import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
+import se.streamsource.streamflow.web.domain.structure.casetype.SelectedCaseTypes;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
+import se.streamsource.streamflow.web.domain.structure.label.Labelable;
+import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
 import se.streamsource.streamflow.web.domain.structure.organization.AccessPoint;
 import se.streamsource.streamflow.web.domain.structure.organization.AccessPoints;
+import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnits;
+import se.streamsource.streamflow.web.domain.structure.organization.Projects;
+import se.streamsource.streamflow.web.domain.structure.project.Project;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * JAVADOC
  */
 @Mixins(AccessPointContext.Mixin.class)
 public interface AccessPointContext
-   extends IndexInteraction<StringValue>, Interactions, DeleteInteraction
+      extends IndexInteraction<AccessPointValue>, Interactions, DeleteInteraction
 {
+   void changedescription( StringValue name )
+         throws IllegalArgumentException;
+
+   void setproject( StringValue id );
+
+   void setcasetype( StringValue id );
+
+   LinksValue possibleprojects();
+
+   LinksValue possiblecasetypes();
+
+   LinksValue possiblelabels();
+
+   @SubContext
+   LabelableContext labels();
+
    abstract class Mixin
-      extends InteractionsMixin
-      implements AccessPointContext
+         extends InteractionsMixin
+         implements AccessPointContext
    {
-      public StringValue index()
+      public AccessPointValue index()
       {
-         ValueBuilder<StringValue> builder = module.valueBuilderFactory().newValueBuilder( StringValue.class );
-         StringBuilder sb = new StringBuilder( );
+         ValueBuilder<AccessPointValue> builder = module.valueBuilderFactory().newValueBuilder( AccessPointValue.class );
+
          AccessPoint accessPoint = context.get( AccessPoint.class );
-         AccessPoint.Data data = context.get( AccessPoint.Data.class );
-         sb.append( accessPoint.getDescription() ).append( "(" ).append( EntityReference.getEntityReference( accessPoint ) ).append( ")" );
-         sb.append( ": Project="  );
-         sb.append( data.project().get().getDescription() );
-         sb.append( ", Case Type=" );
-         sb.append( data.caseType().get().getDescription() );
-         sb.append( ", Label(s)=" );
+         AccessPoint.Data accessPointData = context.get( AccessPoint.Data.class );
+         Labelable.Data labelsData = context.get( Labelable.Data.class );
 
-         for (Label label : data.labels())
-         {
-            sb.append( label.getDescription() );
-            sb.append( " " );
-         }
+         builder.prototype().accessPoint().set( createLinkValue( accessPoint ) );
+         if( accessPointData.project().get() != null )
+            builder.prototype().project().set( createLinkValue( accessPointData.project().get() ) );
+         if( accessPointData.caseType().get() != null )
+            builder.prototype().caseType().set( createLinkValue( accessPointData.caseType().get() ) );
 
-         builder.prototype().string().set( sb.toString() );
+         LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
+         linksBuilder.addDescribables( labelsData.labels() );
+
+         builder.prototype().labels().set( linksBuilder.newLinks() );
+
          return builder.newInstance();
+      }
+
+      private LinkValue createLinkValue( Describable describable )
+      {
+         ValueBuilder<LinkValue> linkBuilder = module.valueBuilderFactory().newValueBuilder( LinkValue.class );
+         EntityReference ref = EntityReference.getEntityReference( describable );
+         linkBuilder.prototype().text().set( describable.getDescription() );
+         linkBuilder.prototype().id().set( ref.identity() );
+         linkBuilder.prototype().href().set( ref.identity() );
+         return linkBuilder.newInstance();
       }
 
       public void delete() throws ResourceException
@@ -70,6 +115,111 @@ public interface AccessPointContext
          AccessPoints accessPoints = context.get( AccessPoints.class );
 
          accessPoints.removeAccessPoint( accessPoint );
+      }
+
+      public void changedescription( StringValue name )
+            throws IllegalArgumentException
+      {
+         // check if the new description is valid
+         AccessPoints.Data accessPoints = context.get( AccessPoints.Data.class );
+         List<AccessPoint> accessPointsList = accessPoints.accessPoints().toList();
+         for (AccessPoint accessPoint : accessPointsList)
+         {
+            if( accessPoint.getDescription().equals( name.string().get() ) )
+            {
+               throw new IllegalArgumentException( "accesspoint_already_exists" );
+            }
+         }
+         
+         context.get( AccessPoint.class ).changeDescription( name.string().get() );
+      }
+
+      public LinksValue possibleprojects()
+      {
+
+         final LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
+         OrganizationQueries organizationQueries = context.get( OrganizationQueries.class );
+         organizationQueries.visitOrganization( new OrganizationVisitor()
+         {
+            @Override
+            public boolean visitProject( Project project )
+            {
+               linksBuilder.addDescribable( project );
+
+               return true;
+            }
+         }, new OrganizationQueries.ClassSpecification( OrganizationalUnits.class, Projects.class, Project.class ) );
+
+         return linksBuilder.newLinks();
+      }
+
+      public LinksValue possiblecasetypes()
+      {
+         AccessPoint.Data accessPoint = context.get( AccessPoint.Data.class );
+         Project project = accessPoint.project().get();
+
+         LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() );
+         if (project != null)
+         {
+            SelectedCaseTypes.Data data = (SelectedCaseTypes.Data) project;
+            builder.addDescribables( data.selectedCaseTypes() );
+         }
+         return builder.newLinks();
+      }
+
+      public void setproject( StringValue id )
+      {
+         AccessPoint accessPoint = context.get( AccessPoint.class );
+
+         Project project = module.unitOfWorkFactory().currentUnitOfWork().get( Project.class, id.string().get() );
+
+         accessPoint.addProject( project );
+      }
+
+      public void setcasetype( StringValue id )
+      {
+         AccessPoint accessPoint = context.get( AccessPoint.class );
+
+         CaseType caseType = module.unitOfWorkFactory().currentUnitOfWork().get( CaseType.class, id.string().get() );
+
+         accessPoint.addCaseType( caseType );
+      }
+
+      public LinksValue possiblelabels()
+      {
+         AccessPoint.Data accessPoint = context.get( AccessPoint.Data.class );
+         Labelable.Data labelsData = context.get( Labelable.Data.class );
+         Project project = accessPoint.project().get();
+         CaseType caseType = accessPoint.caseType().get();
+
+         LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
+         if (project != null && caseType != null)
+         {
+            ProjectLabelsQueries labelsQueries = (ProjectLabelsQueries) project;
+
+
+            Map<Label, SelectedLabels> map = labelsQueries.possibleLabels( caseType );
+            try
+            {
+               List<Label> labels = labelsData.labels().toList();
+               for (Label label : map.keySet())
+               {
+                  if (!labels.contains( label ))
+                  {
+                     linksBuilder.addDescribable( label, (( Describable )map.get( label )).getDescription()  );
+                  }
+               }
+            } catch (IllegalArgumentException e)
+            {
+               linksBuilder.addDescribables( map.keySet() );
+            }
+         }
+         return linksBuilder.newLinks();
+      }
+
+      public LabelableContext labels()
+      {
+         return subContext( LabelableContext.class );
       }
    }
 }

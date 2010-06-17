@@ -22,7 +22,6 @@ import com.jgoodies.forms.layout.FormLayout;
 import org.jdesktop.swingx.JXList;
 import org.jdesktop.swingx.decorator.HighlighterFactory;
 import se.streamsource.streamflow.client.Icons;
-import se.streamsource.streamflow.client.infrastructure.ui.ModifiedFlowLayout;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.resource.conversation.ConversationDTO;
 
@@ -104,7 +103,7 @@ public class ConversationsListCellRenderer implements ListCellRenderer
 			JPanel contentPanel = new JPanel(new BorderLayout());
 			contentPanel.setFocusable(false);
 
-			JPanel ingressPanel = new JPanel(new ModifiedFlowLayout(
+			JPanel ingressPanel = new JPanel(new FlowLayout(
 					FlowLayout.LEFT));
 			
 			// Conversation creation date

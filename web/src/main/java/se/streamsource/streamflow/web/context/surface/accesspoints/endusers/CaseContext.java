@@ -31,11 +31,12 @@ import se.streamsource.streamflow.resource.caze.ProxyUserCaseDTO;
 import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.formdrafts.FormDraftsContext;
 import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.requiredforms.RequiredFormsContext;
 import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.submittedforms.SubmittedFormsContext;
-import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
-import se.streamsource.streamflow.web.domain.structure.label.Label;
-import se.streamsource.streamflow.web.domain.structure.organization.AccessPoint;
+import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
+import se.streamsource.streamflow.web.domain.structure.label.Label;
+import se.streamsource.streamflow.web.domain.structure.label.Labelable;
+import se.streamsource.streamflow.web.domain.structure.organization.AccessPoint;
 
 /**
  * JAVADOC
@@ -71,12 +72,13 @@ public interface CaseContext
          ValueBuilder<ProxyUserCaseDTO> builder = vbf.newValueBuilder( ProxyUserCaseDTO.class );
          builder.prototype().description().set( aCase.getDescription() );
          AccessPoint.Data accessPoint = context.get( AccessPoint.Data.class );
+         Labelable.Data labelsData = context.get( Labelable.Data.class );
 
          builder.prototype().project().set( accessPoint.project().get().getDescription() );
          builder.prototype().caseType().set( accessPoint.caseType().get().getDescription() );
 
 
-         for (Label label : accessPoint.labels())
+         for (Label label : labelsData.labels())
          {
             builder.prototype().labels().get().add( label.getDescription() );
          }

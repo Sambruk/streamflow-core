@@ -23,6 +23,7 @@ import se.streamsource.dci.api.Interactions;
 import se.streamsource.dci.api.InteractionsMixin;
 import se.streamsource.dci.api.SubContexts;
 import se.streamsource.dci.value.LinksValue;
+import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.web.domain.entity.organization.AccessPointEntity;
 import se.streamsource.streamflow.web.domain.structure.organization.AccessPoint;
@@ -35,6 +36,8 @@ import se.streamsource.streamflow.web.domain.structure.organization.AccessPoints
 public interface AccessPointsContext
    extends SubContexts<AccessPointContext>, IndexInteraction<LinksValue>, Interactions
 {
+   public void createaccesspoint( StringValue name );
+   
    abstract class Mixin
       extends InteractionsMixin
       implements AccessPointsContext
@@ -48,6 +51,12 @@ public interface AccessPointsContext
          linksBuilder.addDescribables( data.accessPoints() );
 
          return linksBuilder.newLinks();
+      }
+
+      public void createaccesspoint( StringValue name )
+      {
+         AccessPoints accessPoints = context.get( AccessPoints.class );
+         accessPoints.createAccessPoint( name.string().get() );
       }
 
       public AccessPointContext context( String id )
