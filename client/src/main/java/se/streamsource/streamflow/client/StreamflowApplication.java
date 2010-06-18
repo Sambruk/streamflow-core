@@ -40,6 +40,7 @@ import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.data.Protocol;
 import org.restlet.routing.Filter;
+import se.streamsource.streamflow.client.assembler.StreamflowClientAssembler;
 import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.JavaHelp;
