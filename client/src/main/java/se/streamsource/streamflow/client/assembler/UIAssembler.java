@@ -217,8 +217,9 @@ import se.streamsource.streamflow.client.ui.workspace.WorkspaceUserNode;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceView;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceWindow;
 
-import static org.qi4j.api.common.Visibility.layer;
+import static org.qi4j.api.common.Visibility.*;
 import static se.streamsource.streamflow.client.infrastructure.ui.UIAssemblers.*;
+import static se.streamsource.streamflow.client.infrastructure.ui.UIAssemblers.addDialogs;
 
 /**
  * JAVADOC
@@ -312,38 +313,38 @@ public class UIAssembler
 
    private void projectAdministration( ModuleAssembly module ) throws AssemblyException
    {
-      UIAssemblers.addViews( module, ProjectAdminView.class );
+      addViews( module, ProjectAdminView.class );
 
 
-      UIAssemblers.addMV( module, ProjectsModel.class,
+      addMV( module, ProjectsModel.class,
             ProjectsView.class );
 
-      UIAssemblers.addModels( module, ProjectModel.class );
+      addModels( module, ProjectModel.class );
 
-      UIAssemblers.addViews( module, ProjectView.class, se.streamsource.streamflow.client.ui.administration.casetypes.forms.FormsAdminView.class, FormEditAdminView.class );
+      addViews( module, ProjectView.class, se.streamsource.streamflow.client.ui.administration.casetypes.forms.FormsAdminView.class, FormEditAdminView.class );
 
-      UIAssemblers.addMV( module, ProjectMembersModel.class,
+      addMV( module, ProjectMembersModel.class,
             ProjectMembersView.class );
 
-      UIAssemblers.addMV( module,
+      addMV( module,
             FieldsModel.class, FieldsView.class );
 
-      UIAssemblers.addMV( module,
+      addMV( module,
             FieldValueEditModel.class, FieldValueTextEditView.class);
 
-      UIAssemblers.addMV( module,
+      addMV( module,
             SelectionElementsModel.class, SelectionElementsView.class);
 
-      UIAssemblers.addMV( module,
+      addMV( module,
             PageEditModel.class, PageEditView.class);
 
-      UIAssemblers.addViews( module,
+      addViews( module,
             FieldValueDateEditView.class,
             FieldValueNumberEditView.class,
             FieldValueSelectionEditView.class,
             FieldValueCommentEditView.class);
 
-      UIAssemblers.addDialogs( module, FieldCreationDialog.class );
+      addDialogs( module, FieldCreationDialog.class );
 
       module.addObjects( FieldValueObserver.class );
 
@@ -351,30 +352,30 @@ public class UIAssembler
 
    private void groupAdministration( ModuleAssembly module ) throws AssemblyException
    {
-      UIAssemblers.addViews( module, GroupAdminView.class );
+      addViews( module, GroupAdminView.class );
 
-      UIAssemblers.addMV( module, GroupsModel.class,
+      addMV( module, GroupsModel.class,
             GroupsView.class );
 
-      UIAssemblers.addMV( module, ParticipantsModel.class,
+      addMV( module, ParticipantsModel.class,
             ParticipantsView.class );
 
    }
 
    private void organizationAdministration( ModuleAssembly module ) throws AssemblyException
    {
-      UIAssemblers.addViews( module, OrganizationsTabbedView.class,
+      addViews( module, OrganizationsTabbedView.class,
             OrganizationsAdminView.class );
 
-      UIAssemblers.addMV( module, OrganizationsModel.class,
+      addMV( module, OrganizationsModel.class,
             OrganizationsView.class );
-      UIAssemblers.addMV( module, LinksListModel.class,
+      addMV( module, LinksListModel.class,
             OrganizationUsersView.class );
    }
 
    private void userAdministration( ModuleAssembly module ) throws AssemblyException
    {
-      UIAssemblers.addMV( module, UsersAdministrationModel.class,
+      addMV( module, UsersAdministrationModel.class,
             UsersAdministrationView.class );
    }
 
@@ -387,7 +388,7 @@ public class UIAssembler
 
    private void restlet( ModuleAssembly module ) throws AssemblyException
    {
-      module.importServices( Restlet.class ).visibleIn( Visibility.application );
+      module.importServices( Restlet.class ).visibleIn( application );
    }
 
    private void streamflow( ModuleAssembly module ) throws AssemblyException
@@ -420,24 +421,24 @@ public class UIAssembler
             DialogService.class,
             UncaughtExceptionHandler.class,
             JavaHelp.class
-      ).visibleIn( Visibility.layer );
+      ).visibleIn( layer );
 
       module.importServices( UncaughtExceptionHandler.class,
-            JavaHelp.class ).importedBy( NewObjectImporter.class ).visibleIn( Visibility.application );
+            JavaHelp.class ).importedBy( NewObjectImporter.class ).visibleIn( application );
       module.addServices(
             ExceptionHandlerService.class ).instantiateOnStartup();
-      module.importServices( DialogService.class ).importedBy( NewObjectImporter.class ).visibleIn( Visibility.application );
+      module.importServices( DialogService.class ).importedBy( NewObjectImporter.class ).visibleIn( application );
    }
 
    private void overview( ModuleAssembly module ) throws AssemblyException
    {
-      module.addObjects( OverviewWindow.class ).visibleIn( Visibility.layer );
+      module.addObjects( OverviewWindow.class ).visibleIn( layer );
 
       module.addObjects(
             OverviewNode.class,
             OverviewProjectsNode.class,
             OverviewProjectNode.class,
-            OverviewProjectAssignmentsNode.class).visibleIn( Visibility.layer );
+            OverviewProjectAssignmentsNode.class).visibleIn( layer );
 
       addMV( module,
             OverviewModel.class,
@@ -535,7 +536,7 @@ public class UIAssembler
    private void workspace( ModuleAssembly module ) throws AssemblyException
    {
       addViews( module, AccountSelectionView.class );
-      module.addObjects( WorkspaceWindow.class ).visibleIn( Visibility.layer );
+      module.addObjects( WorkspaceWindow.class ).visibleIn( layer );
 
       module.addObjects(
             WorkspaceNode.class,
@@ -545,7 +546,7 @@ public class UIAssembler
             WorkspaceProjectNode.class,
             WorkspaceProjectInboxNode.class,
             WorkspaceProjectAssignmentsNode.class,
-            RefreshCaseCountTask.class).visibleIn( Visibility.layer );
+            RefreshCaseCountTask.class).visibleIn( layer );
 
       addMV( module,
             WorkspaceModel.class,
@@ -578,7 +579,7 @@ public class UIAssembler
 
    private void administration( ModuleAssembly module ) throws AssemblyException
    {
-      module.addObjects( AdministrationWindow.class ).visibleIn( Visibility.layer );
+      module.addObjects( AdministrationWindow.class ).visibleIn( layer );
 
       module.addObjects( AdministrationNode.class,
             AccountAdministrationNode.class,
@@ -617,6 +618,6 @@ public class UIAssembler
 
    private void search( ModuleAssembly module ) throws AssemblyException
    {
-      module.addObjects( SearchResultTableModel.class ).visibleIn( Visibility.layer );
+      module.addObjects( SearchResultTableModel.class ).visibleIn( layer );
    }
 }
