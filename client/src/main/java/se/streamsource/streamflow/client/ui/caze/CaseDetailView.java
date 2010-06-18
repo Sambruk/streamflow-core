@@ -24,6 +24,7 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.ui.caze.attachments.AttachmentsView;
 import se.streamsource.streamflow.client.ui.caze.conversations.ConversationsView;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 
@@ -50,6 +51,7 @@ public class CaseDetailView
    private FormsAdminView formsView;
    private CaseModel model;
    private CaseInfoView infoView;
+   private AttachmentsView attachmentsView;
    private CaseActionsView actionsView;
 
    public CaseDetailView( @Service ApplicationContext appContext,
@@ -58,6 +60,7 @@ public class CaseDetailView
                           @Uses ConversationsView conversationsView,
                           @Uses ContactsAdminView contactsView,
                           @Uses FormsAdminView formsAdminView,
+                          @Uses AttachmentsView attachmentsView,
                           @Uses CaseActionsView actionsView,
                           @Structure ObjectBuilderFactory obf )
    {
@@ -73,12 +76,13 @@ public class CaseDetailView
       this.generalView = generalView;
       this.contactsView = contactsView;
       this.formsView = formsAdminView;
+      this.attachmentsView = attachmentsView;
 
       tabs.addTab( i18n.text( WorkspaceResources.general_tab ), i18n.icon( Icons.general ), generalView, i18n.text( WorkspaceResources.general_tab ) );
       tabs.addTab( i18n.text( WorkspaceResources.contacts_tab ), i18n.icon( Icons.projects ), contactsView, i18n.text( WorkspaceResources.contacts_tab ) );
       tabs.addTab( i18n.text( WorkspaceResources.conversations_tab ), i18n.icon( Icons.comments ), conversationsView, i18n.text( WorkspaceResources.conversations_tab ) );
       tabs.addTab( i18n.text( WorkspaceResources.metadata_tab ), i18n.icon( Icons.metadata ), formsAdminView, i18n.text( WorkspaceResources.metadata_tab ) );
-//      tabs.addTab( i18n.text( WorkspaceResources.attachments_tab ), i18n.icon( Icons.attachments ), new JLabel( "Attachments" ), i18n.text( WorkspaceResources.attachments_tab ) );
+      tabs.addTab( i18n.text( WorkspaceResources.attachments_tab ), i18n.icon( Icons.attachments ), attachmentsView, i18n.text( WorkspaceResources.attachments_tab ) );
 
       tabs.setMnemonicAt( 0, KeyEvent.VK_1 );
       tabs.setMnemonicAt( 1, KeyEvent.VK_2 );
@@ -118,6 +122,7 @@ public class CaseDetailView
          conversationsView.setModel( model.conversations() );
          contactsView.setModel( model.contacts() );
          formsView.setModel( model.forms() );
+         attachmentsView.setModel (model.attachments() );
 
          actionsView.setModel(model.actions());
          actionsView.refresh();

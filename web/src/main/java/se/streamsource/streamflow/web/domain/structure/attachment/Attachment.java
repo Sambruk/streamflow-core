@@ -15,22 +15,16 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.client;
+package se.streamsource.streamflow.web.domain.structure.attachment;
 
-import org.qi4j.bootstrap.AssemblyException;
-import org.qi4j.bootstrap.Energy4Java;
-import org.qi4j.envisage.Envisage;
-import org.qi4j.spi.structure.ApplicationModelSPI;
+import se.streamsource.streamflow.domain.structure.Describable;
 
 /**
- * Run this to start Envisage to visualize the Streamflow client application.
+ * JAVADOC
  */
-public class Visualize
+public interface Attachment
+   extends
+      Describable,
+      AttachedFile
 {
-   public static void main( String[] args ) throws AssemblyException
-   {
-        Energy4Java is = new Energy4Java();
-        ApplicationModelSPI app = is.newApplicationModel(new StreamflowClientAssembler());
-        new Envisage().run(app);
-   }
 }

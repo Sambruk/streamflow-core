@@ -19,6 +19,7 @@ package se.streamsource.streamflow.web.domain.structure.caze;
 
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.domain.structure.Removable;
+import se.streamsource.streamflow.web.domain.structure.attachment.Attachments;
 import se.streamsource.streamflow.web.domain.structure.casetype.Resolvable;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationOwner;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversations;
@@ -32,6 +33,7 @@ import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
  */
 public interface Case
       extends
+      Attachments,
       Contacts,
       Conversations,
       ConversationOwner,

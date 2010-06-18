@@ -53,6 +53,9 @@ public interface CaseContext
    @SubContext
    CaseFormsContext forms();
 
+   @SubContext
+   AttachmentsContext attachments();
+
    abstract class Mixin
       extends InteractionsMixin
       implements CaseContext
@@ -119,6 +122,11 @@ public interface CaseContext
       public CaseFormsContext forms()
       {
          return subContext( CaseFormsContext.class );
+      }
+
+      public AttachmentsContext attachments()
+      {
+         return subContext( AttachmentsContext.class );
       }
    }
 }

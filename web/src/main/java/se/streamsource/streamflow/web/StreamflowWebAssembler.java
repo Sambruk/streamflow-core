@@ -37,6 +37,7 @@ import se.streamsource.streamflow.web.application.security.SecurityAssembler;
 import se.streamsource.streamflow.web.application.statistics.StatisticsAssembler;
 import se.streamsource.streamflow.web.configuration.ConfigurationAssembler;
 import se.streamsource.streamflow.web.context.InteractionsAssembler;
+import se.streamsource.streamflow.web.domain.entity.attachment.AttachmentAssembler;
 import se.streamsource.streamflow.web.domain.entity.conversation.ConversationAssembler;
 import se.streamsource.streamflow.web.domain.entity.form.FormAssembler;
 import se.streamsource.streamflow.web.domain.entity.label.LabelAssembler;
@@ -48,6 +49,7 @@ import se.streamsource.streamflow.web.domain.entity.caze.CaseAssembler;
 import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeAssembler;
 import se.streamsource.streamflow.web.domain.entity.user.UserAssembler;
 import se.streamsource.streamflow.web.domain.interaction.comment.CommentAssembler;
+import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStoreAssembler;
 import se.streamsource.streamflow.web.infrastructure.database.DatabaseAssembler;
 import se.streamsource.streamflow.web.infrastructure.domain.EntityFinderAssembler;
 import se.streamsource.streamflow.web.infrastructure.domain.ServerEntityStoreAssembler;
@@ -132,7 +134,11 @@ public class StreamflowWebAssembler
       new EntityFinderAssembler().assemble( domainInfrastructureLayer.moduleAssembly( "Entity Finder" ) );
       new EventAssembler().assemble( domainInfrastructureLayer.moduleAssembly( "Events" ) );
       new EmbeddedSolrAssembler().assemble( domainInfrastructureLayer.moduleAssembly( "Search Engine" ));
-      new OSGiServiceImporterAssembler().assemble( domainInfrastructureLayer.moduleAssembly("OSGi Services" ));
+
+      if (OSGiWebAssembler.class.getClassLoader() instanceof BundleReference)
+         new OSGiServiceImporterAssembler().assemble( domainInfrastructureLayer.moduleAssembly("OSGi Services" ));
+
+      new AttachmentStoreAssembler().assemble( domainInfrastructureLayer.moduleAssembly("Attachment store" ));
    }
 
 
@@ -142,7 +148,8 @@ public class StreamflowWebAssembler
       new StreamflowRestAssembler().assemble( restModule );
       new ServerResourceAssembler().assemble( restModule );
 
-      new OSGiWebAssembler().assemble( webLayer.moduleAssembly("OSGi" ));
+      if (OSGiWebAssembler.class.getClassLoader() instanceof BundleReference)
+         new OSGiWebAssembler().assemble( webLayer.moduleAssembly("OSGi" ));
    }
 
    protected void assembleApplicationLayer( LayerAssembly appLayer ) throws AssemblyException
@@ -178,5 +185,6 @@ public class StreamflowWebAssembler
       new CaseAssembler().assemble( domainLayer.moduleAssembly( "Cases" ) );
       new CaseTypeAssembler().assemble( domainLayer.moduleAssembly( "Case types" ) );
       new UserAssembler().assemble( domainLayer.moduleAssembly( "Users" ) );
+      new AttachmentAssembler().assemble( domainLayer.moduleAssembly( "Attachments" ) );
    }
 }

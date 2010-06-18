@@ -31,6 +31,7 @@ import org.restlet.data.ChallengeScheme;
 import org.restlet.resource.Directory;
 import org.restlet.resource.ServerResource;
 import org.restlet.routing.Router;
+import org.restlet.routing.Template;
 import org.restlet.security.Authenticator;
 import org.restlet.security.ChallengeAuthenticator;
 import se.streamsource.dci.restlet.server.CommandQueryRestlet;
@@ -65,16 +66,16 @@ public class APIv1Router
       // Events
       attach( "/events", createServerResourceFinder( EventsServerResource.class ) );
 
-      // Qi4j
-      Router qi4jRouter = new Router( getContext() );
-      qi4jRouter.attach( "/entity", createServerResourceFinder( EntitiesResource.class ) );
-      qi4jRouter.attach( "/entity/{identity}", createServerResourceFinder( EntityResource.class ) );
-      qi4jRouter.attach( "/query", createServerResourceFinder( SPARQLResource.class ) );
-      qi4jRouter.attach( "/query/index", createServerResourceFinder( IndexResource.class ) );
-      attach( "/qi4j", new ExtensionMediaTypeFilter( getContext(), qi4jRouter ) );
+      // Admin resources
+      Router adminRouter = new Router( getContext() );
+      adminRouter.attach( "/entity", createServerResourceFinder( EntitiesResource.class ) );
+      adminRouter.attach( "/entity/{identity}", createServerResourceFinder( EntityResource.class ) );
+      adminRouter.attach( "/query", createServerResourceFinder( SPARQLResource.class ), Template.MODE_STARTS_WITH );
+      adminRouter.attach( "/index", createServerResourceFinder( IndexResource.class ) );
+      adminRouter.attach( "/console", createServerResourceFinder( ConsoleServerResource.class ) );
+      attach( "/admin", new ExtensionMediaTypeFilter( getContext(), adminRouter ) );
 
 
-      attach( "/admin/console", createServerResourceFinder( ConsoleServerResource.class ) );
 
       // Version info
       Directory directory = new Directory( getContext(), "clap://thread/static/" );

@@ -21,6 +21,8 @@ import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import se.streamsource.streamflow.client.infrastructure.ui.UIAssemblers;
+import se.streamsource.streamflow.client.ui.caze.attachments.AttachmentsModel;
+import se.streamsource.streamflow.client.ui.caze.attachments.AttachmentsView;
 import se.streamsource.streamflow.client.ui.caze.conversations.ConversationModel;
 import se.streamsource.streamflow.client.ui.caze.conversations.ConversationParticipantsModel;
 import se.streamsource.streamflow.client.ui.caze.conversations.ConversationParticipantsView;
@@ -113,6 +115,11 @@ public class CaseAssembler
       UIAssemblers.addMV( module,
             ConversationParticipantsModel.class,
             ConversationParticipantsView.class );
+
+      // Attachments
+      UIAssemblers.addMV( module,
+            AttachmentsModel.class,
+            AttachmentsView.class );
 
    }
 }

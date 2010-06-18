@@ -15,22 +15,21 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.client;
+package se.streamsource.streamflow.web.infrastructure.attachment;
 
+import org.qi4j.api.common.Visibility;
+import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
-import org.qi4j.bootstrap.Energy4Java;
-import org.qi4j.envisage.Envisage;
-import org.qi4j.spi.structure.ApplicationModelSPI;
+import org.qi4j.bootstrap.ModuleAssembly;
 
 /**
- * Run this to start Envisage to visualize the Streamflow client application.
+ * JAVADOC
  */
-public class Visualize
+public class AttachmentStoreAssembler
+   implements Assembler
 {
-   public static void main( String[] args ) throws AssemblyException
+   public void assemble( ModuleAssembly module ) throws AssemblyException
    {
-        Energy4Java is = new Energy4Java();
-        ApplicationModelSPI app = is.newApplicationModel(new StreamflowClientAssembler());
-        new Envisage().run(app);
+      module.addServices( AttachmentStoreService.class ).identifiedBy( "attachments" ).visibleIn( Visibility.application );
    }
 }

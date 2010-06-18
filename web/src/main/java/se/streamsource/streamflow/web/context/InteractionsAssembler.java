@@ -17,6 +17,8 @@
 
 package se.streamsource.streamflow.web.context;
 
+import org.apache.commons.fileupload.FileItemFactory;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.qi4j.api.common.Visibility;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
@@ -25,6 +27,8 @@ import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.spi.service.importer.NewObjectImporter;
 import se.streamsource.dci.api.InteractionConstraintsService;
 import se.streamsource.streamflow.server.plugin.ContactLookup;
+import se.streamsource.streamflow.web.context.caze.AttachmentContext;
+import se.streamsource.streamflow.web.context.caze.AttachmentsContext;
 import se.streamsource.streamflow.web.context.surface.SurfaceContext;
 import se.streamsource.streamflow.web.context.surface.accesspoints.AccessPointContext;
 import se.streamsource.streamflow.web.context.surface.accesspoints.AccessPointsContext;
@@ -109,6 +113,8 @@ import se.streamsource.streamflow.web.context.users.workspace.WorkspaceProjectsC
 import se.streamsource.streamflow.web.context.users.workspace.WorkspaceUserContext;
 import se.streamsource.streamflow.web.infrastructure.osgi.OSGiServiceImporter;
 
+import static org.qi4j.bootstrap.ImportedServiceDeclaration.INSTANCE;
+
 /**
  * JAVADOC
  */
@@ -124,6 +130,11 @@ public class InteractionsAssembler
 
       moduleAssembly.addObjects( RequiresPermission.RequiresPermissionConstraint.class,
             ServiceAvailable.ServiceAvailableConstraint.class);
+
+      // Import file handling service for file uploads
+      DiskFileItemFactory factory = new DiskFileItemFactory();
+      factory.setSizeThreshold( 1024*1000*30 ); // 30 Mb threshold TODO Make this into real service and make this number configurable
+      moduleAssembly.importServices( FileItemFactory.class ).importedBy( INSTANCE ).setMetaInfo( factory );
 
       // Import plugins from OSGi
       moduleAssembly.importServices( ContactLookup.class ).importedBy( OSGiServiceImporter.class );
@@ -211,6 +222,9 @@ public class InteractionsAssembler
             ConversationsContext.class,
             MessageContext.class,
             MessagesContext.class,
+
+            AttachmentsContext.class,
+            AttachmentContext.class,
 
             // Surface
             SurfaceContext.class,

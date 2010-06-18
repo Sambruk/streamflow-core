@@ -15,22 +15,21 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.client;
+package se.streamsource.streamflow.web.domain.entity.attachment;
 
-import org.qi4j.bootstrap.AssemblyException;
-import org.qi4j.bootstrap.Energy4Java;
-import org.qi4j.envisage.Envisage;
-import org.qi4j.spi.structure.ApplicationModelSPI;
+import se.streamsource.streamflow.domain.structure.Describable;
+import se.streamsource.streamflow.web.domain.entity.DomainEntity;
+import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
+import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
 
 /**
- * Run this to start Envisage to visualize the Streamflow client application.
+ * Attachment
  */
-public class Visualize
+public interface AttachmentEntity
+   extends DomainEntity,
+      Attachment,
+
+      Describable.Data,
+      AttachedFile.Data
 {
-   public static void main( String[] args ) throws AssemblyException
-   {
-        Energy4Java is = new Energy4Java();
-        ApplicationModelSPI app = is.newApplicationModel(new StreamflowClientAssembler());
-        new Envisage().run(app);
-   }
 }

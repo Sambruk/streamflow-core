@@ -27,6 +27,7 @@ import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.*;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
+import se.streamsource.streamflow.client.ui.caze.attachments.AttachmentsModel;
 import se.streamsource.streamflow.client.ui.caze.conversations.ConversationsModel;
 import se.streamsource.streamflow.client.ui.search.SearchTerms;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
@@ -60,6 +61,7 @@ public class CasesModel
          CommandQueryClient converationsClient = caseClient.getSubClient( "conversations" );
          CommandQueryClient contactsClient = caseClient.getSubClient( "contacts" );
          CommandQueryClient formsClient = caseClient.getSubClient( "forms" );
+         CommandQueryClient attachmentsClient = caseClient.getSubClient( "attachments" );
          CommandQueryClient actionsClient = caseClient;
 
          PossibleFormsModel possibleFormsModel = obf.newObjectBuilder( PossibleFormsModel.class ).use( formsClient ).newInstance();
@@ -68,6 +70,7 @@ public class CasesModel
          ConversationsModel conversationsModel = obf.newObjectBuilder( ConversationsModel.class ).use( converationsClient ).newInstance();
          ContactsModel contactsModel = obf.newObjectBuilder( ContactsModel.class ).use( contactsClient ).newInstance();
          CaseFormsModel formsModel = obf.newObjectBuilder( CaseFormsModel.class ).use( formsClient ).newInstance();
+         AttachmentsModel attachmentsModel = obf.newObjectBuilder( AttachmentsModel.class ).use( attachmentsClient ).newInstance();
 
          CaseActionsModel actionsModel = obf.newObjectBuilder( CaseActionsModel.class ).use( actionsClient).newInstance();
 
@@ -77,6 +80,7 @@ public class CasesModel
                      conversationsModel,
                      contactsModel,
                      formsModel,
+                     attachmentsModel,
                      actionsModel ).newInstance();
       }
    };

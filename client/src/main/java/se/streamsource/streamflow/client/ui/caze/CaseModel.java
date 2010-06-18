@@ -19,6 +19,7 @@ package se.streamsource.streamflow.client.ui.caze;
 
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.streamflow.client.ui.caze.attachments.AttachmentsModel;
 import se.streamsource.streamflow.client.ui.caze.conversations.ConversationsModel;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
@@ -46,6 +47,9 @@ public class CaseModel
 
    @Uses
    private CaseFormsModel forms;
+
+   @Uses
+   private AttachmentsModel attachments;
 
    @Uses
    CommandQueryClient client;
@@ -80,6 +84,12 @@ public class CaseModel
       return forms;
    }
 
+
+   public AttachmentsModel attachments()
+   {
+      return attachments;
+   }
+
    public CaseActionsModel actions()
    {
       return actions;
@@ -92,5 +102,6 @@ public class CaseModel
       general.notifyEvent( event );
       contacts.notifyEvent( event );
       forms.notifyEvent( event );
+      attachments.notifyEvent( event ); 
    }
 }

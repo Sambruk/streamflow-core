@@ -169,10 +169,7 @@ public class CaseTableView
             {
                try
                {
-                  if (caseTable.getSelectionModel().isSelectionEmpty())
-                  {
-//                     detailsView.removeCurrent();
-                  } else
+                  if (!caseTable.getSelectionModel().isSelectionEmpty())
                   {
                      CaseValue value = null;
                      try
@@ -208,21 +205,6 @@ public class CaseTableView
             caseTable.requestFocusInWindow();
          }
       } );
-   }
-
-   protected Action addToolbarButton( JPanel toolbar, String name )
-   {
-      ActionMap am = getActionMap();
-      Action action = am.get( name );
-      action.putValue( Action.SMALL_ICON, i18n.icon( (ImageIcon) action.getValue( Action.SMALL_ICON ), 16 ) );
-      JButton button = new JButton(action);
-      button.registerKeyboardAction(action, (KeyStroke) action
-				.getValue(javax.swing.Action.ACCELERATOR_KEY),
-				JComponent.WHEN_IN_FOCUSED_WINDOW);
-//      NotificationGlassPane.registerButton(button);
-
-      toolbar.add( button );
-      return action;
    }
 
    public JXTable getCaseTable()

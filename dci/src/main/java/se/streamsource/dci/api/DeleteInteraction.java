@@ -19,11 +19,13 @@ package se.streamsource.dci.api;
 
 import org.restlet.resource.ResourceException;
 
+import java.io.IOException;
+
 /**
  * JAVADOC
  */
 public interface DeleteInteraction
 {
    void delete()
-      throws ResourceException;
+         throws ResourceException, IOException;
 }

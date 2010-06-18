@@ -15,22 +15,26 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.client;
+package se.streamsource.streamflow.domain.attachment;
 
-import org.qi4j.bootstrap.AssemblyException;
-import org.qi4j.bootstrap.Energy4Java;
-import org.qi4j.envisage.Envisage;
-import org.qi4j.spi.structure.ApplicationModelSPI;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.property.Property;
+import se.streamsource.dci.value.LinkValue;
+
+import java.util.Date;
 
 /**
- * Run this to start Envisage to visualize the Streamflow client application.
+ * JAVADOC
  */
-public class Visualize
+public interface AttachmentValue
+   extends LinkValue
 {
-   public static void main( String[] args ) throws AssemblyException
-   {
-        Energy4Java is = new Energy4Java();
-        ApplicationModelSPI app = is.newApplicationModel(new StreamflowClientAssembler());
-        new Envisage().run(app);
-   }
+   @Optional
+   Property<String> mimeType();
+
+   @Optional
+   Property<Long> size();
+
+   @Optional
+   Property<Date> modificationDate();
 }

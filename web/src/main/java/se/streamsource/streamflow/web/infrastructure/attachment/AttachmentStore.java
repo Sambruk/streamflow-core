@@ -15,22 +15,26 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.client;
+package se.streamsource.streamflow.web.infrastructure.attachment;
 
-import org.qi4j.bootstrap.AssemblyException;
-import org.qi4j.bootstrap.Energy4Java;
-import org.qi4j.envisage.Envisage;
-import org.qi4j.spi.structure.ApplicationModelSPI;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
- * Run this to start Envisage to visualize the Streamflow client application.
+ * Store for the binary part of an attachment
  */
-public class Visualize
+public interface AttachmentStore
 {
-   public static void main( String[] args ) throws AssemblyException
-   {
-        Energy4Java is = new Energy4Java();
-        ApplicationModelSPI app = is.newApplicationModel(new StreamflowClientAssembler());
-        new Envisage().run(app);
-   }
+   /**
+    * Read the binary data and save, and return a URL
+    * pointing to the file.
+    *
+    * @param in stream of binary data for the file
+    * @return id for the file
+    */
+   String storeAttachment( InputStream in) throws IOException;
+
+   InputStream getAttachment(String id) throws IOException;
+
+   void deleteAttachment(String id) throws IOException;
 }

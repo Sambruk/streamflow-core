@@ -34,6 +34,7 @@ import se.streamsource.streamflow.web.domain.interaction.gtd.Actor;
 import se.streamsource.streamflow.web.domain.interaction.profile.MessageRecipient;
 import se.streamsource.streamflow.web.domain.interaction.security.Authentication;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipant;
+import se.streamsource.streamflow.web.domain.structure.conversation.MessageReceiver;
 import se.streamsource.streamflow.web.domain.structure.form.Submitter;
 import se.streamsource.streamflow.web.domain.structure.group.Participation;
 import se.streamsource.streamflow.web.domain.structure.label.Labels;
@@ -76,7 +77,8 @@ public interface UserEntity
       Describable.Data,
       Participation.Data,
       UserAuthentication.Data,
-      MessageRecipient.Data
+      MessageRecipient.Data,
+      MessageReceiver.Data
 {
    public static final String ADMINISTRATOR_USERNAME = "administrator";
 

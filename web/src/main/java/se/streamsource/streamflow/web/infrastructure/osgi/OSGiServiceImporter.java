@@ -18,6 +18,7 @@
 package se.streamsource.streamflow.web.infrastructure.osgi;
 
 import org.osgi.util.tracker.ServiceTracker;
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.service.ImportedServiceDescriptor;
 import org.qi4j.api.service.ServiceImporter;
@@ -31,11 +32,15 @@ import java.lang.reflect.Proxy;
 public class OSGiServiceImporter
       implements ServiceImporter
 {
+   @Optional
    @Service
    OSGiServices services;
 
    public Object importService( final ImportedServiceDescriptor serviceDescriptor ) throws ServiceImporterException
    {
+      if (services == null)
+         return null; // OSGi not enabled
+
       final ServiceTracker serviceTracker = services.getServiceTracker( serviceDescriptor.type().getName() );
 
       OSGiInvocationHandler handler = new OSGiInvocationHandler(serviceTracker);

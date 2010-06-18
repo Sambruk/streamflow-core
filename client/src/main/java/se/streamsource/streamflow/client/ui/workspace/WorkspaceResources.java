@@ -82,5 +82,9 @@ public enum WorkspaceResources
    welcome,
    none_text,
    lookup_contact_label,
-   chose_project, choose_message_delivery_type
+   attachments_tab,
+   attachment_name,
+   attachment_size,
+   choose_message_delivery_type,
+   chose_project, 
 }

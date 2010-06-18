@@ -46,9 +46,6 @@ public interface ContactsContext
       extends InteractionsMixin
       implements ContactsContext
    {
-      @Structure
-      Module module;
-
       public ContactsDTO contacts()
       {
          ValueBuilder<ContactsDTO> builder = module.valueBuilderFactory().newValueBuilder( ContactsDTO.class );

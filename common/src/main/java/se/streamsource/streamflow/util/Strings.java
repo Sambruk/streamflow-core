@@ -15,22 +15,22 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.client;
-
-import org.qi4j.bootstrap.AssemblyException;
-import org.qi4j.bootstrap.Energy4Java;
-import org.qi4j.envisage.Envisage;
-import org.qi4j.spi.structure.ApplicationModelSPI;
+package se.streamsource.streamflow.util;
 
 /**
- * Run this to start Envisage to visualize the Streamflow client application.
+ * Utility methods for strings
  */
-public class Visualize
+public class Strings
 {
-   public static void main( String[] args ) throws AssemblyException
+   /**
+    * Check if a string is not null and not equal to ""
+    *
+    * @param value string to be tested
+    * @return true if value is not null and not equal to ""
+    */
+   public static boolean notEmpty(String value)
    {
-        Energy4Java is = new Energy4Java();
-        ApplicationModelSPI app = is.newApplicationModel(new StreamflowClientAssembler());
-        new Envisage().run(app);
+      return value != null && !value.equals("");
    }
+
 }

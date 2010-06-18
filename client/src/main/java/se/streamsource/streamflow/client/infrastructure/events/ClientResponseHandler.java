@@ -56,13 +56,17 @@ public class ClientResponseHandler
                String source = entity.getText();
 
                final TransactionEvents transactionEvents = vbf.newValueFromJSON( TransactionEvents.class, source );
-
-               transactionVisitor.visit( transactionEvents );
+               handleTransactionEvents( transactionEvents );
             }
          } catch (Exception e)
          {
             throw new RuntimeException( "Could not process events", e );
          }
       }
+   }
+
+   protected void handleTransactionEvents (TransactionEvents transactionEvents)
+   {
+      transactionVisitor.visit( transactionEvents );
    }
 }
