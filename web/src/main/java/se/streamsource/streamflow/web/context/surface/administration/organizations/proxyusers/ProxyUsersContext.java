@@ -53,7 +53,7 @@ public interface ProxyUsersContext
       public void createproxyuser( NewProxyUserCommand proxyUser )
       {
          Organization organization = context.get( Organization.class );
-         organization.createProxyUser( proxyUser.name().get(), proxyUser.username().get(), proxyUser.password().get() );
+         organization.createProxyUser( proxyUser.description().get(), proxyUser.password().get() );
       }
 
       public ProxyUserListDTO index()
@@ -67,9 +67,9 @@ public interface ProxyUsersContext
          List<ProxyUser> proxyUsers = data.proxyUsers().toList();
          for( ProxyUser proxyUser : proxyUsers)
          {
-            builder.prototype().entity().set( EntityReference.getEntityReference( proxyUser ) );
+            builder.prototype().username().set( ((UserAuthentication.Data)proxyUser).userName().get() );
             builder.prototype().disabled().set( ((UserAuthentication.Data)proxyUser).disabled().get() );
-            builder.prototype().username().set( ((Describable)proxyUser).getDescription() );
+            builder.prototype().description().set( proxyUser.getDescription() );
 
             listBuilder.prototype().users().get().add( builder.newInstance() );
          }

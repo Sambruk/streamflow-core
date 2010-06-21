@@ -67,9 +67,13 @@ public class ProxyUsersModel
    public ProxyUsersModel( @Uses CommandQueryClient client ) throws ResourceException
    {
       this.client = client;
-      columnNames = new String[]{text( AdministrationResources.user_enabled_label ), text( AdministrationResources.username_label )};
-      columnClasses = new Class[]{Boolean.class, String.class};
-      columnEditable = new boolean[]{true, false};
+      columnNames = new String[]{
+            text( AdministrationResources.user_enabled_label ),
+            text( AdministrationResources.username_label ),
+            text(AdministrationResources.description_label)
+      };
+      columnClasses = new Class[]{Boolean.class, String.class, String.class};
+      columnEditable = new boolean[]{true, false, false};
       refresh();
    }
 
@@ -92,7 +96,7 @@ public class ProxyUsersModel
 
    public int getColumnCount()
    {
-      return 2;
+      return 3;
    }
 
    public Object getValueAt( int row, int column )
@@ -101,8 +105,10 @@ public class ProxyUsersModel
       {
          case 0:
             return proxyUsers != null && !proxyUsers.get( row ).disabled().get();
-         default:
+         case 1:
             return proxyUsers == null ? "" : proxyUsers.get( row ).username().get();
+         default:
+            return proxyUsers == null ? "" : proxyUsers.get( row ).description().get();
       }
    }
 
@@ -159,7 +165,7 @@ public class ProxyUsersModel
    {
       try
       {
-         client.getSubClient( proxyUser.entity().get().identity() ).postCommand( "changeenabled" );
+         client.getSubClient( proxyUser.username().get() ).postCommand( "changeenabled" );
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_change_user_disabled, e );
@@ -186,7 +192,7 @@ public class ProxyUsersModel
          ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
          builder.prototype().string().set( password );
 
-         client.getSubClient( proxyUsers.get( index ).entity().get().identity() ).putCommand( "resetpassword", builder.newInstance() );
+         client.getSubClient( proxyUsers.get( index ).username().get()).putCommand( "resetpassword", builder.newInstance() );
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.reset_password_failed, e );
@@ -197,7 +203,7 @@ public class ProxyUsersModel
    {
       try
       {
-         client.getSubClient( proxyUsers.get( index ).entity().get().identity() ).putCommand( "delete" );
+         client.getSubClient( proxyUsers.get( index ).username().get() ).putCommand( "delete" );
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_remove_proxyuser, e );

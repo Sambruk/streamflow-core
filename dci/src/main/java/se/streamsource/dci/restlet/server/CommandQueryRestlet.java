@@ -433,13 +433,11 @@ public class CommandQueryRestlet
       Subject subject = new Subject();
       subject.getPrincipals().addAll( request.getClientInfo().getPrincipals() );
 
-
       User user = request.getClientInfo().getUser();
       if (user != null)
       {
          subject.getPrivateCredentials().add( user.getSecret() );
       }
-      subject.setReadOnly();
 
       context.set( subject );
    }

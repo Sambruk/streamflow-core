@@ -17,30 +17,24 @@
 
 package se.streamsource.streamflow.web.application.security;
 
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.restlet.data.ClientInfo;
-import org.restlet.security.Enroler;
-import org.restlet.security.User;
+import java.io.Serializable;
+import java.security.Principal;
 
 /**
- * Accept login if user with the given username has the given password
- * in the Streamflow user database.
+ * JAVADOC
  */
-public class DefaultEnroler
-      implements Enroler
+public class ProxyUserPrincipal
+      implements Principal, Serializable
 {
-   @Structure
-   UnitOfWorkFactory uowf;
+   private String name;
 
-   public void enrole( ClientInfo clientInfo )
+   public ProxyUserPrincipal( String name )
    {
-      User user = clientInfo.getUser();
-      if (user != null)
-      {
-         clientInfo.getPrincipals().add( new UserPrincipal( user.getIdentifier() ) );
+      this.name = name;
+   }
 
-
-      }
+   public String getName()
+   {
+      return name;
    }
 }

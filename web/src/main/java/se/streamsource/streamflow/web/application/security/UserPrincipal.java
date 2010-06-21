@@ -23,12 +23,12 @@ import java.security.Principal;
 /**
  * JAVADOC
  */
-public class StreamflowPrincipal
+public class UserPrincipal
       implements Principal, Serializable
 {
    private String name;
 
-   public StreamflowPrincipal( String name )
+   public UserPrincipal( String name )
    {
       this.name = name;
    }

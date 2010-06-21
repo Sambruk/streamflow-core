@@ -27,9 +27,9 @@ import org.qi4j.api.value.ValueComposite;
 public interface ProxyUserDTO
       extends ValueComposite
 {
-   Property<EntityReference> entity();
-
    Property<String> username();
+
+   Property<String> description();
 
    Property<Boolean> disabled();
 }

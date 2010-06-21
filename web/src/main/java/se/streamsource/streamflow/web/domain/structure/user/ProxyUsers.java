@@ -42,7 +42,7 @@ public interface ProxyUsers
 {
    // Commands
 
-   ProxyUser createProxyUser( String name, @Username String username, @Password String password )
+   ProxyUser createProxyUser( String name, @Password String password )
          throws IllegalArgumentException;
 
    interface Data
@@ -50,7 +50,7 @@ public interface ProxyUsers
       @Aggregated
       ManyAssociation<ProxyUser> proxyUsers();
 
-      ProxyUser createdProxyUser( DomainEvent event, String id, String name, String username, String password );
+      ProxyUser createdProxyUser( DomainEvent event, String id, String description, String password );
    }
 
    abstract class Mixin
@@ -68,22 +68,22 @@ public interface ProxyUsers
       @This
       Organization organization;
 
-      public ProxyUser createProxyUser( String name, String username, String password )
+      public ProxyUser createProxyUser( String description, String password )
             throws IllegalArgumentException
       {
-         return createdProxyUser( DomainEvent.CREATE, idGen.generate( Identity.class ), name, username, password );
+         return createdProxyUser( DomainEvent.CREATE, idGen.generate( Identity.class ), description, password );
       }
 
-      public ProxyUser createdProxyUser( DomainEvent event, String id, String name, String username, String password )
+      public ProxyUser createdProxyUser( DomainEvent event, String id, String description, String password )
       {
          EntityBuilder<ProxyUser> builder = uowf.currentUnitOfWork().newEntityBuilder( ProxyUser.class, id );
          builder.instance().organization().set( organization );
          UserAuthentication.Data userEntity = builder.instanceFor( UserAuthentication.Data.class );
-         userEntity.userName().set( username );
+         userEntity.userName().set( id );
          userEntity.hashedPassword().set( userEntity.hashPassword( password ) );
 
          Describable.Data desc = builder.instanceFor( Describable.Data.class );
-         desc.description().set( name );
+         desc.description().set( description );
          ProxyUser proxyUser = builder.newInstance();
 
          proxyUsers().add( proxyUser );

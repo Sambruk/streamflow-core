@@ -36,7 +36,7 @@ import se.streamsource.streamflow.domain.form.NumberFieldValue;
 import se.streamsource.streamflow.domain.form.PageSubmissionValue;
 import se.streamsource.streamflow.domain.form.SelectionFieldValue;
 import se.streamsource.streamflow.domain.form.TextFieldValue;
-import se.streamsource.streamflow.web.application.security.StreamflowPrincipal;
+import se.streamsource.streamflow.web.application.security.UserPrincipal;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.entity.conversation.ConversationEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
@@ -92,7 +92,7 @@ public interface TestDataService
       public void activate() throws Exception
       {
          Subject subject = new Subject();
-         subject.getPrincipals().add( new StreamflowPrincipal("administrator") );
+         subject.getPrincipals().add( new UserPrincipal("administrator") );
          Subject.doAs( subject, new PrivilegedExceptionAction()
          {
             public Object run() throws Exception
@@ -320,7 +320,7 @@ public interface TestDataService
                labels.add( question );
                organization.createAccessPoint( "ComplaintAccess", invoicing, complaint, labels );
 
-               ProxyUser proxyUser = organization.createProxyUser( "Citizens Portal", "proxy", "proxy" );
+               //ProxyUser proxyUser = organization.createProxyUser( "Citizens Portal", "proxy", "proxy" );
 
                uow.complete();
 

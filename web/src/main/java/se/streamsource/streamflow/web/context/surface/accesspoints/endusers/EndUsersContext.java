@@ -17,13 +17,18 @@
 
 package se.streamsource.streamflow.web.context.surface.accesspoints.endusers;
 
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.mixin.Mixins;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.api.Interactions;
 import se.streamsource.dci.api.InteractionsMixin;
 import se.streamsource.dci.api.SubContexts;
+import se.streamsource.streamflow.web.application.security.UserPrincipal;
 import se.streamsource.streamflow.web.domain.structure.user.AnonymousEndUser;
 import se.streamsource.streamflow.web.domain.structure.user.EndUsers;
+
+import javax.security.auth.Subject;
+import java.util.Set;
 
 /**
  * JAVADOC
@@ -49,6 +54,11 @@ public interface EndUsersContext
       public EndUserContext context( String id)
       {
          AnonymousEndUser endUser = module.unitOfWorkFactory().currentUnitOfWork().get( AnonymousEndUser.class, id );
+         Subject subject = context.get( Subject.class );
+         Set<UserPrincipal> userPrincipals = subject.getPrincipals( UserPrincipal.class );
+
+         userPrincipals.clear();
+         userPrincipals.add( new UserPrincipal( EntityReference.getEntityReference( endUser ).identity() ) );
 
          context.set( endUser );
          return subContext( EndUserContext.class );

@@ -26,9 +26,7 @@ import org.qi4j.api.value.ValueComposite;
 public interface NewProxyUserCommand
       extends ValueComposite
 {
-   Property<String> name();
-
-   Property<String> username();
+   Property<String> description();
 
    Property<String> password();
 }

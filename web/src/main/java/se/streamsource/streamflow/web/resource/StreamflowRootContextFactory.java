@@ -18,12 +18,16 @@
 package se.streamsource.streamflow.web.resource;
 
 import org.qi4j.api.composite.TransientBuilderFactory;
+import org.qi4j.api.entity.Identity;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.restlet.server.RootInteractionsFactory;
+import se.streamsource.streamflow.web.application.security.ProxyUserPrincipal;
 import se.streamsource.streamflow.web.context.RootContext;
+import se.streamsource.streamflow.web.domain.structure.user.ProxyUser;
 import se.streamsource.streamflow.web.domain.structure.user.User;
+import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
 
 import javax.security.auth.Subject;
 
@@ -43,8 +47,21 @@ public class StreamflowRootContextFactory
 
    public Object getRoot( Context context )
    {
-      context.set(uowf.currentUnitOfWork().get( User.class, context.get( Subject.class ).getPrincipals().iterator().next().getName()));
-      
+
+      String name = context.get( Subject.class ).getPrincipals().iterator().next().getName();
+      UserAuthentication authentication = uowf.currentUnitOfWork().get( UserAuthentication.class, name );
+
+      if ( authentication instanceof User )
+      {
+         context.set( authentication, User.class );
+      }
+
+      if ( authentication instanceof ProxyUser)
+      {
+         context.set( authentication, ProxyUser.class );
+         context.get( Subject.class).getPrincipals().add( new ProxyUserPrincipal( name ));
+      }
+
       return tbf.newTransientBuilder( RootContext.class ).use( context ).newInstance();
    }
 }

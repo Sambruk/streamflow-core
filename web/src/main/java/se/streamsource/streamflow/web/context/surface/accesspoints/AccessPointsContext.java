@@ -19,6 +19,7 @@ package se.streamsource.streamflow.web.context.surface.accesspoints;
 
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.value.ValueBuilder;
+import org.restlet.resource.ResourceException;
 import se.streamsource.dci.api.ContextNotFoundException;
 import se.streamsource.dci.api.IndexInteraction;
 import se.streamsource.dci.api.Interactions;
@@ -52,9 +53,9 @@ public interface AccessPointsContext
    {
       public LinksValue index()
       {
-         ProxyUser proxyUSer = getAuthenticatedProxyUSer();
+         UserAuthentication authentication = context.get( UserAuthentication.class );
 
-         if (proxyUSer == null)
+         if ( ! (authentication instanceof ProxyUser) )
          {
             TitledLinksBuilder builder = new TitledLinksBuilder( module.valueBuilderFactory() );
             ValueBuilder<LinkValue> valueBuilder = module.valueBuilderFactory().newValueBuilder( LinkValue.class );
@@ -68,7 +69,8 @@ public interface AccessPointsContext
             return builder.newLinks();
          }
 
-         Organization organization = proxyUSer.organization().get();
+         ProxyUser proxyUser = (ProxyUser) authentication;
+         Organization organization = proxyUser.organization().get();
 
          AccessPoints.Data data = (AccessPoints.Data) organization;
 
@@ -79,28 +81,11 @@ public interface AccessPointsContext
          return linksBuilder.newLinks();
       }
 
-      private ProxyUser getAuthenticatedProxyUSer()
-      {
-         Iterator<Principal> principalIterator = context.get( Subject.class ).getPrincipals( Principal.class ).iterator();
-         if (principalIterator.hasNext())
-         {
-            Principal principal = principalIterator.next();
-
-            UserAuthentication authentication = module.unitOfWorkFactory().currentUnitOfWork().get( UserAuthentication.class, principal.getName() );
-
-            if (authentication instanceof ProxyUser )
-               return (ProxyUser) authentication;
-         }
-
-         return null;
-      }
-
       public AccessPointContext context( String id )
       {
-         ProxyUser proxyUSer = getAuthenticatedProxyUSer();
-         if (proxyUSer == null) throw new ContextNotFoundException();
+         ProxyUser proxyUser = context.get( ProxyUser.class );
 
-         AccessPoints.Data data = (AccessPoints.Data) proxyUSer.organization().get();
+         AccessPoints.Data data = (AccessPoints.Data) proxyUser.organization().get();
 
          for (AccessPoint accessPoint : data.accessPoints())
          {

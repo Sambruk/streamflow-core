@@ -47,7 +47,6 @@ import java.awt.BorderLayout;
 public class CreateProxyUserDialog
       extends JPanel
 {
-   public JTextField usernameField;
    public JTextField descriptionField;
    public JPasswordField passwordField;
 
@@ -69,14 +68,9 @@ public class CreateProxyUserDialog
       DefaultFormBuilder builder = new DefaultFormBuilder( layout,
             form );
 
-      usernameField = new JTextField();
       descriptionField = new JTextField();
       passwordField = new JPasswordField();
 
-      builder.add(new JLabel( i18n.text( AdministrationResources.username_label ) ));
-      builder.nextColumn(2);
-      builder.add(usernameField);
-      builder.nextLine();
       builder.add(new JLabel( i18n.text( AdministrationResources.description_label ) ));
       builder.nextColumn(2);
       builder.add(descriptionField);
@@ -102,8 +96,7 @@ public class CreateProxyUserDialog
       ValueBuilder<NewProxyUserCommand> builder = vbf.newValueBuilder( NewProxyUserCommand.class );
       try
       {
-         builder.prototype().username().set( usernameField.getText() );
-         builder.prototype().name().set( descriptionField.getText() );
+         builder.prototype().description().set( descriptionField.getText() );
          builder.prototype().password().set( String.valueOf( passwordField.getPassword() ) );
          command = builder.newInstance();
       } catch(ConstraintViolationException e)
