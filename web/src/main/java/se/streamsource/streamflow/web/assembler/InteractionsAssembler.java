@@ -15,33 +15,22 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.context;
+package se.streamsource.streamflow.web.assembler;
 
 import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.qi4j.api.common.Visibility;
-import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
-import org.qi4j.bootstrap.ImportedServiceDeclaration;
+import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.spi.service.importer.NewObjectImporter;
 import se.streamsource.dci.api.InteractionConstraintsService;
 import se.streamsource.streamflow.server.plugin.ContactLookup;
+import se.streamsource.streamflow.web.context.RequiresPermission;
+import se.streamsource.streamflow.web.context.RootContext;
+import se.streamsource.streamflow.web.context.ServiceAvailable;
 import se.streamsource.streamflow.web.context.caze.AttachmentContext;
 import se.streamsource.streamflow.web.context.caze.AttachmentsContext;
-import se.streamsource.streamflow.web.context.surface.SurfaceContext;
-import se.streamsource.streamflow.web.context.surface.accesspoints.AccessPointContext;
-import se.streamsource.streamflow.web.context.surface.accesspoints.AccessPointsContext;
-import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.EndUserContext;
-import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.formdrafts.FormDraftContext;
-import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.formdrafts.summary.SummaryContext;
-import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.submittedforms.SubmittedFormsContext;
-import se.streamsource.streamflow.web.context.surface.administration.organizations.proxyusers.ProxyUserContext;
-import se.streamsource.streamflow.web.context.surface.administration.organizations.proxyusers.ProxyUsersContext;
-import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.EndUsersContext;
-import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.formdrafts.FormDraftsContext;
-import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.requiredforms.RequiredFormsContext;
-import se.streamsource.streamflow.web.context.surface.administration.AdministrationContext;
 import se.streamsource.streamflow.web.context.caze.CaseContext;
 import se.streamsource.streamflow.web.context.caze.CaseFormContext;
 import se.streamsource.streamflow.web.context.caze.CaseFormsContext;
@@ -49,7 +38,6 @@ import se.streamsource.streamflow.web.context.caze.CaseGeneralContext;
 import se.streamsource.streamflow.web.context.caze.CasesContext;
 import se.streamsource.streamflow.web.context.caze.ContactContext;
 import se.streamsource.streamflow.web.context.caze.ContactsContext;
-import se.streamsource.streamflow.web.context.ServiceAvailable;
 import se.streamsource.streamflow.web.context.conversation.ConversationContext;
 import se.streamsource.streamflow.web.context.conversation.ConversationParticipantContext;
 import se.streamsource.streamflow.web.context.conversation.ConversationParticipantsContext;
@@ -98,6 +86,19 @@ import se.streamsource.streamflow.web.context.structure.resolutions.ResolutionCo
 import se.streamsource.streamflow.web.context.structure.resolutions.ResolutionsContext;
 import se.streamsource.streamflow.web.context.structure.resolutions.SelectedResolutionContext;
 import se.streamsource.streamflow.web.context.structure.resolutions.SelectedResolutionsContext;
+import se.streamsource.streamflow.web.context.surface.SurfaceContext;
+import se.streamsource.streamflow.web.context.surface.accesspoints.AccessPointContext;
+import se.streamsource.streamflow.web.context.surface.accesspoints.AccessPointsContext;
+import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.EndUserContext;
+import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.EndUsersContext;
+import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.formdrafts.FormDraftContext;
+import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.formdrafts.FormDraftsContext;
+import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.formdrafts.summary.SummaryContext;
+import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.requiredforms.RequiredFormsContext;
+import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.submittedforms.SubmittedFormsContext;
+import se.streamsource.streamflow.web.context.surface.administration.AdministrationContext;
+import se.streamsource.streamflow.web.context.surface.administration.organizations.proxyusers.ProxyUserContext;
+import se.streamsource.streamflow.web.context.surface.administration.organizations.proxyusers.ProxyUsersContext;
 import se.streamsource.streamflow.web.context.users.ContactableContext;
 import se.streamsource.streamflow.web.context.users.UserAdministrationContext;
 import se.streamsource.streamflow.web.context.users.UserContext;
@@ -119,32 +120,37 @@ import static org.qi4j.bootstrap.ImportedServiceDeclaration.INSTANCE;
  * JAVADOC
  */
 public class InteractionsAssembler
-   implements Assembler
 {
-   public void assemble( ModuleAssembly moduleAssembly ) throws AssemblyException
+   public void assemble( LayerAssembly layer )
+         throws AssemblyException
    {
-      moduleAssembly.importServices( InteractionConstraintsService.class ).
+      interactions( layer.moduleAssembly( "Interactions" ) );
+   }
+
+   private void interactions( ModuleAssembly module ) throws AssemblyException
+   {
+      module.importServices( InteractionConstraintsService.class ).
             importedBy( NewObjectImporter.class ).
             visibleIn( Visibility.application );
-      moduleAssembly.addObjects( InteractionConstraintsService.class );
+      module.addObjects( InteractionConstraintsService.class );
 
-      moduleAssembly.addObjects( RequiresPermission.RequiresPermissionConstraint.class,
-            ServiceAvailable.ServiceAvailableConstraint.class);
+      module.addObjects( RequiresPermission.RequiresPermissionConstraint.class,
+            ServiceAvailable.ServiceAvailableConstraint.class );
 
       // Import file handling service for file uploads
       DiskFileItemFactory factory = new DiskFileItemFactory();
-      factory.setSizeThreshold( 1024*1000*30 ); // 30 Mb threshold TODO Make this into real service and make this number configurable
-      moduleAssembly.importServices( FileItemFactory.class ).importedBy( INSTANCE ).setMetaInfo( factory );
+      factory.setSizeThreshold( 1024 * 1000 * 30 ); // 30 Mb threshold TODO Make this into real service and make this number configurable
+      module.importServices( FileItemFactory.class ).importedBy( INSTANCE ).setMetaInfo( factory );
 
       // Import plugins from OSGi
-      moduleAssembly.importServices( ContactLookup.class ).importedBy( OSGiServiceImporter.class );
+      module.importServices( ContactLookup.class ).importedBy( OSGiServiceImporter.class );
 //      moduleAssembly.importServices( ContactLookup.class ).importedBy( ImportedServiceDeclaration.INSTANCE );
 
       // Only expose the root to the upper layers
-      moduleAssembly.addTransients(
-            RootContext.class).visibleIn( Visibility.application);
+      module.addTransients(
+            RootContext.class ).visibleIn( Visibility.application );
 
-      moduleAssembly.addTransients(
+      module.addTransients(
             FormContext.class,
             FormFieldContext.class,
             FormFieldsContext.class,
@@ -248,6 +254,6 @@ public class InteractionsAssembler
             se.streamsource.streamflow.web.context.surface.administration.organizations.accesspoints.AccessPointsContext.class,
             ProxyUserContext.class,
             ProxyUsersContext.class
-            );
+      );
    }
 }

@@ -19,33 +19,42 @@ package se.streamsource.streamflow.web.infrastructure.osgi;
 
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleReference;
-import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
-import org.qi4j.api.common.Visibility;
-import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.Qi4j;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
-import org.qi4j.api.service.ServiceReference;
-import org.qi4j.api.util.Classes;
-import org.qi4j.bootstrap.Assembler;
-import org.qi4j.bootstrap.AssemblyException;
-import org.qi4j.bootstrap.ModuleAssembly;
-import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Properties;
-import java.util.Set;
 
 /**
- * JAVADOC
- */
-public class OSGiServiceImporterAssembler
-      implements Assembler
+* JAVADOC
+*/
+@Mixins(OSGiAPIExporterService.Mixin.class)
+public interface OSGiAPIExporterService
+      extends ServiceComposite, Activatable
 {
-   public void assemble( ModuleAssembly module ) throws AssemblyException
+   class Mixin
+         implements Activatable
    {
-      module.addServices( OSGiServicesService.class ).visibleIn( Visibility.application );
+      @Structure
+      Qi4j api;
+
+      ServiceRegistration registration;
+
+      public void activate() throws Exception
+      {
+         BundleContext context = BundleReference.class.cast( OSGiAPIExporterService.class.getClassLoader() ).getBundle().getBundleContext();
+
+         // Export Qi4j API
+         registration = context.registerService( Qi4j.class.getName(), api, new Properties() );
+      }
+
+      public void passivate() throws Exception
+      {
+         registration.unregister();
+         registration = null;
+      }
    }
 }

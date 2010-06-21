@@ -32,7 +32,7 @@ import org.restlet.data.MediaType;
 import org.restlet.routing.Router;
 import org.restlet.security.Enroler;
 import org.restlet.security.Verifier;
-import se.streamsource.streamflow.web.StreamflowWebAssembler;
+import se.streamsource.streamflow.web.assembler.StreamflowWebAssembler;
 import se.streamsource.streamflow.web.application.security.DefaultEnroler;
 import se.streamsource.streamflow.web.resource.APIv1Router;
 

@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.configuration;
+package se.streamsource.streamflow.web.assembler;
 
 import org.qi4j.api.common.Visibility;
 import org.qi4j.api.structure.Application;
-import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
+import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.entitystore.jdbm.JdbmConfiguration;
 import org.qi4j.entitystore.memory.MemoryEntityStoreService;
@@ -30,23 +30,29 @@ import org.qi4j.index.reindexer.ReindexerConfiguration;
 import org.qi4j.library.rdf.repository.NativeConfiguration;
 import org.qi4j.migration.MigrationConfiguration;
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
+import se.streamsource.streamflow.web.application.mail.MailConfiguration;
 import se.streamsource.streamflow.web.application.management.jmxconnector.JmxConnectorConfiguration;
 import se.streamsource.streamflow.web.application.migration.StartupMigrationConfiguration;
 import se.streamsource.streamflow.web.application.notification.NotificationConfiguration;
-import se.streamsource.streamflow.web.application.mail.MailConfiguration;
 import se.streamsource.streamflow.web.application.statistics.StatisticsConfiguration;
+import se.streamsource.streamflow.web.configuration.ServiceConfiguration;
 import se.streamsource.streamflow.web.infrastructure.database.DataSourceConfiguration;
 import se.streamsource.streamflow.web.infrastructure.database.LiquibaseConfiguration;
 
 import java.util.prefs.Preferences;
 
 /**
- * Assembly of configurations for services
+ * JAVADOC
  */
 public class ConfigurationAssembler
-      implements Assembler
 {
-   public void assemble( ModuleAssembly module ) throws AssemblyException
+   public void assemble( LayerAssembly layer)
+         throws AssemblyException
+   {
+      configuration(layer.moduleAssembly( "Configuration" ));
+   }
+
+   private void configuration( ModuleAssembly module ) throws AssemblyException
    {
       System.setProperty( "application", "StreamFlowServer" );
 
@@ -102,6 +108,5 @@ public class ConfigurationAssembler
 
          module.addServices( PreferencesEntityStoreService.class ).setMetaInfo( new PreferencesEntityStoreInfo( node ) );
       }
-
    }
 }

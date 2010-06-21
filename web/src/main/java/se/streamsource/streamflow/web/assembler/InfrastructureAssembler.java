@@ -15,32 +15,125 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.infrastructure.domain;
+package se.streamsource.streamflow.web.assembler;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.osgi.framework.BundleReference;
 import org.qi4j.api.common.Visibility;
 import org.qi4j.api.structure.Application;
-import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
+import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.entitystore.jdbm.JdbmEntityStoreService;
 import org.qi4j.entitystore.map.StateStore;
 import org.qi4j.entitystore.memory.MemoryEntityStoreService;
+import org.qi4j.index.rdf.RdfIndexingEngineService;
+import org.qi4j.index.rdf.query.RdfQueryParserFactory;
+import org.qi4j.library.rdf.entity.EntityStateSerializer;
+import org.qi4j.library.rdf.entity.EntityTypeSerializer;
+import org.qi4j.library.rdf.repository.MemoryRepositoryService;
+import org.qi4j.library.rdf.repository.NativeRepositoryService;
 import org.qi4j.migration.MigrationService;
 import org.qi4j.migration.Migrator;
 import org.qi4j.migration.assembly.EntityMigrationOperation;
 import org.qi4j.migration.assembly.MigrationBuilder;
+import org.qi4j.spi.service.importer.NewObjectImporter;
 import org.qi4j.spi.uuid.UuidIdentityGeneratorService;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.DomainEventFactoryService;
+import se.streamsource.streamflow.infrastructure.event.TimeService;
+import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
+import se.streamsource.streamflow.infrastructure.event.source.memory.MemoryEventStoreService;
+import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStoreService;
+import se.streamsource.streamflow.web.infrastructure.database.DataSourceService;
+import se.streamsource.streamflow.web.infrastructure.database.LiquibaseService;
+import se.streamsource.streamflow.web.infrastructure.database.ServiceInstanceImporter;
+import se.streamsource.streamflow.web.infrastructure.event.EventSourceService;
+import se.streamsource.streamflow.web.infrastructure.event.JdbmEventStoreService;
+import se.streamsource.streamflow.web.infrastructure.index.EmbeddedSolrService;
+import se.streamsource.streamflow.web.infrastructure.index.SolrQueryService;
+import se.streamsource.streamflow.web.infrastructure.osgi.OSGiServicesService;
+
+import javax.sql.DataSource;
 
 /**
  * JAVADOC
  */
-public class ServerEntityStoreAssembler
-      implements Assembler
+public class InfrastructureAssembler
 {
-   public void assemble( ModuleAssembly module ) throws AssemblyException
+   public void assemble( LayerAssembly layer)
+         throws AssemblyException
+   {
+      database(layer.moduleAssembly( "Database" ));
+      entityStore(layer.moduleAssembly( "Entity store" ));
+      entityFinder(layer.moduleAssembly( "Entity finder" ));
+      events(layer.moduleAssembly( "Events" ));
+      searchEngine(layer.moduleAssembly( "Search engine" ));
+      attachments(layer.moduleAssembly( "Attachments store" ));
+
+      if (InfrastructureAssembler.class.getClassLoader() instanceof BundleReference)
+      {
+         osgi(layer.moduleAssembly( "OSGi Service import" ));
+      }
+   }
+
+   private void osgi( ModuleAssembly module ) throws AssemblyException
+   {
+      module.addServices( OSGiServicesService.class ).visibleIn( Visibility.application );
+   }
+
+   private void attachments( ModuleAssembly module ) throws AssemblyException
+   {
+      module.addServices( AttachmentStoreService.class ).identifiedBy( "attachments" ).visibleIn( Visibility.application );
+   }
+
+   private void searchEngine( ModuleAssembly module ) throws AssemblyException
+   {
+      Application.Mode mode = module.layerAssembly().applicationAssembly().mode();
+      if (!mode.equals( Application.Mode.test ))
+      {
+         module.addServices( EmbeddedSolrService.class ).visibleIn( Visibility.application ).instantiateOnStartup();
+         module.addServices( SolrQueryService.class ).visibleIn( Visibility.application ).identifiedBy( "solr" ).instantiateOnStartup();
+
+         module.addObjects( EntityStateSerializer.class );
+      }
+   }
+
+   private void events( ModuleAssembly module ) throws AssemblyException
+   {
+      module.addValues( TransactionEvents.class, DomainEvent.class ).visibleIn( Visibility.application );
+      module.addServices( EventSourceService.class ).identifiedBy( "eventsource" ).visibleIn( Visibility.application );
+      module.addServices( DomainEventFactoryService.class ).visibleIn( Visibility.application );
+      module.addObjects( TimeService.class );
+      module.importServices( TimeService.class ).importedBy( NewObjectImporter.class );
+
+      if (module.layerAssembly().applicationAssembly().mode() == Application.Mode.production)
+         module.addServices( JdbmEventStoreService.class ).identifiedBy( "eventstore" ).visibleIn( Visibility.application );
+      else
+         module.addServices( MemoryEventStoreService.class ).identifiedBy( "eventstore" ).visibleIn( Visibility.application );
+   }
+
+   private void entityFinder( ModuleAssembly module ) throws AssemblyException
+   {
+      Application.Mode mode = module.layerAssembly().applicationAssembly().mode();
+      if (mode.equals( Application.Mode.development ) || mode.equals( Application.Mode.test ))
+      {
+         // In-memory store
+         module.addServices( MemoryRepositoryService.class ).instantiateOnStartup().visibleIn( Visibility.application ).identifiedBy( "rdf-repository" );
+      } else if (mode.equals( Application.Mode.production ))
+      {
+         // Native storage
+         module.addServices( NativeRepositoryService.class ).visibleIn( Visibility.application ).instantiateOnStartup().identifiedBy( "rdf-repository" );
+      }
+
+      module.addObjects( EntityStateSerializer.class, EntityTypeSerializer.class );
+      module.addServices( RdfIndexingEngineService.class ).instantiateOnStartup().visibleIn( Visibility.application );
+      module.addServices( RdfQueryParserFactory.class);
+   }
+
+   private void entityStore( ModuleAssembly module ) throws AssemblyException
    {
       Application.Mode mode = module.layerAssembly().applicationAssembly().mode();
       if (mode.equals( Application.Mode.development ))
@@ -178,7 +271,7 @@ public class ServerEntityStoreAssembler
                            changed = true;
                         }
                      }
-                                                                  
+
                      return changed;
                   }
 
@@ -232,6 +325,22 @@ public class ServerEntityStoreAssembler
                   renameAssociation( "taskType", "caseType" );
 
          module.addServices( MigrationService.class ).setMetaInfo( migrationBuilder );
+      }
+   }
+
+   private void database( ModuleAssembly module ) throws AssemblyException
+   {
+      module.addServices( DataSourceService.class ).identifiedBy( "datasource" ).visibleIn( Visibility.application );
+      module.importServices( DataSource.class ).
+            importedBy( ServiceInstanceImporter.class ).
+            setMetaInfo( "datasource" ).
+            identifiedBy( "streamflowds" ).visibleIn( Visibility.application );
+
+      Application.Mode mode = module.layerAssembly().applicationAssembly().mode();
+      if (mode.equals( Application.Mode.production ))
+      {
+         // Liquibase migration
+    	 module.addServices( LiquibaseService.class ).instantiateOnStartup();
       }
    }
 }
