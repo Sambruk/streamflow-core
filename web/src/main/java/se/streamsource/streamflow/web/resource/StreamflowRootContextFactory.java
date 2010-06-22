@@ -51,15 +51,10 @@ public class StreamflowRootContextFactory
 
       String name = context.get( Subject.class ).getPrincipals().iterator().next().getName();
       UserAuthentication authentication = uowf.currentUnitOfWork().get( UserAuthentication.class, name );
-
-      if ( authentication instanceof UserEntity)
-      {
-         context.set( authentication, UserEntity.class );
-      }
+      context.set(authentication);
 
       if ( authentication instanceof ProxyUser)
       {
-         context.set( authentication, ProxyUser.class );
          context.get( Subject.class).getPrincipals().add( new ProxyUserPrincipal( name ));
       }
 
