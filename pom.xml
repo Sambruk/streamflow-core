@@ -166,8 +166,8 @@
         <extensions>
             <extension>
                 <groupId>org.apache.maven.wagon</groupId>
-                <artifactId>wagon-ssh-external</artifactId>
-                <version>1.0-beta-5</version>
+                <artifactId>wagon-ssh</artifactId>
+                <version>1.0-beta-6</version>
             </extension>
         </extensions>
         <plugins>
@@ -608,6 +608,36 @@
                     </plugins>
                 </pluginManagement>
             </build>
+        </profile>
+        <profile>
+            <id>streamflow-nightly</id>
+            <activation>
+                <property>
+                    <name>!release</name>
+                </property>
+            </activation>
+            <properties>
+                <deploy.server>${deploy.nightly.server}</deploy.server>
+                <deploy.server.domain>${deploy.nightly.server.domain}</deploy.server.domain>
+                <cargo.url>http://${deploy.nightly.server}/manager</cargo.url>
+                <cargo.username>${cargo.nightly.username}</cargo.username>
+                <cargo.password>${cargo.nightly.password}</cargo.password>
+            </properties>
+        </profile>
+        <profile>
+            <id>streamflow-release</id>
+            <activation>
+                <property>
+                    <name>release</name>
+                </property>
+            </activation>
+            <properties>
+                <deploy.server>${deploy.release.server}</deploy.server>
+                <deploy.server.domain>${deploy.release.server.domain}</deploy.server.domain>
+                <cargo.url>http://${deploy.release.server}/manager</cargo.url>
+                <cargo.username>${cargo.release.username}</cargo.username>
+                <cargo.password>${cargo.release.password}</cargo.password>
+            </properties>
         </profile>
     </profiles>
 </project>

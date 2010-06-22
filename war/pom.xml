@@ -93,8 +93,11 @@
                         <!-- Read all OSGi configuration info from this optional file -->
                         <_include>-osgi.bundle</_include>
                         <!-- By default, we don't export anything -->
-                        <Bundle-ClassPath>WEB-INF/classes,WEB-INF/lib/webstart-jnlp-servlet-1.0-6.0-02_ea_b02.jar</Bundle-ClassPath>
-                        <Import-Package>org.slf4j;version=0.0,org.osgi.framework,org.osgi.util.tracker,org.restlet,org.restlet.ext.servlet,javax.servlet,javax.servlet.http</Import-Package>
+                        <Bundle-ClassPath>WEB-INF/classes,WEB-INF/lib/webstart-jnlp-servlet-1.0-6.0-02_ea_b02.jar
+                        </Bundle-ClassPath>
+                        <Import-Package>
+                            org.slf4j;version=0.0,org.osgi.framework,org.osgi.util.tracker,org.restlet,org.restlet.ext.servlet,javax.servlet,javax.servlet.http
+                        </Import-Package>
                         <Export-Package></Export-Package>
                         <Private-Package>*</Private-Package>
                         <Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>
@@ -146,7 +149,7 @@
                 </configuration>
             </plugin>
 
-            <plugin>
+            <!-- <plugin>
                 <groupId>org.codehaus.cargo</groupId>
                 <artifactId>cargo-maven2-plugin</artifactId>
                 <configuration>
@@ -176,32 +179,31 @@
                         </deployables>
                     </deployer>
                 </configuration>
-            </plugin>
-            <!--
-                        <plugin>
-                            <groupId>org.codehaus.mojo</groupId>
-                            <artifactId>wagon-maven-plugin</artifactId>
-                            <executions>
-                                <execution>
-                                    <id>upload-war</id>
-                                    <phase>deploy</phase>
-                                    <goals>
-                                        <goal>upload-single</goal>
-                                    </goals>
-                                    <configuration>
-                                        <fromFile>target/${project.build.finalName}.war</fromFile>
-                                        <serverId>deploy.streamflow</serverId>
-                                        <url>scp://${deploy.server}/root</url>
-                                        <toFile>streamflow.war</toFile>
-                                    </configuration>
-                                </execution>
-                            </executions>
-                        </plugin>
-            -->
+            </plugin> -->
+
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
+                <artifactId>wagon-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>upload-war</id>
+                        <goals>
+                            <goal>upload-single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <fromFile>target/${project.build.finalName}.war</fromFile>
+                    <serverId>deploy.streamflow</serverId>
+                    <url>scp://${deploy.server}${deploy.server.domain}/streamflow</url>
+                    <toFile>${project.build.finalName}.war</toFile>
+                </configuration>
+            </plugin>
+
+            <!-- <plugin>
+                <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
-                <!--
+                
                                 <executions>
                                     <execution>
                                         <phase>deploy</phase>
@@ -210,7 +212,7 @@
                                         </goals>
                                     </execution>
                                 </executions>
-                -->
+
                 <configuration>
                     <executable>ssh</executable>
                     <arguments>
@@ -220,13 +222,13 @@
                         <argument>sh deploy.sh</argument>
                     </arguments>
                 </configuration>
-            </plugin>
+            </plugin> -->
             <plugin>
                 <artifactId>maven-antrun-plugin</artifactId>
             </plugin>
         </plugins>
     </build>
-    <profiles>
+   <!-- <profiles>
         <profile>
             <id>streamflow-nightly</id>
             <activation>
@@ -255,7 +257,7 @@
                 <cargo.password>${cargo.release.password}</cargo.password>
             </properties>
         </profile>
-    </profiles>
+    </profiles> -->
 
     <dependencies>
         <dependency>

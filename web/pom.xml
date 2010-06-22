@@ -38,7 +38,24 @@
             <plugin>
                 <artifactId>maven-antrun-plugin</artifactId>
             </plugin>
-            
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>wagon-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>upload-jar</id>
+                        <goals>
+                            <goal>upload-single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <fromFile>target/${project.build.finalName}.jar</fromFile>
+                    <serverId>deploy.streamflow</serverId>
+                    <url>scp://${deploy.server}${deploy.server.domain}/streamflow/</url>
+                    <toFile>${project.build.finalName}.jar</toFile>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
