@@ -25,6 +25,7 @@ import se.streamsource.dci.api.Context;
 import se.streamsource.dci.restlet.server.RootInteractionsFactory;
 import se.streamsource.streamflow.web.application.security.ProxyUserPrincipal;
 import se.streamsource.streamflow.web.context.RootContext;
+import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.structure.user.ProxyUser;
 import se.streamsource.streamflow.web.domain.structure.user.User;
 import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
@@ -51,9 +52,9 @@ public class StreamflowRootContextFactory
       String name = context.get( Subject.class ).getPrincipals().iterator().next().getName();
       UserAuthentication authentication = uowf.currentUnitOfWork().get( UserAuthentication.class, name );
 
-      if ( authentication instanceof User )
+      if ( authentication instanceof UserEntity)
       {
-         context.set( authentication, User.class );
+         context.set( authentication, UserEntity.class );
       }
 
       if ( authentication instanceof ProxyUser)
