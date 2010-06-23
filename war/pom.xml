@@ -184,18 +184,8 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>wagon-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>upload-war</id>
-                        <goals>
-                            <goal>upload-single</goal>
-                        </goals>
-                    </execution>
-                </executions>
                 <configuration>
                     <fromFile>target/${project.build.finalName}.war</fromFile>
-                    <serverId>deploy.streamflow</serverId>
-                    <url>scp://${deploy.server}${deploy.server.domain}/streamflow</url>
                     <toFile>${project.build.finalName}.war</toFile>
                 </configuration>
             </plugin>
