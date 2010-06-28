@@ -61,7 +61,7 @@ public class AccessPointModel extends Observable
       this.client = client;
       eventFilter = new EventVisitorFilter(client.getReference()
             .getLastSegment(), this, "addedLabel",
-            "removedLabel", "addedCaseType", "addedProject" );
+            "removedLabel", "addedCaseType", "addedProject", "addedSelectedForm" );
    }
 
    public void refresh() throws OperationException
@@ -165,5 +165,28 @@ public class AccessPointModel extends Observable
    {
       refresh();
       return true;
+   }
+
+   public EventList<LinkValue> getPossibleForms()
+   {
+      try
+      {
+         BasicEventList<LinkValue> list = new BasicEventList<LinkValue>();
+
+         LinksValue listValue = client.query("possibleforms",
+               LinksValue.class);
+         list.addAll(listValue.links().get());
+
+         return list;
+      } catch (ResourceException e)
+      {
+         throw new OperationException( WorkspaceResources.could_not_refresh,
+               e);
+      }
+   }
+
+   public void setForm( String id )
+   {
+      client.postCommand( "setform", getStringValue( id ) );
    }
 }

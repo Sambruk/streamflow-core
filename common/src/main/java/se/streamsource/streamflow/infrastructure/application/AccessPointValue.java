@@ -39,4 +39,7 @@ public interface AccessPointValue
 
    @Optional
    Property<LinksValue> labels();
+
+   @Optional
+   Property<LinkValue> form();
 }

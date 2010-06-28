@@ -38,6 +38,8 @@ import se.streamsource.streamflow.web.domain.entity.organization.OrganizationVis
 import se.streamsource.streamflow.web.domain.entity.project.ProjectLabelsQueries;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.SelectedCaseTypes;
+import se.streamsource.streamflow.web.domain.structure.form.Form;
+import se.streamsource.streamflow.web.domain.structure.form.SelectedForms;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.label.Labelable;
 import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
@@ -64,6 +66,8 @@ public interface AccessPointContext
 
    void setcasetype( StringValue id );
 
+   void setform( StringValue id );
+
    LinksValue possibleprojects();
 
    LinksValue possiblecasetypes();
@@ -72,6 +76,8 @@ public interface AccessPointContext
 
    @SubContext
    LabelableContext labels();
+
+   LinksValue possibleforms();
 
    abstract class Mixin
          extends InteractionsMixin
@@ -83,18 +89,22 @@ public interface AccessPointContext
 
          AccessPoint accessPoint = context.get( AccessPoint.class );
          AccessPoint.Data accessPointData = context.get( AccessPoint.Data.class );
+         SelectedForms.Data forms = context.get( SelectedForms.Data.class );
          Labelable.Data labelsData = context.get( Labelable.Data.class );
 
          builder.prototype().accessPoint().set( createLinkValue( accessPoint ) );
-         if( accessPointData.project().get() != null )
+         if (accessPointData.project().get() != null)
             builder.prototype().project().set( createLinkValue( accessPointData.project().get() ) );
-         if( accessPointData.caseType().get() != null )
+         if (accessPointData.caseType().get() != null)
             builder.prototype().caseType().set( createLinkValue( accessPointData.caseType().get() ) );
 
          LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
          linksBuilder.addDescribables( labelsData.labels() );
 
          builder.prototype().labels().set( linksBuilder.newLinks() );
+
+         if (forms.selectedForms().toList().size() > 0)
+            builder.prototype().form().set( createLinkValue( forms.selectedForms().toList().get( 0 ) ) );
 
          return builder.newInstance();
       }
@@ -125,12 +135,12 @@ public interface AccessPointContext
          List<AccessPoint> accessPointsList = accessPoints.accessPoints().toList();
          for (AccessPoint accessPoint : accessPointsList)
          {
-            if( accessPoint.getDescription().equals( name.string().get() ) )
+            if (accessPoint.getDescription().equals( name.string().get() ))
             {
                throw new IllegalArgumentException( "accesspoint_already_exists" );
             }
          }
-         
+
          context.get( AccessPoint.class ).changeDescription( name.string().get() );
       }
 
@@ -206,7 +216,7 @@ public interface AccessPointContext
                {
                   if (!labels.contains( label ))
                   {
-                     linksBuilder.addDescribable( label, (( Describable )map.get( label )).getDescription()  );
+                     linksBuilder.addDescribable( label, ((Describable) map.get( label )).getDescription() );
                   }
                }
             } catch (IllegalArgumentException e)
@@ -215,6 +225,48 @@ public interface AccessPointContext
             }
          }
          return linksBuilder.newLinks();
+      }
+
+      public LinksValue possibleforms()
+      {
+         AccessPoint.Data accessPoint = context.get( AccessPoint.Data.class );
+         SelectedForms.Data selected = context.get( SelectedForms.Data.class );
+         CaseType caseType = accessPoint.caseType().get();
+
+         LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() );
+
+         if (caseType != null)
+         {
+
+            List<Form> forms = ((SelectedForms.Data) caseType).selectedForms().toList();
+            for( Form f : forms)
+            {
+               if(!selected.selectedForms().contains( f ))
+               {
+                  builder.addDescribable( f );
+               }
+            }
+         }
+
+         return builder.newLinks();
+      }
+
+      public void setform( StringValue id )
+      {
+         SelectedForms forms = context.get( SelectedForms.class );
+         SelectedForms.Data formsData = context.get( SelectedForms.Data.class );
+
+         // remove what's there - should only be one or none
+         List<Form> selectedForms = formsData.selectedForms().toList();
+         for( Form f : selectedForms )
+         {
+            forms.removeSelectedForm( f );
+         }
+
+         // add the last selected from
+         Form form = module.unitOfWorkFactory().currentUnitOfWork().get( Form.class, id.string().get() );
+
+         forms.addSelectedForm( form );
       }
 
       public LabelableContext labels()

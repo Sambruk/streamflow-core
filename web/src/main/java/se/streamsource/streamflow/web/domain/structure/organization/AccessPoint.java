@@ -24,6 +24,7 @@ import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.domain.structure.Removable;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
+import se.streamsource.streamflow.web.domain.structure.form.SelectedForms;
 import se.streamsource.streamflow.web.domain.structure.label.Labelable;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 
@@ -33,7 +34,7 @@ import se.streamsource.streamflow.web.domain.structure.project.Project;
 @Mixins(AccessPoint.Mixin.class)
 public interface AccessPoint
       extends
-      Labelable, Describable, Removable
+      Labelable, Describable, Removable, SelectedForms
 {
    void addProject( Project project );
    void addCaseType( CaseType caseType );

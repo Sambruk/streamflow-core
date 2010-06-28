@@ -78,6 +78,9 @@ public class AccessPointView
    protected ObjectBuilder<FilterListDialog> caseTypeDialog;
 
    @Uses
+   protected ObjectBuilder<FilterListDialog> formDialog;
+
+   @Uses
    protected ObjectBuilder<CaseLabelsDialog> labelSelectionDialog;
 
    public CaseLabelsView labels;
@@ -87,6 +90,8 @@ public class AccessPointView
    public JButton labelButton;
    public JButton projectButton;
    public JLabel selectedProject = new JLabel();
+   public JButton formButton;
+   public JLabel selectedForm = new JLabel();
 
    private AccessPointModel model;
 
@@ -122,7 +127,7 @@ public class AccessPointView
       AccessPointValue template = accessPointBinder
             .bindingTemplate( AccessPointValue.class );
 
-      FormLayout layout = new FormLayout( "50dlu, 5dlu, 150:grow", "pref, 2dlu, pref, 2dlu, default:grow" );
+      FormLayout layout = new FormLayout( "50dlu, 5dlu, 150:grow", "pref, 2dlu, pref, 2dlu, pref, 2dlu, default:grow" );
 
       JPanel panel = new JPanel( layout );
       DefaultFormBuilder builder = new DefaultFormBuilder( layout,
@@ -136,11 +141,13 @@ public class AccessPointView
       MacOsUIWrapper.convertAccelerators( appContext.getActionMap(
             AccessPointView.class, this ) );
 
+      selectedProject.setFont( selectedProject.getFont().deriveFont( Font.BOLD ) );
 
       selectedCaseType.setFont( selectedCaseType.getFont().deriveFont(
             Font.BOLD ) );
 
-      selectedProject.setFont( selectedProject.getFont().deriveFont( Font.BOLD ) );
+      selectedForm.setFont( selectedForm.getFont().deriveFont(
+            Font.BOLD ) );
 
       ActionMap am = getActionMap();
 
@@ -184,10 +191,24 @@ public class AccessPointView
 
       builder.add( labelButton, cc.xy( 1, 5, CellConstraints.FILL, CellConstraints.TOP ) );
 
-      labels.setPreferredSize( new Dimension( 500, 200 ) );
+      labels.setPreferredSize( new Dimension( 500, 60 ) );
       builder.add( labels,
             new CellConstraints( 3, 5, 1, 1, CellConstraints.LEFT, CellConstraints.TOP, new Insets( 5, 0, 0, 0 ) ) );
 
+      // Select form
+      javax.swing.Action formAction = am.get( "form" );
+      formButton = new JButton( formAction );
+
+      formButton.registerKeyboardAction( formAction, (KeyStroke) formAction
+            .getValue( javax.swing.Action.ACCELERATOR_KEY ),
+            JComponent.WHEN_IN_FOCUSED_WINDOW );
+
+      formButton.setHorizontalAlignment( SwingConstants.LEFT );
+
+      builder.add( formButton, cc.xy( 1, 7, CellConstraints.FILL, CellConstraints.TOP ) );
+
+      builder.add( accessPointBinder.bind( selectedForm, template.form() ),
+            new CellConstraints( 3, 7, 1, 1, CellConstraints.LEFT, CellConstraints.TOP, new Insets( 5, 0, 0, 0 ) ) );
       add( panel, BorderLayout.CENTER );
 
       accessPointBinder.updateWith( model.getAccessPointValue() );
@@ -203,9 +224,9 @@ public class AccessPointView
    {
 
       FilterListDialog dialog = projectDialog.use(
-            i18n.text( WorkspaceResources.chose_project ),
+            i18n.text( WorkspaceResources.choose_project ),
             model.getPossibleProjects() ).newInstance();
-      dialogs.showOkCancelHelpDialog( caseTypeButton, dialog );
+      dialogs.showOkCancelHelpDialog( projectButton, dialog );
 
       if (dialog.getSelected() != null)
       {
@@ -243,6 +264,20 @@ public class AccessPointView
       }
    }
 
+   @Action
+   public void form()
+   {
+      FilterListDialog dialog = formDialog.use(
+            i18n.text( WorkspaceResources.choose_form ),
+            model.getPossibleForms() ).newInstance();
+      dialogs.showOkCancelHelpDialog( formButton, dialog );
+
+      if (dialog.getSelected() != null)
+      {
+         model.setForm( dialog.getSelected().identity() );
+      }
+   }
+
    public void update( Observable o, Object arg )
    {
       accessPointBinder.updateWith( model.getAccessPointValue() );
@@ -255,14 +290,17 @@ public class AccessPointView
       {
          caseTypeButton.setEnabled( false );
          labelButton.setEnabled( false );
+         formButton.setEnabled( false );
       } else if (model.getAccessPointValue().caseType().get() == null)
       {
          caseTypeButton.setEnabled( true );
          labelButton.setEnabled( false );
+         formButton.setEnabled( false );
       } else
       {
          caseTypeButton.setEnabled( true );
          labelButton.setEnabled( true );
+         formButton.setEnabled( true );
       }
 
    }

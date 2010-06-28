@@ -86,5 +86,5 @@ public enum WorkspaceResources
    attachment_name,
    attachment_size,
    choose_message_delivery_type,
-   chose_project, 
+   choose_project, choose_form,
 }
