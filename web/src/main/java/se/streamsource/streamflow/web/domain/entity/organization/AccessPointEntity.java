@@ -25,6 +25,7 @@ import se.streamsource.streamflow.domain.structure.Removable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.IdGenerator;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
+import se.streamsource.streamflow.web.domain.structure.form.EndUserFormSubmissions;
 import se.streamsource.streamflow.web.domain.structure.form.SelectedForms;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.label.Labelable;
@@ -52,6 +53,7 @@ public interface AccessPointEntity
       AccessPoint.Data,
       Labelable.Data,
       SelectedForms.Data,
+      EndUserFormSubmissions.Data,
       Removable.Data
 {
    abstract class AddProjectConcern

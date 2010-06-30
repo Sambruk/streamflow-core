@@ -180,7 +180,9 @@ public interface EndUserFormSubmissions
          formDraftBuilder.prototype().formsubmission().set( EntityReference.getEntityReference( formSubmission ));
 
          EndUserFormDraftValue value = formDraftBuilder.newInstance();
-         formDrafts().get().add( value );
+         List<EndUserFormDraftValue> draftValues = formDrafts().get();
+         draftValues.add( value );
+         formDrafts().set( draftValues );
 
          return value;
       }
