@@ -57,6 +57,7 @@ import org.jdesktop.swingx.renderer.IconValue;
 import org.jdesktop.swingx.renderer.StringValue;
 import org.jdesktop.swingx.renderer.WrappingIconPanel;
 import org.jdesktop.swingx.renderer.WrappingProvider;
+import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.object.ObjectBuilderFactory;
@@ -97,7 +98,7 @@ public class WorkspaceView
    private JButton showSavedSearchesButton;
    private JTextField searchField;
 
-   private Component currentSelection = new JLabel( i18n.text( WorkspaceResources.welcome ) , JLabel.CENTER );
+   private Component currentSelection = new JLabel( i18n.text( WorkspaceResources.welcome ), JLabel.CENTER );
    private Popup popup;
    private Popup savedSearches;
    private SavedSearchesView savedSearchesPanelView;
@@ -116,14 +117,14 @@ public class WorkspaceView
                          final @Structure ObjectBuilderFactory obf )
    {
       setLayout( new BorderLayout() );
-      this.setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
+      this.setBorder( Borders.createEmptyBorder( "2dlu, 2dlu, 2dlu, 2dlu" ) );
 
       getInputMap( WHEN_IN_FOCUSED_WINDOW ).put( KeyStroke.getKeyStroke( KeyEvent.VK_LEFT, KeyEvent.ALT_DOWN_MASK + Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() ), "selectTree" );
       getInputMap( WHEN_IN_FOCUSED_WINDOW ).put( KeyStroke.getKeyStroke( KeyEvent.VK_UP, KeyEvent.ALT_DOWN_MASK + Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() ), "selectTable" );
       getInputMap( WHEN_IN_FOCUSED_WINDOW ).put( KeyStroke.getKeyStroke( KeyEvent.VK_DOWN, KeyEvent.ALT_DOWN_MASK + Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() ), "selectDetails" );
       setActionMap( context.getActionMap( this ) );
       MacOsUIWrapper.convertAccelerators( context.getActionMap(
-            WorkspaceView.class, this ));
+            WorkspaceView.class, this ) );
 
       ActionMap am = getActionMap();
 
@@ -151,11 +152,11 @@ public class WorkspaceView
             .getValue( javax.swing.Action.ACCELERATOR_KEY ),
             JComponent.WHEN_IN_FOCUSED_WINDOW );
 
-      MacOsUIWrapper.convertAccelerators(getActionMap());
-      
+      MacOsUIWrapper.convertAccelerators( getActionMap() );
+
       JPanel contextToolbar = new JPanel();
       contextToolbar.add( createCaseButton );
-      contextToolbar.add( refreshButton);
+      contextToolbar.add( refreshButton );
       contextToolbar.add( showSearchButton );
 
       contextPanel = new JPanel( new BorderLayout() );
@@ -166,20 +167,20 @@ public class WorkspaceView
       contextPanel.add( selectedContext, BorderLayout.CENTER );
       contextPanel.add( contextToolbar, BorderLayout.EAST );
 
-      searchPanel = new JPanel(new BorderLayout());
+      searchPanel = new JPanel( new BorderLayout() );
       searchField = new JTextField();
       searchField.setAction( getActionMap().get( "search" ) );
       searchPanel.add( searchField, BorderLayout.CENTER );
-      savedSearchesPanelView = obf.newObjectBuilder( SavedSearchesView.class ).use( searchField).newInstance();
+      savedSearchesPanelView = obf.newObjectBuilder( SavedSearchesView.class ).use( searchField ).newInstance();
       JPanel searchButtons = new JPanel();
-      showSavedSearchesButton = new JButton(getActionMap().get( "showSavedSearches" ));
+      showSavedSearchesButton = new JButton( getActionMap().get( "showSavedSearches" ) );
 //      searchButtons.add( showSavedSearchesButton);
-      searchButtons.add( new JButton(getActionMap().get( "hideSearch" )) );
-      searchPanel.add(searchButtons, BorderLayout.EAST );
+      searchButtons.add( new JButton( getActionMap().get( "hideSearch" ) ) );
+      searchPanel.add( searchButtons, BorderLayout.EAST );
 
-      topPanel = new JPanel(topLayout);
+      topPanel = new JPanel( topLayout );
       topPanel.add( contextPanel, "context" );
-      topPanel.add(searchPanel, "search");
+      topPanel.add( searchPanel, "search" );
 
       add( topPanel, BorderLayout.NORTH );
       add( currentSelection, BorderLayout.CENTER );
@@ -315,7 +316,7 @@ public class WorkspaceView
                      }
                   } );
 
-               } 
+               }
 
                if (view != null)
                {
@@ -390,7 +391,7 @@ public class WorkspaceView
 
       casesModel = model.workspace().getRoot().getUserObject().cases();
       detailView = obf.newObjectBuilder( CasesDetailView2.class ).use( casesModel ).newInstance();
-      savedSearchesPanelView.setModel(model.workspace().getSavedSearches());
+      savedSearchesPanelView.setModel( model.workspace().getSavedSearches() );
 
       refreshTree();
    }
@@ -415,7 +416,7 @@ public class WorkspaceView
       if (popup == null)
       {
          Point location = selectContextButton.getLocationOnScreen();
-         popup = PopupFactory.getSharedInstance().getPopup( this, new JScrollPane(workspaceTree), (int) location.getX(), (int) location.getY() + selectContextButton.getHeight() );
+         popup = PopupFactory.getSharedInstance().getPopup( this, new JScrollPane( workspaceTree ), (int) location.getX(), (int) location.getY() + selectContextButton.getHeight() );
          popup.show();
 
          return obf.newObjectBuilder( RefreshCaseCountTask.class ).use( workspaceTree, model.getRoot() ).newInstance();
@@ -519,11 +520,15 @@ public class WorkspaceView
 
          if (node instanceof CaseCreationNode)
          {
-            ((CaseCreationNode)node).createDraft();
+            // TODO very odd hack - how to solve state binder update issue during use of accelerator keys.
+            Component focusOwner = WindowUtils.findWindow( this ).getFocusOwner();
+            focusOwner.transferFocus();
+
+            ((CaseCreationNode) node).createDraft();
             refresh();
             CasesView currentCases = (CasesView) currentSelection;
             JXTable caseTable = currentCases.getCaseTableView().getCaseTable();
-            caseTable.getSelectionModel().setSelectionInterval( caseTable.getRowCount()-1, caseTable.getRowCount()-1 );
+            caseTable.getSelectionModel().setSelectionInterval( caseTable.getRowCount() - 1, caseTable.getRowCount() - 1 );
          }
       }
 

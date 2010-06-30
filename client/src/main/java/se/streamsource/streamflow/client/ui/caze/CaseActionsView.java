@@ -42,97 +42,109 @@ import javax.swing.ActionMap;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
 /**
  * JAVADOC
  */
 public class CaseActionsView extends JPanel
 {
-	@Uses
-	protected ObjectBuilder<SelectLinkDialog> projectSelectionDialog;
+   @Uses
+   protected ObjectBuilder<SelectLinkDialog> projectSelectionDialog;
 
    @Uses
    private ObjectBuilder<ConfirmationDialog> confirmationDialog;
 
-	@Service
-	DialogService dialogs;
+   @Service
+   DialogService dialogs;
 
-	@Service
+   @Service
    StreamflowApplication controller;
 
    @Structure
    ObjectBuilderFactory obf;
 
-	private CaseActionsModel model;
+   private CaseActionsModel model;
 
-	private JPanel actionsPanel = new JPanel();
+   private JPanel actionsPanel = new JPanel();
 
-   public CaseActionsView(@Service ApplicationContext context)
-	{
-		setLayout(new BorderLayout());
+   public CaseActionsView( @Service ApplicationContext context )
+   {
+      setLayout( new BorderLayout() );
       setBorder( new EmptyBorder( 5, 5, 5, 10 ) );
-      actionsPanel.setLayout(new GridLayout(0, 1, 5, 5));
-		add(actionsPanel, BorderLayout.NORTH);
-		setActionMap(context.getActionMap(this));
-		MacOsUIWrapper.convertAccelerators(context.getActionMap(
-				CaseActionsView.class, this));
-	}
+      actionsPanel.setLayout( new GridLayout( 0, 1, 5, 5 ) );
+      add( actionsPanel, BorderLayout.NORTH );
+      setActionMap( context.getActionMap( this ) );
+      MacOsUIWrapper.convertAccelerators( context.getActionMap(
+            CaseActionsView.class, this ) );
+   }
 
    public void refresh()
-	{
-		Actions actions = model.actions();
+   {
+      Actions actions = model.actions();
 
-		actionsPanel.removeAll();
+      actionsPanel.removeAll();
 
-		ActionMap am = getActionMap();
+      ActionMap am = getActionMap();
 
-		for (String action : actions.actions().get())
-		{
-			javax.swing.Action action1 = am.get(action);
-			if (action1 != null)
-			{
-				JButton button = new JButton(action1);
-				button.registerKeyboardAction(action1, (KeyStroke) action1
-						.getValue(javax.swing.Action.ACCELERATOR_KEY),
-						JComponent.WHEN_IN_FOCUSED_WINDOW);
-				button.setHorizontalAlignment(SwingConstants.LEFT);
-				actionsPanel.add(button);
+      for (String action : actions.actions().get())
+      {
+         javax.swing.Action action1 = am.get( action );
+         if (action1 != null)
+         {
+            JButton button = new JButton( action1 );
+            button.registerKeyboardAction( action1, (KeyStroke) action1
+                  .getValue( javax.swing.Action.ACCELERATOR_KEY ),
+                  JComponent.WHEN_IN_FOCUSED_WINDOW );
+            button.setHorizontalAlignment( SwingConstants.LEFT );
+            actionsPanel.add( button );
 //				NotificationGlassPane.registerButton(button);
-			}
-		}
+         }
+      }
 
-		revalidate();
-		repaint();
-	}
+      revalidate();
+      repaint();
+   }
 
-	// Case actions
-	@Action
-	public void open()
-	{
-		model.open();
-		refresh();
-	}
+   // Case actions
 
-	@Action
-	public void assign()
-	{
-		model.assignToMe();
-		refresh();
-	}
+   @Action
+   public void open()
+   {
+      model.open();
+      refresh();
+   }
 
-	@Action
-	public void close()
-	{
+   @Action
+   public void assign()
+   {
+      model.assignToMe();
+      refresh();
+   }
+
+   @Action
+   public void close()
+   {
+      // TODO very odd hack - how to solve state binder update issue during use of accelerator keys.
+      Component focusOwner = WindowUtils.findWindow( this ).getFocusOwner();
+      focusOwner.transferFocus();
+
       EventList<TitledLinkValue> resolutions = model.getPossibleResolutions();
       if (resolutions.isEmpty())
       {
-   		model.close();
-   		refresh();
+         model.close();
+         refresh();
       } else
       {
          SelectLinkDialog dialog = obf.newObjectBuilder( SelectLinkDialog.class )
@@ -144,36 +156,36 @@ public class CaseActionsView extends JPanel
 
          if (dialog.getSelected() != null)
          {
-            model.resolve(dialog.getSelected());
+            model.resolve( dialog.getSelected() );
             refresh();
          }
       }
-	}
+   }
 
-	@Action
-	public void delete()
-	{
+   @Action
+   public void delete()
+   {
       ConfirmationDialog dialog = confirmationDialog.newInstance();
-      dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation) );
-      if( dialog.isConfirmed())
+      dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation ) );
+      if (dialog.isConfirmed())
       {
-		   model.delete();
+         model.delete();
       }
-	}
+   }
 
-	@Action
-	public void sendto()
-	{
-		SelectLinkDialog dialog = projectSelectionDialog.use(
-				model.getPossibleProjects()).newInstance();
-		dialogs.showOkCancelHelpDialog(this, dialog, i18n.text( WorkspaceResources.choose_owner_title ));
+   @Action
+   public void sendto()
+   {
+      SelectLinkDialog dialog = projectSelectionDialog.use(
+            model.getPossibleProjects() ).newInstance();
+      dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( WorkspaceResources.choose_owner_title ) );
 
-		if (dialog.getSelected() != null)
-		{
-			model.sendTo(dialog.getSelected());
-			refresh();
-		}
-	}
+      if (dialog.getSelected() != null)
+      {
+         model.sendTo( dialog.getSelected() );
+         refresh();
+      }
+   }
 
    @Action
    public void onhold()
@@ -182,12 +194,12 @@ public class CaseActionsView extends JPanel
       refresh();
    }
 
-	@Action
-	public void reopen()
-	{
-		model.reopen();
-		refresh();
-	}
+   @Action
+   public void reopen()
+   {
+      model.reopen();
+      refresh();
+   }
 
    @Action
    public void resume()
@@ -196,15 +208,15 @@ public class CaseActionsView extends JPanel
       refresh();
    }
 
-	@Action
-	public void unassign()
-	{
-		model.unassign();
-		refresh();
-	}
+   @Action
+   public void unassign()
+   {
+      model.unassign();
+      refresh();
+   }
 
-	public void setModel( CaseActionsModel caseActionsModel )
-	{
-		this.model = caseActionsModel;
-	}
+   public void setModel( CaseActionsModel caseActionsModel )
+   {
+      this.model = caseActionsModel;
+   }
 }
