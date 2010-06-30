@@ -65,6 +65,11 @@ public class WorkspaceModel
 
    public boolean visit( DomainEvent event )
    {
+      if( event.name().get().equals("changedDescription") &&
+            !event.entityType().get().equals( "se.streamsource.streamflow.web.domain.entity.project.ProjectEntity" ))
+      {
+         return true;
+      }
       Logger.getLogger( "workspace" ).info( "Refresh project list" );
       getRoot().getProjectsNode().refresh();
       reload( getRoot().getProjectsNode() );
