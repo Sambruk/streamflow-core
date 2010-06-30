@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.web.domain.entity.form;
 
+import se.streamsource.streamflow.domain.structure.Removable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
 import se.streamsource.streamflow.web.domain.structure.form.FormSubmission;
 
@@ -27,6 +28,8 @@ public interface FormSubmissionEntity
       extends
       FormSubmission,
       FormSubmission.Data,
+      Removable,
+      Removable.Data,
       DomainEntity
 {
 }

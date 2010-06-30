@@ -24,8 +24,9 @@ import se.streamsource.dci.api.Interactions;
 import se.streamsource.dci.api.InteractionsMixin;
 import se.streamsource.streamflow.domain.form.FormSubmissionValue;
 import se.streamsource.streamflow.resource.roles.IntegerDTO;
+import se.streamsource.streamflow.web.domain.structure.form.EndUserFormSubmissions;
+import se.streamsource.streamflow.web.domain.structure.form.Form;
 import se.streamsource.streamflow.web.domain.structure.form.FormSubmission;
-import se.streamsource.streamflow.web.domain.structure.form.SubmittedForms;
 import se.streamsource.streamflow.web.domain.structure.user.AnonymousEndUser;
 
 /**
@@ -51,10 +52,11 @@ public interface SummaryContext
 
       public void submit()
       {
-         SubmittedForms submittedForms = context.get( SubmittedForms.class );
-         FormSubmission formSubmission = context.get( FormSubmission.class );
+         EndUserFormSubmissions submittedForms = context.get( EndUserFormSubmissions.class );
          AnonymousEndUser user = context.get( AnonymousEndUser.class );
-         submittedForms.submitForm( formSubmission, user );
+         Form form = context.get( Form.class );
+
+         submittedForms.submitForm( form , user );
       }
 
       public void gotopage( IntegerDTO page)

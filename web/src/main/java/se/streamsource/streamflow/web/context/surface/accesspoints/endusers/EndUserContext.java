@@ -18,70 +18,29 @@
 package se.streamsource.streamflow.web.context.surface.accesspoints.endusers;
 
 import org.qi4j.api.mixin.Mixins;
-import se.streamsource.dci.api.IndexInteraction;
 import se.streamsource.dci.api.Interactions;
 import se.streamsource.dci.api.InteractionsMixin;
-import se.streamsource.dci.api.SubContexts;
-import se.streamsource.dci.value.LinksValue;
-import se.streamsource.dci.value.StringValue;
-import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
-import se.streamsource.streamflow.web.domain.entity.gtd.Drafts;
-import se.streamsource.streamflow.web.domain.entity.gtd.DraftsQueries;
-import se.streamsource.streamflow.web.domain.structure.label.Label;
-import se.streamsource.streamflow.web.domain.structure.label.Labelable;
-import se.streamsource.streamflow.web.domain.structure.organization.AccessPoint;
-import se.streamsource.streamflow.web.domain.structure.user.AnonymousEndUser;
+import se.streamsource.dci.api.SubContext;
+import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.formdrafts.FormDraftsContext;
 
 /**
  * JAVADOC
  */
 @Mixins(EndUserContext.Mixin.class)
 public interface EndUserContext
-   extends SubContexts<CaseContext>, Interactions, IndexInteraction<LinksValue>
+   extends Interactions
 {
-   // command
-   void createcase( StringValue description );
+   @SubContext
+   FormDraftsContext forms();
 
    abstract class Mixin
       extends InteractionsMixin
       implements EndUserContext
    {
 
-      public LinksValue index()
+      public FormDraftsContext forms()
       {
-         DraftsQueries draftsQueries = context.get( DraftsQueries.class );
-
-         LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
-
-         linksBuilder.addDescribables( draftsQueries.drafts().newQuery( module.unitOfWorkFactory().currentUnitOfWork() ));
-
-         return linksBuilder.newLinks();
-      }
-
-      public void createcase( StringValue description )
-      {
-         Drafts drafts = context.get( Drafts.class );
-         AccessPoint.Data data = context.get( AccessPoint.Data.class );
-         Labelable.Data labelsData = context.get( Labelable.Data.class );
-         AnonymousEndUser creator = context.get( AnonymousEndUser.class );
-         CaseEntity caseEntity = drafts.createDraft();
-         caseEntity.changeDescription( description.string().get() );
-         caseEntity.changeCaseType( data.caseType().get() );
-         caseEntity.createdBy().set( creator );
-
-         for (Label label : labelsData.labels())
-         {
-            caseEntity.addLabel( label );
-         }
-      }
-
-      public CaseContext context( String id)
-      {
-         CaseEntity caseEntity = module.unitOfWorkFactory().currentUnitOfWork().get( CaseEntity.class, id );
-
-         context.set( caseEntity );
-         return subContext( CaseContext.class );
+         return subContext( FormDraftsContext.class );
       }
    }
 }

@@ -239,7 +239,6 @@ public class InteractionsAssembler
             se.streamsource.streamflow.web.context.surface.administration.organizations.projects.CaseTypesContext.class,
             se.streamsource.streamflow.web.context.surface.administration.organizations.projects.LabelsContext.class,
             se.streamsource.streamflow.web.context.surface.administration.organizations.OrganizationsContext.class,
-            se.streamsource.streamflow.web.context.surface.accesspoints.endusers.CaseContext.class,
             EndUserContext.class,
             EndUsersContext.class,
             SubmittedFormsContext.class,

@@ -15,18 +15,24 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.domain.structure.user;
+package se.streamsource.streamflow.domain.form;
 
-import se.streamsource.streamflow.domain.structure.Describable;
-import se.streamsource.streamflow.domain.structure.Removable;
-import se.streamsource.streamflow.web.domain.entity.gtd.Drafts;
-import se.streamsource.streamflow.web.domain.structure.created.Creator;
-import se.streamsource.streamflow.web.domain.structure.form.FormSubmissions;
-import se.streamsource.streamflow.web.domain.structure.form.Submitter;
+import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueComposite;
+
+import java.util.List;
 
 /**
+ * JAVADOC
  */
-public interface AnonymousEndUser
-   extends Drafts, Submitter, Creator, Removable, Describable
+public interface EndUserFormDraftValue
+      extends ValueComposite
 {
+   Property<EntityReference> form();
+
+   Property<EntityReference> enduser();
+
+   Property<EntityReference> formsubmission();
 }
