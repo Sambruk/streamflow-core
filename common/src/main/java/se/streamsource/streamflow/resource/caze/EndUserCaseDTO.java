@@ -28,7 +28,7 @@ import java.util.List;
 /**
  * General information about a case
  */
-public interface ProxyUserCaseDTO
+public interface EndUserCaseDTO
       extends ValueComposite
 {
    Property<String> project();

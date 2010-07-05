@@ -29,6 +29,7 @@ import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.EndU
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.label.Labelable;
 import se.streamsource.streamflow.web.domain.structure.organization.AccessPoint;
+import se.streamsource.streamflow.web.domain.structure.organization.AccessPointSettings;
 
 /**
  * JAVADOC
@@ -50,7 +51,7 @@ public interface AccessPointContext
          ValueBuilder<StringValue> builder = module.valueBuilderFactory().newValueBuilder( StringValue.class );
          StringBuilder sb = new StringBuilder();
          AccessPoint accessPoint = context.get( AccessPoint.class );
-         AccessPoint.Data data = context.get( AccessPoint.Data.class );
+         AccessPointSettings.Data data = context.get( AccessPointSettings.Data.class );
          Labelable.Data labelsData = context.get( Labelable.Data.class );
          sb.append( accessPoint.getDescription() ).append( "(" ).append( EntityReference.getEntityReference( accessPoint ) ).append( ")" );
          sb.append( ": Project=" );

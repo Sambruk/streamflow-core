@@ -41,7 +41,7 @@ import se.streamsource.streamflow.resource.caze.ContactsDTO;
 import se.streamsource.streamflow.resource.caze.EffectiveFieldDTO;
 import se.streamsource.streamflow.resource.caze.EffectiveFieldsDTO;
 import se.streamsource.streamflow.resource.caze.FieldDTO;
-import se.streamsource.streamflow.resource.caze.ProxyUserCaseDTO;
+import se.streamsource.streamflow.resource.caze.EndUserCaseDTO;
 import se.streamsource.streamflow.resource.caze.SubmittedFormDTO;
 import se.streamsource.streamflow.resource.caze.SubmittedFormListDTO;
 import se.streamsource.streamflow.resource.caze.SubmittedFormsListDTO;
@@ -107,7 +107,7 @@ public class CommonResourceAssembler
             CaseValue.class,
             CaseGeneralDTO.class,
             ContactsDTO.class,
-            ProxyUserCaseDTO.class,
+            EndUserCaseDTO.class,
             CommentsDTO.class,
             CommentDTO.class,
             ConversationDTO.class,

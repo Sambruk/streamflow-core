@@ -17,78 +17,17 @@
 
 package se.streamsource.streamflow.web.domain.structure.organization;
 
-import org.qi4j.api.common.Optional;
-import org.qi4j.api.entity.association.Association;
-import org.qi4j.api.mixin.Mixins;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.domain.structure.Removable;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
-import se.streamsource.streamflow.web.domain.structure.form.EndUserFormSubmissions;
-import se.streamsource.streamflow.web.domain.structure.form.FormSubmissions;
+import se.streamsource.streamflow.web.domain.structure.form.EndUserCases;
 import se.streamsource.streamflow.web.domain.structure.form.SelectedForms;
 import se.streamsource.streamflow.web.domain.structure.label.Labelable;
-import se.streamsource.streamflow.web.domain.structure.project.Project;
 
 /**
  * JAVADOC
  */
-@Mixins(AccessPoint.Mixin.class)
 public interface AccessPoint
       extends
-      Labelable, Describable, Removable, SelectedForms, EndUserFormSubmissions
+      Labelable, Describable, Removable, SelectedForms, EndUserCases, AccessPointSettings
 {
-   void addProject( Project project );
-   void addCaseType( CaseType caseType );
-   void removeCaseType();
-
-   interface Data
-   {
-      @Optional
-      Association<Project> project();
-
-      @Optional
-      Association<CaseType> caseType();
-
-      void addedProject( DomainEvent event, Project project );
-      void addedCaseType( DomainEvent event, CaseType caseType );
-      void removedCaseType( DomainEvent event, CaseType caseType );
-   }
-
-   abstract class Mixin
-      implements AccessPoint, Data
-   {
-      public void addProject( Project project )
-      {
-         addedProject( DomainEvent.CREATE, project );
-      }
-
-      public void addedProject( DomainEvent event, Project project )
-      {
-         project().set( project );
-      }
-
-      public void addCaseType( CaseType caseType )
-      {
-         addedCaseType( DomainEvent.CREATE, caseType );
-      }
-
-      public void addedCaseType( DomainEvent event, CaseType caseType )
-      {
-         caseType().set( caseType );
-      }
-
-      public void removeCaseType()
-      {
-         if( caseType().get() != null )
-         {
-            removedCaseType( DomainEvent.CREATE, caseType().get() );
-         }
-      }
-
-      public void removedCaseType( DomainEvent event, CaseType caseType )
-      {
-         caseType().set( null );
-      }
-   }
 }

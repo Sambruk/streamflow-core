@@ -44,6 +44,7 @@ import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.label.Labelable;
 import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
 import se.streamsource.streamflow.web.domain.structure.organization.AccessPoint;
+import se.streamsource.streamflow.web.domain.structure.organization.AccessPointSettings;
 import se.streamsource.streamflow.web.domain.structure.organization.AccessPoints;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnits;
 import se.streamsource.streamflow.web.domain.structure.organization.Projects;
@@ -88,7 +89,7 @@ public interface AccessPointContext
          ValueBuilder<AccessPointValue> builder = module.valueBuilderFactory().newValueBuilder( AccessPointValue.class );
 
          AccessPoint accessPoint = context.get( AccessPoint.class );
-         AccessPoint.Data accessPointData = context.get( AccessPoint.Data.class );
+         AccessPointSettings.Data accessPointData = context.get( AccessPointSettings.Data.class );
          SelectedForms.Data forms = context.get( SelectedForms.Data.class );
          Labelable.Data labelsData = context.get( Labelable.Data.class );
 
@@ -165,7 +166,7 @@ public interface AccessPointContext
 
       public LinksValue possiblecasetypes()
       {
-         AccessPoint.Data accessPoint = context.get( AccessPoint.Data.class );
+         AccessPointSettings.Data accessPoint = context.get( AccessPointSettings.Data.class );
          Project project = accessPoint.project().get();
 
          LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() );
@@ -183,7 +184,7 @@ public interface AccessPointContext
 
          Project project = module.unitOfWorkFactory().currentUnitOfWork().get( Project.class, id.string().get() );
 
-         accessPoint.addProject( project );
+         accessPoint.setProject( project );
       }
 
       public void setcasetype( StringValue id )
@@ -192,12 +193,12 @@ public interface AccessPointContext
 
          CaseType caseType = module.unitOfWorkFactory().currentUnitOfWork().get( CaseType.class, id.string().get() );
 
-         accessPoint.addCaseType( caseType );
+         accessPoint.setCaseType( caseType );
       }
 
       public LinksValue possiblelabels()
       {
-         AccessPoint.Data accessPoint = context.get( AccessPoint.Data.class );
+         AccessPointSettings.Data accessPoint = context.get( AccessPointSettings.Data.class );
          Labelable.Data labelsData = context.get( Labelable.Data.class );
          Project project = accessPoint.project().get();
          CaseType caseType = accessPoint.caseType().get();
@@ -229,7 +230,7 @@ public interface AccessPointContext
 
       public LinksValue possibleforms()
       {
-         AccessPoint.Data accessPoint = context.get( AccessPoint.Data.class );
+         AccessPointSettings.Data accessPoint = context.get( AccessPointSettings.Data.class );
          SelectedForms.Data selected = context.get( SelectedForms.Data.class );
          CaseType caseType = accessPoint.caseType().get();
 

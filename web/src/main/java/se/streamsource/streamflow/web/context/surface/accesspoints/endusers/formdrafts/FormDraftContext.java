@@ -68,7 +68,8 @@ public interface FormDraftContext
    @HasNextPage(false)
    SummaryContext summary();
 
-   void discard();
+   // parameter only neede to make the command work
+   void discard( IntegerDTO dummy );
 
    abstract class Mixin
       extends InteractionsMixin
@@ -221,9 +222,9 @@ public interface FormDraftContext
          return subContext( SummaryContext.class );
       }
 
-      public void discard()
+      public void discard( IntegerDTO dummy )
       {
-         // delete formSubmission
+         // todo
       }
    }
 }

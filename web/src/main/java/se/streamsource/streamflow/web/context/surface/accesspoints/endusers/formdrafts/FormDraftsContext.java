@@ -24,13 +24,9 @@ import se.streamsource.dci.api.Interactions;
 import se.streamsource.dci.api.InteractionsMixin;
 import se.streamsource.dci.api.SubContexts;
 import se.streamsource.dci.value.LinksValue;
-import se.streamsource.streamflow.domain.form.EndUserFormDraftValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.web.domain.structure.form.EndUserFormSubmissions;
-import se.streamsource.streamflow.web.domain.structure.form.Form;
 import se.streamsource.streamflow.web.domain.structure.form.FormSubmission;
-import se.streamsource.streamflow.web.domain.structure.form.SelectedForms;
-import se.streamsource.streamflow.web.domain.structure.user.AnonymousEndUser;
+import se.streamsource.streamflow.web.domain.structure.form.FormSubmissions;
 
 /**
  * JAVADOC
@@ -48,32 +44,31 @@ public interface FormDraftsContext
 
       public LinksValue index()
       {
-         SelectedForms.Data forms = context.get( SelectedForms.Data.class );
+         FormSubmissions.Data data = context.get( FormSubmissions.Data.class );
+
          LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() );
-         for (Form form : forms.selectedForms())
+         for (FormSubmission form : data.formSubmissions())
          {
-            builder.addLink( form.getDescription(), EntityReference.getEntityReference( form ));
+            builder.addLink( form.getFormSubmission().description().get(), EntityReference.getEntityReference( form ));
          }
          return builder.newLinks();
       }
 
       public FormDraftContext context( String id )
       {
-         EndUserFormSubmissions formSubmissions = context.get( EndUserFormSubmissions.class );
-         AnonymousEndUser endUser = context.get( AnonymousEndUser.class );
-         Form form = module.unitOfWorkFactory().currentUnitOfWork().get( Form.class, id );
+         FormSubmissions.Data data = context.get( FormSubmissions.Data.class );
 
-         EndUserFormDraftValue formDraftValue = formSubmissions.getFormDraft( form, endUser );
-         if ( formDraftValue == null )
+         for (FormSubmission formSubmission : data.formSubmissions())
          {
-            formDraftValue = formSubmissions.createFormDraft( form, endUser );
+            EntityReference entityReference = EntityReference.getEntityReference( formSubmission );
+            if ( entityReference.identity().equals( id ))
+            {
+               context.set( formSubmission );
+               context.set( formSubmission.getFormSubmission() );
+               return subContext( FormDraftContext.class );
+            }
          }
-
-         FormSubmission formSubmission = module.unitOfWorkFactory().currentUnitOfWork().get( FormSubmission.class, formDraftValue.formsubmission().get().identity() );
-         context.set( form );
-         context.set( formSubmission );
-         context.set( formSubmission.getFormSubmission() );
-         return subContext( FormDraftContext.class );
+         return null;
       }
    }
 }

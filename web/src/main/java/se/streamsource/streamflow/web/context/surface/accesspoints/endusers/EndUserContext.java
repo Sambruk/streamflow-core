@@ -18,29 +18,61 @@
 package se.streamsource.streamflow.web.context.surface.accesspoints.endusers;
 
 import org.qi4j.api.mixin.Mixins;
+import se.streamsource.dci.api.IndexInteraction;
 import se.streamsource.dci.api.Interactions;
 import se.streamsource.dci.api.InteractionsMixin;
-import se.streamsource.dci.api.SubContext;
-import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.formdrafts.FormDraftsContext;
+import se.streamsource.dci.api.SubContexts;
+import se.streamsource.dci.value.LinksValue;
+import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
+import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
+import se.streamsource.streamflow.web.domain.entity.gtd.DraftsQueries;
+import se.streamsource.streamflow.web.domain.structure.form.EndUserCases;
+import se.streamsource.streamflow.web.domain.structure.user.AnonymousEndUser;
 
 /**
  * JAVADOC
  */
 @Mixins(EndUserContext.Mixin.class)
 public interface EndUserContext
-   extends Interactions
+      extends SubContexts<CaseContext>, Interactions, IndexInteraction<LinksValue>
 {
-   @SubContext
-   FormDraftsContext forms();
+   // command
+   void createcase( );
+
+   void createcasewithform( );
 
    abstract class Mixin
       extends InteractionsMixin
       implements EndUserContext
    {
 
-      public FormDraftsContext forms()
+      public LinksValue index()
       {
-         return subContext( FormDraftsContext.class );
+         DraftsQueries draftsQueries = context.get( DraftsQueries.class );
+         LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
+         linksBuilder.addDescribables( draftsQueries.drafts().newQuery( module.unitOfWorkFactory().currentUnitOfWork() ));
+         return linksBuilder.newLinks();
+      }
+
+      public void createcase( )
+      {
+         AnonymousEndUser endUser = context.get( AnonymousEndUser.class );
+         EndUserCases endUserCases = context.get( EndUserCases.class );
+         endUserCases.createCase( endUser );
+      }
+
+      public void createcasewithform()
+      {
+         AnonymousEndUser endUser = context.get( AnonymousEndUser.class );
+         EndUserCases endUserCases = context.get( EndUserCases.class );
+         endUserCases.createCaseWithForm( endUser );
+      }
+
+      public CaseContext context( String id)
+      {
+         CaseEntity caseEntity = module.unitOfWorkFactory().currentUnitOfWork().get( CaseEntity.class, id );
+         context.set( caseEntity );
+         return subContext( CaseContext.class );
       }
    }
 }

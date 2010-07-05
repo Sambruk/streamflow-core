@@ -25,11 +25,12 @@ import se.streamsource.streamflow.domain.structure.Removable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.IdGenerator;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
-import se.streamsource.streamflow.web.domain.structure.form.EndUserFormSubmissions;
+import se.streamsource.streamflow.web.domain.structure.form.EndUserCases;
 import se.streamsource.streamflow.web.domain.structure.form.SelectedForms;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.label.Labelable;
 import se.streamsource.streamflow.web.domain.structure.organization.AccessPoint;
+import se.streamsource.streamflow.web.domain.structure.organization.AccessPointSettings;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 
 import java.util.List;
@@ -50,10 +51,9 @@ public interface AccessPointEntity
       // Data
       Describable.Data,
       IdGenerator.Data,
-      AccessPoint.Data,
+      AccessPointSettings.Data,
       Labelable.Data,
       SelectedForms.Data,
-      EndUserFormSubmissions.Data,
       Removable.Data
 {
    abstract class AddProjectConcern
@@ -61,9 +61,9 @@ public interface AccessPointEntity
       implements AccessPoint
    {
 
-      public void addProject( Project project )
+      public void setProject( Project project )
       {
-         next.addProject( project );
+         next.setProject( project );
          removeCaseType( );
 
       }
@@ -76,9 +76,9 @@ public interface AccessPointEntity
       @This
       Labelable.Data labels;
 
-      public void addCaseType( CaseType caseType )
+      public void setCaseType( CaseType caseType )
       {
-         next.addCaseType( caseType );
+         next.setCaseType( caseType );
          List<Label> labelList = labels.labels().toList();
          for( Label label : labelList )
          {

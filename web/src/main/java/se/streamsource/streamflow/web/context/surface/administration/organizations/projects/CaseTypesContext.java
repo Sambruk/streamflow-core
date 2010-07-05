@@ -62,7 +62,7 @@ public interface CaseTypesContext
 
          context.set( caseType );
 
-         accessPoint.addCaseType( caseType );
+         accessPoint.setCaseType( caseType );
 
          return subContext( LabelsContext.class);
       }

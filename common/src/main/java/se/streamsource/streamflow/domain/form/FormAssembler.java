@@ -36,7 +36,6 @@ public class FormAssembler
             SubmittedFieldValue.class,
             FormValue.class,
             FormSubmissionValue.class,
-            EndUserFormDraftValue.class,
             FieldValue.class,
             FieldValueDTO.class,
             DateFieldValue.class,

@@ -108,8 +108,8 @@ public interface
       public AccessPoint createdAccessPoint( DomainEvent event, String id, Project project, CaseType caseType, @Optional List<Label> labels )
       {
          EntityBuilder<AccessPoint> entityBuilder = uowf.currentUnitOfWork().newEntityBuilder( AccessPoint.class, id );
-         entityBuilder.instance().addProject( project );
-         entityBuilder.instance().addCaseType( caseType );
+         entityBuilder.instance().setProject( project );
+         entityBuilder.instance().setCaseType( caseType );
          for (Label label : labels)
          {
             entityBuilder.instance().addLabel( label );

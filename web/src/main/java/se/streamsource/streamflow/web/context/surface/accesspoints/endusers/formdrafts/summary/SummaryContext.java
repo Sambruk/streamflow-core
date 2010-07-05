@@ -24,8 +24,8 @@ import se.streamsource.dci.api.Interactions;
 import se.streamsource.dci.api.InteractionsMixin;
 import se.streamsource.streamflow.domain.form.FormSubmissionValue;
 import se.streamsource.streamflow.resource.roles.IntegerDTO;
-import se.streamsource.streamflow.web.domain.structure.form.EndUserFormSubmissions;
-import se.streamsource.streamflow.web.domain.structure.form.Form;
+import se.streamsource.streamflow.web.domain.structure.caze.Case;
+import se.streamsource.streamflow.web.domain.structure.form.EndUserCases;
 import se.streamsource.streamflow.web.domain.structure.form.FormSubmission;
 import se.streamsource.streamflow.web.domain.structure.user.AnonymousEndUser;
 
@@ -38,6 +38,8 @@ public interface SummaryContext
 {
 
    void submit();
+   
+   void submitandsend();
 
    void gotopage( IntegerDTO page );
 
@@ -52,11 +54,22 @@ public interface SummaryContext
 
       public void submit()
       {
-         EndUserFormSubmissions submittedForms = context.get( EndUserFormSubmissions.class );
+         EndUserCases userCases = context.get( EndUserCases.class );
          AnonymousEndUser user = context.get( AnonymousEndUser.class );
-         Form form = context.get( Form.class );
+         FormSubmission formSubmission = context.get( FormSubmission.class );
+         Case aCase = context.get( Case.class );
 
-         submittedForms.submitForm( form , user );
+         userCases.submitForm( aCase, formSubmission , user );
+      }
+
+      public void submitandsend()
+      {
+         EndUserCases userCases = context.get( EndUserCases.class );
+         AnonymousEndUser user = context.get( AnonymousEndUser.class );
+         FormSubmission formSubmission = context.get( FormSubmission.class );
+         Case aCase = context.get( Case.class );
+
+         userCases.submitFormAndSendCase( aCase, formSubmission, user );
       }
 
       public void gotopage( IntegerDTO page)
