@@ -97,6 +97,10 @@ public interface SearchCaseQueries
                         count++;
                      }
                      queryBuilder.append( ")" );
+                  } else
+                  {
+                     // dismiss search - no label/s with given name exist. Return empty search
+                     return module.queryBuilderFactory().newQueryBuilder( Case.class ).newQuery( Collections.<Case>emptyList() );
                   }
                } else if (search.hasName( "caseType" ))
                {
@@ -123,6 +127,11 @@ public interface SearchCaseQueries
                         count++;
                      }
                      queryBuilder.append( ")" );
+                  } else
+                  {
+                     // dismiss search - no case type/s for given name exists. Return empty search
+                     return module.queryBuilderFactory().newQueryBuilder( Case.class ).newQuery( Collections.<Case>emptyList() );
+
                   }
                } else if (search.hasName( "project" ))
                {
@@ -149,6 +158,10 @@ public interface SearchCaseQueries
                         count++;
                      }
                      queryBuilder.append( ")" );
+                  } else
+                  {
+                     // dismiss search - no project/s for given name exists. Return empty search
+                     return module.queryBuilderFactory().newQueryBuilder( Case.class ).newQuery( Collections.<Case>emptyList() );
                   }
                } else if (search.hasName( "description", "note", "name", "contactId", "phoneNumber", "emailAddress" ))
                {
