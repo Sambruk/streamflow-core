@@ -25,7 +25,8 @@ import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * JAVADOC
@@ -37,6 +38,8 @@ public interface IndividualRepositoryService
    class Mixin
          implements IndividualRepository, Activatable
    {
+      final Logger logger = LoggerFactory.getLogger( IndividualRepository.class.getName() );
+
       @Structure
       UnitOfWorkFactory uowf;
 
@@ -59,7 +62,7 @@ public interface IndividualRepositoryService
             // Create Individual
             uow.newEntity( Individual.class, "1" );
 
-            Logger.getLogger( IndividualRepository.class.getName() ).info( "Created invidual" );
+            logger.info( "Created invidual" );
          }
 
          uow.complete();

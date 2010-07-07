@@ -18,13 +18,15 @@
 package se.streamsource.streamflow.client.ui.workspace;
 
 import org.qi4j.api.injection.scope.Uses;
+import se.streamsource.streamflow.client.LoggerCategories;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
 import se.streamsource.streamflow.infrastructure.event.source.helper.EventVisitorFilter;
 
 import javax.swing.tree.DefaultTreeModel;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * JAVADOC
@@ -33,6 +35,8 @@ public class WorkspaceModel
       extends DefaultTreeModel
       implements EventListener, EventVisitor
 {
+   final Logger logger = LoggerFactory.getLogger( LoggerCategories.WORKSPACE );
+
    public EventVisitorFilter eventHandlerFilter;
    private SavedSearchesModel savedSearches;
 
@@ -70,7 +74,7 @@ public class WorkspaceModel
       {
          return true;
       }
-      Logger.getLogger( "workspace" ).info( "Refresh project list" );
+      logger.info( "Refresh project list" );
       getRoot().getProjectsNode().refresh();
       reload( getRoot().getProjectsNode() );
 

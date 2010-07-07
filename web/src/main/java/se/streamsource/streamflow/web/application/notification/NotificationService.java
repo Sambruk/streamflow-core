@@ -44,8 +44,8 @@ import se.streamsource.streamflow.web.application.mail.MailService;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.interaction.profile.MessageRecipient;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Send and receive notifications. This service
@@ -59,6 +59,7 @@ public interface NotificationService
    class Mixin
          implements TransactionVisitor, Activatable
    {
+      final Logger logger = LoggerFactory.getLogger( NotificationService.class.getName() );
       @Structure
       Qi4j api;
 
@@ -77,8 +78,6 @@ public interface NotificationService
       @This
       Configuration<NotificationConfiguration> config;
 
-      public Logger logger;
-
       private EventSpecification userNotificationFilter;
 
       private Usecase usecase = UsecaseBuilder.newUsecase( "Notify" );
@@ -88,8 +87,6 @@ public interface NotificationService
 
       public void activate() throws Exception
       {
-         logger = Logger.getLogger( NotificationService.class.getName() );
-
          logger.info( "Starting ..." );
 
          userNotificationFilter = new EventQuery().withNames( "receivedMessage" );
@@ -126,7 +123,7 @@ public interface NotificationService
                         }
                      } catch (Exception e)
                      {
-                        logger.log( Level.SEVERE, "Could not send notification", e );
+                        logger.error( "Could not send notification", e );
 
                         return false;
                      } finally

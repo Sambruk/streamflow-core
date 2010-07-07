@@ -21,7 +21,8 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.ServiceComposite;
 import se.streamsource.streamflow.client.LoggerCategories;
 
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Helper service for setting status in the statusbar. The possible
@@ -37,9 +38,10 @@ public interface StatusService
    abstract class Mixin
          implements StatusService
    {
+      final Logger logger = LoggerFactory.getLogger( LoggerCategories.STATUS );
       public void status( StatusResources status )
       {
-         Logger.getLogger( LoggerCategories.STATUS ).info( status.name() );
+         logger.info( status.name() );
       }
    }
 }

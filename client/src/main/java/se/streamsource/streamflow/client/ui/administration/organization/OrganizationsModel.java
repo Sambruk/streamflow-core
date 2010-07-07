@@ -36,11 +36,13 @@ import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
 import se.streamsource.streamflow.infrastructure.event.source.helper.EventVisitorFilter;
 
 import java.util.List;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class OrganizationsModel
       implements EventListener, EventVisitor
 {
+   final Logger logger = LoggerFactory.getLogger( "administration" );
    @Structure
    ObjectBuilderFactory obf;
 
@@ -102,7 +104,7 @@ public class OrganizationsModel
 
    public boolean visit( DomainEvent event )
    {
-      Logger.getLogger( "administration" ).info( "Refresh organizations" );
+      logger.info( "Refresh organizations" );
       refresh();
       return false;
    }

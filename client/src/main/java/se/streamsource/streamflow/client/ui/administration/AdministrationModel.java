@@ -30,7 +30,8 @@ import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
 import se.streamsource.streamflow.infrastructure.event.source.helper.EventVisitorFilter;
 
 import javax.swing.tree.DefaultTreeModel;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * JAVADOC
@@ -39,6 +40,8 @@ public class AdministrationModel
       extends DefaultTreeModel
       implements Refreshable, EventListener, EventVisitor
 {
+   final Logger logger = LoggerFactory.getLogger( "administration" );
+
    @Structure
    ObjectBuilderFactory obf;
 
@@ -105,7 +108,7 @@ public class AdministrationModel
 
    public boolean visit( DomainEvent event )
    {
-      Logger.getLogger( "administration" ).info( "Refresh organizational overview" );
+      logger.info( "Refresh organizational overview" );
       getRoot().refresh();
       reload( getRoot() );
 

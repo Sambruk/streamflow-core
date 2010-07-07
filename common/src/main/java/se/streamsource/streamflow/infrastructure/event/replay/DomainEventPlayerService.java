@@ -42,7 +42,8 @@ import java.lang.reflect.Method;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * DomainEvent player
@@ -54,6 +55,7 @@ public interface DomainEventPlayerService
    class DomainEventPlayerMixin
          implements DomainEventPlayer
    {
+      final Logger logger = LoggerFactory.getLogger( DomainEventPlayer.class.getName() );
       @Structure
       UnitOfWorkFactory uowf;
 
@@ -106,7 +108,7 @@ public interface DomainEventPlayerService
 
                      if (eventMethod == null)
                      {
-                        Logger.getLogger( DomainEventPlayer.class.getName() ).warning( "Could not find event method " + domainEvent.name().get() + " in entity of type " + entityType.getName() );
+                        logger.warn( "Could not find event method " + domainEvent.name().get() + " in entity of type " + entityType.getName() );
                         continue;
                      }
 
@@ -128,7 +130,7 @@ public interface DomainEventPlayerService
                      args[0] = domainEvent;
 
                      // Invoke method
-                     Logger.getLogger( DomainEventPlayer.class.getName() ).info( "Replay:" + domainEvent );
+                     logger.info( "Replay:" + domainEvent );
 
                      eventMethod.invoke( entity, args );
                   }

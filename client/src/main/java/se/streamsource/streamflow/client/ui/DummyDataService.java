@@ -37,7 +37,8 @@ import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
 import se.streamsource.streamflow.client.domain.individual.Individual;
 import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
 
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * JAVADOC
@@ -49,6 +50,8 @@ public interface DummyDataService
    class Mixin
          implements Activatable
    {
+      final Logger logger = LoggerFactory.getLogger( getClass().getName() );
+
       @Structure
       UnitOfWorkFactory uowf;
 
@@ -102,7 +105,7 @@ public interface DummyDataService
 
          } catch (Exception e)
          {
-            Logger.getLogger( getClass().getName() ).warning( "Could not create dummy account" );
+            logger.warn( "Could not create dummy account" );
             e.printStackTrace();
          }
       }

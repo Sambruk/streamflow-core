@@ -23,7 +23,8 @@ import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.index.reindexer.Reindexer;
 
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Reindexer. If the system property "reindex" is set, then
@@ -38,11 +39,11 @@ public interface ReindexOnStartupService
    {
       @Service
       Reindexer reindexer;
-      public Logger logger;
+
+      final Logger logger = LoggerFactory.getLogger( ReindexOnStartupService.class.getName() );
 
       public void activate() throws Exception
       {
-         logger = Logger.getLogger( ReindexOnStartupService.class.getName() );
          if (System.getProperty( "reindex" ) != null)
          {
             logger.info( "Reindex started" );

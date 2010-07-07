@@ -20,7 +20,6 @@ package se.streamsource.streamflow.client.ui.workspace;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.FrameView;
 import org.jdesktop.swingx.JXFrame;
-import org.jdesktop.swingx.JXStatusBar;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
@@ -30,9 +29,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.AccountSelector;
 import se.streamsource.streamflow.client.ui.administration.AccountModel;
 import se.streamsource.streamflow.client.ui.menu.WorkspaceMenuBar;
-import se.streamsource.streamflow.client.ui.status.StatusBarView;
 
-import javax.swing.JPanel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.CardLayout;

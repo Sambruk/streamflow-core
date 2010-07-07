@@ -38,7 +38,8 @@ import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
 import se.streamsource.streamflow.infrastructure.event.source.helper.EventVisitorFilter;
 
 import java.util.Observable;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * JAVADOC
@@ -48,6 +49,7 @@ public class FormModel
       implements Refreshable, EventListener, EventVisitor
 
 {
+   final Logger logger = LoggerFactory.getLogger( "administration" );
    @Structure
    ObjectBuilderFactory obf;
 
@@ -125,7 +127,7 @@ public class FormModel
          {
             getFieldsModel().refresh();
          }
-         Logger.getLogger( "administration" ).info( "Refresh the note" );
+         logger.info( "Refresh the note" );
          refresh();
       }
       return false;

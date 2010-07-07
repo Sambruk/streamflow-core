@@ -43,7 +43,8 @@ import se.streamsource.streamflow.resource.user.UserEntityDTO;
 import javax.swing.table.AbstractTableModel;
 import java.io.File;
 import java.util.List;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 
@@ -51,6 +52,8 @@ public class ProxyUsersModel
       extends AbstractTableModel
       implements EventListener, EventVisitor
 {
+   final Logger logger = LoggerFactory.getLogger( "administration" );
+
    @Structure
    ValueBuilderFactory vbf;
 
@@ -179,7 +182,7 @@ public class ProxyUsersModel
 
    public boolean visit( DomainEvent event )
    {
-      Logger.getLogger( "administration" ).info( "Refresh proxy users" );
+      logger.info( "Refresh proxy users" );
       refresh();
 
       return false;

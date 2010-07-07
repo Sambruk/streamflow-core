@@ -35,7 +35,8 @@ import org.qi4j.spi.entity.EntityState;
 import org.qi4j.spi.entitystore.EntityStore;
 import org.qi4j.spi.structure.ModuleSPI;
 
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Perform migration of all data in the EntityStore
@@ -47,6 +48,7 @@ public interface StartupMigrationService
    class Mixin
          implements Activatable
    {
+      final Logger logger = LoggerFactory.getLogger( StartupMigrationService.class.getName() );
       @This
       Configuration<StartupMigrationConfiguration> config;
 
@@ -61,7 +63,6 @@ public interface StartupMigrationService
 
       @Structure
       ModuleSPI module;
-      public Logger logger;
 
       public void activate() throws Exception
       {
@@ -70,7 +71,6 @@ public interface StartupMigrationService
          if (lsv != null && !lsv.equals( application.version() ))
          {
             // Migrate all data eagerly
-            logger = Logger.getLogger( StartupMigrationService.class.getName() );
             logger.info( "Migrating data to new version" );
             final Usecase usecase = UsecaseBuilder.newUsecase( "Migrate data" );
             final UnitOfWork[] uow = new UnitOfWork[]{uowf.newUnitOfWork( usecase )};

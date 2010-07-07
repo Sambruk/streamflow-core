@@ -38,14 +38,16 @@ import org.qi4j.spi.entity.EntityState;
 import org.qi4j.spi.entitystore.EntityStore;
 import org.qi4j.spi.query.EntityFinder;
 import org.qi4j.spi.structure.ModuleSPI;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
 import se.streamsource.streamflow.infrastructure.event.DomainEventFactory;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.replay.DomainEventPlayer;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
-import se.streamsource.streamflow.infrastructure.event.source.helper.OnEvents;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
+import se.streamsource.streamflow.infrastructure.event.source.helper.OnEvents;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
 import se.streamsource.streamflow.web.infrastructure.event.EventManagement;
 import se.streamsource.streamflow.web.infrastructure.index.EmbeddedSolrService;
@@ -67,8 +69,6 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -95,6 +95,8 @@ public interface ManagerComposite
    abstract class ManagerMixin
          implements ManagerComposite
    {
+      final Logger logger = LoggerFactory.getLogger( Manager.class.getName() );
+
       private static final long ONE_DAY = 1000 * 3600 * 24;
 //        private static final long ONE_DAY = 1000 * 60*10; // Ten minutes
 
@@ -355,7 +357,7 @@ public interface ManagerComposite
             return "Backup restored successfully";
          } catch (Exception ex)
          {
-            Logger.getLogger( Manager.class.getName() ).log( Level.SEVERE, "Backup restore failed:", ex );
+            logger.error( "Backup restore failed:", ex );
             return "Backup restore failed:" + ex.getMessage();
          }
       }

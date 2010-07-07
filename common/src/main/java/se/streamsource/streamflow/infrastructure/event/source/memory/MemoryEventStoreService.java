@@ -41,7 +41,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeMap;
-import java.util.logging.Level;
 
 /**
  * In-Memory EventStore. Mainly used for testing.
@@ -91,7 +90,7 @@ public interface MemoryEventStoreService
             }
          } catch (JSONException e)
          {
-            logger.log( Level.WARNING, "Could not deserialize events", e );
+            logger.warn( "Could not de-serialize events", e );
          } finally
          {
             lock.unlock();
@@ -127,7 +126,7 @@ public interface MemoryEventStoreService
             }
          } catch (JSONException e)
          {
-            logger.log( Level.WARNING, "Could not deserialize events", e );
+            logger.warn( "Could not de-serialize events", e );
          } finally
          {
             lock.unlock();

@@ -22,7 +22,8 @@ import javax.help.HelpBroker;
 import javax.help.HelpSet;
 import java.awt.Component;
 import java.net.URL;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class JavaHelp
@@ -31,6 +32,7 @@ public class JavaHelp
 
    public JavaHelp()
    {
+      final Logger logger = LoggerFactory.getLogger( getClass().getName() );
       // Help system
       String helpHS = "helpset.hs";
       ClassLoader cl = getClass().getClassLoader();
@@ -47,7 +49,7 @@ public class JavaHelp
       } catch (Exception ee)
       {
          // Say what the exception really is
-         Logger.getLogger( getClass().getName() ).warning( "HelpSet " + helpHS + " not found: " + ee.getMessage() );
+         logger.warn( "HelpSet " + helpHS + " not found: " + ee.getMessage() );
       }
    }
 

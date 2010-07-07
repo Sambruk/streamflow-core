@@ -37,7 +37,8 @@ import se.streamsource.streamflow.web.domain.structure.organization.Organization
 import se.streamsource.streamflow.web.domain.structure.role.PermissionsEnum;
 import se.streamsource.streamflow.web.domain.structure.role.Role;
 
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Ensure that the most basic entities are always created. This includes:
@@ -54,6 +55,7 @@ public interface BootstrapDataService
    class Mixin
          implements Activatable
    {
+      final Logger logger = LoggerFactory.getLogger( getClass().getName() );
       @Structure
       UnitOfWorkFactory uowf;
 
@@ -144,7 +146,7 @@ public interface BootstrapDataService
 
          } catch (Exception e)
          {
-            Logger.getLogger( this.getClass().getName() ).warning( "BootstrapDataService failed to start!" );
+            logger.warn( "BootstrapDataService failed to start!" );
             e.printStackTrace();
             uow.discard();
          }

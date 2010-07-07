@@ -36,7 +36,8 @@ import se.streamsource.streamflow.resource.caze.SubmittedFormListDTO;
 import se.streamsource.streamflow.resource.caze.SubmittedFormsListDTO;
 import se.streamsource.streamflow.resource.roles.IntegerDTO;
 
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * List of contacts for a case
@@ -45,6 +46,7 @@ public class CaseSubmittedFormsModel
       implements Refreshable, EventListener, EventVisitor
 
 {
+   final Logger logger = LoggerFactory.getLogger( "workspace" );
    @Structure
    ObjectBuilderFactory obf;
 
@@ -92,7 +94,7 @@ public class CaseSubmittedFormsModel
    {
       if (client.getReference().getParentRef().getLastSegment().equals( event.entity().get() ))
       {
-         Logger.getLogger( "workspace" ).info( "Refresh submitted forms" );
+         logger.info( "Refresh submitted forms" );
          refresh();
       }
 

@@ -36,7 +36,8 @@ import se.streamsource.streamflow.web.assembler.StreamflowWebAssembler;
 import se.streamsource.streamflow.web.application.security.DefaultEnroler;
 import se.streamsource.streamflow.web.resource.APIv1Router;
 
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * JAVADOC
@@ -45,6 +46,8 @@ public class StreamflowRestApplication
       extends Application
 {
    public static final MediaType APPLICATION_SPARQL_JSON = new MediaType( "application/sparql-results+json", "SPARQL JSON" );
+
+   final Logger logger = LoggerFactory.getLogger( "streamflow" );
 
    @Structure
    ObjectBuilderFactory factory;
@@ -117,7 +120,7 @@ public class StreamflowRestApplication
       {
          super.stop();
 
-         Logger.getLogger( "streamflow" ).info( "Passivating Streamflow" );
+         logger.info( "Passivating Streamflow" );
          app.passivate();
       }
    }

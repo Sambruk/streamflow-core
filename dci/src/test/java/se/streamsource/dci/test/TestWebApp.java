@@ -17,15 +17,11 @@
 
 package se.streamsource.dci.test;
 
-import org.apache.log4j.Category;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.PatternLayout;
 import org.restlet.Component;
 import org.restlet.data.Protocol;
 import org.slf4j.bridge.SLF4JBridgeHandler;
-
-import java.util.logging.Handler;
-import java.util.logging.Logger;
 
 /**
  * JAVADOC

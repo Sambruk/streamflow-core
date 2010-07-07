@@ -33,7 +33,8 @@ import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
 import se.streamsource.streamflow.infrastructure.event.source.helper.EventVisitorFilter;
 
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * JAVADOC
@@ -41,6 +42,7 @@ import java.util.logging.Logger;
 public class PageEditModel
       implements Refreshable, EventListener, EventVisitor
 {
+   final Logger logger = LoggerFactory.getLogger( "administration" );
    @Uses
    private CommandQueryClient client;
 
@@ -84,7 +86,7 @@ public class PageEditModel
    {
       if (event.entity().get().equals( page.page().get().identity() ))
       {
-         Logger.getLogger( "adminitration" ).info( "Refresh page name" );
+         logger.info( "Refresh page name" );
          refresh();
       }
 

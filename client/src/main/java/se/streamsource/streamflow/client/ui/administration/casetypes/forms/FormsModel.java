@@ -40,7 +40,8 @@ import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
 import se.streamsource.streamflow.infrastructure.event.source.helper.EventVisitorFilter;
 
 import java.util.List;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * JAVADOC
@@ -49,6 +50,7 @@ public class FormsModel
       implements Refreshable, EventListener, EventVisitor
 
 {
+   final Logger logger = LoggerFactory.getLogger( "administration" );
    @Uses
    CommandQueryClient client;
 
@@ -128,7 +130,7 @@ public class FormsModel
 
    public boolean visit( DomainEvent event )
    {
-      Logger.getLogger( "administration" ).info( "Refresh project form definitions" );
+      logger.info( "Refresh project form definitions" );
       refresh();
       return false;
    }

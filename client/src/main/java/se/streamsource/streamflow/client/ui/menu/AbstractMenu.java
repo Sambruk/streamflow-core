@@ -27,7 +27,8 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JSeparator;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Base class for menus
@@ -35,6 +36,7 @@ import java.util.logging.Logger;
 public abstract class AbstractMenu
       extends JMenu
 {
+   final Logger logger = LoggerFactory.getLogger( "menu" );
    private ApplicationContext context;
 
    public void init( @Service ApplicationContext context )
@@ -66,7 +68,7 @@ public abstract class AbstractMenu
 
             if (menuItemAction == null)
             {
-               Logger.getLogger( "menu" ).warning( "Could not find menu action:" + actionName );
+               logger.warn( "Could not find menu action:" + actionName );
                continue;
             }
             JMenuItem item = menuItem.startsWith( "*" ) ? new JCheckBoxMenuItem() : new JMenuItem();

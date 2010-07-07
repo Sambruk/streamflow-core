@@ -28,4 +28,8 @@ public interface LoggerCategories
    String DONE = "done";
 
    String HTTP = "HTTP";
+
+   String WORKSPACE = "workspace";
+   String ADMIN = "administration";
+   String STREAMFLOW = "streamflow";
 }

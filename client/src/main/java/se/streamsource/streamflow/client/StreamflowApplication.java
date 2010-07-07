@@ -40,6 +40,8 @@ import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.data.Protocol;
 import org.restlet.routing.Filter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import se.streamsource.streamflow.client.assembler.StreamflowClientAssembler;
 import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
@@ -55,9 +57,9 @@ import se.streamsource.streamflow.client.ui.menu.AccountsModel;
 import se.streamsource.streamflow.client.ui.overview.OverviewWindow;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceWindow;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.source.helper.AllEventsSpecification;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
+import se.streamsource.streamflow.infrastructure.event.source.helper.AllEventsSpecification;
 import se.streamsource.streamflow.infrastructure.event.source.helper.ForEvents;
 
 import javax.swing.JComponent;
@@ -72,8 +74,6 @@ import java.awt.event.ActionEvent;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EventObject;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 
@@ -87,6 +87,12 @@ public class StreamflowApplication
       extends SingleFrameApplication
 {
    public static ValueType DOMAIN_EVENT_TYPE;
+
+   final Logger logger = LoggerFactory.getLogger( getClass().getName() );
+   final Logger statusLogger = LoggerFactory.getLogger( LoggerCategories.STATUS );
+   final Logger progressLogger = LoggerFactory.getLogger( LoggerCategories.PROGRESS );
+   final Logger streamflowLogger = LoggerFactory.getLogger( LoggerCategories.STREAMFLOW );
+   final Logger httpLogger = LoggerFactory.getLogger( LoggerCategories.HTTP );
 
    @Structure
    ObjectBuilderFactory obf;
@@ -231,8 +237,8 @@ public class StreamflowApplication
             protected int beforeHandle( Request request, Response response )
             {
 /*
-               Logger.getLogger( LoggerCategories.STATUS ).info( StatusResources.loading.name() );
-               Logger.getLogger( LoggerCategories.PROGRESS ).info( "loading" );
+               statusLogger.info( StatusResources.loading.name() );
+               progressLogger.info( "loading" );
 */
 
 /*
@@ -251,10 +257,10 @@ public class StreamflowApplication
             protected void afterHandle( Request request, Response response )
             {
 /*
-               Logger.getLogger( LoggerCategories.STATUS ).info( StatusResources.ready.name() );
-               Logger.getLogger( LoggerCategories.PROGRESS ).info( LoggerCategories.DONE );
+               statusLogger.info( StatusResources.ready.name() );
+               progressLogger.info( LoggerCategories.DONE );
 
-               Logger.getLogger( LoggerCategories.HTTP ).info( request.getResourceRef().toString() + "->" + response.getStatus() );
+               httpLogger.info( request.getResourceRef().toString() + "->" + response.getStatus() );
 */
 
                super.afterHandle( request, response );
@@ -266,16 +272,16 @@ public class StreamflowApplication
                org.jdesktop.application.Application.getInstance().getContext(),
                restlet ) );
 
-         Logger.getLogger( getClass().getName() ).info( "Starting in " + app.mode() + " mode" );
+         logger.info( "Starting in " + app.mode() + " mode" );
 
          app.activate();
       } catch (Throwable e)
       {
-         JXErrorPane.showDialog( getMainFrame(), new ErrorInfo( i18n.text( StreamflowResources.startup_error ), e.getMessage(), null, "#error", e, Level.SEVERE, Collections.<String, String>emptyMap() ) );
+         JXErrorPane.showDialog( getMainFrame(), new ErrorInfo( i18n.text( StreamflowResources.startup_error ), e.getMessage(), null, "#error", e, java.util.logging.Level.SEVERE, Collections.<String, String>emptyMap() ) );
          shutdown();
       }
 
-      Logger.getLogger( "streamflow" ).info( "Startup done" );
+      streamflowLogger.info( "Startup done" );
 
    }
 

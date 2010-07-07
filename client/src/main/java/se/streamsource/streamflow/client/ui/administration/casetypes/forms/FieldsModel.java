@@ -45,7 +45,8 @@ import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
 import se.streamsource.streamflow.infrastructure.event.source.helper.EventVisitorFilter;
 
 import java.util.List;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * JAVADOC
@@ -53,6 +54,8 @@ import java.util.logging.Logger;
 public class FieldsModel
       implements Refreshable, EventListener, EventVisitor
 {
+   final Logger logger = LoggerFactory.getLogger( "administration" );
+
    @Uses
    CommandQueryClient client;
 
@@ -231,7 +234,7 @@ public class FieldsModel
       }
       if ( !eventName.equals( "changedDescription" ))
       {
-         Logger.getLogger( "adminitration" ).info( "Refresh field list" );
+         logger.info( "Refresh field list" );
          refresh();
       }
       return false;

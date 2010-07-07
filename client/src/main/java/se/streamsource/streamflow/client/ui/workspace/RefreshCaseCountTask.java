@@ -21,13 +21,9 @@ import org.jdesktop.application.Application;
 import org.jdesktop.application.Task;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
-import org.restlet.Restlet;
-import se.streamsource.streamflow.client.LoggerCategories;
-import se.streamsource.streamflow.client.ui.administration.AccountModel;
 
-import javax.swing.SwingUtilities;
-import java.awt.*;
-import java.util.logging.Logger;
+import java.awt.Component;
+
 
 /**
  * JAVADOC

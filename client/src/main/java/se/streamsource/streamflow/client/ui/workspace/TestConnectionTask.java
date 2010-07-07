@@ -25,13 +25,16 @@ import org.restlet.Restlet;
 import se.streamsource.streamflow.client.LoggerCategories;
 import se.streamsource.streamflow.client.ui.administration.AccountModel;
 
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * JAVADOC
  */
 public class TestConnectionTask extends Task<String, Void>
 {
+   final Logger statusLogger = LoggerFactory.getLogger( LoggerCategories.STATUS );
+   final Logger progressLogger = LoggerFactory.getLogger( LoggerCategories.PROGRESS );
    @Uses
    AccountModel model;
 
@@ -45,16 +48,16 @@ public class TestConnectionTask extends Task<String, Void>
 
    protected String doInBackground() throws Exception
    {
-      Logger.getLogger( LoggerCategories.STATUS ).info( "Testing connection..." );
+      statusLogger.info( "Testing connection..." );
       message( "Testing connection" );
-      Logger.getLogger( LoggerCategories.PROGRESS ).info( "50/100" );
+      progressLogger.info( "50/100" );
       try
       {
          return model.test();
       } finally
       {
-         Logger.getLogger( LoggerCategories.PROGRESS ).info( "100/100" );
-         Logger.getLogger( LoggerCategories.STATUS ).info( "Ready" );
+         progressLogger.info( "100/100" );
+         statusLogger.info( "Ready" );
       }
    }
 }

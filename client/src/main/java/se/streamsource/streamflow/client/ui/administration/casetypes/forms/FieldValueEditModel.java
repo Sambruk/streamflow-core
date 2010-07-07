@@ -35,7 +35,8 @@ import se.streamsource.streamflow.infrastructure.event.source.helper.EventVisito
 import se.streamsource.streamflow.resource.roles.BooleanDTO;
 import se.streamsource.streamflow.resource.roles.IntegerDTO;
 
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * JAVADOC
@@ -43,6 +44,7 @@ import java.util.logging.Logger;
 public class FieldValueEditModel
       implements Refreshable, EventListener, EventVisitor
 {
+   final Logger logger = LoggerFactory.getLogger( "administration" );
    private FieldDefinitionValue value;
    private CommandQueryClient client;
    private ValueBuilderFactory vbf;
@@ -138,7 +140,7 @@ public class FieldValueEditModel
    {
       if (value.field().get().identity().equals( event.entity().get() ))
       {
-         Logger.getLogger( "administration" ).info( "Refresh the field values" );
+         logger.info( "Refresh the field values" );
          refresh();
       }
       return false;

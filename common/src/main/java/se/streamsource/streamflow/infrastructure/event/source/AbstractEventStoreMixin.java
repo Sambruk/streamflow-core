@@ -40,7 +40,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Base implementation for EventStores.
@@ -72,7 +73,7 @@ public abstract class AbstractEventStoreMixin
 
    public void activate() throws IOException
    {
-      logger = Logger.getLogger( identity.identity().get() );
+      logger = LoggerFactory.getLogger( identity.identity().get() );
 
       domainEventType = module.valueDescriptor( DomainEvent.class.getName() ).valueType();
       transactionEventsType = module.valueDescriptor( TransactionEvents.class.getName() ).valueType();

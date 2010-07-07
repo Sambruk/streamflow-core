@@ -31,7 +31,8 @@ import java.io.File;
 import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.ResourceBundle;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Service for accessing application-specific directories. These will default to
@@ -81,6 +82,8 @@ public interface FileConfiguration
    abstract class Mixin
          implements FileConfiguration, Activatable
    {
+      final Logger logger = LoggerFactory.getLogger( getClass().getName() );
+
       @This
       Data data;
 
@@ -95,7 +98,7 @@ public interface FileConfiguration
          OS os = detectOS();
 
          data.os().set( os );
-         Logger.getLogger( getClass().getName() ).info( "Operating system:" + os.name() );
+         logger.info( "Operating system:" + os.name() );
 
          // Get bundle with application name and configured directories
          String user = System.getenv( "USERPROFILE" ); // On Windows we use this instead of user.home

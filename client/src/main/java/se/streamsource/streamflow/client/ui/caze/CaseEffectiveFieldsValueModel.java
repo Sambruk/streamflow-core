@@ -36,7 +36,8 @@ import javax.swing.table.AbstractTableModel;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.List;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * List of contacts for a case
@@ -54,6 +55,7 @@ public class CaseEffectiveFieldsValueModel
          i18n.text( WorkspaceResources.field_date )
    };
 
+   final Logger logger = LoggerFactory.getLogger( "workspace" );
    private SimpleDateFormat formatter = new SimpleDateFormat( i18n.text( WorkspaceResources.date_time_format ) );
 
    @Structure
@@ -127,7 +129,7 @@ public class CaseEffectiveFieldsValueModel
    {
       if (client.getReference().getParentRef().getLastSegment().equals( event.entity().get() ))
       {
-         Logger.getLogger( "workspace" ).info( "Refresh effective field" );
+         logger.info( "Refresh effective field" );
          refresh();
       }
 

@@ -69,8 +69,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Generate statistics data to a JDBC database. This service
@@ -84,6 +84,7 @@ public interface StatisticsService
    class Mixin
          implements TransactionVisitor, Activatable
    {
+      final Logger logger = LoggerFactory.getLogger( StatisticsService.class.getName() );
       @Structure
       Qi4j api;
 
@@ -106,7 +107,6 @@ public interface StatisticsService
       Configuration<StatisticsConfiguration> config;
 
       private TransactionTracker tracker;
-      private Logger logger;
       private Properties sql;
 
       private EventSpecification closedFilter;
@@ -115,7 +115,6 @@ public interface StatisticsService
 
       public void activate() throws Exception
       {
-         logger = Logger.getLogger( StatisticsService.class.getName() );
 
          sql = new Properties();
          InputStream asStream = null;
@@ -279,7 +278,7 @@ public interface StatisticsService
                conn.commit();
             } catch (Exception e)
             {
-               logger.log( Level.SEVERE, "Could not log statistics", e );
+               logger.error( "Could not log statistics", e );
                if (conn != null)
                {
                   try
@@ -287,7 +286,7 @@ public interface StatisticsService
                      conn.rollback();
                   } catch (SQLException e1)
                   {
-                     logger.log( Level.SEVERE, "Could not rollback", e );
+                     logger.error( "Could not rollback", e );
                   }
 
                   return false;

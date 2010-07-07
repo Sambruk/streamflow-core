@@ -46,8 +46,8 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This service starts a JMX RMI connector. It also creates an RMI-registry
@@ -64,6 +64,7 @@ public interface JmxConnectorService
    class JmxConnectorMixin
          implements Activatable
    {
+      final Logger logger = LoggerFactory.getLogger( JmxConnectorService.class.getName() );
       @This
       Configuration<JmxConnectorConfiguration> config;
 
@@ -100,7 +101,7 @@ public interface JmxConnectorService
                connector.start();
             } catch (Exception e)
             {
-               Logger.getLogger( JmxConnectorService.class.getName() ).log( Level.SEVERE, "Could not start JMX connector", e );
+               logger.error( "Could not start JMX connector", e );
             }
          }
       }

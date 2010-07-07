@@ -50,7 +50,6 @@ import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.Properties;
-import java.util.logging.Level;
 
 /**
  * JAVADOC
@@ -199,7 +198,7 @@ public interface JdbmEventStoreService
             }
          } catch (Exception e)
          {
-            logger.log( Level.WARNING, "Could not iterate transactions", e );
+            logger.warn( "Could not iterate transactions", e );
          } finally
          {
             lock.unlock();
@@ -231,7 +230,7 @@ public interface JdbmEventStoreService
             }
          } catch (Exception e)
          {
-            logger.log( Level.WARNING, "Could not iterate transactions", e );
+            logger.warn( "Could not iterate transactions", e );
          } finally
          {
             lock.unlock();
