@@ -74,25 +74,5 @@ public interface AccessPointContext
       {
          return subContext( EndUsersContext.class );
       }
-
-      /*
-      private AccessPointValue accesspoint()
-      {
-         ValueBuilder<AccessPointValue> builder = module.valueBuilderFactory().newValueBuilder( AccessPointValue.class );
-         AccessPoint accessPoint = context.get( AccessPoint.class );
-         AccessPoint.Data data = context.get( AccessPoint.Data.class );
-         builder.prototype().entity().set( EntityReference.getEntityReference( accessPoint ));
-         builder.prototype().name().set( accessPoint.getDescription() );
-         builder.prototype().project().set( data.project().get().getDescription() );
-         builder.prototype().caseType().set( data.caseType().get().getDescription() );
-
-         builder.prototype().labels().set( new ArrayList<String>() );
-         for (Label label : data.labels())
-         {
-            builder.prototype().labels().get().add( label.getDescription() );
-         }
-
-         return builder.newInstance();
-      } */
    }
 }
