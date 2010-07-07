@@ -89,10 +89,7 @@ public class StreamflowApplication
    public static ValueType DOMAIN_EVENT_TYPE;
 
    final Logger logger = LoggerFactory.getLogger( getClass().getName() );
-   final Logger statusLogger = LoggerFactory.getLogger( LoggerCategories.STATUS );
-   final Logger progressLogger = LoggerFactory.getLogger( LoggerCategories.PROGRESS );
    final Logger streamflowLogger = LoggerFactory.getLogger( LoggerCategories.STREAMFLOW );
-   final Logger httpLogger = LoggerFactory.getLogger( LoggerCategories.HTTP );
 
    @Structure
    ObjectBuilderFactory obf;
@@ -236,33 +233,12 @@ public class StreamflowApplication
             @Override
             protected int beforeHandle( Request request, Response response )
             {
-/*
-               statusLogger.info( StatusResources.loading.name() );
-               progressLogger.info( "loading" );
-*/
-
-/*
-                    try
-                    {
-                        Thread.sleep(2000);
-                    } catch (InterruptedException e)
-                    {
-                        e.printStackTrace();
-                    }
-*/
                return super.beforeHandle( request, response );
             }
 
             @Override
             protected void afterHandle( Request request, Response response )
             {
-/*
-               statusLogger.info( StatusResources.ready.name() );
-               progressLogger.info( LoggerCategories.DONE );
-
-               httpLogger.info( request.getResourceRef().toString() + "->" + response.getStatus() );
-*/
-
                super.afterHandle( request, response );
             }
          };

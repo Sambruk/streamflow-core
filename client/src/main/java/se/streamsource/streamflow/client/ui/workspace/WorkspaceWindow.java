@@ -64,9 +64,6 @@ public class WorkspaceWindow
       setFrame( frame );
       setMenuBar( menu );
 
-//      JXStatusBar bar = new StatusBarView( getContext() );
-//      setStatusBar( bar );
-//      frame.setStatusBar( bar );
 
       frame.setPreferredSize( new Dimension( 1000, 700 ) );
       frame.pack();
