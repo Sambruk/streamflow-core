@@ -58,7 +58,7 @@ public class DebugWindow
       eventTable = new JXTable( eventModel );
       eventTable.setEditable( false );
 
-      JXFrame frame = new JXFrame( "Debug" );
+      JXFrame frame = new JXFrame( "Streamflow Debug" );
       frame.getContentPane().add( new JScrollPane( eventTable ) );
 
       setFrame( frame );
