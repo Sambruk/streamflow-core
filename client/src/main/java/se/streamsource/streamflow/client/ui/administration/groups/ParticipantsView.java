@@ -35,6 +35,7 @@ import org.qi4j.api.object.ObjectBuilder;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.restlet.resource.ResourceException;
 
+import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
@@ -64,7 +65,9 @@ public class ParticipantsView
 
    @Uses
    ObjectBuilder<SelectUsersAndGroupsDialog> selectUsersAndGroups;
-   private UsersAndGroupsModel usersAndGroupsModel;
+
+   @Uses
+   ObjectBuilder<UsersAndGroupsModel> usersAndGroupsModel;
 
    public JList participantList;
 
@@ -77,8 +80,6 @@ public class ParticipantsView
       super( new BorderLayout() );
       this.model = model;
       setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
-
-      usersAndGroupsModel = obf.newObjectBuilder( UsersAndGroupsModel.class ).use( model.getClient() ).newInstance();
 
       ActionMap am = context.getActionMap( this );
       setActionMap( am );
@@ -98,7 +99,8 @@ public class ParticipantsView
    @Action
    public void add() throws ResourceException
    {
-      SelectUsersAndGroupsDialog dialog = selectUsersAndGroups.use( model.getClient() ).newInstance();
+      UsersAndGroupsModel dialogModel = usersAndGroupsModel.use( model.getClient() ).newInstance();
+      SelectUsersAndGroupsDialog dialog = selectUsersAndGroups.use( dialogModel ).newInstance();
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text(AdministrationResources.add_user_or_group_title) );
 
       Set<LinkValue> linkValueSet = dialog.getSelectedEntities();
