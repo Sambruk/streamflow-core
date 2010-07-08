@@ -474,6 +474,8 @@ public class WorkspaceView
       TreePath[] selection = workspaceTree.getSelectionPaths();
       workspaceTree.clearSelection();
       workspaceTree.setSelectionPaths( selection );
+      // request focus to enable accelerator keys for workspace buttons again
+      this.requestFocus();
    }
 
    @Action
