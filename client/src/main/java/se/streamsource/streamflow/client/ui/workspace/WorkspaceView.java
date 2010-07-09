@@ -75,6 +75,8 @@ import java.awt.Font;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 /**
  * JAVADOC
@@ -376,6 +378,21 @@ public class WorkspaceView
 
          public void treeWillCollapse( TreeExpansionEvent event ) throws ExpandVetoException
          {
+         }
+      } );
+
+      workspaceTree.addMouseListener( new MouseAdapter()
+      {
+
+         @Override
+         public void mouseExited( MouseEvent e )
+         {
+            super.mouseExited( e );
+            if (popup != null)
+            {
+               popup.hide();
+               popup = null;
+            }
          }
       } );
    }
