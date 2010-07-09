@@ -24,11 +24,11 @@ import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.source.helper.EventQuery;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
-import se.streamsource.streamflow.infrastructure.event.source.helper.ForEvents;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
+import se.streamsource.streamflow.infrastructure.event.source.helper.EventQuery;
+import se.streamsource.streamflow.infrastructure.event.source.helper.ForEvents;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -53,10 +53,10 @@ public class CasesDetailView2
 
    public CasesDetailView2( @Uses CaseDetailView current, @Service EventSource events )
    {
-      setLayout(layout );
-      setBorder(BorderFactory.createEmptyBorder());
+      setLayout( layout );
+      setBorder( BorderFactory.createEmptyBorder() );
 
-      add( new JLabel( i18n.text( WorkspaceResources.choose_case ), JLabel.CENTER), "blank" );
+      add( new JLabel( i18n.text( WorkspaceResources.choose_case ), JLabel.CENTER ), "blank" );
       add( current, "detail" );
 
       layout.show( this, "blank" );
@@ -69,7 +69,7 @@ public class CasesDetailView2
       {
          public boolean visit( DomainEvent event )
          {
-            layout.show( CasesDetailView2.this, "blank");
+            layout.show( CasesDetailView2.this, "blank" );
 
             return false;
          }
@@ -80,9 +80,14 @@ public class CasesDetailView2
 
    public void show( final CaseModel aCase )
    {
-      current.setCaseModel( aCase );
-
-      layout.show( this, "detail" );
+      if (aCase == null)
+      {
+         layout.show( this, "blank" );
+      } else
+      {
+         current.setCaseModel( aCase );
+         layout.show( this, "detail" );
+      }
    }
 
    @Override

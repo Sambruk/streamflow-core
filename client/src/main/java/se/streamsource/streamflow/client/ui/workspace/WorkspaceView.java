@@ -17,13 +17,35 @@
 
 package se.streamsource.streamflow.client.ui.workspace;
 
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import java.awt.Component;
-import java.awt.Font;
-import java.awt.Point;
-import java.awt.Toolkit;
-import java.awt.event.KeyEvent;
+import com.jgoodies.forms.factories.Borders;
+import org.jdesktop.application.Action;
+import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Task;
+import org.jdesktop.swingx.JXTable;
+import org.jdesktop.swingx.JXTree;
+import org.jdesktop.swingx.renderer.DefaultTreeRenderer;
+import org.jdesktop.swingx.renderer.IconValue;
+import org.jdesktop.swingx.renderer.StringValue;
+import org.jdesktop.swingx.renderer.WrappingIconPanel;
+import org.jdesktop.swingx.renderer.WrappingProvider;
+import org.jdesktop.swingx.util.WindowUtils;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import se.streamsource.streamflow.client.Icons;
+import se.streamsource.streamflow.client.MacOsUIWrapper;
+import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.ui.administration.AccountModel;
+import se.streamsource.streamflow.client.ui.caze.AssignmentsCaseTableFormatter;
+import se.streamsource.streamflow.client.ui.caze.CaseCreationNode;
+import se.streamsource.streamflow.client.ui.caze.CaseTableView;
+import se.streamsource.streamflow.client.ui.caze.CasesDetailView2;
+import se.streamsource.streamflow.client.ui.caze.CasesModel;
+import se.streamsource.streamflow.client.ui.caze.CasesTableModel;
+import se.streamsource.streamflow.client.ui.caze.CasesView;
+import se.streamsource.streamflow.client.ui.caze.InboxCaseTableFormatter;
+import se.streamsource.streamflow.client.ui.search.SearchResultTableModel;
 
 import javax.swing.ActionMap;
 import javax.swing.Icon;
@@ -46,38 +68,13 @@ import javax.swing.event.TreeWillExpandListener;
 import javax.swing.tree.ExpandVetoException;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
-
-import org.jdesktop.application.Action;
-import org.jdesktop.application.ApplicationContext;
-import org.jdesktop.application.Task;
-import org.jdesktop.swingx.JXTable;
-import org.jdesktop.swingx.JXTree;
-import org.jdesktop.swingx.renderer.DefaultTreeRenderer;
-import org.jdesktop.swingx.renderer.IconValue;
-import org.jdesktop.swingx.renderer.StringValue;
-import org.jdesktop.swingx.renderer.WrappingIconPanel;
-import org.jdesktop.swingx.renderer.WrappingProvider;
-import org.jdesktop.swingx.util.WindowUtils;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.object.ObjectBuilderFactory;
-
-import se.streamsource.streamflow.client.Icons;
-import se.streamsource.streamflow.client.MacOsUIWrapper;
-import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import se.streamsource.streamflow.client.ui.administration.AccountModel;
-import se.streamsource.streamflow.client.ui.caze.AssignmentsCaseTableFormatter;
-import se.streamsource.streamflow.client.ui.caze.CaseCreationNode;
-import se.streamsource.streamflow.client.ui.caze.CaseTableView;
-import se.streamsource.streamflow.client.ui.caze.CasesDetailView2;
-import se.streamsource.streamflow.client.ui.caze.CasesModel;
-import se.streamsource.streamflow.client.ui.caze.CasesTableModel;
-import se.streamsource.streamflow.client.ui.caze.CasesView;
-import se.streamsource.streamflow.client.ui.caze.InboxCaseTableFormatter;
-import se.streamsource.streamflow.client.ui.search.SearchResultTableModel;
-
-import com.jgoodies.forms.factories.Borders;
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.Component;
+import java.awt.Font;
+import java.awt.Point;
+import java.awt.Toolkit;
+import java.awt.event.KeyEvent;
 
 /**
  * JAVADOC
@@ -330,6 +327,9 @@ public class WorkspaceView
                   String selectedContextText = ((TreeNode) node).getParent() + " : " + nodeString;
 
                   selectedContext.setText( selectedContextText );
+
+                  // show blank detail view
+                  detailView.show( null );
 
                   SwingUtilities.invokeLater( new Runnable()
                   {
