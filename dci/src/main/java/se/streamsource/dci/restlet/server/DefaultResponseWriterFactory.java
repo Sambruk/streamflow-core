@@ -63,6 +63,7 @@ public class DefaultResponseWriterFactory
    private Template linksAtomTemplate;
    private Template formHtmlTemplate;
    private Template valueHtmlTemplate;
+   private Template contextHtmlTemplate;
 
    public DefaultResponseWriterFactory( @Service VelocityEngine velocity ) throws Exception
    {
@@ -82,23 +83,13 @@ public class DefaultResponseWriterFactory
       linksAtomTemplate = velocity.getTemplate( "rest/template/links.atom" );
       formHtmlTemplate = velocity.getTemplate( "rest/template/form.htm" );
       valueHtmlTemplate = velocity.getTemplate( "rest/template/value.htm" );
+      contextHtmlTemplate = velocity.getTemplate( "rest/template/context.htm" );
    }
 
    public ResponseWriter createWriter( List<String> segments, Class resultType, Context context, Variant variant )
          throws Exception
    {
-      if (LinkValue.class.isAssignableFrom( resultType ) && !variant.getMediaType().equals( MediaType.APPLICATION_JSON ))
-      {
-         return new RedirectResponseWriter();
-      } else if (Representation.class.isAssignableFrom( resultType ))
-      {
-         // Return representation as-is
-         // TODO refactor this into its own factory
-         return new RepresentationResponseWriter( variant );
-      } else if (variant.getMediaType().equals( MediaType.APPLICATION_JSON ) && Value.class.isAssignableFrom( resultType ))
-      {
-         return new JsonResponseWriter( variant );
-      } else
+      if (resultType == null)
       {
          final String extension = metadataService.getExtension( variant.getMediaType() );
 
@@ -110,35 +101,66 @@ public class DefaultResponseWriterFactory
             return new VelocityResponseWriter( template, context, variant );
          } else
          {
-            // Check if links, then try default templates
-            if (LinksValue.class.isAssignableFrom( resultType))
-            {
-               // Use standard links rendering templates
-               if (variant.getMediaType().equals(MediaType.TEXT_HTML))
-               {
-                  return new VelocityResponseWriter( linksHtmlTemplate, context, variant );
-               } else if (variant.getMediaType().equals( MediaType.APPLICATION_ATOM ))
-               {
-                  return new VelocityResponseWriter( linksAtomTemplate, context, variant );
-               }
-            } else if (ValueDescriptor.class.equals(resultType))
-            {
-               return new VelocityResponseWriter( formHtmlTemplate, context, variant );
-            } else if (ValueComposite.class.isAssignableFrom( resultType ))
-            {
-               // Look for type specific template
-               try
-               {
-                  template = velocity.getTemplate( "rest/template/"+resultType.getInterfaces()[0].getSimpleName()+"."+extension );
-               } catch (ResourceNotFoundException e)
-               {
-                  template = valueHtmlTemplate;
-               }
+            return new NoContentResponseWriter();
+         }
+      } else
+      {
+         if (LinkValue.class.isAssignableFrom( resultType ) && !variant.getMediaType().equals( MediaType.APPLICATION_JSON ))
+         {
+            return new RedirectResponseWriter();
+         } else if (Representation.class.isAssignableFrom( resultType ))
+         {
+            // Return representation as-is
+            // TODO refactor this into its own factory
+            return new RepresentationResponseWriter( variant );
+         } else if (variant.getMediaType().equals( MediaType.APPLICATION_JSON ) && Value.class.isAssignableFrom( resultType ))
+         {
+            return new JsonResponseWriter( variant );
+         } else if (ValueDescriptor.class.equals(resultType))
+         {
+            return new VelocityResponseWriter( formHtmlTemplate, context, variant );
+         } else
+         {
+            final String extension = metadataService.getExtension( variant.getMediaType() );
 
+            String tn = templateName( segments, extension );
+            Template template = resolveTemplate( new File( tn ) );
+
+            if (template != null)
+            {
                return new VelocityResponseWriter( template, context, variant );
-            }
+            } else
+            {
+               // Check if links, then try default templates
+               if (LinksValue.class.isAssignableFrom( resultType))
+               {
+                  // Use standard links rendering templates
+                  if (variant.getMediaType().equals(MediaType.TEXT_HTML))
+                  {
+                     return new VelocityResponseWriter( linksHtmlTemplate, context, variant );
+                  } else if (variant.getMediaType().equals( MediaType.APPLICATION_ATOM ))
+                  {
+                     return new VelocityResponseWriter( linksAtomTemplate, context, variant );
+                  }
+               } else if (ValueDescriptor.class.equals(resultType))
+               {
+                  return new VelocityResponseWriter( formHtmlTemplate, context, variant );
+               } else if (ValueComposite.class.isAssignableFrom( resultType ))
+               {
+                  // Look for type specific template
+                  try
+                  {
+                     template = velocity.getTemplate( "rest/template/"+resultType.getInterfaces()[0].getSimpleName()+"."+extension );
+                  } catch (ResourceNotFoundException e)
+                  {
+                     template = valueHtmlTemplate;
+                  }
 
-            throw new IllegalArgumentException( "Cannot handle URL with this variant" );
+                  return new VelocityResponseWriter( template, context, variant );
+               }
+
+               throw new IllegalArgumentException( "Cannot handle URL with this variant" );
+            }
          }
       }
    }
@@ -169,11 +191,19 @@ public class DefaultResponseWriterFactory
             template = velocity.getTemplate( new File( "rest", templateName.toString() ).toString() );
          } catch (ResourceNotFoundException e)
          {
-            File parentFile = templateName.getParentFile();
-            if (parentFile.toString().equals( "/" ))
-               return null;
+            // If we can't find the specific template, then check if we are looking for the
+            // context template, and if so, use the default one
+            if (templateName.getName().equals("context.htm"))
+               template = contextHtmlTemplate;
+            else
+            {
+               // Try looking up the stack
+               File parentFile = templateName.getParentFile();
+               if (parentFile.toString().equals( "/" ))
+                  return null;
 
-            templateName = new File( parentFile.getParentFile(), templateName.getName() );
+               templateName = new File( parentFile.getParentFile(), templateName.getName() );
+            }
          }
 
       } while (template == null);

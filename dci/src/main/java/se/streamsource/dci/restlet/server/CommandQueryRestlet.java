@@ -70,6 +70,7 @@ import se.streamsource.dci.api.InteractionConstraints;
 import se.streamsource.dci.api.SubContext;
 import se.streamsource.dci.api.SubContexts;
 import se.streamsource.dci.value.IndexValue;
+import se.streamsource.dci.value.LinkValue;
 
 import javax.security.auth.Subject;
 import java.io.IOException;
@@ -362,7 +363,7 @@ public class CommandQueryRestlet
 
          try
          {
-            responseWriter = responseWriterFactory.createWriter( segments, result.getClass(), context, variant );
+            responseWriter = responseWriterFactory.createWriter( segments, result == null ? null : result.getClass(), context, variant );
          } catch (Exception e)
          {
             response.setStatus( Status.CLIENT_ERROR_NOT_FOUND, e.getMessage() );

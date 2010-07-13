@@ -48,7 +48,6 @@ public class TestWebApp
       component.getClients().add( Protocol.FILE );
       TestRestletApplication application = new TestRestletApplication( component.getContext().createChildContext() );
       component.getDefaultHost().attach( application );
-      component.getInternalRouter().attach( "app", application);
       component.start();
    }
 
