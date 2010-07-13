@@ -565,10 +565,7 @@ public class CommandQueryRestlet
          List<String> contextsProperty = builder.prototype().contexts().get();
          for (Method subResource : subResources)
          {
-            if (subResource.getDeclaringClass().equals( SubContexts.class ))
-               contextsProperty.add( subResource.getName() );
-            else
-               contextsProperty.add( subResource.getName() + "/" );
+            contextsProperty.add( subResource.getName());
          }
       }
 

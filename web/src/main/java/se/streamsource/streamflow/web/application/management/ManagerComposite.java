@@ -18,6 +18,8 @@
 package se.streamsource.streamflow.web.application.management;
 
 import org.openrdf.repository.Repository;
+import org.qi4j.api.Qi4j;
+import org.qi4j.api.composite.Composite;
 import org.qi4j.api.composite.TransientComposite;
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.injection.scope.Service;
@@ -34,6 +36,7 @@ import org.qi4j.api.usecase.UsecaseBuilder;
 import org.qi4j.entitystore.jdbm.DatabaseExport;
 import org.qi4j.entitystore.jdbm.DatabaseImport;
 import org.qi4j.index.reindexer.Reindexer;
+import org.qi4j.spi.Qi4jSPI;
 import org.qi4j.spi.entity.EntityState;
 import org.qi4j.spi.entitystore.EntityStore;
 import org.qi4j.spi.query.EntityFinder;
@@ -99,6 +102,9 @@ public interface ManagerComposite
 
       private static final long ONE_DAY = 1000 * 3600 * 24;
 //        private static final long ONE_DAY = 1000 * 60*10; // Ten minutes
+
+      @Structure
+      Qi4j api;
 
       @Service
       Reindexer reindexer;
@@ -455,29 +461,43 @@ public interface ManagerComposite
       private void removeRdfRepository()
             throws Exception
       {
-         ((Activatable) entityFinder).passivate();
-         ((Activatable) repository).passivate();
-         removeDirectory( new File( fileConfig.dataDirectory(), "rdf-repository" ) );
-         ((Activatable) repository).activate();
-         ((Activatable) entityFinder).activate();
+
+         ((Activatable)api.getModule( (Composite) entityFinder )).passivate();
+
+         try
+         {
+            removeDirectory( new File( fileConfig.dataDirectory(), "rdf-repository" ) );
+         } finally
+         {
+            ((Activatable)api.getModule( (Composite) entityFinder )).activate();
+         }
       }
 
       private void removeSolrLuceneIndex()
             throws Exception
       {
-         ((Activatable)solrIndexer).passivate();
-         ((Activatable)solr).passivate();
-         removeDirectory( new File( fileConfig.dataDirectory(), "solr" ) );
-         ((Activatable)solr).activate();
-         ((Activatable)solrIndexer).activate();
+         ((Activatable)api.getModule( (Composite) solr.get() )).passivate();
+
+         try
+         {
+            removeDirectory( new File( fileConfig.dataDirectory(), "solr" ) );
+         } finally
+         {
+            ((Activatable)api.getModule( (Composite) solr.get() )).activate();
+         }
       }
 
       private void removeApplicationDatabase()
             throws Exception
       {
-         ((Activatable) entityStore).passivate();
-         removeDirectory( new File( fileConfig.dataDirectory(), "data" ) );
-         ((Activatable) entityStore).activate();
+         ((Activatable)api.getModule( (Composite) entityStore.get() )).passivate();
+         try
+         {
+            removeDirectory( new File( fileConfig.dataDirectory(), "data" ) );
+         } finally
+         {
+            ((Activatable)api.getModule( (Composite) entityStore.get() )).activate();
+         }
       }
 
       public String databaseSize()

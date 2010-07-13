@@ -50,17 +50,25 @@ public interface EmbeddedSolrService extends Activatable, ServiceComposite
 
       public void activate() throws Exception
       {
-         File directory = new File( fileConfig.dataDirectory() + "/solr" );
-         directory.mkdir();
+         ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
+         Thread.currentThread().setContextClassLoader( getClass().getClassLoader() );
+
+         try
+         {
+            File directory = new File( fileConfig.dataDirectory() + "/solr" );
+            directory.mkdir();
 
 
+            System.setProperty( "solr.solr.home", directory.getAbsolutePath() );
 
-         System.setProperty( "solr.solr.home", directory.getAbsolutePath() );
-
-         CoreContainer.Initializer initializer = new CoreContainer.Initializer();
-         coreContainer = initializer.initialize();
-         server = new EmbeddedSolrServer( coreContainer, "" );
-         core = coreContainer.getCore( "" );
+            CoreContainer.Initializer initializer = new CoreContainer.Initializer();
+            coreContainer = initializer.initialize();
+            server = new EmbeddedSolrServer( coreContainer, "" );
+            core = coreContainer.getCore( "" );
+         } finally
+         {
+            Thread.currentThread().setContextClassLoader( oldCl );
+         }
       }
 
       public void passivate() throws Exception

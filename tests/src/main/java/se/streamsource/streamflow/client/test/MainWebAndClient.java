@@ -28,7 +28,7 @@ public class MainWebAndClient
    private MainWeb web;
    private MainClient mainClient;
 
-   public static void main( String[] args ) throws Exception
+   public static void main( String[] args ) throws Throwable
    {
       MainWebAndClient mainWebAndClient = new MainWebAndClient();
       try
@@ -41,7 +41,7 @@ public class MainWebAndClient
       }
    }
 
-   public void start() throws Exception
+   public void start() throws Throwable
    {
       web = new MainWeb();
       mainClient = new MainClient();
@@ -53,7 +53,7 @@ public class MainWebAndClient
       mainClient.start();
    }
 
-   public void stop() throws Exception
+   public void stop() throws Throwable
    {
       // Stop web
       web.stop();

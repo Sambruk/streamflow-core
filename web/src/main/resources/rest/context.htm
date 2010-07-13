@@ -20,7 +20,7 @@
 <html>
 <head>
     <title>Title = ${request.resourceRef.remainingPart}</title>
-    <link rel="stylesheet" type="text/css" href="/streamflow/streamflow/v1/static/rest.css" />
+    <link rel="stylesheet" type="text/css" href="/streamflow/static/rest.css" />
 </head>
 
 <body>
@@ -33,7 +33,7 @@
 <ul>
 #foreach($query in $result.queries)
 <li>
-    <a href="$query">$query</a></li>
+    <a rel="$query" href="$query">$query</a></li>
 #end
 </ul>
 </div>
@@ -43,7 +43,7 @@
 <div class="block">
 <h2>Commands</h2>
 #foreach($command in $result.commands)
-<form action="$command" method="POST" ><input type="submit" value="$command"/> </form>
+<form name="$command" action="$command" method="POST" ><input type="submit" value="$command"/> </form>
 #end
 </div>
 #end
@@ -54,7 +54,7 @@
 <ul>
 #foreach($context in $result.contexts)
 <li>
-    <a href="$context">$context</a>
+    <a rel="$context" href="${context}/">$context</a>
 </li>
 #end
 </ul>

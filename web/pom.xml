@@ -24,14 +24,66 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
+                        <_exportcontents>se.streamsource.streamflow.server.plugin*,org.restlet*,org.qi4j.api*,org.qi4j.spi*,org.qi4j.bootstrap*,org.json</_exportcontents>
+                        <!--
+                        <_exportcontents>org.restlet*</_exportcontents>
+-->
+
+                        <Export-Package>
+                            se.streamsource.streamflow.infrastructure.event*,
+                        </Export-Package>
                         <_nouses>true</_nouses>
-                        <Export-Package>se.streamsource.streamflow.web.*</Export-Package>
+
                         <Import-Package>
-                            org.qi4j.spi.composite;org.apache.lucene.index;org.apache.solr.spelling;org.apache.solr.update;org.apache.solr.highlight;org.apache.solr.handler;org.apache.solr.handler.admin;org.apache.solr.handler.component;org.apache.solr.request;org.apache.solr.schema;org.apache.solr.analysis;org.apache.solr.search;org.apache.solr.search.function;com.mysql.jdbc;*;version=0.0
+                            !javax.microedition.io;
+                            !com.sun.jdmk.comm;
+                            !sun.net.spi.nameservice;
+                            !org.springframework.beans.factory;
+                            !org.springframework.context;
+                            !org.springframework.core.io;
+                            !org.jdom;
+                            !org.jdom.input;
+                            !org.jdom.output;
+                            !org.mortbay.jetty;
+                            !org.mortbay.jetty.servlet;
+                            !org.mortbay.log;
+                            !org.relaxng.datatype;
+                            !org.jboss.resource.adapter.jdbc;
+                            !org.jboss.resource.adapter.jdbc.vendor;
+                            !org.hibernate.cfg;
+                            !org.hibernate.dialect;
+                            !org.hibernate.engine;
+                            !org.hibernate.mapping;
+                            !org.hibernate;
+                            !org.apache.log.output.io;
+                            !org.apache.log.format;
+                            !org.apache.log;
+                            !org.apache.commons.logging;
+                            !org.apache.bsf.util;
+                            !org.apache.bsf;
+                            !org.apache.avalon.framework.logger;
+                            !junit.framework;
+                            !com.werken.xpath;
+                            !javax.portlet;
+                            se.streamsource.streamflow.infrastructure.event*;
+                            *;version=0.0
                         </Import-Package>
+<!--
+                        org.restlet*;
+-->
+
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+                        <Embed-Dependency>
+                            *;scope=compile|runtime;type=!pom;inline=false;artifactId=!jmxri|jmxtools|slf4j-simple
+                        </Embed-Dependency>
+                        <Embed-Transitive>true</Embed-Transitive>
+<!--
+                        <Embed-Directory>lib</Embed-Directory>
+-->
+
                         <Bundle-Activator>se.streamsource.streamflow.web.activator.StreamflowActivator
                         </Bundle-Activator>
+
                     </instructions>
                 </configuration>
             </plugin>
@@ -61,6 +113,7 @@
             <groupId>se.streamsource.streamflow</groupId>
             <artifactId>streamflow-server-plugin-api</artifactId>
             <version>1.1-SNAPSHOT</version>
+            <scope>compile</scope>
         </dependency>
 
         <dependency>

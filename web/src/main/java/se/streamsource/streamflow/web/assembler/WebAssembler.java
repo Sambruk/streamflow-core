@@ -58,10 +58,7 @@ public class WebAssembler
 
    private void osgi( ModuleAssembly module ) throws AssemblyException
    {
-      module.addServices( OSGiExporterService.class ).instantiateOnStartup();
-      module.addServices( OSGiAPIExporterService.class ).instantiateOnStartup();
-
-      module.addServices( OSGiExporterService.class ).instantiateOnStartup();
+//      module.addServices( OSGiExporterService.class ).instantiateOnStartup();
       module.addServices( OSGiAPIExporterService.class ).instantiateOnStartup();
    }
 

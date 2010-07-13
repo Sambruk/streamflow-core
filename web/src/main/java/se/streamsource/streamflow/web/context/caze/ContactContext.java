@@ -32,7 +32,7 @@ import se.streamsource.streamflow.domain.contact.ContactEmailValue;
 import se.streamsource.streamflow.domain.contact.ContactPhoneValue;
 import se.streamsource.streamflow.domain.contact.ContactValue;
 import se.streamsource.streamflow.resource.caze.ContactsDTO;
-import se.streamsource.streamflow.server.plugin.ContactLookup;
+import se.streamsource.streamflow.server.plugin.contact.ContactLookup;
 import se.streamsource.streamflow.web.context.ServiceAvailable;
 import se.streamsource.streamflow.web.domain.structure.caze.Contacts;
 import se.streamsource.dci.api.InteractionsMixin;
@@ -188,18 +188,21 @@ public interface ContactContext
 
       public ContactsDTO searchcontacts()
       {
+         // This method has to convert between the internal ContactValue and the plugin API ContactValue,
+         // hence the use of JSON as intermediary
          ContactValue contact = context.get(ContactValue.class);
+         se.streamsource.streamflow.server.plugin.contact.ContactValue pluginContact = vbf.newValueFromJSON( se.streamsource.streamflow.server.plugin.contact.ContactValue.class, contact.toJSON() );
          ValueBuilder<ContactsDTO> builder = vbf.newValueBuilder( ContactsDTO.class );
 
          try
          {
             ContactLookup lookup = contactLookup.get();
-            Iterable<ContactValue> possibleContacts = lookup.lookup( contact );
+            Iterable<se.streamsource.streamflow.server.plugin.contact.ContactValue> possibleContacts = lookup.lookup( pluginContact );
             List<ContactValue> contactList = builder.prototype().contacts().get();
 
-            for (ContactValue possibleContact : possibleContacts)
+            for (se.streamsource.streamflow.server.plugin.contact.ContactValue possibleContact : possibleContacts)
             {
-               contactList.add( possibleContact );
+               contactList.add( vbf.newValueFromJSON( ContactValue.class, possibleContact.toJSON() ));
             }
             return builder.newInstance();
          } catch (ServiceImporterException e)

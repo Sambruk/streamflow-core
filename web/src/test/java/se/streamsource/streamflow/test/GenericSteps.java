@@ -39,13 +39,18 @@ import se.streamsource.dci.api.SubContexts;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.source.helper.EventCollector;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
+import se.streamsource.streamflow.infrastructure.event.source.helper.EventCollector;
+import se.streamsource.streamflow.web.application.security.UserPrincipal;
 import se.streamsource.streamflow.web.context.RootContext;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Actor;
+import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
 
+import javax.security.auth.Subject;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -222,9 +227,28 @@ public class GenericSteps
    }
 
    @When("command $name without parameters")
-   public void whenCommand( String name ) throws InvocationTargetException, IllegalAccessException, UnitOfWorkCompletionException
+   public void whenCommand( String name ) throws Throwable
    {
-      Method commandMethod = getMethod( name );
+      final Method commandMethod = getMethod( name );
+
+      UserAuthentication.Data user = context.get( UserAuthentication.Data.class);
+      Subject subject = new Subject();
+      subject.getPrincipals().add( new UserPrincipal(user.userName().get()) );
+      try
+      {
+         Subject.doAs( subject, new PrivilegedExceptionAction()
+         {
+            public Object run() throws Exception
+            {
+               commandMethod.invoke( current );
+               return null;
+            }
+         });
+      } catch (PrivilegedActionException e)
+      {
+         throw e.getCause();
+      }
+
       commandMethod.invoke( current );
       uowf.currentUnitOfWork().complete();
    }

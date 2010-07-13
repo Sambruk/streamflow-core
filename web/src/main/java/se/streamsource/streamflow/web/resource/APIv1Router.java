@@ -40,7 +40,7 @@ import se.streamsource.streamflow.web.resource.admin.ConsoleServerResource;
 import se.streamsource.streamflow.web.resource.events.EventsServerResource;
 
 /**
- * Router for v1 of the Streamflow REST API.
+ * Router for the Streamflow REST API.
  */
 public class APIv1Router
       extends Router
@@ -59,10 +59,6 @@ public class APIv1Router
 
       attachDefault( new ExtensionMediaTypeFilter( getContext(), auth) );
 
-/*
-      attach(new ExtensionMediaTypeFilter( getContext(), factory.newObjectBuilder( EventsCommandResult.class).use(getContext(),
-            factory.newObjectBuilder( ViewFilter.class).use(getContext(), createServerResourceFinder( StreamflowRootContextFactory.class )).newInstance()).newInstance()));
-*/
       // Events
       attach( "/events", createServerResourceFinder( EventsServerResource.class ) );
 

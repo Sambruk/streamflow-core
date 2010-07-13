@@ -21,6 +21,7 @@ import org.apache.velocity.app.VelocityEngine;
 import org.qi4j.api.common.Visibility;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
+import org.qi4j.bootstrap.ImportedServiceDeclaration;
 import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.spi.service.importer.NewObjectImporter;
 import org.restlet.service.MetadataService;
@@ -31,6 +32,11 @@ import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.StringValue;
 
+import java.util.Dictionary;
+import java.util.Properties;
+
+import static org.qi4j.bootstrap.ImportedServiceDeclaration.NEW_OBJECT;
+
 /**
  * JAVADOC
  */
@@ -39,10 +45,11 @@ public class DCIAssembler
 {
    public void assemble( ModuleAssembly module ) throws AssemblyException
    {
+      module.importServices( CommandQueryRestlet.class ).setMetaInfo( new Properties() ).importedBy( NEW_OBJECT );
+
       module.importServices( VelocityEngine.class,
-            CommandQueryRestlet.class,
             ResponseWriterFactory.class,
-            CommandResult.class).importedBy( NewObjectImporter.class );
+            CommandResult.class).importedBy( NEW_OBJECT );
       module.addObjects( VelocityEngine.class,
             CommandQueryRestlet.class);
 

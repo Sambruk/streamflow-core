@@ -101,7 +101,10 @@ public interface ErrorLogService
          if (!isLoggable( record ) || objectName == null)
             return;
 
-         String source = sourceMappings.get( record.getLoggerName() );
+         String loggerName = record.getLoggerName();
+         String source = null;
+         if (loggerName != null)
+            source = sourceMappings.get( loggerName );
          if (source == null)
             source = "other"; // No mapping found
 

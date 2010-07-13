@@ -23,8 +23,6 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
 import org.restlet.Restlet;
 import org.restlet.ext.servlet.ServletAdapter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -41,7 +39,6 @@ public class StreamflowServlet
    private ServletAdapter adapter;
    private ServiceTracker tracker;
    private BundleContext ctx;
-   private Logger logger = LoggerFactory.getLogger( getClass() );
 
    @Override
    public void init() throws ServletException
@@ -55,7 +52,7 @@ public class StreamflowServlet
          public Object addingService( ServiceReference reference )
          {
             adapter.setNext( (Restlet) ctx.getService( reference) );
-            logger.info( "Streamflow application is online" );
+            getServletContext().log( "Streamflow application is online" );
             return super.addingService( reference );
          }
 
@@ -70,7 +67,7 @@ public class StreamflowServlet
          public void removedService( ServiceReference reference, Object service )
          {
             adapter.setNext( null );
-            logger.info( "Streamflow application is offline" );
+            getServletContext().log( "Streamflow application is offline" );
             super.removedService( reference, service );
          }
       };

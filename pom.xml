@@ -31,13 +31,11 @@
         <module>dci</module>
         <module>client</module>
         <module>serverplugin</module>
-        <module>web-dependencies</module>
         <module>web</module>
         <module>tests</module>
         <module>webstart</module>
         <module>war</module>
         <module>helloworldplugin</module>
-        <!--        <module>server</module> -->
         <module>help</module>
     </modules>
 
@@ -480,8 +478,13 @@
                 <artifactId>slf4j-log4j12</artifactId>
                 <version>${version.slf4j}</version>
             </dependency>
+            <dependency>
+                <groupId>log4j</groupId>
+                <artifactId>log4j</artifactId>
+                <version>1.2.15</version>
+            </dependency>
 
-            <!-- Other -->
+            <!-- OSGi -->
             <dependency>
                 <groupId>org.osgi</groupId>
                 <artifactId>org.osgi.core</artifactId>
@@ -552,12 +555,14 @@
                 <version>4.4</version>
                 <scope>test</scope>
             </dependency>
+<!--
             <dependency>
                 <groupId>commons-logging</groupId>
                 <artifactId>commons-logging</artifactId>
                 <version>1.1</version>
                 <scope>test</scope>
             </dependency>
+-->
             <dependency>
                 <groupId>log4j</groupId>
                 <artifactId>log4j</artifactId>

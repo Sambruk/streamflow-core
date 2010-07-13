@@ -44,16 +44,40 @@ public class StreamflowActivator implements BundleActivator
 
    public void start( BundleContext context ) throws Exception
    {
-      mainWeb = new MainWeb();
-      mainWeb.start();
+      try
+      {
+         mainWeb = new MainWeb();
+         mainWeb.start();
 
-      reg = context.registerService( Restlet.class.getName(), mainWeb.getApplication(), new Properties() );
+         reg = context.registerService( Restlet.class.getName(), mainWeb.getApplication(), new Properties() );
+      } catch (Throwable throwable)
+      {
+         if (throwable instanceof Exception)
+         {
+            throw (Exception)throwable;
+         }else if (throwable instanceof Error)
+         {
+            throw (Error)throwable;
+         }
+      }
    }
 
    public void stop( BundleContext context ) throws Exception
    {
       reg.unregister();
 
-      mainWeb.stop();
+      try
+      {
+         mainWeb.stop();
+      } catch (Throwable throwable)
+      {
+         if (throwable instanceof Exception)
+         {
+            throw (Exception)throwable;
+         }else if (throwable instanceof Error)
+         {
+            throw (Error)throwable;
+         }
+      }
    }
 }

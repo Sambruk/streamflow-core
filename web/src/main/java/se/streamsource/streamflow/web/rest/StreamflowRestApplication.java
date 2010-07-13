@@ -83,7 +83,7 @@ public class StreamflowRestApplication
       Router versions = new Router( getContext() );
 
       Router api = factory.newObjectBuilder( APIv1Router.class ).use( getContext() ).newInstance();
-      versions.attach( "/v1", api );
+      versions.attachDefault( api );
 
       return versions;
    }

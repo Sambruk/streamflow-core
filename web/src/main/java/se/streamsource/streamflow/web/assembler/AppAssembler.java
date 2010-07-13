@@ -48,6 +48,8 @@ import se.streamsource.streamflow.web.application.organization.BootstrapAssemble
 import se.streamsource.streamflow.web.application.organization.BootstrapDataService;
 import se.streamsource.streamflow.web.application.organization.TestDataService;
 import se.streamsource.streamflow.web.application.security.PasswordVerifierService;
+import se.streamsource.streamflow.web.application.statistics.CaseStatisticsService;
+import se.streamsource.streamflow.web.application.statistics.LoggingStatisticsStore;
 import se.streamsource.streamflow.web.application.statistics.StatisticsService;
 
 import javax.management.MBeanServer;
@@ -95,10 +97,20 @@ public class AppAssembler
 
    private void statistics( ModuleAssembly module ) throws AssemblyException
    {
+/*
       module.addServices( StatisticsService.class ).
             identifiedBy( "statistics" ).
             instantiateOnStartup().
             visibleIn( Visibility.layer );
+*/
+      module.addServices( CaseStatisticsService.class ).
+            identifiedBy( "statistics" ).
+            instantiateOnStartup().
+            visibleIn( Visibility.layer );
+      module.addServices( LoggingStatisticsStore.class ).
+            identifiedBy( "jdbcstatisticsstore" ).
+            instantiateOnStartup().
+            visibleIn( Visibility.module );
    }
 
    private void security( ModuleAssembly module ) throws AssemblyException

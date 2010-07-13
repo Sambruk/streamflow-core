@@ -36,6 +36,7 @@ import se.streamsource.streamflow.web.domain.structure.attachment.Attachments;
 import se.streamsource.streamflow.web.domain.structure.casetype.Resolvable;
 import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
+import se.streamsource.streamflow.web.domain.structure.caze.Closed;
 import se.streamsource.streamflow.web.domain.structure.caze.Contacts;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversations;
 import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
@@ -44,9 +45,9 @@ import se.streamsource.streamflow.web.domain.structure.form.SubmittedForms;
 import se.streamsource.streamflow.web.domain.structure.label.Labelable;
 
 /**
- * JAVADOC
+ * This represents a single Case in the system
  */
-@SideEffects(AssignIdSideEffect.class)
+@SideEffects({AssignIdSideEffect.class, StatusClosedSideEffect.class})
 public interface CaseEntity
       extends Case,
 
@@ -72,6 +73,7 @@ public interface CaseEntity
       Conversations.Data,      
 
       // Structure
+      Closed,
       Attachments.Data,
       Contacts.Data,
       Labelable.Data,

@@ -30,6 +30,7 @@ import org.qi4j.api.util.Classes;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Dictionary;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
@@ -56,20 +57,23 @@ public interface OSGiExporterService
          // Export services
          for (ServiceReference service : services)
          {
-            Object serviceInstance = service.get();
-            Set<Class> classes = Classes.classesOf( serviceInstance.getClass() );
-            String[] clazzes = new String[classes.size()];
-            int idx = 0;
-            for (Class aClass : classes)
+            Dictionary<Object, Object> osgiProps = (Dictionary) service.metaInfo( Dictionary.class );
+            if (osgiProps != null)
             {
-               clazzes[idx++] = aClass.getName();
+               Object serviceInstance = service.get();
+               Set<Class> classes = Classes.classesOf( serviceInstance.getClass() );
+               String[] clazzes = new String[classes.size()];
+               int idx = 0;
+               for (Class aClass : classes)
+               {
+                  clazzes[idx++] = aClass.getName();
+               }
+
+               osgiProps.put( Constants.SERVICE_ID, service.identity() );
+
+               registrations.add( context.registerService( clazzes, serviceInstance, osgiProps ) );
+               LoggerFactory.getLogger( getClass() ).info( "Exported service:" + service.identity() );
             }
-
-            Properties properties = new Properties();
-            properties.setProperty( Constants.SERVICE_ID, service.identity() );
-
-            registrations.add( context.registerService( clazzes, serviceInstance, properties ) );
-            LoggerFactory.getLogger( getClass() ).info( "Exported service:" + service.identity() );
          }
       }
 

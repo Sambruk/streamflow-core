@@ -42,12 +42,12 @@ public class MainWeb
    public StreamflowRestApplication application;
    public Logger logger;
 
-   public static void main( String[] args ) throws Exception
+   public static void main( String[] args ) throws Throwable
    {
       new MainWeb().start();
    }
 
-   public void start() throws Exception
+   public void start() throws Throwable
    {
 /*
       // Remove default handlers - we do our own logging!
@@ -78,20 +78,13 @@ public class MainWeb
          component.getDefaultHost().attach( "/streamflow/streamflow", application );
          component.start();
          logger.info("Started Streamflow");
-      } catch (Exception e)
-      {
-         logger.info("Could not start Streamflow", e);
-
-         if (component != null)
-            component.stop();
-         throw e;
       } catch (Throwable e)
       {
          logger.info("Could not start Streamflow", e);
 
          if (component != null)
             component.stop();
-         throw (RuntimeException) e;
+         throw e;
       } finally
       {
          Thread.currentThread().setContextClassLoader( null );
@@ -104,7 +97,7 @@ public class MainWeb
       return new ClassLoaderFilter(application.getContext(), application);
    }
 
-   public void stop() throws Exception
+   public void stop() throws Throwable
    {
       logger.info("Stopping Streamflow");
       component.stop();
