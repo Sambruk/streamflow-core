@@ -27,7 +27,7 @@
                         <Export-Package></Export-Package>
                         <Import-Package>*;version=0.0</Import-Package>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-                        <Bundle-Activator>se.streamsource.streamflow.plugin.helloworld.EniroLookupService
+                        <Bundle-Activator>se.streamsource.streamflow.plugin.contact.EniroContactLookupService
                         </Bundle-Activator>
                         <Embed-Dependency>*;scope=compile|runtime;type=!pom;inline=false</Embed-Dependency>
                     </instructions>
@@ -96,7 +96,13 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <scope>provided</scope>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-jdk14</artifactId>
+            <version>1.6.1</version>
+            <scope>runtime</scope>
         </dependency>
 
     </dependencies>
