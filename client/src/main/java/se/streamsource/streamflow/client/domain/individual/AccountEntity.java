@@ -47,7 +47,7 @@ import se.streamsource.streamflow.resource.user.ChangePasswordCommand;
 import java.io.IOException;
 
 /**
- * JAVADOC
+ * Entity representing a client-side account
  */
 @Mixins({AccountEntity.Mixin.class})
 public interface AccountEntity
@@ -118,7 +118,7 @@ public interface AccountEntity
       {
          AccountSettingsValue settings = accountSettings();
          Reference serverRef = new Reference( settings.server().get() );
-         serverRef.addSegment( "streamflow" ).addSegment( "v1" ).addSegment( "" );
+         serverRef.setPath( "/streamflow/" );
 
          AuthenticationFilter filter = new AuthenticationFilter( uowf, account );
          filter.setNext( (Restlet) client );
