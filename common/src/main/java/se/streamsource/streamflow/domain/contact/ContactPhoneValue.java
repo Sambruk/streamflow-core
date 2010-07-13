@@ -23,7 +23,7 @@ import org.qi4j.api.value.ValueComposite;
 import org.qi4j.library.constraints.annotation.Matches;
 
 /**
- * JAVADOC
+ * Phone information for a contact
  */
 public interface ContactPhoneValue
       extends ValueComposite

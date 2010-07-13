@@ -22,7 +22,7 @@ import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
 
 /**
- * JAVADOC
+ * Address information for a contact
  */
 public interface ContactAddressValue
       extends ValueComposite

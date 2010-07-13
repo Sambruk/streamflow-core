@@ -24,7 +24,7 @@ import org.qi4j.api.value.ValueComposite;
 import org.qi4j.library.constraints.annotation.Matches;
 
 /**
- * JAVADOC
+ * Email information for a contact
  */
 public interface ContactEmailValue
       extends ValueComposite

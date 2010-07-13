@@ -25,7 +25,7 @@ import org.qi4j.library.constraints.annotation.Matches;
 import java.util.List;
 
 /**
- * JAVADOC
+ * Contact information for either a person or a company
  */
 public interface ContactValue
       extends ValueComposite
