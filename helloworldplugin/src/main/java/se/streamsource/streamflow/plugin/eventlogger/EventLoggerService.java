@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.plugin.helloworld;
+package se.streamsource.streamflow.plugin.eventlogger;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;

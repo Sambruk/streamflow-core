@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.plugin.helloworld;
+package se.streamsource.streamflow.plugin.contact;
 
 import org.apache.commons.lang.CharSet;
 import org.ccil.cowan.tagsoup.Parser;
@@ -53,6 +53,7 @@ import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
 import se.streamsource.streamflow.server.plugin.ContactLookup;
+import se.streamsource.streamflow.server.plugin.contact.ContactLookup;
 
 import javax.xml.namespace.QName;
 import javax.xml.transform.Transformer;
