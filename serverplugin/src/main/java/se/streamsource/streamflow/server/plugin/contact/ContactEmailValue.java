@@ -15,14 +15,28 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.server.plugin;
+package se.streamsource.streamflow.server.plugin.contact;
 
-import se.streamsource.streamflow.domain.contact.ContactValue;
+import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueComposite;
+import org.qi4j.library.constraints.annotation.Matches;
 
 /**
- * JAVADOC
+ * Email information for a contact
  */
-public interface ContactLookup
+public interface ContactEmailValue
+      extends ValueComposite
 {
-   Iterable<ContactValue> lookup(ContactValue contactTemplate);
+   public enum ContactType
+   {
+      HOME, WORK, OTHER
+   }
+
+   @UseDefaults
+   Property<ContactType> contactType();
+
+   @UseDefaults
+   @Matches("(.*@.*)?")
+   Property<String> emailAddress();
 }
