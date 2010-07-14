@@ -17,18 +17,11 @@
 
 package se.streamsource.streamflow.web.assembler;
 
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleReference;
-import org.qi4j.api.common.Visibility;
-import org.qi4j.api.structure.Application;
 import org.qi4j.bootstrap.ApplicationAssembler;
 import org.qi4j.bootstrap.ApplicationAssembly;
 import org.qi4j.bootstrap.ApplicationAssemblyFactory;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.LayerAssembly;
-import org.qi4j.bootstrap.ModuleAssembly;
-import se.streamsource.streamflow.infrastructure.event.EventListener;
-import se.streamsource.streamflow.web.application.organization.BootstrapAssembler;
 
 /**
  * JAVADOC
@@ -51,14 +44,6 @@ public class StreamflowWebAssembler
       for (Object serviceObject : serviceObjects)
       {
          assembly.setMetaInfo( serviceObject );
-      }
-
-      // Make bundle context available as application metainfo
-      ClassLoader classLoader = getClass().getClassLoader();
-      if (classLoader instanceof BundleReference)
-      {
-         BundleContext context = BundleReference.class.cast( classLoader ).getBundle().getBundleContext();
-         assembly.setMetaInfo( context );
       }
 
       // Version name rules: x.y.sprint.revision

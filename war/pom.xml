@@ -15,7 +15,7 @@
     <name>Streamflow war</name>
     <description>Streamflow WAR packaging</description>
     <properties>
-        <deploy.dir>${glassfish.domain}/streamflow</deploy.dir>
+        <deploy.dir>${glassfish.domain}/autodeploy</deploy.dir>
     </properties>
 
     <build>
@@ -76,76 +76,6 @@
                         </artifactItem>
                     </artifactItems>
                     <outputDirectory>${project.build.directory}/${project.build.finalName}/webstart</outputDirectory>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <extensions>true</extensions>
-                <configuration>
-                    <supportedProjectTypes>
-                        <supportedProjectType>war</supportedProjectType>
-                        <supportedProjectType>bundle</supportedProjectType>
-                        <supportedProjectType>jar</supportedProjectType>
-                    </supportedProjectTypes>
-                    <instructions>
-                        <!-- Read all OSGi configuration info from this optional file -->
-                        <_include>-osgi.bundle</_include>
-                        <!-- By default, we don't export anything -->
-                        <Bundle-ClassPath>WEB-INF/classes,WEB-INF/lib/webstart-jnlp-servlet-1.0-6.0-02_ea_b02.jar
-                        </Bundle-ClassPath>
-                        <Import-Package>
-                            org.osgi.framework,org.osgi.util.tracker,org.restlet,org.restlet.ext.servlet,javax.servlet,javax.servlet.http
-                        </Import-Package>
-                        <Export-Package></Export-Package>
-                        <Private-Package>*</Private-Package>
-                        <Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>
-                    </instructions>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>bundle-manifest</id>
-                        <phase>process-classes</phase>
-                        <goals>
-                            <goal>manifest</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <artifactId>maven-jar-plugin</artifactId>
-                <configuration>
-                    <archive>
-                        <!-- add bundle plugin generated manifest to the jar -->
-                        <manifestFile>
-                            ${project.build.outputDirectory}/META-INF/MANIFEST.MF
-                        </manifestFile>
-                    </archive>
-                </configuration>
-            </plugin>
-            <plugin> <!-- Need to use this plugin to build war files -->
-                <artifactId>maven-war-plugin</artifactId>
-                <groupId>org.apache.maven.plugins</groupId>
-                <!-- Use version 2.1-beta-1, as it supports the new property failOnMissingWebXml -->
-                <version>2.1-beta-1</version>
-                <configuration>
-                    <archive>
-                        <!-- add bundle plugin generated manifest to the war -->
-                        <manifestFile>
-                            ${project.build.outputDirectory}/META-INF/MANIFEST.MF
-                        </manifestFile>
-                        <!-- For some reason, adding Bundle-ClassPath in maven-bundle-plugin
-                        confuses that plugin and it generates wrong Import-Package, etc.
-                        So, we generate it here.
-                        -->
-                        <manifestEntries>
-                            <Bundle-ClassPath>WEB-INF/classes/
-                            </Bundle-ClassPath>
-                        </manifestEntries>
-                    </archive>
-                    <!-- We don't have a web.xml -->
-                    <failOnMissingWebXml>false</failOnMissingWebXml>
                 </configuration>
             </plugin>
 
@@ -250,29 +180,6 @@
     </profiles> -->
 
     <dependencies>
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.compendium</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.restlet.jee</groupId>
-            <artifactId>org.restlet</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.restlet.jee</groupId>
-            <artifactId>org.restlet.ext.servlet</artifactId>
-            <version>${version.restlet}</version>
-            <scope>provided</scope>
-        </dependency>
-
         <!-- Web -->
         <dependency>
             <groupId>org.codehaus.mojo.webstart</groupId>

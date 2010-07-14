@@ -18,11 +18,8 @@
 package se.streamsource.streamflow.plugin.contact;
 
 import org.ccil.cowan.tagsoup.Parser;
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
-import org.osgi.framework.ServiceRegistration;
 import org.qi4j.api.Qi4j;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.value.ValueBuilder;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -44,34 +41,18 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 /**
  * Implementation of contact lookup that gets info from Eniro.se
  */
 public class EniroContactLookupService
-   implements BundleActivator, ContactLookup
+   implements ContactLookup
 {
-   private BundleContext bundleContext;
-   public ServiceRegistration registration;
-
-   public void start( BundleContext bundleContext ) throws Exception
-   {
-      this.bundleContext = bundleContext;
-
-      registration = bundleContext.registerService( ContactLookup.class.getName(), this, new Properties() );
-   }
-
-   public void stop( BundleContext bundleContext ) throws Exception
-   {
-      registration.unregister();
-   }
+   private @Structure
+   Qi4j qi4j;
 
    public Iterable<ContactValue> lookup( ContactValue contactTemplate )
    {
-      ServiceReference reference = bundleContext.getServiceReference( Qi4j.class.getName() );
-      Qi4j qi4j = (Qi4j) bundleContext.getService( reference );
-
       String searchString = "";
 
       if (!contactTemplate.name().get().equals(""))

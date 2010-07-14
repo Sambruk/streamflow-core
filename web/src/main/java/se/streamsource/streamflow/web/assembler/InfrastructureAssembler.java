@@ -20,7 +20,6 @@ package se.streamsource.streamflow.web.assembler;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.osgi.framework.BundleReference;
 import org.qi4j.api.common.Visibility;
 import org.qi4j.api.structure.Application;
 import org.qi4j.bootstrap.AssemblyException;
@@ -54,7 +53,6 @@ import se.streamsource.streamflow.web.infrastructure.event.EventSourceService;
 import se.streamsource.streamflow.web.infrastructure.event.JdbmEventStoreService;
 import se.streamsource.streamflow.web.infrastructure.index.EmbeddedSolrService;
 import se.streamsource.streamflow.web.infrastructure.index.SolrQueryService;
-import se.streamsource.streamflow.web.infrastructure.osgi.OSGiServicesService;
 
 import javax.sql.DataSource;
 
@@ -72,16 +70,6 @@ public class InfrastructureAssembler
       events(layer.moduleAssembly( "Events" ));
       searchEngine(layer.moduleAssembly( "Search engine" ));
       attachments(layer.moduleAssembly( "Attachments store" ));
-
-      if (InfrastructureAssembler.class.getClassLoader() instanceof BundleReference)
-      {
-         osgi(layer.moduleAssembly( "OSGi Service import" ));
-      }
-   }
-
-   private void osgi( ModuleAssembly module ) throws AssemblyException
-   {
-      module.addServices( OSGiServicesService.class ).visibleIn( Visibility.application );
    }
 
    private void attachments( ModuleAssembly module ) throws AssemblyException

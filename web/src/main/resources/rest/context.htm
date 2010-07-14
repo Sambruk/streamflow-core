@@ -19,15 +19,16 @@
 
 <html>
 <head>
-    <title>Title = ${request.resourceRef.remainingPart}</title>
+    <title>Streamflow REST API</title>
     <link rel="stylesheet" type="text/css" href="/streamflow/static/rest.css" />
 </head>
 
 <body>
 
-<h1>${request.resourceRef.remainingPart}</h1>
+<h1>Streamflow REST API</h1>
 
-#if ($result.queries)
+This is the entry point for the Streamflow REST API.
+
 <div class="block">
 <h2>Queries</h2>
 <ul>
@@ -37,18 +38,14 @@
 #end
 </ul>
 </div>
-#end
 
-#if($result.commands)
 <div class="block">
 <h2>Commands</h2>
 #foreach($command in $result.commands)
 <form name="$command" action="$command" method="POST" ><input type="submit" value="$command"/> </form>
 #end
 </div>
-#end
 
-#if($result.contexts)
 <div class="block">
 <h2>Sub-contexts</h2>
 <ul>
@@ -59,7 +56,6 @@
 #end
 </ul>
 </div>
-#end
 
 #if ($result.index)
 

@@ -17,7 +17,6 @@
 
 package se.streamsource.streamflow.web.assembler;
 
-import org.osgi.framework.BundleReference;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
@@ -31,8 +30,6 @@ import org.restlet.security.ChallengeAuthenticator;
 import se.streamsource.dci.restlet.server.DCIAssembler;
 import se.streamsource.dci.restlet.server.DefaultResponseWriterFactory;
 import se.streamsource.dci.restlet.server.ResourceFinder;
-import se.streamsource.streamflow.web.infrastructure.osgi.OSGiAPIExporterService;
-import se.streamsource.streamflow.web.infrastructure.osgi.OSGiExporterService;
 import se.streamsource.streamflow.web.resource.APIv1Router;
 import se.streamsource.streamflow.web.resource.EventsCommandResult;
 import se.streamsource.streamflow.web.resource.StreamflowRootContextFactory;
@@ -51,15 +48,6 @@ public class WebAssembler
          throws AssemblyException
    {
       rest(layer.moduleAssembly( "REST" ));
-
-      if (WebAssembler.class.getClassLoader() instanceof BundleReference)
-         osgi(layer.moduleAssembly( "OSGi Exported services" ));
-   }
-
-   private void osgi( ModuleAssembly module ) throws AssemblyException
-   {
-//      module.addServices( OSGiExporterService.class ).instantiateOnStartup();
-      module.addServices( OSGiAPIExporterService.class ).instantiateOnStartup();
    }
 
    private void rest( ModuleAssembly module ) throws AssemblyException

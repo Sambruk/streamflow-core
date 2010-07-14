@@ -23,23 +23,13 @@
          xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee
     http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd" version="2.4">
     <servlet>
-        <servlet-name>JnlpDownloadServlet</servlet-name>
-        <servlet-class>jnlp.sample.servlet.JnlpDownloadServlet</servlet-class>
-        <init-param>
-            <param-name>logLevel</param-name>
-            <param-value>DEBUG</param-value>
-        </init-param>
-
+        <servlet-name>StreamflowServlet</servlet-name>
+        <servlet-class>se.streamsource.streamflow.web.servlet.StreamflowServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
     </servlet>
 
     <servlet-mapping>
-        <servlet-name>JnlpDownloadServlet</servlet-name>
-        <url-pattern>/webstart/*</url-pattern>
+        <servlet-name>StreamflowServlet</servlet-name>
+        <url-pattern>/*</url-pattern>
     </servlet-mapping>
-
-    <welcome-file-list>
-        <welcome-file>index.html</welcome-file>
-        <welcome-file>index.jsp</welcome-file>
-    </welcome-file-list>
-
 </web-app>

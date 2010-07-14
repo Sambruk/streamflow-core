@@ -25,7 +25,6 @@ import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.spi.service.importer.NewObjectImporter;
 import se.streamsource.dci.api.InteractionConstraintsService;
-import se.streamsource.streamflow.server.plugin.contact.ContactLookup;
 import se.streamsource.streamflow.web.context.RequiresPermission;
 import se.streamsource.streamflow.web.context.RootContext;
 import se.streamsource.streamflow.web.context.ServiceAvailable;
@@ -112,7 +111,6 @@ import se.streamsource.streamflow.web.context.users.workspace.WorkspaceContext;
 import se.streamsource.streamflow.web.context.users.workspace.WorkspaceProjectContext;
 import se.streamsource.streamflow.web.context.users.workspace.WorkspaceProjectsContext;
 import se.streamsource.streamflow.web.context.users.workspace.WorkspaceUserContext;
-import se.streamsource.streamflow.web.infrastructure.osgi.OSGiServiceImporter;
 
 import static org.qi4j.bootstrap.ImportedServiceDeclaration.INSTANCE;
 
@@ -141,10 +139,6 @@ public class InteractionsAssembler
       DiskFileItemFactory factory = new DiskFileItemFactory();
       factory.setSizeThreshold( 1024 * 1000 * 30 ); // 30 Mb threshold TODO Make this into real service and make this number configurable
       module.importServices( FileItemFactory.class ).importedBy( INSTANCE ).setMetaInfo( factory );
-
-      // Import plugins from OSGi
-      module.importServices( ContactLookup.class ).importedBy( OSGiServiceImporter.class );
-//      moduleAssembly.importServices( ContactLookup.class ).importedBy( ImportedServiceDeclaration.INSTANCE );
 
       // Only expose the root to the upper layers
       module.addTransients(
