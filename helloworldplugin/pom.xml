@@ -25,7 +25,7 @@
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>wagon-maven-plugin</artifactId>
                 <configuration>
-                    <url>scp://${deploy.server}${deploy.server.domain}/plugins/</url>
+                    <url>scp://${deploy.server}${deploy.server.domain}/autodeploy/</url>
                 </configuration>
             </plugin>
         </plugins>
