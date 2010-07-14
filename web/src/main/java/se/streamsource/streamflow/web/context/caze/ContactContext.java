@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.web.context.caze;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
@@ -64,6 +65,7 @@ public interface ContactContext
       @Structure
       ValueBuilderFactory vbf;
 
+      @Optional
       @Service
       ServiceReference<ContactLookup> contactLookup;
 
@@ -196,15 +198,21 @@ public interface ContactContext
 
          try
          {
-            ContactLookup lookup = contactLookup.get();
-            Iterable<se.streamsource.streamflow.server.plugin.contact.ContactValue> possibleContacts = lookup.lookup( pluginContact );
-            List<ContactValue> contactList = builder.prototype().contacts().get();
-
-            for (se.streamsource.streamflow.server.plugin.contact.ContactValue possibleContact : possibleContacts)
+            if (contactLookup != null)
             {
-               contactList.add( vbf.newValueFromJSON( ContactValue.class, possibleContact.toJSON() ));
+               ContactLookup lookup = contactLookup.get();
+               Iterable<se.streamsource.streamflow.server.plugin.contact.ContactValue> possibleContacts = lookup.lookup( pluginContact );
+               List<ContactValue> contactList = builder.prototype().contacts().get();
+
+               for (se.streamsource.streamflow.server.plugin.contact.ContactValue possibleContact : possibleContacts)
+               {
+                  contactList.add( vbf.newValueFromJSON( ContactValue.class, possibleContact.toJSON() ));
+               }
+               return builder.newInstance();
+            } else
+            {
+               return builder.newInstance();
             }
-            return builder.newInstance();
          } catch (ServiceImporterException e)
          {
             // Not available at this time
