@@ -636,7 +636,7 @@
                                 </execution>
                             </executions>
                             <configuration>
-                                <fromFile>target/${project.build.finalName}.jar</fromFile>
+                                <fromFile>target/${project.build.finalName}.war</fromFile>
                                 <serverId>deploy.streamflow</serverId>
                                 <url>scp://${deploy.server}${deploy.server.domain}/autodeploy/</url>
                                 <toFile>${project.build.finalName}.war</toFile>
