@@ -639,7 +639,7 @@
                                 <fromFile>target/${project.build.finalName}.jar</fromFile>
                                 <serverId>deploy.streamflow</serverId>
                                 <url>scp://${deploy.server}${deploy.server.domain}/autodeploy/</url>
-                                <toFile>${project.build.finalName}.jar</toFile>
+                                <toFile>${project.build.finalName}.war</toFile>
                             </configuration>
                         </plugin>
                     </plugins>
