@@ -480,22 +480,22 @@
                 <scope>compile</scope>
                 <exclusions>
                     <exclusion>
-                      <groupId>javax.mail</groupId>
-                      <artifactId>mail</artifactId>
+                        <groupId>javax.mail</groupId>
+                        <artifactId>mail</artifactId>
                     </exclusion>
                     <exclusion>
-                      <groupId>javax.jms</groupId>
-                      <artifactId>jms</artifactId>
+                        <groupId>javax.jms</groupId>
+                        <artifactId>jms</artifactId>
                     </exclusion>
                     <exclusion>
-                      <groupId>com.sun.jdmk</groupId>
-                      <artifactId>jmxtools</artifactId>
+                        <groupId>com.sun.jdmk</groupId>
+                        <artifactId>jmxtools</artifactId>
                     </exclusion>
                     <exclusion>
-                      <groupId>com.sun.jmx</groupId>
-                      <artifactId>jmxri</artifactId>
+                        <groupId>com.sun.jmx</groupId>
+                        <artifactId>jmxri</artifactId>
                     </exclusion>
-                  </exclusions>
+                </exclusions>
             </dependency>
 
             <!-- REST -->
@@ -557,14 +557,14 @@
                 <version>4.4</version>
                 <scope>test</scope>
             </dependency>
-<!--
-            <dependency>
-                <groupId>commons-logging</groupId>
-                <artifactId>commons-logging</artifactId>
-                <version>1.1</version>
-                <scope>test</scope>
-            </dependency>
--->
+            <!--
+                        <dependency>
+                            <groupId>commons-logging</groupId>
+                            <artifactId>commons-logging</artifactId>
+                            <version>1.1</version>
+                            <scope>test</scope>
+                        </dependency>
+            -->
             <dependency>
                 <groupId>log4j</groupId>
                 <artifactId>log4j</artifactId>
@@ -638,7 +638,7 @@
                             <configuration>
                                 <fromFile>target/${project.build.finalName}.jar</fromFile>
                                 <serverId>deploy.streamflow</serverId>
-                                <url>scp://${deploy.server}${deploy.server.domain}/streamflow/</url>
+                                <url>scp://${deploy.server}${deploy.server.domain}/autodeploy/</url>
                                 <toFile>${project.build.finalName}.jar</toFile>
                             </configuration>
                         </plugin>
