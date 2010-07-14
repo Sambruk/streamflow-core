@@ -139,9 +139,6 @@ public interface FormSubmissions
             {
                FieldValue fieldValue = ((FieldValueDefinition.Data) field).fieldValue().get();
 
-               if (fieldValue instanceof CommentFieldValue)
-                  continue;
-
                valueBuilder.prototype().description().set( field.getDescription() );
                valueBuilder.prototype().note().set( field.getNote() );
                valueBuilder.prototype().field().set( EntityReference.getEntityReference( field ));

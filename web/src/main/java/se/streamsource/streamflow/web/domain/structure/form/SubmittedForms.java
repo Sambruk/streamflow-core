@@ -25,6 +25,7 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
+import se.streamsource.streamflow.domain.form.CommentFieldValue;
 import se.streamsource.streamflow.domain.form.EffectiveFieldValue;
 import se.streamsource.streamflow.domain.form.EffectiveFormFieldsValue;
 import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
@@ -84,15 +85,19 @@ public interface SubmittedForms
          {
             for (FieldSubmissionValue field : pageValue.fields().get())
             {
-               fieldBuilder.prototype().field().set( field.field().get().field().get() );
-               if ( field.value().get() == null )
+               // ignore comment fields when submitting
+               if ( !(field.field().get().fieldValue().get() instanceof CommentFieldValue) )
                {
-                  fieldBuilder.prototype().value().set( "" );
-               } else
+                  fieldBuilder.prototype().field().set( field.field().get().field().get() );
+                  if ( field.value().get() == null )
+                  {
+                     fieldBuilder.prototype().value().set( "" );
+                  } else
 
-               fieldBuilder.prototype().value().set( field.value().get() );
+                     fieldBuilder.prototype().value().set( field.value().get() );
 
-               formBuilder.prototype().values().get().add( fieldBuilder.newInstance() );
+                  formBuilder.prototype().values().get().add( fieldBuilder.newInstance() );
+               }
             }
          }
 
