@@ -53,8 +53,10 @@
                             <port>8082</port>
                         </connector>
                     </connectors>
+                    <scanIntervalSeconds>10</scanIntervalSeconds>
+                    <stopKey>stopit</stopKey>
+                    <stopPort>9999</stopPort>
                 </configuration>
-
             </plugin>
 
             <plugin>
@@ -253,10 +255,10 @@
             <version>3.1.3</version>
             <exclusions>
                 <exclusion>
-                  <groupId>org.slf4j</groupId>
-                  <artifactId>slf4j-simple</artifactId>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-simple</artifactId>
                 </exclusion>
-              </exclusions>
+            </exclusions>
         </dependency>
 
         <!-- Testing -->
