@@ -30,7 +30,7 @@ import org.restlet.security.ChallengeAuthenticator;
 import se.streamsource.dci.restlet.server.DCIAssembler;
 import se.streamsource.dci.restlet.server.DefaultResponseWriterFactory;
 import se.streamsource.dci.restlet.server.ResourceFinder;
-import se.streamsource.streamflow.web.resource.APIv1Router;
+import se.streamsource.streamflow.web.resource.APIRouter;
 import se.streamsource.streamflow.web.resource.EventsCommandResult;
 import se.streamsource.streamflow.web.resource.StreamflowRootContextFactory;
 import se.streamsource.streamflow.web.resource.admin.ConsoleServerResource;
@@ -71,7 +71,7 @@ public class WebAssembler
 
       // Resources
       module.addObjects(
-            APIv1Router.class,
+            APIRouter.class,
             StreamflowRootContextFactory.class,
 
             // Events

@@ -58,10 +58,10 @@ public class MainWeb
 
       // Install SL4J Bridge. This will eventually delegate to log4j for logging
       SLF4JBridgeHandler.install();
-*/
 
       URL logConfig = getClass().getResource( "/log4j.xml" );
       DOMConfigurator.configure( logConfig );
+*/
 
       logger = LoggerFactory.getLogger( getClass() );
       logger.info("Starting Streamflow");
@@ -75,7 +75,7 @@ public class MainWeb
          component.getClients().add( Protocol.FILE );
          application = new StreamflowRestApplication( component.getContext().createChildContext() );
 
-         component.getDefaultHost().attach( "/streamflow/streamflow", application );
+         component.getDefaultHost().attach( "/streamflow", application );
          component.start();
          logger.info("Started Streamflow");
       } catch (Throwable e)

@@ -18,22 +18,35 @@
 package se.streamsource.streamflow.web.resource.events;
 
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.util.DateFunctions;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
+import org.restlet.data.Status;
+import org.restlet.ext.atom.Content;
+import org.restlet.ext.atom.Entry;
+import org.restlet.ext.atom.Feed;
+import org.restlet.ext.atom.Text;
 import org.restlet.representation.Representation;
+import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.Variant;
 import org.restlet.representation.WriterRepresentation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
- * Get events since a given date
+ * Get events since a given date in various formats
  */
 public class EventsServerResource
       extends ServerResource
@@ -43,22 +56,106 @@ public class EventsServerResource
 
    public EventsServerResource()
    {
-      getVariants().add( new Variant( MediaType.TEXT_PLAIN ) );
+      getVariants().add(new Variant( MediaType.TEXT_HTML));
+      getVariants().add(new Variant( MediaType.APPLICATION_ATOM));
+      getVariants().add(new Variant( MediaType.APPLICATION_JSON));
    }
 
    @Override
    protected Representation get( Variant variant ) throws ResourceException
    {
+      String before = null;
       String after = getRequest().getResourceRef().getQueryAsForm().getFirstValue( "after" );
+      final List<TransactionEvents> transactions = new ArrayList<TransactionEvents>( );
+      // Get transactions first
       if (after != null)
       {
          final long afterDate = Long.parseLong( after );
 
-         WriterRepresentation representation = new WriterRepresentation( MediaType.TEXT_PLAIN )
+         store.transactionsAfter( afterDate, new RESTTransactionVisitor( transactions ) );
+
+      } else
+      {
+         before = getRequest().getResourceRef().getQueryAsForm().getFirstValue( "before" );
+
+         final long beforeDate = before == null ? System.currentTimeMillis() : Long.parseLong( before );
+
+         store.transactionsBefore( beforeDate, new RESTTransactionVisitor( transactions ) );
+         
+         // Reverse list
+         Collections.reverse( transactions );
+      }
+
+      if (variant.getMediaType().equals( MediaType.TEXT_HTML ))
+      {
+         WriterRepresentation representation = new WriterRepresentation( MediaType.TEXT_HTML )
          {
             public void write( final Writer writer ) throws IOException
             {
-               store.transactionsAfter( afterDate, new RESTTransactionVisitor( writer ) );
+               String earlier = transactions.size() == 0 ? System.currentTimeMillis()+"" : transactions.get( 0 ).timestamp().get().toString();
+               String later = transactions.size() == 0 ? System.currentTimeMillis()+"" : transactions.get( transactions.size()-1).timestamp().get().toString();
+
+               writer.append( "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n" +
+                     "<head>\n" +
+                     "    <title>Domain events</title>\n" +
+                     "</head>\n" +
+                     "\n" +
+                     "<body>\n" +
+                     "<a href=\"?before="+earlier+"\">Earlier</a> | \n" +
+                     "<a href=\"?after="+later+"\">Later</a>\n" +
+                     "<table style=\"font-size:10\" border=\"1\" cellpadding=\"0\">\n" +
+                     "    <tr>\n" +
+                     "        <th>Usecase</th>\n" +
+                     "        <th>Event</th>\n" +
+                     "        <th>Timestamp</th>\n" +
+                     "        <th>Entity</th>\n" +
+                     "        <th>Parameters</th>\n" +
+                     "        <th>User</th>\n" +
+                     "    </tr>\n");
+
+               for (TransactionEvents transaction : transactions)
+               {
+                  for (DomainEvent domainEvent : transaction.events().get())
+                  {
+                     writer.append( "<tr><td>" ).append( domainEvent.usecase().get() ).
+                           append("</td><td>").append( domainEvent.name().get() ).
+                           append("</td><td>").append( DateFunctions.toUtcString( domainEvent.on().get()) ).
+                           append("</td><td>").append( domainEvent.entity().get() ).
+                           append("</td><td>").append( domainEvent.parameters().get() ).
+                           append("</td><td>").append( domainEvent.by().get() ).
+                           append("</td></tr>");
+                  }
+               }
+
+               writer.append("</table>\n" +
+                     "</body>\n" +
+                     "\n" +
+                     "</html>" );
+            }
+         };
+
+         representation.setCharacterSet( CharacterSet.UTF_8 );
+         return representation;
+      } else if (variant.getMediaType().equals( MediaType.APPLICATION_ATOM ))
+      {
+         final Feed feed = new Feed();
+         feed.setTitle( new Text("Domain events"+ (after == null ? " before "+before : " after "+after)));
+
+         for (TransactionEvents transaction : transactions)
+         {
+            Entry entry = new Entry();
+            entry.setPublished( new Date(transaction.timestamp().get()) );
+            Content content = new Content();
+            content.setInlineContent( new StringRepresentation(transaction.toJSON(), MediaType.APPLICATION_JSON) );
+            entry.setContent( content );
+            feed.getEntries().add( entry );
+         }
+
+         WriterRepresentation representation = new WriterRepresentation( MediaType.TEXT_HTML )
+         {
+            public void write( final Writer writer ) throws IOException
+            {
+               feed.write( writer );
             }
          };
 
@@ -66,20 +163,7 @@ public class EventsServerResource
          return representation;
       } else
       {
-         String before = getRequest().getResourceRef().getQueryAsForm().getFirstValue( "before" );
-
-         final long beforeDate = before == null ? System.currentTimeMillis() : Long.parseLong( before );
-
-         WriterRepresentation representation = new WriterRepresentation( MediaType.TEXT_PLAIN )
-         {
-            public void write( final Writer writer ) throws IOException
-            {
-               store.transactionsBefore( beforeDate, new RESTTransactionVisitor( writer ) );
-            }
-         };
-
-         representation.setCharacterSet( CharacterSet.UTF_8 );
-         return representation;
+         throw new ResourceException( Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE);
       }
    }
 
@@ -88,28 +172,20 @@ public class EventsServerResource
       int maxResults = 100;
       int currentResults = 0;
 
-      private final Writer writer;
+      private List<TransactionEvents> transactions;
 
-      public RESTTransactionVisitor( Writer writer )
+      public RESTTransactionVisitor( List<TransactionEvents> transactions)
       {
-         this.writer = writer;
+         this.transactions = transactions;
       }
 
       public boolean visit( TransactionEvents transaction )
       {
-         try
-         {
-            String json = transaction.toJSON();
-            writer.write( json );
-            writer.write( '\n' );
+         transactions.add( transaction );
 
-            currentResults++;
+         currentResults++;
 
-            return currentResults < maxResults;
-         } catch (IOException e)
-         {
-            return false;
-         }
+         return currentResults < maxResults;
       }
    }
 }

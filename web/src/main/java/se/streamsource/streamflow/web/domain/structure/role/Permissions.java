@@ -70,12 +70,16 @@ public interface Permissions
 
       public void addedPermission( DomainEvent event, String permission )
       {
-         permissions().get().add( permission );
+         List<String> permissionList = permissions().get();
+         permissionList.add( permission );
+         permissions().set( permissionList );
       }
 
       public void removedPermission( DomainEvent event, String permission )
       {
-         permissions().get().remove( permission );
+         List<String> permissionList = permissions().get();
+         permissionList.remove( permission );
+         permissions().set( permissionList );
       }
    }
 }

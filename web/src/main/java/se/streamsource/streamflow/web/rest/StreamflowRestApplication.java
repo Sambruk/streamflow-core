@@ -34,7 +34,7 @@ import org.restlet.security.Enroler;
 import org.restlet.security.Verifier;
 import se.streamsource.streamflow.web.assembler.StreamflowWebAssembler;
 import se.streamsource.streamflow.web.application.security.DefaultEnroler;
-import se.streamsource.streamflow.web.resource.APIv1Router;
+import se.streamsource.streamflow.web.resource.APIRouter;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,7 +82,7 @@ public class StreamflowRestApplication
 
       Router versions = new Router( getContext() );
 
-      Router api = factory.newObjectBuilder( APIv1Router.class ).use( getContext() ).newInstance();
+      Router api = factory.newObjectBuilder( APIRouter.class ).use( getContext() ).newInstance();
       versions.attachDefault( api );
 
       return versions;

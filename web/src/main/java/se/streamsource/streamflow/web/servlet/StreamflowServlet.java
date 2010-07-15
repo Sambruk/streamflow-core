@@ -27,7 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * Servlet that starts Streamflow app and delegates requests to it
+ * Servlet that starts Streamflow and delegates requests to it
  */
 public class StreamflowServlet
       extends HttpServlet

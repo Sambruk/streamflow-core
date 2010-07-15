@@ -24,7 +24,7 @@ import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.LayerAssembly;
 
 /**
- * JAVADOC
+ * Assembly of the Streamflow Server
  */
 public class StreamflowWebAssembler
       implements ApplicationAssembler
@@ -47,7 +47,7 @@ public class StreamflowWebAssembler
       }
 
       // Version name rules: x.y.sprint.revision
-      assembly.setVersion( "0.7.25.1665" );
+      assembly.setVersion( "1.1.5.2083" );
 
       LayerAssembly configurationLayer = assembly.layerAssembly( "Configuration" );
       LayerAssembly domainInfrastructureLayer = assembly.layerAssembly( "Domain infrastructure" );

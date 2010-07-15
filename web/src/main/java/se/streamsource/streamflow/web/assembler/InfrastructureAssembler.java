@@ -23,6 +23,7 @@ import org.json.JSONObject;
 import org.qi4j.api.common.Visibility;
 import org.qi4j.api.structure.Application;
 import org.qi4j.bootstrap.AssemblyException;
+import org.qi4j.bootstrap.ImportedServiceDeclaration;
 import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.entitystore.jdbm.JdbmEntityStoreService;
@@ -34,6 +35,7 @@ import org.qi4j.library.rdf.entity.EntityStateSerializer;
 import org.qi4j.library.rdf.entity.EntityTypeSerializer;
 import org.qi4j.library.rdf.repository.MemoryRepositoryService;
 import org.qi4j.library.rdf.repository.NativeRepositoryService;
+import org.qi4j.migration.MigrationEventLogger;
 import org.qi4j.migration.MigrationService;
 import org.qi4j.migration.Migrator;
 import org.qi4j.migration.assembly.EntityMigrationOperation;
@@ -175,10 +177,10 @@ public class InfrastructureAssembler
                withEntities( "ProjectEntity", "ProjectRoleEntity" ).
                end().
                renamePackage( "se.streamsource.streamflow.web.domain.task", "se.streamsource.streamflow.web.domain.entity.task" ).
-               withEntities( "CaseEntity").
+               withEntities( "TaskEntity").
                end().
                renamePackage( "se.streamsource.streamflow.web.domain.tasktype", "se.streamsource.streamflow.web.domain.entity.tasktype" ).
-               withEntities( "CaseTypeEntity").
+               withEntities( "TaskTypeEntity").
                end().
                renamePackage( "se.streamsource.streamflow.web.domain.user", "se.streamsource.streamflow.web.domain.entity.user" ).
                withEntities( "UserEntity").
@@ -206,7 +208,7 @@ public class InfrastructureAssembler
                })
                .end().
 
-               toVersion( "0.6.24.1488" ).forEntities( "se.streamsource.streamflow.web.domain.entity.task.CaseEntity" ).
+               toVersion( "0.6.24.1488" ).forEntities( "se.streamsource.streamflow.web.domain.entity.task.TaskEntity" ).
                custom( new EntityMigrationOperation()
                {
                   public boolean upgrade( JSONObject state, StateStore stateStore, Migrator migrator ) throws JSONException
@@ -313,6 +315,8 @@ public class InfrastructureAssembler
                   renameAssociation( "taskType", "caseType" );
 
          module.addServices( MigrationService.class ).setMetaInfo( migrationBuilder );
+         module.addObjects( MigrationEventLogger.class );
+         module.importServices( MigrationEventLogger.class ).importedBy( ImportedServiceDeclaration.NEW_OBJECT );
       }
    }
 

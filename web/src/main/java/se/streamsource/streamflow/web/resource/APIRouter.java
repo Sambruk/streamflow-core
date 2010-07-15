@@ -42,12 +42,12 @@ import se.streamsource.streamflow.web.resource.events.EventsServerResource;
 /**
  * Router for the Streamflow REST API.
  */
-public class APIv1Router
+public class APIRouter
       extends Router
 {
    private ObjectBuilderFactory factory;
 
-   public APIv1Router( @Uses Context context, @Structure ObjectBuilderFactory factory ) throws Exception
+   public APIRouter( @Uses Context context, @Structure ObjectBuilderFactory factory ) throws Exception
    {
       super( context );
       this.factory = factory;
@@ -60,7 +60,7 @@ public class APIv1Router
       attachDefault( new ExtensionMediaTypeFilter( getContext(), auth) );
 
       // Events
-      attach( "/events", createServerResourceFinder( EventsServerResource.class ) );
+      attach( "/events", new ExtensionMediaTypeFilter( getContext(), createServerResourceFinder( EventsServerResource.class )), Template.MODE_STARTS_WITH );
 
       // Admin resources
       Router adminRouter = new Router( getContext() );

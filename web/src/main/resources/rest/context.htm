@@ -21,6 +21,7 @@
 <head>
     <title>Streamflow REST API</title>
     <link rel="stylesheet" type="text/css" href="/streamflow/static/rest.css" />
+    <link rel="alternate" type="application.json" href="${request.getResourceRef()}.json" />
 </head>
 
 <body>
@@ -73,5 +74,17 @@ This is the entry point for the Streamflow REST API.
 <pre>$result.index</pre>
 #end
 #end
+
+<h2>Administration</h2>
+<ul>
+    <li><a href="events">Events</a></li>
+    <li><a href="admin/console">Console</a></li>
+    <li><a href="admin/query">SPARQL Query</a></li>
+    <li><a href="admin/index">RDF Index</a></li>
+</ul>
+
+
+
+
 </body>
 </html>
