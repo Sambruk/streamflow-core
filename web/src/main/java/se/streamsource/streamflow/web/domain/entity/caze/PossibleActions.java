@@ -47,17 +47,19 @@ public interface PossibleActions
          {
             case DRAFT:
             {
-               if (aCase.createdBy().get().equals(actor))
+               if (aCase.createdBy().get().equals( actor ))
                {
-                   if (aCase.owner().get() != null){
+                  if (aCase.owner().get() != null)
+                  {
                      actions.add( "open" );
                      actions.add( "sendto" );
 
-                   } else {
+                  } else
+                  {
 
-                      actions.add( "sendto" );
-                   }
-                  actions.add("delete");
+                     actions.add( "sendto" );
+                  }
+                  actions.add( "delete" );
                }
 
                return;
@@ -71,12 +73,13 @@ public interface PossibleActions
                {
                   if (aCase.isAssigned())
                   {
-                     actions.add( "onhold" );
+                     actions.add( "sendto" );
                      actions.add( "unassign" );
+                     actions.add( "onhold" );
                   } else
                   {
                      actions.add( "assign" );
-                     actions.add(  "sendto" );
+                     actions.add( "sendto" );
                   }
 
                   CaseType caseType = aCase.caseType().get();
