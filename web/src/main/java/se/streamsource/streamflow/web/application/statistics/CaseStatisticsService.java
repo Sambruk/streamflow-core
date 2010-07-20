@@ -17,7 +17,6 @@
 
 package se.streamsource.streamflow.web.application.statistics;
 
-import com.sun.tools.internal.ws.wsdl.framework.NoSuchEntityException;
 import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.entity.Identity;
@@ -31,10 +30,10 @@ import org.qi4j.api.query.QueryBuilder;
 import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
+import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.usecase.UsecaseBuilder;
 import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.spi.entitystore.EntityStore;
 import org.qi4j.spi.structure.ModuleSPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,7 +70,6 @@ import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganizationalUnit;
-import se.streamsource.streamflow.web.domain.structure.project.Member;
 import se.streamsource.streamflow.web.domain.structure.project.Members;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.user.User;
@@ -346,7 +344,7 @@ public interface CaseStatisticsService
                prototype.caseTypeOwnerId().set( caseTypeOwner.identity().get() );
 
             if (aCase.resolution().get() != null)
-               prototype.resolutionId().set( ((Identity)aCase.resolution().get()).identity().get());
+               prototype.resolutionId().set( ((Identity) aCase.resolution().get()).identity().get() );
          }
 
          Owner owner = aCase.owner().get();
@@ -362,7 +360,7 @@ public interface CaseStatisticsService
             Members.Data members = (Members.Data) owner;
             if (members.members().contains( group ))
             {
-               groupId = ((Identity)group).identity().get();
+               groupId = ((Identity) group).identity().get();
                break findgroup;
             }
          }
