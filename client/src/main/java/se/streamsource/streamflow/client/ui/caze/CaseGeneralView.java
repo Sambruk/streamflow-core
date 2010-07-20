@@ -111,7 +111,7 @@ public class CaseGeneralView extends JScrollPane implements Observer
    {
       this.labels = labels;
       this.forms = forms;
-      this.setBorder(BorderFactory.createEmptyBorder());
+      this.setBorder( BorderFactory.createEmptyBorder() );
       getVerticalScrollBar().setUnitIncrement( 30 );
 
       setActionMap( appContext.getActionMap( this ) );
@@ -172,8 +172,8 @@ public class CaseGeneralView extends JScrollPane implements Observer
       //rightBuilder.nextColumn();
       //rightBuilder.nextColumn();
       rightBuilder.add( selectedCaseType,
-            new CellConstraints( 3,2,1,1, CellConstraints.LEFT, CellConstraints.BOTTOM, new Insets(5,0,0,0) ) );
-      
+            new CellConstraints( 3, 2, 1, 1, CellConstraints.LEFT, CellConstraints.BOTTOM, new Insets( 5, 0, 0, 0 ) ) );
+
       rightBuilder.nextLine();
 
       // Select labels
@@ -186,11 +186,11 @@ public class CaseGeneralView extends JScrollPane implements Observer
 
       labelButton.setHorizontalAlignment( SwingConstants.LEFT );
       rightBuilder.add( labelButton,
-            new CellConstraints( 1,3,1,1, CellConstraints.FILL, CellConstraints.TOP, new Insets(5,0,0,0) ) );
+            new CellConstraints( 1, 3, 1, 1, CellConstraints.FILL, CellConstraints.TOP, new Insets( 5, 0, 0, 0 ) ) );
 
-      labels.setPreferredSize( new Dimension( 500, 80 ));
+      labels.setPreferredSize( new Dimension( 500, 80 ) );
       rightBuilder.add( labels,
-            new CellConstraints( 3,3,1,1, CellConstraints.LEFT, CellConstraints.TOP, new Insets(5,0,0,0) ) );
+            new CellConstraints( 3, 3, 1, 1, CellConstraints.LEFT, CellConstraints.TOP, new Insets( 5, 0, 0, 0 ) ) );
       rightBuilder.nextLine();
 
       // Due date
@@ -204,11 +204,11 @@ public class CaseGeneralView extends JScrollPane implements Observer
 
       // Forms
       rightBuilder.add( new JLabel( i18n.text( WorkspaceResources.forms_label ) ),
-            cc.xy( 1, 5, CellConstraints.FILL, CellConstraints.TOP ));
+            cc.xy( 1, 5, CellConstraints.FILL, CellConstraints.TOP ) );
       rightBuilder.nextLine();
       forms.setPreferredSize( new Dimension( 500, 80 ) );
       rightBuilder.add( forms,
-            new CellConstraints( 3,5,1,1, CellConstraints.LEFT, CellConstraints.TOP, new Insets(5,0,0,0) ) );
+            new CellConstraints( 3, 5, 1, 1, CellConstraints.LEFT, CellConstraints.TOP, new Insets( 5, 0, 0, 0 ) ) );
 
       rightBuilder.nextLine();
 
@@ -217,7 +217,6 @@ public class CaseGeneralView extends JScrollPane implements Observer
       calendar.setTime( new Date() );
       calendar.add( Calendar.DAY_OF_MONTH, 1 );
       dueOnField.getMonthView().setLowerBound( calendar.getTime() );
-
 
 
       // Layout and form for the bottom panel
@@ -239,8 +238,8 @@ public class CaseGeneralView extends JScrollPane implements Observer
       bottomBindingBuilder.appendLine( WorkspaceResources.note_label,
             notePane, template.note() );
 
-      JPanel formsContainer = new JPanel( new GridLayout(1,2) );
-      formsContainer.setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
+      JPanel formsContainer = new JPanel( new GridLayout( 1, 2 ) );
+      formsContainer.setBorder( Borders.createEmptyBorder( "2dlu, 2dlu, 2dlu, 2dlu" ) );
       formsContainer.add( notePane );
       formsContainer.add( rightForm );
 
@@ -275,8 +274,8 @@ public class CaseGeneralView extends JScrollPane implements Observer
          }
       } );
 
-      notePane.getViewport().getView().setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, null);
-      notePane.getViewport().getView().setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, null);
+      notePane.getViewport().getView().setFocusTraversalKeys( KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, null );
+      notePane.getViewport().getView().setFocusTraversalKeys( KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, null );
 
       refresher = new RefreshWhenVisible( this );
       addAncestorListener( refresher );
@@ -303,7 +302,7 @@ public class CaseGeneralView extends JScrollPane implements Observer
             .setLinkValue( value );
 
       selectedCaseType.setVisible( value == null ? false : true );
-      
+
 
       caseGeneralModel.addObserver( this );
 
@@ -313,10 +312,10 @@ public class CaseGeneralView extends JScrollPane implements Observer
    private void updateEnabled()
    {
       dueOnField.setEnabled( model.getCommandEnabled( "changedueon" ) );
-      descriptionField.setEnabled( model.getCommandEnabled( "changedescription" ));
-      notePane.getViewport().getView().setEnabled( model.getCommandEnabled( "changenote" ));
-      caseTypeButton.setEnabled( model.getCommandEnabled( "casetype" ));
-      selectedCaseType.setEnabled( model.getCommandEnabled(  "casetype" ));
+      descriptionField.setEnabled( model.getCommandEnabled( "changedescription" ) );
+      notePane.getViewport().getView().setEnabled( model.getCommandEnabled( "changenote" ) );
+      caseTypeButton.setEnabled( model.getCommandEnabled( "casetype" ) );
+      selectedCaseType.setEnabled( model.getCommandEnabled( "casetype" ) );
 
       boolean enabled = model.getCaseStatus().equals( DRAFT ) || model.getCaseStatus().equals( OPEN );
       labelButton.setEnabled( enabled );
@@ -343,7 +342,7 @@ public class CaseGeneralView extends JScrollPane implements Observer
             model.caseType( null );
             selectedCaseType.setVisible( false );
          }
-      } else                                              
+      } else
       {
          CaseGeneralDTO general = model.getGeneral();
          valueBuilder = general.buildWith();
@@ -365,7 +364,7 @@ public class CaseGeneralView extends JScrollPane implements Observer
 
       if (dialog.getSelectedReference() != null)
       {
-         model.caseType( dialog.getSelectedReference() );
+         model.caseType( dialog.getSelectedItem(), dialog.itemList.getTextField().getText() );
          // refresh();
       }
    }

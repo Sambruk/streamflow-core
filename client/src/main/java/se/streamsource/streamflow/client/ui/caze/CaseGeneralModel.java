@@ -73,12 +73,12 @@ public class CaseGeneralModel extends Observable implements Refreshable,
    PossibleFormsModel possibleFormsModel;
    private IndexValue indexValue;
 
-   public CaseGeneralModel(@Uses CommandQueryClient client)
+   public CaseGeneralModel( @Uses CommandQueryClient client )
    {
       this.client = client;
-      eventFilter = new EventVisitorFilter(client.getReference()
+      eventFilter = new EventVisitorFilter( client.getReference()
             .getParentRef().getLastSegment(), this, "addedLabel",
-            "removedLabel", "sentTo", "changedCaseType", "changedStatus");
+            "removedLabel", "sentTo", "changedCaseType", "changedStatus" );
    }
 
    public CaseGeneralDTO getGeneral()
@@ -89,46 +89,46 @@ public class CaseGeneralModel extends Observable implements Refreshable,
       return general;
    }
 
-   public void changeDescription(String newDescription)
+   public void changeDescription( String newDescription )
    {
       try
       {
          ValueBuilder<StringValue> builder = vbf
-               .newValueBuilder( StringValue.class);
-         builder.prototype().string().set(newDescription);
-         client.putCommand("changedescription", builder.newInstance());
+               .newValueBuilder( StringValue.class );
+         builder.prototype().string().set( newDescription );
+         client.putCommand( "changedescription", builder.newInstance() );
       } catch (ResourceException e)
       {
          throw new OperationException(
-               CaseResources.could_not_change_description, e);
+               CaseResources.could_not_change_description, e );
       }
    }
 
-   public void changeNote(String newNote)
+   public void changeNote( String newNote )
    {
       try
       {
          ValueBuilder<StringValue> builder = vbf
-               .newValueBuilder( StringValue.class);
-         builder.prototype().string().set(newNote);
-         client.putCommand("changenote", builder.newInstance());
+               .newValueBuilder( StringValue.class );
+         builder.prototype().string().set( newNote );
+         client.putCommand( "changenote", builder.newInstance() );
       } catch (ResourceException e)
       {
-         throw new OperationException( CaseResources.could_not_change_note, e);
+         throw new OperationException( CaseResources.could_not_change_note, e );
       }
    }
 
-   public void changeDueOn(Date newDueOn)
+   public void changeDueOn( Date newDueOn )
    {
       try
       {
-         ValueBuilder<DateDTO> builder = vbf.newValueBuilder(DateDTO.class);
-         builder.prototype().date().set(newDueOn);
-         client.putCommand("changedueon", builder.newInstance());
+         ValueBuilder<DateDTO> builder = vbf.newValueBuilder( DateDTO.class );
+         builder.prototype().date().set( newDueOn );
+         client.putCommand( "changedueon", builder.newInstance() );
       } catch (ResourceException e)
       {
          throw new OperationException( CaseResources.could_not_change_due_on,
-               e);
+               e );
       }
    }
 
@@ -148,15 +148,15 @@ public class CaseGeneralModel extends Observable implements Refreshable,
       {
          BasicEventList<LinkValue> list = new BasicEventList<LinkValue>();
 
-         LinksValue listValue = client.query("possiblecasetypes",
-               LinksValue.class);
-         list.addAll(listValue.links().get());
+         LinksValue listValue = client.query( "possiblecasetypes",
+               LinksValue.class );
+         list.addAll( listValue.links().get() );
 
          return list;
       } catch (ResourceException e)
       {
-         throw new OperationException(WorkspaceResources.could_not_refresh,
-               e);
+         throw new OperationException( WorkspaceResources.could_not_refresh,
+               e );
       }
    }
 
@@ -166,15 +166,15 @@ public class CaseGeneralModel extends Observable implements Refreshable,
       {
          BasicEventList<LinkValue> list = new BasicEventList<LinkValue>();
 
-         LinksValue listValue = client.getSubClient( "labels" ).query("possiblelabels",
-               LinksValue.class);
-         list.addAll(listValue.links().get());
+         LinksValue listValue = client.getSubClient( "labels" ).query( "possiblelabels",
+               LinksValue.class );
+         list.addAll( listValue.links().get() );
 
          return list;
       } catch (ResourceException e)
       {
-         throw new OperationException(WorkspaceResources.could_not_refresh,
-               e);
+         throw new OperationException( WorkspaceResources.could_not_refresh,
+               e );
       }
    }
 
@@ -185,14 +185,14 @@ public class CaseGeneralModel extends Observable implements Refreshable,
          BasicEventList<LinkValue> list = new BasicEventList<LinkValue>();
 
          LinksValue listValue = client
-               .query("possibleforms", LinksValue.class);
-         list.addAll(listValue.links().get());
+               .query( "possibleforms", LinksValue.class );
+         list.addAll( listValue.links().get() );
 
          return list;
       } catch (ResourceException e)
       {
-         throw new OperationException(WorkspaceResources.could_not_refresh,
-               e);
+         throw new OperationException( WorkspaceResources.could_not_refresh,
+               e );
       }
    }
 
@@ -200,11 +200,11 @@ public class CaseGeneralModel extends Observable implements Refreshable,
    {
       try
       {
-         indexValue = client.query("", IndexValue.class);
+         indexValue = client.query( "", IndexValue.class );
 
          general = (CaseGeneralDTO) indexValue.index().get().buildWith().prototype();
 
-         caseLabelsModel.setLabels(general.labels().get());
+         caseLabelsModel.setLabels( general.labels().get() );
 
          possibleFormsModel.setForms( getPossibleForms() );
 
@@ -213,39 +213,63 @@ public class CaseGeneralModel extends Observable implements Refreshable,
 
       } catch (Exception e)
       {
-         throw new OperationException( CaseResources.could_not_refresh, e);
+         throw new OperationException( CaseResources.could_not_refresh, e );
       }
    }
 
-   public void notifyEvent(DomainEvent event)
+   public void notifyEvent( DomainEvent event )
    {
-      eventFilter.visit(event);
+      eventFilter.visit( event );
 
-      caseLabelsModel.notifyEvent(event);
+      caseLabelsModel.notifyEvent( event );
    }
 
-   public boolean visit(DomainEvent event)
+   public boolean visit( DomainEvent event )
    {
       refresh();
       return true;
    }
 
-   public void caseType(EntityReference selected)
+   public void caseType( EntityReference selected )
    {
       try
       {
          ValueBuilder<EntityReferenceDTO> builder = vbf
-               .newValueBuilder(EntityReferenceDTO.class);
-         builder.prototype().entity().set(selected);
-         client.putCommand("casetype", builder.newInstance());
+               .newValueBuilder( EntityReferenceDTO.class );
+         builder.prototype().entity().set( selected );
+         client.putCommand( "casetype", builder.newInstance() );
       } catch (ResourceException e)
       {
          throw new OperationException(
-               WorkspaceResources.could_not_perform_operation, e);
+               WorkspaceResources.could_not_perform_operation, e );
       }
    }
 
-   public void addLabel(EntityReference entityReference)
+   public void caseType( LinkValue selected, String labelQuery )
+   {
+      try
+      {
+         ValueBuilder<EntityReferenceDTO> builder = vbf
+               .newValueBuilder( EntityReferenceDTO.class );
+         builder.prototype().entity().set( EntityReference.parseEntityReference( selected.id().get() ) );
+         client.putCommand( "casetype", builder.newInstance() );
+
+         // if the query string has any match inside label descriptions
+         // we do a search for that labels and add them to the case automatically
+         if (selected.classes().get().indexOf( labelQuery ) != -1)
+         {
+            ValueBuilder<StringValue> strBuilder = vbf.newValueBuilder( StringValue.class );
+            strBuilder.prototype().string().set( labelQuery );
+            client.getSubClient( "labels" ).putCommand( "addmatchinglabels", strBuilder.newInstance() );
+         }
+      } catch (ResourceException e)
+      {
+         throw new OperationException(
+               WorkspaceResources.could_not_perform_operation, e );
+      }
+   }
+
+   public void addLabel( EntityReference entityReference )
    {
       caseLabelsModel.addLabel( entityReference );
    }
@@ -254,18 +278,19 @@ public class CaseGeneralModel extends Observable implements Refreshable,
    {
       try
       {
-         return client.query("actions", Actions.class);
+         return client.query( "actions", Actions.class );
       } catch (ResourceException e)
       {
          throw new OperationException(
-               WorkspaceResources.could_not_perform_operation, e);
+               WorkspaceResources.could_not_perform_operation, e );
       }
    }
 
-   public boolean getCommandEnabled( String commandName ) 
+   public boolean getCommandEnabled( String commandName )
    {
-      for (String command : indexValue.commands().get()) {
-         if ( command.equals( commandName ) ) return true;
+      for (String command : indexValue.commands().get())
+      {
+         if (command.equals( commandName )) return true;
       }
       return false;
    }

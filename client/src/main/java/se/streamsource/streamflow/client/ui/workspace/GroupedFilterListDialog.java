@@ -28,14 +28,12 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.TitledLinkValue;
-import se.streamsource.streamflow.client.infrastructure.ui.FilteredList;
 import se.streamsource.streamflow.client.infrastructure.ui.GroupedFilteredList;
 
 import javax.swing.JPanel;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -50,11 +48,11 @@ public class GroupedFilterListDialog
    public GroupedFilteredList itemList;
 
    public GroupedFilterListDialog( @Uses String caption,
-                                      final @Uses EventList<TitledLinkValue> items,
-                                      @Service ApplicationContext context,
-                                      @Structure ObjectBuilderFactory obf )
+                                   final @Uses EventList<TitledLinkValue> items,
+                                   @Service ApplicationContext context,
+                                   @Structure ObjectBuilderFactory obf )
    {
-      super( new GridLayout(1, 1) );
+      super( new GridLayout( 1, 1 ) );
 
       setName( caption );
       setActionMap( context.getActionMap( this ) );
@@ -67,7 +65,7 @@ public class GroupedFilterListDialog
 
    public EntityReference getSelectedReference()
    {
-      return selected.size() == 0 ? null : EntityReference.parseEntityReference( selected.get(0).id().get());
+      return selected.size() == 0 ? null : EntityReference.parseEntityReference( selected.get( 0 ).id().get() );
    }
 
    public EntityReference[] getSelectedReferences()
@@ -75,10 +73,20 @@ public class GroupedFilterListDialog
       EntityReference[] refs = new EntityReference[selected.size()];
       for (int i = 0; i < selected.size(); i++)
       {
-         LinkValue linkValue = selected.get(i);
-         refs[i] = EntityReference.parseEntityReference( linkValue.id().get()); 
+         LinkValue linkValue = selected.get( i );
+         refs[i] = EntityReference.parseEntityReference( linkValue.id().get() );
       }
       return refs;
+   }
+
+   public LinkValue getSelectedItem()
+   {
+      return selected.size() == 0 ? null : selected.get( 0 );
+   }
+
+   public List<LinkValue> getSelectedItems()
+   {
+      return selected.size() > 0 ? selected : new ArrayList();
    }
 
    @Action
@@ -87,7 +95,7 @@ public class GroupedFilterListDialog
       selected = new ArrayList<LinkValue>();
       for (Object o : itemList.getList().getSelectedValues())
       {
-         selected.add( (LinkValue) o);
+         selected.add( (LinkValue) o );
       }
 
       WindowUtils.findWindow( this ).dispose();

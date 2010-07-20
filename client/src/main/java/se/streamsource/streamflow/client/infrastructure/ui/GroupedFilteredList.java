@@ -33,15 +33,17 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.BorderLayout;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 /**
  * JAVADOC
  */
 public class GroupedFilteredList
-      extends JPanel
+      extends JPanel implements PropertyChangeListener
 {
    private JTextField textField;
    private JList list;
@@ -54,8 +56,13 @@ public class GroupedFilteredList
 
       textField = new JTextField( 20 );
 
+      FilterLinkListCellRenderer filterCellRenderer = new FilterLinkListCellRenderer();
+      filterCellRenderer.addPropertyChangeListener( this );
+      textField.getDocument().addDocumentListener( filterCellRenderer );
+
       list = new JList();
-      list.setCellRenderer( new SeparatorListCellRenderer(new LinkListCellRenderer()) );
+
+      list.setCellRenderer( new SeparatorListCellRenderer( filterCellRenderer ) );
       list.getSelectionModel().addListSelectionListener( new ListSelectionListener()
       {
          public void valueChanged( ListSelectionEvent e )
@@ -63,7 +70,7 @@ public class GroupedFilteredList
             if (list.getSelectedValue() instanceof SeparatorList.Separator)
                list.clearSelection();
          }
-      });
+      } );
       pane.setViewportView( list );
 
       add( textField, BorderLayout.NORTH );
@@ -114,7 +121,7 @@ public class GroupedFilteredList
                         {
                            list.setSelectedIndex( idx );
                         }
-                     });
+                     } );
 
                      break;
                   }
@@ -122,6 +129,14 @@ public class GroupedFilteredList
 
             }
          }
-      });
+      } );
+   }
+
+   public void propertyChange( PropertyChangeEvent evt )
+   {
+      if (evt.getPropertyName().equals( "text" ))
+      {
+         list.repaint();
+      }
    }
 }
