@@ -159,6 +159,11 @@ public enum AdministrationResources
    rows_label,
    integer_label,
    reset_password_failed,
+   checkboxes,
+   combobox,
+   listbox,
+   optionbuttons,
+   textarea,
    text,
    number,
    date,
@@ -206,6 +211,7 @@ public enum AdministrationResources
    could_not_create_proxyuser,
    could_not_rename_proxyuser,
    members_tab,
-   could_not_reset_password, remove_proxyuser_title, could_not_remove_proxyuser;
+   could_not_reset_password, remove_proxyuser_title, could_not_remove_proxyuser,
+   cols_label;
 
 }

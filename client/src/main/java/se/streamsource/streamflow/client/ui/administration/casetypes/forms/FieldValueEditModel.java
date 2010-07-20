@@ -99,6 +99,14 @@ public class FieldValueEditModel
       client.putCommand( "changerows", builder.newInstance() );
    }
 
+   public void changeCols( Integer newWidth ) throws ResourceException
+   {
+      ValueBuilder<IntegerDTO> builder = vbf.newValueBuilder( IntegerDTO.class );
+      builder.prototype().integer().set( newWidth );
+      client.putCommand( "changecols", builder.newInstance() );
+   }
+
+
    public void changeMultiple( Boolean multiple ) throws ResourceException
    {
       ValueBuilder<BooleanDTO> builder = vbf.newValueBuilder( BooleanDTO.class );

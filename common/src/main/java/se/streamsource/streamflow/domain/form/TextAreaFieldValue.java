@@ -15,24 +15,18 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.client.domain.form;
+package se.streamsource.streamflow.domain.form;
 
-import se.streamsource.streamflow.domain.form.TextFieldValue;
-import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FieldValueTextEditView;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.property.Property;
 
-import java.awt.Component;
-
-import org.qi4j.api.mixin.Mixins;
-@Mixins(ClientTextFieldValue.Mixin.class)
-public interface ClientTextFieldValue
-   extends TextFieldValue, FormFieldEditing
+/**
+ * JAVADOC
+ */
+public interface TextAreaFieldValue
+      extends FieldValue
 {
-   class Mixin
-      implements FormFieldEditing
-   {
-      public Class<? extends Component> getEditorClass( )
-      {
-         return FieldValueTextEditView.class;
-      }
-   }
+   Property<Integer> cols();
+
+   Property<Integer> rows();
 }

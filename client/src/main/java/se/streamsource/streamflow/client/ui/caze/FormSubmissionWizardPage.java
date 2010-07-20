@@ -40,11 +40,16 @@ import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
 import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
 import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.*;
 import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.domain.form.CheckboxesFieldValue;
+import se.streamsource.streamflow.domain.form.ComboBoxFieldValue;
 import se.streamsource.streamflow.domain.form.CommentFieldValue;
 import se.streamsource.streamflow.domain.form.DateFieldValue;
+import se.streamsource.streamflow.domain.form.FieldValue;
+import se.streamsource.streamflow.domain.form.ListBoxFieldValue;
 import se.streamsource.streamflow.domain.form.NumberFieldValue;
+import se.streamsource.streamflow.domain.form.OptionButtonsFieldValue;
 import se.streamsource.streamflow.domain.form.PageSubmissionValue;
-import se.streamsource.streamflow.domain.form.SelectionFieldValue;
+import se.streamsource.streamflow.domain.form.TextAreaFieldValue;
 import se.streamsource.streamflow.domain.form.TextFieldValue;
 import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
 import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
@@ -97,47 +102,53 @@ public class FormSubmissionWizardPage
       for (FieldSubmissionValue value : page.fields().get() )
       {
          JComponent component = null;
-         if ( value.field().get().fieldValue().get() instanceof TextFieldValue)
+         FieldValue fieldValue = value.field().get().fieldValue().get();
+         if ( fieldValue instanceof CheckboxesFieldValue )
          {
-            TextFieldValue field = (TextFieldValue) value.field().get().fieldValue().get();
-            if ( field.rows().get() != null && field.rows().get() > 1)
-            {
-               JScrollPane scroll = (JScrollPane) TEXTAREA.newField();
-               JTextArea text = (JTextArea) scroll.getViewport().getView();
-               text.setRows( field.rows().get());
-               text.setColumns( field.width().get() );
-               component = scroll;
-            } else
-            {
-               component = new JTextField( field.width().get() );
-            }
-         } else if ( value.field().get().fieldValue().get() instanceof DateFieldValue)
+            CheckboxesFieldValue field = (CheckboxesFieldValue) fieldValue;
+            component = new CheckboxesPanel( field.values().get() );
+         } else if ( fieldValue instanceof ComboBoxFieldValue )
          {
-            JXDatePicker datePicker = new JXDatePicker();
-            datePicker.setFormats( DateFormat.getDateInstance( DateFormat.MEDIUM, Locale.getDefault() ) );
-            component = datePicker;
-         } else if ( value.field().get().fieldValue().get() instanceof NumberFieldValue)
+            ComboBoxFieldValue field = (ComboBoxFieldValue) fieldValue;
+            JComboBox box = new JComboBox( field.values().get().toArray() );
+            box.setEditable( true );
+            component = box;
+         } else if ( fieldValue instanceof OptionButtonsFieldValue )
          {
-            NumberFieldValue field = (NumberFieldValue) value.field().get().fieldValue().get();
-
-            NumberFormat numberInstance = NumberFormat.getNumberInstance();
-            numberInstance.setParseIntegerOnly( field.integer().get() );
-            component = new JFormattedTextField( numberInstance );
-         } else if ( value.field().get().fieldValue().get() instanceof SelectionFieldValue)
+            OptionButtonsFieldValue field = (OptionButtonsFieldValue) fieldValue;
+            component = new OptionButtonsPanel( field.values().get() );
+         } else if ( fieldValue instanceof ListBoxFieldValue )
          {
-            SelectionFieldValue field = (SelectionFieldValue) value.field().get().fieldValue().get();
-            if ( field.multiple().get() )
-            {
-               component = new MultiSelectPanel( field.values().get() );
-            } else
-            {
-               component = new JComboBox( field.values().get().toArray() );
-            }
-         } else if ( value.field().get().fieldValue().get() instanceof CommentFieldValue )
+            ListBoxFieldValue field = (ListBoxFieldValue) fieldValue;
+            component = new JComboBox( field.values().get().toArray() );
+         } else if ( fieldValue instanceof CommentFieldValue )
          {
             String comment = value.field().get().note().get();
             comment = comment.replaceAll( "\n", "<br/>" );
             bb.append( new JLabel( "<html>"+comment+"</html>" ) );
+         } else if ( fieldValue instanceof DateFieldValue )
+         {
+            JXDatePicker datePicker = new JXDatePicker();
+            datePicker.setFormats( DateFormat.getDateInstance( DateFormat.MEDIUM, Locale.getDefault() ) );
+            component = datePicker;
+         } else if ( fieldValue instanceof NumberFieldValue )
+         {
+            NumberFieldValue field = (NumberFieldValue) fieldValue;
+            NumberFormat numberInstance = NumberFormat.getNumberInstance();
+            numberInstance.setParseIntegerOnly( field.integer().get() );
+            component = new JFormattedTextField( numberInstance );
+         } else if ( fieldValue instanceof TextAreaFieldValue)
+         {
+            TextAreaFieldValue textAreaFieldValue = (TextAreaFieldValue) fieldValue;
+            JScrollPane scroll = (JScrollPane) TEXTAREA.newField();
+            JTextArea text = (JTextArea) scroll.getViewport().getView();
+            text.setRows( textAreaFieldValue.rows().get());
+            text.setColumns( textAreaFieldValue.cols().get() );
+            component = scroll;
+         } else if ( fieldValue instanceof TextFieldValue )
+         {
+            TextFieldValue textFieldValue = (TextFieldValue) fieldValue;
+            component = new JTextField( textFieldValue.width().get() );
          }
 
          if ( component != null )
@@ -237,9 +248,9 @@ public class FormSubmissionWizardPage
             {
                value = box.getSelectedItem().toString();
             }
-         } else if (component instanceof MultiSelectPanel)
+         } else if (component instanceof CheckboxesPanel)
          {
-            MultiSelectPanel multiSelect = (MultiSelectPanel) component;
+            CheckboxesPanel multiSelect = (CheckboxesPanel) component;
             value = multiSelect.getChecked();
          }
 

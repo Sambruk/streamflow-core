@@ -60,9 +60,13 @@ public class FieldCreationDialog
       formBuilder.append( i18n.text( AdministrationResources.name_label ), nameField );
       box = new JComboBox( new FieldTypes[] {
             FieldTypes.text,
+            FieldTypes.textarea,
+            FieldTypes.checkboxes,
+            FieldTypes.combobox,
+            FieldTypes.listbox,
+            FieldTypes.optionbuttons,
             FieldTypes.date,
             FieldTypes.number,
-            FieldTypes.selection,
             FieldTypes.comment} );
 
       box.setRenderer( new DefaultListCellRenderer() {

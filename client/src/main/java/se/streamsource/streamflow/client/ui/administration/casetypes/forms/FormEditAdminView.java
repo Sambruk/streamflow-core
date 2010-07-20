@@ -47,12 +47,17 @@ import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.caze.CaseResources;
+import se.streamsource.streamflow.domain.form.CheckboxesFieldValue;
+import se.streamsource.streamflow.domain.form.ComboBoxFieldValue;
 import se.streamsource.streamflow.domain.form.CommentFieldValue;
 import se.streamsource.streamflow.domain.form.DateFieldValue;
 import se.streamsource.streamflow.domain.form.FieldValue;
 import se.streamsource.streamflow.domain.form.FormValue;
+import se.streamsource.streamflow.domain.form.ListBoxFieldValue;
 import se.streamsource.streamflow.domain.form.NumberFieldValue;
+import se.streamsource.streamflow.domain.form.OptionButtonsFieldValue;
 import se.streamsource.streamflow.domain.form.SelectionFieldValue;
+import se.streamsource.streamflow.domain.form.TextAreaFieldValue;
 import se.streamsource.streamflow.domain.form.TextFieldValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.PageListItemValue;
@@ -82,8 +87,8 @@ public class FormEditAdminView
       super();
 
       this.model = model;
-      setBorder(BorderFactory.createEmptyBorder());      
-      
+      setBorder(BorderFactory.createEmptyBorder());
+
       JPanel formAttributePanel = new JPanel( new BorderLayout() );
       JPanel leftPanel = new JPanel( new BorderLayout() );
       leftPanel.add( formAttributePanel, BorderLayout.CENTER );
@@ -144,27 +149,51 @@ public class FormEditAdminView
 
                      FieldValue value = editModel.getFieldDefinition().fieldValue().get();
 
-                     if (value instanceof TextFieldValue)
+                     if ( value instanceof CheckboxesFieldValue )
                      {
                         setRightComponent(
-                              obf.newObjectBuilder( FieldValueTextEditView.class ).
+                              obf.newObjectBuilder( FieldEditorCheckboxesFieldValueView.class ).
                                     use( editModel ).newInstance() );
-                     } else if (value instanceof DateFieldValue) {
+                     } else if ( value instanceof ComboBoxFieldValue )
+                     {
                         setRightComponent(
-                              obf.newObjectBuilder( FieldValueDateEditView.class ).
+                              obf.newObjectBuilder( FieldEditorComboBoxFieldValueView.class ).
                                     use( editModel ).newInstance() );
-                     } else if (value instanceof NumberFieldValue)
+                     } else if ( value instanceof CommentFieldValue )
                      {
-                        setRightComponent( obf.newObjectBuilder( FieldValueNumberEditView.class ).
-                              use( editModel ).newInstance() );
-                     } else if (value instanceof SelectionFieldValue)
+                        setRightComponent(
+                              obf.newObjectBuilder( FieldEditorCommentFieldValueView.class ).
+                                    use( editModel ).newInstance() );
+                     } else if ( value instanceof DateFieldValue )
                      {
-                        setRightComponent( obf.newObjectBuilder( FieldValueSelectionEditView.class ).
-                              use( editModel ).newInstance() );
-                     } else if ( value instanceof CommentFieldValue)
+                        setRightComponent(
+                              obf.newObjectBuilder( FieldEditorDateFieldValueView.class ).
+                                    use( editModel ).newInstance() );
+                     } else if ( value instanceof ListBoxFieldValue)
                      {
-                        setRightComponent( obf.newObjectBuilder( FieldValueCommentEditView.class ).
-                              use( editModel ).newInstance() );
+                        setRightComponent(
+                              obf.newObjectBuilder( FieldEditorListBoxFieldValueView.class ).
+                                    use( editModel ).newInstance() );
+                     } else if ( value instanceof NumberFieldValue )
+                     {
+                        setRightComponent(
+                              obf.newObjectBuilder( FieldEditorNumberFieldValueView.class ).
+                                    use( editModel ).newInstance() );
+                     } else if ( value instanceof OptionButtonsFieldValue)
+                     {
+                        setRightComponent(
+                              obf.newObjectBuilder( FieldEditorOptionButtonsFieldValueView.class ).
+                                    use( editModel ).newInstance() );
+                     } else if ( value instanceof TextAreaFieldValue)
+                     {
+                        setRightComponent(
+                              obf.newObjectBuilder( FieldEditorTextAreaFieldValueView.class ).
+                                    use( editModel ).newInstance() );
+                     } else if ( value instanceof TextFieldValue )
+                     {
+                        setRightComponent(
+                              obf.newObjectBuilder( FieldEditorTextFieldValueView.class ).
+                                    use( editModel ).newInstance() );
                      }
                   }
 

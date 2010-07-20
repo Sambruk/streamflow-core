@@ -218,12 +218,10 @@ public interface TestDataService
                page.createField( "Bugname", builder.newInstance() ).changeMandatory( true );
                numberBuilder.prototype().integer().set( true );
                page.createField( "Bug ID", numberBuilder.newInstance() ).changeMandatory( true );
-               builder.prototype().rows().set( 5 );
                page.createField( "Description", builder.newInstance() );
                page = bugreport.createPage( "Date Information" );
                page.createField( "Discovered", dateBuilder.newInstance() ).changeMandatory( true );
                page.createField( "Priority", selectionBuilder.newInstance() ).changeMandatory( true );
-               selectionBuilder.prototype().multiple().set( true );
                values.clear();
                values.add( "Server" );
                values.add( "Client" );
@@ -240,18 +238,15 @@ public interface TestDataService
                Form emailForm = improvement.createForm();
                emailForm.changeDescription( "Email form" );
                emailForm.changeNote( "Form for entering and sending an email" );
-               builder.prototype().rows().set( 0 );
                page = emailForm.createPage( "Email Form" );
                page.createField( "To", builder.newInstance() ).changeNote( "Enter address of receiver. Note it must be a valid email" );
                page.createField( "Subject", builder.newInstance() ).changeNote( "Subject of the mail" );
-               builder.prototype().rows().set( 10 );
                page.createField( "Content", builder.newInstance() ).changeNote( "Mail content" );
                improvement.addSelectedForm( emailForm );
 
                Form resetPasswordForm = passwordReset.createForm();
                resetPasswordForm.changeDescription( "Reset password" );
                resetPasswordForm.changeNote( "Reset password for a user" );
-               builder.prototype().rows().set( 0 );
                page = resetPasswordForm.createPage( "Reset password form" );
                page.createField( "Username", builder.newInstance() ).changeNote( "Username whose password should be reset" );
                passwordReset.addSelectedForm( resetPasswordForm );

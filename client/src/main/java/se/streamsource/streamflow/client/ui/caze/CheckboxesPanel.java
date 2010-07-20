@@ -28,12 +28,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MultiSelectPanel extends JPanel
+public class CheckboxesPanel extends JPanel
 {
 
    Map<String, JCheckBox> checkBoxMap;
 
-   public MultiSelectPanel( List<String> elements )
+   public CheckboxesPanel( List<String> elements )
    {
       JPanel panel = new JPanel( new BorderLayout( ));
       FormLayout formLayout = new FormLayout( "200dlu", "" );

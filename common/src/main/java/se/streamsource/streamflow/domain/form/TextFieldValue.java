@@ -27,7 +27,4 @@ public interface TextFieldValue
       extends FieldValue
 {
    Property<Integer> width();
-
-   @Optional
-   Property<Integer> rows();
 }

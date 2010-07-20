@@ -29,9 +29,11 @@ import org.qi4j.api.util.DateFunctions;
 import org.qi4j.runtime.composite.ConstraintsCheck;
 import org.qi4j.runtime.property.PropertyInstance;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
-import se.streamsource.streamflow.client.ui.caze.MultiSelectPanel;
+import se.streamsource.streamflow.client.ui.caze.CheckboxesPanel;
+import se.streamsource.streamflow.client.ui.caze.OptionButtonsPanel;
 import se.streamsource.streamflow.client.ui.caze.RemovableLabel;
 
+import javax.swing.ButtonModel;
 import javax.swing.InputVerifier;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -40,6 +42,7 @@ import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -95,7 +98,8 @@ public class StateBinder
             JCheckBox.class,
             JXDatePicker.class,
             JComboBox.class,
-            MultiSelectPanel.class,
+            CheckboxesPanel.class,
+            OptionButtonsPanel.class,
             RemovableLabel.class);
 
       errorMessages = ResourceBundle.getBundle( getClass().getName() );
@@ -456,9 +460,9 @@ public class StateBinder
                }
             });
             return binding;
-         } else if (component instanceof MultiSelectPanel)
+         } else if (component instanceof CheckboxesPanel)
          {
-            final MultiSelectPanel multi = (MultiSelectPanel) component;
+            final CheckboxesPanel multi = (CheckboxesPanel) component;
             multi.addActionPerformedListener( new ActionListener() {
 
                public void actionPerformed( ActionEvent actionEvent )
@@ -467,6 +471,17 @@ public class StateBinder
                }
             });
 
+            return binding;
+         } else if ( component instanceof OptionButtonsPanel )
+         {
+           final OptionButtonsPanel optionsPanel = (OptionButtonsPanel) component;
+            optionsPanel.addActionPerformedListener( new ActionListener()
+            {
+               public void actionPerformed( ActionEvent actionEvent )
+               {
+                  binding.updateProperty( ((JRadioButton)actionEvent.getSource()).getText() );
+               }
+            });
             return binding;
          } else if ( component instanceof RemovableLabel )
          {
@@ -506,14 +521,17 @@ public class StateBinder
          } else if (component instanceof JLabel)
          {
             JLabel label = (JLabel) component;
-            label.setText( (String) value == null ? "" : value.toString() );
+            label.setText( value == null ? "" : value.toString() );
          } else if (component instanceof JXDatePicker)
          {
             JXDatePicker datePicker = (JXDatePicker) component;
 
             if ( value instanceof String)
             {
-               datePicker.setDate( DateFunctions.fromString( (String) value ));
+               if ( !((String) value).isEmpty() )
+               {
+                  datePicker.setDate( DateFunctions.fromString( (String) value ) );
+               }
             } else
             {
                datePicker.setDate( (Date) value );
@@ -522,10 +540,13 @@ public class StateBinder
          {
             JComboBox box = (JComboBox) component;
             box.setSelectedItem( value );
-         } else if (component instanceof MultiSelectPanel)
+         } else if (component instanceof CheckboxesPanel)
          {
-            MultiSelectPanel multi = (MultiSelectPanel) component;
+            CheckboxesPanel multi = (CheckboxesPanel) component;
             multi.setChecked( (String) value );
+         } else if ( component instanceof OptionButtonsPanel ) {
+            OptionButtonsPanel optionsPanel = (OptionButtonsPanel) component;
+            optionsPanel.setSelected( (String) value );
          } else if ( component instanceof RemovableLabel )
          {
             RemovableLabel removableLabel = (RemovableLabel) component;

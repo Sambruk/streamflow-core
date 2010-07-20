@@ -19,5 +19,13 @@ package se.streamsource.streamflow.domain.form;
 
 public enum FieldTypes
 {
-   text, number, date, selection, comment
+   checkboxes,
+   combobox,
+   comment,
+   date,
+   listbox,
+   number,
+   optionbuttons,
+   textarea,
+   text
 }

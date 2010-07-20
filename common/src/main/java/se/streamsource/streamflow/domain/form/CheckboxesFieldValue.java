@@ -15,18 +15,17 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.client.domain.form;
+package se.streamsource.streamflow.domain.form;
 
-import org.qi4j.bootstrap.Assembler;
-import org.qi4j.bootstrap.ModuleAssembly;
-import org.qi4j.bootstrap.AssemblyException;
-import org.qi4j.api.common.Visibility;
+import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.property.Property;
 
-public class FormValueAssembler
-   implements Assembler
+import java.util.List;
+
+/**
+ * JAVADOC
+ */
+public interface CheckboxesFieldValue
+      extends SelectionFieldValue
 {
-   public void assemble( ModuleAssembly module ) throws AssemblyException
-   {
-      module.addValues( ClientTextFieldValue.class ).visibleIn( Visibility.application );
-   }
 }

@@ -29,69 +29,58 @@ import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
+import se.streamsource.streamflow.domain.form.SelectionFieldValue;
 import se.streamsource.streamflow.domain.form.TextFieldValue;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-
-import java.awt.*;
+import java.awt.BorderLayout;
 
 import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.*;
 
 /**
  * JAVADOC
  */
-public class FieldValueTextEditView
+public class FieldEditorCheckboxesFieldValueView
       extends JScrollPane
 {
+   StateBinder fieldDefinitionBinder;
+   StateBinder fieldValueBinder;
 
-   private StateBinder fieldDefinitionBinder;
-   private StateBinder fieldValueBinder;
-
-   public FieldValueTextEditView( @Service ApplicationContext context,
-                                  @Uses FieldValueEditModel model,
-                                  @Structure ObjectBuilderFactory obf)
+   public FieldEditorCheckboxesFieldValueView( @Service ApplicationContext context,
+                                               @Uses FieldValueEditModel model,
+                                               @Structure ObjectBuilderFactory obf)
    {
       JPanel panel = new JPanel( new BorderLayout() );
 
       JPanel fieldPanel = new JPanel();
+//      FormLayout formLayout = new FormLayout(
+//            "200dlu", "" );
       FormLayout formLayout = new FormLayout(
             "45dlu, 5dlu, 150dlu:grow",
-            "pref, pref, pref, pref, pref, 5dlu, top:70dlu:grow" );
+            "pref, pref, pref, 5dlu, top:110dlu, pref" );
 
       DefaultFormBuilder formBuilder = new DefaultFormBuilder( formLayout, fieldPanel );
       formBuilder.setBorder(Borders.createEmptyBorder("4dlu, 4dlu, 4dlu, 4dlu"));
-      
+
       fieldDefinitionBinder = new StateBinder();
       fieldDefinitionBinder.setResourceMap( context.getResourceMap( getClass() ) );
       FieldDefinitionValue fieldDefinitionTemplate = fieldDefinitionBinder.bindingTemplate( FieldDefinitionValue.class );
 
       fieldValueBinder = new StateBinder();
       fieldValueBinder.setResourceMap( context.getResourceMap( getClass() ) );
-      TextFieldValue fieldValueTemplate = fieldValueBinder.bindingTemplate( TextFieldValue.class );
+      SelectionFieldValue fieldValueTemplate = fieldValueBinder.bindingTemplate( SelectionFieldValue.class );
 
       BindingFormBuilder bb = new BindingFormBuilder( formBuilder, fieldDefinitionBinder );
 
-      formBuilder.append( i18n.text( AdministrationResources.type_label ), new JLabel( i18n.text( AdministrationResources.text_field_type ) ) );
+      formBuilder.append( i18n.text( AdministrationResources.type_label ), new JLabel( i18n.text( AdministrationResources.selection_field_type ) ) );
       formBuilder.nextLine();
 
       formBuilder.add(new JLabel(i18n.text(AdministrationResources.mandatory)));
       formBuilder.nextColumn(2);
       formBuilder.add(fieldDefinitionBinder.bind( CHECKBOX.newField(), fieldDefinitionTemplate.mandatory() ) );
-      formBuilder.nextLine();
-
-      formBuilder.add(new JLabel(i18n.text(AdministrationResources.width_label)));
-      formBuilder.nextColumn(2);
-      formBuilder.add(fieldValueBinder.bind( TEXTFIELD.newField(), fieldValueTemplate.width() ) );
-      formBuilder.nextLine();
-
-      formBuilder.add(new JLabel(i18n.text(AdministrationResources.rows_label)));
-      formBuilder.nextColumn(2);
-      formBuilder.add(fieldValueBinder.bind( TEXTFIELD.newField(), fieldValueTemplate.rows() ) );
       formBuilder.nextLine();
 
       formBuilder.add(new JLabel(i18n.text(AdministrationResources.name_label)));
@@ -102,7 +91,6 @@ public class FieldValueTextEditView
       formBuilder.add(new JLabel(i18n.text(AdministrationResources.description_label)));
       formBuilder.nextColumn(2);
       formBuilder.add(fieldDefinitionBinder.bind( TEXTAREA.newField(), fieldDefinitionTemplate.note() ) );
-      formBuilder.nextLine();
 
       FieldValueObserver observer = obf.newObjectBuilder( FieldValueObserver.class ).use( model ).newInstance();
       fieldValueBinder.addObserver( observer );
@@ -112,7 +100,11 @@ public class FieldValueTextEditView
       fieldDefinitionBinder.updateWith( model.getFieldDefinition() );
 
       panel.add( fieldPanel, BorderLayout.CENTER );
+      panel.add( obf.newObjectBuilder( SelectionElementsView.class ).use( model.getClient() ).newInstance(),
+            BorderLayout.SOUTH );
 
       setViewportView( panel );
    }
+
+
 }

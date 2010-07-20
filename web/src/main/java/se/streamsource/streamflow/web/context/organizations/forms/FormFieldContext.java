@@ -28,6 +28,7 @@ import se.streamsource.dci.api.Interactions;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
 import se.streamsource.streamflow.domain.form.SelectionFieldValue;
+import se.streamsource.streamflow.domain.form.TextAreaFieldValue;
 import se.streamsource.streamflow.domain.form.TextFieldValue;
 import se.streamsource.streamflow.resource.roles.BooleanDTO;
 import se.streamsource.streamflow.resource.roles.IntegerDTO;
@@ -56,22 +57,22 @@ public interface FormFieldContext
    @RequiresRoles(TextFieldValue.class)
    public void changewidth( IntegerDTO newWidth );
 
-   @RequiresRoles(TextFieldValue.class)
+   @RequiresRoles(TextAreaFieldValue.class)
    public void changerows( IntegerDTO newRows );
 
-   @RequiresRoles(SelectionFieldValue.class)
-   public void changemultiple( BooleanDTO multiple );
+   @RequiresRoles(TextAreaFieldValue.class)
+   public void changecols( IntegerDTO newRows );
 
-   @RequiresRoles(SelectionFieldValue.class)
+   @RequiresRoles( SelectionFieldValue.class)
    public void addselectionelement( StringValue name );
 
-   @RequiresRoles(SelectionFieldValue.class)
+   @RequiresRoles( SelectionFieldValue.class)
    public void removeselectionelement( IntegerDTO index );
 
-   @RequiresRoles(SelectionFieldValue.class)
+   @RequiresRoles( SelectionFieldValue.class)
    public void moveselectionelement( NamedIndexDTO moveElement );
 
-   @RequiresRoles(SelectionFieldValue.class)
+   @RequiresRoles( SelectionFieldValue.class)
    public void changeselectionelementname( NamedIndexDTO newNameDTO );
 
    public void move( StringValue direction );
@@ -118,21 +119,21 @@ public interface FormFieldContext
       public void changerows( IntegerDTO newRows )
       {
          FieldValueDefinition fieldValueDefinition = context.get( FieldValueDefinition.class );
-         TextFieldValue value = context.get( TextFieldValue.class );
+         TextAreaFieldValue value = context.get( TextAreaFieldValue.class );
 
-         ValueBuilder<TextFieldValue> builder = value.buildWith();
+         ValueBuilder<TextAreaFieldValue> builder = value.buildWith();
          builder.prototype().rows().set( newRows.integer().get() );
 
          fieldValueDefinition.changeFieldValue( builder.newInstance() );
       }
 
-      public void changemultiple( BooleanDTO multiple )
+      public void changecols( IntegerDTO newRows )
       {
          FieldValueDefinition fieldValueDefinition = context.get( FieldValueDefinition.class );
-         SelectionFieldValue value = context.get( SelectionFieldValue.class );
+         TextAreaFieldValue value = context.get( TextAreaFieldValue.class );
 
-         ValueBuilder<SelectionFieldValue> builder = value.buildWith();
-         builder.prototype().multiple().set( multiple.bool().get() );
+         ValueBuilder<TextAreaFieldValue> builder = value.buildWith();
+         builder.prototype().cols().set( newRows.integer().get() );
 
          fieldValueDefinition.changeFieldValue( builder.newInstance() );
       }

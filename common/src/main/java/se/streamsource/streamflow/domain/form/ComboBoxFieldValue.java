@@ -15,11 +15,17 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.client.domain.form;
+package se.streamsource.streamflow.domain.form;
 
-import java.awt.Component;
+import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.property.Property;
 
-public interface FormFieldEditing
+import java.util.List;
+
+/**
+ * JAVADOC
+ */
+public interface ComboBoxFieldValue
+      extends SelectionFieldValue
 {
-   Class<? extends Component> getEditorClass();
 }

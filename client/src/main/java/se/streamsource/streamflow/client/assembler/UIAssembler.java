@@ -18,7 +18,6 @@
 package se.streamsource.streamflow.client.assembler;
 
 import org.jdesktop.application.ApplicationContext;
-import org.qi4j.api.common.Visibility;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
@@ -28,7 +27,6 @@ import se.streamsource.streamflow.client.StreamflowApplication;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.ExceptionHandlerService;
 import se.streamsource.streamflow.client.infrastructure.ui.JavaHelp;
-import se.streamsource.streamflow.client.infrastructure.ui.UIAssemblers;
 import se.streamsource.streamflow.client.infrastructure.ui.UncaughtExceptionHandler;
 import se.streamsource.streamflow.client.ui.AccountSelector;
 import se.streamsource.streamflow.client.ui.ApplicationInitializationService;
@@ -70,13 +68,17 @@ import se.streamsource.streamflow.client.ui.administration.casetypes.SelectCaseT
 import se.streamsource.streamflow.client.ui.administration.casetypes.SelectedCaseTypesModel;
 import se.streamsource.streamflow.client.ui.administration.casetypes.SelectedCaseTypesView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FieldCreationDialog;
-import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FieldValueCommentEditView;
-import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FieldValueDateEditView;
+import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FieldEditorCheckboxesFieldValueView;
+import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FieldEditorComboBoxFieldValueView;
+import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FieldEditorCommentFieldValueView;
+import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FieldEditorDateFieldValueView;
+import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FieldEditorListBoxFieldValueView;
+import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FieldEditorNumberFieldValueView;
+import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FieldEditorOptionButtonsFieldValueView;
+import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FieldEditorTextAreaFieldValueView;
+import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FieldEditorTextFieldValueView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FieldValueEditModel;
-import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FieldValueNumberEditView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FieldValueObserver;
-import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FieldValueSelectionEditView;
-import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FieldValueTextEditView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FieldsModel;
 import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FieldsView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FormEditAdminView;
@@ -222,7 +224,6 @@ import se.streamsource.streamflow.client.ui.workspace.WorkspaceWindow;
 
 import static org.qi4j.api.common.Visibility.*;
 import static se.streamsource.streamflow.client.infrastructure.ui.UIAssemblers.*;
-import static se.streamsource.streamflow.client.infrastructure.ui.UIAssemblers.addDialogs;
 
 /**
  * JAVADOC
@@ -322,7 +323,7 @@ public class UIAssembler
       addMV( module, ProjectsModel.class,
             ProjectsView.class );
 
-      addModels( module, ProjectModel.class );
+      addModels( module, ProjectModel.class, FieldValueEditModel.class );
 
       addViews( module, ProjectView.class, se.streamsource.streamflow.client.ui.administration.casetypes.forms.FormsAdminView.class, FormEditAdminView.class );
 
@@ -333,19 +334,21 @@ public class UIAssembler
             FieldsModel.class, FieldsView.class );
 
       addMV( module,
-            FieldValueEditModel.class, FieldValueTextEditView.class);
-
-      addMV( module,
             SelectionElementsModel.class, SelectionElementsView.class);
 
       addMV( module,
             PageEditModel.class, PageEditView.class);
 
       addViews( module,
-            FieldValueDateEditView.class,
-            FieldValueNumberEditView.class,
-            FieldValueSelectionEditView.class,
-            FieldValueCommentEditView.class);
+            FieldEditorCheckboxesFieldValueView.class,
+            FieldEditorComboBoxFieldValueView.class,
+            FieldEditorCommentFieldValueView.class,
+            FieldEditorDateFieldValueView.class,
+            FieldEditorListBoxFieldValueView.class,
+            FieldEditorNumberFieldValueView.class,
+            FieldEditorOptionButtonsFieldValueView.class,
+            FieldEditorTextAreaFieldValueView.class,
+            FieldEditorTextFieldValueView.class);
 
       addDialogs( module, FieldCreationDialog.class );
 

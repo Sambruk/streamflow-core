@@ -21,13 +21,18 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.streamflow.domain.form.CheckboxesFieldValue;
+import se.streamsource.streamflow.domain.form.ComboBoxFieldValue;
 import se.streamsource.streamflow.domain.form.CommentFieldValue;
 import se.streamsource.streamflow.domain.form.CreateFieldDTO;
 import se.streamsource.streamflow.domain.form.DateFieldValue;
 import se.streamsource.streamflow.domain.form.FieldTypes;
 import se.streamsource.streamflow.domain.form.FieldValue;
+import se.streamsource.streamflow.domain.form.ListBoxFieldValue;
 import se.streamsource.streamflow.domain.form.NumberFieldValue;
+import se.streamsource.streamflow.domain.form.OptionButtonsFieldValue;
 import se.streamsource.streamflow.domain.form.SelectionFieldValue;
+import se.streamsource.streamflow.domain.form.TextAreaFieldValue;
 import se.streamsource.streamflow.domain.form.TextFieldValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.dci.value.LinksValue;
@@ -41,14 +46,14 @@ import se.streamsource.dci.api.SubContexts;
  */
 @Mixins(FormFieldsContext.Mixin.class)
 public interface FormFieldsContext
-   extends SubContexts<FormFieldContext>, Interactions
+      extends SubContexts<FormFieldContext>, Interactions
 {
    public LinksValue fields();
    public void add( CreateFieldDTO createFieldDTO );
 
    abstract class Mixin
-      extends InteractionsMixin
-      implements FormFieldsContext
+         extends InteractionsMixin
+         implements FormFieldsContext
    {
       public LinksValue fields()
       {
@@ -70,26 +75,39 @@ public interface FormFieldsContext
          ValueBuilderFactory vbf = module.valueBuilderFactory();
          switch (fieldType)
          {
-            case text:
-               ValueBuilder<TextFieldValue> textBuilder = vbf.newValueBuilder( TextFieldValue.class );
-               textBuilder.prototype().width().set( 30 );
-               value = textBuilder.newInstance();
+            case checkboxes:
+               value = vbf.newValue( CheckboxesFieldValue.class );
+               break;
+            case combobox:
+               value = vbf.newValue( ComboBoxFieldValue.class );
+               break;
+            case comment:
+               value = vbf.newValue( CommentFieldValue.class );
+               break;
+            case date:
+               value = vbf.newValue( DateFieldValue.class );
+               break;
+            case listbox:
+               value = vbf.newValue( ListBoxFieldValue.class );
                break;
             case number:
                ValueBuilder<NumberFieldValue> numberBuilder = vbf.newValueBuilder( NumberFieldValue.class );
                numberBuilder.prototype().integer().set( true );
                value = numberBuilder.newInstance();
                break;
-            case date:
-               value = vbf.newValue( DateFieldValue.class );
+            case optionbuttons:
+               value = vbf.newValue( OptionButtonsFieldValue.class );
                break;
-            case selection:
-               ValueBuilder<SelectionFieldValue> selection = vbf.newValueBuilder( SelectionFieldValue.class );
-               value = selection.newInstance();
+            case textarea:
+               ValueBuilder<TextAreaFieldValue> builder = vbf.newValueBuilder( TextAreaFieldValue.class );
+               builder.prototype().cols().set( 30 );
+               builder.prototype().rows().set( 5 );
+               value = builder.newInstance();
                break;
-            case comment:
-               ValueBuilder<CommentFieldValue> comment = vbf.newValueBuilder( CommentFieldValue.class );
-               value = comment.newInstance();
+            case text:
+               ValueBuilder<TextFieldValue> textBuilder = vbf.newValueBuilder( TextFieldValue.class );
+               textBuilder.prototype().width().set( 30 );
+               value = textBuilder.newInstance();
                break;
          }
          return value;
