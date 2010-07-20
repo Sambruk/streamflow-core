@@ -42,7 +42,7 @@ import java.util.Observable;
 
 
 public class AccessPointModel extends Observable
-   implements Refreshable, EventListener, EventVisitor
+      implements Refreshable, EventListener, EventVisitor
 {
    @Structure
    ValueBuilderFactory vbf;
@@ -56,12 +56,12 @@ public class AccessPointModel extends Observable
 
    EventVisitorFilter eventFilter;
 
-   public AccessPointModel( @Uses CommandQueryClient client)
+   public AccessPointModel( @Uses CommandQueryClient client )
    {
       this.client = client;
-      eventFilter = new EventVisitorFilter(client.getReference()
+      eventFilter = new EventVisitorFilter( client.getReference()
             .getLastSegment(), this, "addedLabel",
-            "removedLabel", "addedCaseType", "addedProject", "addedSelectedForm" );
+            "removedLabel", "addedCaseType", "addedProject", "addedSelectedForm", "changedProject", "changedCaseType" );
    }
 
    public void refresh() throws OperationException
@@ -96,15 +96,15 @@ public class AccessPointModel extends Observable
       {
          BasicEventList<LinkValue> list = new BasicEventList<LinkValue>();
 
-         LinksValue listValue = client.query("possibleprojects",
-               LinksValue.class);
-         list.addAll(listValue.links().get());
+         LinksValue listValue = client.query( "possibleprojects",
+               LinksValue.class );
+         list.addAll( listValue.links().get() );
 
          return list;
       } catch (ResourceException e)
       {
          throw new OperationException( WorkspaceResources.could_not_refresh,
-               e);
+               e );
       }
    }
 
@@ -114,15 +114,15 @@ public class AccessPointModel extends Observable
       {
          BasicEventList<LinkValue> list = new BasicEventList<LinkValue>();
 
-         LinksValue listValue = client.query("possiblecasetypes",
-               LinksValue.class);
-         list.addAll(listValue.links().get());
+         LinksValue listValue = client.query( "possiblecasetypes",
+               LinksValue.class );
+         list.addAll( listValue.links().get() );
 
          return list;
       } catch (ResourceException e)
       {
          throw new OperationException( WorkspaceResources.could_not_refresh,
-               e);
+               e );
       }
    }
 
@@ -132,15 +132,15 @@ public class AccessPointModel extends Observable
       {
          BasicEventList<LinkValue> list = new BasicEventList<LinkValue>();
 
-         LinksValue listValue = client.query("possiblelabels",
-               LinksValue.class);
-         list.addAll(listValue.links().get());
+         LinksValue listValue = client.query( "possiblelabels",
+               LinksValue.class );
+         list.addAll( listValue.links().get() );
 
          return list;
       } catch (ResourceException e)
       {
-         throw new OperationException(WorkspaceResources.could_not_refresh,
-               e);
+         throw new OperationException( WorkspaceResources.could_not_refresh,
+               e );
       }
    }
 
@@ -157,7 +157,7 @@ public class AccessPointModel extends Observable
 
    public void notifyEvent( DomainEvent event )
    {
-      eventFilter.visit(event);
+      eventFilter.visit( event );
       caseLabelsModel.notifyEvent( event );
    }
 
@@ -173,15 +173,15 @@ public class AccessPointModel extends Observable
       {
          BasicEventList<LinkValue> list = new BasicEventList<LinkValue>();
 
-         LinksValue listValue = client.query("possibleforms",
-               LinksValue.class);
-         list.addAll(listValue.links().get());
+         LinksValue listValue = client.query( "possibleforms",
+               LinksValue.class );
+         list.addAll( listValue.links().get() );
 
          return list;
       } catch (ResourceException e)
       {
          throw new OperationException( WorkspaceResources.could_not_refresh,
-               e);
+               e );
       }
    }
 
