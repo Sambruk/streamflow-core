@@ -40,9 +40,9 @@ public class AssignIdSideEffect
       return result.hasOwner();
    }
 
-   public void sendTo( Owner owner )
+   public void changeOwner( Owner owner )
    {
-      result.sendTo( owner );
+      result.changeOwner( owner );
 
       if (owner instanceof IdGenerator)
       {

@@ -91,7 +91,7 @@ public interface EndUserCases
       {
          CaseEntity caseEntity = (CaseEntity) caze;
          caseEntity.unassign();
-         caseEntity.sendTo( (ProjectEntity) accesspoint.project().get() );
+         caseEntity.changeOwner( (ProjectEntity) accesspoint.project().get() );
          caseEntity.open();
       }
    }

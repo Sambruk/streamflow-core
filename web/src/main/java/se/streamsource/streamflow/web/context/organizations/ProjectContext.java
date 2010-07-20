@@ -22,7 +22,7 @@ import se.streamsource.dci.api.InteractionsMixin;
 import se.streamsource.streamflow.web.context.organizations.forms.FormsContext;
 import se.streamsource.streamflow.web.context.structure.labels.LabelsContext;
 import se.streamsource.streamflow.web.context.structure.labels.SelectedLabelsContext;
-import se.streamsource.streamflow.web.domain.structure.organization.Projects;
+import se.streamsource.streamflow.web.domain.structure.project.Projects;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.dci.api.Interactions;
 import se.streamsource.dci.api.DeleteInteraction;

@@ -25,5 +25,8 @@ public enum RelatedEnum
    label,
    user,
    group,
-   organizationalUnit
+   project,
+   organization,
+   organizationalUnit,
+   resolution
 }

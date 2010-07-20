@@ -40,6 +40,7 @@ import org.qi4j.migration.MigrationService;
 import org.qi4j.migration.Migrator;
 import org.qi4j.migration.assembly.EntityMigrationOperation;
 import org.qi4j.migration.assembly.MigrationBuilder;
+import org.qi4j.migration.assembly.MigrationOperation;
 import org.qi4j.spi.service.importer.NewObjectImporter;
 import org.qi4j.spi.uuid.UuidIdentityGeneratorService;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
@@ -57,6 +58,7 @@ import se.streamsource.streamflow.web.infrastructure.index.EmbeddedSolrService;
 import se.streamsource.streamflow.web.infrastructure.index.SolrQueryService;
 
 import javax.sql.DataSource;
+import java.io.IOException;
 
 /**
  * JAVADOC
@@ -312,7 +314,12 @@ public class InfrastructureAssembler
                   renameManyAssociation( "selectedTaskTypes", "selectedCaseTypes" ).
                end().
                forEntities( "se.streamsource.streamflow.web.domain.entity.organization.AccessPointEntity" ).
-                  renameAssociation( "taskType", "caseType" );
+                  renameAssociation( "taskType", "caseType" ).
+               end().
+               toVersion( "1.1.5.2083" ).
+                  forEntities( "se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity" ).
+                     removeManyAssociation( "fieldDefinitions" ).
+               end();
 
          module.addServices( MigrationService.class ).setMetaInfo( migrationBuilder );
          module.addObjects( MigrationEventLogger.class );

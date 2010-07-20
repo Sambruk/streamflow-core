@@ -102,7 +102,7 @@ public class GroupsModel
    {
       try
       {
-         LinksValue groupsList = client.query( "groups", LinksValue.class );
+         LinksValue groupsList = client.query( "index", LinksValue.class );
          EventListSynch.synchronize( groupsList.links().get(), groups );
       } catch (ResourceException e)
       {

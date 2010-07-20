@@ -18,11 +18,17 @@
 package se.streamsource.streamflow.web.domain.structure.role;
 
 import se.streamsource.streamflow.domain.structure.Describable;
+import se.streamsource.streamflow.domain.structure.Removable;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 
 /**
  * JAVADOC
  */
 public interface Role
-   extends Describable, Permissions
+   extends
+      Describable,
+      Ownable,
+      Permissions,
+      Removable
 {
 }

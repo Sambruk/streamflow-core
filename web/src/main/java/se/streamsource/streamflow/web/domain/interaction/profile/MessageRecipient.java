@@ -55,7 +55,8 @@ public interface MessageRecipient
       
       public void changeMessageDeliveryType(MessageDeliveryTypes deliveryType) 
       {
-         changedMessageDeliveryType(CREATE, deliveryType);
+         if (!deliveryType.equals( delivery().get() ))
+            changedMessageDeliveryType(CREATE, deliveryType);
       }
       
       public void changedMessageDeliveryType(DomainEvent event, MessageDeliveryTypes deliveryType)

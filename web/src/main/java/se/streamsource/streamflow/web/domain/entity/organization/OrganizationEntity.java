@@ -29,7 +29,6 @@ import se.streamsource.streamflow.web.domain.entity.form.PossibleFormMoveToQueri
 import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypesQueries;
 import se.streamsource.streamflow.web.domain.interaction.security.Authorization;
 import se.streamsource.streamflow.web.domain.interaction.gtd.IdGenerator;
-import se.streamsource.streamflow.web.domain.structure.form.FieldTemplates;
 import se.streamsource.streamflow.web.domain.structure.form.Forms;
 import se.streamsource.streamflow.web.domain.structure.label.Labels;
 import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
@@ -61,7 +60,6 @@ public interface OrganizationEntity
 
       // Data
       Describable.Data,
-      FieldTemplates.Data,
       Forms.Data,
       Labels.Data,
       OrganizationalUnits.Data,

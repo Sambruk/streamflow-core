@@ -18,14 +18,18 @@
 package se.streamsource.streamflow.web.application.statistics;
 
 import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueComposite;
 
 /**
  * Value for related entities in statistics, such as labels, users, etc.
  * The identities in these values will be referenced from CaseStatisticsValue
  */
 public interface RelatedStatisticsValue
+      extends ValueComposite
 {
    Property<String> identity();
+
    Property<String> description();
-   Property<RelatedEnum> type();
+
+   Property<RelatedEnum> relatedType();
 }

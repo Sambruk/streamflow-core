@@ -62,7 +62,7 @@ public class CasesTableModel
    public CasesTableModel()
    {
       eventFilter = new EventVisitorFilter( this, "addedLabel", "removedLabel", "changedDescription", "changedCaseType", "changedStatus",
-            "sentTo","assignedTo", "deletedEntity");
+            "changedOwner","assignedTo", "deletedEntity");
    }
 
    public void notifyEvent( DomainEvent event )
@@ -105,7 +105,7 @@ public class CasesTableModel
                }
             }
             eventList.set( idx, valueBuilder.newInstance() );
-         } else if ("addedLabel,changedCaseType,sentTo,assignedTo,deletedEntity".indexOf(eventName) != -1)
+         } else if ("addedLabel,changedCaseType,changedOwner,assignedTo,deletedEntity".indexOf(eventName) != -1)
          {
             refresh();
          } else if (eventName.equals("changedStatus"))

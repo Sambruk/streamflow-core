@@ -21,6 +21,7 @@ import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.domain.structure.Removable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
 import se.streamsource.streamflow.web.domain.entity.user.ProjectQueries;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.structure.group.Group;
 import se.streamsource.streamflow.web.domain.structure.group.Participants;
 import se.streamsource.streamflow.web.domain.structure.group.Participation;
@@ -32,10 +33,10 @@ import se.streamsource.streamflow.web.domain.structure.project.Member;
 public interface GroupEntity
       extends Group,
 
-      Member,
       ProjectQueries,
 
       Describable.Data,
+      Ownable.Data,
       Participation.Data,
       Participants.Data,
       Removable.Data,

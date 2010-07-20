@@ -26,14 +26,18 @@ public interface StatisticsStore
     * Add information about a statistics related entity
     *
     * @param related
+    * @throws StatisticsStoreException
     */
-   void related(RelatedStatisticsValue related);
+   void related(RelatedStatisticsValue related)
+      throws StatisticsStoreException;
 
    /**
     * Add statistics for a single case
     * @param caseStatistics
+    * @throws StatisticsStoreException
     */
-   void caseStatistics(CaseStatisticsValue caseStatistics);
+   void caseStatistics(CaseStatisticsValue caseStatistics)
+      throws StatisticsStoreException;
 
    /**
     * Clear out all statistics from the store. This is usually

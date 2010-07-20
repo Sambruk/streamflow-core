@@ -37,11 +37,11 @@ import se.streamsource.streamflow.web.context.structure.DescribableContext;
 import se.streamsource.streamflow.web.context.structure.NotableContext;
 import se.streamsource.streamflow.web.domain.entity.form.FieldEntity;
 import se.streamsource.streamflow.web.domain.structure.form.Field;
-import se.streamsource.streamflow.web.domain.structure.form.FieldTemplate;
 import se.streamsource.streamflow.web.domain.structure.form.FieldValueDefinition;
 import se.streamsource.streamflow.web.domain.structure.form.Fields;
 import se.streamsource.dci.api.InteractionsMixin;
 import se.streamsource.dci.api.RequiresRoles;
+import se.streamsource.streamflow.web.domain.structure.form.Mandatory;
 
 /**
  * JAVADOC
@@ -93,16 +93,16 @@ public interface FormFieldContext
          builder.prototype().note().set( fieldEntity.note().get() );
          builder.prototype().description().set( fieldEntity.description().get() );
          builder.prototype().fieldValue().set( fieldEntity.fieldValue().get() );
-         builder.prototype().mandatory().set( fieldEntity.getMandatory() );
+         builder.prototype().mandatory().set( fieldEntity.isMandatory() );
 
          return builder.newInstance();
       }
 
       public void updatemandatory( BooleanDTO mandatory )
       {
-         FieldTemplate fieldEntity = context.get( FieldTemplate.class );
+         Mandatory mandatoryField = context.get( Mandatory.class );
 
-         fieldEntity.changeMandatory( mandatory.bool().get() );
+         mandatoryField.changeMandatory( mandatory.bool().get() );
       }
 
       public void changewidth( IntegerDTO newWidth )

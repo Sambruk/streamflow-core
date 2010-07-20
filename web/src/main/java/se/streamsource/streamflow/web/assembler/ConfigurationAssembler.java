@@ -82,19 +82,14 @@ public class ConfigurationAssembler
       if (mode.equals( Application.Mode.development ))
       {
          // In-memory store
-         module.addServices( MemoryEntityStoreService.class ).visibleIn( Visibility.application );
+         module.addServices( MemoryEntityStoreService.class ).visibleIn( Visibility.layer );
       } else if (mode.equals( Application.Mode.test ))
       {
          // In-memory store
-         module.addServices( MemoryEntityStoreService.class ).visibleIn( Visibility.application );
+         module.addServices( MemoryEntityStoreService.class ).visibleIn( Visibility.layer );
       } else if (mode.equals( Application.Mode.production ))
       {
          // Preferences storage
-
-         // We have to do some CL twiddling since the Preferences impl might start a timer thread with our
-         // classloader as contextclassloader = BAD!
-//         System.setProperty( "java.util.prefs.PreferencesFactory", "java.util.prefs.FileSystemPreferencesFactory");
-
          ClassLoader cl = Thread.currentThread().getContextClassLoader();
          Thread.currentThread().setContextClassLoader( null );
          Preferences node;
@@ -106,7 +101,7 @@ public class ConfigurationAssembler
             Thread.currentThread().setContextClassLoader( cl );
          }
 
-         module.addServices( PreferencesEntityStoreService.class ).setMetaInfo( new PreferencesEntityStoreInfo( node ) );
+         module.addServices( PreferencesEntityStoreService.class ).setMetaInfo( new PreferencesEntityStoreInfo( node ) ).visibleIn( Visibility.layer );
       }
    }
 }

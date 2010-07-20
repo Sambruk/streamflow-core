@@ -22,6 +22,7 @@ import org.qi4j.api.constraint.Name;
 import org.qi4j.api.property.Computed;
 import org.qi4j.api.property.Immutable;
 import org.qi4j.api.property.Property;
+import se.streamsource.streamflow.web.application.statistics.StatisticsStoreException;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -49,6 +50,8 @@ public interface Manager
    public String restore() throws Exception;
 
    public String databaseSize();
+
+   public void refreshStatistics() throws StatisticsStoreException;
 
    @Computed
    Property<Integer> failedLogins();

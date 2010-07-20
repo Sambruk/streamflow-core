@@ -20,6 +20,7 @@ package se.streamsource.streamflow.web.domain.entity.organization;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.domain.structure.Removable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.structure.role.Role;
 
 /**
@@ -27,9 +28,9 @@ import se.streamsource.streamflow.web.domain.structure.role.Role;
  */
 public interface RoleEntity
       extends Role,
-      Describable,
-      Removable,
       Describable.Data,
+      Ownable.Data,
+      Removable,
       Removable.Data,
       DomainEntity
 {

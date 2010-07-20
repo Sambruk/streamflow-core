@@ -20,6 +20,7 @@ package se.streamsource.streamflow.web.context.structure.labels;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
+import se.streamsource.dci.api.IndexInteraction;
 import se.streamsource.dci.api.Interactions;
 import se.streamsource.dci.api.InteractionsMixin;
 import se.streamsource.dci.value.StringValue;
@@ -34,9 +35,8 @@ import se.streamsource.dci.api.SubContexts;
  */
 @Mixins(LabelsContext.Mixin.class)
 public interface LabelsContext
-   extends Interactions, SubContexts<LabelContext>
+   extends Interactions, SubContexts<LabelContext>, IndexInteraction<LinksValue>
 {
-   LinksValue labels();
    void createlabel( StringValue name );
 
    abstract class Mixin
@@ -46,7 +46,7 @@ public interface LabelsContext
       @Structure
       Module module;
 
-      public LinksValue labels()
+      public LinksValue index()
       {
          return new LinksBuilder(module.valueBuilderFactory()).rel( "label" ).addDescribables( context.get(Labels.class).getLabels()).newLinks();
       }

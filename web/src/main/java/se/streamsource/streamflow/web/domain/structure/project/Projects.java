@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.domain.structure.organization;
+package se.streamsource.streamflow.web.domain.structure.project;
 
 import org.qi4j.api.entity.Aggregated;
 import org.qi4j.api.entity.EntityBuilder;
@@ -29,7 +29,9 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.web.domain.structure.group.Group;
+import se.streamsource.streamflow.web.domain.interaction.gtd.ChangesOwner;
+import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
+import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 
 /**
@@ -42,6 +44,7 @@ public interface Projects
 
    boolean removeProject( Project project );
 
+   @ChangesOwner
    void addProject( Project project );
 
    interface Data
@@ -72,12 +75,14 @@ public interface Projects
       @Structure
       UnitOfWorkFactory uowf;
 
+      @This Data data;
+
       public Project createProject( String name )
       {
          String id = idgen.generate( Identity.class );
 
          Project project = createdProject( DomainEvent.CREATE, id );
-         addedProject( DomainEvent.CREATE, project );
+         addProject( project );
          project.changeDescription( name );
 
          return project;
@@ -92,38 +97,37 @@ public interface Projects
 
       public void mergeProjects( Projects projects )
       {
-         while (this.projects().count() > 0)
+         while (data.projects().count() > 0)
          {
-            Project project = this.projects().get( 0 );
+            Project project = data.projects().get( 0 );
             removeProject( project );
             projects.addProject( project );
          }
-
       }
 
       public void addProject( Project project )
       {
 
-         if (projects().contains( project ))
+         if (data.projects().contains( project ))
          {
             return;
          }
-         addedProject( DomainEvent.CREATE, project );
+         data.addedProject( DomainEvent.CREATE, project );
       }
 
       public boolean removeProject( Project project )
       {
-         if (!projects().contains( project ))
+         if (!data.projects().contains( project ))
             return false;
 
-         removedProject( DomainEvent.CREATE, project );
+         data.removedProject( DomainEvent.CREATE, project );
          project.removeEntity();              
          return true;
       }
 
       public Project getProjectByName( String name )
       {
-         return Describable.Mixin.getDescribable( projects(), name );
+         return Describable.Mixin.getDescribable( data.projects(), name );
       }
 
    }

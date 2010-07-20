@@ -93,7 +93,7 @@ public class RolesModel
    {
       try
       {
-         LinksValue rolesList = client.query( "roles", LinksValue.class);
+         LinksValue rolesList = client.query( "index", LinksValue.class);
          EventListSynch.synchronize( rolesList.links().get(), roles );
       } catch (ResourceException e)
       {

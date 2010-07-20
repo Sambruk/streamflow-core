@@ -63,18 +63,18 @@ public interface Labels
       QueryBuilderFactory qbf;
 
       @This
-      Data state;
+      Data data;
 
       public Label createLabel( String name )
       {
-         Label label = createdLabel( DomainEvent.CREATE );
+         Label label = data.createdLabel( DomainEvent.CREATE );
          label.changeDescription( name );
          return label;
       }
 
       public void removeLabel( Label label )
       {
-         if (state.labels().contains( label ))
+         if (data.labels().contains( label ))
          {
             removedLabel( DomainEvent.CREATE, label );
             label.removeEntity();
@@ -83,7 +83,7 @@ public interface Labels
 
       public Iterable<Label> getLabels()
       {
-         return state.labels();
+         return data.labels();
       }
 
       public Query<SelectedLabels> usages( Label label )
@@ -100,13 +100,13 @@ public interface Labels
       {
          UnitOfWork uow = uowf.currentUnitOfWork();
          Label label = uow.newEntity( Label.class );
-         state.labels().add( state.labels().count(), label );
+         data.labels().add( data.labels().count(), label );
          return label;
       }
 
       public void removedLabel( DomainEvent event, Label label )
       {
-         state.labels().remove( label );
+         data.labels().remove( label );
       }
    }
 }

@@ -45,7 +45,7 @@ public class CaseInfoModel extends Observable implements Refreshable,
    public CaseInfoModel(@Uses CommandQueryClient client)
 	{
 		this.client = client;
-		eventFilter = new EventVisitorFilter(client.getReference().getLastSegment(), this, "sentTo", "changedCaseType", "changedDescription", "assignedTo", "unassigned", "changedStatus");
+		eventFilter = new EventVisitorFilter(client.getReference().getLastSegment(), this, "changedOwner", "changedCaseType", "changedDescription", "assignedTo", "unassigned", "changedStatus");
 	}
 
    public CaseValue getInfo()

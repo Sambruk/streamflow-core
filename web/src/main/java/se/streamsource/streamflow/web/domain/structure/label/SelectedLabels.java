@@ -18,6 +18,7 @@
 package se.streamsource.streamflow.web.domain.structure.label;
 
 import org.qi4j.api.entity.association.ManyAssociation;
+import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
@@ -42,32 +43,25 @@ public interface SelectedLabels
       void removedSelectedLabel( DomainEvent event, Label label );
    }
 
-   abstract class Mixin
-         implements SelectedLabels, Data
+   class Mixin
+         implements SelectedLabels
    {
+      @This
+      Data data;
+
       public void addSelectedLabel( Label label )
       {
-         addedSelectedLabel( DomainEvent.CREATE, label );
+         data.addedSelectedLabel( DomainEvent.CREATE, label );
       }
 
       public void removeSelectedLabel( Label label )
       {
-         removedSelectedLabel( DomainEvent.CREATE, label );
+         data.removedSelectedLabel( DomainEvent.CREATE, label );
       }
 
       public boolean hasSelectedLabel( Label label )
       {
-         return selectedLabels().contains( label );
-      }
-
-      public void addedSelectedLabel( DomainEvent event, Label label )
-      {
-         selectedLabels().add( label );
-      }
-
-      public void removedSelectedLabel( DomainEvent event, Label label )
-      {
-         selectedLabels().remove( label );
+         return data.selectedLabels().contains( label );
       }
    }
 }

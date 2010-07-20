@@ -92,7 +92,7 @@ public interface Delegatable
       {
          if (delegatedTo().get() != null)
          {
-            ownable.sendTo( delegatedFrom().get() );
+            ownable.changeOwner( delegatedFrom().get() );
             rejectedDelegation( DomainEvent.CREATE );
          }
       }
@@ -101,7 +101,7 @@ public interface Delegatable
       {
          if (delegatedTo().get() != null)
          {
-            ownable.sendTo( delegatedFrom().get() );
+            ownable.changeOwner( delegatedFrom().get() );
             cancelledDelegation( DomainEvent.CREATE );
          }
       }

@@ -18,6 +18,7 @@
 package se.streamsource.streamflow.web.context.organizations;
 
 import org.qi4j.api.mixin.Mixins;
+import se.streamsource.dci.api.IndexInteraction;
 import se.streamsource.dci.api.InteractionsMixin;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
@@ -32,16 +33,15 @@ import se.streamsource.dci.api.SubContexts;
  */
 @Mixins(RolesContext.Mixin.class)
 public interface RolesContext
-   extends SubContexts<RoleContext>, Interactions
+   extends SubContexts<RoleContext>, IndexInteraction<LinksValue>, Interactions
 {
-   LinksValue roles();
    void createrole( StringValue name );
 
    abstract class Mixin
       extends InteractionsMixin
       implements RolesContext
    {
-      public LinksValue roles()
+      public LinksValue index()
       {
          Roles.Data roles = context.get( Roles.Data.class );
 

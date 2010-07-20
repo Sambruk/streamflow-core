@@ -50,11 +50,11 @@ public interface Members
       void removedMember( DomainEvent event, Member member );
    }
 
-   abstract class Mixin
-         implements Members, Data
+   class Mixin
+         implements Members
    {
       @This
-      Data state;
+      Data data;
 
       @Structure
       ValueBuilderFactory vbf;
@@ -67,30 +67,30 @@ public interface Members
 
       public void addMember( Member member )
       {
-         if (members().contains( member ))
+         if (data.members().contains( member ))
             return;
 
-         addedMember( DomainEvent.CREATE, member );
+         data.addedMember( DomainEvent.CREATE, member );
 
          member.joinProject( project );
       }
 
       public void removeMember( Member member )
       {
-         if (!members().contains( member ))
+         if (!data.members().contains( member ))
          {
             return;
          }
          member.leaveProject( project );
 
-         removedMember( DomainEvent.CREATE, member );
+         data.removedMember( DomainEvent.CREATE, member );
       }
 
       public void removeAllMembers()
       {
-         while (members().count() != 0)
+         while (data.members().count() != 0)
          {
-            removeMember( members().get( 0 ) );
+            removeMember( data.members().get( 0 ) );
          }
       }
    }
@@ -106,7 +106,7 @@ public interface Members
       {
          if (result.removeEntity())
          {
-            // Remove all project from the project
+            // Remove all members from the project
             members.removeAllMembers();
          }
 

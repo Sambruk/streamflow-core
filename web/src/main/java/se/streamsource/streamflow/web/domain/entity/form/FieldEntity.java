@@ -17,12 +17,23 @@
 
 package se.streamsource.streamflow.web.domain.entity.form;
 
+import se.streamsource.streamflow.domain.structure.Describable;
+import se.streamsource.streamflow.domain.structure.Notable;
+import se.streamsource.streamflow.web.domain.entity.DomainEntity;
 import se.streamsource.streamflow.web.domain.structure.form.Field;
+import se.streamsource.streamflow.web.domain.structure.form.FieldValueDefinition;
+import se.streamsource.streamflow.web.domain.structure.form.Mandatory;
 
 /**
  * JAVADOC
  */
 public interface FieldEntity
-      extends FieldTemplateEntity, Field
+      extends
+      Field,
+      Describable.Data,
+      Notable.Data,
+      FieldValueDefinition.Data,
+      Mandatory.Data,
+      DomainEntity
 {
 }

@@ -59,7 +59,6 @@ import se.streamsource.streamflow.web.domain.structure.organization.Organization
 import se.streamsource.streamflow.web.domain.structure.project.Member;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.project.ProjectRole;
-import se.streamsource.streamflow.web.domain.structure.user.ProxyUser;
 import se.streamsource.streamflow.web.domain.structure.user.User;
 import se.streamsource.streamflow.web.domain.structure.user.Users;
 
@@ -293,7 +292,7 @@ public interface TestDataService
                // Create cases
                CaseEntity aCase = user.createDraft();
                aCase.changeDescription( "Ärende 0" );
-               aCase.sendTo( (Owner) project );
+               aCase.changeOwner( (Owner) project );
 
                aCase.changeCaseType( bug );
                aCase.open();
@@ -306,7 +305,7 @@ public interface TestDataService
                {
                   CaseEntity caze = user.createDraft();
                   caze.changeDescription( "Ärende " + i );
-                  caze.sendTo( (Owner) project );
+                  caze.changeOwner( (Owner) project );
                   caze.open();
                }
 

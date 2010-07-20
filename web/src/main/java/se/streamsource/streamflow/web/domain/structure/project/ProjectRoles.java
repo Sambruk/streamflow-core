@@ -22,6 +22,7 @@ import org.qi4j.api.entity.Identity;
 import org.qi4j.api.entity.IdentityGenerator;
 import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
@@ -51,24 +52,27 @@ public interface ProjectRoles
       void removedProjectRole( DomainEvent event, ProjectRole role );
    }
 
-   abstract class Mixin
-         implements ProjectRoles, Data
+   class Mixin
+         implements ProjectRoles
    {
       @Service
       IdentityGenerator idGen;
 
+      @This
+      Data data;
+
       public ProjectRole createProjectRole( String name )
       {
-         ProjectRole role = createdProjectRole( DomainEvent.CREATE, idGen.generate( Identity.class ));
+         ProjectRole role = data.createdProjectRole( DomainEvent.CREATE, idGen.generate( Identity.class ));
          role.changeDescription( name );
          return role;
       }
 
       public void mergeProjectRoles( ProjectRoles projectRoles )
       {
-         while (this.projectRoles().count() > 0)
+         while (data.projectRoles().count() > 0)
          {
-            ProjectRole role = this.projectRoles().get( 0 );
+            ProjectRole role = data.projectRoles().get( 0 );
             removeProjectRole( role );
             projectRoles.addProjectRole( role );
          }
@@ -76,21 +80,21 @@ public interface ProjectRoles
 
       public void addProjectRole( ProjectRole projectRole )
       {
-         if (projectRoles().contains( projectRole ))
+         if (data.projectRoles().contains( projectRole ))
          {
             return;
          }
-         addedProjectRole( DomainEvent.CREATE, projectRole );
+         data.addedProjectRole( DomainEvent.CREATE, projectRole );
       }
 
       public boolean removeProjectRole( ProjectRole projectRole )
       {
-         if (!projectRoles().contains( projectRole ))
+         if (!data.projectRoles().contains( projectRole ))
          {
             return false;
          }
 
-         removedProjectRole( DomainEvent.CREATE, projectRole );
+         data.removedProjectRole( DomainEvent.CREATE, projectRole );
 
          return true;
       }

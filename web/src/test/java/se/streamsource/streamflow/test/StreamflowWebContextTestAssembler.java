@@ -19,27 +19,26 @@ package se.streamsource.streamflow.test;
 
 import org.qi4j.api.common.Visibility;
 import org.qi4j.api.structure.Application;
+import org.qi4j.bootstrap.ApplicationAssembly;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
-import se.streamsource.streamflow.web.assembler.StreamflowWebAssembler;
 import se.streamsource.streamflow.web.application.organization.BootstrapAssembler;
+import se.streamsource.streamflow.web.assembler.StreamflowWebAssembler;
 
 /**
  * JAVADOC
  */
-public class StreamflowWebDomainTestAssembler
+public class StreamflowWebContextTestAssembler
       extends StreamflowWebAssembler
 {
-   private Class[] testClass;
    private Object[] serviceObjects;
 
 
-   public StreamflowWebDomainTestAssembler( Class[] testClass, Object... serviceObjects )
+   public StreamflowWebContextTestAssembler( Object... serviceObjects )
    {
       this.serviceObjects = serviceObjects;
-      this.testClass = testClass;
    }
 
    @Override
@@ -48,8 +47,14 @@ public class StreamflowWebDomainTestAssembler
       appLayer.applicationAssembly().setMode( Application.Mode.test );
       new BootstrapAssembler().assemble( appLayer.moduleAssembly( "Bootstrap" ) );
 
-      ModuleAssembly moduleAssembly = appLayer.moduleAssembly( "Test" );
-      moduleAssembly.addObjects( testClass );
+
+      ApplicationAssembly applicationAssembly = appLayer.applicationAssembly();
+      LayerAssembly layer1 = applicationAssembly.layerAssembly( "Layer 1" );
+      layer1.uses(
+            applicationAssembly.layerAssembly("Interactions" ), 
+            applicationAssembly.layerAssembly("Domain infrastructure" ),
+            applicationAssembly.layerAssembly("Domain" ));
+      ModuleAssembly moduleAssembly = layer1.moduleAssembly( "Module 1" );
       moduleAssembly.importServices( EventListener.class ).visibleIn( Visibility.application );
 
       for (Object serviceObject : serviceObjects)

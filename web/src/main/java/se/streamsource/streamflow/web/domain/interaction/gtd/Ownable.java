@@ -24,12 +24,12 @@ import org.qi4j.api.mixin.Mixins;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 /**
- * JAVADOC
+ * Generic mixin for anything that is ownable. Represents a child-parent relationship.
  */
 @Mixins(Ownable.Mixin.class)
 public interface Ownable
 {
-   void sendTo( Owner owner );
+   void changeOwner( Owner owner );
 
    boolean isOwnedBy(Owner owner);
 
@@ -40,7 +40,7 @@ public interface Ownable
       @Optional
       Association<Owner> owner();
 
-      void sentTo( DomainEvent event, Owner newOwner );
+      void changedOwner( DomainEvent event, Owner newOwner );
    }
 
    abstract class Mixin
@@ -49,9 +49,12 @@ public interface Ownable
       @This
       Data state;
 
-      public void sendTo( Owner owner )
+      public void changeOwner( Owner owner )
       {
-         sentTo( DomainEvent.CREATE, owner );
+         if (owner != null && owner.equals( owner().get() ))
+            return; // Don't try to set to the same owner
+
+         changedOwner( DomainEvent.CREATE, owner );
       }
 
       public boolean hasOwner()
@@ -64,7 +67,7 @@ public interface Ownable
          return owner.equals( owner().get() );
       }
 
-      public void sentTo( DomainEvent event, Owner newOwner )
+      public void changedOwner( DomainEvent event, Owner newOwner )
       {
          state.owner().set( newOwner );
       }

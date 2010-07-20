@@ -25,6 +25,7 @@ import org.qi4j.api.entity.IdentityGenerator;
 import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.domain.structure.Describable;
@@ -67,29 +68,28 @@ public interface Forms
       @Structure
       UnitOfWorkFactory uowf;
 
+      @This
+      Data data;
+
       public Form createForm()
       {
          Form form = createdForm( DomainEvent.CREATE, idGen.generate( Identity.class ) );
+         addForm(form);
 
          return form;
       }
 
       public void addForm( Form form )
       {
-         if (forms().contains( form ))
+         if (data.forms().contains( form ))
             return;
 
-         addedForm(DomainEvent.CREATE, form);
-      }
-
-      public void addedForm( DomainEvent create, Form form )
-      {
-         forms().add( form );
+         data.addedForm(DomainEvent.CREATE, form);
       }
 
       public void removeForm( Form form )
       {
-         if (!forms().contains( form ))
+         if (!data.forms().contains( form ))
             return;
 
          removedForm( DomainEvent.CREATE, form );
@@ -106,18 +106,18 @@ public interface Forms
       {
          EntityBuilder<Form> builder = uowf.currentUnitOfWork().newEntityBuilder( Form.class, id );
          Form form = builder.newInstance();
-         forms().add( form );
+         data.forms().add( form );
          return form;
       }
 
       public void removedForm( DomainEvent event, Form removedForm )
       {
-         forms().remove( removedForm );
+         data.forms().remove( removedForm );
       }
 
       public Form getFormByName( String name )
       {
-         return Describable.Mixin.getDescribable( forms(), name );
+         return Describable.Mixin.getDescribable( data.forms(), name );
       }
    }
 }

@@ -78,7 +78,7 @@ public class CaseGeneralModel extends Observable implements Refreshable,
       this.client = client;
       eventFilter = new EventVisitorFilter( client.getReference()
             .getParentRef().getLastSegment(), this, "addedLabel",
-            "removedLabel", "sentTo", "changedCaseType", "changedStatus" );
+            "removedLabel", "changedOwner", "changedCaseType", "changedStatus");
    }
 
    public CaseGeneralDTO getGeneral()

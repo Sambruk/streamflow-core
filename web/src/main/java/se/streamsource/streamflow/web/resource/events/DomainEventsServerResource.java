@@ -48,13 +48,13 @@ import java.util.Map;
 /**
  * Get events since a given date in various formats
  */
-public class EventsServerResource
+public class DomainEventsServerResource
       extends ServerResource
 {
    @Service
    EventStore store;
 
-   public EventsServerResource()
+   public DomainEventsServerResource()
    {
       getVariants().add(new Variant( MediaType.TEXT_HTML));
       getVariants().add(new Variant( MediaType.APPLICATION_ATOM));

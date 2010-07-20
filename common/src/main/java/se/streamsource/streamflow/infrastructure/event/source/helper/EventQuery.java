@@ -37,6 +37,7 @@ public class EventQuery
    private List<String> names; // Only return events with these names
    private List<String> usecases; // Only return events with these usecases
    private List<String> entities; // Only return events on these entity
+   private List<String> entityTypes; // Only return events on these entity-types
    private List<String> by; // Only return events caused by these users
 
    public EventQuery()
@@ -84,6 +85,15 @@ public class EventQuery
       return this;
    }
 
+   public EventQuery onEntityTypes( String... entityTypes )
+   {
+      if (this.entityTypes == null)
+         this.entityTypes = new ArrayList<String>();
+
+      this.entityTypes.addAll( Arrays.asList( entityTypes ) );
+      return this;
+   }
+
    public EventQuery by( String... by )
    {
       if (this.by == null)
@@ -109,6 +119,9 @@ public class EventQuery
          return false;
 
       if (entities != null && !entities.contains( event.entity().get() ))
+         return false;
+
+      if (entityTypes != null && !entityTypes.contains( event.entityType().get() ))
          return false;
 
       if (by != null && !by.contains( event.by().get() ))

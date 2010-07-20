@@ -23,6 +23,7 @@ import org.qi4j.api.entity.IdentityGenerator;
 import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilderFactory;
@@ -30,6 +31,7 @@ import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 
 /**
  * JAVADOC
@@ -64,6 +66,9 @@ public interface CaseTypes
    abstract class Mixin
          implements CaseTypes, Data
    {
+      @This
+      Owner owner;
+
       @Service
       IdentityGenerator idGen;
 
@@ -76,10 +81,14 @@ public interface CaseTypes
       @Structure
       QueryBuilderFactory qbf;
 
+      @This
+      Data data;
+
       public CaseType createCaseType( String name )
       {
          CaseType caseType = createdCaseType( DomainEvent.CREATE, idGen.generate( Identity.class ) );
          addedCaseType(DomainEvent.CREATE, caseType );
+         caseType.changeOwner( owner );
          caseType.changeDescription( name );
 
          return caseType;
@@ -88,6 +97,7 @@ public interface CaseTypes
       public void addCaseType( CaseType caseType )
       {
          addedCaseType(DomainEvent.CREATE, caseType );
+         caseType.changeOwner( owner );
       }
 
       public void moveCaseType( CaseType caseType, CaseTypes toCaseTypes )
@@ -95,6 +105,17 @@ public interface CaseTypes
          toCaseTypes.addCaseType( caseType );
 
          removedCaseType( DomainEvent.CREATE, caseType );
+      }
+
+      public boolean removeCaseType( CaseType caseType )
+      {
+         if (data.caseTypes().contains( caseType ))
+         {
+            removedCaseType( DomainEvent.CREATE, caseType );
+            return true;
+         }
+
+         return true;
       }
 
       public CaseType createdCaseType( DomainEvent event, String id )

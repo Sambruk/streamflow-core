@@ -15,23 +15,29 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.context.users;
+package se.streamsource.streamflow.web.domain.interaction.gtd;
 
-import se.streamsource.streamflow.test.AbstractWebDomainApplicationScenario;
+import org.qi4j.api.common.AppliesTo;
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.sideeffect.GenericSideEffect;
+
+import java.lang.reflect.Method;
 
 /**
- * JAVADOC
+ * Change ownership of first argument to "this".
  */
-public class UsersScenario
-      extends AbstractWebDomainApplicationScenario
+@AppliesTo(ChangesOwner.class)
+public class ChangeOwnerSideEffect
+   extends GenericSideEffect
 {
-   public UsersScenario()
-   {
-      this( Thread.currentThread().getContextClassLoader() );
-   }
+   @This
+   Owner owner;
 
-   public UsersScenario( ClassLoader classLoader )
+   @Override
+   protected void invoke( Method method, Object[] args ) throws Throwable
    {
-      super( classLoader);
+      Ownable ownable = (Ownable) args[0];
+
+      ownable.changeOwner( owner );
    }
 }

@@ -17,10 +17,13 @@
 
 package se.streamsource.streamflow.web.domain.structure.form;
 
+import se.streamsource.streamflow.domain.structure.Describable;
+import se.streamsource.streamflow.domain.structure.Notable;
+
 /**
  * JAVADOC
  */
 public interface Field
-      extends FieldTemplate
+      extends Describable, Notable, FieldValueDefinition, Mandatory
 {
 }

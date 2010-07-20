@@ -17,9 +17,14 @@
 
 package se.streamsource.streamflow.web.application.statistics;
 
+import org.qi4j.api.Qi4j;
+import org.qi4j.api.common.QualifiedName;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.property.StateHolder;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
+import org.qi4j.spi.Qi4jSPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,6 +40,9 @@ public interface LoggingStatisticsStore
    {
       private Logger log;
 
+      @Structure
+      private Qi4jSPI qi4j;
+
       public void activate() throws Exception
       {
          log = LoggerFactory.getLogger( "statistics" );
@@ -46,20 +54,24 @@ public interface LoggingStatisticsStore
 
       public void related( RelatedStatisticsValue related )
       {
-         log.info( "id:{}, description:{}, type:{}", new Object[]{related.identity().get(), related.description().get(), related.type().get()} );
+         log.info( "id:{}, description:{}, type:{}", new Object[]{related.identity().get(), related.description().get(), related.relatedType().get()} );
       }
 
       public void caseStatistics( CaseStatisticsValue caseStatistics )
       {
          // TODO Add all fields to log message
 
-         StringBuilder str = new StringBuilder();
-         str.append( "id:" ).append( caseStatistics.identity().get() );
-         str.append( "caseId:" ).append( caseStatistics.caseId().get() );
-         str.append( "description:" ).append( caseStatistics.description().get() );
-         str.append( "note:" ).append( caseStatistics.note().get() );
-         str.append( "createdOn:" ).append( caseStatistics.createdOn().get() );
-         str.append( "closedOn:" ).append( caseStatistics.closedOn().get() );
+         final StringBuilder str = new StringBuilder();
+         StateHolder state = qi4j.getState( caseStatistics);
+         state.visitProperties( new StateHolder.StateVisitor()
+         {
+            public void visitProperty( QualifiedName name, Object value )
+            {
+               if (str.length()> 0)
+                  str.append(", " );
+               str.append(name.name()).append( ":" ).append( value );
+            }
+         });
 
          log.info( str.toString() );
       }

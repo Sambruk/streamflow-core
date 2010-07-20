@@ -15,23 +15,16 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.context.users;
-
-import se.streamsource.streamflow.test.AbstractWebDomainApplicationScenario;
+package se.streamsource.streamflow.web.application.statistics;
 
 /**
- * JAVADOC
+ * Throw by statistics store if it could not store the statistics. Try again later.
  */
-public class UserScenario
-      extends AbstractWebDomainApplicationScenario
+public class StatisticsStoreException
+   extends Exception
 {
-   public UserScenario()
+   public StatisticsStoreException( String message, Throwable cause )
    {
-      this( Thread.currentThread().getContextClassLoader() );
-   }
-
-   public UserScenario( ClassLoader classLoader )
-   {
-      super( classLoader);
+      super( message, cause );
    }
 }

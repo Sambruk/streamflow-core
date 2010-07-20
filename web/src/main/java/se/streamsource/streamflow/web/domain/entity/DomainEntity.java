@@ -20,22 +20,22 @@ package se.streamsource.streamflow.web.domain.entity;
 import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.sideeffect.SideEffects;
 import se.streamsource.streamflow.infrastructure.event.EventCreationConcern;
-import se.streamsource.streamflow.web.domain.generic.CommandEntityCreateMixin;
-import se.streamsource.streamflow.web.domain.generic.CommandEntityRemoveMixin;
 import se.streamsource.streamflow.web.domain.generic.CommandPropertyChangeMixin;
 import se.streamsource.streamflow.web.domain.generic.EventEntityAddedMixin;
 import se.streamsource.streamflow.web.domain.generic.EventEntityCreatedMixin;
 import se.streamsource.streamflow.web.domain.generic.EventEntityRemovedMixin;
 import se.streamsource.streamflow.web.domain.generic.EventPropertyChangedMixin;
+import se.streamsource.streamflow.web.domain.interaction.gtd.ChangeOwnerSideEffect;
 
 /**
  * Base Composite for all domain entities
  */
 @Concerns(EventCreationConcern.class)
-@Mixins({EventPropertyChangedMixin.class, CommandPropertyChangeMixin.class,
-      EventEntityCreatedMixin.class, EventEntityAddedMixin.class, EventEntityRemovedMixin.class,
-      CommandEntityCreateMixin.class, CommandEntityRemoveMixin.class})
+@Mixins({EventPropertyChangedMixin.class, CommandPropertyChangeMixin.class, EventEntityCreatedMixin.class, EventEntityAddedMixin.class, EventEntityRemovedMixin.class})
+//      CommandEntityCreateMixin.class, CommandEntityRemoveMixin.class})
+@SideEffects(ChangeOwnerSideEffect.class)
 public interface DomainEntity
       extends EntityComposite
 {

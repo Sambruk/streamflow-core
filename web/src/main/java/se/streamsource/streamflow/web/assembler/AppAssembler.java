@@ -21,10 +21,12 @@ import org.qi4j.api.common.Visibility;
 import org.qi4j.api.service.ServiceSelector;
 import org.qi4j.api.structure.Application;
 import org.qi4j.bootstrap.AssemblyException;
+import org.qi4j.bootstrap.ImportedServiceDeclaration;
 import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.index.reindexer.ReindexerService;
 import org.qi4j.rest.MBeanServerImporter;
+import org.qi4j.spi.entitystore.EntityStore;
 import org.qi4j.spi.query.NamedEntityFinder;
 import org.qi4j.spi.service.importer.NewObjectImporter;
 import org.qi4j.spi.service.importer.ServiceSelectorImporter;
@@ -49,12 +51,16 @@ import se.streamsource.streamflow.web.application.organization.BootstrapDataServ
 import se.streamsource.streamflow.web.application.organization.TestDataService;
 import se.streamsource.streamflow.web.application.security.PasswordVerifierService;
 import se.streamsource.streamflow.web.application.statistics.CaseStatisticsService;
+import se.streamsource.streamflow.web.application.statistics.CaseStatisticsValue;
 import se.streamsource.streamflow.web.application.statistics.LoggingStatisticsStore;
+import se.streamsource.streamflow.web.application.statistics.RelatedStatisticsValue;
 import se.streamsource.streamflow.web.application.statistics.StatisticsService;
 
 import javax.management.MBeanServer;
 
 import static org.qi4j.api.common.Visibility.application;
+import static org.qi4j.api.common.Visibility.layer;
+import static org.qi4j.api.common.Visibility.module;
 
 /**
  * JAVADOC
@@ -92,7 +98,7 @@ public class AppAssembler
       module.addServices( NotificationService.class )
             .identifiedBy( "notification" )
             .instantiateOnStartup()
-            .visibleIn( Visibility.layer );
+            .visibleIn( layer );
    }
 
    private void statistics( ModuleAssembly module ) throws AssemblyException
@@ -106,11 +112,13 @@ public class AppAssembler
       module.addServices( CaseStatisticsService.class ).
             identifiedBy( "statistics" ).
             instantiateOnStartup().
-            visibleIn( Visibility.layer );
+            visibleIn( layer );
       module.addServices( LoggingStatisticsStore.class ).
-            identifiedBy( "jdbcstatisticsstore" ).
+            identifiedBy( "logstatisticsstore" ).
             instantiateOnStartup().
             visibleIn( Visibility.module );
+
+      module.addValues( RelatedStatisticsValue.class, CaseStatisticsValue.class ).visibleIn( layer );
    }
 
    private void security( ModuleAssembly module ) throws AssemblyException
@@ -125,11 +133,11 @@ public class AppAssembler
       module.addTransients( ManagerComposite.class );
 
       module.importServices( MBeanServer.class ).importedBy( MBeanServerImporter.class );
-      module.addServices( ManagerService.class ).visibleIn( Visibility.application ).instantiateOnStartup();
+      module.addServices( ManagerService.class ).visibleIn( application ).instantiateOnStartup();
 
       module.addServices( JmxConnectorService.class ).identifiedBy( "jmxconnector" ).instantiateOnStartup();
 
-      module.addServices( ReindexerService.class ).identifiedBy( "reindexer" ).visibleIn( Visibility.layer );
+      module.addServices( ReindexerService.class ).identifiedBy( "reindexer" ).visibleIn( layer );
       module.addServices( ReindexOnStartupService.class ).instantiateOnStartup();
 
       module.addServices( EventManagerService.class, DomainEventPlayerService.class ).instantiateOnStartup();
@@ -145,7 +153,7 @@ public class AppAssembler
       {
          // Migrate state
          module.addServices( StartupMigrationService.class ).
-               visibleIn( Visibility.application ).
+               visibleIn( application ).
                identifiedBy( "startupmigration" ).
                instantiateOnStartup();
       }
@@ -153,8 +161,8 @@ public class AppAssembler
 
    private void console( ModuleAssembly module ) throws AssemblyException
    {
-      module.addValues( ConsoleScriptValue.class, ConsoleResultValue.class ).visibleIn( Visibility.application );
+      module.addValues( ConsoleScriptValue.class, ConsoleResultValue.class ).visibleIn( application );
 
-      module.addServices( ConsoleService.class ).visibleIn( Visibility.application );
+      module.addServices( ConsoleService.class ).visibleIn( application );
    }
 }

@@ -66,7 +66,7 @@ public interface AssignmentsContext
          CaseEntity caze = drafts.createDraft();
 
          Owner owner = context.get( Owner.class);
-         caze.sendTo( owner );
+         caze.changeOwner( owner );
 
          caze.open();
 

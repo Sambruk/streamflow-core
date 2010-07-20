@@ -18,7 +18,9 @@
 package se.streamsource.streamflow.web.application.statistics;
 
 import org.qi4j.api.common.Optional;
+import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueComposite;
 
 import java.util.Date;
 import java.util.List;
@@ -27,6 +29,7 @@ import java.util.List;
  * Statistics for a single closed case
  */
 public interface CaseStatisticsValue
+   extends ValueComposite
 {
    Property<String> identity();
    Property<String> caseId();
@@ -36,6 +39,7 @@ public interface CaseStatisticsValue
    Property<Date> closedOn();
    Property<Long> duration();
 
+   @UseDefaults
    Property<List<String>> labels();
 
    Property<String> assigneeId();

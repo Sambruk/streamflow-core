@@ -19,11 +19,14 @@ package se.streamsource.streamflow.web.domain.structure.organization;
 
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.domain.structure.Removable;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseTypes;
 import se.streamsource.streamflow.web.domain.structure.form.Forms;
 import se.streamsource.streamflow.web.domain.structure.group.Groups;
 import se.streamsource.streamflow.web.domain.structure.label.Labels;
 import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
+import se.streamsource.streamflow.web.domain.structure.project.Projects;
 
 /**
  * JAVADOC
@@ -35,6 +38,8 @@ public interface OrganizationalUnit
       Forms,
       OrganizationalUnitRefactoring,
       OrganizationalUnits,
+      Owner,
+      Ownable,
       Projects,
       Removable,
       RolePolicy,

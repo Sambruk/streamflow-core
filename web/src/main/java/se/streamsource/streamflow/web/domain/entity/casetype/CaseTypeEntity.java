@@ -29,6 +29,7 @@ import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.domain.structure.Notable;
 import se.streamsource.streamflow.domain.structure.Removable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.structure.casetype.Resolutions;
 import se.streamsource.streamflow.web.domain.structure.casetype.SelectedCaseTypes;
 import se.streamsource.streamflow.web.domain.structure.casetype.SelectedResolutions;
@@ -50,6 +51,7 @@ public interface CaseTypeEntity
       Describable.Data,
       Notable.Data,
       Labels.Data,
+      Ownable.Data,
       SelectedLabels.Data,
       Forms.Data,
       SelectedForms.Data,

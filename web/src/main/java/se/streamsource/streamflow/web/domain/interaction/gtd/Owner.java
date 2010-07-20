@@ -18,7 +18,7 @@
 package se.streamsource.streamflow.web.domain.interaction.gtd;
 
 /**
- * JAVADOC
+ * Anything that can own other entities through Ownable should implement this.
  */
 public interface Owner
 {

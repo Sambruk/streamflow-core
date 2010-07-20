@@ -57,8 +57,8 @@ public interface Participants
       void removedParticipant( DomainEvent event, Participant participant );
    }
 
-   abstract class Mixin
-         implements Participants, Data
+   class Mixin
+         implements Participants
    {
       @Structure
       ValueBuilderFactory vbf;
@@ -66,27 +66,29 @@ public interface Participants
       @This
       Group group;
 
+      @This Data data;
+
       public void addParticipant( Participant participant )
       {
-         if (!participants().contains( participant ))
+         if (!data.participants().contains( participant ))
          {
-            addedParticipant( DomainEvent.CREATE, participant );
+            data.addedParticipant( DomainEvent.CREATE, participant );
             participant.joinGroup( group );
          }
       }
 
       public void removeParticipant( Participant participant )
       {
-         if (participants().contains( participant ))
+         if (data.participants().contains( participant ))
          {
-            removedParticipant( DomainEvent.CREATE, participant );
+            data.removedParticipant( DomainEvent.CREATE, participant );
             participant.leaveGroup( group );
          }
       }
 
       public boolean isParticipant( Participant participant )
       {
-         for (Participant participant1 : participants())
+         for (Participant participant1 : data.participants())
          {
             if (participant.equals(participant1))
                return true;
@@ -101,18 +103,6 @@ public interface Participants
 
          return false;
       }
-
-      // Events
-      public void addedParticipant( DomainEvent event, Participant participant )
-      {
-         participants().add( participant );
-      }
-
-      public void removedParticipant( DomainEvent event, Participant participant )
-      {
-         participants().remove( participant );
-      }
-
    }
 
    class RemovableSideEffect

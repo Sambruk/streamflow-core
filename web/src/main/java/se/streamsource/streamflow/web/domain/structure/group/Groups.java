@@ -20,22 +20,28 @@ package se.streamsource.streamflow.web.domain.structure.group;
 import org.qi4j.api.concern.ConcernOf;
 import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.entity.Aggregated;
+import org.qi4j.api.entity.IdentityGenerator;
 import org.qi4j.api.entity.association.ManyAssociation;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.domain.structure.Removable;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.web.domain.entity.organization.GroupEntity;
+import se.streamsource.streamflow.web.domain.interaction.gtd.ChangesOwner;
 
 /**
  * JAVADOC
  */
-@Concerns(Groups.DescribeCreatedGroupConcern.class)
 @Mixins(Groups.Mixin.class)
 public interface Groups
 {
    Group createGroup( String name );
 
+   @ChangesOwner
    void addGroup( Group group );
 
    boolean removeGroup( Group group );
@@ -59,13 +65,29 @@ public interface Groups
    abstract class Mixin
          implements Groups, Data
    {
+      @This Data data;
+
+      @Service
+      IdentityGenerator idGen;
+
+      @Structure
+      UnitOfWorkFactory uowf;
+
+      public Group createGroup( String name )
+      {
+         Group group = data.createdGroup(DomainEvent.CREATE, idGen.generate( GroupEntity.class ));
+         group.changeDescription( name );
+         addGroup(group);
+         return group;
+      }
+
       public void mergeGroups( Groups groups )
       {
 
-         while (this.groups().count() > 0)
+         while (data.groups().count() > 0)
          {
-            Group group = this.groups().get( 0 );
-            removedGroup( DomainEvent.CREATE, group );
+            Group group = data.groups().get( 0 );
+            data.removedGroup( DomainEvent.CREATE, group );
             groups.addGroup( group );
          }
 
@@ -73,39 +95,25 @@ public interface Groups
 
       public void addGroup( Group group )
       {
-         if (groups().contains( group ))
+         if (!data.groups().contains( group ))
          {
-            return;
+            data.addedGroup( DomainEvent.CREATE, group );
          }
-         addedGroup( DomainEvent.CREATE, group );
       }
 
       public boolean removeGroup( Group group )
       {
-         if (!groups().contains( group ))
+         if (!data.groups().contains( group ))
             return false;
 
-         removedGroup( DomainEvent.CREATE, group );
+         data.removedGroup( DomainEvent.CREATE, group );
          group.removeEntity();
          return true;
       }
 
       public Group getGroupByName( String name )
       {
-         return Describable.Mixin.getDescribable( groups(), name );
+         return Describable.Mixin.getDescribable( data.groups(), name );
       }
    }
-
-   abstract class DescribeCreatedGroupConcern
-         extends ConcernOf<Groups>
-         implements Groups
-   {
-      public Group createGroup( String name )
-      {
-         Group group = next.createGroup( name );
-         group.changeDescription( name );
-         return group;
-      }
-   }
-
 }

@@ -25,6 +25,7 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.sideeffect.SideEffects;
 import org.qi4j.api.structure.Application;
+import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
@@ -78,9 +79,18 @@ public interface DomainEventFactoryService
          prototype.on().set( time.dateNow() );
          prototype.entity().set( entity.identity().get() );
 
+         // Take user either from Subject or UoW
+         UnitOfWork uow = uowf.currentUnitOfWork();
          Subject subject = Subject.getSubject( AccessController.getContext() );
          if (subject == null)
-            prototype.by().set( "unknown" );
+         {
+            Principal principal = uow.metaInfo().get( Principal.class );
+            if (principal != null)
+               prototype.by().set( principal.getName() );
+            else
+               prototype.by().set( "unknown" ); // No user set
+
+         }
          else
          {
             Iterator<Principal> iterator = subject.getPrincipals().iterator();
@@ -93,7 +103,7 @@ public interface DomainEventFactoryService
          }
 
          prototype.identity().set( idGenerator.generate( DomainEvent.class ) );
-         prototype.usecase().set( uowf.currentUnitOfWork().usecase().name() );
+         prototype.usecase().set( uow.usecase().name() );
          prototype.version().set( version );
 
          // JSON-ify parameters

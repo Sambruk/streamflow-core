@@ -142,7 +142,7 @@ public interface FormSubmissions
                valueBuilder.prototype().description().set( field.getDescription() );
                valueBuilder.prototype().note().set( field.getNote() );
                valueBuilder.prototype().field().set( EntityReference.getEntityReference( field ));
-               valueBuilder.prototype().mandatory().set( field.getMandatory() );
+               valueBuilder.prototype().mandatory().set( field.isMandatory() );
                valueBuilder.prototype().fieldValue().set( fieldValue );
 
                fieldBuilder.prototype().field().set( valueBuilder.newInstance() );

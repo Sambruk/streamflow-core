@@ -37,7 +37,7 @@ import org.restlet.security.ChallengeAuthenticator;
 import se.streamsource.dci.restlet.server.CommandQueryRestlet;
 import se.streamsource.dci.restlet.server.ResourceFinder;
 import se.streamsource.streamflow.web.resource.admin.ConsoleServerResource;
-import se.streamsource.streamflow.web.resource.events.EventsServerResource;
+import se.streamsource.streamflow.web.resource.events.DomainEventsServerResource;
 
 /**
  * Router for the Streamflow REST API.
@@ -60,7 +60,7 @@ public class APIRouter
       attachDefault( new ExtensionMediaTypeFilter( getContext(), auth) );
 
       // Events
-      attach( "/events", new ExtensionMediaTypeFilter( getContext(), createServerResourceFinder( EventsServerResource.class )), Template.MODE_STARTS_WITH );
+      attach( "/events/domain", new ExtensionMediaTypeFilter( getContext(), createServerResourceFinder( DomainEventsServerResource.class )), Template.MODE_STARTS_WITH );
 
       // Admin resources
       Router adminRouter = new Router( getContext() );

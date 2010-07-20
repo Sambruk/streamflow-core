@@ -37,6 +37,7 @@ import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
 import se.streamsource.streamflow.web.domain.interaction.gtd.CompletableId;
 import se.streamsource.streamflow.web.domain.interaction.gtd.IdGenerator;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseTypes;
 import se.streamsource.streamflow.web.domain.structure.casetype.SelectedCaseTypes;
@@ -61,6 +62,7 @@ public interface ProjectEntity
 
       // Interactions
       Owner,
+      Ownable,
       IdGenerator,
 
       // Structure
@@ -72,6 +74,7 @@ public interface ProjectEntity
       Members.Data,
       Describable.Data,
       OwningOrganizationalUnit.Data,
+      Ownable.Data,
       Forms.Data,
       Labels.Data,
       SelectedLabels.Data,

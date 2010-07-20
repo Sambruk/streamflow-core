@@ -59,7 +59,7 @@ public class LabelsModel
       try
       {
          // Get label list
-         LinksValue newList = client.query( "labels", LinksValue.class );
+         LinksValue newList = client.query( "index", LinksValue.class );
 
          EventListSynch.synchronize( newList.links().get(), labels );
 

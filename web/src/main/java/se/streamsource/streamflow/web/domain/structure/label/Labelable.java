@@ -51,18 +51,18 @@ public interface Labelable
          implements Labelable, Data
    {
       @This
-      Data state;
+      Data data;
 
       public void addLabel( Label label )
       {
-         addedLabel( DomainEvent.CREATE, label );
+         data.addedLabel( DomainEvent.CREATE, label );
       }
 
       public void removeLabel( Label label )
       {
-         if (state.labels().contains( label ))
+         if (data.labels().contains( label ))
          {
-            removedLabel( DomainEvent.CREATE, label );
+            data.removedLabel( DomainEvent.CREATE, label );
          }
       }
 
@@ -97,21 +97,21 @@ public interface Labelable
 
       public void addedLabel( DomainEvent event, Label label )
       {
-         for (int i = 0; i < state.labels().count(); i++)
+         for (int i = 0; i < data.labels().count(); i++)
          {
-            if (state.labels().get( i ).getDescription().compareTo( label.getDescription() ) > 0)
+            if (data.labels().get( i ).getDescription().compareTo( label.getDescription() ) > 0)
             {
-               state.labels().add( i, label );
+               data.labels().add( i, label );
                return;
             }
          }
 
-         state.labels().add( label );
+         data.labels().add( label );
       }
 
       public void removedLabel( DomainEvent event, Label label )
       {
-         state.labels().remove( label );
+         data.labels().remove( label );
       }
    }
 }

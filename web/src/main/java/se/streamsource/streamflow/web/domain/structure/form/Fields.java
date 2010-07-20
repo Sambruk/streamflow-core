@@ -24,6 +24,7 @@ import org.qi4j.api.entity.IdentityGenerator;
 import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
@@ -61,6 +62,9 @@ public interface Fields
    abstract class Mixin
          implements Fields, Data
    {
+      @This
+      Data data;
+
       @Service
       IdentityGenerator idGen;
 
@@ -79,7 +83,7 @@ public interface Fields
 
       public void removeField( Field field )
       {
-         if (!fields().contains( field ))
+         if (!data.fields().contains( field ))
             return;
 
          removedField( DomainEvent.CREATE, field );
@@ -87,7 +91,7 @@ public interface Fields
 
       public void moveField( Field field, Integer toIdx )
       {
-         if (!fields().contains( field ) || fields().count() <= toIdx)
+         if (!data.fields().contains( field ) || data.fields().count() <= toIdx)
             return;
 
          movedField( DomainEvent.CREATE, field, toIdx );
@@ -95,7 +99,7 @@ public interface Fields
 
       public Field getFieldByName( String name )
       {
-         for (Field field : fields())
+         for (Field field : data.fields())
          {
             if (((Describable.Data) field).description().get().equals( name ))
                return field;
@@ -111,21 +115,21 @@ public interface Fields
 
          Field field = builder.newInstance();
 
-         fields().add( field );
+         data.fields().add( field );
 
          return field;
       }
 
       public void movedField( DomainEvent event, Field field, int toIdx )
       {
-         fields().remove( field );
+         data.fields().remove( field );
 
-         fields().add( toIdx, field );
+         data.fields().add( toIdx, field );
       }
 
       public void removedField( DomainEvent event, Field field )
       {
-         fields().remove( field );
+         data.fields().remove( field );
       }
    }
 }

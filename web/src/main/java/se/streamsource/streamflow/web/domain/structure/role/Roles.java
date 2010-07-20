@@ -20,14 +20,19 @@ package se.streamsource.streamflow.web.domain.structure.role;
 import org.qi4j.api.concern.ConcernOf;
 import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.entity.Aggregated;
+import org.qi4j.api.entity.IdentityGenerator;
 import org.qi4j.api.entity.association.ManyAssociation;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.web.domain.entity.organization.RoleEntity;
 
 /**
  * JAVADOC
  */
-@Concerns(Roles.DescribeCreatedRoleConcern.class)
 @Mixins(Roles.Mixin.class)
 public interface Roles
 {
@@ -50,28 +55,43 @@ public interface Roles
       void removedRole( DomainEvent event, Role role );
    }
 
-   public abstract class Mixin
-         implements Roles, Data
+   public class Mixin
+         implements Roles
    {
+      @Service
+      IdentityGenerator idGen;
+
+      @Structure
+      UnitOfWorkFactory uowf;
+
+      @This
+      Data data;
+
+      public Role createRole( String name )
+      {
+         Role role = data.createdRole( DomainEvent.CREATE, idGen.generate( RoleEntity.class ));
+         data.addedRole( DomainEvent.CREATE, role );
+         role.changeDescription( name );
+
+         return role;
+      }
+
+      public void removeRole( Role projectRole )
+      {
+         if (data.roles().contains( projectRole ))
+         {
+            data.removedRole(DomainEvent.CREATE, projectRole);
+            projectRole.removeEntity();
+         }
+      }
+
       public Role getAdministratorRole()
             throws IllegalStateException
       {
-         if (roles().count() > 0)
-            return roles().get( 0 );
+         if (data.roles().count() > 0)
+            return data.roles().get( 0 );
          else
             throw new IllegalStateException( "There's no Administrator role!" );
-      }
-   }
-
-   abstract class DescribeCreatedRoleConcern
-         extends ConcernOf<Roles>
-         implements Roles
-   {
-      public Role createRole( String name )
-      {
-         Role role = next.createRole( name );
-         role.changeDescription( name );
-         return role;
       }
    }
 }

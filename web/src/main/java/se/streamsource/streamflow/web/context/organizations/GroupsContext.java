@@ -20,6 +20,7 @@ package se.streamsource.streamflow.web.context.organizations;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
+import se.streamsource.dci.api.IndexInteraction;
 import se.streamsource.dci.api.Interactions;
 import se.streamsource.dci.value.*;
 import se.streamsource.dci.value.StringValue;
@@ -35,9 +36,8 @@ import se.streamsource.dci.api.SubContexts;
  */
 @Mixins(GroupsContext.Mixin.class)
 public interface GroupsContext
-   extends SubContexts<GroupContext>, Interactions
+   extends SubContexts<GroupContext>, IndexInteraction<LinksValue>, Interactions
 {
-   public LinksValue groups();
    public void creategroup( StringValue name );
 
    abstract class Mixin
@@ -47,7 +47,7 @@ public interface GroupsContext
       @Structure
       Module module;
 
-      public LinksValue groups()
+      public LinksValue index()
       {
          Groups.Data groups = context.get(Groups.Data.class);
 

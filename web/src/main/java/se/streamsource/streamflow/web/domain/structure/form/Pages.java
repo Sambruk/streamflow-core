@@ -24,6 +24,7 @@ import org.qi4j.api.entity.IdentityGenerator;
 import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
@@ -69,6 +70,9 @@ public interface Pages
       @Structure
       ValueBuilderFactory vbf;
 
+      @This
+      Data data;
+
       public Page createPage( String name )
       {
          Page Page = createdPage( DomainEvent.CREATE, idGen.generate( Identity.class ) );
@@ -78,7 +82,7 @@ public interface Pages
 
       public void removePage( Page page )
       {
-         if (!pages().contains( page ))
+         if (!data.pages().contains( page ))
             return;
 
          removedPage( DomainEvent.CREATE, page );
@@ -86,7 +90,7 @@ public interface Pages
 
       public void movePage( Page page, Integer toIdx )
       {
-         if (!pages().contains( page ) || pages().count() <= toIdx)
+         if (!data.pages().contains( page ) || data.pages().count() <= toIdx)
             return;
 
          movedPage( DomainEvent.CREATE, page, toIdx );
@@ -94,7 +98,7 @@ public interface Pages
 
       public Page getPageByName( String name )
       {
-         for (Page page : pages())
+         for (Page page : data.pages())
          {
             if (((Describable.Data) page).description().get().equals( name ))
                return page;
@@ -109,21 +113,21 @@ public interface Pages
 
          Page page = builder.newInstance();
 
-         pages().add( page );
+         data.pages().add( page );
 
          return page;
       }
 
       public void movedPage( DomainEvent event, Page page, int toIdx )
       {
-         pages().remove( page );
+         data.pages().remove( page );
 
-         pages().add( toIdx, page );
+         data.pages().add( toIdx, page );
       }
 
       public void removedPage( DomainEvent event, Page page )
       {
-         pages().remove( page );
+         data.pages().remove( page );
       }
    }
 }

@@ -25,6 +25,7 @@ import se.streamsource.streamflow.domain.organization.OpenProjectExistsException
 import se.streamsource.streamflow.domain.structure.Removable;
 import se.streamsource.streamflow.web.domain.structure.group.Groups;
 import se.streamsource.streamflow.web.domain.structure.project.ProjectRoles;
+import se.streamsource.streamflow.web.domain.structure.project.Projects;
 
 /**
  * An organizational unit represents a part of an organization.

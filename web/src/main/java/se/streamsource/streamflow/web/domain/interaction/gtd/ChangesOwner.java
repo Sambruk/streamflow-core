@@ -15,23 +15,24 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.context.caze;
+package se.streamsource.streamflow.web.domain.interaction.gtd;
 
-import se.streamsource.streamflow.test.AbstractWebDomainApplicationScenario;
+import org.qi4j.api.sideeffect.SideEffects;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
- * JAVADOC
+ * Add this to methods which when invoked change the ownership
+ * of the first argument to the entity being invoked.
+ *
+ * Example:
+ * bar.addFoo(Foo foo);
+ * -> invoke changeOwner on foo with bar as Owner.
+ *
  */
-public class CaseActionsScenario
-      extends AbstractWebDomainApplicationScenario
+@Retention(RetentionPolicy.RUNTIME)
+@SideEffects(ChangeOwnerSideEffect.class)
+public @interface ChangesOwner
 {
-   public CaseActionsScenario()
-   {
-      this( Thread.currentThread().getContextClassLoader() );
-   }
-
-   public CaseActionsScenario( ClassLoader classLoader )
-   {
-      super( classLoader);
-   }
 }

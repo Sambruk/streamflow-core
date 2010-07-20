@@ -42,7 +42,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * SomeType createFoo(<args>)
  * This will generated an id for "SomeType" (so SomeType needs to extend EntityComposite!) and then call the
  * event method "createdFoo(DomainEvent.CREATE, id)"
- * followed by "addedFoo(DomainEvent.CREATE, entity)".
+ * followed by "addFoo(entity)".
  * The new entity is then returned from the method.
  */
 @AppliesTo(CommandEntityCreateMixin.CommandEntityCreateAppliesTo.class)
@@ -84,8 +84,8 @@ public class CommandEntityCreateMixin
 
       // createFoo -> addedFoo
       {
-         String addedName = "added" + name;
-         Class[] parameterTypes = new Class[]{DomainEvent.class, method.getReturnType()};
+         String addedName = "add" + name;
+         Class[] parameterTypes = new Class[]{method.getReturnType()};
          addedMethod = composite.getClass().getMethod( addedName, parameterTypes );
          //addedMappings.put(method, addedMethod);
       }
@@ -101,7 +101,7 @@ public class CommandEntityCreateMixin
       Object entity = createdMethod.invoke( composite, DomainEvent.CREATE, id );
 
       // Add entity to collection
-      addedMethod.invoke( composite, DomainEvent.CREATE, entity );
+      addedMethod.invoke( composite, entity );
 
       return entity;
    }

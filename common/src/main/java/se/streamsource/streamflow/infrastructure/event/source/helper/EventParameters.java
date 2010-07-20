@@ -22,7 +22,7 @@ import org.json.JSONObject;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 /**
- * Utility class to pick out parameters as strings from a DomainEvent
+ * Utility class to pick out parameters by name or index as strings from a DomainEvent
  */
 public class EventParameters
 {

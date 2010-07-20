@@ -34,7 +34,7 @@ import se.streamsource.streamflow.web.resource.APIRouter;
 import se.streamsource.streamflow.web.resource.EventsCommandResult;
 import se.streamsource.streamflow.web.resource.StreamflowRootContextFactory;
 import se.streamsource.streamflow.web.resource.admin.ConsoleServerResource;
-import se.streamsource.streamflow.web.resource.events.EventsServerResource;
+import se.streamsource.streamflow.web.resource.events.DomainEventsServerResource;
 import se.streamsource.streamflow.web.rest.StreamflowRestApplication;
 
 import static org.qi4j.bootstrap.ImportedServiceDeclaration.NEW_OBJECT;
@@ -75,7 +75,7 @@ public class WebAssembler
             StreamflowRootContextFactory.class,
 
             // Events
-            EventsServerResource.class,
+            DomainEventsServerResource.class,
 
             // Admin
             ConsoleServerResource.class

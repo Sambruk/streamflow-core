@@ -51,6 +51,8 @@ import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
 import se.streamsource.streamflow.infrastructure.event.source.helper.OnEvents;
+import se.streamsource.streamflow.web.application.statistics.CaseStatistics;
+import se.streamsource.streamflow.web.application.statistics.StatisticsStoreException;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
 import se.streamsource.streamflow.web.infrastructure.event.EventManagement;
 import se.streamsource.streamflow.web.infrastructure.index.EmbeddedSolrService;
@@ -147,6 +149,9 @@ public interface ManagerComposite
 
       @Service
       ServiceReference<SolrQueryService> solrIndexer;
+
+      @Service
+      CaseStatistics statistics;
 
       @Structure
       UnitOfWorkFactory uowf;
@@ -512,6 +517,11 @@ public interface ManagerComposite
          }, module );
 
          return "Database contains " + count[0] + " objects";
+      }
+
+      public void refreshStatistics() throws StatisticsStoreException
+      {
+         statistics.refresh();
       }
 
       private File getLatestBackup() throws ParseException

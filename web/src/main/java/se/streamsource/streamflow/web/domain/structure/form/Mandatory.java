@@ -18,6 +18,7 @@
 package se.streamsource.streamflow.web.domain.structure.form;
 
 import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 import se.streamsource.streamflow.domain.structure.Describable;
@@ -27,13 +28,12 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 /**
  * JAVADOC
  */
-@Mixins(FieldTemplate.Mixin.class)
-public interface FieldTemplate
-      extends Describable, Notable, FieldValueDefinition
+@Mixins(Mandatory.Mixin.class)
+public interface Mandatory
 {
    void changeMandatory( Boolean mandatory );
 
-   Boolean getMandatory();
+   boolean isMandatory();
 
    interface Data
    {
@@ -43,25 +43,23 @@ public interface FieldTemplate
       void changedMandatory( DomainEvent event, Boolean mandatory );
    }
 
-   abstract class Mixin
-      implements FieldTemplate, Data
+   class Mixin
+      implements Mandatory
    {
+      @This
+      Data data;
+
       public void changeMandatory( Boolean mandatory )
       {
-         if (mandatory.booleanValue() != mandatory().get().booleanValue())
+         if (mandatory.booleanValue() != data.mandatory().get().booleanValue())
          {
-            changedMandatory( DomainEvent.CREATE, mandatory );
+            data.changedMandatory( DomainEvent.CREATE, mandatory );
          }
       }
 
-      public void changedMandatory( DomainEvent event, Boolean mandatory )
+      public boolean isMandatory()
       {
-         mandatory().set( mandatory );
-      }
-
-      public Boolean getMandatory()
-      {
-         return mandatory().get();
+         return data.mandatory().get();
       }
    }
 

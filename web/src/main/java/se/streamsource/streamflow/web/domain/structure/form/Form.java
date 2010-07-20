@@ -19,6 +19,7 @@ package se.streamsource.streamflow.web.domain.structure.form;
 
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.domain.structure.Notable;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 
 /**
  * JAVADOC
@@ -26,6 +27,7 @@ import se.streamsource.streamflow.domain.structure.Notable;
 public interface Form
  extends Describable,
       Notable,
-      Pages
+      Pages,
+      Ownable
 {
 }
