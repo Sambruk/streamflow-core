@@ -26,6 +26,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 import java.awt.Component;
+import java.util.StringTokenizer;
 
 /**
  * List renderer for lists that use LinkValue as items.
@@ -46,7 +47,19 @@ public class FilterLinkListCellRenderer extends DefaultListCellRenderer
          {
             if (((TitledLinkValue) value).classes().get() != null)
             {
-               val = "<html>&nbsp; " + highlightQuery( val ) + " [" + highlightQuery( ((TitledLinkValue) value).classes().get().trim() ) + "]</html>";
+               String classes = ((TitledLinkValue) value).classes().get().trim();
+               StringTokenizer tokenizer = new StringTokenizer( classes, " " );
+               String matchedClasses = "";
+               while (tokenizer.hasMoreElements())
+               {
+                  String token = (String) tokenizer.nextElement();
+                  if (token.contains( filterText ))
+                  {
+                     matchedClasses += token + " ";
+                  }
+               }
+
+               val = "<html>&nbsp; " + highlightQuery( val ) + " [" + highlightQuery( matchedClasses.trim() ) + "]</html>";
             } else
                val = "  " + highlightQuery( val );
          }
