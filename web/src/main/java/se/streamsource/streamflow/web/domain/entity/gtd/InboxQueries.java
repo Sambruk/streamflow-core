@@ -34,6 +34,7 @@ import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 
 import static org.qi4j.api.query.QueryExpressions.*;
+import static org.qi4j.api.query.QueryExpressions.eq;
 
 @Mixins(InboxQueries.Mixin.class)
 public interface InboxQueries
@@ -65,9 +66,10 @@ public interface InboxQueries
          Association<Owner> ownableId = templateFor( Ownable.Data.class ).owner();
          Association<Assignee> assignee = templateFor( Assignable.Data.class ).assignedTo();
          queryBuilder = queryBuilder.where( and(
+               eq( templateFor( Status.Data.class ).status(), CaseStates.OPEN ),
                eq( ownableId, owner ),
-               isNull( assignee ),
-               QueryExpressions.eq( templateFor( Status.Data.class ).status(), CaseStates.OPEN ) ) );
+               isNull( assignee )
+                ) );
          return queryBuilder;
       }
 

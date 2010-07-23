@@ -17,7 +17,6 @@
 
 package se.streamsource.streamflow.web.domain.entity.caze;
 
-import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.sideeffect.SideEffects;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.domain.structure.Notable;
@@ -25,7 +24,6 @@ import se.streamsource.streamflow.domain.structure.Removable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
 import se.streamsource.streamflow.web.domain.entity.form.FormSubmissionsQueries;
 import se.streamsource.streamflow.web.domain.entity.form.SubmittedFormsQueries;
-import se.streamsource.streamflow.web.domain.interaction.comment.Commentable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.AssignIdSideEffect;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.CompletableId;
@@ -54,8 +52,6 @@ public interface CaseEntity
       // Interactions
       Assignable,
       Assignable.Data,
-      Commentable,
-      Commentable.Data,
       Describable,
       Describable.Data,
       DueOn,

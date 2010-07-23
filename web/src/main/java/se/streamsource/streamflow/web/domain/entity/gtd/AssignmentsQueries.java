@@ -37,6 +37,8 @@ import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
 
 import static org.qi4j.api.query.QueryExpressions.*;
+import static org.qi4j.api.query.QueryExpressions.eq;
+import static org.qi4j.api.query.QueryExpressions.or;
 
 @Mixins(AssignmentsQueries.Mixin.class)
 public interface AssignmentsQueries
@@ -68,10 +70,10 @@ public interface AssignmentsQueries
          Association<Assignee> assignedId = templateFor( Assignable.Data.class ).assignedTo();
          Association<Owner> ownedId = templateFor( Ownable.Data.class ).owner();
          queryBuilder = queryBuilder.where( and(
-               assignee == null ? isNotNull( assignedId ) : eq( assignedId, assignee ),
                eq( ownedId, owner ),
-               QueryExpressions.or(QueryExpressions.eq( templateFor( Status.Data.class ).status(), CaseStates.OPEN ),
-                                   QueryExpressions.eq( templateFor( Status.Data.class ).status(), CaseStates.ON_HOLD ) )));
+               assignee == null ? isNotNull( assignedId ) : eq( assignedId, assignee ),
+               or( eq( templateFor( Status.Data.class ).status(), CaseStates.OPEN ),
+                   eq( templateFor( Status.Data.class ).status(), CaseStates.ON_HOLD ) )));
          return queryBuilder;
       }
 
@@ -83,7 +85,7 @@ public interface AssignmentsQueries
          Query<CaseEntity> assignmentsQuery = queryBuilder.where( and(
                isNotNull( assignedId ),
                eq( ownedId, owner ),
-               QueryExpressions.eq( templateFor( Status.Data.class ).status(), CaseStates.OPEN ) ) ).
+               eq( templateFor( Status.Data.class ).status(), CaseStates.OPEN ) ) ).
                newQuery( uowf.currentUnitOfWork() );
 
          return assignmentsQuery.count() > 0;

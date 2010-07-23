@@ -19,6 +19,7 @@ package se.streamsource.streamflow.web.infrastructure.index;
 
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrInputDocument;
 import org.apache.solr.core.SolrCore;
 import org.apache.solr.schema.SchemaField;
@@ -43,10 +44,14 @@ import org.qi4j.library.rdf.entity.EntityStateSerializer;
 import org.qi4j.spi.entity.EntityState;
 import org.qi4j.spi.entity.EntityStatus;
 import org.qi4j.spi.entitystore.StateChangeListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -65,6 +70,8 @@ public class SolrEntityIndexerMixin
 
    private SolrServer server;
    private Map<String, SchemaField> indexedFields;
+
+   Logger logger = LoggerFactory.getLogger( getClass() );
 
    public void activate() throws Exception
    {
@@ -92,37 +99,46 @@ public class SolrEntityIndexerMixin
          try
          {
             // Figure out what to update
+            List<String> deleted = null;
+            List<SolrInputDocument> added = new ArrayList<SolrInputDocument>();
             for (EntityState entityState : entityStates)
             {
                if (entityState.status().equals( EntityStatus.REMOVED ))
                {
-                  removeEntityState( entityState.identity(), server );
+                  if (deleted == null)
+                     deleted = new ArrayList<String>();
+                  deleted.add( entityState.identity().identity() );
                } else if (entityState.status().equals( EntityStatus.UPDATED ))
                {
-                  removeEntityState( entityState.identity(), server );
-                  indexEntityState( entityState, server );
+                  added.add( indexEntityState( entityState, server ));
                } else if (entityState.status().equals( EntityStatus.NEW ))
                {
-                  indexEntityState( entityState, server );
+                  added.add(indexEntityState( entityState, server ));
                }
             }
+
+            // Send changes to Solr
+            if (deleted != null)
+               server.deleteById( deleted );
+            if (!added.isEmpty())
+               server.add( added );
          }
          finally
          {
             if (server != null)
             {
-               server.commit();
+               server.commit(false, false);
             }
          }
       }
       catch (Throwable e)
       {
-         e.printStackTrace();
+         logger.error( "Could not update Solr", e );
          //TODO What shall we do with the exception?
       }
    }
 
-   private void indexEntityState( final EntityState entityState,
+   private SolrInputDocument indexEntityState( final EntityState entityState,
                                   final SolrServer server )
          throws IOException, SolrServerException, JSONException
    {
@@ -178,7 +194,8 @@ public class SolrEntityIndexerMixin
          }
 
       }
-      server.add( input );
+
+      return input;
    }
 
    private void indexJson( SolrInputDocument input, Object object ) throws JSONException
@@ -209,12 +226,5 @@ public class SolrEntityIndexerMixin
             }
          }
       }
-   }
-
-   private void removeEntityState( final EntityReference identity,
-                                   final SolrServer server )
-         throws IOException, SolrServerException
-   {
-      server.deleteById( identity.identity() );
    }
 }

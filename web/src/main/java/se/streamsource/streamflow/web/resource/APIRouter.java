@@ -26,14 +26,20 @@ import org.qi4j.rest.entity.EntityResource;
 import org.qi4j.rest.query.IndexResource;
 import org.qi4j.rest.query.SPARQLResource;
 import org.restlet.Context;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.data.ChallengeScheme;
+import org.restlet.data.Method;
 import org.restlet.resource.Directory;
 import org.restlet.resource.ServerResource;
+import org.restlet.routing.Filter;
 import org.restlet.routing.Router;
 import org.restlet.routing.Template;
 import org.restlet.security.Authenticator;
 import org.restlet.security.ChallengeAuthenticator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import se.streamsource.dci.restlet.server.CommandQueryRestlet;
 import se.streamsource.dci.restlet.server.ResourceFinder;
 import se.streamsource.streamflow.web.resource.admin.ConsoleServerResource;
@@ -54,8 +60,10 @@ public class APIRouter
 
       Restlet cqr = factory.newObjectBuilder( CommandQueryRestlet.class ).use(context).newInstance();
 
+      Filter performanceLoggingFilter = new PerformanceLoggingFilter( context, cqr );
+
       Authenticator auth = new ChallengeAuthenticator( getContext(), ChallengeScheme.HTTP_BASIC, "Streamflow" );
-      auth.setNext( cqr );
+      auth.setNext( performanceLoggingFilter );
 
       attachDefault( new ExtensionMediaTypeFilter( getContext(), auth) );
 
@@ -96,5 +104,40 @@ public class APIRouter
          return auth;
       } else
          return finder;
+   }
+
+   private static class PerformanceLoggingFilter extends Filter
+   {
+      Logger queryPerformanceMonitor;
+      Logger commandPerformanceMonitor;
+
+      public PerformanceLoggingFilter( Context context, Restlet restlet )
+      {
+         super( context, restlet );
+         queryPerformanceMonitor = LoggerFactory.getLogger( "monitor.rest.query" );
+         commandPerformanceMonitor = LoggerFactory.getLogger( "monitor.rest.command" );
+      }
+
+      @Override
+      protected int doHandle( Request request, Response response )
+      {
+         long start = System.nanoTime();
+         try
+         {
+            return super.doHandle( request, response );
+         } finally
+         {
+            long end = System.nanoTime();
+            long requestTime = (end - start) / 1000000L;
+
+            if (request.getMethod().equals( Method.GET))
+            {
+               queryPerformanceMonitor.info( "{}\t{}\t{}", new Object[]{requestTime, request.getResourceRef().getLastSegment(), request.getResourceRef() } );
+            } else
+            {
+               commandPerformanceMonitor.info( "{}\t{}\t{}", new Object[]{requestTime, request.getResourceRef().getLastSegment(), request.getResourceRef() } );
+            }
+         }
+      }
    }
 }

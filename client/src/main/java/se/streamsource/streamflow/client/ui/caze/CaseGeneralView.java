@@ -23,7 +23,9 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.Sizes;
 import org.jdesktop.application.Action;
+import org.jdesktop.application.Application;
 import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Task;
 import org.jdesktop.swingx.JXDatePicker;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
@@ -54,6 +56,7 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.LayoutFocusTraversalPolicy;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -323,7 +326,7 @@ public class CaseGeneralView extends JScrollPane implements Observer
       forms.setEnabled( enabled );
    }
 
-   public void update( Observable o, Object arg )
+   public void update( final Observable o, final Object arg )
    {
       if (o == caseBinder)
       {

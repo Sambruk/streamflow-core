@@ -89,7 +89,7 @@ public class CaseStatisticsServiceTest
       module.addServices( MemoryEntityStoreService.class );
 
       module.addServices( CaseStatisticsService.class ).instantiateOnStartup();
-      module.addServices( MemoryEventStoreService.class, EventSourceService.class );
+      module.addServices( MemoryEventStoreService.class );
       module.addServices( UuidIdentityGeneratorService.class);
       module.importServices( TimeService.class ).importedBy( ImportedServiceDeclaration.NEW_OBJECT );
       module.addServices( LoggingStatisticsStore.class );
@@ -119,7 +119,7 @@ public class CaseStatisticsServiceTest
    }
 
    @Test
-   public void testLabelChangeDescription() throws UnitOfWorkCompletionException
+   public void testLabelChangeDescription() throws UnitOfWorkCompletionException, InterruptedException
    {
       TestAppender appender = new TestAppender();
       Logger.getRootLogger().addAppender( appender );
@@ -129,11 +129,13 @@ public class CaseStatisticsServiceTest
       label1.changeDescription( "Foo bar" );
       uow.complete();
 
+      Thread.sleep( 1000 );
+
       assertThat( appender.getEvents().get( 0 ).getMessage().toString(), equalTo( "id:label1, description:Foo bar, type:label" ));
    }
 
    @Test
-   public void testCaseClosed() throws UnitOfWorkCompletionException, PrivilegedActionException
+   public void testCaseClosed() throws UnitOfWorkCompletionException, PrivilegedActionException, InterruptedException
    {
       TestAppender appender = new TestAppender();
       Logger.getRootLogger().addAppender( appender );
@@ -190,6 +192,7 @@ public class CaseStatisticsServiceTest
          }
       });
 
+      Thread.sleep( 1000 );
 
       // Verify log records
       int idx = 0;

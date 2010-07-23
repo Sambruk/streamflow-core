@@ -68,6 +68,7 @@ public class UsersContextTest
    public void testCreateUser() throws UnitOfWorkCompletionException
    {
       // Create user
+      clearEvents();
       createUser( "test" );
       eventsOccurred( "createdUser", "joinedOrganization" );
 

@@ -51,7 +51,6 @@ import se.streamsource.streamflow.web.domain.entity.user.AnonymousEndUserEntity;
 import se.streamsource.streamflow.web.domain.entity.user.ProxyUserEntity;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.entity.user.UsersEntity;
-import se.streamsource.streamflow.web.domain.interaction.comment.CommentValue;
 import se.streamsource.streamflow.web.domain.structure.organization.ParticipantRolesValue;
 import se.streamsource.streamflow.web.domain.structure.project.PermissionValue;
 import se.streamsource.streamflow.web.infrastructure.index.NamedSolrDescriptor;
@@ -69,7 +68,6 @@ public class DomainAssembler
       new CommonDomainAssembler().assemble( layer );
       new CommonResourceAssembler().assemble( layer.moduleAssembly( "Common" ) );
 
-      comments(layer.moduleAssembly( "Comments" ));
       conversations(layer.moduleAssembly("Conversations"));
       forms(layer.moduleAssembly( "Forms" ));
       groups(layer.moduleAssembly( "Groups" ));
@@ -158,10 +156,5 @@ public class DomainAssembler
       module.addEntities(
             ConversationEntity.class,
             MessageEntity.class).visibleIn( Visibility.application );
-   }
-
-   private void comments( ModuleAssembly module ) throws AssemblyException
-   {
-      module.addValues( CommentValue.class ).visibleIn( Visibility.application );
    }
 }

@@ -53,7 +53,7 @@ import java.util.Collections;
 /**
  * Base class for client-side Command/Query resources
  */
-public final class CommandQueryClient
+public class CommandQueryClient
 {
    @Structure
    private  ValueBuilderFactory vbf;
@@ -65,7 +65,7 @@ public final class CommandQueryClient
    private  Qi4jSPI spi;
 
    @Uses
-   private ResponseHandler responseHandler;
+   protected ResponseHandler responseHandler;
 
    @Uses
    private Uniform client;
@@ -353,17 +353,17 @@ public final class CommandQueryClient
    public CommandQueryClient getSubClient( String pathSegment )
    {
       Reference subReference = reference.clone().addSegment( pathSegment ).addSegment( "" );
-      return obf.newObjectBuilder( CommandQueryClient.class ).use( client, new Context(), subReference, responseHandler ).newInstance();
+      return obf.newObjectBuilder( getClass() ).use( client, new Context(), subReference, responseHandler ).newInstance();
    }
 
    public CommandQueryClient getClient( String relativePath )
    {
       Reference reference = new Reference(this.reference, relativePath);
-      return obf.newObjectBuilder( CommandQueryClient.class ).use( client, new Context(), reference, responseHandler ).newInstance();
+      return obf.newObjectBuilder( getClass() ).use( client, new Context(), reference, responseHandler ).newInstance();
    }
 
    public CommandQueryClient getClient( LinkValue link)
    {
       return getClient( link.href().get() );
    }
-}
+   }

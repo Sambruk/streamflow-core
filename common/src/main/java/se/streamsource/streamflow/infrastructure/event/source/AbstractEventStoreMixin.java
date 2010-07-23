@@ -21,33 +21,30 @@ import org.qi4j.api.entity.Identity;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.service.Activatable;
-import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.unitofwork.UnitOfWorkCallback;
-import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.spi.property.ValueType;
 import org.qi4j.spi.structure.ModuleSPI;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static java.util.Collections.synchronizedList;
+
 /**
  * Base implementation for EventStores.
  */
 public abstract class AbstractEventStoreMixin
-      implements EventStore, EventListener, Activatable
+      implements EventStore, TransactionVisitor, Activatable
 {
    @This
    protected Identity identity;
@@ -67,9 +64,9 @@ public abstract class AbstractEventStoreMixin
    @Structure
    private ValueBuilderFactory vbf;
 
-   private Map<UnitOfWork, List<DomainEvent>> uows = new ConcurrentHashMap<UnitOfWork, List<DomainEvent>>();
+   private ExecutorService transactionNotifier;
 
-   private long lastTimestamp = 0;
+   final private List<TransactionVisitor> listeners = synchronizedList( new ArrayList<TransactionVisitor>() );
 
    public void activate() throws IOException
    {
@@ -77,75 +74,66 @@ public abstract class AbstractEventStoreMixin
 
       domainEventType = module.valueDescriptor( DomainEvent.class.getName() ).valueType();
       transactionEventsType = module.valueDescriptor( TransactionEvents.class.getName() ).valueType();
+
+      transactionNotifier = Executors.newSingleThreadExecutor();
    }
 
    public void passivate() throws Exception
    {
+      transactionNotifier.shutdown();
+      transactionNotifier.awaitTermination( 10000, TimeUnit.MILLISECONDS );
    }
 
-   public void notifyEvent( DomainEvent event )
+   // TransactionVisitor implementation
+   // This is how transactions are put into the store
+   public boolean visit( final TransactionEvents transaction )
    {
-      final UnitOfWork unitOfWork = uowf.currentUnitOfWork();
-      List<DomainEvent> events = uows.get( unitOfWork );
-      if (events == null)
+      try
       {
-         final List<DomainEvent> eventList = new ArrayList<DomainEvent>();
-         unitOfWork.addUnitOfWorkCallback( new UnitOfWorkCallback()
+         // Lock store so noone else can interrupt
+         lock();
+
+         storeEvents( transaction );
+
+         // Notify listeners
+         transactionNotifier.submit( new Runnable()
          {
-            public void beforeCompletion() throws UnitOfWorkCompletionException
+            public void run()
             {
-               if (eventList.size() > 0)
+               synchronized(listeners)
                {
-                  try
+                  for (TransactionVisitor listener : listeners)
                   {
-                     // Lock store so noone else can interrupt
-                     lock();
-
-                     // Store all events from this UoW as one transaction
-                     ValueBuilder<TransactionEvents> builder = vbf.newValueBuilder( TransactionEvents.class );
-                     builder.prototype().timestamp().set( getCurrentTimestamp() );
-                     builder.prototype().events().set( eventList );
-                     TransactionEvents transaction = builder.newInstance();
-
-                     storeEvents( transaction );
-                  } catch (Exception e)
-                  {
-                     lock.unlock();
-                     throw new UnitOfWorkCompletionException( e );
-                  }
-               }
-            }
-
-            public void afterCompletion( UnitOfWorkStatus status )
-            {
-               try
-               {
-                  if (status.equals( UnitOfWorkStatus.COMPLETED ))
-                  {
-                     if (eventList.size() > 0)
+                     try
                      {
-                        commit();
+                        listener.visit( transaction );
+                     } catch (Exception e)
+                     {
+                        logger.warn( "Could not notify event listener", e );
                      }
-                  } else
-                  {
-                     rollback();
                   }
-               } catch (IOException e)
-               {
-                  e.printStackTrace();
                }
-
-               // Unlock store so that others can use it
-               if (lock.isLocked())
-                  lock.unlock();
-
-               uows.remove( unitOfWork );
             }
-         } );
-         events = eventList;
-         uows.put( unitOfWork, events );
+         });
+
+         return true;
+
+      } catch (Exception e)
+      {
+         lock.unlock();
+         return false;
       }
-      events.add( event );
+   }
+
+   // EventSource implementation
+   public void registerListener( TransactionVisitor subscriber )
+   {
+      listeners.add( subscriber );
+   }
+
+   public void unregisterListener( TransactionVisitor subscriber )
+   {
+      listeners.remove( subscriber );
    }
 
    abstract protected void rollback()
@@ -175,15 +163,4 @@ public abstract class AbstractEventStoreMixin
          }
       }
    }
-
-
-   protected long getCurrentTimestamp()
-   {
-      long timestamp = System.currentTimeMillis();
-      if (timestamp <= lastTimestamp)
-         timestamp = lastTimestamp + 1; // Increase by one to ensure uniqueness
-      lastTimestamp = timestamp;
-      return timestamp;
-   }
-
 }

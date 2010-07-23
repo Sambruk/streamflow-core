@@ -77,7 +77,7 @@ import se.streamsource.streamflow.web.domain.structure.user.User;
 import java.util.Date;
 
 /**
- * JAVADOC
+ * Consumes domain events and creates application events for statistics.
  */
 @Mixins(CaseStatisticsService.Mixin.class)
 public interface CaseStatisticsService
@@ -199,7 +199,7 @@ public interface CaseStatisticsService
 
 
          transactionAdapter = new TransactionEventAdapter( router );
-         tracker = new TransactionTracker( eventStore, source, config, this );
+         tracker = new TransactionTracker( eventStore, config, this );
          tracker.start();
       }
 

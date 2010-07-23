@@ -58,7 +58,8 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * JAVADOC
+ * Base class for context tests. Context tests should subclass this test and use the fluent API provided
+ * by this class to do testing of contexts.
  */
 public abstract class ContextTest
 {
@@ -105,9 +106,6 @@ public abstract class ContextTest
       unitOfWorkFactory = moduleInstance.unitOfWorkFactory();
       queryBuilderFactory = moduleInstance.queryBuilderFactory();
       serviceLocator = moduleInstance.serviceFinder();
-
-      eventSource = serviceLocator.<EventSource>findService( EventSource.class ).get();
-      eventSource.registerListener( new TransactionEventAdapter( eventCollector ) );
    }
 
    /**
@@ -171,7 +169,7 @@ public abstract class ContextTest
    protected static ApplicationModelSPI newApplication() throws AssemblyException
    {
 
-      ApplicationAssembler assembler = new StreamflowWebContextTestAssembler( eventCollector );
+      ApplicationAssembler assembler = new StreamflowWebContextTestAssembler( new TransactionEventAdapter( eventCollector ) );
 
       try
       {

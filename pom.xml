@@ -220,6 +220,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <forkMode>once</forkMode>
+                    <argLine>-Xmx256m</argLine>
                     <includes>
                         <include>**/*Test.java</include>
                         <include>**/*TestCase.java</include>

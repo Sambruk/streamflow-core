@@ -31,7 +31,7 @@ public interface EventManagement
     *
     * @throws IOException
     */
-   void removeAll() throws IOException;
+   void removeAll() throws Exception;
 
    /**
     * Remove all events up to and including the given date. This is used

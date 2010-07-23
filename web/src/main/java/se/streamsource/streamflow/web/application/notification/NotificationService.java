@@ -91,7 +91,7 @@ public interface NotificationService
 
          userNotificationFilter = new EventQuery().withNames( "receivedMessage" );
 
-         tracker = new TransactionTracker( eventStore, source, config, this );
+         tracker = new TransactionTracker( eventStore, config, this );
          tracker.start();
 
          logger.info( "Started" );
@@ -99,7 +99,7 @@ public interface NotificationService
 
       public void passivate() throws Exception
       {
-         tracker.start();
+         tracker.stop();
       }
 
       public boolean visit( TransactionEvents transaction )

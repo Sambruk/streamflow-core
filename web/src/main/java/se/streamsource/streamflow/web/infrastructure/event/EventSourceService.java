@@ -51,7 +51,7 @@ import java.util.concurrent.Executors;
 import static java.util.Collections.*;
 
 /**
- * This service collects indidivual events created during a UoW
+ * This service collects individual events created during a UoW
  * and publishes them in one go as a transaction to listeners, but only if the UoW is
  * completed successfully.
  */
@@ -100,7 +100,6 @@ public interface EventSourceService
       }
 
       // EventSource implementation
-
       public void registerListener( TransactionVisitor subscriber )
       {
          listeners.add( subscriber );

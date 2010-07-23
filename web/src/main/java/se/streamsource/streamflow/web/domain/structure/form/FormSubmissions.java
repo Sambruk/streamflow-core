@@ -17,8 +17,10 @@
 
 package se.streamsource.streamflow.web.domain.structure.form;
 
+import org.qi4j.api.entity.Aggregated;
 import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.entity.Queryable;
 import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
@@ -54,6 +56,8 @@ public interface FormSubmissions
 
    interface Data
    {
+      @Aggregated
+      @Queryable(false)
       ManyAssociation<FormSubmission> formSubmissions();
 
       FormSubmission createdFormSubmission( DomainEvent event, Form form );

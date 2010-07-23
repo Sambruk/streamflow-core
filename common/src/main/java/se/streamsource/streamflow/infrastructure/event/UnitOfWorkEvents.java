@@ -15,14 +15,25 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.domain.interaction.comment;
+package se.streamsource.streamflow.infrastructure.event;
 
-import se.streamsource.streamflow.domain.structure.Describable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * JAVADOC
+ * List of events for the current UnitOfWork. This will be updated by the DomainEventFactory.
  */
-public interface Commenter
-   extends Describable
+public class UnitOfWorkEvents
 {
+   private List<DomainEvent> events = new ArrayList<DomainEvent>( );
+
+   public void add(DomainEvent event)
+   {
+      events.add( event );
+   }
+
+   public List<DomainEvent> getEvents()
+   {
+      return events;
+   }
 }

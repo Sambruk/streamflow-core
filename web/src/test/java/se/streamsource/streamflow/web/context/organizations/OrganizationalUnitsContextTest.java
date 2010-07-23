@@ -57,6 +57,7 @@ public class OrganizationalUnitsContextTest
    {
       // Create OU
       {
+         clearEvents();
          createOU("OU1");
          eventsOccurred( "createdOrganizationalUnit", "addedOrganizationalUnit", "changedDescription" );
       }

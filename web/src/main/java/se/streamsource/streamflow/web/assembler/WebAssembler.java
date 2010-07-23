@@ -64,7 +64,7 @@ public class WebAssembler
 
       module.importServices( ChallengeAuthenticator.class);
 
-      module.addObjects( DefaultResponseWriterFactory.class, EventsCommandResult.class );
+      module.addObjects( DefaultResponseWriterFactory.class);
       new DCIAssembler().assemble( module );
 
       module.importServices( StreamflowRootContextFactory.class ).importedBy( NEW_OBJECT );

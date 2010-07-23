@@ -41,6 +41,7 @@ import org.restlet.resource.ResourceException;
 import org.restlet.routing.Filter;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.restlet.client.ResponseHandler;
+import se.streamsource.dci.restlet.client.SwingCommandQueryClient;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.resource.user.ChangePasswordCommand;
 
@@ -123,7 +124,7 @@ public interface AccountEntity
          AuthenticationFilter filter = new AuthenticationFilter( uowf, account );
          filter.setNext( (Restlet) client );
 
-         CommandQueryClient cqc = obf.newObjectBuilder( CommandQueryClient.class ).use( filter, serverRef, handler ).newInstance();
+         CommandQueryClient cqc = obf.newObjectBuilder( SwingCommandQueryClient.class ).use( filter, serverRef, handler ).newInstance();
 
          return cqc;
       }

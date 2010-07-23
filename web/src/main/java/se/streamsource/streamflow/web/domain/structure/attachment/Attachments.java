@@ -17,8 +17,10 @@
 
 package se.streamsource.streamflow.web.domain.structure.attachment;
 
+import org.qi4j.api.entity.Aggregated;
 import org.qi4j.api.entity.Identity;
 import org.qi4j.api.entity.IdentityGenerator;
+import org.qi4j.api.entity.Queryable;
 import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.State;
@@ -42,6 +44,8 @@ public interface Attachments
 
    interface Data
    {
+      @Aggregated
+      @Queryable(false)
       ManyAssociation<Attachment> attachments();
 
       Attachment createdAttachment( DomainEvent event, String id);

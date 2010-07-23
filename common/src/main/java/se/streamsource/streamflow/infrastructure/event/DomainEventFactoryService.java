@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.infrastructure.event;
 
+import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.entity.IdentityGenerator;
 import org.qi4j.api.injection.scope.Service;
@@ -42,7 +43,7 @@ import java.util.Iterator;
 /**
  * DomainEvent factory
  */
-@SideEffects(EventNotificationSideEffect.class)
+@Concerns(TransactionNotificationConcern.class)
 @Mixins(DomainEventFactoryService.DomainEventFactoryMixin.class)
 public interface DomainEventFactoryService
       extends DomainEventFactory, ServiceComposite
@@ -128,6 +129,7 @@ public interface DomainEventFactoryService
          prototype.parameters().set( json.toString() );
 
          DomainEvent event = builder.newInstance();
+
          return event;
       }
    }

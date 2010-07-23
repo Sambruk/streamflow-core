@@ -136,7 +136,7 @@ public interface StatisticsService
 
          closedFilter = new EventQuery().withUsecases( "close", "reopen", "resolve" ).withNames( "changedStatus" );
 
-         tracker = new TransactionTracker( eventStore, source, config, this );
+         tracker = new TransactionTracker( eventStore, config, this );
          tracker.start();
       }
 

@@ -20,6 +20,7 @@ package se.streamsource.streamflow.web.domain.structure.form;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.entity.Queryable;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
@@ -50,6 +51,7 @@ public interface SubmittedForms
    interface Data
    {
       @UseDefaults
+      @Queryable(false)
       Property<List<SubmittedFormValue>> submittedForms();
 
       @Optional

@@ -21,6 +21,7 @@ import org.qi4j.api.entity.Aggregated;
 import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.entity.Identity;
 import org.qi4j.api.entity.IdentityGenerator;
+import org.qi4j.api.entity.Queryable;
 import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
@@ -42,6 +43,7 @@ public interface Conversations
    interface Data
    {
       @Aggregated
+      @Queryable(false)
       ManyAssociation<Conversation> conversations();
 
       Conversation createdConversation( DomainEvent event, String id, Creator creator );

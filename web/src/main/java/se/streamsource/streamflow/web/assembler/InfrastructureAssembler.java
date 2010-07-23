@@ -21,6 +21,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.qi4j.api.common.Visibility;
+import org.qi4j.api.service.ServiceTags;
 import org.qi4j.api.structure.Application;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ImportedServiceDeclaration;
@@ -43,6 +44,7 @@ import org.qi4j.migration.assembly.MigrationBuilder;
 import org.qi4j.migration.assembly.MigrationOperation;
 import org.qi4j.spi.service.importer.NewObjectImporter;
 import org.qi4j.spi.uuid.UuidIdentityGeneratorService;
+import se.streamsource.dci.restlet.server.CommandResult;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.DomainEventFactoryService;
 import se.streamsource.streamflow.infrastructure.event.TimeService;
@@ -56,9 +58,13 @@ import se.streamsource.streamflow.web.infrastructure.event.EventSourceService;
 import se.streamsource.streamflow.web.infrastructure.event.JdbmEventStoreService;
 import se.streamsource.streamflow.web.infrastructure.index.EmbeddedSolrService;
 import se.streamsource.streamflow.web.infrastructure.index.SolrQueryService;
+import se.streamsource.streamflow.web.resource.EventsCommandResult;
 
 import javax.sql.DataSource;
 import java.io.IOException;
+
+import static org.qi4j.api.service.ServiceTags.tags;
+import static org.qi4j.bootstrap.ImportedServiceDeclaration.NEW_OBJECT;
 
 /**
  * JAVADOC
@@ -95,14 +101,17 @@ public class InfrastructureAssembler
 
    private void events( ModuleAssembly module ) throws AssemblyException
    {
+      module.importServices( EventsCommandResult.class ).importedBy( NEW_OBJECT ).visibleIn( Visibility.application );
+      module.addObjects(EventsCommandResult.class); 
       module.addValues( TransactionEvents.class, DomainEvent.class ).visibleIn( Visibility.application );
-      module.addServices( EventSourceService.class ).identifiedBy( "eventsource" ).visibleIn( Visibility.application );
       module.addServices( DomainEventFactoryService.class ).visibleIn( Visibility.application );
       module.addObjects( TimeService.class );
       module.importServices( TimeService.class ).importedBy( NewObjectImporter.class );
 
       if (module.layerAssembly().applicationAssembly().mode() == Application.Mode.production)
-         module.addServices( JdbmEventStoreService.class ).identifiedBy( "eventstore" ).visibleIn( Visibility.application );
+      {
+         module.addServices( JdbmEventStoreService.class ).identifiedBy( "eventstore" ).setMetaInfo( tags( "domain" ) ).visibleIn( Visibility.application );
+      }
       else
          module.addServices( MemoryEventStoreService.class ).identifiedBy( "eventstore" ).visibleIn( Visibility.application );
    }
@@ -323,7 +332,7 @@ public class InfrastructureAssembler
 
          module.addServices( MigrationService.class ).setMetaInfo( migrationBuilder );
          module.addObjects( MigrationEventLogger.class );
-         module.importServices( MigrationEventLogger.class ).importedBy( ImportedServiceDeclaration.NEW_OBJECT );
+         module.importServices( MigrationEventLogger.class ).importedBy( NEW_OBJECT );
       }
    }
 

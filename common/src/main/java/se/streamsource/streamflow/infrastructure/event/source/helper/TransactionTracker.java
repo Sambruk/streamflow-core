@@ -29,9 +29,9 @@ import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor
  * Helper that enables a service to easily track transactions. Upon startup
  * the tracker will get all the transactions from the store since the last
  * check, and delegate them to the given TransactionVisitor. It will also register itself
- * with a source so that it can get continuous updates.
+ * with the store so that it can get continuous updates.
  *
- * Then, as transactions come in from the source, they will be processed in real-time.
+ * Then, as transactions come in from the store, they will be processed in real-time.
  * If a transaction is successfully handled the configuration of the service, which must
  * extend TransactionTrackerConfiguration, will update the marker for the last successfully handled transaction.
  *
@@ -41,27 +41,25 @@ public class TransactionTracker
 {
    private Configuration<? extends TransactionTrackerConfiguration> configuration;
    private TransactionVisitor visitor;
-   private EventSource source;
    private EventStore store;
    private boolean started = false;
    private boolean upToSpeed = false;
    private Logger logger;
 
-   public TransactionTracker( EventStore store, EventSource source,
+   public TransactionTracker( EventStore store,
                         Configuration<? extends TransactionTrackerConfiguration> configuration,
                         TransactionVisitor visitor)
    {
       this.configuration = configuration;
       this.visitor = visitor;
       this.store = store;
-      this.source = source;
 
       logger = LoggerFactory.getLogger( visitor.getClass() );
    }
 
    public void start()
    {
-      source.registerListener( this );
+      store.registerListener( this );
       started = true;
 
       // Get events since last check
@@ -74,7 +72,7 @@ public class TransactionTracker
       if (started)
       {
          started = false;
-         source.unregisterListener( this );
+         store.unregisterListener( this );
       }
    }
 

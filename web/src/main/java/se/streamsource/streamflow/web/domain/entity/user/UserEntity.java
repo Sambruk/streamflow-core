@@ -29,7 +29,6 @@ import se.streamsource.streamflow.web.domain.entity.gtd.AssignmentsQueries;
 import se.streamsource.streamflow.web.domain.entity.gtd.Drafts;
 import se.streamsource.streamflow.web.domain.entity.gtd.DraftsQueries;
 import se.streamsource.streamflow.web.domain.entity.gtd.InboxQueries;
-import se.streamsource.streamflow.web.domain.interaction.comment.Commenter;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Actor;
 import se.streamsource.streamflow.web.domain.interaction.profile.MessageRecipient;
 import se.streamsource.streamflow.web.domain.interaction.security.Authentication;
@@ -37,7 +36,6 @@ import se.streamsource.streamflow.web.domain.structure.conversation.Conversation
 import se.streamsource.streamflow.web.domain.structure.conversation.MessageReceiver;
 import se.streamsource.streamflow.web.domain.structure.form.Submitter;
 import se.streamsource.streamflow.web.domain.structure.group.Participation;
-import se.streamsource.streamflow.web.domain.structure.label.Labels;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationParticipations;
 import se.streamsource.streamflow.web.domain.structure.user.User;
 import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
@@ -57,7 +55,6 @@ public interface UserEntity
 
       // Structure
       User,
-      Commenter,
       Contactable,
       ConversationParticipant,
       OrganizationParticipations,

@@ -47,16 +47,12 @@ import java.util.TreeMap;
  */
 @Mixins(MemoryEventStoreService.MemoryEventStoreMixin.class)
 public interface MemoryEventStoreService
-      extends EventStore, EventListener, Activatable, ServiceComposite
+      extends EventStore, TransactionVisitor, Activatable, ServiceComposite
 {
-   public List<DomainEvent> getEvents();
-
-   public void clearEvents();
-
    abstract class MemoryEventStoreMixin
          extends AbstractEventStoreMixin
-         implements EventListener, MemoryEventStoreService
    {
+      // This holds all transactions
       private TreeMap<Long, String> store = new TreeMap<Long, String>();
 
       public void activate() throws IOException
@@ -66,6 +62,7 @@ public interface MemoryEventStoreService
 
       public void passivate() throws Exception
       {
+         super.passivate();
       }
 
       public void transactionsAfter( long afterTimestamp, TransactionVisitor visitor )
@@ -149,46 +146,5 @@ public interface MemoryEventStoreService
          String jsonString = transaction.toString();
          store.put( transaction.timestamp().get(), jsonString );
       }
-
-      @Structure
-      UnitOfWorkFactory uowf;
-
-      @Override
-      public void notifyEvent( DomainEvent event )
-      {
-         super.notifyEvent( event );
-         if (events == null)
-         {
-            events = new ArrayList<DomainEvent>();
-            UnitOfWork uow = uowf.currentUnitOfWork();
-            uow.addUnitOfWorkCallback( new UnitOfWorkCallback()
-            {
-
-               public void beforeCompletion() throws UnitOfWorkCompletionException
-               {
-                  events = null;
-               }
-
-               public void afterCompletion( UnitOfWorkCallback.UnitOfWorkStatus status )
-               {
-               }
-            } );
-         }
-
-         events.add( event );
-      }
-
-      public List<DomainEvent> getEvents()
-      {
-         return events;
-      }
-
-      public void clearEvents()
-      {
-         events = null;
-      }
-
-      private List<DomainEvent> events;
-
    }
 }

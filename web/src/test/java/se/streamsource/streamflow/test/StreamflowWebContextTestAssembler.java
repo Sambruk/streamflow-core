@@ -23,7 +23,7 @@ import org.qi4j.bootstrap.ApplicationAssembly;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
-import se.streamsource.streamflow.infrastructure.event.EventListener;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
 import se.streamsource.streamflow.web.application.organization.BootstrapAssembler;
 import se.streamsource.streamflow.web.assembler.StreamflowWebAssembler;
 
@@ -33,12 +33,12 @@ import se.streamsource.streamflow.web.assembler.StreamflowWebAssembler;
 public class StreamflowWebContextTestAssembler
       extends StreamflowWebAssembler
 {
-   private Object[] serviceObjects;
+   private TransactionVisitor transactionVisitor;
 
 
-   public StreamflowWebContextTestAssembler( Object... serviceObjects )
+   public StreamflowWebContextTestAssembler( TransactionVisitor transactionVisitor )
    {
-      this.serviceObjects = serviceObjects;
+      this.transactionVisitor = transactionVisitor;
    }
 
    @Override
@@ -55,12 +55,7 @@ public class StreamflowWebContextTestAssembler
             applicationAssembly.layerAssembly("Domain infrastructure" ),
             applicationAssembly.layerAssembly("Domain" ));
       ModuleAssembly moduleAssembly = layer1.moduleAssembly( "Module 1" );
-      moduleAssembly.importServices( EventListener.class ).visibleIn( Visibility.application );
-
-      for (Object serviceObject : serviceObjects)
-      {
-         appLayer.applicationAssembly().setMetaInfo( serviceObject );
-      }
+      applicationAssembly.layerAssembly( "Domain infrastructure" ).moduleAssembly( "Events" ).importServices( TransactionVisitor.class ).visibleIn( Visibility.application ).setMetaInfo( transactionVisitor );
    }
 
    @Override

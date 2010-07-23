@@ -21,6 +21,7 @@ package se.streamsource.streamflow.infrastructure.event.source;
  * An EventStore is a store of events. Events are grouped in the transactions in which they were created.
  */
 public interface EventStore
+   extends EventSource
 {
    /**
     * Get list of event transactions after the given timestamp. If they are on the exact same timestamp, they will not be included.

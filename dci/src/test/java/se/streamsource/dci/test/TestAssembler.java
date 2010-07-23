@@ -17,6 +17,7 @@
 
 package se.streamsource.dci.test;
 
+import org.apache.velocity.app.VelocityEngine;
 import org.qi4j.api.common.Visibility;
 import org.qi4j.bootstrap.ApplicationAssembler;
 import org.qi4j.bootstrap.ApplicationAssembly;
@@ -27,10 +28,12 @@ import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.spi.service.importer.NewObjectImporter;
 import org.restlet.Restlet;
 import se.streamsource.dci.api.InteractionConstraintsService;
+import se.streamsource.dci.restlet.server.CommandResult;
 import se.streamsource.dci.restlet.server.DCIAssembler;
 import se.streamsource.dci.restlet.server.DefaultResponseWriterFactory;
 import se.streamsource.dci.restlet.server.NullCommandResult;
 import se.streamsource.dci.restlet.server.ResourceFinder;
+import se.streamsource.dci.restlet.server.ResponseWriterFactory;
 import se.streamsource.dci.test.interactions.RootInteractions;
 import se.streamsource.dci.test.interactions.file.FileInteractions;
 import se.streamsource.dci.test.interactions.file.FilesInteractions;
@@ -39,6 +42,8 @@ import se.streamsource.dci.test.interactions.jmx.JmxServerInteractions;
 import se.streamsource.dci.test.interactions.jmx.MBeanAttributeInteractions;
 import se.streamsource.dci.test.interactions.jmx.MBeanInteractions;
 import se.streamsource.dci.test.interactions.jmx.TabularDataValue;
+
+import static org.qi4j.bootstrap.ImportedServiceDeclaration.NEW_OBJECT;
 
 /**
  * JAVADOC
@@ -59,6 +64,7 @@ public class TestAssembler
       ModuleAssembly assembly1 = assembly.layerAssembly( "Web" ).moduleAssembly( "REST" );
       assemble( assembly1 );
       new DCIAssembler().assemble( assembly1 );
+      assembly1.importServices(CommandResult.class).importedBy( NEW_OBJECT );
 
       assembly1.importServices( InteractionConstraintsService.class ).
             importedBy( NewObjectImporter.class ).

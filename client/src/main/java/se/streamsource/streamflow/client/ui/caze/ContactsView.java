@@ -19,6 +19,7 @@ package se.streamsource.streamflow.client.ui.caze;
 
 import ca.odell.glazedlists.swing.EventListModel;
 import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Task;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.object.ObjectBuilderFactory;
@@ -38,6 +39,8 @@ import java.awt.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.io.IOException;
+
+import static org.jdesktop.application.Task.BlockingScope.COMPONENT;
 
 /**
  * JAVADOC
@@ -121,14 +124,14 @@ public class ContactsView
       } );
    }
 
-   @org.jdesktop.application.Action
+   @org.jdesktop.application.Action(block=COMPONENT)
    public void add() throws IOException, ResourceException
    {
       model.createContact();
       contacts.setSelectedIndex( model.getEventList().size() - 1 );
    }
 
-   @org.jdesktop.application.Action
+   @org.jdesktop.application.Action(block=COMPONENT)
    public void remove() throws IOException, ResourceException
    {
       model.removeElement( getContactsList().getSelectedIndex() );

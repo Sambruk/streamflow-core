@@ -48,8 +48,7 @@ public class DCIAssembler
       module.importServices( CommandQueryRestlet.class ).setMetaInfo( new Properties() ).importedBy( NEW_OBJECT );
 
       module.importServices( VelocityEngine.class,
-            ResponseWriterFactory.class,
-            CommandResult.class).importedBy( NEW_OBJECT );
+            ResponseWriterFactory.class).importedBy( NEW_OBJECT );
       module.addObjects( VelocityEngine.class,
             CommandQueryRestlet.class);
 

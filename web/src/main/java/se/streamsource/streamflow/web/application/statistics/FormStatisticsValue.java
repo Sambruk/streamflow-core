@@ -15,27 +15,41 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.domain.interaction.comment;
+package se.streamsource.streamflow.web.application.statistics;
 
-import org.qi4j.api.common.UseDefaults;
-import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
 
-import java.util.Date;
-
 /**
- * A comment value
+ * Value for form data about a case in statistics. For multi-value fields
+ * the same {id,form,field} may repeat many times in the statistics, with different values.
  */
-public interface CommentValue
+public interface FormStatisticsValue
       extends ValueComposite
 {
-   Property<EntityReference> commenter();
+   /**
+    * Case id
+    * @return if of the case
+    */
+   Property<String> identity();
 
-   Property<Date> creationDate();
+   /**
+    * Name of the form
+    * @return name of the form
+    */
+   Property<String> form();
 
-   Property<String> text();
+   /**
+    * Name of the field
+    *
+    * @return name of the field
+    */
+   Property<String> field();
 
-   @UseDefaults
-   Property<Boolean> isPublic();
+   /**
+    * Value for the field
+    *
+    * @return value for field
+    */
+   Property<String> value();
 }

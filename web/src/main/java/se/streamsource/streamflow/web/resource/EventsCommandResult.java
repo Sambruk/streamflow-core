@@ -36,29 +36,35 @@ public class EventsCommandResult
    @Structure
    protected ValueBuilderFactory vbf;
 
-   private TransactionEvents transactions;
+   private ThreadLocal<TransactionEvents> transactions = new ThreadLocal<TransactionEvents>();
 
+/*
    public EventsCommandResult( @Service EventSource source) throws Exception
    {
       source.registerListener( this );
    }
+*/
 
    public Object getResult()
    {
-      if (transactions == null)
+      TransactionEvents transaction = transactions.get();
+      if (transaction == null)
       {
          ValueBuilder<TransactionEvents> builder = vbf.newValueBuilder( TransactionEvents.class );
          builder.prototype().timestamp().set( System.currentTimeMillis() );
-         transactions = builder.newInstance();
+         transaction = builder.newInstance();
+      } else
+      {
+         transactions.set( null ); // Clear for next request
       }
 
-      return transactions;
+      return transaction;
    }
 
 
    public boolean visit( TransactionEvents transaction )
    {
-      transactions = transaction;
+      transactions.set(transaction);
 
       return true;
    }

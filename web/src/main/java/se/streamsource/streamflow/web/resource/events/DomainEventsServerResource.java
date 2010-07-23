@@ -18,6 +18,8 @@
 package se.streamsource.streamflow.web.resource.events;
 
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.service.ServiceReference;
+import org.qi4j.api.service.ServiceSelector;
 import org.qi4j.api.util.DateFunctions;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
@@ -45,14 +47,17 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import static org.qi4j.api.service.ServiceSelector.service;
+import static org.qi4j.api.service.ServiceSelector.withTags;
+
 /**
- * Get events since a given date in various formats
+ * Get events before or after a given date in various formats
  */
 public class DomainEventsServerResource
       extends ServerResource
 {
    @Service
-   EventStore store;
+   Iterable<ServiceReference<EventStore>> stores;
 
    public DomainEventsServerResource()
    {
@@ -64,6 +69,8 @@ public class DomainEventsServerResource
    @Override
    protected Representation get( Variant variant ) throws ResourceException
    {
+      EventStore store = service( stores, withTags( "domain" ) );
+
       String before = null;
       String after = getRequest().getResourceRef().getQueryAsForm().getFirstValue( "after" );
       final List<TransactionEvents> transactions = new ArrayList<TransactionEvents>( );

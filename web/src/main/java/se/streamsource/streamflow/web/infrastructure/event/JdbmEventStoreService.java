@@ -48,15 +48,21 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import static java.util.Collections.synchronizedList;
 
 /**
  * JAVADOC
  */
 @Mixins(JdbmEventStoreService.JdbmEventStoreMixin.class)
 public interface JdbmEventStoreService
-      extends EventStore, EventListener, EventManagement, Activatable, ServiceComposite
+      extends EventStore, TransactionVisitor, EventManagement, Activatable, ServiceComposite
 {
    class JdbmEventStoreMixin
          extends AbstractEventStoreMixin
@@ -88,13 +94,15 @@ public interface JdbmEventStoreService
          initialize( name, properties );
       }
 
-      public void passivate() throws IOException
+      public void passivate() throws Exception
       {
+         super.passivate();
+
          logger.info( "Close event db" );
          recordManager.close();
       }
 
-      public void removeAll() throws IOException
+      public void removeAll() throws Exception
       {
          // Delete event files
          passivate();
@@ -173,6 +181,7 @@ public interface JdbmEventStoreService
          }
       }
 
+      // EventStore implementation
       public void transactionsAfter( long afterTimestamp, TransactionVisitor visitor )
       {
          // Lock datastore first
