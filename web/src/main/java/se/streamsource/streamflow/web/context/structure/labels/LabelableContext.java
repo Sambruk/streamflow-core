@@ -26,7 +26,6 @@ import se.streamsource.dci.api.Interactions;
 import se.streamsource.dci.api.InteractionsMixin;
 import se.streamsource.dci.api.SubContexts;
 import se.streamsource.dci.value.LinksValue;
-import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
@@ -47,8 +46,6 @@ public interface LabelableContext
    LinksValue possiblelabels();
 
    void addlabel( EntityReferenceDTO reference );
-
-   void addmatchinglabels( StringValue query );
 
    abstract class Mixin
          extends InteractionsMixin
@@ -81,23 +78,6 @@ public interface LabelableContext
          Label label = uow.get( Label.class, reference.entity().get().identity() );
 
          labelable.addLabel( label );
-      }
-
-      public void addmatchinglabels( StringValue query )
-      {
-         UnitOfWork uow = uowf.currentUnitOfWork();
-         Labelable labelable = context.get( Labelable.class );
-
-         CaseLabelsQueries labels = context.get( CaseLabelsQueries.class );
-
-         for (Map.Entry<Label, SelectedLabels> labelSelectedLabelsEntry : labels.possibleLabels().entrySet())
-         {
-            String description = ((Describable) labelSelectedLabelsEntry.getKey()).getDescription();
-            if (!"".equals( query.string().get() ) && description.startsWith( query.string().get() ))
-            {
-               labelable.addLabel( labelSelectedLabelsEntry.getKey() );
-            }
-         }
       }
 
       public LabeledContext context( String id )

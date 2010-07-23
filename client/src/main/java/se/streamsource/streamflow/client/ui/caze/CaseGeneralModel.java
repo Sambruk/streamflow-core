@@ -78,7 +78,7 @@ public class CaseGeneralModel extends Observable implements Refreshable,
       this.client = client;
       eventFilter = new EventVisitorFilter( client.getReference()
             .getParentRef().getLastSegment(), this, "addedLabel",
-            "removedLabel", "changedOwner", "changedCaseType", "changedStatus");
+            "removedLabel", "changedOwner", "changedCaseType", "changedStatus" );
    }
 
    public CaseGeneralDTO getGeneral()
@@ -237,7 +237,7 @@ public class CaseGeneralModel extends Observable implements Refreshable,
          ValueBuilder<EntityReferenceDTO> builder = vbf
                .newValueBuilder( EntityReferenceDTO.class );
          builder.prototype().entity().set( selected );
-         client.putCommand( "casetype", builder.newInstance() );
+         client.postCommand( "casetype", builder.newInstance() );
       } catch (ResourceException e)
       {
          throw new OperationException(
@@ -252,15 +252,19 @@ public class CaseGeneralModel extends Observable implements Refreshable,
          ValueBuilder<EntityReferenceDTO> builder = vbf
                .newValueBuilder( EntityReferenceDTO.class );
          builder.prototype().entity().set( EntityReference.parseEntityReference( selected.id().get() ) );
-         client.putCommand( "casetype", builder.newInstance() );
+         client.postCommand( "casetype", builder.newInstance() );
 
          // if the query string has any match inside label descriptions
          // we do a search for that labels and add them to the case automatically
          if (selected.classes().get().indexOf( labelQuery ) != -1)
          {
-            ValueBuilder<StringValue> strBuilder = vbf.newValueBuilder( StringValue.class );
-            strBuilder.prototype().string().set( labelQuery );
-            client.getSubClient( "labels" ).putCommand( "addmatchinglabels", strBuilder.newInstance() );
+            for (LinkValue link : getPossibleLabels())
+            {
+               if (link.text().get().toLowerCase().contains( labelQuery.toLowerCase() ))
+               {
+                  addLabel( EntityReference.parseEntityReference( link.id().get() ) );
+               }
+            }
          }
       } catch (ResourceException e)
       {

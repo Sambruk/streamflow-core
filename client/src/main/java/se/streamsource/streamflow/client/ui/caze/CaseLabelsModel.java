@@ -46,7 +46,7 @@ public class CaseLabelsModel
    @Structure
    ValueBuilderFactory vbf;
 
-   BasicEventList<LinkValue> labels = new BasicEventList<LinkValue>( );
+   BasicEventList<LinkValue> labels = new BasicEventList<LinkValue>();
 
    public EventList<LinkValue> getLabels()
    {
@@ -57,14 +57,14 @@ public class CaseLabelsModel
    {
       EventListSynch.synchronize( labels.links().get(), this.labels );
    }
-   
+
    public void addLabel( EntityReference addLabel )
    {
       try
       {
          ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
          builder.prototype().entity().set( addLabel );
-         client.putCommand( "addlabel", builder.newInstance() );
+         client.postCommand( "addlabel", builder.newInstance() );
       } catch (ResourceException e)
       {
          throw new OperationException( CaseResources.could_not_add_label, e );
