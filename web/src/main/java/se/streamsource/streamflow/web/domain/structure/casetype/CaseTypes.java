@@ -31,6 +31,7 @@ import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.web.domain.interaction.gtd.ChangesOwner;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 
 /**
@@ -42,6 +43,7 @@ public interface CaseTypes
    // Commands
    CaseType createCaseType( String name );
 
+   @ChangesOwner
    void addCaseType( CaseType caseType );
 
    boolean removeCaseType( CaseType caseType );
@@ -87,8 +89,7 @@ public interface CaseTypes
       public CaseType createCaseType( String name )
       {
          CaseType caseType = createdCaseType( DomainEvent.CREATE, idGen.generate( Identity.class ) );
-         addedCaseType(DomainEvent.CREATE, caseType );
-         caseType.changeOwner( owner );
+         addCaseType(caseType );
          caseType.changeDescription( name );
 
          return caseType;
@@ -97,7 +98,6 @@ public interface CaseTypes
       public void addCaseType( CaseType caseType )
       {
          addedCaseType(DomainEvent.CREATE, caseType );
-         caseType.changeOwner( owner );
       }
 
       public void moveCaseType( CaseType caseType, CaseTypes toCaseTypes )

@@ -29,6 +29,7 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.web.domain.entity.organization.RoleEntity;
+import se.streamsource.streamflow.web.domain.interaction.gtd.ChangesOwner;
 
 /**
  * JAVADOC
@@ -37,6 +38,9 @@ import se.streamsource.streamflow.web.domain.entity.organization.RoleEntity;
 public interface Roles
 {
    Role createRole( String name);
+
+   @ChangesOwner
+   void addRole(Role role);
 
    void removeRole( Role projectRole );
 
@@ -74,6 +78,14 @@ public interface Roles
          role.changeDescription( name );
 
          return role;
+      }
+
+      public void addRole( Role role )
+      {
+         if (!data.roles().contains( role ))
+         {
+            data.addedRole( DomainEvent.CREATE, role );
+         }
       }
 
       public void removeRole( Role projectRole )

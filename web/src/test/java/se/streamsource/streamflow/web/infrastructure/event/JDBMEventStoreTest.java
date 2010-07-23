@@ -15,21 +15,26 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.infrastructure.event;
+package se.streamsource.streamflow.web.infrastructure.event;
 
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
-import se.streamsource.streamflow.infrastructure.event.source.memory.MemoryEventStoreService;
+import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
+import se.streamsource.streamflow.web.infrastructure.event.AbstractEventStoreTest;
 
 /**
  * JAVADOC
  */
-public class MemoryEventStoreTest
+public class JDBMEventStoreTest
       extends AbstractEventStoreTest
 {
    public void assemble( ModuleAssembly module ) throws AssemblyException
    {
       super.assemble( module );
-      module.addServices( MemoryEventStoreService.class );
+
+      module.layerAssembly().applicationAssembly().setName( "jdbmeventstoretest" );
+
+      module.addServices( FileConfiguration.class );
+      module.addServices( JdbmEventStoreService.class );
    }
 }

@@ -37,7 +37,6 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
-import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.AbstractEventStoreMixin;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
@@ -48,14 +47,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Properties;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import static java.util.Collections.synchronizedList;
 
 /**
  * JAVADOC

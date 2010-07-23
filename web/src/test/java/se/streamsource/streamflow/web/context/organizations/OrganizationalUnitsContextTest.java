@@ -59,7 +59,7 @@ public class OrganizationalUnitsContextTest
       {
          clearEvents();
          createOU("OU1");
-         eventsOccurred( "createdOrganizationalUnit", "addedOrganizationalUnit", "changedDescription" );
+         eventsOccurred( "createdOrganizationalUnit", "addedOrganizationalUnit", "changedOwner", "changedDescription" );
       }
 
       // Check that OU can be found

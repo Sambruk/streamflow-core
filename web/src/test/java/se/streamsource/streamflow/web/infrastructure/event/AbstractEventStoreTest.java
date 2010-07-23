@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.infrastructure.event;
+package se.streamsource.streamflow.web.infrastructure.event;
 
 import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
@@ -33,6 +33,11 @@ import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.spi.service.importer.NewObjectImporter;
 import org.qi4j.test.AbstractQi4jTest;
 import org.qi4j.test.EntityTestAssembler;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.DomainEventFactoryService;
+import se.streamsource.streamflow.infrastructure.event.EventCreationConcern;
+import se.streamsource.streamflow.infrastructure.event.TimeService;
+import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
 import se.streamsource.streamflow.infrastructure.event.source.helper.TransactionTimestampFilter;
@@ -57,9 +62,6 @@ public abstract class AbstractEventStoreTest
 
    @Service
    EventStore eventStore;
-
-   @Service
-   EventListener listener;
 
    @Before
    public void initStore() throws UnitOfWorkCompletionException

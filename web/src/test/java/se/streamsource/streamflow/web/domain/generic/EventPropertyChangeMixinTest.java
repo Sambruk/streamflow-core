@@ -35,7 +35,7 @@ import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.TimeService;
 import se.streamsource.streamflow.infrastructure.event.Time;
 import se.streamsource.streamflow.infrastructure.event.DomainEventFactoryService;
-import se.streamsource.streamflow.infrastructure.event.source.memory.MemoryEventStoreService;
+import se.streamsource.streamflow.web.infrastructure.event.MemoryEventStoreService;
 import se.streamsource.streamflow.infrastructure.event.EventCreationConcern;
 
 /**

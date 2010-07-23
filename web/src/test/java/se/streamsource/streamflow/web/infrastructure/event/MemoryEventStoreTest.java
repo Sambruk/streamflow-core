@@ -19,22 +19,16 @@ package se.streamsource.streamflow.web.infrastructure.event;
 
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
-import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
-import se.streamsource.streamflow.infrastructure.event.AbstractEventStoreTest;
 
 /**
  * JAVADOC
  */
-public class JDBMEventStoreTest
+public class MemoryEventStoreTest
       extends AbstractEventStoreTest
 {
    public void assemble( ModuleAssembly module ) throws AssemblyException
    {
       super.assemble( module );
-
-      module.layerAssembly().applicationAssembly().setName( "jdbmeventstoretest" );
-
-      module.addServices( FileConfiguration.class );
-      module.addServices( JdbmEventStoreService.class );
+      module.addServices( MemoryEventStoreService.class );
    }
 }

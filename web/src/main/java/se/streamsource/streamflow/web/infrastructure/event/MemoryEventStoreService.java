@@ -15,31 +15,22 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.infrastructure.event.source.memory;
+package se.streamsource.streamflow.web.infrastructure.event;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
-import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
-import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.unitofwork.UnitOfWorkCallback;
-import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.AbstractEventStoreMixin;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.TreeMap;
 
 /**

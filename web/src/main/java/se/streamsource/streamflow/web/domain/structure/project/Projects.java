@@ -107,12 +107,10 @@ public interface Projects
 
       public void addProject( Project project )
       {
-
-         if (data.projects().contains( project ))
+         if (!data.projects().contains( project ))
          {
-            return;
+            data.addedProject( DomainEvent.CREATE, project );
          }
-         data.addedProject( DomainEvent.CREATE, project );
       }
 
       public boolean removeProject( Project project )

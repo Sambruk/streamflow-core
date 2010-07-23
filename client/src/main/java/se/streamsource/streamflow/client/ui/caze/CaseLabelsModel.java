@@ -77,7 +77,7 @@ public class CaseLabelsModel
       {
          ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
          builder.prototype().entity().set( removeLabel );
-         client.getSubClient( removeLabel.identity() ).delete();;
+         client.getSubClient( removeLabel.identity() ).delete();
       } catch (ResourceException e)
       {
          throw new OperationException( CaseResources.could_not_remove_label, e );

@@ -30,6 +30,7 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.web.domain.interaction.gtd.ChangesOwner;
 
 /**
  * JAVADOC
@@ -39,6 +40,7 @@ public interface Forms
 {
    Form createForm();
 
+   @ChangesOwner
    void addForm( Form form );
 
    void removeForm( Form form );
