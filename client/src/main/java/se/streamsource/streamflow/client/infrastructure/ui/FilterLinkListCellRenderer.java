@@ -53,7 +53,7 @@ public class FilterLinkListCellRenderer extends DefaultListCellRenderer
                while (tokenizer.hasMoreElements())
                {
                   String token = (String) tokenizer.nextElement();
-                  if (token.contains( filterText ))
+                  if (token.toLowerCase().contains( filterText.toLowerCase() ))
                   {
                      matchedClasses += token + " ";
                   }
@@ -70,9 +70,16 @@ public class FilterLinkListCellRenderer extends DefaultListCellRenderer
 
    private String highlightQuery( String s )
    {
-      if (!"".equals( filterText ) && s.indexOf( filterText ) != -1)
+      if (!"".equals( filterText ) && s.toLowerCase().indexOf( filterText.toLowerCase() ) != -1)
       {
-         return s.replace( filterText, "<b>" + filterText + "</b>" );
+         if (s.indexOf( filterText ) != -1)
+         {
+            return s.replace( filterText, "<b>" + filterText + "</b>" );
+         } else
+         {
+            String firstUpperCase = filterText.replaceFirst( "" + filterText.charAt( 0 ), ("" + filterText.charAt( 0 )).toUpperCase() );
+            return s.replace( firstUpperCase, "<b>" + firstUpperCase + "</b>" );
+         }
       }
       return s;
    }
