@@ -256,7 +256,7 @@ public class CaseGeneralModel extends Observable implements Refreshable,
 
          // if the query string has any match inside label descriptions
          // we do a search for that labels and add them to the case automatically
-         if (selected.classes().get().indexOf( labelQuery ) != -1)
+         if (!"".equals( labelQuery ) && selected.classes().get().indexOf( labelQuery ) != -1)
          {
             for (LinkValue link : getPossibleLabels())
             {
