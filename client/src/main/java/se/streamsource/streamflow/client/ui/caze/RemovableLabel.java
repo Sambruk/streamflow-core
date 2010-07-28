@@ -21,6 +21,7 @@ import org.jdesktop.swingx.JXLabel;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.util.Strings;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -126,7 +127,7 @@ public class RemovableLabel extends JPanel
       addKeyListener( this );
       addMouseListener( this );
 
-      if (label.getText() == null || "".equals( label.getText() ))
+      if (!Strings.notEmpty( label.getText() ))
       {
          this.setVisible( false );
       }

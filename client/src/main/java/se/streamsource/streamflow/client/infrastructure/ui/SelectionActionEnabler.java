@@ -23,12 +23,14 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
 /**
  * Enable actions if a list has a selection
  */
 public class SelectionActionEnabler
-      implements ListSelectionListener, TreeSelectionListener
+      implements ListSelectionListener, TreeSelectionListener, ItemListener
 {
    private Action[] action;
 
@@ -49,7 +51,7 @@ public class SelectionActionEnabler
          for (int i = 0; i < action.length; i++)
          {
             Action action1 = action[i];
-            action1.setEnabled( !((ListSelectionModel) e.getSource()).isSelectionEmpty() && isSelectedValueValid(action1) );
+            action1.setEnabled( !((ListSelectionModel) e.getSource()).isSelectionEmpty() && isSelectedValueValid( action1 ) );
          }
       }
    }
@@ -59,7 +61,7 @@ public class SelectionActionEnabler
       for (int i = 0; i < action.length; i++)
       {
          Action action1 = action[i];
-         action1.setEnabled( e.getNewLeadSelectionPath() != null && isSelectedValueValid(action1));
+         action1.setEnabled( e.getNewLeadSelectionPath() != null && isSelectedValueValid( action1 ) );
       }
    }
 
@@ -68,8 +70,17 @@ public class SelectionActionEnabler
     *
     * @return
     */
-   public boolean isSelectedValueValid(Action action)
+   public boolean isSelectedValueValid( Action action )
    {
       return true;
+   }
+
+   public void itemStateChanged( ItemEvent e )
+   {
+      for (int i = 0; i < action.length; i++)
+      {
+         Action action1 = action[i];
+         action1.setEnabled( e.getStateChange() == ItemEvent.SELECTED && isSelectedValueValid( action1 ) );
+      }
    }
 }

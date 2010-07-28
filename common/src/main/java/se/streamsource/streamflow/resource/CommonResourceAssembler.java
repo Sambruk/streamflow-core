@@ -40,8 +40,8 @@ import se.streamsource.streamflow.resource.caze.CasesQuery;
 import se.streamsource.streamflow.resource.caze.ContactsDTO;
 import se.streamsource.streamflow.resource.caze.EffectiveFieldDTO;
 import se.streamsource.streamflow.resource.caze.EffectiveFieldsDTO;
-import se.streamsource.streamflow.resource.caze.FieldDTO;
 import se.streamsource.streamflow.resource.caze.EndUserCaseDTO;
+import se.streamsource.streamflow.resource.caze.FieldDTO;
 import se.streamsource.streamflow.resource.caze.SubmittedFormDTO;
 import se.streamsource.streamflow.resource.caze.SubmittedFormListDTO;
 import se.streamsource.streamflow.resource.caze.SubmittedFormsListDTO;
@@ -66,6 +66,7 @@ import se.streamsource.streamflow.resource.user.RegisterUserCommand;
 import se.streamsource.streamflow.resource.user.ResetPasswordCommand;
 import se.streamsource.streamflow.resource.user.UserEntityDTO;
 import se.streamsource.streamflow.resource.user.UserEntityListDTO;
+import se.streamsource.streamflow.resource.user.profile.SearchValue;
 
 /**
  * JAVADOC
@@ -125,6 +126,7 @@ public class CommonResourceAssembler
             UserEntityListDTO.class,
             UserEntityDTO.class,
             ProxyUserListDTO.class,
-            ProxyUserDTO.class).visibleIn( Visibility.application );
+            ProxyUserDTO.class,
+            SearchValue.class ).visibleIn( Visibility.application );
    }
 }

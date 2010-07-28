@@ -107,12 +107,14 @@ import se.streamsource.streamflow.web.context.users.overview.OverviewProjectAssi
 import se.streamsource.streamflow.web.context.users.overview.OverviewProjectContext;
 import se.streamsource.streamflow.web.context.users.overview.OverviewProjectsContext;
 import se.streamsource.streamflow.web.context.users.workspace.DraftsContext;
+import se.streamsource.streamflow.web.context.users.workspace.SavedSearchContext;
+import se.streamsource.streamflow.web.context.users.workspace.SavedSearchesContext;
 import se.streamsource.streamflow.web.context.users.workspace.WorkspaceContext;
 import se.streamsource.streamflow.web.context.users.workspace.WorkspaceProjectContext;
 import se.streamsource.streamflow.web.context.users.workspace.WorkspaceProjectsContext;
 import se.streamsource.streamflow.web.context.users.workspace.WorkspaceUserContext;
 
-import static org.qi4j.bootstrap.ImportedServiceDeclaration.INSTANCE;
+import static org.qi4j.bootstrap.ImportedServiceDeclaration.*;
 
 /**
  * JAVADOC
@@ -225,6 +227,8 @@ public class InteractionsAssembler
 
             AttachmentsContext.class,
             AttachmentContext.class,
+            SavedSearchesContext.class,
+            SavedSearchContext.class,
 
             // Surface
             SurfaceContext.class,

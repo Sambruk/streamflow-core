@@ -206,9 +206,11 @@ import se.streamsource.streamflow.client.ui.search.SearchResultTableModel;
 import se.streamsource.streamflow.client.ui.workspace.AccountSelectionView;
 import se.streamsource.streamflow.client.ui.workspace.FilterListDialog;
 import se.streamsource.streamflow.client.ui.workspace.GroupedFilterListDialog;
+import se.streamsource.streamflow.client.ui.workspace.HandleSearchesDialog;
 import se.streamsource.streamflow.client.ui.workspace.RefreshCaseCountTask;
+import se.streamsource.streamflow.client.ui.workspace.SaveSearchDialog;
 import se.streamsource.streamflow.client.ui.workspace.SavedSearchesModel;
-import se.streamsource.streamflow.client.ui.workspace.SavedSearchesView;
+import se.streamsource.streamflow.client.ui.workspace.SearchView;
 import se.streamsource.streamflow.client.ui.workspace.SelectLinkDialog;
 import se.streamsource.streamflow.client.ui.workspace.TestConnectionTask;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceModel;
@@ -234,43 +236,43 @@ public class UIAssembler
    {
       search( layer.moduleAssembly( "Search" ) );
       administration( layer.moduleAssembly( "Administration" ) );
-      workspace(layer.moduleAssembly( "Workspace" ));
-      caze(layer.moduleAssembly( "Case" ));
-      menu(layer.moduleAssembly("Menu"));
-      overview(layer.moduleAssembly( "Overview" ));
-      streamflow(layer.moduleAssembly( "Streamflow" ));
-      restlet(layer.moduleAssembly( "Restlet client" ));
+      workspace( layer.moduleAssembly( "Workspace" ) );
+      caze( layer.moduleAssembly( "Case" ) );
+      menu( layer.moduleAssembly( "Menu" ) );
+      overview( layer.moduleAssembly( "Overview" ) );
+      streamflow( layer.moduleAssembly( "Streamflow" ) );
+      restlet( layer.moduleAssembly( "Restlet client" ) );
 
       // More specific administration modules
-      labels(layer.moduleAssembly( "Labels" ));
+      labels( layer.moduleAssembly( "Labels" ) );
       userAdministration( layer.moduleAssembly( "Users" ) );
-      organizationAdministration(layer.moduleAssembly( "Organizations" ) );
-      groupAdministration(layer.moduleAssembly( "Groups" ) );
-      projectAdministration(layer.moduleAssembly( "Projects" ) );
-      caseTypeAdministration(layer.moduleAssembly( "Case types" ) );
-      resolutions(layer.moduleAssembly( "Resolutions" ) );
-      roleAdministration(layer.moduleAssembly( "Roles" ) );
-      forms(layer.moduleAssembly( "Forms" ) );
-      administratorAdministrator(layer.moduleAssembly( "Administrators" ) );
-      surfaceAdministration(layer.moduleAssembly( "Surface" ) );
+      organizationAdministration( layer.moduleAssembly( "Organizations" ) );
+      groupAdministration( layer.moduleAssembly( "Groups" ) );
+      projectAdministration( layer.moduleAssembly( "Projects" ) );
+      caseTypeAdministration( layer.moduleAssembly( "Case types" ) );
+      resolutions( layer.moduleAssembly( "Resolutions" ) );
+      roleAdministration( layer.moduleAssembly( "Roles" ) );
+      forms( layer.moduleAssembly( "Forms" ) );
+      administratorAdministrator( layer.moduleAssembly( "Administrators" ) );
+      surfaceAdministration( layer.moduleAssembly( "Surface" ) );
    }
 
    private void surfaceAdministration( ModuleAssembly module ) throws AssemblyException
    {
       addViews( module, SurfaceAdministrationView.class,
-            AccessPointsAdminView.class);
+            AccessPointsAdminView.class );
 
       addMV( module,
             AccessPointsModel.class,
-            AccessPointsView.class);
+            AccessPointsView.class );
 
       addMV( module,
             AccessPointModel.class,
-            AccessPointView.class);
+            AccessPointView.class );
 
       addMV( module,
             ProxyUsersModel.class,
-            ProxyUsersView.class);
+            ProxyUsersView.class );
    }
 
    private void administratorAdministrator( ModuleAssembly module ) throws AssemblyException
@@ -334,10 +336,10 @@ public class UIAssembler
             FieldsModel.class, FieldsView.class );
 
       addMV( module,
-            SelectionElementsModel.class, SelectionElementsView.class);
+            SelectionElementsModel.class, SelectionElementsView.class );
 
       addMV( module,
-            PageEditModel.class, PageEditView.class);
+            PageEditModel.class, PageEditView.class );
 
       addViews( module,
             FieldEditorCheckboxesFieldValueView.class,
@@ -348,7 +350,7 @@ public class UIAssembler
             FieldEditorNumberFieldValueView.class,
             FieldEditorOptionButtonsFieldValueView.class,
             FieldEditorTextAreaFieldValueView.class,
-            FieldEditorTextFieldValueView.class);
+            FieldEditorTextFieldValueView.class );
 
       addDialogs( module, FieldCreationDialog.class );
 
@@ -444,7 +446,7 @@ public class UIAssembler
             OverviewNode.class,
             OverviewProjectsNode.class,
             OverviewProjectNode.class,
-            OverviewProjectAssignmentsNode.class).visibleIn( layer );
+            OverviewProjectAssignmentsNode.class ).visibleIn( layer );
 
       addMV( module,
             OverviewModel.class,
@@ -509,12 +511,12 @@ public class UIAssembler
             FormSubmissionWizardPage.class );
 
       addMV( module,
-              PossibleFormsModel.class,
-              PossibleFormsView.class );
+            PossibleFormsModel.class,
+            PossibleFormsView.class );
 
       addMV( module,
-    		  CaseActionsModel.class,
-    		  CaseActionsView.class );
+            CaseActionsModel.class,
+            CaseActionsView.class );
 
       // conversations
       addMV( module,
@@ -552,15 +554,19 @@ public class UIAssembler
             WorkspaceProjectNode.class,
             WorkspaceProjectInboxNode.class,
             WorkspaceProjectAssignmentsNode.class,
-            RefreshCaseCountTask.class).visibleIn( layer );
+            RefreshCaseCountTask.class ).visibleIn( layer );
 
       addMV( module,
             WorkspaceModel.class,
             WorkspaceView.class );
 
-      addMV( module, SavedSearchesModel.class, SavedSearchesView.class );
+      addMV( module, SavedSearchesModel.class, SearchView.class );
 
-      addDialogs( module, SelectLinkDialog.class, FilterListDialog.class, GroupedFilterListDialog.class);
+      addDialogs( module, SelectLinkDialog.class,
+            FilterListDialog.class,
+            GroupedFilterListDialog.class,
+            SaveSearchDialog.class,
+            HandleSearchesDialog.class );
    }
 
    private void menu( ModuleAssembly module ) throws AssemblyException

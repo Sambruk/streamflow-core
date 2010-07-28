@@ -19,7 +19,6 @@ package se.streamsource.streamflow.web.infrastructure.index;
 
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
-import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrInputDocument;
 import org.apache.solr.core.SolrCore;
 import org.apache.solr.schema.SchemaField;
@@ -36,7 +35,6 @@ import org.openrdf.model.ValueFactory;
 import org.openrdf.model.impl.GraphImpl;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.model.impl.ValueFactoryImpl;
-import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.service.Activatable;
@@ -110,10 +108,10 @@ public class SolrEntityIndexerMixin
                   deleted.add( entityState.identity().identity() );
                } else if (entityState.status().equals( EntityStatus.UPDATED ))
                {
-                  added.add( indexEntityState( entityState, server ));
+                  added.add( indexEntityState( entityState, server ) );
                } else if (entityState.status().equals( EntityStatus.NEW ))
                {
-                  added.add(indexEntityState( entityState, server ));
+                  added.add( indexEntityState( entityState, server ) );
                }
             }
 
@@ -127,7 +125,7 @@ public class SolrEntityIndexerMixin
          {
             if (server != null)
             {
-               server.commit(false, false);
+               server.commit( false, false );
             }
          }
       }
@@ -139,7 +137,7 @@ public class SolrEntityIndexerMixin
    }
 
    private SolrInputDocument indexEntityState( final EntityState entityState,
-                                  final SolrServer server )
+                                               final SolrServer server )
          throws IOException, SolrServerException, JSONException
    {
       Graph graph = new GraphImpl();

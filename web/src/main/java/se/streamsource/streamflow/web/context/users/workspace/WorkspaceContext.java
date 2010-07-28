@@ -24,8 +24,8 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import se.streamsource.dci.api.Interactions;
 import se.streamsource.dci.api.InteractionsMixin;
 import se.streamsource.dci.api.SubContext;
-import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.dci.value.LinksValue;
+import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.web.domain.entity.gtd.AssignmentsQueries;
 import se.streamsource.streamflow.web.domain.entity.gtd.DraftsQueries;
 import se.streamsource.streamflow.web.domain.entity.gtd.InboxQueries;
@@ -38,7 +38,7 @@ import se.streamsource.streamflow.web.domain.structure.project.Project;
  */
 @Mixins(WorkspaceContext.Mixin.class)
 public interface WorkspaceContext
-   extends Interactions
+      extends Interactions
 {
    LinksValue casecounts();
 
@@ -52,24 +52,24 @@ public interface WorkspaceContext
    SavedSearchesContext savedsearches();
 
    abstract class Mixin
-      extends InteractionsMixin
-      implements WorkspaceContext
+         extends InteractionsMixin
+         implements WorkspaceContext
    {
       @Structure
       Module module;
 
       public LinksValue casecounts()
       {
-         LinksBuilder builder = new LinksBuilder(module.valueBuilderFactory());
+         LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() );
 
          UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
 
-         builder.addLink( context.get( DraftsQueries.class ).drafts().newQuery( uow ).count()+"", "drafts" );
+         builder.addLink( context.get( DraftsQueries.class ).drafts().newQuery( uow ).count() + "", "drafts" );
 
          for (Project project : context.get( ProjectQueries.class ).allProjects())
          {
-            builder.addLink( ((InboxQueries)project).inbox().newQuery( uow ).count()+"", project+"/inbox" );
-            builder.addLink( ((AssignmentsQueries)project).assignments( context.get( Assignee.class) ).newQuery( uow ).count()+"", project+"/assignments" );
+            builder.addLink( ((InboxQueries) project).inbox().newQuery( uow ).count() + "", project + "/inbox" );
+            builder.addLink( ((AssignmentsQueries) project).assignments( context.get( Assignee.class ) ).newQuery( uow ).count() + "", project + "/assignments" );
          }
 
          return builder.newLinks();

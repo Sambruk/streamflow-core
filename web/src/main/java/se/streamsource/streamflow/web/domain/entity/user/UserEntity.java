@@ -31,6 +31,7 @@ import se.streamsource.streamflow.web.domain.entity.gtd.DraftsQueries;
 import se.streamsource.streamflow.web.domain.entity.gtd.InboxQueries;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Actor;
 import se.streamsource.streamflow.web.domain.interaction.profile.MessageRecipient;
+import se.streamsource.streamflow.web.domain.interaction.profile.SavedSearches;
 import se.streamsource.streamflow.web.domain.interaction.security.Authentication;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipant;
 import se.streamsource.streamflow.web.domain.structure.conversation.MessageReceiver;
@@ -52,6 +53,7 @@ public interface UserEntity
       Actor,
       Authentication,
       MessageRecipient,
+      SavedSearches,
 
       // Structure
       User,
@@ -75,7 +77,8 @@ public interface UserEntity
       Participation.Data,
       UserAuthentication.Data,
       MessageRecipient.Data,
-      MessageReceiver.Data
+      MessageReceiver.Data,
+      SavedSearches.Data
 {
    public static final String ADMINISTRATOR_USERNAME = "administrator";
 
@@ -97,9 +100,10 @@ public interface UserEntity
    }
 
    class AuthenticationMixin
-      implements Authentication
+         implements Authentication
    {
-      @This UserAuthentication.Data data;
+      @This
+      UserAuthentication.Data data;
 
       public boolean login( String password )
       {

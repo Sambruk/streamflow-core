@@ -51,34 +51,35 @@ import se.streamsource.streamflow.web.domain.entity.user.AnonymousEndUserEntity;
 import se.streamsource.streamflow.web.domain.entity.user.ProxyUserEntity;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.entity.user.UsersEntity;
+import se.streamsource.streamflow.web.domain.entity.user.profile.SavedSearchEntity;
 import se.streamsource.streamflow.web.domain.structure.organization.ParticipantRolesValue;
 import se.streamsource.streamflow.web.domain.structure.project.PermissionValue;
 import se.streamsource.streamflow.web.infrastructure.index.NamedSolrDescriptor;
 
-import static org.qi4j.api.common.Visibility.application;
+import static org.qi4j.api.common.Visibility.*;
 
 /**
  * JAVADOC
  */
 public class DomainAssembler
 {
-   public void assemble( LayerAssembly layer)
+   public void assemble( LayerAssembly layer )
          throws AssemblyException
    {
       new CommonDomainAssembler().assemble( layer );
       new CommonResourceAssembler().assemble( layer.moduleAssembly( "Common" ) );
 
-      conversations(layer.moduleAssembly("Conversations"));
-      forms(layer.moduleAssembly( "Forms" ));
-      groups(layer.moduleAssembly( "Groups" ));
-      labels(layer.moduleAssembly( "Labels" ));
-      organizations(layer.moduleAssembly( "Organizations" ));
-      projects(layer.moduleAssembly( "Projects" ));
-      roles(layer.moduleAssembly( "Roles" ));
-      cases(layer.moduleAssembly( "Cases" ));
-      caseTypes(layer.moduleAssembly( "Casetypes" ));
-      users(layer.moduleAssembly( "Users" ));
-      attachments(layer.moduleAssembly( "Attachments" ));
+      conversations( layer.moduleAssembly( "Conversations" ) );
+      forms( layer.moduleAssembly( "Forms" ) );
+      groups( layer.moduleAssembly( "Groups" ) );
+      labels( layer.moduleAssembly( "Labels" ) );
+      organizations( layer.moduleAssembly( "Organizations" ) );
+      projects( layer.moduleAssembly( "Projects" ) );
+      roles( layer.moduleAssembly( "Roles" ) );
+      cases( layer.moduleAssembly( "Cases" ) );
+      caseTypes( layer.moduleAssembly( "Casetypes" ) );
+      users( layer.moduleAssembly( "Users" ) );
+      attachments( layer.moduleAssembly( "Attachments" ) );
    }
 
    private void attachments( ModuleAssembly module ) throws AssemblyException
@@ -88,7 +89,8 @@ public class DomainAssembler
 
    private void users( ModuleAssembly module ) throws AssemblyException
    {
-      module.addEntities( UsersEntity.class, UserEntity.class, ProxyUserEntity.class, AnonymousEndUserEntity.class).visibleIn( application );
+      module.addEntities( UsersEntity.class, UserEntity.class, ProxyUserEntity.class, AnonymousEndUserEntity.class,
+            SavedSearchEntity.class ).visibleIn( application );
 
       NamedQueries namedQueries = new NamedQueries();
       NamedQueryDescriptor queryDescriptor = new NamedSolrDescriptor( "solrquery", "" );
@@ -96,8 +98,8 @@ public class DomainAssembler
 
       module.importServices( NamedEntityFinder.class ).
             importedBy( ServiceSelectorImporter.class ).
-            setMetaInfo( ServiceSelector.withId("solr" )).
-            setMetaInfo( namedQueries);
+            setMetaInfo( ServiceSelector.withId( "solr" ) ).
+            setMetaInfo( namedQueries );
    }
 
    private void caseTypes( ModuleAssembly module ) throws AssemblyException
@@ -148,13 +150,13 @@ public class DomainAssembler
             FormSubmissionEntity.class,
             FieldEntity.class,
             PageEntity.class
-            ).visibleIn( Visibility.application );
+      ).visibleIn( Visibility.application );
    }
 
    private void conversations( ModuleAssembly module ) throws AssemblyException
    {
       module.addEntities(
             ConversationEntity.class,
-            MessageEntity.class).visibleIn( Visibility.application );
+            MessageEntity.class ).visibleIn( Visibility.application );
    }
 }

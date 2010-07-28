@@ -17,22 +17,58 @@
 
 package se.streamsource.streamflow.web.context.users.workspace;
 
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.structure.Module;
 import se.streamsource.dci.api.ContextNotFoundException;
+import se.streamsource.dci.api.IndexInteraction;
+import se.streamsource.dci.api.Interactions;
 import se.streamsource.dci.api.InteractionsMixin;
 import se.streamsource.dci.api.SubContexts;
+import se.streamsource.dci.value.LinksValue;
+import se.streamsource.streamflow.infrastructure.application.TitledLinksBuilder;
+import se.streamsource.streamflow.resource.user.profile.SearchValue;
+import se.streamsource.streamflow.web.domain.interaction.profile.SavedSearches;
+import se.streamsource.streamflow.web.domain.structure.user.profile.SavedSearch;
 
 /**
  * JAVADOC
  */
+@Mixins(SavedSearchesContext.Mixin.class)
 public interface SavedSearchesContext
-   extends SubContexts<SavedSearchContext>
+      extends SubContexts<SavedSearchContext>, IndexInteraction<LinksValue>, Interactions
 {
+   public void addsearch( SearchValue search );
+
    abstract class Mixin
-      extends InteractionsMixin
-      implements SavedSearchesContext
+         extends InteractionsMixin
+         implements IndexInteraction<LinksValue>,
+         SavedSearchesContext
    {
+      @Structure
+      Module module;
+
+      public LinksValue index()
+      {
+         TitledLinksBuilder builder = new TitledLinksBuilder( module.valueBuilderFactory() );
+         SavedSearches.Data searches = context.get( SavedSearches.Data.class );
+         for (SavedSearch search : searches.searches().toList())
+         {
+            builder.addDescribable( search, ((SavedSearch.Data) search).query().get() );
+         }
+
+         return builder.newLinks();
+      }
+
+      public void addsearch( SearchValue search )
+      {
+         SavedSearches searches = context.get( SavedSearches.class );
+         searches.createSavedSearch( search );
+      }
+
       public SavedSearchContext context( String id ) throws ContextNotFoundException
       {
+         context.set( module.unitOfWorkFactory().currentUnitOfWork().get( SavedSearch.class, id ) );
          return subContext( SavedSearchContext.class );
       }
    }

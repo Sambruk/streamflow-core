@@ -25,14 +25,20 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.StringValue;
+import se.streamsource.dci.value.TitledLinksValue;
 import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.administration.organization.LinksListModel;
+import se.streamsource.streamflow.resource.user.profile.SearchValue;
+
+import java.util.List;
 
 /**
  * JAVADOC
  */
 public class SavedSearchesModel
-   extends LinksListModel
+      extends LinksListModel
 {
    @Structure
    ValueBuilderFactory vbf;
@@ -42,40 +48,85 @@ public class SavedSearchesModel
       super( client, "index" );
    }
 
-   @Override
-   public void refresh()
-   {
-      eventList.clear();
-      ValueBuilder<LinkValue> builder = vbf.newValueBuilder( LinkValue.class);
-      builder.prototype().text().set( "This week" );
-      builder.prototype().id().set("skapad:vecka");
-      builder.prototype().href().set( "123" );
-
-      eventList.add( builder.newInstance() );
-   }
-
-   public void saveSearch(String name, String query)
+   public void saveSearch( SearchValue saveSearch )
    {
       try
       {
-         ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
-         builder.prototype().string().set( query );
-         client.postCommand( "save", builder.newInstance() );
+         client.postCommand( "addsearch", saveSearch );
+         refresh();
       } catch (ResourceException e)
       {
-         throw new OperationException(WorkspaceResources.could_not_perform_operation, e);
+         throw new OperationException( WorkspaceResources.could_not_perform_operation, e );
       }
    }
 
-   public void remove( LinkValue removeSearch)
+   public void remove( LinkValue link )
    {
       try
       {
-         client.getClient( removeSearch ).delete();
+         if (link != null)
+         {
+            client.getClient( link ).delete();
+            eventList.remove( link );
+         }
+
       } catch (ResourceException e)
       {
          e.printStackTrace();
       }
    }
 
+   public void refresh()
+   {
+      try
+      {
+         List<LinkValue> links = client.query( "index", TitledLinksValue.class ).links().get();
+         EventListSynch.synchronize( links, eventList );
+      } catch (ResourceException e)
+      {
+         throw new OperationException( AdministrationResources.could_not_refresh, e );
+      }
+   }
+
+   public void updateSearch( LinkValue link, SearchValue searchValue )
+   {
+      try
+      {
+         client.getClient( link ).postCommand( "update", searchValue );
+         refresh();
+      } catch (ResourceException e)
+      {
+         throw new OperationException( WorkspaceResources.could_not_perform_operation, e );
+      }
+   }
+
+   public void changeDescription( LinkValue link, String name )
+   {
+
+      try
+      {
+         ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
+         builder.prototype().string().set( name );
+         client.getClient( link ).postCommand( "changedescription", builder.newInstance() );
+         refresh();
+      } catch (ResourceException e)
+      {
+         throw new OperationException( WorkspaceResources.could_not_perform_operation, e );
+      }
+   }
+
+   public void changeQuery( LinkValue link, String query )
+   {
+
+      try
+      {
+         ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
+         builder.prototype().string().set( query );
+         client.getClient( link ).postCommand( "changequery", builder.newInstance() );
+         refresh();
+      } catch (ResourceException e)
+      {
+         throw new OperationException( WorkspaceResources.could_not_perform_operation, e );
+      }
+   }
 }

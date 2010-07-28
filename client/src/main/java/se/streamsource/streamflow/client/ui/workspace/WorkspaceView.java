@@ -92,13 +92,12 @@ public class WorkspaceView
    private String accountName = "";
    private JLabel selectedContext;
    private JButton selectContextButton;
-   private JButton showSavedSearchesButton;
    private JTextField searchField;
 
    private Component currentSelection = new JLabel( i18n.text( WorkspaceResources.welcome ), JLabel.CENTER );
    private Popup popup;
-   private Popup savedSearches;
-   private SavedSearchesView savedSearchesPanelView;
+
+   private SearchView searchView;
 
 
    private JPanel contextPanel;
@@ -165,15 +164,14 @@ public class WorkspaceView
       contextPanel.add( contextToolbar, BorderLayout.EAST );
 
       searchPanel = new JPanel( new BorderLayout() );
-      searchField = new JTextField();
-      searchField.setAction( getActionMap().get( "search" ) );
-      searchPanel.add( searchField, BorderLayout.CENTER );
-      savedSearchesPanelView = obf.newObjectBuilder( SavedSearchesView.class ).use( searchField ).newInstance();
       JPanel searchButtons = new JPanel();
-      showSavedSearchesButton = new JButton( getActionMap().get( "showSavedSearches" ) );
-//      searchButtons.add( showSavedSearchesButton);
       searchButtons.add( new JButton( getActionMap().get( "hideSearch" ) ) );
       searchPanel.add( searchButtons, BorderLayout.EAST );
+
+      searchView = obf.newObjectBuilder( SearchView.class ).use().newInstance();
+      searchField = searchView.getTextField();
+      searchField.setAction( getActionMap().get( "search" ) );
+      searchPanel.add( searchView, BorderLayout.CENTER );
 
       topPanel = new JPanel( topLayout );
       topPanel.add( contextPanel, "context" );
@@ -391,7 +389,7 @@ public class WorkspaceView
 
       casesModel = model.workspace().getRoot().getUserObject().cases();
       detailView = obf.newObjectBuilder( CasesDetailView2.class ).use( casesModel ).newInstance();
-      savedSearchesPanelView.setModel( model.workspace().getSavedSearches() );
+      searchView.setModel( this.model.getSavedSearches() );
 
       refreshTree();
    }
@@ -448,22 +446,6 @@ public class WorkspaceView
 
 
       add( currentSelection, BorderLayout.CENTER );
-   }
-
-   @Action
-   public void showSavedSearches()
-   {
-      if (savedSearches == null)
-      {
-         Point location = showSavedSearchesButton.getLocationOnScreen();
-         savedSearches = PopupFactory.getSharedInstance().getPopup( this, new JScrollPane( savedSearchesPanelView ), (int) location.getX(), (int) location.getY() + showSavedSearchesButton.getHeight() );
-         savedSearches.show();
-      } else
-      {
-         savedSearches.hide();
-         savedSearches = null;
-      }
-
    }
 
    @Action

@@ -41,6 +41,7 @@ import se.streamsource.streamflow.client.ui.overview.OverviewModel;
 import se.streamsource.streamflow.client.ui.overview.OverviewProjectsNode;
 import se.streamsource.streamflow.client.ui.overview.OverviewSummaryModel;
 import se.streamsource.streamflow.client.ui.search.SearchResultTableModel;
+import se.streamsource.streamflow.client.ui.workspace.SavedSearchesModel;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceModel;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceUserDraftsNode;
 import se.streamsource.streamflow.domain.contact.ContactEmailValue;
@@ -92,7 +93,7 @@ public class AccountModel extends Observable implements EventListener
    public AccountSettingsValue settings()
    {
       UnitOfWork uow = uowf.newUnitOfWork();
-      Account acc = uow.get(account);
+      Account acc = uow.get( account );
       try
       {
          return acc.accountSettings();
@@ -102,11 +103,11 @@ public class AccountModel extends Observable implements EventListener
       }
    }
 
-   public void updateSettings(AccountSettingsValue value)
+   public void updateSettings( AccountSettingsValue value )
          throws UnitOfWorkCompletionException
    {
       UnitOfWork uow = uowf.newUnitOfWork();
-      uow.get(account).updateSettings(value);
+      uow.get( account ).updateSettings( value );
       uow.complete();
       setChanged();
       notifyObservers();
@@ -117,7 +118,7 @@ public class AccountModel extends Observable implements EventListener
       UnitOfWork uow = uowf.newUnitOfWork();
       try
       {
-         return uow.get(account).version(client);
+         return uow.get( account ).version( client );
       } finally
       {
          uow.discard();
@@ -126,7 +127,7 @@ public class AccountModel extends Observable implements EventListener
 
    private CommandQueryClient contactResource()
    {
-      return this.userResource().getSubClient("contact");
+      return this.userResource().getSubClient( "contact" );
    }
 
    public CommandQueryClient userResource()
@@ -135,7 +136,7 @@ public class AccountModel extends Observable implements EventListener
 
       try
       {
-         return uow.get(account).user(client);
+         return uow.get( account ).user( client );
       } finally
       {
          uow.discard();
@@ -148,7 +149,7 @@ public class AccountModel extends Observable implements EventListener
 
       try
       {
-         return uow.get(account).server(client);
+         return uow.get( account ).server( client );
       } finally
       {
          uow.discard();
@@ -158,11 +159,11 @@ public class AccountModel extends Observable implements EventListener
    public TreeValue organizations() throws ResourceException
    {
       UnitOfWork uow = uowf.newUnitOfWork();
-      Account acc = uow.get(account);
+      Account acc = uow.get( account );
       try
       {
-         return acc.user(client).getSubClient("administration").query(
-               "organizations", TreeValue.class);
+         return acc.user( client ).getSubClient( "administration" ).query(
+               "organizations", TreeValue.class );
 
       } finally
       {
@@ -173,20 +174,20 @@ public class AccountModel extends Observable implements EventListener
    public void remove() throws UnitOfWorkCompletionException
    {
       UnitOfWork uow = uowf.newUnitOfWork();
-      Account acc = uow.get(account);
-      individualRepository.individual().removeAccount(acc);
+      Account acc = uow.get( account );
+      individualRepository.individual().removeAccount( acc );
       uow.complete();
    }
 
-   public void changePassword(ChangePasswordCommand changePasswordCommand)
+   public void changePassword( ChangePasswordCommand changePasswordCommand )
          throws Exception
    {
       UnitOfWork uow = uowf.newUnitOfWork();
 
       try
       {
-         Account account1 = uow.get(account);
-         account1.changePassword(client, changePasswordCommand);
+         Account account1 = uow.get( account );
+         account1.changePassword( client, changePasswordCommand );
          uow.complete();
       } catch (Exception ex)
       {
@@ -195,41 +196,42 @@ public class AccountModel extends Observable implements EventListener
       }
    }
 
-   public void changeMessageDeliveryType(String newDeliveryType)
+   public void changeMessageDeliveryType( String newDeliveryType )
          throws ResourceException
    {
       ValueBuilder<StringValue> builder = vbf
-            .newValueBuilder(StringValue.class);
-      builder.prototype().string().set(newDeliveryType);
+            .newValueBuilder( StringValue.class );
+      builder.prototype().string().set( newDeliveryType );
       CommandQueryClient client = userResource();
-      client.putCommand("changemessagedeliverytype", builder.newInstance());
+      client.putCommand( "changemessagedeliverytype", builder.newInstance() );
    }
 
-   public String getMessageDeliveryType() 
+   public String getMessageDeliveryType()
    {
       try
       {
          CommandQueryClient client = userResource();
-         return client.query("getmessagedeliverytype", StringValue.class)
+         return client.query( "getmessagedeliverytype", StringValue.class )
                .string().get();
       } catch (Exception e)
       {
-         throw new OperationException( CaseResources.could_not_refresh, e);
+         throw new OperationException( CaseResources.could_not_refresh, e );
       }
    }
 
    // Contact Details
+
    public ContactValue getContact()
    {
       try
       {
          CommandQueryClient client = userResource();
-         this.contact = (ContactValue) client.getSubClient("contact").query(
-               "index", ContactValue.class).buildWith().prototype();
+         this.contact = (ContactValue) client.getSubClient( "contact" ).query(
+               "index", ContactValue.class ).buildWith().prototype();
          return contact;
       } catch (Exception e)
       {
-         throw new OperationException( CaseResources.could_not_refresh, e);
+         throw new OperationException( CaseResources.could_not_refresh, e );
       }
    }
 
@@ -237,59 +239,59 @@ public class AccountModel extends Observable implements EventListener
    {
       if (contact.phoneNumbers().get().isEmpty())
       {
-         ContactPhoneValue phone = vbf.newValue(ContactPhoneValue.class)
-               .<ContactPhoneValue> buildWith().prototype();
-         contact.phoneNumbers().get().add(phone);
+         ContactPhoneValue phone = vbf.newValue( ContactPhoneValue.class )
+               .<ContactPhoneValue>buildWith().prototype();
+         contact.phoneNumbers().get().add( phone );
       }
-      return contact.phoneNumbers().get().get(0);
+      return contact.phoneNumbers().get().get( 0 );
    }
 
    public ContactEmailValue getEmailAddress()
    {
       if (contact.emailAddresses().get().isEmpty())
       {
-         ContactEmailValue email = vbf.newValue(ContactEmailValue.class)
-               .<ContactEmailValue> buildWith().prototype();
-         contact.emailAddresses().get().add(email);
+         ContactEmailValue email = vbf.newValue( ContactEmailValue.class )
+               .<ContactEmailValue>buildWith().prototype();
+         contact.emailAddresses().get().add( email );
       }
-      return contact.emailAddresses().get().get(0);
+      return contact.emailAddresses().get().get( 0 );
    }
 
-   public void changeName(String newName) throws ResourceException
+   public void changeName( String newName ) throws ResourceException
    {
       ValueBuilder<StringValue> builder = vbf
-            .newValueBuilder(StringValue.class);
-      builder.prototype().string().set(newName);
+            .newValueBuilder( StringValue.class );
+      builder.prototype().string().set( newName );
       contactClient = contactResource();
-      contactClient.putCommand("changename", builder.newInstance());
+      contactClient.putCommand( "changename", builder.newInstance() );
    }
 
-   public void changePhoneNumber(String newPhoneNumber)
+   public void changePhoneNumber( String newPhoneNumber )
          throws ResourceException
    {
       ValueBuilder<ContactPhoneValue> builder = vbf
-            .newValueBuilder(ContactPhoneValue.class);
-      builder.prototype().phoneNumber().set(newPhoneNumber);
+            .newValueBuilder( ContactPhoneValue.class );
+      builder.prototype().phoneNumber().set( newPhoneNumber );
       contactClient = contactResource();
-      contactClient.putCommand("changephonenumber", builder.newInstance());
+      contactClient.putCommand( "changephonenumber", builder.newInstance() );
    }
 
-   public void changeEmailAddress(String newEmailAddress)
+   public void changeEmailAddress( String newEmailAddress )
          throws ResourceException
    {
       ValueBuilder<ContactEmailValue> builder = vbf
-            .newValueBuilder(ContactEmailValue.class);
-      builder.prototype().emailAddress().set(newEmailAddress);
+            .newValueBuilder( ContactEmailValue.class );
+      builder.prototype().emailAddress().set( newEmailAddress );
       contactClient = contactResource();
-      contactClient.putCommand("changeemailaddress", builder.newInstance());
+      contactClient.putCommand( "changeemailaddress", builder.newInstance() );
    }
 
    public CasesModel cases()
    {
       if (casesModel == null)
       {
-         casesClient = serverResource().getSubClient("cases");
-         casesModel = obf.newObjectBuilder( CasesModel.class).use(this,
+         casesClient = serverResource().getSubClient( "cases" );
+         casesModel = obf.newObjectBuilder( CasesModel.class ).use( this,
                casesClient ).newInstance();
       }
 
@@ -302,20 +304,24 @@ public class AccountModel extends Observable implements EventListener
       {
          CommandQueryClient resource = userResource();
          CommandQueryClient userDraftsClient = resource
-               .getSubClient("workspace").getSubClient("user").getSubClient(
-                     "drafts");
-         CasesTableModel draftsModel = obf.newObjectBuilder( CasesTableModel.class)
-               .use(userDraftsClient).newInstance();
+               .getSubClient( "workspace" ).getSubClient( "user" ).getSubClient(
+                     "drafts" );
+         CasesTableModel draftsModel = obf.newObjectBuilder( CasesTableModel.class )
+               .use( userDraftsClient ).newInstance();
          WorkspaceUserDraftsNode userDraftsNode = obf.newObjectBuilder(
-               WorkspaceUserDraftsNode.class).use(draftsModel, userDraftsClient)
+               WorkspaceUserDraftsNode.class ).use( draftsModel, userDraftsClient )
                .newInstance();
 
-         CommandQueryClient savedSearchesClient = resource.getClient( "searches" );
+         CommandQueryClient savedSearchesClient = resource.getSubClient( "workspace" )
+               .getSubClient( "savedsearches" );
+
+         SavedSearchesModel savedSearchesModel = obf.newObjectBuilder( SavedSearchesModel.class )
+               .use( savedSearchesClient ).newInstance();
 
 
-         workspaceModel = obf.newObjectBuilder(WorkspaceModel.class).use(this,
-               resource, userDraftsNode,
-               cases()).newInstance();
+         workspaceModel = obf.newObjectBuilder( WorkspaceModel.class ).use( this,
+               resource, userDraftsNode, savedSearchesModel,
+               cases() ).newInstance();
       }
 
       return workspaceModel;
@@ -325,17 +331,17 @@ public class AccountModel extends Observable implements EventListener
    {
       if (overviewModel == null)
       {
-         CommandQueryClient client = userResource().getSubClient("overview")
-               .getSubClient("projects");
+         CommandQueryClient client = userResource().getSubClient( "overview" )
+               .getSubClient( "projects" );
          OverviewProjectsNode overviewProjects = obf.newObjectBuilder(
-               OverviewProjectsNode.class).use(client, this).newInstance();
+               OverviewProjectsNode.class ).use( client, this ).newInstance();
 
          OverviewSummaryModel summaryModel = obf.newObjectBuilder(
-               OverviewSummaryModel.class).use(
-               userResource().getSubClient("overview")).newInstance();
+               OverviewSummaryModel.class ).use(
+               userResource().getSubClient( "overview" ) ).newInstance();
 
-         overviewModel = obf.newObjectBuilder(OverviewModel.class).use(this,
-               cases(), overviewProjects, summaryModel).newInstance();
+         overviewModel = obf.newObjectBuilder( OverviewModel.class ).use( this,
+               cases(), overviewProjects, summaryModel ).newInstance();
       }
 
       return overviewModel;
@@ -345,7 +351,7 @@ public class AccountModel extends Observable implements EventListener
    {
       if (searchResults == null)
       {
-         searchResults = obf.newObjectBuilder(SearchResultTableModel.class)
+         searchResults = obf.newObjectBuilder( SearchResultTableModel.class )
                .use( cases(), casesClient ).newInstance();
       }
 
@@ -356,29 +362,29 @@ public class AccountModel extends Observable implements EventListener
    {
       if (administrationModel == null)
       {
-         administrationModel = obf.newObjectBuilder(AdministrationModel.class)
-               .use(this, cases()).newInstance();
+         administrationModel = obf.newObjectBuilder( AdministrationModel.class )
+               .use( this, cases() ).newInstance();
       }
 
       return administrationModel;
    }
 
-   public void notifyEvent(DomainEvent event)
+   public void notifyEvent( DomainEvent event )
    {
       if (workspaceModel != null)
-         workspaceModel.notifyEvent(event);
+         workspaceModel.notifyEvent( event );
 
       if (overviewModel != null)
-         overviewModel.notifyEvent(event);
+         overviewModel.notifyEvent( event );
 
       if (searchResults != null)
-         searchResults.notifyEvent(event);
+         searchResults.notifyEvent( event );
 
       if (administrationModel != null)
-         administrationModel.notifyEvent(event);
+         administrationModel.notifyEvent( event );
 
       if (casesModel != null)
-         casesModel.notifyEvent(event);
+         casesModel.notifyEvent( event );
    }
 
 }

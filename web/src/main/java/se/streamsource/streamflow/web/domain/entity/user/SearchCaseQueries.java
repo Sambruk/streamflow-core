@@ -52,7 +52,7 @@ public interface SearchCaseQueries
    Query<Case> search( StringValue query, String userName );
 
    abstract class Mixin
-      implements SearchCaseQueries
+         implements SearchCaseQueries
    {
       @Structure
       Module module;
@@ -163,6 +163,37 @@ public interface SearchCaseQueries
                      // dismiss search - no project/s for given name exists. Return empty search
                      return module.queryBuilderFactory().newQueryBuilder( Case.class ).newQuery( Collections.<Case>emptyList() );
                   }
+               } else if (search.hasName( "createdBy" ))
+               {
+                  StringBuilder creatorQueryBuilder = new StringBuilder( "type:se.streamsource.streamflow.web.domain.entity.user.UserEntity" );
+                  creatorQueryBuilder.append( " description:" ).append( search.getValue() );
+
+                  Query<UserEntity> users = module.queryBuilderFactory()
+                        .newNamedQuery( UserEntity.class, uow, "solrquery" ).setVariable( "query", creatorQueryBuilder.toString() );
+
+                  if (users.iterator().hasNext())
+                  {
+                     queryBuilder.append( " createdBy:(" );
+                     int count = 0;
+                     for (UserEntity user : users)
+                     {
+                        if (count == 0)
+                        {
+                           queryBuilder.append( user.identity().get() );
+                        } else
+                        {
+                           queryBuilder.append( " OR " ).append( user.identity().get() );
+                        }
+
+                        count++;
+                     }
+                     queryBuilder.append( ")" );
+                  } else
+                  {
+                     // dismiss search - no user/s for given name exists. Return empty search
+                     return module.queryBuilderFactory().newQueryBuilder( Case.class ).newQuery( Collections.<Case>emptyList() );
+                  }
+
                } else if (search.hasName( "description", "note", "name", "contactId", "phoneNumber", "emailAddress" ))
                {
                   queryBuilder.append( " " ).append( search.getName() ).append( ":" ).append( search.getValue() );
