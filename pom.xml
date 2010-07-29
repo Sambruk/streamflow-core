@@ -39,8 +39,8 @@
     </modules>
 
     <scm>
-        <connection>scm:svn:https://source.waygroup.se/svn/streamsource/streamflow/branches/1.0</connection>
-        <developerConnection>scm:svn:https://source.waygroup.se/svn/streamsource/streamflow/branches/1.0
+        <connection>scm:svn:https://source.jayway.com/svn/streamsource/streamflow/branches/1.0</connection>
+        <developerConnection>scm:svn:https://source.jayway.com/svn/streamsource/streamflow/branches/1.0
         </developerConnection>
     </scm>
 
