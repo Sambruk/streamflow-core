@@ -145,6 +145,8 @@ public class CaseStatisticsServiceTest
       Subject subject = new Subject();
       subject.getPrincipals().add( new UserPrincipal(user1.userName().get()) );
 
+      final String[] id = new String[1];
+
       Subject.doAs( subject, new PrivilegedExceptionAction()
       {
          public Object run() throws Exception
@@ -183,12 +185,8 @@ public class CaseStatisticsServiceTest
             case1.resolve( fixed );
             case1.close();
 
-            caseUoW.complete();
+            id[0] = case1.identity().get();
 
-            // Remove case
-            caseUoW = unitOfWorkFactory.newUnitOfWork();
-            case1 = caseUoW.get( case1 );
-            case1.deleteEntity();
             caseUoW.complete();
 
             return null;
@@ -207,6 +205,13 @@ public class CaseStatisticsServiceTest
       assertThat( appender.getEvents().get( ++idx ).getMessage().toString(),new ContainsMatcher("description:Label1" ));
       assertThat( appender.getEvents().get( ++idx ).getMessage().toString(),new ContainsMatcher("description:Case description" ));
       assertThat( appender.getEvents().get( idx ).getMessage().toString(),new ContainsMatcher("note:Case note" ));
+
+      UnitOfWork removeUoW = unitOfWorkFactory.newUnitOfWork();
+      CaseEntity case1 = removeUoW.get( CaseEntity.class, id[0] );
+      case1.deleteEntity();
+      removeUoW.complete();
+
+      Thread.sleep( 1000 );
 
       assertThat( appender.getEvents().get( ++idx ).getMessage().toString(),new ContainsMatcher("Removed statistics about" ));
    }

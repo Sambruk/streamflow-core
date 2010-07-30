@@ -29,6 +29,7 @@ import org.qi4j.api.query.QueryBuilder;
 import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
+import org.qi4j.api.unitofwork.EntityTypeNotFoundException;
 import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.usecase.UsecaseBuilder;
@@ -134,7 +135,16 @@ public interface CaseStatisticsService
                UnitOfWork uow = module.unitOfWorkFactory().newUnitOfWork( UsecaseBuilder.newUsecase( "Create statistics" ) );
                try
                {
-                  CaseEntity entity = uow.get( CaseEntity.class, event.entity().get() );
+                  CaseEntity entity = null;
+                  try
+                  {
+                     entity = uow.get( CaseEntity.class, event.entity().get() );
+                  } catch (NoSuchEntityException e)
+                  {
+                     // Entity has been deleted. Ignore it
+                     return true;
+                  }
+
                   CaseStatisticsValue stats = createStatistics( entity );
                   try
                   {
