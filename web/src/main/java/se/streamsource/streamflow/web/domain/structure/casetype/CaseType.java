@@ -21,6 +21,7 @@ import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.domain.structure.Notable;
 import se.streamsource.streamflow.domain.structure.Removable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.structure.form.Forms;
 import se.streamsource.streamflow.web.domain.structure.form.SelectedForms;
 import se.streamsource.streamflow.web.domain.structure.label.Labels;
@@ -36,6 +37,7 @@ public interface CaseType
       Labels,
       Notable,
       Ownable,
+      Owner,
       Resolutions,
       SelectedForms,
       SelectedLabels,

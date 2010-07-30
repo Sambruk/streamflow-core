@@ -30,7 +30,7 @@ public class Strings
     */
    public static boolean notEmpty(String value)
    {
-      return value != null && !value.equals("");
+      return value != null && !value.trim().equals("");
    }
 
 }

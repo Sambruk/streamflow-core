@@ -22,7 +22,7 @@ import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.TitledLinksValue;
 
 /**
- * An extension of LinksBuild to make it handle TitledLinksValue
+ * An extension of LinksBuilder to make it handle TitledLinksValue
  */
 public class TitledLinksBuilder
    extends LinksBuilder

@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.web.application.organization;
 
+import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
@@ -29,11 +30,23 @@ import static org.qi4j.api.usecase.UsecaseBuilder.newUsecase;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.domain.contact.ContactValue;
+import se.streamsource.streamflow.web.domain.Specification;
+import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationVisitor;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationalUnitEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
+import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.entity.user.UsersEntity;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
+import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
+import se.streamsource.streamflow.web.domain.structure.form.Form;
+import se.streamsource.streamflow.web.domain.structure.group.Group;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
+import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
+import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.role.PermissionsEnum;
 import se.streamsource.streamflow.web.domain.structure.role.Role;
 
@@ -140,6 +153,82 @@ public interface BootstrapDataService
 
                // Assign admin role to administrator
                org.grantRole( admin, administrator );
+
+               // Check that ownership is correctly set
+               org.visitOrganization( new OrganizationVisitor()
+               {
+                  @Override
+                  public boolean visitOrganization( Organization org )
+                  {
+                     OrganizationEntity organization = (OrganizationEntity) org;
+
+                     fixOwnership(organization, organization.organizationalUnits());
+                     fixOwnership(organization, organization.forms());
+                     fixOwnership(organization, organization.roles());
+                     fixOwnership(organization, organization.caseTypes());
+
+                     return true;
+                  }
+
+                  @Override
+                  public boolean visitOrganizationalUnit( OrganizationalUnit ou )
+                  {
+                     OrganizationalUnitEntity orgUnit = (OrganizationalUnitEntity) ou;
+
+                     fixOwnership(orgUnit, orgUnit.organizationalUnits());
+                     fixOwnership(orgUnit, orgUnit.forms());
+                     fixOwnership(orgUnit, orgUnit.groups());
+                     fixOwnership(orgUnit, orgUnit.projects());
+                     fixOwnership(orgUnit, orgUnit.caseTypes());
+
+                     return true;
+                  }
+
+                  @Override
+                  public boolean visitProject( Project project )
+                  {
+                     ProjectEntity proj = (ProjectEntity) project;
+
+                     fixOwnership(proj, proj.forms());
+                     fixOwnership(proj, proj.caseTypes());
+
+                     return true;
+                  }
+
+                  @Override
+                  public boolean visitCaseType( CaseType caseType )
+                  {
+                     CaseTypeEntity ct = (CaseTypeEntity) caseType;
+
+                     fixOwnership(ct, ct.forms());
+
+                     return true;
+                  }
+
+                  private void fixOwnership( Owner owner, ManyAssociation<? extends Ownable> ownables )
+                  {
+                     for (Ownable ownable : ownables)
+                     {
+                        fixOwner( ownable, owner );
+                     }
+                  }
+
+                  private void fixOwner( Ownable ownable, Owner owner )
+                  {
+                     if (!ownable.isOwnedBy( owner ))
+                     {
+                        logger.info( "Changed owner of "+ownable+" to "+owner );
+                        ownable.changeOwner( owner );
+                     }
+                  }
+
+               }, new Specification<Class>()
+               {
+                  public boolean valid( Class instance )
+                  {
+                     return true;
+                  }
+               });
             }
 
             uow.complete();

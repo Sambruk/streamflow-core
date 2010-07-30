@@ -112,7 +112,7 @@ public class CaseStatisticsServiceTest
       module.addObjects( TimeService.class, CaseStatisticsServiceTest.class );
 
       module.addValues( DomainEvent.class, TransactionEvents.class );
-      module.addValues( CaseStatisticsValue.class, RelatedStatisticsValue.class );
+      module.addValues( CaseStatisticsValue.class, FormFieldStatisticsValue.class, RelatedStatisticsValue.class );
    }
 
    @Test
@@ -132,7 +132,7 @@ public class CaseStatisticsServiceTest
    }
 
    @Test
-   public void testCaseClosed() throws UnitOfWorkCompletionException, PrivilegedActionException, InterruptedException
+   public void testCaseClosedAndRemoved() throws UnitOfWorkCompletionException, PrivilegedActionException, InterruptedException
    {
       TestAppender appender = new TestAppender();
       Logger.getRootLogger().addAppender( appender );
@@ -177,12 +177,18 @@ public class CaseStatisticsServiceTest
             case1.changeNote( "Case note" );
             case1.addLabel( label1 );
             case1.changeCaseType( caseType1 );
-            case1.changeOwner( (Owner) project1 );
+            case1.changeOwner( project1 );
             case1.open();
             case1.assignTo( user );
             case1.resolve( fixed );
             case1.close();
 
+            caseUoW.complete();
+
+            // Remove case
+            caseUoW = unitOfWorkFactory.newUnitOfWork();
+            case1 = caseUoW.get( case1 );
+            case1.deleteEntity();
             caseUoW.complete();
 
             return null;
@@ -197,9 +203,12 @@ public class CaseStatisticsServiceTest
       assertThat( appender.getEvents().get( ++idx ).getMessage().toString(),new ContainsMatcher("description:OU1, type:organizationalUnit" ));
       assertThat( appender.getEvents().get( ++idx ).getMessage().toString(),new ContainsMatcher("description:Group1, type:group" ));
       assertThat( appender.getEvents().get( ++idx ).getMessage().toString(),new ContainsMatcher("description:Project1" ));
+      assertThat( appender.getEvents().get( ++idx ).getMessage().toString(),new ContainsMatcher("description:Casetype" ));
       assertThat( appender.getEvents().get( ++idx ).getMessage().toString(),new ContainsMatcher("description:Label1" ));
       assertThat( appender.getEvents().get( ++idx ).getMessage().toString(),new ContainsMatcher("description:Case description" ));
       assertThat( appender.getEvents().get( idx ).getMessage().toString(),new ContainsMatcher("note:Case note" ));
+
+      assertThat( appender.getEvents().get( ++idx ).getMessage().toString(),new ContainsMatcher("Removed statistics about" ));
    }
 
    public static class TestAppender

@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.web.context.caze;
 
+import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
@@ -57,6 +58,7 @@ import static se.streamsource.streamflow.domain.interaction.gtd.CaseStates.OPEN;
 /**
  * JAVADOC
  */
+@Concerns(UpdateCaseCountCacheConcern.class)
 @Mixins(CaseActionsContext.Mixin.class)
 public interface CaseActionsContext
       extends DeleteInteraction // , InteractionConstraints

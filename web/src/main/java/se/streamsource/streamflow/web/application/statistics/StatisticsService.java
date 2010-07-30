@@ -34,6 +34,8 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.usecase.Usecase;
 import org.qi4j.api.usecase.UsecaseBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
@@ -45,7 +47,6 @@ import se.streamsource.streamflow.infrastructure.event.source.helper.EventCollec
 import se.streamsource.streamflow.infrastructure.event.source.helper.EventQuery;
 import se.streamsource.streamflow.infrastructure.event.source.helper.EventVisitorFilter;
 import se.streamsource.streamflow.infrastructure.event.source.helper.TransactionEventAdapter;
-import se.streamsource.streamflow.infrastructure.event.source.helper.TransactionTimestampFilter;
 import se.streamsource.streamflow.infrastructure.event.source.helper.TransactionTracker;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
@@ -69,8 +70,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Properties;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Generate statistics data to a JDBC database. This service

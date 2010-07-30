@@ -22,29 +22,23 @@ import org.qi4j.api.value.ValueComposite;
 
 /**
  * Value for form data about a case in statistics. For multi-value fields
- * the same {id,form,field} may repeat many times in the statistics, with different values.
+ * the same {formId,fieldId} may repeat many times in the statistics, with different values.
  */
-public interface FormStatisticsValue
+public interface FormFieldStatisticsValue
       extends ValueComposite
 {
    /**
-    * Case id
-    * @return if of the case
-    */
-   Property<String> identity();
-
-   /**
-    * Name of the form
+    * Id of the form
     * @return name of the form
     */
-   Property<String> form();
+   Property<String> formId();
 
    /**
-    * Name of the field
+    * Id of the field
     *
     * @return name of the field
     */
-   Property<String> field();
+   Property<String> fieldId();
 
    /**
     * Value for the field

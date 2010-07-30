@@ -17,6 +17,9 @@
 
 package se.streamsource.streamflow.web.context.users.workspace;
 
+import net.sf.ehcache.Ehcache;
+import net.sf.ehcache.Element;
+import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
@@ -32,6 +35,9 @@ import se.streamsource.streamflow.web.domain.entity.gtd.InboxQueries;
 import se.streamsource.streamflow.web.domain.entity.user.ProjectQueries;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
+import se.streamsource.streamflow.web.infrastructure.caching.Caches;
+import se.streamsource.streamflow.web.infrastructure.caching.Caching;
+import se.streamsource.streamflow.web.infrastructure.caching.CachingService;
 
 /**
  * JAVADOC
@@ -58,18 +64,48 @@ public interface WorkspaceContext
       @Structure
       Module module;
 
+      @Service
+      CachingService caching;
+
+      /**
+       * Calculate casecounts for this user. Uses caching if available.
+       *
+       * @return
+       */
       public LinksValue casecounts()
       {
+         Caching caching = new Caching(this.caching, Caches.CASECOUNTS);
+
          LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() );
 
          UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
 
-         builder.addLink( context.get( DraftsQueries.class ).drafts().newQuery( uow ).count() + "", "drafts" );
+         Element caseCount;
+         DraftsQueries drafts = context.get( DraftsQueries.class );
+         if ((caseCount = caching.get( drafts.toString())) == null )
+         {
+            caseCount = new Element(drafts.toString(), Long.toString(drafts.drafts().newQuery( uow ).count()));
+            caching.put( caseCount );
+         }
+         builder.addLink( (String) caseCount.getObjectValue(), "drafts" );
 
          for (Project project : context.get( ProjectQueries.class ).allProjects())
          {
-            builder.addLink( ((InboxQueries) project).inbox().newQuery( uow ).count() + "", project + "/inbox" );
-            builder.addLink( ((AssignmentsQueries) project).assignments( context.get( Assignee.class ) ).newQuery( uow ).count() + "", project + "/assignments" );
+            if ((caseCount = caching.get( project.toString())) == null )
+            {
+               caseCount = new Element(project.toString(), Long.toString(((InboxQueries)project).inbox().newQuery( uow ).count()));
+               caching.put( caseCount );
+            }
+
+            builder.addLink( (String) caseCount.getObjectValue(), project+"/inbox" );
+
+            if ((caseCount = caching.get( project.toString()+":"+context.get( Assignee.class).toString())) == null )
+            {
+               caseCount = new Element(project.toString()+":"+context.get( Assignee.class).toString(), Long.toString(((AssignmentsQueries)project).assignments( context.get( Assignee.class) ).newQuery( uow ).count()));
+               caching.put( caseCount );
+            }
+
+            builder.addLink( (String) caseCount.getObjectValue(), project+"/assignments" );
          }
 
          return builder.newLinks();

@@ -20,7 +20,6 @@ package se.streamsource.streamflow.web.application.statistics;
 import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.entity.Identity;
-import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
@@ -37,6 +36,8 @@ import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.spi.structure.ModuleSPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import se.streamsource.streamflow.domain.form.EffectiveFieldValue;
+import se.streamsource.streamflow.domain.form.EffectiveFormFieldsValue;
 import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
@@ -51,7 +52,11 @@ import se.streamsource.streamflow.infrastructure.event.source.helper.EventRouter
 import se.streamsource.streamflow.infrastructure.event.source.helper.TransactionEventAdapter;
 import se.streamsource.streamflow.infrastructure.event.source.helper.TransactionTracker;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
+import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity;
+import se.streamsource.streamflow.web.domain.entity.casetype.ResolutionEntity;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
+import se.streamsource.streamflow.web.domain.entity.form.FormEntity;
+import se.streamsource.streamflow.web.domain.entity.form.PageEntity;
 import se.streamsource.streamflow.web.domain.entity.label.LabelEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.GroupEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
@@ -59,11 +64,14 @@ import se.streamsource.streamflow.web.domain.entity.organization.OrganizationalU
 import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
-import se.streamsource.streamflow.web.domain.structure.casetype.CaseTypes;
 import se.streamsource.streamflow.web.domain.structure.casetype.Resolution;
+import se.streamsource.streamflow.web.domain.structure.form.Field;
+import se.streamsource.streamflow.web.domain.structure.form.Form;
+import se.streamsource.streamflow.web.domain.structure.form.Page;
 import se.streamsource.streamflow.web.domain.structure.group.Group;
 import se.streamsource.streamflow.web.domain.structure.group.Participation;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
@@ -143,12 +151,17 @@ public interface CaseStatisticsService
                }
             }
          } ).route( new EventQuery().withNames( "changedDescription" ).onEntityTypes(
-               UserEntity.class.getName(),
                LabelEntity.class.getName(),
+               UserEntity.class.getName(),
                GroupEntity.class.getName(),
                ProjectEntity.class.getName(),
                OrganizationEntity.class.getName(),
-               OrganizationalUnitEntity.class.getName() ),
+               OrganizationalUnitEntity.class.getName(),
+               Resolution.class.getName(),
+               Form.class.getName(),
+               Field.class.getName(),
+               CaseTypeEntity.class.getName()
+               ),
                new EventVisitor()
                {
                   public boolean visit( DomainEvent event )
@@ -173,6 +186,12 @@ public interface CaseStatisticsService
                            type = RelatedEnum.organizationalUnit;
                         else if (entity instanceof Resolution)
                            type = RelatedEnum.resolution;
+                        else if (entity instanceof Form)
+                           type = RelatedEnum.form;
+                        else if (entity instanceof Field)
+                           type = RelatedEnum.field;
+                        else if (entity instanceof CaseType)
+                           type = RelatedEnum.caseType;
                         else
                            return true;
 
@@ -195,8 +214,22 @@ public interface CaseStatisticsService
                         uow.discard();
                      }
                   }
-               } );
-
+               } ).route(new EventQuery().withNames( "deletedEntity" ).onEntityTypes( CaseEntity.class.getName()),
+               new EventVisitor()
+               {
+                  public boolean visit( DomainEvent event )
+                  {
+                     try
+                     {
+                        notifyStores( event.entity().get() );
+                        return true;
+                     } catch (StatisticsStoreException e)
+                     {
+                        log.warn(e.getMessage(), e.getCause());
+                        return false;
+                     }
+                  }
+               });
 
          transactionAdapter = new TransactionEventAdapter( router );
          tracker = new TransactionTracker( eventStore, config, this );
@@ -248,7 +281,7 @@ public interface CaseStatisticsService
                uow.discard();
                uow = module.unitOfWorkFactory().newUnitOfWork();
 
-               // Group
+               // Groups
                {
                   log.debug( "Update all groups" );
                   Query<GroupEntity> groups = module.queryBuilderFactory().newQueryBuilder( GroupEntity.class ).newQuery( uow );
@@ -260,15 +293,76 @@ public interface CaseStatisticsService
                uow.discard();
                uow = module.unitOfWorkFactory().newUnitOfWork();
 
+               // Projects
+               {
+                  log.debug( "Update all projects" );
+                  Query<ProjectEntity> projects = module.queryBuilderFactory().newQueryBuilder( ProjectEntity.class ).newQuery( uow );
+                  for (ProjectEntity project : projects)
+                  {
+                     notifyStores( createRelated( project, RelatedEnum.project ) );
+                  }
+               }
+               uow.discard();
+               uow = module.unitOfWorkFactory().newUnitOfWork();
+
+               // Organizations
+               {
+                  log.debug( "Update all organizations" );
+                  Query<OrganizationEntity> org = module.queryBuilderFactory().newQueryBuilder( OrganizationEntity.class ).newQuery( uow );
+                  for (OrganizationEntity organization : org)
+                  {
+                     notifyStores( createRelated( organization, RelatedEnum.organization ) );
+                  }
+               }
+
                // OU
                {
-                  log.debug( "Update all OU's" );
+                  log.debug( "Update all OUs" );
                   Query<OrganizationalUnitEntity> ous = module.queryBuilderFactory().newQueryBuilder( OrganizationalUnitEntity.class ).newQuery( uow );
                   for (OrganizationalUnitEntity ou : ous)
                   {
                      notifyStores( createRelated( ou, RelatedEnum.organizationalUnit ) );
                   }
                }
+
+               // Resolutions
+               {
+                  log.debug( "Update all resolutions" );
+                  Query<ResolutionEntity> resolutions = module.queryBuilderFactory().newQueryBuilder( ResolutionEntity.class ).newQuery( uow );
+                  for (ResolutionEntity resolution : resolutions)
+                  {
+                     notifyStores( createRelated( resolution, RelatedEnum.resolution ) );
+                  }
+               }
+
+               // Forms
+               {
+                  log.debug( "Update all forms" );
+                  Query<FormEntity> forms = module.queryBuilderFactory().newQueryBuilder( FormEntity.class ).newQuery( uow );
+                  for (FormEntity form : forms)
+                  {
+                     notifyStores( createRelated( form, RelatedEnum.form ) );
+
+                     for (Page page : form.pages())
+                     {
+                        for (Field field : ((PageEntity) page).fields())
+                        {
+                           notifyStores( createRelated( (EntityComposite) field, RelatedEnum.field ) );
+                        }
+                     }
+                  }
+               }
+
+               // Casetypes
+               {
+                  log.debug( "Update all Casetypes" );
+                  Query<CaseTypeEntity> caseTypes = module.queryBuilderFactory().newQueryBuilder( CaseTypeEntity.class ).newQuery( uow );
+                  for (CaseTypeEntity caseType : caseTypes)
+                  {
+                     notifyStores( createRelated( caseType, RelatedEnum.caseType ) );
+                  }
+               }
+
 
             } finally
             {
@@ -317,6 +411,8 @@ public interface CaseStatisticsService
 
       private CaseStatisticsValue createStatistics( CaseEntity aCase )
       {
+         UnitOfWork uow = module.unitOfWorkFactory().getUnitOfWork( aCase );
+
          ValueBuilder<CaseStatisticsValue> builder = module.valueBuilderFactory().newValueBuilder( CaseStatisticsValue.class );
          CaseStatisticsValue prototype = builder.prototype();
 
@@ -334,23 +430,21 @@ public interface CaseStatisticsService
          CaseType caseType = aCase.caseType().get();
          if (caseType != null)
          {
-            UnitOfWork uow = module.unitOfWorkFactory().getUnitOfWork( aCase );
             prototype.caseTypeId().set( ((Identity) caseType).identity().get() );
 
-            QueryBuilder<Identity> caseOwnerQuery = module.queryBuilderFactory().newQueryBuilder( Identity.class );
-            ManyAssociation<CaseType> caseTypes = QueryExpressions.templateFor( CaseTypes.Data.class ).caseTypes();
-            Identity caseTypeOwner = caseOwnerQuery.where( QueryExpressions.contains( caseTypes, caseType ) ).newQuery( uow ).find();
+            Owner caseTypeOwner = ((Ownable.Data)caseType).owner().get();
             if (caseTypeOwner != null)
-               prototype.caseTypeOwnerId().set( caseTypeOwner.identity().get() );
+               prototype.caseTypeOwnerId().set( ((Identity)caseTypeOwner).identity().get() );
 
             if (aCase.resolution().get() != null)
                prototype.resolutionId().set( ((Identity) aCase.resolution().get()).identity().get() );
          }
 
          Owner owner = aCase.owner().get();
+         prototype.projectId().set( ((Identity)owner).identity().get() );
          OwningOrganizationalUnit.Data po = (OwningOrganizationalUnit.Data) owner;
          OrganizationalUnit organizationalUnit = po.organizationalUnit().get();
-         prototype.organizationalUnit().set( organizationalUnit.getDescription() );
+         prototype.organizationalUnitId().set( ((Identity)organizationalUnit).identity().get());
 
          String groupId = null;
          Participation.Data participant = (Participation.Data) assignee;
@@ -371,6 +465,19 @@ public interface CaseStatisticsService
             prototype.labels().get().add( label.toString() );
          }
 
+         ValueBuilder<FormFieldStatisticsValue> formBuilder = module.valueBuilderFactory().newValueBuilder( FormFieldStatisticsValue.class );
+         EffectiveFormFieldsValue value = aCase.effectiveFieldValues().get();
+         if (value != null)
+         {
+            for (EffectiveFieldValue effectiveFieldValue : value.fields().get())
+            {
+               formBuilder.prototype().formId().set( effectiveFieldValue.form().get().identity() );
+               formBuilder.prototype().fieldId().set( effectiveFieldValue.field().get().identity() );
+               formBuilder.prototype().value().set( effectiveFieldValue.value().get() );
+               prototype.fields().get().add( formBuilder.newInstance() );
+            }
+         }
+
          return builder.newInstance();
       }
 
@@ -389,5 +496,15 @@ public interface CaseStatisticsService
             statisticsStore.caseStatistics( caseStatisticsValue );
          }
       }
+
+      private void notifyStores( String id ) throws StatisticsStoreException
+      {
+         for (StatisticsStore statisticsStore : statisticsStores)
+         {
+            statisticsStore.removedCase( id );
+         }
+      }
+
+
    }
 }

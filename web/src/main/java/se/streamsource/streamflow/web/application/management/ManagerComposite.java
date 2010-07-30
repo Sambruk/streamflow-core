@@ -74,6 +74,9 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -521,7 +524,9 @@ public interface ManagerComposite
 
       public void refreshStatistics() throws StatisticsStoreException
       {
+         logger.info( "Start refreshing statistics" );
          statistics.refresh();
+         logger.info( "Finished refreshing statistics" );
       }
 
       private File getLatestBackup() throws ParseException

@@ -190,6 +190,8 @@ public abstract class ContextTest
       {
          context.set( contextObject );
       }
+      unitOfWorkFactory.currentUnitOfWork().metaInfo().set( context );
+
       return transientBuilderFactory.newTransientBuilder( RootContext.class ).use( context ).newInstance();
    }
 

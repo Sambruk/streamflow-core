@@ -19,6 +19,7 @@ package se.streamsource.streamflow.web.domain.structure.form;
 
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.domain.structure.Notable;
+import se.streamsource.streamflow.domain.structure.Removable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 
 /**
@@ -28,6 +29,7 @@ public interface Form
  extends Describable,
       Notable,
       Pages,
-      Ownable
+      Ownable,
+      Removable
 {
 }

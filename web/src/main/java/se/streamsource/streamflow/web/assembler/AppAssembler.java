@@ -52,9 +52,12 @@ import se.streamsource.streamflow.web.application.organization.TestDataService;
 import se.streamsource.streamflow.web.application.security.PasswordVerifierService;
 import se.streamsource.streamflow.web.application.statistics.CaseStatisticsService;
 import se.streamsource.streamflow.web.application.statistics.CaseStatisticsValue;
+import se.streamsource.streamflow.web.application.statistics.FormFieldStatisticsValue;
+import se.streamsource.streamflow.web.application.statistics.JdbcStatisticsStore;
 import se.streamsource.streamflow.web.application.statistics.LoggingStatisticsStore;
 import se.streamsource.streamflow.web.application.statistics.RelatedStatisticsValue;
 import se.streamsource.streamflow.web.application.statistics.StatisticsService;
+import se.streamsource.streamflow.web.infrastructure.caching.CachingServiceComposite;
 
 import javax.management.MBeanServer;
 
@@ -87,7 +90,6 @@ public class AppAssembler
       statistics(layer.moduleAssembly( "Statistics" ));
    }
 
-
    private void mail( ModuleAssembly module ) throws AssemblyException
    {
       module.addServices( MailService.class ).identifiedBy( "mail" ).instantiateOnStartup().visibleIn( Visibility.application );
@@ -117,8 +119,12 @@ public class AppAssembler
             identifiedBy( "logstatisticsstore" ).
             instantiateOnStartup().
             visibleIn( Visibility.module );
+      module.addServices( JdbcStatisticsStore.class ).
+            identifiedBy( "jdbcstatisticsstore" ).
+            instantiateOnStartup().
+            visibleIn( Visibility.module );
 
-      module.addValues( RelatedStatisticsValue.class, CaseStatisticsValue.class ).visibleIn( layer );
+      module.addValues( RelatedStatisticsValue.class, FormFieldStatisticsValue.class, CaseStatisticsValue.class ).visibleIn( layer );
    }
 
    private void security( ModuleAssembly module ) throws AssemblyException

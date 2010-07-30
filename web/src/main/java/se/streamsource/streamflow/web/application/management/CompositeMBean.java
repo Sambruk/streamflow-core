@@ -17,6 +17,10 @@
 
 package se.streamsource.streamflow.web.application.management;
 
+import org.apache.log4j.AppenderSkeleton;
+import org.apache.log4j.Logger;
+import org.apache.log4j.spi.LoggingEvent;
+import org.apache.log4j.spi.ThrowableInformation;
 import org.qi4j.api.common.QualifiedName;
 import org.qi4j.api.composite.TransientComposite;
 import org.qi4j.api.injection.scope.Structure;
@@ -24,12 +28,14 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.property.StateHolder;
 import org.qi4j.spi.Qi4jSPI;
+import org.slf4j.LoggerFactory;
 
 import javax.management.Attribute;
 import javax.management.AttributeList;
 import javax.management.AttributeNotFoundException;
 import javax.management.DynamicMBean;
 import javax.management.InvalidAttributeValueException;
+import javax.management.ListenerNotFoundException;
 import javax.management.MBeanAttributeInfo;
 import javax.management.MBeanConstructorInfo;
 import javax.management.MBeanException;
@@ -37,7 +43,14 @@ import javax.management.MBeanInfo;
 import javax.management.MBeanNotificationInfo;
 import javax.management.MBeanOperationInfo;
 import javax.management.MBeanParameterInfo;
+import javax.management.Notification;
+import javax.management.NotificationBroadcasterSupport;
+import javax.management.NotificationEmitter;
+import javax.management.NotificationFilter;
+import javax.management.NotificationListener;
 import javax.management.ReflectionException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -45,12 +58,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 /**
  * Expose a TransientComposite as an MBean. All properties are used as JMX attributes. The rest
  * of the methods are exposed as operations.
  */
 public class CompositeMBean
+      extends NotificationBroadcasterSupport
       implements DynamicMBean
 {
    private TransientComposite composite;
@@ -61,9 +79,15 @@ public class CompositeMBean
 
    private MBeanInfo info;
    private List<Method> operationMethods = new ArrayList<Method>();
+   private AppenderSkeleton appender;
+   private Class exposedInterface;
 
-   public CompositeMBean( @Uses TransientComposite composite, @Uses Class exposedInterface, @Uses final ResourceBundle resourceBundle, @Structure Qi4jSPI spi )
+   private ExecutorService executor;
+
+
+   public CompositeMBean( @Uses final TransientComposite composite, @Uses final Class exposedInterface, @Uses final ResourceBundle resourceBundle, @Structure Qi4jSPI spi )
    {
+      this.exposedInterface = exposedInterface;
       String description = resourceBundle.getString( "mbean.description" );
 
       // Find state
@@ -122,9 +146,43 @@ public class CompositeMBean
             attributes.toArray( new MBeanAttributeInfo[attributes.size()] ),
             new MBeanConstructorInfo[0],
             operations.toArray( new MBeanOperationInfo[operations.size()] ),
-            new MBeanNotificationInfo[0] );
+            new MBeanNotificationInfo[]{new MBeanNotificationInfo(new String[]{"info","warning","error"}, "Log", "Log")} );
 
       this.composite = composite;
+
+      appender = new AppenderSkeleton()
+      {
+         long seq = 0;
+
+         @Override
+         protected void append( LoggingEvent event )
+         {
+            final Notification notification = new Notification( event.getLevel().toString(), event.getLoggerName(), seq++, event.getTimeStamp(), event.getMessage() == null ? null : event.getMessage().toString() );
+            ThrowableInformation throwable = event.getThrowableInformation();
+            if (throwable != null)
+            {
+               StringWriter writer = new StringWriter();
+               PrintWriter printWriter = new PrintWriter( writer );
+               throwable.getThrowable().printStackTrace( printWriter );
+               printWriter.close();
+               notification.setUserData( writer.toString() );
+            }
+
+            sendNotification( notification );
+         }
+
+         public void close()
+         {
+            Logger.getLogger( exposedInterface ).removeAppender( this );
+         }
+
+         public boolean requiresLayout()
+         {
+            return false;
+         }
+      };
+
+      executor = Executors.newSingleThreadExecutor();
    }
 
    public Object getAttribute( String name ) throws AttributeNotFoundException, MBeanException, ReflectionException
@@ -199,19 +257,60 @@ public class CompositeMBean
       return list;
    }
 
-   public Object invoke( String s, Object[] arguments, String[] parameterTypes ) throws MBeanException, ReflectionException
+   public synchronized Object invoke( String s, final Object[] arguments, String[] parameterTypes ) throws MBeanException, ReflectionException
    {
-      Method method = getOperation( s, parameterTypes );
+      final Method method = getOperation( s, parameterTypes );
 
-      try
+      final Callable<Object> call = new Callable<Object>()
+         {
+         public Object call() throws Exception
+         {
+            try
+            {
+               Logger.getRootLogger().addAppender( appender );
+               return method.invoke( composite, arguments );
+            } catch (IllegalAccessException e)
+            {
+               throw new ReflectionException( e );
+            } catch (InvocationTargetException e)
+            {
+               throw new MBeanException( (Exception) e.getCause() );
+            } finally
+            {
+               Logger.getRootLogger().removeAppender( appender );
+            }
+         }
+      };
+
+      if (method.getReturnType().equals(Void.TYPE))
       {
-         return method.invoke( composite, arguments );
-      } catch (IllegalAccessException e)
+         executor.submit(new Callable<Object>()
+         {
+            public Object call() throws Exception
+            {
+               try
+               {
+                  return call.call();
+               } catch (Exception e)
+               {
+                  // Log exception
+                  Logger.getRootLogger().addAppender( appender );
+                  LoggerFactory.getLogger( exposedInterface ).error( "Could not complete "+method.getName(), e );
+                  Logger.getRootLogger().removeAppender( appender );
+                  throw e;
+               }
+            }
+         });
+         return method.getName()+" started. See notification log for details";
+      } else
       {
-         throw new ReflectionException( e );
-      } catch (InvocationTargetException e)
-      {
-         throw new MBeanException( (Exception) e.getCause() );
+         try
+         {
+            return call.call();
+         } catch (Exception e)
+         {
+            throw new ReflectionException(e);
+         }
       }
    }
 
@@ -236,6 +335,12 @@ public class CompositeMBean
       }
 
       return null;
+   }
+
+   @Override
+   public MBeanNotificationInfo[] getNotificationInfo()
+   {
+      return info.getNotifications();
    }
 
    public MBeanInfo getMBeanInfo()

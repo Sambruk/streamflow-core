@@ -24,7 +24,7 @@ import org.qi4j.api.value.ValueComposite;
 import java.util.List;
 
 /**
- * JAVADOC
+ * List of all the effective field values for all the forms.
  */
 public interface EffectiveFieldsDTO
       extends ValueComposite

@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.web.assembler;
 
+import org.qi4j.api.common.Visibility;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
@@ -30,6 +31,7 @@ import org.restlet.security.ChallengeAuthenticator;
 import se.streamsource.dci.restlet.server.DCIAssembler;
 import se.streamsource.dci.restlet.server.DefaultResponseWriterFactory;
 import se.streamsource.dci.restlet.server.ResourceFinder;
+import se.streamsource.streamflow.web.infrastructure.caching.CachingServiceComposite;
 import se.streamsource.streamflow.web.resource.APIRouter;
 import se.streamsource.streamflow.web.resource.EventsCommandResult;
 import se.streamsource.streamflow.web.resource.StreamflowRootContextFactory;

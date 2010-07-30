@@ -95,6 +95,8 @@ public interface Forms
             return;
 
          removedForm( DomainEvent.CREATE, form );
+
+         form.removeEntity();
       }
 
       public void moveForm( Form form, Forms toForms )

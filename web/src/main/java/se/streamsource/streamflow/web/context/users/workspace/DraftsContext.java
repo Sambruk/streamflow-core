@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.web.context.users.workspace;
 
+import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
@@ -24,7 +25,6 @@ import org.restlet.data.Reference;
 import se.streamsource.dci.api.Interactions;
 import se.streamsource.dci.api.InteractionsMixin;
 import se.streamsource.dci.value.LinksValue;
-import se.streamsource.streamflow.web.context.caze.CaseContext;
 import se.streamsource.streamflow.web.context.caze.CasesContext;
 import se.streamsource.streamflow.web.domain.entity.gtd.Drafts;
 import se.streamsource.streamflow.web.domain.entity.gtd.DraftsQueries;
@@ -37,6 +37,7 @@ import static org.qi4j.api.query.QueryExpressions.templateFor;
 /**
  * JAVADOC
  */
+@Concerns(UpdateCaseCountDraftsConcern.class)
 @Mixins(DraftsContext.Mixin.class)
 public interface DraftsContext
       extends Interactions

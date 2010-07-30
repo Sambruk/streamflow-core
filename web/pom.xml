@@ -54,7 +54,6 @@
                             <maxIdleTime>3600000</maxIdleTime>                            
                         </connector>
                     </connectors>
-                    <scanIntervalSeconds>10</scanIntervalSeconds>
                     <stopKey>stopit</stopKey>
                     <stopPort>9999</stopPort>
                 </configuration>
@@ -188,6 +187,13 @@
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
             <scope>provided</scope>
+        </dependency>
+
+        <!-- Caching -->
+        <dependency>
+            <groupId>net.sf.ehcache</groupId>
+            <artifactId>ehcache-core</artifactId>
+            <version>2.2.0</version>            
         </dependency>
 
         <!-- Database -->

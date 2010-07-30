@@ -138,6 +138,8 @@ public interface SubmittedFormsQueries
 
                   fieldDTO.fieldValue().set( fieldValue.value().get() );
                   Describable.Data fieldName = uow.get( Describable.Data.class, fieldValue.field().get().identity() );
+                  Describable.Data formName = uow.get( Describable.Data.class, fieldValue.form().get().identity() );
+                  fieldDTO.formName().set( formName.description().get() );
                   fieldDTO.fieldName().set( fieldName.description().get() );
                   list.effectiveFields().get().add( fieldBuilder.newInstance() );
                }

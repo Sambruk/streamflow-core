@@ -17,7 +17,6 @@
 
 package se.streamsource.streamflow.web.application.statistics;
 
-import org.qi4j.api.Qi4j;
 import org.qi4j.api.common.QualifiedName;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
@@ -29,7 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * JAVADOC
+ * Log all statistics information
  */
 @Mixins(LoggingStatisticsStore.Mixin.class)
 public interface LoggingStatisticsStore
@@ -59,8 +58,6 @@ public interface LoggingStatisticsStore
 
       public void caseStatistics( CaseStatisticsValue caseStatistics )
       {
-         // TODO Add all fields to log message
-
          final StringBuilder str = new StringBuilder();
          StateHolder state = qi4j.getState( caseStatistics);
          state.visitProperties( new StateHolder.StateVisitor()
@@ -76,8 +73,14 @@ public interface LoggingStatisticsStore
          log.info( str.toString() );
       }
 
+      public void removedCase( String id ) throws StatisticsStoreException
+      {
+         log.info("Removed statistics about "+id);
+      }
+
       public void clearAll()
       {
+         log.info("Cleared statistics");
       }
    }
 }

@@ -42,10 +42,14 @@ public interface CaseStatisticsValue
    @UseDefaults
    Property<List<String>> labels();
 
+   @UseDefaults
+   Property<List<FormFieldStatisticsValue>> fields();
+
    Property<String> assigneeId();
    @Optional Property<String> caseTypeId();
    @Optional Property<String> caseTypeOwnerId();
-   @Optional Property<String> organizationalUnit();
+   @Optional Property<String> projectId();
+   @Optional Property<String> organizationalUnitId();
    @Optional Property<String> groupId();
    @Optional Property<String> resolutionId();
 }

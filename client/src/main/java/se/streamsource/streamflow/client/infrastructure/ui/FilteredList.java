@@ -53,7 +53,9 @@ public class FilteredList
 
       list = new JList();
       list.setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
-      list.setCellRenderer( new LinkListCellRenderer() );
+      FilterLinkListCellRenderer filterCellRenderer = new FilterLinkListCellRenderer();
+
+      list.setCellRenderer( filterCellRenderer );
       pane.setViewportView( list );
 
       add( textField, BorderLayout.NORTH );

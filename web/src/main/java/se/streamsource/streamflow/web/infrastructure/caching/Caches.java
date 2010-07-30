@@ -1,35 +1,25 @@
-/**
- *
- * Copyright 2009-2010 Streamsource AB
+/*
+ * Copyright (c) 2010, Rickard Öberg. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 
-package se.streamsource.streamflow.web.application.statistics;
+package se.streamsource.streamflow.web.infrastructure.caching;
 
 /**
- * Types of related entities for case statistics
+ * These are the names of the caches being used in Streamflow. Reference this enum
+ * when accessing caches so that we can easily do "Find usages" of each enum and find out
+ * where they are being used in the code.
  */
-public enum RelatedEnum
+public enum Caches
 {
-   label,
-   user,
-   group,
-   project,
-   organization,
-   organizationalUnit,
-   resolution,
-   form,
-   field,
-   caseType
+   CASECOUNTS
 }

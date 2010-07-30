@@ -25,6 +25,9 @@ import se.streamsource.streamflow.domain.structure.Removable;
  * Resolution of a Case. Each CaseType has to select a number of possible Resolutions.
  */
 public interface Resolution
-      extends Describable, Notable, Removable
+      extends
+      Describable,
+      Notable,
+      Removable
 {
 }

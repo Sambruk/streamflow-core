@@ -59,9 +59,12 @@ public class FilterLinkListCellRenderer extends DefaultListCellRenderer
                   }
                }
 
-               val = "<html>&nbsp; " + highlightQuery( val ) + " [" + highlightQuery( matchedClasses.trim() ) + "]</html>";
+               if (matchedClasses.trim().equals( "" ))
+                  val = "<html>&nbsp; " + highlightQuery( val )+"</html>";
+               else
+                  val = "<html>&nbsp; " + highlightQuery( val ) + " [" + highlightQuery( matchedClasses.trim() ) + "]</html>";
             } else
-               val = "  " + highlightQuery( val );
+               val = "<html>&nbsp;&nbsp;" + highlightQuery( val )+"</html>";
          }
 
          return super.getListCellRendererComponent( list, val, index, isSelected, cellHasFocus );

@@ -45,6 +45,7 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.DomainEventFactoryService;
 import se.streamsource.streamflow.infrastructure.event.TimeService;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
+import se.streamsource.streamflow.web.infrastructure.caching.CachingServiceComposite;
 import se.streamsource.streamflow.web.infrastructure.event.MemoryEventStoreService;
 import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStoreService;
 import se.streamsource.streamflow.web.infrastructure.database.DataSourceService;
@@ -68,12 +69,18 @@ public class InfrastructureAssembler
    public void assemble( LayerAssembly layer)
          throws AssemblyException
    {
+      caching(layer.moduleAssembly( "Caching" ));
       database(layer.moduleAssembly( "Database" ));
       entityStore(layer.moduleAssembly( "Entity store" ));
       entityFinder(layer.moduleAssembly( "Entity finder" ));
       events(layer.moduleAssembly( "Events" ));
       searchEngine(layer.moduleAssembly( "Search engine" ));
       attachments(layer.moduleAssembly( "Attachments store" ));
+   }
+
+   private void caching( ModuleAssembly moduleAssembly ) throws AssemblyException
+   {
+      moduleAssembly.addServices( CachingServiceComposite.class ).visibleIn( Visibility.application );
    }
 
    private void attachments( ModuleAssembly module ) throws AssemblyException

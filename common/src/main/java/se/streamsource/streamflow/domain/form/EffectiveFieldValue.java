@@ -28,6 +28,8 @@ import java.util.Date;
 public interface EffectiveFieldValue
       extends SubmittedFieldValue
 {
+   Property<EntityReference> form();
+
    Property<EntityReference> submitter();
 
    Property<Date> submissionDate();

@@ -17,9 +17,6 @@
 
 package se.streamsource.streamflow.web.application.statistics;
 
-import org.qi4j.api.common.UseDefaults;
-import org.qi4j.api.configuration.ConfigurationComposite;
-import org.qi4j.api.property.Property;
 import se.streamsource.streamflow.infrastructure.event.source.helper.TransactionTrackerConfiguration;
 
 /**

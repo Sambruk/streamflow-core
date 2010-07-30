@@ -55,6 +55,7 @@ public interface SubmittedForms
       Property<List<SubmittedFormValue>> submittedForms();
 
       @Optional
+      @Queryable(false)
       Property<EffectiveFormFieldsValue> effectiveFieldValues();
 
       void submittedForm( DomainEvent event, FormSubmission formSubmission, Submitter submitter );
@@ -113,6 +114,7 @@ public interface SubmittedForms
          LinkedHashMap<EntityReference, EffectiveFieldValue> effectiveValues = new LinkedHashMap<EntityReference, EffectiveFieldValue>();
          for (SubmittedFormValue submittedFormValue : forms)
          {
+            eFieldBuilder.prototype().form().set( submittedFormValue.form().get() );
             eFieldBuilder.prototype().submissionDate().set( submittedFormValue.submissionDate().get() );
             eFieldBuilder.prototype().submitter().set( submittedFormValue.submitter().get() );
 

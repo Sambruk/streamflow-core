@@ -29,7 +29,7 @@ public interface StatisticsStore
     * @throws StatisticsStoreException
     */
    void related(RelatedStatisticsValue related)
-      throws StatisticsStoreException;
+         throws StatisticsStoreException;
 
    /**
     * Add statistics for a single case
@@ -39,10 +39,14 @@ public interface StatisticsStore
    void caseStatistics(CaseStatisticsValue caseStatistics)
       throws StatisticsStoreException;
 
+   void removedCase(String id)
+      throws StatisticsStoreException;
+
    /**
     * Clear out all statistics from the store. This is usually
     * done before repopulating the statistics store from scratch.
     *
     */
-   void clearAll();
+   void clearAll()
+      throws StatisticsStoreException;
 }

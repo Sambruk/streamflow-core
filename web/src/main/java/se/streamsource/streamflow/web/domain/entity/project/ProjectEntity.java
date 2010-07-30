@@ -61,8 +61,6 @@ public interface ProjectEntity
       extends DomainEntity,
 
       // Interactions
-      Owner,
-      Ownable,
       IdGenerator,
 
       // Structure

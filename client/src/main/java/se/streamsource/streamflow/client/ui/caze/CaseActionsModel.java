@@ -95,7 +95,7 @@ public class CaseActionsModel
    {
       try
       {
-         client.putCommand( "open" );
+         client.postCommand( "open" );
       } catch (ResourceException e)
       {
          throw new OperationException(WorkspaceResources.could_not_perform_operation, e);
@@ -117,7 +117,7 @@ public class CaseActionsModel
    {
       try
       {
-         client.putCommand( "close" );
+         client.postCommand( "close" );
       } catch (ResourceException e)
       {
          throw new OperationException(WorkspaceResources.could_not_perform_operation, e);

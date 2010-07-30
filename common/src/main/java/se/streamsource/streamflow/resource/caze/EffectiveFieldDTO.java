@@ -23,7 +23,7 @@ import org.qi4j.api.value.ValueComposite;
 import java.util.Date;
 
 /**
- * JAVADOC
+ * This represents the latest value of a form field in a particular case.
  */
 public interface EffectiveFieldDTO
       extends ValueComposite
@@ -31,6 +31,8 @@ public interface EffectiveFieldDTO
    Property<Date> submissionDate();
 
    Property<String> submitter();
+
+   Property<String> formName();
 
    Property<String> fieldName();
 
