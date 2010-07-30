@@ -202,6 +202,7 @@ public class CaseStatisticsServiceTest
       assertThat( appender.getEvents().get( ++idx ).getMessage().toString(),new ContainsMatcher("description:Group1, type:group" ));
       assertThat( appender.getEvents().get( ++idx ).getMessage().toString(),new ContainsMatcher("description:Project1" ));
       assertThat( appender.getEvents().get( ++idx ).getMessage().toString(),new ContainsMatcher("description:Casetype" ));
+      assertThat( appender.getEvents().get( ++idx ).getMessage().toString(),new ContainsMatcher("description:Fixed" ));
       assertThat( appender.getEvents().get( ++idx ).getMessage().toString(),new ContainsMatcher("description:Label1" ));
       assertThat( appender.getEvents().get( ++idx ).getMessage().toString(),new ContainsMatcher("description:Case description" ));
       assertThat( appender.getEvents().get( idx ).getMessage().toString(),new ContainsMatcher("note:Case note" ));
