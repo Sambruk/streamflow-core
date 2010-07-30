@@ -32,5 +32,6 @@ public enum SearchTermsResources
    yesterday,
    hour,
    week,
-   me
+   me,
+   createdBy
 }
