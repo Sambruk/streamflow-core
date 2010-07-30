@@ -29,6 +29,8 @@ import se.streamsource.dci.restlet.client.ResponseHandler;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
 
+import javax.swing.SwingUtilities;
+
 /**
  * JAVADOC
  */
@@ -65,8 +67,14 @@ public class ClientResponseHandler
       }
    }
 
-   protected void handleTransactionEvents (TransactionEvents transactionEvents)
+   protected void handleTransactionEvents ( final TransactionEvents transactionEvents)
    {
-      transactionVisitor.visit( transactionEvents );
+      SwingUtilities.invokeLater( new Runnable()
+      {
+         public void run()
+         {
+            transactionVisitor.visit( transactionEvents );
+         }
+      });
    }
 }

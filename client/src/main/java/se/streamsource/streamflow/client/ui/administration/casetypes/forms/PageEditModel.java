@@ -64,7 +64,7 @@ public class PageEditModel
       }
    }
 
-   public void changeDesctiption( String pageName ) throws ResourceException
+   public void changeDescription( String pageName ) throws ResourceException
    {
       ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
       builder.prototype().string().set( pageName );
@@ -99,7 +99,7 @@ public class PageEditModel
       builder.prototype().string().set( direction );
 
 
-      client.putCommand( "move", builder.newInstance() );
+      client.postCommand( "move", builder.newInstance() );
    }
 
    public void remove() throws ResourceException

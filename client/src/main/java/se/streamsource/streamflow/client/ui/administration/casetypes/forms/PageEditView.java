@@ -40,7 +40,6 @@ import java.awt.*;
 import java.util.Observable;
 import java.util.Observer;
 
-import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.CHECKBOX;
 import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.TEXTFIELD;
 
 /**
@@ -99,7 +98,7 @@ public class PageEditView
       {
          try
          {
-            model.changeDesctiption( (String) property.get() );
+            model.changeDescription( (String) property.get() );
          } catch (ResourceException e)
          {
             throw new OperationException( CaseResources.could_not_change_description, e );

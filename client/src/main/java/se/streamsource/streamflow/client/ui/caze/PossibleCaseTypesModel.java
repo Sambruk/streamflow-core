@@ -71,7 +71,7 @@ public class PossibleCaseTypesModel
       {
          ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
          builder.prototype().entity().set( caseType );
-         client.putCommand( "changecasetype", builder.newInstance() );
+         client.postCommand( "changecasetype", builder.newInstance() );
       } catch (ResourceException e)
       {
          throw new OperationException( CaseResources.could_not_change_type, e );

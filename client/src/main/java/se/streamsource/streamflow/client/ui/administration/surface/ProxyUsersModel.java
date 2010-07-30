@@ -195,7 +195,7 @@ public class ProxyUsersModel
          ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
          builder.prototype().string().set( password );
 
-         client.getSubClient( proxyUsers.get( index ).username().get()).putCommand( "resetpassword", builder.newInstance() );
+         client.getSubClient( proxyUsers.get( index ).username().get()).postCommand( "resetpassword", builder.newInstance() );
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.reset_password_failed, e );
@@ -206,7 +206,7 @@ public class ProxyUsersModel
    {
       try
       {
-         client.getSubClient( proxyUsers.get( index ).username().get() ).putCommand( "delete" );
+         client.getSubClient( proxyUsers.get( index ).username().get() ).delete();
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_remove_proxyuser, e );

@@ -56,6 +56,7 @@ import se.streamsource.streamflow.web.domain.entity.DomainEntity;
 import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity;
 import se.streamsource.streamflow.web.domain.entity.casetype.ResolutionEntity;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
+import se.streamsource.streamflow.web.domain.entity.form.FieldEntity;
 import se.streamsource.streamflow.web.domain.entity.form.FormEntity;
 import se.streamsource.streamflow.web.domain.entity.form.PageEntity;
 import se.streamsource.streamflow.web.domain.entity.label.LabelEntity;
@@ -167,9 +168,9 @@ public interface CaseStatisticsService
                ProjectEntity.class.getName(),
                OrganizationEntity.class.getName(),
                OrganizationalUnitEntity.class.getName(),
-               Resolution.class.getName(),
-               Form.class.getName(),
-               Field.class.getName(),
+               ResolutionEntity.class.getName(),
+               FormEntity.class.getName(),
+               FieldEntity.class.getName(),
                CaseTypeEntity.class.getName()
                ),
                new EventVisitor()

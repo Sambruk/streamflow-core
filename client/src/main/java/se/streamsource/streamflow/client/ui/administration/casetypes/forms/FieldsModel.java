@@ -132,7 +132,7 @@ public class FieldsModel
 
       try
       {
-         subClient.putCommand( "add", builder.newInstance() );
+         subClient.postCommand( "add", builder.newInstance() );
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.description_cannot_be_more_than_50, e );

@@ -83,7 +83,7 @@ public class SelectionElementsModel
       builder.prototype().string().set( name );
       try
       {
-         client.putCommand( "addselectionelement", builder.newInstance() );
+         client.postCommand( "addselectionelement", builder.newInstance() );
          refresh();
       } catch (ResourceException e)
       {
@@ -113,7 +113,7 @@ public class SelectionElementsModel
       builder.prototype().name().set( direction );
       try
       {
-         client.putCommand( "moveselectionelement", builder.newInstance() );
+         client.postCommand( "moveselectionelement", builder.newInstance() );
          refresh();
       } catch (ResourceException e)
       {
