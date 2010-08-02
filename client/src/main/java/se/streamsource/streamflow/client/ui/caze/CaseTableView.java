@@ -17,28 +17,8 @@
 
 package se.streamsource.streamflow.client.ui.caze;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.KeyboardFocusManager;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import javax.swing.Action;
-import javax.swing.ActionMap;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.KeyStroke;
-import javax.swing.ListSelectionModel;
-import javax.swing.SwingUtilities;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-
+import ca.odell.glazedlists.gui.TableFormat;
+import ca.odell.glazedlists.swing.EventJXTableModel;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.decorator.ComponentAdapter;
@@ -52,17 +32,27 @@ import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
-import org.restlet.resource.ResourceException;
-
 import se.streamsource.streamflow.client.MacOsUIWrapper;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.StreamflowApplication;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
-import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
 import se.streamsource.streamflow.resource.caze.CaseValue;
-import ca.odell.glazedlists.gui.TableFormat;
-import ca.odell.glazedlists.swing.EventJXTableModel;
+
+import javax.swing.ActionMap;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.KeyboardFocusManager;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Base class for all views of case lists.
@@ -87,7 +77,7 @@ public class CaseTableView
                      @Uses final CasesModel casesModel,
                      @Uses final CasesTableModel model,
                      @Uses final CasesDetailView2 detailsView,
-                     @Uses TableFormat tableFormat)
+                     @Uses TableFormat tableFormat )
    {
       setLayout( new BorderLayout() );
       this.caseCreation = node;
@@ -97,11 +87,11 @@ public class CaseTableView
 
       ActionMap am = context.getActionMap( CaseTableView.class, this );
       setActionMap( am );
-      MacOsUIWrapper.convertAccelerators(context.getActionMap(
-				CaseTableView.class, this));
+      MacOsUIWrapper.convertAccelerators( context.getActionMap(
+            CaseTableView.class, this ) );
 
       // Table
-      EventJXTableModel tableModel = new EventJXTableModel(model.getEventList(), tableFormat);
+      EventJXTableModel tableModel = new EventJXTableModel( model.getEventList(), tableFormat );
       caseTable = new JXTable( tableModel );
       caseTable.setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
       caseTable.getActionMap().getParent().setParent( am );
@@ -123,7 +113,7 @@ public class CaseTableView
 
       caseTable.setAutoCreateColumnsFromModel( false );
 
-      add(caseScrollPane, BorderLayout.CENTER);
+      add( caseScrollPane, BorderLayout.CENTER );
 
       JXTable.BooleanEditor completableEditor = new JXTable.BooleanEditor();
       caseTable.setDefaultEditor( Boolean.class, completableEditor );
@@ -143,8 +133,8 @@ public class CaseTableView
       caseTable.addHighlighter( HighlighterFactory.createAlternateStriping() );
 
       PinstripePainter p = new PinstripePainter();
-      p.setAngle(90);
-      p.setPaint(Color.LIGHT_GRAY);
+      p.setAngle( 90 );
+      p.setPaint( Color.LIGHT_GRAY );
 
       caseTable.addHighlighter( new PainterHighlighter( new HighlightPredicate()
       {
@@ -153,9 +143,9 @@ public class CaseTableView
             if (componentAdapter != null)
             {
                Object value = componentAdapter.getValue( componentAdapter.getColumnCount() - 1 );
-               return value.equals( value.equals( CaseStates.CLOSED ));
+               return value.equals( value.equals( CaseStates.CLOSED ) );
             } else
-            return false;
+               return false;
          }
       }, p ) );
 
@@ -230,24 +220,4 @@ public class CaseTableView
       else
          return model.getEventList().get( getCaseTable().convertRowIndexToModel( selectedRow ) );
    }
-
-  /* @org.jdesktop.application.Action()
-   public void createCase() throws ResourceException
-   {
-      caseCreation.createDraft();
-      model.refresh();
-
-      JXTable table = getCaseTable();
-      int index = table.convertRowIndexToView( model.getEventList().size() - 1 );
-      table.getSelectionModel().setSelectionInterval( index, index );
-      table.scrollRowToVisible( index );
-
-      SwingUtilities.invokeLater( new Runnable()
-      {
-         public void run()
-         {
-            detailsView.requestFocusInWindow();
-         }
-      } );
-   }*/
 }
