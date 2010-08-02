@@ -34,7 +34,7 @@
         <module>web</module>
         <module>webstart</module>
         <module>war</module>
-        <module>helloworldplugin</module>
+        <module>referenceplugin</module>
         <module>help</module>
     </modules>
 
