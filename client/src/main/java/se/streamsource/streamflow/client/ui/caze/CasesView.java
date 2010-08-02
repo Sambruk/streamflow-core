@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.client.ui.caze;
 
+import org.apache.poi.ss.usermodel.Workbook;
 import org.qi4j.api.injection.scope.Uses;
 
 import javax.swing.*;
@@ -29,11 +30,13 @@ public class CasesView
    extends JPanel
 {
    private CaseTableView caseTableView;
+   private CasesDetailView2 detailsView;
 
    public CasesView(@Uses CaseTableView caseTableView, @Uses CasesDetailView2 detailsView)
    {
       super(new BorderLayout());
       this.caseTableView = caseTableView;
+      this.detailsView = detailsView;
       
       final JSplitPane splitPane = new JSplitPane( JSplitPane.VERTICAL_SPLIT );
       splitPane.setOneTouchExpandable( true );
@@ -50,6 +53,11 @@ public class CasesView
    public CaseTableView getCaseTableView()
    {
       return caseTableView;
+   }
+
+   public CaseDetailView getCurrentCaseView()
+   {
+      return detailsView.getCurrentCaseView();
    }
 }
 

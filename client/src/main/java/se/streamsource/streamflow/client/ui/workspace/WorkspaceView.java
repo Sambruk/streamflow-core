@@ -39,6 +39,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.administration.AccountModel;
 import se.streamsource.streamflow.client.ui.caze.AssignmentsCaseTableFormatter;
 import se.streamsource.streamflow.client.ui.caze.CaseCreationNode;
+import se.streamsource.streamflow.client.ui.caze.CaseDetailView;
 import se.streamsource.streamflow.client.ui.caze.CaseTableView;
 import se.streamsource.streamflow.client.ui.caze.CasesDetailView2;
 import se.streamsource.streamflow.client.ui.caze.CasesModel;
@@ -513,6 +514,17 @@ public class WorkspaceView
             CasesView currentCases = (CasesView) currentSelection;
             JXTable caseTable = currentCases.getCaseTableView().getCaseTable();
             caseTable.getSelectionModel().setSelectionInterval( caseTable.getRowCount() - 1, caseTable.getRowCount() - 1 );
+            caseTable.scrollRowToVisible( caseTable.getSelectedRow() );
+
+            final CaseDetailView caseDetail = currentCases.getCurrentCaseView();
+            SwingUtilities.invokeLater( new Runnable()
+            {
+               public void run()
+               {
+                  caseDetail.setSelectedTab( 0 );
+                  caseDetail.requestFocusInWindow();
+               }
+            } );
          }
       }
 

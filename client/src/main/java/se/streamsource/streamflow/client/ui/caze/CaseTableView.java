@@ -231,7 +231,7 @@ public class CaseTableView
          return model.getEventList().get( getCaseTable().convertRowIndexToModel( selectedRow ) );
    }
 
-   @org.jdesktop.application.Action()
+  /* @org.jdesktop.application.Action()
    public void createCase() throws ResourceException
    {
       caseCreation.createDraft();
@@ -249,5 +249,5 @@ public class CaseTableView
             detailsView.requestFocusInWindow();
          }
       } );
-   }
+   }*/
 }

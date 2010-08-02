@@ -95,4 +95,9 @@ public class CasesDetailView2
    {
       return current.requestFocusInWindow();
    }
+
+   public CaseDetailView getCurrentCaseView()
+   {
+      return current;
+   }
 }

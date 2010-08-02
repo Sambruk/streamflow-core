@@ -135,4 +135,9 @@ public class CaseDetailView
    {
       return model;
    }
+
+   public void setSelectedTab( int index )
+   {
+      tabs.setSelectedIndex( index );
+   }
 }
