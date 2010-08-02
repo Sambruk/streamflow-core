@@ -112,7 +112,12 @@ public class CasesTableModel
          {
             CaseStates newStatus = CaseStates.valueOf( EventParameters.getParameter( event, "param1" ));
             updatedCase.status().set( newStatus );
-            eventList.set( idx, valueBuilder.newInstance() );            
+            eventList.set( idx, valueBuilder.newInstance() );
+            // update in case the case has moved to another project
+            if( CaseStates.OPEN.equals( newStatus ))
+            {
+               refresh();
+            }
          }
       }
       return true;
