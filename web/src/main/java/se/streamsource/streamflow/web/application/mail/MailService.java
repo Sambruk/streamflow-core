@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.web.application.mail;
 
+import org.json.JSONObject;
 import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
@@ -33,7 +34,7 @@ import org.slf4j.LoggerFactory;
 import se.streamsource.streamflow.domain.contact.ContactEmailValue;
 import se.streamsource.streamflow.domain.contact.Contactable;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.json.JSONObject;
+import se.streamsource.streamflow.infrastructure.event.source.helper.EventParameters;
 import se.streamsource.streamflow.web.domain.interaction.gtd.CompletableId;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversation;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationOwner;
@@ -163,7 +164,7 @@ public interface MailService
             emailAddress = listIter.next().emailAddress().get();
          }
 
-         String messageId = new JSONObject( event.parameters().get() ).getString( "param1" );
+         String messageId = EventParameters.getParameter( event, 1);
 
          Message.Data message = uowf.currentUnitOfWork().get( Message.Data.class, messageId );
          Conversation conversation = message.conversation().get();

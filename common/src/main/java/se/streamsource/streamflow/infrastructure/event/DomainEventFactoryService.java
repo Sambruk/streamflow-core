@@ -17,6 +17,10 @@
 
 package se.streamsource.streamflow.infrastructure.event;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONStringer;
+import org.json.JSONWriter;
 import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.entity.IdentityGenerator;
@@ -24,16 +28,11 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.ServiceComposite;
-import org.qi4j.api.sideeffect.SideEffects;
 import org.qi4j.api.structure.Application;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.infrastructure.json.JSONException;
-import se.streamsource.streamflow.infrastructure.json.JSONObject;
-import se.streamsource.streamflow.infrastructure.json.JSONStringer;
-import se.streamsource.streamflow.infrastructure.json.JSONWriter;
 
 import javax.security.auth.Subject;
 import java.security.AccessController;
