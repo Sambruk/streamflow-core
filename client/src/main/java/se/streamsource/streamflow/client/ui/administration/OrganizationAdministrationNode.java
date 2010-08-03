@@ -44,12 +44,10 @@ public class OrganizationAdministrationNode
 
    OrganizationAdministrationModel model;
 
-   private CommandQueryClient client;
-
    public OrganizationAdministrationNode( @Uses TreeNode parent, @Uses TreeNodeValue ou, @Uses CommandQueryClient client, @Structure ObjectBuilderFactory obf ) throws ResourceException
    {
       super( ou.buildWith().prototype() );
-      this.client = client;
+      CommandQueryClient client1 = client;
 
       CommandQueryClient orgClient = client.getSubClient( ou.entity().get().identity() );
       model = obf.newObjectBuilder( OrganizationAdministrationModel.class )
@@ -90,8 +88,7 @@ public class OrganizationAdministrationNode
    public DataFlavor[] getTransferDataFlavors()
    {
 
-      DataFlavor[] result = {new DataFlavor( OrganizationAdministrationNode.class, "OrganizationalStructureNode" )};
-      return result;
+      return new DataFlavor[]{new DataFlavor( OrganizationAdministrationNode.class, "OrganizationalStructureNode" )};
    }
 
    public boolean isDataFlavorSupported( DataFlavor dataFlavor )

@@ -134,7 +134,6 @@ import se.streamsource.streamflow.client.ui.administration.surface.ProxyUsersVie
 import se.streamsource.streamflow.client.ui.administration.surface.SurfaceAdministrationView;
 import se.streamsource.streamflow.client.ui.administration.users.UsersAdministrationModel;
 import se.streamsource.streamflow.client.ui.administration.users.UsersAdministrationView;
-import se.streamsource.streamflow.client.ui.caze.AddCommentDialog;
 import se.streamsource.streamflow.client.ui.caze.CaseActionsModel;
 import se.streamsource.streamflow.client.ui.caze.CaseActionsView;
 import se.streamsource.streamflow.client.ui.caze.CaseDetailView;
@@ -462,7 +461,7 @@ public class UIAssembler
       addViews( module, CasesView.class, CasesDetailView2.class, ContactsAdminView.class,
             FormsAdminView.class, SubmittedFormsAdminView.class );
 
-      addDialogs( module, AddCommentDialog.class, CaseLabelsDialog.class );
+      addDialogs( module, CaseLabelsDialog.class );
 
       addMV( module, CasesTableModel.class, CaseTableView.class );
 

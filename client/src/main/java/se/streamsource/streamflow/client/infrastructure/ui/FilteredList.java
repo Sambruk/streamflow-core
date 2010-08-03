@@ -42,7 +42,6 @@ public class FilteredList
 {
    private JTextField textField;
    private JList list;
-   private EventListModel listModel;
    public JScrollPane pane = new JScrollPane();
 
    public FilteredList()
@@ -81,7 +80,7 @@ public class FilteredList
    {
       SortedList<LinkValue> sortedIssues = new SortedList<LinkValue>( eventList, new LinkComparator() );
       final FilterList<LinkValue> textFilteredIssues = new FilterList<LinkValue>( sortedIssues, new TextComponentMatcherEditor( textField, new LinkFilterator() ) );
-      listModel = new EventListModel<LinkValue>( textFilteredIssues );
+      EventListModel listModel = new EventListModel<LinkValue>( textFilteredIssues );
 
       textFilteredIssues.addListEventListener( new ListEventListener<LinkValue>()
       {

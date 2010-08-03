@@ -32,9 +32,9 @@ import org.qi4j.test.AbstractQi4jTest;
 import org.qi4j.test.EntityTestAssembler;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
-import se.streamsource.streamflow.infrastructure.event.TimeService;
-import se.streamsource.streamflow.infrastructure.event.Time;
-import se.streamsource.streamflow.infrastructure.event.DomainEventFactoryService;
+import se.streamsource.streamflow.infrastructure.time.TimeService;
+import se.streamsource.streamflow.infrastructure.time.Time;
+import se.streamsource.streamflow.infrastructure.event.factory.DomainEventFactoryService;
 import se.streamsource.streamflow.web.infrastructure.event.MemoryEventStoreService;
 import se.streamsource.streamflow.infrastructure.event.EventCreationConcern;
 

@@ -70,8 +70,6 @@ public class PageEditView
       nameBinder.setResourceMap( context.getResourceMap( getClass() ) );
       PageDefinitionValue definitionValue = nameBinder.bindingTemplate( PageDefinitionValue.class );
 
-      BindingFormBuilder bb = new BindingFormBuilder( formBuilder, nameBinder );
-
       formBuilder.append( i18n.text( AdministrationResources.type_label ), new JLabel( i18n.text( AdministrationResources.page_break_field_type ) ) );
       formBuilder.nextLine();
 

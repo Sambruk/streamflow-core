@@ -84,7 +84,7 @@ public class ConversationsModel
          List<ConversationDTO> mutable = new ArrayList<ConversationDTO>();
          for( LinkValue link : newConversations.links().get())
          {
-            mutable.add( ((ConversationDTO)link).<ConversationDTO>buildWith().prototype() );
+            mutable.add( link.<ConversationDTO>buildWith().prototype() );
          }
          EventListSynch.synchronize( mutable, conversations );
       } catch (Exception e)

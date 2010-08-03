@@ -36,7 +36,6 @@ import org.qi4j.api.usecase.UsecaseBuilder;
 import org.qi4j.entitystore.jdbm.DatabaseExport;
 import org.qi4j.entitystore.jdbm.DatabaseImport;
 import org.qi4j.index.reindexer.Reindexer;
-import org.qi4j.spi.Qi4jSPI;
 import org.qi4j.spi.entity.EntityState;
 import org.qi4j.spi.entitystore.EntityStore;
 import org.qi4j.spi.query.EntityFinder;
@@ -44,9 +43,10 @@ import org.qi4j.spi.structure.ModuleSPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
-import se.streamsource.streamflow.infrastructure.event.DomainEventFactory;
+import se.streamsource.streamflow.infrastructure.event.factory.DomainEventFactory;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.replay.DomainEventPlayer;
+import se.streamsource.streamflow.infrastructure.event.replay.EventReplayException;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
@@ -74,9 +74,6 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -366,7 +363,28 @@ public interface ManagerComposite
                eventManagement.restoreEvents( reader );
             }
 
-            eventPlayer.replayEvents( latestBackupDate.getTime() - 60000 );
+            {
+               // Replay transactions
+               final EventReplayException[] ex = new EventReplayException[1];
+               eventStore.transactionsAfter( latestBackupDate.getTime() - 60000, new TransactionVisitor()
+               {
+                  public boolean visit( TransactionEvents transaction )
+                  {
+                     try
+                     {
+                        eventPlayer.playTransaction( transaction );
+                        return true;
+                     } catch (EventReplayException e)
+                     {
+                        ex[0] = e;
+                        return false;
+                     }
+                  }
+               } );
+
+               if (ex[0] != null)
+                  throw ex[0];
+            }
 
             return "Backup restored successfully";
          } catch (Exception ex)

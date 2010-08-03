@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.infrastructure.event;
+package se.streamsource.streamflow.infrastructure.time;
 
 import java.util.Date;
 

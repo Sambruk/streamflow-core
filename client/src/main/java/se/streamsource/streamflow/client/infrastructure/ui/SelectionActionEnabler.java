@@ -37,9 +37,8 @@ public class SelectionActionEnabler
    public SelectionActionEnabler( Action... action )
    {
       this.action = action;
-      for (int i = 0; i < action.length; i++)
+      for (Action action1 : action)
       {
-         Action action1 = action[i];
          action1.setEnabled( false );
       }
    }
@@ -48,9 +47,8 @@ public class SelectionActionEnabler
    {
       if (!e.getValueIsAdjusting())
       {
-         for (int i = 0; i < action.length; i++)
+         for (Action action1 : action)
          {
-            Action action1 = action[i];
             action1.setEnabled( !((ListSelectionModel) e.getSource()).isSelectionEmpty() && isSelectedValueValid( action1 ) );
          }
       }
@@ -58,9 +56,8 @@ public class SelectionActionEnabler
 
    public void valueChanged( TreeSelectionEvent e )
    {
-      for (int i = 0; i < action.length; i++)
+      for (Action action1 : action)
       {
-         Action action1 = action[i];
          action1.setEnabled( e.getNewLeadSelectionPath() != null && isSelectedValueValid( action1 ) );
       }
    }
@@ -77,9 +74,8 @@ public class SelectionActionEnabler
 
    public void itemStateChanged( ItemEvent e )
    {
-      for (int i = 0; i < action.length; i++)
+      for (Action action1 : action)
       {
-         Action action1 = action[i];
          action1.setEnabled( e.getStateChange() == ItemEvent.SELECTED && isSelectedValueValid( action1 ) );
       }
    }

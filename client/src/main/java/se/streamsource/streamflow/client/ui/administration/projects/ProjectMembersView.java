@@ -65,7 +65,6 @@ public class ProjectMembersView
    @Uses
    ObjectBuilder<SelectUsersAndGroupsDialog> selectUsersAndGroups;
 
-   private ObjectBuilderFactory obf;
    private UsersAndGroupsModel usersAndGroupsModel;
 
 
@@ -79,7 +78,7 @@ public class ProjectMembersView
    {
       super( new BorderLayout() );
       this.membersModel = membersModel;
-      this.obf = obf;
+      ObjectBuilderFactory obf1 = obf;
       setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
 
       usersAndGroupsModel = obf.newObjectBuilder( UsersAndGroupsModel.class ).use( membersModel.getFilterResource() ).newInstance();

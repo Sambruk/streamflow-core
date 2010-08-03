@@ -63,7 +63,7 @@ public class MessagesView extends JTextPane
          StringBuffer buf = new StringBuffer();
 
          buf.append( "<html><head></head><body>" );
-         buf.append( "<strong>" + topic + "</strong>" );
+         buf.append( "<strong>" ).append( topic ).append( "</strong>" );
 
          int size = list.size();
          if (size > 0)
@@ -81,8 +81,7 @@ public class MessagesView extends JTextPane
                buf.append( new SimpleDateFormat( i18n
                      .text( WorkspaceResources.date_time_format ) ).format( messageDTO
                      .createdOn().get() ) );
-               buf.append( "</p></td><td width='" + getMessageTableLastColSize()
-                     + "' style=''>" );
+               buf.append( "</p></td><td width='" ).append( getMessageTableLastColSize() ).append( "' style=''>" );
                buf.append( messageDTO.text().get() );
                buf
                      .append( "<hr width='100%' style='border:1px solid #cccccc; padding-top: 15px;'>" );

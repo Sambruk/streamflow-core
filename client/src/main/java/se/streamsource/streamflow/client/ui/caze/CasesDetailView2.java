@@ -47,8 +47,6 @@ public class CasesDetailView2
    @Structure
    ObjectBuilderFactory obf;
 
-   private TransactionVisitor subscriber;
-
    private CardLayout layout = new CardLayout();
 
    public CasesDetailView2( @Uses CaseDetailView current, @Service EventSource events )
@@ -65,7 +63,7 @@ public class CasesDetailView2
 
       this.current = current;
 
-      subscriber = new ForEvents( new EventQuery().withNames( "deletedEntity" ), new EventVisitor()
+      TransactionVisitor subscriber = new ForEvents( new EventQuery().withNames( "deletedEntity" ), new EventVisitor()
       {
          public boolean visit( DomainEvent event )
          {

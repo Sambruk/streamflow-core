@@ -62,7 +62,6 @@ public class NotificationGlassPane extends JPanel implements MouseListener, Acti
          {
             if (event instanceof MouseEvent)
             {
-               MouseEvent mouseEvent = (MouseEvent) event;
                if (event.getID() == MouseEvent.MOUSE_PRESSED && event.getSource() instanceof JButton)
                {
                   JButton button = (JButton) event.getSource();
@@ -222,7 +221,7 @@ public class NotificationGlassPane extends JPanel implements MouseListener, Acti
 		Dimension size = getSize();
 
 		Font font = g.getFont();
-		int arc = 0;
+		int arc;
 
 		int h = size.height;
 		int w = size.width;

@@ -88,7 +88,7 @@ public class CaseDetailView
       tabs.setMnemonicAt( 1, KeyEvent.VK_2 );
       tabs.setMnemonicAt( 2, KeyEvent.VK_3 );
       tabs.setMnemonicAt( 3, KeyEvent.VK_4 );
-//      tabs.setMnemonicAt( 4, KeyEvent.VK_5 );
+      tabs.setMnemonicAt( 4, KeyEvent.VK_5 );
 
       tabs.setFocusable( true );
       tabs.setFocusCycleRoot( true );

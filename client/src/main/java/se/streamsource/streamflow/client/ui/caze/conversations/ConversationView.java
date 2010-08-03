@@ -57,19 +57,16 @@ public class ConversationView extends JPanel
    private ConversationModel model;
    private MessagesView messagesView;
    private JTextPane newMessage;
-   private ApplicationContext context;
    private JPanel bottomPanel;
-   private JPanel topPanel;
    private JButton addParticipants;
    private ConversationParticipantsView participantsView;
    private JPanel sendPanel;
-   private JPanel participantsButtonPanel;
 
    public ConversationView( @Service final ApplicationContext context,
                                 @Structure ObjectBuilderFactory obf )
    {
       super( new BorderLayout() );
-      this.context = context;
+      ApplicationContext context1 = context;
       this.obf = obf;
 
       setActionMap( context.getActionMap( this ) );
@@ -93,7 +90,7 @@ public class ConversationView extends JPanel
 
    private JPanel initTop()
    {
-      topPanel = new JPanel( new BorderLayout() );
+      JPanel topPanel = new JPanel( new BorderLayout() );
 
       participantsView = obf.newObjectBuilder( ConversationParticipantsView.class ).newInstance();
       participantsView.setPreferredSize( new Dimension( 800, 50 ) );
@@ -107,7 +104,7 @@ public class ConversationView extends JPanel
             JComponent.WHEN_IN_FOCUSED_WINDOW );
 
       // IMPLODED
-      participantsButtonPanel = new JPanel( new FlowLayout( FlowLayout.RIGHT ) );
+      JPanel participantsButtonPanel = new JPanel( new FlowLayout( FlowLayout.RIGHT ) );
 
       participantsButtonPanel.add( addParticipants );
 

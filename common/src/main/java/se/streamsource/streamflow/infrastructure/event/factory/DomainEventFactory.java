@@ -15,21 +15,15 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.infrastructure.domain;
+package se.streamsource.streamflow.infrastructure.event.factory;
 
-import org.qi4j.api.constraint.Constraint;
-
-import java.util.Date;
+import org.qi4j.api.entity.EntityComposite;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 /**
- * Check if long-value of time is in the future, compared
- * to current system time.
+ * Factory for DomainEvents
  */
-public class FutureConstraint
-      implements Constraint<Future, Date>
+public interface DomainEventFactory
 {
-   public boolean isValid( Future annotation, Date value )
-   {
-      return value.getTime() > System.currentTimeMillis();
-   }
+   DomainEvent createEvent( EntityComposite entity, String name, Object[] args );
 }

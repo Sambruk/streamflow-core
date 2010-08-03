@@ -15,16 +15,21 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.infrastructure.event;
+package se.streamsource.streamflow.web.domain.interaction.gtd;
+
+import org.qi4j.api.constraint.Constraint;
 
 import java.util.Date;
 
 /**
- * This is a service interface for giving the current time.
+ * Check if long-value of time is in the future, compared
+ * to current system time.
  */
-public interface Time
+public class FutureConstraint
+      implements Constraint<Future, Date>
 {
-   long timeNow();
-
-   Date dateNow();
+   public boolean isValid( Future annotation, Date value )
+   {
+      return value.getTime() > System.currentTimeMillis();
+   }
 }

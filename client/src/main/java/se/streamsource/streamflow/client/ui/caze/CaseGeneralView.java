@@ -304,7 +304,7 @@ public class CaseGeneralView extends JScrollPane implements Observer
       selectedCaseType
             .setLinkValue( value );
 
-      selectedCaseType.setVisible( value == null ? false : true );
+      selectedCaseType.setVisible( value != null );
 
 
       caseGeneralModel.addObserver( this );

@@ -38,12 +38,11 @@ public class AccessPointsAdminView
    @Structure
    ObjectBuilderFactory obf;
 
-   private AccessPointsModel accessPointsModel;
    public AccessPointsAdminView( @Uses final AccessPointsView accessPointsView,
                                  @Uses final AccessPointsModel accessPointsModel)
    {
       super();
-      this.accessPointsModel = accessPointsModel;
+      AccessPointsModel accessPointsModel1 = accessPointsModel;
 
       setBorder( BorderFactory.createEmptyBorder());
       setLeftComponent( accessPointsView );

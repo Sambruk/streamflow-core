@@ -46,8 +46,7 @@ public interface IndividualRepositoryService
       public Individual individual()
       {
          UnitOfWork unitOfWork = uowf.currentUnitOfWork();
-         Individual individual = unitOfWork.get( Individual.class, "1" );
-         return individual;
+         return unitOfWork.get( Individual.class, "1" );
       }
 
       public void activate() throws Exception

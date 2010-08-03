@@ -44,7 +44,6 @@ import com.jgoodies.forms.layout.FormLayout;
 public class ChangePasswordDialog
       extends JPanel
 {
-   private StateBinder passwordBinder;
    private JPasswordField confirmPassword;
    private JPasswordField newPassword;
 
@@ -66,19 +65,19 @@ public class ChangePasswordDialog
       DefaultFormBuilder builder = new DefaultFormBuilder( layout, this );
 //      builder.setDefaultDialogBorder();
 
-      passwordBinder = new StateBinder();
+      StateBinder passwordBinder = new StateBinder();
       passwordBinder.setResourceMap( context.getResourceMap( getClass() ) );
 
       command = vbf.newValue( ChangePasswordCommand.class ).<ChangePasswordCommand>buildWith().prototype();
       
-      JLabel confirmPasswordLabel = null;
+      JLabel confirmPasswordLabel;
       builder.add(new JLabel( i18n.text( AdministrationResources.old_password ) ));
       builder.nextColumn(2);
-      builder.add(passwordBinder.bind(PASSWORD.newField(), command.oldPassword()));
+      builder.add( passwordBinder.bind(PASSWORD.newField(), command.oldPassword()));
       builder.nextLine();
       builder.add(new JLabel( i18n.text( AdministrationResources.new_password ) ));
       builder.nextColumn(2);
-      builder.add(passwordBinder.bind(newPassword = (JPasswordField) PASSWORD.newField(), command.newPassword()));
+      builder.add( passwordBinder.bind(newPassword = (JPasswordField) PASSWORD.newField(), command.newPassword()));
       builder.nextLine();
       builder.add(confirmPasswordLabel = new JLabel( i18n.text( AdministrationResources.confirm_password ) ));
       builder.nextColumn(2);

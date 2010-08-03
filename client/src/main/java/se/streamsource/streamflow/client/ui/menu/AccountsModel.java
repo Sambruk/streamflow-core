@@ -106,7 +106,7 @@ public class AccountsModel
    {
       UnitOfWork uow = uowf.newUnitOfWork();
 
-      Account account = repository.individual().newAccount( accountSettingsValue );
+      repository.individual().newAccount( accountSettingsValue );
 
       uow.complete();
 

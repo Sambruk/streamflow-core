@@ -85,6 +85,7 @@ public class MacOsUIExtension
 
    /**
     * Replace all "ctrl" keystrokes with "meta" (Apple command) keystrokes.
+    * @param actions
     */
    public static void convertAccelerators(ActionMap actions)
    {

@@ -76,8 +76,6 @@ public class HandleSearchesDialog
 
    private JList searches;
    private JButton remove;
-   private JTextField name;
-   private JTextField query;
 
    private RefreshWhenVisible refresher;
 
@@ -125,11 +123,13 @@ public class HandleSearchesDialog
 
       builder.add( new JLabel( i18n.text( WorkspaceResources.name_label ) ) );
       builder.nextColumn( 1 );
+      JTextField name;
       builder.add( searchBinder.bind( name = (JTextField) TEXTFIELD.newField(), template.name() ) );
 
       builder.nextLine();
       builder.add( new JLabel( i18n.text( WorkspaceResources.query_label ) ) );
       builder.nextColumn( 1 );
+      JTextField query;
       builder.add( searchBinder.bind( query = (JTextField) TEXTFIELD.newField(), template.query() ) );
 
       right.add( form, BorderLayout.CENTER );

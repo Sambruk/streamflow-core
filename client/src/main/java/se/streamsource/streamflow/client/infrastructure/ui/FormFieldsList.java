@@ -38,7 +38,6 @@ public class FormFieldsList
       extends JPanel
 {
    private JList list;
-   private EventListModel listModel;
    public JScrollPane pane = new JScrollPane();
 
    public FormFieldsList()
@@ -74,7 +73,7 @@ public class FormFieldsList
    {
       SortedList<ListItemValue> sortedIssues = new SortedList<ListItemValue>( eventList, new ListItemComparator() );
 
-      listModel = new EventListModel<ListItemValue>( new SeparatorList<ListItemValue>( sortedIssues, new ListItemGroupingComparator(), 1, 10000 ) );
+      EventListModel listModel = new EventListModel<ListItemValue>( new SeparatorList<ListItemValue>( sortedIssues, new ListItemGroupingComparator(), 1, 10000 ) );
 
       list.setModel( listModel );
    }

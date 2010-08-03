@@ -40,7 +40,6 @@ public class OverviewProjectsNode
       extends DefaultMutableTreeNode
       implements Refreshable, EventListener
 {
-   private AccountModel account;
    private ObjectBuilderFactory obf;
 
    private @Uses
@@ -50,7 +49,7 @@ public class OverviewProjectsNode
                                 @Structure final ObjectBuilderFactory obf ) throws Exception
    {
       super( account );
-      this.account = account;
+      AccountModel account1 = account;
       this.obf = obf;
    }
 

@@ -90,7 +90,7 @@ public interface DummyDataService
             builder.prototype().name().set( "Test server someuser" );
             builder.prototype().userName().set("someuser");
             builder.prototype().password().set("someuser");
-            final Account account2 = individual.newAccount( builder.newInstance() );
+            individual.newAccount( builder.newInstance() );
 
             CommandQueryClient server = account.server( client );
             ClientResource version = new ClientResource(server.getReference().clone().addSegment( "static" ).addSegment( "version.html" ));

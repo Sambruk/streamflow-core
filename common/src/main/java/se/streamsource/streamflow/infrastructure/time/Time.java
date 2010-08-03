@@ -15,24 +15,16 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.resource.comment;
-
-import org.qi4j.api.property.Property;
-import org.qi4j.api.value.ValueComposite;
+package se.streamsource.streamflow.infrastructure.time;
 
 import java.util.Date;
 
 /**
- * Comment DTO
+ * This is a service interface for giving the current time.
  */
-public interface CommentDTO
-      extends ValueComposite
+public interface Time
 {
-   Property<String> commenter();
+   long timeNow();
 
-   Property<Date> creationDate();
-
-   Property<String> text();
-
-   Property<Boolean> isPublic();
+   Date dateNow();
 }

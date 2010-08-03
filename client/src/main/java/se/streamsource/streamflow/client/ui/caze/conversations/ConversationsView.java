@@ -71,14 +71,12 @@ public class ConversationsView
 
    private JList list;
 
-   private ApplicationContext context;
-
    public ConversationsView( @Service final ApplicationContext context, @Structure ObjectBuilderFactory obf )
    {
 
       setActionMap(context.getActionMap( this ));
       MacOsUIWrapper.convertAccelerators( getActionMap() );
-      this.context = context;
+      ApplicationContext context1 = context;
       this.setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
 
       JPanel left = new JPanel( new BorderLayout() );

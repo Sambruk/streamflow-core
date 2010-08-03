@@ -48,13 +48,7 @@ public class FileNameExtensionFilter extends FileFilter
          String extension = f.getName().substring(
                f.getName().lastIndexOf( '.' ) + 1 );
 
-         if (extensions.contains( extension ))
-         {
-            return true;
-         } else
-         {
-            return false;
-         }
+         return extensions.contains( extension );
       } else
       {
          return false;

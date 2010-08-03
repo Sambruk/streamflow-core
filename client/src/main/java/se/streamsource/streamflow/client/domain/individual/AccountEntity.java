@@ -124,9 +124,7 @@ public interface AccountEntity
          AuthenticationFilter filter = new AuthenticationFilter( uowf, account );
          filter.setNext( (Restlet) client );
 
-         CommandQueryClient cqc = obf.newObjectBuilder( SwingCommandQueryClient.class ).use( filter, serverRef, handler ).newInstance();
-
-         return cqc;
+         return obf.newObjectBuilder( SwingCommandQueryClient.class ).use( filter, serverRef, handler ).newInstance();
       }
 
       public CommandQueryClient user( Uniform client )
@@ -141,7 +139,7 @@ public interface AccountEntity
          version.setNext( server.getClient() );
          Representation rep = version.get();
 
-         String response = "";
+         String response;
          if( !Status.SUCCESS_OK.equals(version.getStatus()))
          {
             throw new ResourceException( version.getStatus() );

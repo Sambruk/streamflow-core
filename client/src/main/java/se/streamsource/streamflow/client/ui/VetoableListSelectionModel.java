@@ -67,9 +67,8 @@ public class VetoableListSelectionModel extends DefaultListSelectionModel
 
    private boolean isVetoable()
    {
-      if ((vetoableChangeSupport == null)
-            || (getSelectionMode() != SINGLE_SELECTION)) return false;
-      return vetoableChangeSupport.hasListeners( null );
+      return !((vetoableChangeSupport == null)
+            || (getSelectionMode() != SINGLE_SELECTION)) && vetoableChangeSupport.hasListeners( null );
    }
 
 
@@ -149,12 +148,7 @@ public class VetoableListSelectionModel extends DefaultListSelectionModel
     */
    private boolean invalidRange( int index0, int index1 )
    {
-      if (index0 == -1 || index1 == -1)
-      {
-         // super does nothing
-         return true;
-      }
-      return false;
+      return index0 == -1 || index1 == -1;
    }
 
 

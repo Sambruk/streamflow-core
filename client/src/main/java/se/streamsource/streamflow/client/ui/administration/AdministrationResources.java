@@ -212,6 +212,6 @@ public enum AdministrationResources
    could_not_rename_proxyuser,
    members_tab,
    could_not_reset_password, remove_proxyuser_title, could_not_remove_proxyuser,
-   cols_label;
+   cols_label
 
 }

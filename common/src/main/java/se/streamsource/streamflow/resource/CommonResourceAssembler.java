@@ -45,9 +45,6 @@ import se.streamsource.streamflow.resource.caze.FieldDTO;
 import se.streamsource.streamflow.resource.caze.SubmittedFormDTO;
 import se.streamsource.streamflow.resource.caze.SubmittedFormListDTO;
 import se.streamsource.streamflow.resource.caze.SubmittedFormsListDTO;
-import se.streamsource.streamflow.resource.comment.CommentDTO;
-import se.streamsource.streamflow.resource.comment.CommentsDTO;
-import se.streamsource.streamflow.resource.comment.NewCommentCommand;
 import se.streamsource.streamflow.resource.conversation.ConversationDTO;
 import se.streamsource.streamflow.resource.conversation.MessageDTO;
 import se.streamsource.streamflow.resource.overview.ProjectSummaryDTO;
@@ -85,7 +82,6 @@ public class CommonResourceAssembler
             IntegerDTO.class,
             NamedIndexDTO.class,
             EntityReferenceDTO.class,
-            NewCommentCommand.class,
             NewUserCommand.class,
             NewProxyUserCommand.class,
             ResetPasswordCommand.class ).visibleIn( Visibility.application );
@@ -109,8 +105,6 @@ public class CommonResourceAssembler
             CaseGeneralDTO.class,
             ContactsDTO.class,
             EndUserCaseDTO.class,
-            CommentsDTO.class,
-            CommentDTO.class,
             ConversationDTO.class,
             MessageDTO.class,
             TreeValue.class,

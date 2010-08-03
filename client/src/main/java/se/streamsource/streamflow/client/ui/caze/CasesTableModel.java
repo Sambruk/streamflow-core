@@ -77,7 +77,7 @@ public class CasesTableModel
       if (updatedCase != null)
       {
          int idx = eventList.indexOf( updatedCase );
-         ValueBuilder<CaseValue> valueBuilder = updatedCase.<CaseValue>buildWith();
+         ValueBuilder<CaseValue> valueBuilder = updatedCase.buildWith();
          updatedCase = valueBuilder.prototype();
 
          String eventName = event.name().get();
@@ -150,9 +150,8 @@ public class CasesTableModel
       if (cases == null)
          return null;
 
-      for (int i = 0; i < eventList.size(); i++)
+      for (CaseValue caseValue : eventList)
       {
-         CaseValue caseValue = eventList.get( i );
          if (caseValue.id().get().equals( event.entity().get() ))
          {
             return caseValue;

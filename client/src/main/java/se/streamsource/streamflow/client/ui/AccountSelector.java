@@ -98,7 +98,7 @@ public class AccountSelector
    {
       try
       {
-         if (evt.getNewValue() != null && ((Integer) evt.getNewValue()).intValue() != -1)
+         if (evt.getNewValue() != null && (Integer) evt.getNewValue() != -1)
          {
             InputStream is = getClass().getResourceAsStream( "/version.properties" );
             Properties p = IOUtil.readProperties( is );

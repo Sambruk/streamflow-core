@@ -89,8 +89,7 @@ public class ContactsView
                return cell;
             }
 
-            String name = contact.name().get();
-            String text = name;
+            String text = contact.name().get();
 
             return super.getListCellRendererComponent( jList, text, i, b, b1 );
          }

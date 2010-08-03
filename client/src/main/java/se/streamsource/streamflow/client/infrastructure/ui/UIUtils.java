@@ -29,7 +29,7 @@ public class UIUtils
 	public static JFrame getActiveJFrame(Component aComponent)
 	{
 		Frame frame = (Frame) WindowUtils.findWindow(aComponent);
-		for (Frame aFrame : frame.getFrames())
+		for (Frame aFrame : Frame.getFrames())
 		{
 			if (aFrame.isActive())
 			{

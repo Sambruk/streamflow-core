@@ -46,9 +46,6 @@ public class FieldEditorTextFieldValueView
       extends JScrollPane
 {
 
-   private StateBinder fieldDefinitionBinder;
-   private StateBinder fieldValueBinder;
-
    public FieldEditorTextFieldValueView( @Service ApplicationContext context,
                                          @Uses FieldValueEditModel model,
                                          @Structure ObjectBuilderFactory obf)
@@ -63,11 +60,11 @@ public class FieldEditorTextFieldValueView
       DefaultFormBuilder formBuilder = new DefaultFormBuilder( formLayout, fieldPanel );
       formBuilder.setBorder(Borders.createEmptyBorder("4dlu, 4dlu, 4dlu, 4dlu"));
 
-      fieldDefinitionBinder = new StateBinder();
+      StateBinder fieldDefinitionBinder = new StateBinder();
       fieldDefinitionBinder.setResourceMap( context.getResourceMap( getClass() ) );
       FieldDefinitionValue fieldDefinitionTemplate = fieldDefinitionBinder.bindingTemplate( FieldDefinitionValue.class );
 
-      fieldValueBinder = new StateBinder();
+      StateBinder fieldValueBinder = new StateBinder();
       fieldValueBinder.setResourceMap( context.getResourceMap( getClass() ) );
       TextFieldValue fieldValueTemplate = fieldValueBinder.bindingTemplate( TextFieldValue.class );
 
@@ -76,22 +73,22 @@ public class FieldEditorTextFieldValueView
 
       formBuilder.add(new JLabel(i18n.text(AdministrationResources.mandatory)));
       formBuilder.nextColumn(2);
-      formBuilder.add(fieldDefinitionBinder.bind( CHECKBOX.newField(), fieldDefinitionTemplate.mandatory() ) );
+      formBuilder.add( fieldDefinitionBinder.bind( CHECKBOX.newField(), fieldDefinitionTemplate.mandatory() ) );
       formBuilder.nextLine();
 
       formBuilder.add(new JLabel(i18n.text(AdministrationResources.width_label)));
       formBuilder.nextColumn(2);
-      formBuilder.add(fieldValueBinder.bind( TEXTFIELD.newField(), fieldValueTemplate.width() ) );
+      formBuilder.add( fieldValueBinder.bind( TEXTFIELD.newField(), fieldValueTemplate.width() ) );
       formBuilder.nextLine();
 
       formBuilder.add(new JLabel(i18n.text(AdministrationResources.name_label)));
       formBuilder.nextColumn(2);
-      formBuilder.add(fieldDefinitionBinder.bind( TEXTFIELD.newField(), fieldDefinitionTemplate.description() ) );
+      formBuilder.add( fieldDefinitionBinder.bind( TEXTFIELD.newField(), fieldDefinitionTemplate.description() ) );
       formBuilder.nextLine();
 
       formBuilder.add(new JLabel(i18n.text(AdministrationResources.description_label)));
       formBuilder.nextColumn(2);
-      formBuilder.add(fieldDefinitionBinder.bind( TEXTAREA.newField(), fieldDefinitionTemplate.note() ) );
+      formBuilder.add( fieldDefinitionBinder.bind( TEXTAREA.newField(), fieldDefinitionTemplate.note() ) );
       formBuilder.nextLine();
 
       FieldValueObserver observer = obf.newObjectBuilder( FieldValueObserver.class ).use( model ).newInstance();

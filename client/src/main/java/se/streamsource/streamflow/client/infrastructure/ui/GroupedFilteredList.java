@@ -47,7 +47,6 @@ public class GroupedFilteredList
 {
    private JTextField textField;
    private JList list;
-   private EventListModel listModel;
    public JScrollPane pane = new JScrollPane();
 
    public GroupedFilteredList()
@@ -97,7 +96,7 @@ public class GroupedFilteredList
       SortedList<TitledLinkValue> sortedIssues = new SortedList<TitledLinkValue>( eventList, new LinkComparator() );
       final FilterList<TitledLinkValue> textFilteredIssues = new FilterList<TitledLinkValue>( sortedIssues, new TextComponentMatcherEditor( textField, new LinkFilterator() ) );
 
-      listModel = new EventListModel<TitledLinkValue>( new SeparatorList<TitledLinkValue>( textFilteredIssues, new TitledLinkGroupingComparator(), 1, 10000 ) );
+      EventListModel listModel = new EventListModel<TitledLinkValue>( new SeparatorList<TitledLinkValue>( textFilteredIssues, new TitledLinkGroupingComparator(), 1, 10000 ) );
 
       list.setModel( listModel );
 

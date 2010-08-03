@@ -101,9 +101,6 @@ public class WorkspaceView
    private SearchView searchView;
 
 
-   private JPanel contextPanel;
-   private JPanel searchPanel;
-
    private JPanel topPanel;
    private CardLayout topLayout = new CardLayout();
 
@@ -156,7 +153,7 @@ public class WorkspaceView
       contextToolbar.add( refreshButton );
       contextToolbar.add( showSearchButton );
 
-      contextPanel = new JPanel( new BorderLayout() );
+      JPanel contextPanel = new JPanel( new BorderLayout() );
       selectContextButton = new JButton( getActionMap().get( "selectContext" ) );
       contextPanel.add( selectContextButton, BorderLayout.WEST );
       selectedContext = new JLabel();
@@ -164,7 +161,7 @@ public class WorkspaceView
       contextPanel.add( selectedContext, BorderLayout.CENTER );
       contextPanel.add( contextToolbar, BorderLayout.EAST );
 
-      searchPanel = new JPanel( new BorderLayout() );
+      JPanel searchPanel = new JPanel( new BorderLayout() );
       JPanel searchButtons = new JPanel();
       searchButtons.add( new JButton( getActionMap().get( "hideSearch" ) ) );
       searchPanel.add( searchButtons, BorderLayout.EAST );

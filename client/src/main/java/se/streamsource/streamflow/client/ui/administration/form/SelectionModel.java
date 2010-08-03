@@ -52,13 +52,12 @@ public class SelectionModel
 
    private String index;
    private String possible;
-   private String add;
 
    public SelectionModel(String index, String possible, String add)
    {
       this.index = index;
       this.possible = possible;
-      this.add = add;
+      String add1 = add;
    }
 
    public EventList<LinkValue> getEventList()

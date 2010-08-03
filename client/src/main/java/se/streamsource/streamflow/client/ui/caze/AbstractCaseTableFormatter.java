@@ -34,7 +34,7 @@ public abstract class AbstractCaseTableFormatter
    protected String[] columnNames;
    protected Class[] columnClasses;
 
-   StringBuilder desc = new StringBuilder( );
+   StringBuilder description = new StringBuilder( );
 
    public int getColumnCount()
    {
@@ -62,26 +62,26 @@ public abstract class AbstractCaseTableFormatter
       {
          case 0:
          {
-            desc.setLength( 0 );
+            description.setLength( 0 );
 
             if (caseValue.caseId().get() != null)
-               desc.append( "#" ).append( caseValue.caseId()).append(" " );
+               description.append( "#" ).append( caseValue.caseId()).append(" " );
 
-            desc.append( caseValue.text().get() );
+            description.append( caseValue.text().get() );
 
             List<LinkValue> labels = caseValue.labels().get().links().get();
             if (labels.size() > 0)
             {
-               desc.append( " (" );
+               description.append( " (" );
                String comma = "";
                for (LinkValue label : labels)
                {
-                  desc.append( comma + label.text().get() );
+                  description.append( comma ).append( label.text().get() );
                   comma = ",";
                }
-               desc.append( ")" );
+               description.append( ")" );
             }
-            return desc.toString();
+            return description.toString();
          }
 
          case 1:

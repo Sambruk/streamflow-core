@@ -76,7 +76,7 @@ import java.util.Set;
 /**
  * JAVADOC
  */
-public class StateBinder
+public class   StateBinder
       extends Observable
 {
    ResourceBundle errorMessages;
@@ -183,21 +183,14 @@ public class StateBinder
       {
          ConstraintViolationException cve = (ConstraintViolationException) e;
          String[] messages = cve.getLocalizedMessages( errorMessages );
-         JXErrorPane errorPane = new JXErrorPane();
          StringBuilder message = new StringBuilder( "<html>" );
          for (String s : messages)
          {
-            message.append( s + "<br/>" );
+            message.append( s ).append( "<br/>" );
          }
          message.append( "</html>" );
          JLabel messageLabel = new JLabel( message.toString() );
          JOptionPane.showMessageDialog( component, messageLabel, errorMessages.getString( "property_constraint_violation" ), JOptionPane.ERROR_MESSAGE );
-/*
-            JXDialog dialog = new JXDialog(WindowUtils.findJFrame(component), messageLabel);
-            dialog.pack();
-            dialog.setLocationRelativeTo(component);
-            dialog.setVisible(true);
-*/
       } else
       {
          Thread.currentThread().getUncaughtExceptionHandler().uncaughtException( Thread.currentThread(), e );
@@ -212,8 +205,7 @@ public class StateBinder
          {
             if (Property.class.isAssignableFrom( method.getReturnType() ))
             {
-               PropertyInstance propertyInstance = new BinderPropertyInstance( method, new GenericPropertyInfo( method ), null, null );
-               return propertyInstance;
+               return new BinderPropertyInstance( method, new GenericPropertyInfo( method ), null, null );
             } else
                return null;
          }
@@ -606,7 +598,7 @@ public class StateBinder
                message = new StringBuilder( "<html>" );
                for (String s : messages)
                {
-                  message.append( "<p>" + s + "</p>" );
+                  message.append( "<p>" ).append( s ).append( "</p>" );
                }
                message.append( "</html>" );
             }

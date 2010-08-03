@@ -41,14 +41,13 @@ public class MessagesModel
    @Structure
    ValueBuilderFactory vbf;
 
-   private LinksValue messagesLinks;
    BasicEventList<LinkValue> messages = new BasicEventList<LinkValue>();
 
    public void refresh()
    {
       try
       {
-         messagesLinks = client.query( "index", LinksValue.class );
+         LinksValue messagesLinks = client.query( "index", LinksValue.class );
          EventListSynch.synchronize( messagesLinks.links().get(), messages );
 
       } catch (Exception e)

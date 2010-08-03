@@ -53,7 +53,7 @@ public class ConversationsListCellRenderer implements ListCellRenderer
 		{
 			public void valueChanged(ListSelectionEvent lse)
 			{
-				if (lse.getValueIsAdjusting() == false)
+				if (!lse.getValueIsAdjusting())
 					list.setCellRenderer(new ConversationsListCellRenderer());
 			}
 		});

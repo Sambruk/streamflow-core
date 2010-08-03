@@ -84,8 +84,7 @@ public class OrganizationalUnitAdministrationNode
    public DataFlavor[] getTransferDataFlavors()
    {
 
-      DataFlavor[] result = {new DataFlavor( OrganizationalUnitAdministrationNode.class, "OrganizationalStructureNode" )};
-      return result;
+      return new DataFlavor[]{new DataFlavor( OrganizationalUnitAdministrationNode.class, "OrganizationalStructureNode" )};
    }
 
    public boolean isDataFlavorSupported( DataFlavor dataFlavor )

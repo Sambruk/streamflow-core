@@ -124,7 +124,6 @@ public class StreamflowApplication
    DebugWindow debugWindow;
 
    AdministrationWindow administrationWindow;
-   private ForEvents subscriber;
    public ApplicationSPI app;
 
    public StreamflowApplication()
@@ -186,7 +185,7 @@ public class StreamflowApplication
 
       this.accountsModel = accountsModel;
 
-      subscriber = new ForEvents( AllEventsSpecification.INSTANCE, new EventVisitor()
+      ForEvents subscriber = new ForEvents( AllEventsSpecification.INSTANCE, new EventVisitor()
       {
          public boolean visit( DomainEvent event )
          {

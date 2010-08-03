@@ -42,6 +42,6 @@ public class CaseSelectionActionEnabler
    @Override
    public boolean isSelectedValueValid(Action action)
    {
-      return !((CaseStates) table.getValueAt( table.convertRowIndexToModel( table.getSelectedRow() ), completedColumn )).equals( CaseStates.CLOSED );
+      return !table.getValueAt( table.convertRowIndexToModel( table.getSelectedRow() ), completedColumn ).equals( CaseStates.CLOSED );
    }
 }

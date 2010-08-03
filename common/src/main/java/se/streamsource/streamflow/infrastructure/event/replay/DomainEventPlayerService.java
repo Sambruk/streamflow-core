@@ -33,6 +33,8 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.api.value.ValueComposite;
 import org.qi4j.spi.Qi4jSPI;
 import org.qi4j.spi.entity.EntityState;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
@@ -42,8 +44,6 @@ import java.lang.reflect.Method;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * DomainEvent player
@@ -60,13 +60,7 @@ public interface DomainEventPlayerService
       UnitOfWorkFactory uowf;
 
       @Structure
-      ValueBuilderFactory vbf;
-
-      @Service
-      IdentityGenerator idGenerator;
-
-      @Service
-      EventStore eventStore;
+      ValueBuilderFactory vxbf;
 
       @Structure
       Module module;
@@ -74,79 +68,85 @@ public interface DomainEventPlayerService
       @Structure
       Qi4jSPI spi;
 
-      String version;
-
       SimpleDateFormat dateFormat = new SimpleDateFormat( "EEE MMM dd HH:mm:ss zzz yyyy" );
 
-      public void replayEvents( long afterDate ) throws EventReplayException
+      public void playTransaction( TransactionEvents transaction )
+            throws EventReplayException
       {
-         final EventReplayException[] ex = new EventReplayException[1];
-         eventStore.transactionsAfter( afterDate, new TransactionVisitor()
+         UnitOfWork uow = uowf.newUnitOfWork( UsecaseBuilder.newUsecase( "Event replay" ) );
+         DomainEvent currentEvent = null;
+         try
          {
-            public boolean visit( TransactionEvents transaction )
+            for (DomainEvent domainEvent : transaction.events().get())
             {
-               UnitOfWork uow = uowf.newUnitOfWork( UsecaseBuilder.newUsecase( "Event replay" ) );
-               DomainEvent currentEvent = null;
-               try
+               currentEvent = domainEvent;
+               // Get the entity
+               Class entityType = module.classLoader().loadClass( domainEvent.entityType().get() );
+               String id = domainEvent.entity().get();
+               Object entity = uow.get( entityType, id );
+
+               // check if the event has already occured
+               EntityState state = spi.getEntityState( (EntityComposite) entity );
+               if (state.lastModified() > currentEvent.on().get().getTime())
                {
-                  for (DomainEvent domainEvent : transaction.events().get())
-                  {
-                     currentEvent = domainEvent;
-                     // Get the entity
-                     Class entityType = module.classLoader().loadClass( domainEvent.entityType().get() );
-                     String id = domainEvent.entity().get();
-                     Object entity = uow.get( entityType, id );
-
-                     // Get method
-                     Method eventMethod = getEventMethod( entityType, domainEvent.name().get() );
-                     // check if the event has already occured
-                     EntityState state = spi.getEntityState( (EntityComposite)entity );
-                     if( state.lastModified() > currentEvent.on().get().getTime() )
-                     {
-                        break; // dont rerun event in this transaction
-                     }
-
-                     if (eventMethod == null)
-                     {
-                        logger.warn( "Could not find event method " + domainEvent.name().get() + " in entity of type " + entityType.getName() );
-                        continue;
-                     }
-
-                     // Build parameters
-                     String jsonParameters = domainEvent.parameters().get();
-                     JSONObject parameters = (JSONObject) new JSONTokener( jsonParameters ).nextValue();
-                     Object[] args = new Object[eventMethod.getParameterTypes().length];
-                     for (int i = 1; i < eventMethod.getParameterTypes().length; i++)
-                     {
-                        Class<?> parameterType = eventMethod.getParameterTypes()[i];
-
-                        String paramName = "param" + i;
-
-                        Object value = parameters.get( paramName );
-
-                        args[i] = getParameterArgument( parameterType, value, uow );
-                     }
-
-                     args[0] = domainEvent;
-
-                     // Invoke method
-                     logger.info( "Replay:" + domainEvent );
-
-                     eventMethod.invoke( entity, args );
-                  }
-                  uow.complete();
-                  return true;
-               } catch (Exception e)
-               {
-                  uow.discard();
-                  ex[0] = new EventReplayException( currentEvent, e );
-                  return false;
+                  break; // don't rerun event in this transaction
                }
-            }
-         } );
 
-         if (ex[0] != null)
-            throw ex[0];
+               playEvent( domainEvent, entity );
+            }
+            uow.complete();
+         } catch (Exception e)
+         {
+            uow.discard();
+            if (e instanceof EventReplayException)
+               throw ((EventReplayException)e);
+            else
+               throw new EventReplayException( currentEvent, e );
+         }
+      }
+
+      public void playEvent( DomainEvent domainEvent, Object entity )
+            throws EventReplayException
+      {
+         UnitOfWork uow = uowf.currentUnitOfWork();
+         Class entityType = entity.getClass();
+
+         // Get method
+         Method eventMethod = getEventMethod( entityType, domainEvent.name().get() );
+
+         if (eventMethod == null)
+         {
+            logger.warn( "Could not find event method " + domainEvent.name().get() + " in entity of type " + entityType.getName() );
+            return;
+         }
+
+         // Build parameters
+         try
+         {
+            String jsonParameters = domainEvent.parameters().get();
+            JSONObject parameters = (JSONObject) new JSONTokener( jsonParameters ).nextValue();
+            Object[] args = new Object[eventMethod.getParameterTypes().length];
+            for (int i = 1; i < eventMethod.getParameterTypes().length; i++)
+      {
+         Class<?> parameterType = eventMethod.getParameterTypes()[i];
+
+         String paramName = "param" + i;
+
+         Object value = parameters.get( paramName );
+
+         args[i] = getParameterArgument( parameterType, value, uow );
+      }
+
+            args[0] = domainEvent;
+
+            // Invoke method
+            logger.debug( "Replay:" + domainEvent +" on:"+entity );
+
+            eventMethod.invoke( entity, args );
+         } catch (Exception e)
+         {
+            throw new EventReplayException(domainEvent, e);
+         }
       }
 
       private Object getParameterArgument( Class<?> parameterType, Object value, UnitOfWork uow ) throws ParseException
@@ -185,7 +185,7 @@ public interface DomainEventPlayerService
          }
       }
 
-      private Method getEventMethod( Class<? extends Object> aClass, String eventName )
+      private Method getEventMethod( Class<?> aClass, String eventName )
       {
          for (Method method : aClass.getMethods())
          {

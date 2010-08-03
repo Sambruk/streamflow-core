@@ -17,12 +17,17 @@
 
 package se.streamsource.streamflow.infrastructure.event.replay;
 
-import se.streamsource.streamflow.infrastructure.event.replay.EventReplayException;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 
 /**
- * Factory for DomainEvents
+ * Service that can replay transactions and individual domain events.
  */
 public interface DomainEventPlayer
 {
-   void replayEvents( long afterDate ) throws EventReplayException;
+   public void playTransaction( TransactionEvents transaction )
+         throws EventReplayException;
+
+   public void playEvent( DomainEvent domainEvent, Object entity )
+         throws EventReplayException;
 }

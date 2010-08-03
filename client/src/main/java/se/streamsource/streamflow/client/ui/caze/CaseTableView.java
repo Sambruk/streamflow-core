@@ -161,7 +161,7 @@ public class CaseTableView
                {
                   if (!caseTable.getSelectionModel().isSelectionEmpty())
                   {
-                     CaseValue value = null;
+                     CaseValue value;
                      try
                      {
                         value = getSelectedCase();
