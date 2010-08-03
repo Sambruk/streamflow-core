@@ -124,6 +124,7 @@ public class StreamflowApplication
    DebugWindow debugWindow;
 
    AdministrationWindow administrationWindow;
+   private ForEvents subscriber;
    public ApplicationSPI app;
 
    public StreamflowApplication()
@@ -155,22 +156,22 @@ public class StreamflowApplication
          //Do nothing
       }
 
-      
+
       // General UI settings
       String toolTipDismissDelay = i18n.text( StreamflowResources.tooltip_delay_dismiss );
       String toolTipInitialDelay = i18n.text( StreamflowResources.tooltip_delay_initial );
       String toolTipReshowDelay = i18n.text( StreamflowResources.tooltip_delay_reshow );
-      if(toolTipInitialDelay != null && !toolTipInitialDelay.trim().equals(""))
+      if (toolTipInitialDelay != null && !toolTipInitialDelay.trim().equals( "" ))
       {
-         ToolTipManager.sharedInstance().setInitialDelay(Integer.parseInt(toolTipInitialDelay));
+         ToolTipManager.sharedInstance().setInitialDelay( Integer.parseInt( toolTipInitialDelay ) );
       }
-      if(toolTipDismissDelay != null && !toolTipDismissDelay.trim().equals(""))
+      if (toolTipDismissDelay != null && !toolTipDismissDelay.trim().equals( "" ))
       {
-         ToolTipManager.sharedInstance().setDismissDelay(Integer.parseInt(toolTipDismissDelay));
+         ToolTipManager.sharedInstance().setDismissDelay( Integer.parseInt( toolTipDismissDelay ) );
       }
-      if(toolTipReshowDelay != null && !toolTipReshowDelay.trim().equals(""))
+      if (toolTipReshowDelay != null && !toolTipReshowDelay.trim().equals( "" ))
       {
-         ToolTipManager.sharedInstance().setReshowDelay(Integer.parseInt(toolTipReshowDelay));
+         ToolTipManager.sharedInstance().setReshowDelay( Integer.parseInt( toolTipReshowDelay ) );
       }
 
       getContext().getActionMap().get( "myProfile" ).setEnabled( false );
@@ -185,7 +186,7 @@ public class StreamflowApplication
 
       this.accountsModel = accountsModel;
 
-      ForEvents subscriber = new ForEvents( AllEventsSpecification.INSTANCE, new EventVisitor()
+      subscriber = new ForEvents( AllEventsSpecification.INSTANCE, new EventVisitor()
       {
          public boolean visit( DomainEvent event )
          {
@@ -216,7 +217,7 @@ public class StreamflowApplication
          {
             StreamflowApplication.this.getContext().getActionMap().get( "myProfile" ).setEnabled( !accountSelector.getSelectionModel().isSelectionEmpty() );
          }
-      });
+      } );
    }
 
    @Override
@@ -288,8 +289,8 @@ public class StreamflowApplication
    @Action
    public void myProfile()
    {
-      ProfileDialog profile = profileDialogs.use(accountSelector.getSelectedAccount()).newInstance();
-      dialogs.showOkDialog( getMainFrame(), profile, text(AccountResources.profile_title) );
+      ProfileDialog profile = profileDialogs.use( accountSelector.getSelectedAccount() ).newInstance();
+      dialogs.showOkDialog( getMainFrame(), profile, text( AccountResources.profile_title ) );
    }
 
    public AccountsModel accountsModel()
