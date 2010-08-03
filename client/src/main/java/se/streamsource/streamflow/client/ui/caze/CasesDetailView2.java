@@ -47,6 +47,7 @@ public class CasesDetailView2
    @Structure
    ObjectBuilderFactory obf;
 
+   // do not remove subscriber - holds a weak reference for event handling system
    private TransactionVisitor subscriber;
 
    private CardLayout layout = new CardLayout();

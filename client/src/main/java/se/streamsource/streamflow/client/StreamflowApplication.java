@@ -124,7 +124,10 @@ public class StreamflowApplication
    DebugWindow debugWindow;
 
    AdministrationWindow administrationWindow;
+
+   // do not remove subscriber - holds a weak reference for event handling system
    private ForEvents subscriber;
+
    public ApplicationSPI app;
 
    public StreamflowApplication()

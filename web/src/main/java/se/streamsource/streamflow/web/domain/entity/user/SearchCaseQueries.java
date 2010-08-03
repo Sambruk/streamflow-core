@@ -166,7 +166,7 @@ public interface SearchCaseQueries
                } else if (search.hasName( "createdBy" ))
                {
                   StringBuilder creatorQueryBuilder = new StringBuilder( "type:se.streamsource.streamflow.web.domain.entity.user.UserEntity" );
-                  creatorQueryBuilder.append( " description:" ).append( search.getValue() );
+                  creatorQueryBuilder.append( " description:" ).append( getUserInSearch( search.getValue(), userName ) );
 
                   Query<UserEntity> users = module.queryBuilderFactory()
                         .newNamedQuery( UserEntity.class, uow, "solrquery" ).setVariable( "query", creatorQueryBuilder.toString() );
@@ -203,7 +203,7 @@ public interface SearchCaseQueries
                   buildDateQuery( queryBuilder, search );
                } else if (search.hasName( "assignedTo" ))
                {
-                  queryBuilder.append( " " ).append( search.getName() ).append( ":" ).append( getAssignedTo( search.getValue(), userName ) );
+                  queryBuilder.append( " " ).append( search.getName() ).append( ":" ).append( getUserInSearch( search.getValue(), userName ) );
                } else
                {
                   queryBuilder.append( " " ).append( search.getValue() );
@@ -285,7 +285,7 @@ public interface SearchCaseQueries
        * @param search
        * @return
        */
-      protected String getAssignedTo( String search, String user )
+      protected String getUserInSearch( String search, String user )
       {
          if (UserSearchKeyword.ME.toString().equalsIgnoreCase( search ))
          {

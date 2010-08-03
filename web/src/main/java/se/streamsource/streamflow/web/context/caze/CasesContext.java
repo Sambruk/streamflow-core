@@ -46,20 +46,26 @@ import java.util.List;
  */
 @Mixins(CasesContext.Mixin.class)
 public interface CasesContext
-   extends SubContexts<CaseContext>, Interactions
+      extends SubContexts<CaseContext>, Interactions
 {
-   LinksValue search( StringValue query);
+   LinksValue search( StringValue query );
 
    abstract class Mixin
-      extends InteractionsMixin
-      implements CasesContext
+         extends InteractionsMixin
+         implements CasesContext
    {
-      public static LinksValue buildCaseList(Iterable<Case> query, Module module, String basePath)
+      public static LinksValue buildCaseList( Iterable<Case> query, Module module, String basePath )
       {
-         LinksBuilder linksBuilder = new LinksBuilder(module.valueBuilderFactory()).path( basePath );
-         for (Case aCase : query)
+         LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() ).path( basePath );
+         try
          {
-            linksBuilder.addLink( CaseContext.Mixin.caseDTO( (CaseEntity) aCase, module, basePath ));
+            for (Case aCase : query)
+            {
+               linksBuilder.addLink( CaseContext.Mixin.caseDTO( (CaseEntity) aCase, module, basePath ) );
+            }
+         } catch ( Exception e )
+         {
+            return linksBuilder.newLinks();
          }
          return linksBuilder.newLinks();
       }
@@ -72,9 +78,9 @@ public interface CasesContext
          SearchCaseQueries caseQueries = context.get( SearchCaseQueries.class );
          String name = context.get( UserAuthentication.Data.class ).userName().get();
          Query<Case> caseQuery = caseQueries.search( query, name );
-         caseQuery.orderBy( QueryExpressions.orderBy(QueryExpressions.templateFor( Describable.Data.class ).description()) );
+         caseQuery.orderBy( QueryExpressions.orderBy( QueryExpressions.templateFor( Describable.Data.class ).description() ) );
 
-         return buildCaseList( caseQuery, module, context.get(Reference.class).getBaseRef().getPath());
+         return buildCaseList( caseQuery, module, context.get( Reference.class ).getBaseRef().getPath() );
       }
 
       public CaseContext context( String id )
@@ -82,7 +88,7 @@ public interface CasesContext
          CaseEntity aCase = module.unitOfWorkFactory().currentUnitOfWork().get( CaseEntity.class, id );
          context.set( aCase );
 
-         return subContext( CaseContext.class);
+         return subContext( CaseContext.class );
       }
    }
 }
