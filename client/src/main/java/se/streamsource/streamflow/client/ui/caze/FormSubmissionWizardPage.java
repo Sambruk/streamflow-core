@@ -26,6 +26,7 @@ import com.jgoodies.validation.util.DefaultValidationResultModel;
 import com.jgoodies.validation.util.ValidationUtils;
 import com.jgoodies.validation.view.ValidationResultViewFactory;
 import org.jdesktop.swingx.JXDatePicker;
+import org.jdesktop.swingx.JXPanel;
 import org.netbeans.spi.wizard.Wizard;
 import org.netbeans.spi.wizard.WizardPage;
 import org.netbeans.spi.wizard.WizardPanelNavResult;
@@ -63,6 +64,11 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.util.Locale;
@@ -92,7 +98,7 @@ public class FormSubmissionWizardPage
       componentFieldMap = new HashMap<FieldDefinitionValue, JComponent>();
       validationResultModel = new DefaultValidationResultModel();
       setLayout(new BorderLayout());
-      JPanel panel = new JPanel( new FormLayout( ) );
+      final JPanel panel = new JPanel( new FormLayout( ) );
 
       fieldBinders = new HashMap<StateBinder, EntityReference>( page.fields().get().size() );
       FormLayout formLayout = new FormLayout( "200dlu", "" );
@@ -164,8 +170,20 @@ public class FormSubmissionWizardPage
       CellConstraints cc = new CellConstraints();
       formBuilder.add(validationResultsComponent, cc.xywh(1, formBuilder.getRow() + 1, 1, 1, "fill, bottom"));
 
-      JScrollPane scroll = new JScrollPane(panel);
+      final JScrollPane scroll = new JScrollPane(panel);
       add(scroll,  BorderLayout.CENTER);
+      
+     for( Component component : panel.getComponents())
+      {
+         component.addFocusListener( new FocusAdapter(){
+
+            @Override
+            public void focusGained( FocusEvent e )
+            {
+               panel.scrollRectToVisible( e.getComponent().getBounds());
+            }
+         });
+      }
    }
 
    private void bindComponent( BindingFormBuilder bb, FieldSubmissionValue value, JComponent component )
