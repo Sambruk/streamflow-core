@@ -26,6 +26,7 @@ import se.streamsource.streamflow.web.domain.entity.DomainEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.IdGenerator;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.form.EndUserCases;
+import se.streamsource.streamflow.web.domain.structure.form.Form;
 import se.streamsource.streamflow.web.domain.structure.form.SelectedForms;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.label.Labelable;
@@ -61,11 +62,17 @@ public interface AccessPointEntity
       implements AccessPoint
    {
 
+      @This
+      SelectedForms.Data forms;
+
       public void setProject( Project project )
       {
          next.setProject( project );
          removeCaseType( );
-
+         for(Form form : forms.selectedForms().toList())
+         {
+            removeSelectedForm( form );
+         }
       }
    }
 
@@ -76,6 +83,9 @@ public interface AccessPointEntity
       @This
       Labelable.Data labels;
 
+      @This
+      SelectedForms.Data forms;
+
       public void setCaseType( CaseType caseType )
       {
          next.setCaseType( caseType );
@@ -83,6 +93,11 @@ public interface AccessPointEntity
          for( Label label : labelList )
          {
             removeLabel( label );
+         }
+
+         for(Form form : forms.selectedForms().toList())
+         {
+            removeSelectedForm( form );
          }
       }
    }
@@ -94,6 +109,9 @@ public interface AccessPointEntity
       @This
       Labelable.Data labels;
 
+      @This
+      SelectedForms.Data forms;
+
       public void removeCaseType( )
       {
          next.removeCaseType( );
@@ -101,6 +119,11 @@ public interface AccessPointEntity
          for( Label label : labelList )
          {
             removeLabel( label );
+         }
+
+         for(Form form : forms.selectedForms().toList())
+         {
+            removeSelectedForm( form );
          }
       }
    }
