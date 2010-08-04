@@ -30,6 +30,7 @@ import org.restlet.engine.io.BioUtils;
 import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.domain.attachment.AttachmentValue;
 
 import javax.swing.ActionMap;
@@ -112,7 +113,7 @@ public class AttachmentsView
    {
       JFileChooser fileChooser = new JFileChooser();
 
-      if (fileChooser.showDialog( this, "Create attachment" ) == JFileChooser.APPROVE_OPTION)
+      if (fileChooser.showDialog( this, i18n.text( WorkspaceResources.create_attachment )) == JFileChooser.APPROVE_OPTION)
       {
          attachmentsModel.createAttachment( fileChooser.getSelectedFile() );
          attachmentsModel.refresh();
