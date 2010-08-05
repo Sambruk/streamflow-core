@@ -49,6 +49,7 @@ import se.streamsource.streamflow.client.ui.caze.InboxCaseTableFormatter;
 import se.streamsource.streamflow.client.ui.search.SearchResultTableModel;
 
 import javax.swing.ActionMap;
+import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -172,6 +173,7 @@ public class WorkspaceView
       searchPanel.add( searchView, BorderLayout.CENTER );
 
       topPanel = new JPanel( topLayout );
+      topPanel.setBorder( BorderFactory.createEmptyBorder( 0,0,5,0 ));
       topPanel.add( contextPanel, "context" );
       topPanel.add( searchPanel, "search" );
 
