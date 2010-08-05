@@ -76,7 +76,7 @@ public class FieldEditorOptionButtonsFieldValueView
 
       BindingFormBuilder bb = new BindingFormBuilder( formBuilder, fieldDefinitionBinder );
 
-      formBuilder.append( i18n.text( AdministrationResources.type_label ), new JLabel( i18n.text( AdministrationResources.selection_field_type ) ) );
+      formBuilder.append( i18n.text( AdministrationResources.type_label ), new JLabel( i18n.text( AdministrationResources.optionbuttons ) ) );
       formBuilder.nextLine();
 
       formBuilder.add(new JLabel(i18n.text(AdministrationResources.mandatory)));

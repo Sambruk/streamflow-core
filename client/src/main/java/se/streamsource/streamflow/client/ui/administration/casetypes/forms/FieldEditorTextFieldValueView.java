@@ -68,7 +68,7 @@ public class FieldEditorTextFieldValueView
       fieldValueBinder.setResourceMap( context.getResourceMap( getClass() ) );
       TextFieldValue fieldValueTemplate = fieldValueBinder.bindingTemplate( TextFieldValue.class );
 
-      formBuilder.append( i18n.text( AdministrationResources.type_label ), new JLabel( i18n.text( AdministrationResources.text_field_type ) ) );
+      formBuilder.append( i18n.text( AdministrationResources.type_label ), new JLabel( i18n.text( AdministrationResources.text ) ) );
       formBuilder.nextLine();
 
       formBuilder.add(new JLabel(i18n.text(AdministrationResources.mandatory)));
