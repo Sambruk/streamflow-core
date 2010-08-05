@@ -170,6 +170,7 @@ public class AccountsDialog
    public void remove() throws UnitOfWorkCompletionException
    {
       ConfirmationDialog dialog = confirmationDialog.iterator().next();
+      dialog.setRemovalMessage( ((ListItemValue)accountList.getSelectedValue()).description().get() );
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation ) );
       if (dialog.isConfirmed())
       {

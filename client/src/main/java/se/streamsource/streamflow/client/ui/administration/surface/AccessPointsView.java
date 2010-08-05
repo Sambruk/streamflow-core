@@ -107,11 +107,13 @@ public class AccessPointsView
       @Action
       public void remove()
       {
+         LinkValue selected = (LinkValue) accessPointList.getSelectedValue();
+
          ConfirmationDialog dialog = confirmationDialog.iterator().next();
+         dialog.setRemovalMessage( selected.text().get() );
          dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation ) );
          if (dialog.isConfirmed())
          {
-            LinkValue selected = (LinkValue) accessPointList.getSelectedValue();
             model.removeAccessPoint( selected.id().get() );
          }
       }

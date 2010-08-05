@@ -25,9 +25,11 @@ import org.qi4j.api.injection.scope.Uses;
 
 import com.jgoodies.forms.factories.Borders;
 
+import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.ui.ConfirmationDialog;
 import se.streamsource.streamflow.client.ui.NameDialog;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
@@ -60,6 +62,9 @@ public class SelectionElementsView
 
    @Uses
    Iterable<NameDialog> nameDialogs;
+
+   @Uses
+   Iterable<ConfirmationDialog> confirmationDialog;
 
 
    public SelectionElementsView( @Service ApplicationContext context,
@@ -148,7 +153,12 @@ public class SelectionElementsView
    public void remove( )
    {
       int index = elementList.getSelectedIndex();
-      if (index != -1)
+
+      ConfirmationDialog dialog = confirmationDialog.iterator().next();
+      dialog.setRemovalMessage( elementList.getStringAt( index ));
+
+      dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation ) );
+      if (index != -1 && dialog.isConfirmed() )
       {
          model.removeElement( index );
          elementList.clearSelection();

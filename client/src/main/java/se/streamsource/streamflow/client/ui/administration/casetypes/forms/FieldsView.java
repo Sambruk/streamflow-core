@@ -162,12 +162,14 @@ public class FieldsView
       int index = fieldList.getList().getSelectedIndex();
       if (index != -1)
       {
+         ListItemValue selected = (ListItemValue) fieldList.getList().getSelectedValue();
+
          ConfirmationDialog dialog = confirmationDialog.iterator().next();
+         dialog.setRemovalMessage( selected.description().get() );
          dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation ) );
          if (dialog.isConfirmed())
          {
 
-            ListItemValue selected = (ListItemValue) fieldList.getList().getSelectedValue();
             if ( selected instanceof PageListItemValue)
             {
                model.removePage( selected.entity().get() );

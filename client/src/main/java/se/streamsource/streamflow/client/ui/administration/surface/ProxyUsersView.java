@@ -119,6 +119,7 @@ public class ProxyUsersView
    public void remove()
    {
       ConfirmationDialog dialog = confirmationDialog.iterator().next();
+      dialog.setRemovalMessage( model.getValueAt( proxyUsersTable.getSelectedRow(), 1 ).toString() );
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.remove_proxyuser_title ) );
 
       if (dialog.isConfirmed())

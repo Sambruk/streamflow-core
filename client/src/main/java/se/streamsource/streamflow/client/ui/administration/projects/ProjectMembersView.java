@@ -118,11 +118,14 @@ public class ProjectMembersView
    @Action
    public void remove()
    {
+      LinkValue selected = (LinkValue) membersList.getSelectedValue();
+
       ConfirmationDialog dialog = confirmationDialog.iterator().next();
+      dialog.setRemovalMessage( selected.text().get() );
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation ) );
-      if (dialog.isConfirmed() && !membersList.isSelectionEmpty())
+      if (dialog.isConfirmed() )
       {
-         membersModel.removeMember( (LinkValue) membersList.getSelectedValue() );
+         membersModel.removeMember( selected );
          membersModel.refresh();
       }
    }

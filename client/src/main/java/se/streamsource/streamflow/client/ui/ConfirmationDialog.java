@@ -26,6 +26,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
+import java.text.MessageFormat;
 
 /**
  * A general confirmation dialog
@@ -34,6 +35,7 @@ public class ConfirmationDialog
       extends JPanel
 {
    boolean confirm;
+   private JLabel msgLabel;
 
    public ConfirmationDialog( @Service ApplicationContext context )
    {
@@ -42,13 +44,18 @@ public class ConfirmationDialog
       setActionMap( context.getActionMap( this ) );
 
       JPanel dialog = new JPanel( new BorderLayout() );
-      dialog.add( new JLabel( i18n.text( StreamflowResources.proceed_label ) ), BorderLayout.CENTER );
+      dialog.add( msgLabel = new JLabel( i18n.text( StreamflowResources.proceed_label ) ), BorderLayout.CENTER );
       add( dialog, BorderLayout.NORTH );
    }
 
    public boolean isConfirmed()
    {
       return confirm;
+   }
+
+   public void setRemovalMessage( String description )
+   {
+      msgLabel.setText( new MessageFormat( i18n.text( StreamflowResources.removal_confirmation )).format( new Object[]{description} ));
    }
 
    @org.jdesktop.application.Action

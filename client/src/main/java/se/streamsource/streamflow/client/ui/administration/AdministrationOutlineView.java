@@ -250,6 +250,7 @@ public class AdministrationOutlineView
          OrganizationalUnitAdministrationNode orgNode = (OrganizationalUnitAdministrationNode) node;
 
          ConfirmationDialog dialog = confirmationDialog.iterator().next();
+         dialog.setRemovalMessage( node.toString() );
          dialogs.showOkCancelHelpDialog( this, dialog, text( StreamflowResources.confirmation ) );
          if (dialog.isConfirmed())
          {

@@ -118,11 +118,13 @@ public class ResolutionsView
    @Action
    public void remove()
    {
+      LinkValue selected = (LinkValue) list.getSelectedValue();
+
       ConfirmationDialog dialog = confirmationDialog.iterator().next();
+      dialog.setRemovalMessage( selected.text().get() );
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation ) );
       if (dialog.isConfirmed())
       {
-         LinkValue selected = (LinkValue) list.getSelectedValue();
          model.remove( selected );
          model.refresh();
       }

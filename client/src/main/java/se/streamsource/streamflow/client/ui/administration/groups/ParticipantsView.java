@@ -114,11 +114,13 @@ public class ParticipantsView
    @Action
    public void remove() throws ResourceException
    {
+      LinkValue value = (LinkValue) participantList.getSelectedValue();
+      
       ConfirmationDialog dialog = confirmationDialog.iterator().next();
+      dialog.setRemovalMessage( value.text().get() );
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation ) );
       if (dialog.isConfirmed())
       {
-         LinkValue value = (LinkValue) participantList.getSelectedValue();
          model.removeParticipant( value.id().get() );
          model.refresh();
       }

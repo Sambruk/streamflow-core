@@ -126,6 +126,7 @@ public class OrganizationUsersView
    public void remove() throws ResourceException
    {
       ConfirmationDialog dialog = confirmationDialog.iterator().next();
+      dialog.setRemovalMessage( i18n.text( AdministrationResources.users_tab) );
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation ) );
       if (dialog.isConfirmed())
       {
