@@ -160,7 +160,7 @@ public class CaseActionsView extends JPanel
    public void delete()
    {
       ConfirmationDialog dialog = confirmationDialog.newInstance();
-      dialog.setRemovalMessage( i18n.text( WorkspaceResources.case_separator ) );
+      dialog.setRemovalMessage( i18n.text( WorkspaceResources.caze ) );
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation ) );
       if (dialog.isConfirmed())
       {
