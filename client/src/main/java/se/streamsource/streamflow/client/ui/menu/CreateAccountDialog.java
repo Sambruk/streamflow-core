@@ -27,10 +27,15 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 
+import javax.jnlp.BasicService;
+import javax.jnlp.ServiceManager;
+import javax.jnlp.UnavailableServiceException;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -45,6 +50,8 @@ import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBui
  */
 public class CreateAccountDialog extends JPanel
 {
+   final Logger logger = LoggerFactory.getLogger( getClass().getName() );
+
    @Structure
    ValueBuilderFactory vbf;
 
@@ -64,7 +71,19 @@ public class CreateAccountDialog extends JPanel
 
       nameField = (JTextField) TEXTFIELD.newField();
       serverField = (JTextField) TEXTFIELD.newField();
-      serverField.setText( "http://streamflow.doesntexist.com/streamflow" );
+      String defaultServer = "";
+      try
+      {
+         BasicService bs = (BasicService) ServiceManager.lookup("javax.jnlp.BasicService");
+         String host = bs.getCodeBase().getHost();
+         String port = ( 80 == bs.getCodeBase().getPort()  ? "" : ":" + bs.getCodeBase().getPort() );
+         defaultServer = host + port;
+      } catch (UnavailableServiceException e)
+      {
+        logger.info( "Streamflow Client not started via Java Web Start - cannot determine default host!" );
+      }
+      if( !"".equals( defaultServer ))
+         serverField.setText( "http://" + defaultServer + "/streamflow" );
       usernameField = (JTextField) TEXTFIELD.newField();
       passwordField = (JPasswordField) PASSWORD.newField();
 
