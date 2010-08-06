@@ -22,15 +22,19 @@ import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.restlet.resource.ResourceException;
 
 import com.jgoodies.forms.factories.Borders;
 
 import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.streamflow.client.StreamflowResources;
+import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import se.streamsource.streamflow.client.infrastructure.ui.UncaughtExceptionHandler;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.ui.ConfirmationDialog;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.domain.contact.ContactValue;
 
@@ -51,6 +55,12 @@ public class ContactsView
    @Service
    UncaughtExceptionHandler exception;
 
+   @Service
+   DialogService dialogs;
+
+   @Uses
+   Iterable<ConfirmationDialog> confirmationDialog;
+
    ContactsModel model;
 
    public JList contacts;
@@ -58,20 +68,20 @@ public class ContactsView
    public EventListModel eventListModel;
 
    public ContactsView( @Service ApplicationContext context,
-                            @Structure ObjectBuilderFactory obf )
+                        @Structure ObjectBuilderFactory obf )
    {
       super( new BorderLayout() );
 
       ActionMap am = context.getActionMap( this );
       setActionMap( am );
       setMinimumSize( new Dimension( 200, 0 ) );
-      setMaximumSize( new Dimension(200,1000) );
+      setMaximumSize( new Dimension( 200, 1000 ) );
 
       contactView = obf.newObject( ContactView.class );
-      this.setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
+      this.setBorder( Borders.createEmptyBorder( "2dlu, 2dlu, 2dlu, 2dlu" ) );
 
       contacts = new JList();
-      contacts.setPreferredSize( new Dimension(200,1000) );
+      contacts.setPreferredSize( new Dimension( 200, 1000 ) );
       contacts.setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
       JScrollPane contactsScrollPane = new JScrollPane();
       contactsScrollPane.setViewportView( contacts );
@@ -123,18 +133,24 @@ public class ContactsView
       } );
    }
 
-   @org.jdesktop.application.Action(block=COMPONENT)
+   @org.jdesktop.application.Action(block = COMPONENT)
    public void add() throws IOException, ResourceException
    {
       model.createContact();
       contacts.setSelectedIndex( model.getEventList().size() - 1 );
    }
 
-   @org.jdesktop.application.Action(block=COMPONENT)
+   @org.jdesktop.application.Action(block = COMPONENT)
    public void remove() throws IOException, ResourceException
    {
-      model.removeElement( getContactsList().getSelectedIndex() );
-      contacts.clearSelection();
+      ConfirmationDialog dialog = confirmationDialog.iterator().next();
+      dialog.setRemovalMessage( ((ContactValue) contacts.getSelectedValue()).name().get() );
+      dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation ) );
+      if (dialog.isConfirmed())
+      {
+         model.removeElement( getContactsList().getSelectedIndex() );
+         contacts.clearSelection();
+      }
    }
 
    public JList getContactsList()
@@ -166,7 +182,7 @@ public class ContactsView
       this.model = model;
       if (eventListModel != null)
          eventListModel.dispose();
-      eventListModel = new EventListModel(model.getEventList());
+      eventListModel = new EventListModel( model.getEventList() );
       contacts.setModel( eventListModel );
       if (model.getEventList().size() > 0 && isVisible())
       {

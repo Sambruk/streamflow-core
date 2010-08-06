@@ -27,9 +27,12 @@ import org.jdesktop.swingx.decorator.HighlighterFactory;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.engine.io.BioUtils;
+import se.streamsource.streamflow.client.StreamflowResources;
+import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.ui.ConfirmationDialog;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.domain.attachment.AttachmentValue;
 
@@ -53,6 +56,12 @@ import java.io.InputStream;
 public class AttachmentsView
       extends JPanel
 {
+   @Service
+   DialogService dialogs;
+
+   @Uses
+   Iterable<ConfirmationDialog> confirmationDialog;
+
    private JXTable attachments = new JXTable();
 
    private EventJXTableModel<AttachmentValue> tableModel;
@@ -71,11 +80,11 @@ public class AttachmentsView
       tableModel = new EventJXTableModel<AttachmentValue>( new BasicEventList<AttachmentValue>(), tableFormat );
 
       TableColumn nameColumn = new TableColumn( 0 );
-      nameColumn.setHeaderValue( tableFormat.getColumnName(0 ));
+      nameColumn.setHeaderValue( tableFormat.getColumnName( 0 ) );
       TableColumn sizeColumn = new TableColumn( 1 );
-      sizeColumn.setHeaderValue( tableFormat.getColumnName(1 ));
+      sizeColumn.setHeaderValue( tableFormat.getColumnName( 1 ) );
       TableColumn dateColumn = new TableColumn( 2 );
-      dateColumn.setHeaderValue( tableFormat.getColumnName(2 ));
+      dateColumn.setHeaderValue( tableFormat.getColumnName( 2 ) );
 
       attachments.getColumnModel().addColumn( nameColumn );
       attachments.getColumnModel().addColumn( sizeColumn );
@@ -100,7 +109,7 @@ public class AttachmentsView
 
 
       JScrollPane attachmentsScrollPane = new JScrollPane( attachments );
-      
+
       add( attachmentsScrollPane, BorderLayout.CENTER );
       add( toolbar, BorderLayout.SOUTH );
 
@@ -113,7 +122,7 @@ public class AttachmentsView
    {
       JFileChooser fileChooser = new JFileChooser();
 
-      if (fileChooser.showDialog( this, i18n.text( WorkspaceResources.create_attachment )) == JFileChooser.APPROVE_OPTION)
+      if (fileChooser.showDialog( this, i18n.text( WorkspaceResources.create_attachment ) ) == JFileChooser.APPROVE_OPTION)
       {
          attachmentsModel.createAttachment( fileChooser.getSelectedFile() );
          attachmentsModel.refresh();
@@ -123,12 +132,21 @@ public class AttachmentsView
    @Action
    public void remove()
    {
-      for (int i : attachments.getSelectedRows())
+      ConfirmationDialog dialog = confirmationDialog.iterator().next();
+      dialog.setRemovalMessage( i18n.text( attachments.getSelectedRows().length > 1
+            ? WorkspaceResources.attachments
+            : WorkspaceResources.attachment ) );
+      dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation ) );
+
+      if (dialog.isConfirmed())
       {
-         AttachmentValue attachment = attachmentsModel.getEventList().get(attachments.convertRowIndexToModel( i ));
-         attachmentsModel.removeAttachment(attachment);
+         for (int i : attachments.getSelectedRows())
+         {
+            AttachmentValue attachment = attachmentsModel.getEventList().get( attachments.convertRowIndexToModel( i ) );
+            attachmentsModel.removeAttachment( attachment );
+         }
+         attachmentsModel.refresh();
       }
-      attachmentsModel.refresh();
    }
 
    @Action
@@ -136,13 +154,13 @@ public class AttachmentsView
    {
       for (int i : attachments.getSelectedRows())
       {
-         AttachmentValue attachment = attachmentsModel.getEventList().get(attachments.convertRowIndexToModel( i ));
+         AttachmentValue attachment = attachmentsModel.getEventList().get( attachments.convertRowIndexToModel( i ) );
          String fileName = attachment.text().get();
          String[] fileNameParts = fileName.split( "\\." );
-         File file = File.createTempFile( fileNameParts[0]+"_", "."+fileNameParts[1]);
-         FileOutputStream out = new FileOutputStream(file);
+         File file = File.createTempFile( fileNameParts[0] + "_", "." + fileNameParts[1] );
+         FileOutputStream out = new FileOutputStream( file );
 
-         InputStream in = attachmentsModel.download(attachment);
+         InputStream in = attachmentsModel.download( attachment );
          try
          {
             BioUtils.copy( in, out );
