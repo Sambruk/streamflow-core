@@ -134,10 +134,10 @@ public class ContactView
       builder.nextColumn(2);
       builder.add(contactBinder.bind( TEXTAREA.newField(), template.note() ) );
 
-      builder.nextLine(2);
-      builder.add(new JLabel(i18n.text(WorkspaceResources.lookup_contact_label )));
-      builder.nextColumn(2);
-      builder.add(new JButton(getActionMap().get( "lookupContact" )) );
+      //builder.nextLine(2);
+      //builder.add(new JLabel(i18n.text(WorkspaceResources.lookup_contact_label )));
+      //builder.nextColumn(2);
+      //builder.add(new JButton(getActionMap().get( "lookupContact" )) );
 
       contactBinder.addObserver( this );
       phoneNumberBinder.addObserver( this );
