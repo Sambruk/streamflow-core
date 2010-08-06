@@ -42,18 +42,12 @@ import javax.swing.ActionMap;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 
 /**
  * JAVADOC
@@ -166,6 +160,7 @@ public class CaseActionsView extends JPanel
    public void delete()
    {
       ConfirmationDialog dialog = confirmationDialog.newInstance();
+      dialog.setRemovalMessage( i18n.text( WorkspaceResources.case_separator ) );
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation ) );
       if (dialog.isConfirmed())
       {
