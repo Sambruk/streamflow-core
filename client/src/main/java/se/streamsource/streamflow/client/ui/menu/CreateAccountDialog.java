@@ -63,48 +63,49 @@ public class CreateAccountDialog extends JPanel
 
    public CreateAccountDialog( @Service ApplicationContext context )
    {
-      setActionMap(context.getActionMap(this));
+      setActionMap( context.getActionMap( this ) );
 
-      FormLayout layout = new FormLayout("50dlu, 5dlu, 175dlu",
-            "pref, pref, pref, pref");
-      DefaultFormBuilder builder = new DefaultFormBuilder(layout, this);
+      FormLayout layout = new FormLayout( "50dlu, 5dlu, 175dlu",
+            "pref, pref, pref, pref" );
+      DefaultFormBuilder builder = new DefaultFormBuilder( layout, this );
 
       nameField = (JTextField) TEXTFIELD.newField();
       serverField = (JTextField) TEXTFIELD.newField();
       String defaultServer = "";
       try
       {
-         BasicService bs = (BasicService) ServiceManager.lookup("javax.jnlp.BasicService");
+         BasicService bs = (BasicService) ServiceManager.lookup( "javax.jnlp.BasicService" );
          String host = bs.getCodeBase().getHost();
-         String port = ( 80 == bs.getCodeBase().getPort()  ? "" : ":" + bs.getCodeBase().getPort() );
+         int portInt = bs.getCodeBase().getPort();
+         String port = portInt != -1 ? ":" + bs.getCodeBase().getPort() : "";
          defaultServer = host + port;
       } catch (UnavailableServiceException e)
       {
-        logger.info( "Streamflow Client not started via Java Web Start - cannot determine default host!" );
+         logger.info( "Streamflow Client not started via Java Web Start - cannot determine default host!" );
       }
-      if( !"".equals( defaultServer ))
+      if (!"".equals( defaultServer ))
          serverField.setText( "http://" + defaultServer + "/streamflow" );
       usernameField = (JTextField) TEXTFIELD.newField();
       passwordField = (JPasswordField) PASSWORD.newField();
 
-      builder.add(new JLabel(i18n.text(AdministrationResources.create_account_name)));
-      builder.nextColumn(2);
-      builder.add(nameField);
+      builder.add( new JLabel( i18n.text( AdministrationResources.create_account_name ) ) );
+      builder.nextColumn( 2 );
+      builder.add( nameField );
       builder.nextLine();
 
-      builder.add(new JLabel(i18n.text(AdministrationResources.create_account_server)));
-      builder.nextColumn(2);
+      builder.add( new JLabel( i18n.text( AdministrationResources.create_account_server ) ) );
+      builder.nextColumn( 2 );
       builder.add( serverField );
       builder.nextLine();
 
-      builder.add(new JLabel(i18n.text(AdministrationResources.create_account_username)));
-      builder.nextColumn(2);
-      builder.add(usernameField);
+      builder.add( new JLabel( i18n.text( AdministrationResources.create_account_username ) ) );
+      builder.nextColumn( 2 );
+      builder.add( usernameField );
       builder.nextLine();
 
-      builder.add(new JLabel(i18n.text(AdministrationResources.create_account_password)));
-      builder.nextColumn(2);
-      builder.add(passwordField);
+      builder.add( new JLabel( i18n.text( AdministrationResources.create_account_password ) ) );
+      builder.nextColumn( 2 );
+      builder.add( passwordField );
       builder.nextLine();
    }
 
@@ -119,20 +120,20 @@ public class CreateAccountDialog extends JPanel
          accountBuilder.prototype().userName().set( usernameField.getText() );
          accountBuilder.prototype().password().set( String.valueOf( passwordField.getPassword() ) );
          settings = accountBuilder.newInstance();
-      } catch( ConstraintViolationException cve )
+      } catch (ConstraintViolationException cve)
       {
-         JOptionPane.showMessageDialog(new JFrame(), cve.getMessage(), "Dialog",
-            JOptionPane.ERROR_MESSAGE);
+         JOptionPane.showMessageDialog( new JFrame(), cve.getMessage(), "Dialog",
+               JOptionPane.ERROR_MESSAGE );
          return;
       }
 
-      WindowUtils.findWindow(this).dispose();
+      WindowUtils.findWindow( this ).dispose();
    }
 
    @Action
    public void close()
    {
-      WindowUtils.findWindow(this).dispose();
+      WindowUtils.findWindow( this ).dispose();
    }
 
    public AccountSettingsValue settings()
