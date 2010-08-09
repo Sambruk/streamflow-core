@@ -59,7 +59,7 @@ public class OverviewAssignmentsCaseTableFormatter
          case 1:
             return caseValue.assignedTo().get();
          default:
-            return super.getColumnValue( caseValue, i-1 );
+            return super.getColumnValue( caseValue, i );
       }
    }
 }

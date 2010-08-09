@@ -62,7 +62,8 @@ public class CasesTableModel
    public CasesTableModel()
    {
       eventFilter = new EventVisitorFilter( this, "addedLabel", "removedLabel", "changedDescription", "changedCaseType", "changedStatus",
-            "changedOwner","assignedTo", "unassigned", "deletedEntity");
+            "changedOwner","assignedTo", "unassigned", "deletedEntity", "updatedContact", "addedContact", "deletedContact",
+            "createdConversation", "submittedForm", "createdAttachment", "removedAttachment");
    }
 
    public void notifyEvent( DomainEvent event )
@@ -118,6 +119,44 @@ public class CasesTableModel
             {
                refresh();
             }
+         } else if ( "updatedContact,addedContact".indexOf( eventName ) != -1 )
+         {
+            if( !updatedCase.hasContacts().get() )
+            {
+               updatedCase.hasContacts().set( true );
+               eventList.set( idx, valueBuilder.newInstance() );
+            }
+         } else if ( eventName.equals( "deletedContact" ) )
+         {
+            refresh();
+            // force list repaint
+            EventListSynch.synchronize( cases.links().get(), eventList );
+         } else if( eventName.equals( "createdConversation" ) )
+         {
+            if( !updatedCase.hasConversations().get() )
+            {
+               updatedCase.hasConversations().set( true );
+               eventList.set( idx, valueBuilder.newInstance() );
+            }
+         } else if ( eventName.equals( "submittedForm" ) )
+         {
+            if( !updatedCase.hasSubmittedForms().get() )
+            {
+               updatedCase.hasSubmittedForms().set(true);
+               eventList.set( idx, valueBuilder.newInstance() );
+            }
+         } else if ( eventName.equals( "createdAttachment" ) )
+         {
+            if( !updatedCase.hasAttachments().get() )
+            {
+               updatedCase.hasAttachments().set( true );
+               eventList.set( idx, valueBuilder.newInstance() );
+            }
+         } else if ( eventName.equals( "removedAttachment" ))
+         {
+            refresh();
+            // force list repaint
+            EventListSynch.synchronize( cases.links().get(), eventList );
          }
       }
       return true;

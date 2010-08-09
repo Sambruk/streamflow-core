@@ -22,6 +22,7 @@ import ca.odell.glazedlists.EventList;
 import eu.medsea.mimeutil.MimeType;
 import eu.medsea.mimeutil.MimeUtil;
 import org.json.JSONObject;
+import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.util.DateFunctions;
@@ -47,6 +48,7 @@ import se.streamsource.streamflow.domain.attachment.UpdateAttachmentValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
 import se.streamsource.streamflow.infrastructure.event.source.helper.EventQuery;
 
 import java.io.BufferedInputStream;
@@ -62,6 +64,9 @@ import java.util.Date;
 public class AttachmentsModel
    implements Refreshable, EventListener
 {
+   @Service
+   TransactionVisitor transactionVisitor;
+
    @Structure
    private ValueBuilderFactory vbf;
 
@@ -107,6 +112,7 @@ public class AttachmentsModel
                      String source = entity.getText();
 
                      final TransactionEvents transactionEvents = vbf.newValueFromJSON( TransactionEvents.class, source );
+                     transactionVisitor.visit( transactionEvents );
                      EventQuery query = new EventQuery().withNames( "createdAttachment" );
                      for (DomainEvent domainEvent : transactionEvents.events().get())
                      {

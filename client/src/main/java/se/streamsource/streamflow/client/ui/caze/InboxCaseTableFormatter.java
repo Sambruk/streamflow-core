@@ -22,6 +22,7 @@ import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.
 
 import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 /**
@@ -34,11 +35,13 @@ public class InboxCaseTableFormatter
    {
       columnNames = new String[]{
          text( title_column_header ),
+            "", // placeholder for icons
          text( casetype_column_header ),
          text( created_column_header ),
          text( case_status_header )};
       columnClasses = new Class[] {
             String.class,
+            ArrayList.class,
             String.class,
             Date.class,
             CaseStates.class

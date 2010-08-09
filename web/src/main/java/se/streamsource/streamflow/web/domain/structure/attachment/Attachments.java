@@ -41,6 +41,7 @@ public interface Attachments
 {
    Attachment createAttachment( String uri) throws URISyntaxException;
    void deleteAttachment(Attachment attachment);
+   boolean hasAttachments();
 
    interface Data
    {
@@ -87,6 +88,11 @@ public interface Attachments
          removedAttachment( DomainEvent.CREATE, attachment );
 
          uowf.currentUnitOfWork().remove( attachment );
+      }
+
+      public boolean hasAttachments()
+      {
+         return !attachments().toList().isEmpty();
       }
    }
 }

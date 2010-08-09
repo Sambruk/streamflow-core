@@ -18,6 +18,7 @@
 package se.streamsource.streamflow.resource.caze;
 
 import org.qi4j.api.common.Optional;
+import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.property.Property;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.LinksValue;
@@ -54,4 +55,18 @@ public interface CaseValue
 
    @Optional
    Property<String> resolution();
+
+   @UseDefaults
+   Property<Boolean> hasContacts();
+
+   @UseDefaults
+   Property<Boolean> hasConversations();
+
+   @UseDefaults
+   Property<Boolean> hasSubmittedForms();
+
+   @UseDefaults
+   Property<Boolean> hasAttachments();
+
+
 }

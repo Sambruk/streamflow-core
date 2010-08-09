@@ -88,6 +88,11 @@ public interface CaseContext
          if (aCase.isStatus( CaseStates.CLOSED ) && aCase.resolution().get() != null)
             prototype.resolution().set( aCase.resolution().get().getDescription() );
 
+         prototype.hasContacts().set( aCase.hasContacts() );
+         prototype.hasConversations().set( aCase.hasConversations() );
+         prototype.hasSubmittedForms().set( aCase.hasSubmittedForms() );
+         prototype.hasAttachments().set( aCase.hasAttachments() );
+         
          // Labels
          LinksBuilder labelsBuilder = new LinksBuilder(module.valueBuilderFactory()).path( "labels" ).command( "delete" );
          for (Label label : aCase.labels())

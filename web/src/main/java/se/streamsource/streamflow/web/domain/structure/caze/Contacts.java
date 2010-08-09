@@ -40,6 +40,8 @@ public interface Contacts
 
    public void deleteContact( int index );
 
+   public boolean hasContacts();
+
    interface Data
    {
       @UseDefaults
@@ -101,6 +103,11 @@ public interface Contacts
          List<ContactValue> contacts = state.contacts().get();
          contacts.remove( index );
          state.contacts().set( contacts );
+      }
+
+      public boolean hasContacts()
+      {
+         return !state.contacts().get().isEmpty() && !"".equals( state.contacts().get().get(0).name().get() );
       }
    }
 

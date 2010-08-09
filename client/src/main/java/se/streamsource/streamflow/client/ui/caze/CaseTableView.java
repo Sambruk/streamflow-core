@@ -32,26 +32,34 @@ import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
+import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.StreamflowApplication;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
 import se.streamsource.streamflow.resource.caze.CaseValue;
 
 import javax.swing.ActionMap;
+import javax.swing.BorderFactory;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.FlowLayout;
 import java.awt.KeyboardFocusManager;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 /**
@@ -104,10 +112,12 @@ public class CaseTableView
 
       JScrollPane caseScrollPane = new JScrollPane( caseTable );
 
-      caseTable.getColumn( 1 ).setPreferredWidth( 150 );
-      caseTable.getColumn( 1 ).setMaxWidth( 150 );
+      caseTable.getColumn( 1 ).setPreferredWidth( 70 );
+      caseTable.getColumn( 1 ).setMaxWidth( 100 );
       caseTable.getColumn( 2 ).setPreferredWidth( 150 );
       caseTable.getColumn( 2 ).setMaxWidth( 150 );
+      caseTable.getColumn( 3 ).setPreferredWidth( 150 );
+      caseTable.getColumn( 3 ).setMaxWidth( 150 );
       caseTable.getColumn( caseTable.getColumnCount() - 1 ).setMaxWidth( 50 );
       caseTable.getColumn( caseTable.getColumnCount() - 1 ).setResizable( false );
 
@@ -128,6 +138,25 @@ public class CaseTableView
             return format.format( time );
          }
       } ) );
+      caseTable.setDefaultRenderer( ArrayList.class, new DefaultTableRenderer(){
+
+         @Override
+         public Component getTableCellRendererComponent( JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column )
+         {
+            JPanel renderer = new JPanel( new FlowLayout( FlowLayout.LEFT));
+    
+            ArrayList<String> icons = (ArrayList<String>)value;
+            for ( String icon : icons )
+            {
+               JLabel iconLabel = new JLabel( i18n.icon( Icons.valueOf( icon ), 12 ), SwingConstants.LEADING );
+               iconLabel.setText( null );
+               renderer.add( iconLabel );
+            }
+            if ( isSelected )
+               renderer.setBackground( table.getSelectionBackground() );
+            return renderer;
+         }
+      });
       caseTable.setDefaultRenderer( CaseStates.class, new CaseStatusTableCellRenderer() );
 
       caseTable.addHighlighter( HighlighterFactory.createAlternateStriping() );

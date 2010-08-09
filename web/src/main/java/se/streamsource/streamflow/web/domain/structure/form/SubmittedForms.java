@@ -22,6 +22,7 @@ import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.entity.Queryable;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueBuilder;
@@ -48,6 +49,8 @@ public interface SubmittedForms
 {
    void submitForm( FormSubmission formSubmission, Submitter submitter );
 
+   boolean hasSubmittedForms();
+
    interface Data
    {
       @UseDefaults
@@ -68,6 +71,9 @@ public interface SubmittedForms
    {
       @Structure
       ValueBuilderFactory vbf;
+
+      @This
+      Data state;
 
       public void submitForm( FormSubmission formSubmission, Submitter submitter )
       {
@@ -166,6 +172,11 @@ public interface SubmittedForms
 
          // No such field has been submitted
          return null;
+      }
+
+      public boolean hasSubmittedForms()
+      {
+         return !state.submittedForms().get().isEmpty();
       }
    }
 }

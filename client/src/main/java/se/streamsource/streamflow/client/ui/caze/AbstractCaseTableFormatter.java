@@ -20,8 +20,10 @@ package se.streamsource.streamflow.client.ui.caze;
 import ca.odell.glazedlists.gui.AdvancedTableFormat;
 import ca.odell.glazedlists.gui.WritableTableFormat;
 import se.streamsource.dci.value.LinkValue;
+import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.resource.caze.CaseValue;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -85,12 +87,23 @@ public abstract class AbstractCaseTableFormatter
          }
 
          case 1:
+            ArrayList<String> icons = new ArrayList<String>();
+            if(caseValue.hasContacts().get())
+               icons.add( Icons.projects.toString() );
+            if ( caseValue.hasConversations().get())
+               icons.add( Icons.conversations.toString() );
+            if ( caseValue.hasSubmittedForms().get() )
+               icons.add( Icons.formSubmitted.toString() );
+            if ( caseValue.hasAttachments().get() )
+               icons.add( Icons.attachments.toString() );
+            return icons;
+         case 2:
             return caseValue.caseType().get() == null ? null : (caseValue.caseType().get() + (caseValue.resolution().get() == null ? "" : "("+caseValue.resolution().get()+")"));
 
-         case 2:
+         case 3:
             return caseValue.creationDate().get();
 
-         case 3:
+         case 4:
             return caseValue.status().get();
       }
 
