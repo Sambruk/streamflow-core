@@ -35,6 +35,7 @@ import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
 import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.infrastructure.ui.UIUtils;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.administration.AccountModel;
 import se.streamsource.streamflow.client.ui.caze.AssignmentsCaseTableFormatter;
@@ -63,6 +64,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.Popup;
 import javax.swing.PopupFactory;
 import javax.swing.SwingUtilities;
+import javax.swing.event.MouseInputAdapter;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
@@ -76,7 +78,11 @@ import java.awt.Component;
 import java.awt.Font;
 import java.awt.Point;
 import java.awt.Toolkit;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 /**
  * JAVADOC
@@ -173,7 +179,7 @@ public class WorkspaceView
       searchPanel.add( searchView, BorderLayout.CENTER );
 
       topPanel = new JPanel( topLayout );
-      topPanel.setBorder( BorderFactory.createEmptyBorder( 0,0,5,0 ));
+      topPanel.setBorder( BorderFactory.createEmptyBorder( 0, 0, 5, 0 ) );
       topPanel.add( contextPanel, "context" );
       topPanel.add( searchPanel, "search" );
 
@@ -374,6 +380,27 @@ public class WorkspaceView
 
          public void treeWillCollapse( TreeExpansionEvent event ) throws ExpandVetoException
          {
+         }
+      } );
+
+      workspaceTree.addMouseListener( new MouseAdapter()
+      {
+
+         @Override
+         public void mouseExited( MouseEvent e )
+         {
+            super.mouseExited( e );
+            SwingUtilities.invokeLater( new Runnable()
+            {
+               public void run()
+               {
+                  if (popup != null)
+                  {
+                     popup.hide();
+                     popup = null;
+                  }
+               }
+            } );
          }
       } );
    }
