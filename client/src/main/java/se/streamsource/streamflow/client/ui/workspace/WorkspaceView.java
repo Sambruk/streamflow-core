@@ -35,7 +35,6 @@ import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
 import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.infrastructure.ui.UIUtils;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.administration.AccountModel;
 import se.streamsource.streamflow.client.ui.caze.AssignmentsCaseTableFormatter;
@@ -64,7 +63,6 @@ import javax.swing.ListSelectionModel;
 import javax.swing.Popup;
 import javax.swing.PopupFactory;
 import javax.swing.SwingUtilities;
-import javax.swing.event.MouseInputAdapter;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
@@ -78,8 +76,6 @@ import java.awt.Component;
 import java.awt.Font;
 import java.awt.Point;
 import java.awt.Toolkit;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -96,6 +92,7 @@ public class WorkspaceView
    SearchResultTableModel searchResultTableModel;
 
    private JXTree workspaceTree;
+   private JScrollPane workspaceTreeScroll;
    private WorkspaceModel model;
    private String accountName = "";
    private JLabel selectedContext;
@@ -383,13 +380,14 @@ public class WorkspaceView
          }
       } );
 
-      workspaceTree.addMouseListener( new MouseAdapter()
+      workspaceTreeScroll = new JScrollPane( workspaceTree );
+
+      workspaceTreeScroll.addMouseListener( new MouseAdapter()
       {
 
          @Override
          public void mouseExited( MouseEvent e )
          {
-            super.mouseExited( e );
             SwingUtilities.invokeLater( new Runnable()
             {
                public void run()
@@ -441,7 +439,7 @@ public class WorkspaceView
       if (popup == null)
       {
          Point location = selectContextButton.getLocationOnScreen();
-         popup = PopupFactory.getSharedInstance().getPopup( this, new JScrollPane( workspaceTree ), (int) location.getX(), (int) location.getY() + selectContextButton.getHeight() );
+         popup = PopupFactory.getSharedInstance().getPopup( this, workspaceTreeScroll, (int) location.getX(), (int) location.getY() + selectContextButton.getHeight() );
          popup.show();
 
          return obf.newObjectBuilder( RefreshCaseCountTask.class ).use( workspaceTree, model.getRoot() ).newInstance();
