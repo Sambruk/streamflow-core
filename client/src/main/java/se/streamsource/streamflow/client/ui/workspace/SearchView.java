@@ -72,7 +72,7 @@ public class SearchView
    public SearchView( @Service ApplicationContext context )
    {
       super( new BorderLayout() );
-      setBorder( Borders.createEmptyBorder( "2dlu,2dlu,2dlu,2dlu" ) );
+      setBorder( Borders.createEmptyBorder( "3dlu,2dlu,4dlu,4dlu" ) );
 
       ActionMap am;
       setActionMap( am = context.getActionMap( this ) );
