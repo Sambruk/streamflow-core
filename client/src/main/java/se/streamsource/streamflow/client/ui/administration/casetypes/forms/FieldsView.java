@@ -35,20 +35,25 @@ import se.streamsource.streamflow.client.ui.administration.AdministrationResourc
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.PageListItemValue;
 
+import javax.swing.Action;
 import javax.swing.ActionMap;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.ListModel;
 import java.awt.*;
+import java.util.Observable;
+import java.util.Observer;
 
 /**
  * JAVADOC
  */
 public class FieldsView
       extends JPanel
+      implements Observer
 {
    private GroupedList fieldList;
 
@@ -71,10 +76,12 @@ public class FieldsView
    {
       super( new BorderLayout() );
       this.model = model;
-      setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
-      
+      model.addObserver( this );
+
+      setBorder( Borders.createEmptyBorder( "2dlu, 2dlu, 2dlu, 2dlu" ) );
+
       JScrollPane scrollPanel = new JScrollPane();
-      ActionMap am = context.getActionMap( this );
+      final ActionMap am = context.getActionMap( this );
 
       JPanel toolbar = new JPanel();
       toolbar.add( new JButton( am.get( "addPage" ) ) );
@@ -99,25 +106,63 @@ public class FieldsView
       add( scrollPanel, BorderLayout.CENTER );
       add( toolbar, BorderLayout.SOUTH );
 
-      fieldList.getList().getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "addField" ) ) );
-      fieldList.getList().getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "remove" ) ) );
-      fieldList.getList().getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "up" ) ) );
-      fieldList.getList().getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "down" ) ) );
+      fieldList.getList().getSelectionModel().addListSelectionListener(
+            new SelectionActionEnabler( am.get( "addField" ), am.get( "remove" ) ) );
+      fieldList.getList().getSelectionModel().addListSelectionListener(
+            new SelectionActionEnabler( am.get( "up" ), am.get( "down" ) )
+            {
+
+               @Override
+               public boolean isSelectedValueValid( Action action )
+               {
+                  boolean result = true;
+
+                  JList list = fieldList.getList();
+                  Object selected = list.getSelectedValue();
+                  int selectedIndex = list.getSelectedIndex();
+
+                  if (action.equals( am.get( "up" ) ))
+                  {
+                     if (selected instanceof PageListItemValue)
+                     {
+                        if (selectedIndex == 0)
+                           result = false;
+                     } else
+                     {
+                        if (list.getModel().getElementAt( selectedIndex - 1 ) instanceof PageListItemValue)
+                           result = false;
+                     }
+                  } else
+                  {
+                     if (selected instanceof PageListItemValue)
+                     {
+                        if (selectedIndex == list.getModel().getSize() - 1)
+                           result = false;
+                     } else
+                     {
+                        if (list.getModel().getElementAt( selectedIndex + 1 ) instanceof PageListItemValue)
+                           result = false;
+                     }
+                  }
+                  return result;
+               }
+            } );
+
    }
 
    @org.jdesktop.application.Action
    public void addField()
    {
       FieldCreationDialog dialog = fieldCreationDialog.iterator().next();
-      dialogs.showOkCancelHelpDialog( this, dialog, i18n.text(AdministrationResources.add_field_to_form));
+      dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( AdministrationResources.add_field_to_form ) );
 
       if (dialog.name() != null && !"".equals( dialog.name() ))
       {
          PageListItemValue page = findSelectedPage( fieldList.getList().getSelectedValue() );
-         if ( page != null)
+         if (page != null)
          {
-            model.addField( page.entity().get(), dialog.name(), dialog.getFieldType() );
             fieldList.getList().clearSelection();
+            model.addField( page.entity().get(), dialog.name(), dialog.getFieldType() );
          }
       }
    }
@@ -125,15 +170,15 @@ public class FieldsView
    private PageListItemValue findSelectedPage( Object selected )
    {
       ListModel model = fieldList.getList().getModel();
-      if ( selected instanceof PageListItemValue)
+      if (selected instanceof PageListItemValue)
       {
          return (PageListItemValue) selected;
       } else
       {
          int index = fieldList.getList().getSelectedIndex();
-         for ( int i=index; i>=0; i-- )
+         for (int i = index; i >= 0; i--)
          {
-            if ( model.getElementAt( i ) instanceof PageListItemValue)
+            if (model.getElementAt( i ) instanceof PageListItemValue)
             {
                return (PageListItemValue) model.getElementAt( i );
             }
@@ -146,12 +191,12 @@ public class FieldsView
    public void addPage()
    {
       NameDialog dialog = pageCreationDialog.iterator().next();
-      dialogs.showOkCancelHelpDialog( this, dialog, i18n.text(AdministrationResources.add_page_title ) );
+      dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( AdministrationResources.add_page_title ) );
 
-      if ( dialog.name()!=null && !"".equals( dialog.name() ))
+      if (dialog.name() != null && !"".equals( dialog.name() ))
       {
-         model.addPage( dialog.name() );
          fieldList.getList().clearSelection();
+         model.addPage( dialog.name() );
       }
    }
 
@@ -170,14 +215,13 @@ public class FieldsView
          if (dialog.isConfirmed())
          {
 
-            if ( selected instanceof PageListItemValue)
+            if (selected instanceof PageListItemValue)
             {
                model.removePage( selected.entity().get() );
             } else
             {
                model.removeField( selected.entity().get() );
             }
-            fieldList.getList().clearSelection();
          }
       }
    }
@@ -185,18 +229,13 @@ public class FieldsView
    @org.jdesktop.application.Action
    public void up()
    {
-      int index = fieldList.getList().getSelectedIndex();
-      if (index != -1)
+      ListItemValue selected = (ListItemValue) fieldList.getList().getSelectedValue();
+      if (selected instanceof PageListItemValue)
       {
-         ListItemValue selected = (ListItemValue) fieldList.getList().getSelectedValue();
-         if ( selected instanceof PageListItemValue)
-         {
-            model.movePage( selected.entity().get(), "up" );
-         } else
-         {
-            model.moveField( selected.entity().get(), "up" );
-         }
-         fieldList.getList().setSelectedIndex( index );
+         model.movePage( selected.entity().get(), "up" );
+      } else
+      {
+         model.moveField( selected.entity().get(), "up" );
       }
    }
 
@@ -207,14 +246,13 @@ public class FieldsView
       if (index != -1)
       {
          ListItemValue selected = (ListItemValue) fieldList.getList().getSelectedValue();
-         if ( selected instanceof PageListItemValue)
+         if (selected instanceof PageListItemValue)
          {
             model.movePage( selected.entity().get(), "down" );
          } else
          {
             model.moveField( selected.entity().get(), "down" );
          }
-         fieldList.getList().setSelectedIndex( index );
       }
    }
 
@@ -226,5 +264,11 @@ public class FieldsView
    public FieldsModel getModel()
    {
       return model;
+   }
+
+   public void update( Observable o, Object arg )
+   {
+      fieldList.getList().clearSelection();
+      fieldList.getList().setSelectedValue( arg, true );
    }
 }

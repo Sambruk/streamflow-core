@@ -91,8 +91,8 @@ public class FormEditAdminView
 
       JPanel formAttributePanel = new JPanel( new BorderLayout() );
       JPanel leftPanel = new JPanel( new BorderLayout() );
-      leftPanel.add( formAttributePanel, BorderLayout.CENTER );
-      leftPanel.add( fieldsView, BorderLayout.SOUTH );
+      leftPanel.add( formAttributePanel, BorderLayout.NORTH);
+      leftPanel.add( fieldsView, BorderLayout.CENTER );
 
       this.vbf = vbf;
       FormLayout formLayout = new FormLayout(

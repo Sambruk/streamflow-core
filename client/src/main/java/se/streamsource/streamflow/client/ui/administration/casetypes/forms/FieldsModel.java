@@ -26,6 +26,8 @@ import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.client.OperationException;
@@ -40,18 +42,17 @@ import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.PageListItemValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
-import se.streamsource.streamflow.infrastructure.event.source.helper.EventParameters;
 import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
+import se.streamsource.streamflow.infrastructure.event.source.helper.EventParameters;
 import se.streamsource.streamflow.infrastructure.event.source.helper.EventVisitorFilter;
 
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.Observable;
 
 /**
  * JAVADOC
  */
-public class FieldsModel
+public class FieldsModel extends Observable
       implements Refreshable, EventListener, EventVisitor
 {
    final Logger logger = LoggerFactory.getLogger( "administration" );
@@ -73,14 +74,14 @@ public class FieldsModel
          CommandQueryClient fieldClient = null;
          for (ListItemValue listItemValue : fieldsList)
          {
-            if ( listItemValue instanceof PageListItemValue)
+            if (listItemValue instanceof PageListItemValue)
             {
                current = (PageListItemValue) listItemValue;
-            } else if ( listItemValue.entity().get().identity().equals( key ))
+            } else if (listItemValue.entity().get().identity().equals( key ))
             {
-               if ( current == null)
+               if (current == null)
                {
-                  throw new OperationException( AdministrationResources.could_not_find_field, new IllegalArgumentException( key ));
+                  throw new OperationException( AdministrationResources.could_not_find_field, new IllegalArgumentException( key ) );
                }
                fieldClient = client.getSubClient( current.entity().get().identity() ).getSubClient( "fields" ).getSubClient( key );
             }
@@ -95,7 +96,7 @@ public class FieldsModel
    {
       protected PageEditModel newModel( String key )
       {
-         return obf.newObjectBuilder( PageEditModel.class ).use( client.getSubClient( key )).newInstance();
+         return obf.newObjectBuilder( PageEditModel.class ).use( client.getSubClient( key ) ).newInstance();
       }
    };
 
@@ -108,7 +109,7 @@ public class FieldsModel
    {
       try
       {
-         List<ListItemValue> list = ((ListValue)client.query( "pagessummary", ListValue.class ).buildWith().prototype()).items().get();
+         List<ListItemValue> list = ((ListValue) client.query( "pagessummary", ListValue.class ).buildWith().prototype()).items().get();
          EventListSynch.synchronize( list, fieldsList );
       } catch (ResourceException e)
       {
@@ -184,6 +185,31 @@ public class FieldsModel
       try
       {
          model.move( direction );
+         ListItemValue origin = getListItemValueById( field.identity() );
+         ListItemValue target = null;
+
+         int index = fieldsList.indexOf( origin );
+
+         if ("up".equals( direction ))
+         {
+            target = fieldsList.get( index - 1 );
+            if (!(target instanceof PageListItemValue))
+            {
+               fieldsList.set( index - 1, origin );
+               fieldsList.set( index, target );
+            }
+         } else
+         {
+            if (index < fieldsList.size() - 1)
+            {
+               target = fieldsList.get( index + 1 );
+               if (!(target instanceof PageListItemValue))
+               {
+                  fieldsList.set( index + 1, origin );
+                  fieldsList.set( index, target );
+               }
+            }
+         }
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_move_field, e );
@@ -217,27 +243,108 @@ public class FieldsModel
 
    public boolean visit( DomainEvent event )
    {
+      ListItemValue updatedListItem = getListItemValue( event );
       String eventName = event.name().get();
-      int index = 0;
-      for (ListItemValue value : fieldsList)
+      if (updatedListItem != null)
       {
-         if (event.entity().get().equals( value.entity().get().identity() ))
+         int index = fieldsList.indexOf( updatedListItem );
+
+         if ("changedDescription".equals( eventName ))
          {
-            if ( eventName.equals( "changedDescription" ) )
-            {
-               // only update element
-               String description = EventParameters.getParameter( event, "param1" );
-               fieldsList.get( index ).description().set( description );
-            }
+            // only update element
+            String description = EventParameters.getParameter( event, "param1" );
+            updatedListItem.description().set( description );
+            setChanged();
+            notifyObservers( updatedListItem );
+
+         } else if ("movedField".equals( eventName ))
+         {
+            setChanged();
+            notifyObservers( getListItemValueById( EventParameters.getParameter( event, "param1" ) ) );
+         } else if ("removedField".equals( eventName ))
+         {
+            ListItemValue oldSelection = getListItemValueById( EventParameters.getParameter( event, "param1" ) );
+            ListItemValue newSelection = fieldsList.get( fieldsList.indexOf( oldSelection ) - 1 );
+            fieldsList.remove( oldSelection );
+            setChanged();
+            notifyObservers( newSelection );
+         } else if ("createdField".equals( eventName ))
+         {
+            refresh();
+            setChanged();
+            notifyObservers( getListItemValueById( EventParameters.getParameter( event, "param1" ) ) );
          }
-         index++;
-      }
-      if ( !eventName.equals( "changedDescription" ))
+      } else
       {
-         logger.info( "Refresh field list" );
-         refresh();
+
+         if ("movedPage".equals( eventName ))
+         {
+            logger.info( "Refresh field list" );
+            String id = EventParameters.getParameter( event, "param1" );
+            refresh();
+            this.setChanged();
+            this.notifyObservers( getListItemValueById( id ) );
+         } else if ("removedPage".equals( eventName ))
+         {
+            ListItemValue oldSelection = getListItemValueById( EventParameters.getParameter( event, "param1" ) );
+            int newIndex = findPrecedingPageIndex( fieldsList.indexOf( oldSelection ) );
+            ListItemValue newSelection = fieldsList.get( newIndex == -1 ? 1 : newIndex );
+            refresh();
+            setChanged();
+            notifyObservers( newSelection );
+         } else if ("createdPage".equals( eventName ))
+         {
+            refresh();
+            setChanged();
+            notifyObservers( fieldsList.get( fieldsList.size() - 1 ) );
+         }
       }
       return false;
+   }
+
+   private ListItemValue getListItemValue( DomainEvent event )
+   {
+      if (fieldsList == null)
+         return null;
+
+      for (ListItemValue listItemValue : fieldsList)
+      {
+         if (listItemValue.entity().get().identity().equals( event.entity().get() ))
+         {
+            return listItemValue;
+         }
+      }
+      return null;
+   }
+
+   private ListItemValue getListItemValueById( String id )
+   {
+      if (fieldsList == null)
+         return null;
+
+      for (ListItemValue listItemValue : fieldsList)
+      {
+         if (listItemValue.entity().get().identity().equals( id ))
+         {
+            return listItemValue;
+         }
+      }
+      return null;
+   }
+
+   private int findPrecedingPageIndex( int index )
+   {
+      int nearestPrecedingIndex = -1;
+
+      for (ListItemValue listItemValue : fieldsList)
+      {
+         int tmpIndex = fieldsList.indexOf( listItemValue );
+         if (listItemValue instanceof PageListItemValue && tmpIndex < index )
+         {
+            nearestPrecedingIndex = tmpIndex;
+         }
+      }
+      return nearestPrecedingIndex;
    }
 
    public FieldValueEditModel getFieldModel( String id )
@@ -249,4 +356,5 @@ public class FieldsModel
    {
       return pageModels.get( id );
    }
-   }
+
+}

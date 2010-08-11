@@ -145,6 +145,7 @@ public class SelectionElementsView
       if ( dialog.name() != null &&  !dialog.name().equals( "" ))
       {
          model.addElement( dialog.name() );
+         elementList.setSelectedIndex( elementList.getModel().getSize() - 1 );
       }
    }
 
@@ -161,7 +162,7 @@ public class SelectionElementsView
       if (index != -1 && dialog.isConfirmed() )
       {
          model.removeElement( index );
-         elementList.clearSelection();
+         elementList.setSelectedIndex( index == 0 && elementList.getModel().getSize() >= 1 ? index : index - 1);
       }
    }
 
