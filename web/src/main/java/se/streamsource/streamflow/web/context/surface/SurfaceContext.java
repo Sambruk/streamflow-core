@@ -30,9 +30,6 @@ import se.streamsource.streamflow.web.context.surface.accesspoints.AccessPointsC
 public interface SurfaceContext
       extends Interactions
 {
-   /*@RequiresPermission("administrator")
-   @SubContext
-   AdministrationContext administration();*/
 
    @SubContext
    AccessPointsContext accesspoints();
@@ -41,11 +38,6 @@ public interface SurfaceContext
          extends InteractionsMixin
          implements SurfaceContext
    {
-
-      /*public AdministrationContext administration()
-      {
-         return subContext( AdministrationContext.class );
-      }*/
 
       public AccessPointsContext accesspoints()
       {

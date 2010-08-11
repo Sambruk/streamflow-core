@@ -45,19 +45,25 @@ import se.streamsource.dci.api.SubContexts;
  */
 @Mixins(CaseFormsContext.Mixin.class)
 public interface CaseFormsContext
-   extends SubContexts<CaseFormContext>, Interactions
+      extends SubContexts<CaseFormContext>, Interactions
 {
-      public SubmittedFormsListDTO listsubmittedforms();
-      public EffectiveFieldsDTO effectivefields();
-      public SubmittedFormDTO submittedform( IntegerDTO index);
-      public void createformsubmission( EntityReferenceDTO formDTO );
-      public void discard( EntityReferenceDTO formDTO );
-      public EntityReferenceDTO formsubmission( EntityReferenceDTO formDTO );
-      public void submit( EntityReferenceDTO formDTO ) throws ResourceException;
+   public SubmittedFormsListDTO listsubmittedforms();
+
+   public EffectiveFieldsDTO effectivefields();
+
+   public SubmittedFormDTO submittedform( IntegerDTO index);
+
+   public void createformsubmission( EntityReferenceDTO formDTO );
+
+   public void discard( EntityReferenceDTO formDTO );
+
+   public EntityReferenceDTO formsubmission( EntityReferenceDTO formDTO );
+
+   public void submit( EntityReferenceDTO formDTO ) throws ResourceException;
 
    abstract class Mixin
-      extends InteractionsMixin
-      implements CaseFormsContext
+         extends InteractionsMixin
+         implements CaseFormsContext
    {
       @Structure
       UnitOfWorkFactory uowf;

@@ -25,7 +25,6 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
-import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
@@ -35,7 +34,7 @@ import se.streamsource.streamflow.domain.form.NumberFieldValue;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import java.awt.*;
+import java.awt.BorderLayout;
 
 import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.*;
 
@@ -71,8 +70,6 @@ public class FieldEditorNumberFieldValueView
       fieldValueBinder.setResourceMap( context.getResourceMap( getClass() ) );
       NumberFieldValue fieldValueTemplate = fieldValueBinder.bindingTemplate( NumberFieldValue.class );
 
-      BindingFormBuilder bb = new BindingFormBuilder( formBuilder, fieldDefinitionBinder );
-
       formBuilder.append( i18n.text( AdministrationResources.type_label ), new JLabel( i18n.text( AdministrationResources.number_field_type ) ) );
       formBuilder.nextLine();
 
@@ -94,13 +91,6 @@ public class FieldEditorNumberFieldValueView
       formBuilder.add(new JLabel(i18n.text(AdministrationResources.description_label)));
       formBuilder.nextColumn(2);
       formBuilder.add(fieldDefinitionBinder.bind( TEXTAREA.newField(), fieldDefinitionTemplate.note() ) );
-
-//      formBuilder.append( i18n.text( AdministrationResources.type_label ), new JLabel( i18n.text( AdministrationResources.number_field_type ) ) );
-//
-//      bb.appendLine( AdministrationResources.mandatory, CHECKBOX, fieldDefinitionTemplate.mandatory() ).
-//            appendLine( AdministrationResources.integer_label, CHECKBOX, fieldValueTemplate.integer(), fieldValueBinder ).
-//            appendLine( AdministrationResources.name_label, TEXTFIELD, fieldDefinitionTemplate.description() ).
-//            appendLine( AdministrationResources.description_label, TEXTAREA, fieldDefinitionTemplate.note() );
 
       FieldValueObserver observer = obf.newObjectBuilder( FieldValueObserver.class ).use( model ).newInstance();
       fieldValueBinder.addObserver( observer );

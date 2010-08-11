@@ -36,7 +36,6 @@ import se.streamsource.streamflow.domain.form.SelectionFieldValue;
 import se.streamsource.streamflow.resource.roles.IntegerDTO;
 import se.streamsource.streamflow.resource.roles.NamedIndexDTO;
 
-import javax.swing.AbstractListModel;
 import java.util.List;
 
 /**

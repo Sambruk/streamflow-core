@@ -247,29 +247,31 @@ public class FormSubmissionWizardPage
 
          JComponent component = entry.getValue();
          String value = "";
-         if (component instanceof JTextField)
+         if ( component instanceof CheckboxesPanel)
          {
-            JTextField textField = (JTextField) component;
-            value = textField.getText(  );
-         } else if (component instanceof JScrollPane)
-         {
-            JTextArea textArea = (JTextArea) ((JScrollPane) component).getViewport().getView();
-            value = textArea.getText();
-         } else if (component instanceof JXDatePicker)
-         {
-            JXDatePicker datePicker = (JXDatePicker) component;
-            value = datePicker.getDate()==null ? "" : datePicker.getEditor().getText(  );
-         } else if (component instanceof JComboBox)
+            value = ((CheckboxesPanel) component).getChecked();
+         } else if ( component instanceof JComboBox)
          {
             JComboBox box = (JComboBox) component;
             if ( box.getSelectedItem() != null)
             {
                value = box.getSelectedItem().toString();
             }
-         } else if (component instanceof CheckboxesPanel)
+         } else if ( component instanceof OptionButtonsPanel )
          {
-            CheckboxesPanel multiSelect = (CheckboxesPanel) component;
-            value = multiSelect.getChecked();
+           value = ((OptionButtonsPanel) component).getSelected();
+         } else if (component instanceof JScrollPane)
+         {
+            JTextArea textArea = (JTextArea) ((JScrollPane) component).getViewport().getView();
+            value = textArea.getText();
+         } else if (component instanceof JTextField)
+         {
+            JTextField textField = (JTextField) component;
+            value = textField.getText(  );
+         } else if (component instanceof JXDatePicker)
+         {
+            JXDatePicker datePicker = (JXDatePicker) component;
+            value = datePicker.getDate()==null ? "" : datePicker.getEditor().getText(  );
          }
 
          if ( entry.getKey().mandatory().get() )

@@ -52,6 +52,8 @@ public interface CaseFormContext
       {
          FormSubmission formSubmission = context.get(FormSubmission.class);
 
+         formSubmission.changeFieldValue( field.field().get(), field.value().get() );
+         /*
          ValueBuilder<FormSubmissionValue> builder = formSubmission.getFormSubmission().buildWith();
 
          for (PageSubmissionValue pageValue : builder.prototype().pages().get())
@@ -66,6 +68,7 @@ public interface CaseFormContext
          }
 
          formSubmission.changeFormSubmission( builder.newInstance() );
+         */
       }
 
    }

@@ -51,13 +51,7 @@ public interface FormDraftContext
 
    // commands
    @HasNextPage
-   void next(Representation rep);
-
-   @HasNextPage
    void nextpage( IntegerDTO page );
-
-   @HasPreviousPage
-   void previous(Representation rep);
 
    @HasPreviousPage
    void previouspage(IntegerDTO page);
@@ -68,7 +62,7 @@ public interface FormDraftContext
    @HasNextPage(false)
    SummaryContext summary();
 
-   // parameter only neede to make the command work
+   // parameter only needed to make the command work
    void discard( IntegerDTO dummy );
 
    abstract class Mixin
@@ -104,17 +98,19 @@ public interface FormDraftContext
       {
          ValueBuilder<FormSubmissionValue> builder = incrementPage( 1 );
 
-         updateFormSubmission( builder );
+         if ( builder != null )
+            updateFormSubmission( builder );
       }
 
       public void previouspage(IntegerDTO page)
       {
          ValueBuilder<FormSubmissionValue> builder = incrementPage( -1 );
 
-         updateFormSubmission( builder );
+         if ( builder != null )
+            updateFormSubmission( builder );
       }
 
-      public void next( Representation rep)
+      /*public void next( Representation rep)
       {
          updateFieldValues( rep );
 
@@ -130,7 +126,7 @@ public interface FormDraftContext
          ValueBuilder<FormSubmissionValue> builder = incrementPage( -1 );
 
          updateFormSubmission( builder );
-      }
+      } */
 
       private ValueBuilder<FormSubmissionValue> incrementPage( int increment )
       {
@@ -141,11 +137,12 @@ public interface FormDraftContext
          if ( page < pages && page >= 0 )
          {
             builder.prototype().currentPage().set( page );
+            return builder;
          }
-         return builder;
+         return null;
       }
 
-      private void updateFieldValues( Representation rep )
+      /*private void updateFieldValues( Representation rep )
       {
          Form form = new Form( rep );
 
@@ -161,10 +158,15 @@ public interface FormDraftContext
                submission.changeFieldValue( EntityReference.parseEntityReference(entry.getKey() ), value );
             }
          }
-      }
+      } */
 
       public void updatefield( FieldDTO field )
       {
+         FormSubmission formSubmission = context.get( FormSubmission.class );
+
+         formSubmission.changeFieldValue( EntityReference.parseEntityReference( field.field().get() ), field.value().get() );
+
+         /*
          FormSubmissionValue formValue = context.get( FormSubmissionValue.class );
 
          PageSubmissionValue value = formValue.pages().get().get( formValue.currentPage().get() );
@@ -199,13 +201,14 @@ public interface FormDraftContext
                return;
             }
          }
+         */
       }
 
-      private ValueBuilder<FormSubmissionValue> getFormSubmissionValueBuilder()
+      /*private ValueBuilder<FormSubmissionValue> getFormSubmissionValueBuilder()
       {
          FormSubmissionValue value = context.get( FormSubmissionValue.class );
          return value.buildWith();
-      }
+      } */
 
       private void updateFormSubmission( ValueBuilder<FormSubmissionValue> builder )
       {

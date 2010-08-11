@@ -25,13 +25,11 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
-import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
-import se.streamsource.streamflow.domain.form.SelectionFieldValue;
-import se.streamsource.streamflow.domain.form.TextFieldValue;
+import se.streamsource.streamflow.domain.form.ListBoxFieldValue;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -71,9 +69,7 @@ public class FieldEditorListBoxFieldValueView
 
       fieldValueBinder = new StateBinder();
       fieldValueBinder.setResourceMap( context.getResourceMap( getClass() ) );
-      SelectionFieldValue fieldValueTemplate = fieldValueBinder.bindingTemplate( SelectionFieldValue.class );
-
-      BindingFormBuilder bb = new BindingFormBuilder( formBuilder, fieldDefinitionBinder );
+      ListBoxFieldValue fieldValueTemplate = fieldValueBinder.bindingTemplate( ListBoxFieldValue.class );
 
       formBuilder.append( i18n.text( AdministrationResources.type_label ), new JLabel( i18n.text( AdministrationResources.listbox ) ) );
       formBuilder.nextLine();
@@ -91,6 +87,11 @@ public class FieldEditorListBoxFieldValueView
       formBuilder.add(new JLabel(i18n.text(AdministrationResources.description_label)));
       formBuilder.nextColumn(2);
       formBuilder.add(fieldDefinitionBinder.bind( TEXTAREA.newField(), fieldDefinitionTemplate.note() ) );
+      formBuilder.nextLine();
+
+      formBuilder.add(new JLabel(i18n.text(AdministrationResources.multi_selection)));
+      formBuilder.nextColumn(2);
+      formBuilder.add(fieldValueBinder.bind( CHECKBOX.newField(), fieldValueTemplate.multiple() ) );
 
       FieldValueObserver observer = obf.newObjectBuilder( FieldValueObserver.class ).use( model ).newInstance();
       fieldValueBinder.addObserver( observer );

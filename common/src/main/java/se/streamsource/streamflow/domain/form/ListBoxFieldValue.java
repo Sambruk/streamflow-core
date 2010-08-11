@@ -28,4 +28,6 @@ import java.util.List;
 public interface ListBoxFieldValue
       extends SelectionFieldValue
 {
+   @UseDefaults
+   Property<Boolean> multiple();
 }

@@ -78,4 +78,15 @@ public class OptionButtonsPanel extends JPanel
          }
       }
    }
+
+   public String getSelected()
+   {
+      Enumeration<AbstractButton> buttonEnumeration = group.getElements();
+      while ( buttonEnumeration.hasMoreElements() )
+      {
+         AbstractButton button = buttonEnumeration.nextElement();
+         if ( button.isSelected() ) return button.getText();
+      }
+      return null;
+   }
 }
