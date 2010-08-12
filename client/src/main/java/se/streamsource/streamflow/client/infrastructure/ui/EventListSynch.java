@@ -30,13 +30,13 @@ import java.util.Collection;
  */
 public class EventListSynch
 {
-    public static <T, P extends T> void synchronize( Collection<T> list, EventList<P> eventList)
+   public static <T, P extends T> void synchronize( Collection<T> list, EventList<P> eventList )
    {
       if (list.size() == eventList.size())
       {
          // Replace items
          if (eventList instanceof TransactionList)
-            ((TransactionList)eventList).beginEvent();
+            ((TransactionList) eventList).beginEvent();
 
          int idx = 0;
          for (Object item : list)
@@ -45,18 +45,18 @@ public class EventListSynch
          }
 
          if (eventList instanceof TransactionList)
-            ((TransactionList)eventList).commitEvent();
+            ((TransactionList) eventList).commitEvent();
       } else
       {
          // Replace items
          if (eventList instanceof TransactionList)
-            ((TransactionList)eventList).beginEvent();
+            ((TransactionList) eventList).beginEvent();
 
          eventList.clear();
          eventList.addAll( (Collection<? extends P>) list );
 
          if (eventList instanceof TransactionList)
-            ((TransactionList)eventList).commitEvent();
+            ((TransactionList) eventList).commitEvent();
       }
    }
 }

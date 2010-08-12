@@ -339,7 +339,7 @@ public class FieldsModel extends Observable
       for (ListItemValue listItemValue : fieldsList)
       {
          int tmpIndex = fieldsList.indexOf( listItemValue );
-         if (listItemValue instanceof PageListItemValue && tmpIndex < index )
+         if (listItemValue instanceof PageListItemValue && tmpIndex < index)
          {
             nearestPrecedingIndex = tmpIndex;
          }

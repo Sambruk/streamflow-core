@@ -18,12 +18,11 @@
 package se.streamsource.streamflow.client.ui.administration.casetypes.forms;
 
 import ca.odell.glazedlists.EventList;
+import com.jgoodies.forms.factories.Borders;
 import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.swingx.JXList;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
-
-import com.jgoodies.forms.factories.Borders;
-
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.GroupedList;
@@ -39,12 +38,11 @@ import javax.swing.Action;
 import javax.swing.ActionMap;
 import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.ListModel;
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -116,35 +114,58 @@ public class FieldsView
                public boolean isSelectedValueValid( Action action )
                {
                   boolean result = true;
-
-                  JList list = fieldList.getList();
-                  Object selected = list.getSelectedValue();
-                  int selectedIndex = list.getSelectedIndex();
-
-                  if (action.equals( am.get( "up" ) ))
+                  try
                   {
-                     if (selected instanceof PageListItemValue)
+                     JXList list = fieldList.getList();
+                     int selectedIndex = list.getSelectedIndex();
+                     Object selected = list.getModel().getElementAt( list.convertIndexToModel( selectedIndex ) );
+
+
+                     if (action.equals( am.get( "up" ) ))
                      {
-                        if (selectedIndex == 0)
-                           result = false;
+                        if (selected instanceof PageListItemValue)
+                        {
+                           if (selectedIndex == 0)
+                              result = false;
+                        } else
+                        {
+                           if (list.getModel().getElementAt( selectedIndex - 1 ) instanceof PageListItemValue)
+                              result = false;
+                        }
                      } else
                      {
-                        if (list.getModel().getElementAt( selectedIndex - 1 ) instanceof PageListItemValue)
-                           result = false;
+                        if (selected instanceof PageListItemValue)
+                        {
+                           if (selectedIndex == lastPageIndex())
+                              result = false;
+                        } else
+                        {
+                           if (selectedIndex == list.getModel().getSize() - 1 ||
+                                 list.getModel().getElementAt( selectedIndex + 1 ) instanceof PageListItemValue)
+                              result = false;
+                        }
                      }
-                  } else
+                  } catch (IndexOutOfBoundsException e)
                   {
-                     if (selected instanceof PageListItemValue)
-                     {
-                        if (selectedIndex == list.getModel().getSize() - 1)
-                           result = false;
-                     } else
-                     {
-                        if (list.getModel().getElementAt( selectedIndex + 1 ) instanceof PageListItemValue)
-                           result = false;
-                     }
+                     // TODO is there a way to fix the glazedlists outofbounds exception due to concurrent update other than to consume the exception
+                     // tried with wrapping the BasicEventList into GlazedLists.threadSafeList( eventlist ) to no avail!!
+                     // The problem appears on adding and removing elements causing a server refresh that calls clear and addAll on the event list
+                     // resulting in an invalid selection index.
+                     result = false;
                   }
                   return result;
+               }
+
+               private int lastPageIndex()
+               {
+                  int lastIndex = -1;
+                  ListModel listModel = fieldList.getList().getModel();
+                  for (int i = 0; i < listModel.getSize(); i++)
+                  {
+                     if (listModel.getElementAt( i ) instanceof PageListItemValue)
+                        lastIndex = i;
+                  }
+                  return lastIndex;
                }
             } );
 
@@ -214,7 +235,6 @@ public class FieldsView
          dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation ) );
          if (dialog.isConfirmed())
          {
-
             if (selected instanceof PageListItemValue)
             {
                model.removePage( selected.entity().get() );

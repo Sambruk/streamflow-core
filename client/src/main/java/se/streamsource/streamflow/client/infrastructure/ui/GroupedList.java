@@ -17,15 +17,14 @@
 
 package se.streamsource.streamflow.client.infrastructure.ui;
 
-import java.awt.BorderLayout;
-
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.swing.EventListModel;
+import org.jdesktop.swingx.JXList;
+import se.streamsource.streamflow.infrastructure.application.ListItemValue;
+
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import java.awt.BorderLayout;
 
 /**
  * JAVADOC
@@ -33,22 +32,22 @@ import ca.odell.glazedlists.swing.EventListModel;
 public class GroupedList
       extends JPanel
 {
-   private JList list;
+   private JXList list;
    public JScrollPane pane = new JScrollPane();
 
    public GroupedList()
    {
       setLayout( new BorderLayout() );
 
-      list = new JList();
-      list.setCellRenderer( new PageItemListCellRenderer(  ) );
+      list = new JXList();
+      list.setCellRenderer( new PageItemListCellRenderer() );
 
       pane.setViewportView( list );
 
       add( pane, BorderLayout.CENTER );
    }
 
-   public JList getList()
+   public JXList getList()
    {
       return list;
    }
