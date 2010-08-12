@@ -89,4 +89,14 @@ public class FormSubmissionModel
 
       client.putCommand( "updatefield", builder.newInstance());
    }
+
+   public void previousPage()
+   {
+      client.putCommand( "previouspage" );
+   }
+
+   public void nextPage()
+   {
+      client.putCommand( "nextpage" );
+   }
 }

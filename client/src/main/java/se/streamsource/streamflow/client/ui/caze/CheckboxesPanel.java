@@ -77,7 +77,7 @@ public class CheckboxesPanel extends JPanel
 
    public void setChecked( String checked )
    {
-      if ( checked == null) return;
+      if ( checked == null || checked.equals( "" )) return;
       String[] boxes = checked.split( ", " );
       for (String box : boxes)
       {

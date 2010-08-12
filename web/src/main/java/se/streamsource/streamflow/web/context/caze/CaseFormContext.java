@@ -23,6 +23,7 @@ import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
 import se.streamsource.streamflow.domain.form.FieldValueDTO;
 import se.streamsource.streamflow.domain.form.FormSubmissionValue;
 import se.streamsource.streamflow.domain.form.PageSubmissionValue;
+import se.streamsource.streamflow.resource.roles.IntegerDTO;
 import se.streamsource.streamflow.web.domain.structure.form.FormSubmission;
 import se.streamsource.dci.api.Interactions;
 import se.streamsource.dci.api.InteractionsMixin;
@@ -36,6 +37,8 @@ public interface CaseFormContext
 {
    public FormSubmissionValue formsubmission();
    public void updatefield( FieldValueDTO field );
+   public void previouspage();
+   public void nextpage();
 
    abstract class Mixin
       extends InteractionsMixin
@@ -46,6 +49,42 @@ public interface CaseFormContext
          FormSubmission formSubmission = context.get(FormSubmission.class);
 
          return formSubmission.getFormSubmission();
+      }
+
+      public void previouspage()
+      {
+         ValueBuilder<FormSubmissionValue> builder = incrementPage( -1 );
+
+         if ( builder != null )
+         {
+            FormSubmission formSubmission = context.get(FormSubmission.class);
+            formSubmission.changeFormSubmission( builder.newInstance() );
+         }
+      }
+
+      private ValueBuilder<FormSubmissionValue> incrementPage( int increment )
+      {
+         ValueBuilder<FormSubmissionValue> builder = context.get( FormSubmission.Data.class ).formSubmissionValue().get().buildWith();
+         int page = builder.prototype().currentPage().get() + increment;
+         int pages = builder.prototype().pages().get().size();
+
+         if ( page < pages && page >= 0 )
+         {
+            builder.prototype().currentPage().set( page );
+            return builder;
+         }
+         return null;
+      }
+
+      public void nextpage()
+      {
+         ValueBuilder<FormSubmissionValue> builder = incrementPage( 1 );
+
+         if ( builder != null )
+         {
+            FormSubmission formSubmission = context.get(FormSubmission.class);
+            formSubmission.changeFormSubmission( builder.newInstance() );
+         }
       }
 
       public void updatefield( FieldValueDTO field )

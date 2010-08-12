@@ -228,8 +228,16 @@ public class FormSubmissionWizardPage
          return WizardPanelNavResult.REMAIN_ON_PAGE;
       } else
       {
+         model.nextPage();
          return WizardPanelNavResult.PROCEED;
       }
+   }
+
+   @Override
+   public WizardPanelNavResult allowBack( String stepName, Map settings, Wizard wizard )
+   {
+      model.previousPage();
+      return super.allowBack( stepName, settings, wizard );
    }
 
    @Override
