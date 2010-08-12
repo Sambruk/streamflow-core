@@ -243,7 +243,11 @@ public class FormSubmissionWizardPage
    @Override
    public WizardPanelNavResult allowFinish( String s, Map map, Wizard wizard )
    {
-      return allowNext( s, map, wizard );
+      if ( validatePage().hasErrors() )
+      {
+         return WizardPanelNavResult.REMAIN_ON_PAGE;
+      }
+      return WizardPanelNavResult.PROCEED;
    }
 
    private ValidationResult validatePage( ) {
