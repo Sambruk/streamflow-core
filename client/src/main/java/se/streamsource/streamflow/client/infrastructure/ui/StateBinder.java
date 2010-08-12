@@ -30,6 +30,8 @@ import org.qi4j.runtime.composite.ConstraintsCheck;
 import org.qi4j.runtime.property.PropertyInstance;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.caze.CheckboxesPanel;
+import se.streamsource.streamflow.client.ui.caze.DoubleTextField;
+import se.streamsource.streamflow.client.ui.caze.IntegerTextField;
 import se.streamsource.streamflow.client.ui.caze.OptionButtonsPanel;
 import se.streamsource.streamflow.client.ui.caze.RemovableLabel;
 
@@ -48,6 +50,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.text.JTextComponent;
+import javax.swing.text.NumberFormatter;
 import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.Frame;
@@ -61,6 +64,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -91,7 +95,8 @@ public class   StateBinder
       registerBinder( defaultBinder,
             JLabel.class,
             JTextField.class,
-            JFormattedTextField.class,
+            IntegerTextField.class,
+            DoubleTextField.class,
             JTextArea.class,
             JScrollPane.class,
             JPasswordField.class,
@@ -565,7 +570,50 @@ public class   StateBinder
          try
          {
             Object value = null;
-            if (input instanceof JTextComponent)
+
+            /*if ( input instanceof JFormattedTextField )
+            {
+               JFormattedTextField formattedTextField = (JFormattedTextField) input;
+               NumberFormatter formatter = (NumberFormatter) formattedTextField.getFormatter();
+               NumberFormat format = (NumberFormat) formatter.getFormat();
+               try
+               {
+                  if ( format.isParseIntegerOnly() )
+                  {
+                     value = Integer.parseInt( formattedTextField.getText() );
+                  }  else
+                  {
+                     value = Double.parseDouble( formattedTextField.getText() );
+                  }
+               } catch ( NumberFormatException e)
+               {
+                  formattedTextField.setText( "" );
+                  return false;
+               }
+            } */
+            if ( input instanceof IntegerTextField )
+            {
+               IntegerTextField field = (IntegerTextField)input;
+               try
+               {
+                  value = Integer.parseInt( field.getText() );
+               }  catch ( NumberFormatException e)
+               {
+                  field.setText( "" );
+                  return false;
+               }
+            } else if ( input instanceof DoubleTextField)
+            {
+               DoubleTextField field = (DoubleTextField) input;
+               try
+               {
+                  value = Double.parseDouble( field.getText() );
+               }  catch ( NumberFormatException e)
+               {
+                  field.setText( "" );
+                  return false;
+               }
+            } else if (input instanceof JTextComponent)
             {
                value = ((JTextComponent) input).getText();
             } else if (input instanceof JXDatePicker)

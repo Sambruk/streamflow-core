@@ -60,7 +60,7 @@ public interface FormSubmission
    }
 
    abstract class Mixin
-      implements FormSubmission, Data
+         implements FormSubmission, Data
    {
       @Structure
       ValueBuilderFactory vbf;
@@ -183,18 +183,14 @@ public interface FormSubmission
 
       private boolean validate( NumberFieldValue definition, String value )
       {
-         if ( definition.integer().get() )
+         try
          {
-            try
-            {
-               Integer.parseInt( value );
-               return true;
-            } catch (NumberFormatException e)
-            {
-               return false;
-            }
+            Object o = (definition.integer().get() ? Integer.parseInt( value ) : Double.parseDouble( value ));  
+            return true;
+         } catch (NumberFormatException e)
+         {
+            return false;
          }
-         return false;
       }
 
       private boolean validate( OptionButtonsFieldValue definition, String value )

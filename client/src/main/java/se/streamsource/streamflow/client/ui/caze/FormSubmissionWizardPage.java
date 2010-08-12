@@ -26,25 +26,25 @@ import com.jgoodies.validation.util.DefaultValidationResultModel;
 import com.jgoodies.validation.util.ValidationUtils;
 import com.jgoodies.validation.view.ValidationResultViewFactory;
 import org.jdesktop.swingx.JXDatePicker;
-import org.jdesktop.swingx.JXPanel;
 import org.netbeans.spi.wizard.Wizard;
 import org.netbeans.spi.wizard.WizardPage;
 import org.netbeans.spi.wizard.WizardPanelNavResult;
-import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.util.DateFunctions;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
-import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
-import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
-import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.*;
 import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
+import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.domain.form.CheckboxesFieldValue;
 import se.streamsource.streamflow.domain.form.ComboBoxFieldValue;
 import se.streamsource.streamflow.domain.form.CommentFieldValue;
 import se.streamsource.streamflow.domain.form.DateFieldValue;
+import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
+import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
 import se.streamsource.streamflow.domain.form.FieldValue;
 import se.streamsource.streamflow.domain.form.ListBoxFieldValue;
 import se.streamsource.streamflow.domain.form.NumberFieldValue;
@@ -52,12 +52,9 @@ import se.streamsource.streamflow.domain.form.OptionButtonsFieldValue;
 import se.streamsource.streamflow.domain.form.PageSubmissionValue;
 import se.streamsource.streamflow.domain.form.TextAreaFieldValue;
 import se.streamsource.streamflow.domain.form.TextFieldValue;
-import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
-import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
 
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
-import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -65,18 +62,17 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Point;
-import java.awt.Rectangle;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.text.DateFormat;
-import java.text.NumberFormat;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.HashMap;
-import java.util.Observer;
 import java.util.Observable;
-import java.util.Date;
+import java.util.Observer;
+
+import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.*;
 
 /**
  * JAVADOC
@@ -140,9 +136,11 @@ public class FormSubmissionWizardPage
          } else if ( fieldValue instanceof NumberFieldValue )
          {
             NumberFieldValue field = (NumberFieldValue) fieldValue;
-            NumberFormat numberInstance = NumberFormat.getNumberInstance();
+            /*NumberFormat numberInstance = NumberFormat.getNumberInstance();
             numberInstance.setParseIntegerOnly( field.integer().get() );
             component = new JFormattedTextField( numberInstance );
+            */
+            component = field.integer().get() ? new IntegerTextField() : new DoubleTextField();
          } else if ( fieldValue instanceof TextAreaFieldValue)
          {
             TextAreaFieldValue textAreaFieldValue = (TextAreaFieldValue) fieldValue;

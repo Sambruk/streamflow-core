@@ -90,24 +90,7 @@ public interface CaseFormContext
       public void updatefield( FieldValueDTO field )
       {
          FormSubmission formSubmission = context.get(FormSubmission.class);
-
          formSubmission.changeFieldValue( field.field().get(), field.value().get() );
-         /*
-         ValueBuilder<FormSubmissionValue> builder = formSubmission.getFormSubmission().buildWith();
-
-         for (PageSubmissionValue pageValue : builder.prototype().pages().get())
-         {
-            for ( FieldSubmissionValue value : pageValue.fields().get() )
-            {
-               if ( value.field().get().field().get().equals( field.field().get() ) )
-               {
-                  value.value().set( field.value().get() );
-               }
-            }
-         }
-
-         formSubmission.changeFormSubmission( builder.newInstance() );
-         */
       }
 
    }

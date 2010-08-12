@@ -27,6 +27,7 @@ import se.streamsource.dci.api.DeleteInteraction;
 import se.streamsource.dci.api.Interactions;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
+import se.streamsource.streamflow.domain.form.NumberFieldValue;
 import se.streamsource.streamflow.domain.form.SelectionFieldValue;
 import se.streamsource.streamflow.domain.form.TextAreaFieldValue;
 import se.streamsource.streamflow.domain.form.TextFieldValue;
@@ -62,6 +63,9 @@ public interface FormFieldContext
 
    @RequiresRoles(TextAreaFieldValue.class)
    public void changecols( IntegerDTO newRows );
+
+   @RequiresRoles(NumberFieldValue.class)
+   public void changeinteger( BooleanDTO integerDto );
 
    @RequiresRoles( SelectionFieldValue.class)
    public void addselectionelement( StringValue name );
@@ -136,6 +140,17 @@ public interface FormFieldContext
          builder.prototype().cols().set( newRows.integer().get() );
 
          fieldValueDefinition.changeFieldValue( builder.newInstance() );
+      }
+
+      public void changeinteger( BooleanDTO integerDto )
+      {
+         FieldValueDefinition definition = context.get( FieldValueDefinition.class );
+         NumberFieldValue value = context.get( NumberFieldValue.class );
+
+         ValueBuilder<NumberFieldValue> builder = value.buildWith();
+         builder.prototype().integer().set( integerDto.bool().get() );
+
+         definition.changeFieldValue( builder.newInstance() );
       }
 
       public void addselectionelement( StringValue name )

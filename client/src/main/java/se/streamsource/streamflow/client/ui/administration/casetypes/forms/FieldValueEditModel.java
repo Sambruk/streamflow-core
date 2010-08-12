@@ -114,6 +114,13 @@ public class FieldValueEditModel
       client.putCommand( "changemultiple", builder.newInstance() );
    }
 
+   public void changeInteger( Boolean multiple ) throws ResourceException
+   {
+      ValueBuilder<BooleanDTO> builder = vbf.newValueBuilder( BooleanDTO.class );
+      builder.prototype().bool().set( multiple );
+      client.putCommand( "changeinteger", builder.newInstance() );
+   }
+
    public void changeComment( String comment ) throws ResourceException
    {
       ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );

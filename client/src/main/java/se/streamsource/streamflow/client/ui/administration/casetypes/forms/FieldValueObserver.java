@@ -107,6 +107,15 @@ public class FieldValueObserver
          {
             throw new OperationException( CaseResources.could_not_change_comment, e );
          }
+      } else if ( property.qualifiedName().name().equals( "integer" ))
+      {
+         try
+         {
+            model.changeInteger( (Boolean) property.get() );
+         } catch (ResourceException e)
+         {
+            throw new OperationException( CaseResources.could_not_change_comment, e );
+         }
       }
 
    }
