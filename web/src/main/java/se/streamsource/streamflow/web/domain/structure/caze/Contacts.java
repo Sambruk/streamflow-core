@@ -107,7 +107,21 @@ public interface Contacts
 
       public boolean hasContacts()
       {
-         return !state.contacts().get().isEmpty() && !"".equals( state.contacts().get().get(0).name().get() );
+         return !state.contacts().get().isEmpty() && !isTemplate( state.contacts().get().get(0) );
+      }
+
+      private boolean isTemplate( ContactValue contact )
+      {
+         return "".equals( contact.name().get() )
+               && contact.addresses().get().isEmpty()
+               && "".equals( contact.company().get() )
+               && "".equals( contact.contactId().get() )
+               && contact.emailAddresses().get().isEmpty()
+               && "".equals( contact.note().get())
+               && !contact.isCompany().get()
+               && contact.phoneNumbers().get().isEmpty()
+               && "".equals( contact.picture().get());
+
       }
    }
 

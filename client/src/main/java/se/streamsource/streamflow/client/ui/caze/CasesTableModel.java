@@ -19,6 +19,9 @@ package se.streamsource.streamflow.client.ui.caze;
 
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilder;
@@ -39,6 +42,7 @@ import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
 import se.streamsource.streamflow.infrastructure.event.source.helper.EventVisitorFilter;
 import se.streamsource.streamflow.resource.caze.CaseValue;
 
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -62,8 +66,8 @@ public class CasesTableModel
    public CasesTableModel()
    {
       eventFilter = new EventVisitorFilter( this, "addedLabel", "removedLabel", "changedDescription", "changedCaseType", "changedStatus",
-            "changedOwner","assignedTo", "unassigned", "deletedEntity", "updatedContact", "addedContact", "deletedContact",
-            "createdConversation", "submittedForm", "createdAttachment", "removedAttachment");
+            "changedOwner", "assignedTo", "unassigned", "deletedEntity", "updatedContact", "addedContact", "deletedContact",
+            "createdConversation", "submittedForm", "createdAttachment", "removedAttachment" );
    }
 
    public void notifyEvent( DomainEvent event )
@@ -106,53 +110,70 @@ public class CasesTableModel
                }
             }
             eventList.set( idx, valueBuilder.newInstance() );
-         } else if ("addedLabel,changedCaseType,changedOwner,assignedTo,unassigned,deletedEntity".indexOf(eventName) != -1)
+         } else if ("addedLabel,changedCaseType,changedOwner,assignedTo,unassigned,deletedEntity".indexOf( eventName ) != -1)
          {
             refresh();
-         } else if (eventName.equals("changedStatus"))
+         } else if (eventName.equals( "changedStatus" ))
          {
-            CaseStates newStatus = CaseStates.valueOf( EventParameters.getParameter( event, "param1" ));
+            CaseStates newStatus = CaseStates.valueOf( EventParameters.getParameter( event, "param1" ) );
             updatedCase.status().set( newStatus );
             eventList.set( idx, valueBuilder.newInstance() );
             // update in case the case has moved to another project
-            if( CaseStates.OPEN.equals( newStatus ))
+            if (CaseStates.OPEN.equals( newStatus ))
             {
                refresh();
             }
-         } else if ( "updatedContact,addedContact".indexOf( eventName ) != -1 )
+         } else if ("addedContact".equals( eventName ))
          {
-            if( !updatedCase.hasContacts().get() )
+            if (!updatedCase.hasContacts().get())
             {
-               updatedCase.hasContacts().set( true );
-               eventList.set( idx, valueBuilder.newInstance() );
+               String param1 = EventParameters.getParameter( event, "param1" );
+
+               if (!isContactTemplate( param1 ))
+               {
+                  updatedCase.hasContacts().set( true );
+                  eventList.set( idx, valueBuilder.newInstance() );
+               }
             }
-         } else if ( eventName.equals( "deletedContact" ) )
+         } else if ("updatedContact".equals( eventName ))
+         {
+            if (!updatedCase.hasContacts().get())
+            {
+               String param2 = EventParameters.getParameter( event, "param2" );
+
+               if (!isContactTemplate( param2 ))
+               {
+                  updatedCase.hasContacts().set( true );
+                  eventList.set( idx, valueBuilder.newInstance() );
+               }
+            }
+         } else if (eventName.equals( "deletedContact" ))
          {
             refresh();
             // force list repaint
             EventListSynch.synchronize( cases.links().get(), eventList );
-         } else if( eventName.equals( "createdConversation" ) )
+         } else if (eventName.equals( "createdConversation" ))
          {
-            if( !updatedCase.hasConversations().get() )
+            if (!updatedCase.hasConversations().get())
             {
                updatedCase.hasConversations().set( true );
                eventList.set( idx, valueBuilder.newInstance() );
             }
-         } else if ( eventName.equals( "submittedForm" ) )
+         } else if (eventName.equals( "submittedForm" ))
          {
-            if( !updatedCase.hasSubmittedForms().get() )
+            if (!updatedCase.hasSubmittedForms().get())
             {
-               updatedCase.hasSubmittedForms().set(true);
+               updatedCase.hasSubmittedForms().set( true );
                eventList.set( idx, valueBuilder.newInstance() );
             }
-         } else if ( eventName.equals( "createdAttachment" ) )
+         } else if (eventName.equals( "createdAttachment" ))
          {
-            if( !updatedCase.hasAttachments().get() )
+            if (!updatedCase.hasAttachments().get())
             {
                updatedCase.hasAttachments().set( true );
                eventList.set( idx, valueBuilder.newInstance() );
             }
-         } else if ( eventName.equals( "removedAttachment" ))
+         } else if (eventName.equals( "removedAttachment" ))
          {
             refresh();
             // force list repaint
@@ -160,6 +181,38 @@ public class CasesTableModel
          }
       }
       return true;
+   }
+
+   private boolean isContactTemplate( String eventParam )
+   {
+      boolean result = true;
+      try
+      {
+         JSONObject contact = new JSONObject( eventParam );
+         Iterator<String> iterator = contact.keys();
+         while (iterator.hasNext())
+         {
+            String key = iterator.next();
+            if (("name".equals( key ) && !"".equals( contact.getString( key ) ))
+                  || ("company".equals( key ) && !"".equals( contact.getString( key ) ))
+                  || ("contactId".equals( key ) && !"".equals( contact.getString( key ) ))
+                  || ("note".equals( key ) && !"".equals( contact.getString( key ) ))
+                  || ("picture".equals( key ) && !"".equals( contact.getString( key ) )))
+            {
+               result = false;
+            } else if ("addresses".equals( key ) || "emailAddresses".equals( key ) || "phoneNumbers".equals( key ))
+            {
+               JSONArray list = contact.getJSONArray( key );
+               if (list.length() != 0)
+                  result = false;
+            }
+
+         }
+      } catch (JSONException e)
+      {
+         result = false;
+      }
+      return result;
    }
 
    public EventList<CaseValue> getEventList()
@@ -175,8 +228,8 @@ public class CasesTableModel
          boolean same = newRoot.equals( cases );
          if (!same)
          {
-               EventListSynch.synchronize( newRoot.links().get(), eventList );
-               cases = newRoot;
+            EventListSynch.synchronize( newRoot.links().get(), eventList );
+            cases = newRoot;
          }
       } catch (ResourceException e)
       {
