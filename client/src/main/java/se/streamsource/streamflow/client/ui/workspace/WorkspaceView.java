@@ -77,8 +77,6 @@ import java.awt.Font;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 /**
  * JAVADOC
@@ -382,7 +380,8 @@ public class WorkspaceView
 
       workspaceTreeScroll = new JScrollPane( workspaceTree );
 
-      workspaceTreeScroll.addMouseListener( new MouseAdapter()
+      //TODO SF-278 - this solution does not work sufficient - we have to come up with something else
+      /*workspaceTreeScroll.addMouseListener( new MouseAdapter()
       {
 
          @Override
@@ -400,7 +399,7 @@ public class WorkspaceView
                }
             } );
          }
-      } );
+      } );*/
    }
 
    public void setModel( AccountModel model )
