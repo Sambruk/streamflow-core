@@ -221,14 +221,12 @@ public class FormSubmissionWizardPage
       ValidationResult validation = validatePage( );
       validationResultModel.setResult( validation );
 
-      if ( validation.hasErrors())
-      {
-         return WizardPanelNavResult.REMAIN_ON_PAGE;
-      } else
+      if ( !validation.hasErrors() )
       {
          model.nextPage();
          return WizardPanelNavResult.PROCEED;
       }
+      return WizardPanelNavResult.REMAIN_ON_PAGE;
    }
 
    @Override
@@ -241,7 +239,9 @@ public class FormSubmissionWizardPage
    @Override
    public WizardPanelNavResult allowFinish( String s, Map map, Wizard wizard )
    {
-      if ( validatePage().hasErrors() )
+      ValidationResult validationResult = validatePage();
+      validationResultModel.setResult( validationResult );
+      if ( validationResult.hasErrors() )
       {
          return WizardPanelNavResult.REMAIN_ON_PAGE;
       }
