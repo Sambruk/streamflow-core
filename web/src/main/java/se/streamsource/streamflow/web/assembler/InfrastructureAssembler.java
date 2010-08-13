@@ -329,7 +329,37 @@ public class InfrastructureAssembler
                toVersion( "1.1.5.2083" ).
                   forEntities( "se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity" ).
                      removeManyAssociation( "fieldDefinitions" ).
-               end();
+               end().toVersion( "1.1.6.2236" ).
+                  forEntities( "se.streamsource.streamflow.web.domain.entity.form.FieldEntity" ).
+               custom( new EntityMigrationOperation()
+               {
+                  public boolean upgrade( JSONObject state, StateStore stateStore, Migrator migrator ) throws JSONException
+                  {
+                     JSONObject fieldValue = state.getJSONObject( "properties" ).getJSONObject( "fieldValue" );
+
+                     if (fieldValue.get( "_type" ).equals("se.streamsource.streamflow.domain.form.SelectionFieldValue"))
+                     {
+                        if ( fieldValue.get( "multiple" ) != null )
+                        {
+                           if ( fieldValue.get( "multiple" ).equals( "true" ) )
+                           {
+                              fieldValue.put( "_type", "se.streamsource.streamflow.domain.form.CheckboxesFieldValue" );
+                           } else
+                           {
+                              fieldValue.put( "_type", "se.streamsource.streamflow.domain.form.OptionButtonsFieldValue" );
+                           }
+                           migrator.removeProperty( fieldValue, "multiple" );
+                           return true;
+                        }
+                     }
+                     return false;
+                  }
+
+                  public boolean downgrade( JSONObject state, StateStore stateStore, Migrator migrator ) throws JSONException
+                  {
+                     return false;
+                  }
+               });
 
          module.addServices( MigrationService.class ).setMetaInfo( migrationBuilder );
          module.addObjects( MigrationEventLogger.class );
