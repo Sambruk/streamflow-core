@@ -29,7 +29,6 @@ import org.qi4j.api.query.QueryBuilder;
 import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
-import org.qi4j.api.unitofwork.EntityTypeNotFoundException;
 import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.usecase.UsecaseBuilder;
@@ -172,7 +171,7 @@ public interface CaseStatisticsService
                FormEntity.class.getName(),
                FieldEntity.class.getName(),
                CaseTypeEntity.class.getName()
-               ),
+         ),
                new EventVisitor()
                {
                   public boolean visit( DomainEvent event )
@@ -225,7 +224,7 @@ public interface CaseStatisticsService
                         uow.discard();
                      }
                   }
-               } ).route(new EventQuery().withNames( "deletedEntity" ).onEntityTypes( CaseEntity.class.getName()),
+               } ).route( new EventQuery().withNames( "deletedEntity" ).onEntityTypes( CaseEntity.class.getName() ),
                new EventVisitor()
                {
                   public boolean visit( DomainEvent event )
@@ -236,11 +235,11 @@ public interface CaseStatisticsService
                         return true;
                      } catch (StatisticsStoreException e)
                      {
-                        log.warn(e.getMessage(), e.getCause());
+                        log.warn( e.getMessage(), e.getCause() );
                         return false;
                      }
                   }
-               });
+               } );
 
          transactionAdapter = new TransactionEventAdapter( router );
          tracker = new TransactionTracker( eventStore, config, this );
@@ -435,27 +434,29 @@ public interface CaseStatisticsService
          prototype.caseId().set( aCase.caseId().get() );
          prototype.createdOn().set( new Date( aCase.createdOn().get().getTime() ) );
          Date closeDate = aCase.closedOn().get();
-         prototype.closedOn().set( new Date( closeDate.getTime() ) );
-         prototype.duration().set( closeDate.getTime() - aCase.createdOn().get().getTime() );
-
+         if (closeDate != null)
+         {
+            prototype.closedOn().set( new Date( closeDate.getTime() ) );
+            prototype.duration().set( closeDate.getTime() - aCase.createdOn().get().getTime() );
+         }
          CaseType caseType = aCase.caseType().get();
          if (caseType != null)
          {
             prototype.caseTypeId().set( ((Identity) caseType).identity().get() );
 
-            Owner caseTypeOwner = ((Ownable.Data)caseType).owner().get();
+            Owner caseTypeOwner = ((Ownable.Data) caseType).owner().get();
             if (caseTypeOwner != null)
-               prototype.caseTypeOwnerId().set( ((Identity)caseTypeOwner).identity().get() );
+               prototype.caseTypeOwnerId().set( ((Identity) caseTypeOwner).identity().get() );
 
             if (aCase.resolution().get() != null)
                prototype.resolutionId().set( ((Identity) aCase.resolution().get()).identity().get() );
          }
 
          Owner owner = aCase.owner().get();
-         prototype.projectId().set( ((Identity)owner).identity().get() );
+         prototype.projectId().set( ((Identity) owner).identity().get() );
          OwningOrganizationalUnit.Data po = (OwningOrganizationalUnit.Data) owner;
          OrganizationalUnit organizationalUnit = po.organizationalUnit().get();
-         prototype.organizationalUnitId().set( ((Identity)organizationalUnit).identity().get());
+         prototype.organizationalUnitId().set( ((Identity) organizationalUnit).identity().get() );
 
          String groupId = null;
          Participation.Data participant = (Participation.Data) assignee;
