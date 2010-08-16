@@ -297,7 +297,7 @@
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
             <organization>
-                <name>SSun Microsystems, Inc.</name>
+                <name>Sun Microsystems, Inc.</name>
                 <url>http://java.sun.com/products/servlet/</url>
             </organization>
             <licenses>
@@ -335,7 +335,7 @@
             <licenses>
                 <license>
                     <name>The GNU General Public License, Version 2</name>
-                    <url>http://www.gnu.org/licenses/gpl.txt</url>
+                    <url>http://www.gnu.org/licenses/gpl-2.0.txt</url>
                 </license>
                 <license>
                     <name>FOSS Exception to GPL 2</name>
