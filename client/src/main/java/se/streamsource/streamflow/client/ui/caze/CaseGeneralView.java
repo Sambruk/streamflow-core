@@ -103,14 +103,14 @@ public class CaseGeneralView extends JScrollPane implements Observer
    public JPanel rightForm;
    public JPanel bottomForm;
    public CaseLabelsView labels;
-   public PossibleFormsView forms;
+   public PossibleFormsView2 forms;
    public RefreshWhenVisible refresher;
    public RemovableLabel selectedCaseType = new RemovableLabel();
    public JButton caseTypeButton;
    public JButton labelButton;
 
    public CaseGeneralView( @Service ApplicationContext appContext,
-                           @Uses CaseLabelsView labels, @Uses PossibleFormsView forms )
+                           @Uses CaseLabelsView labels, @Uses PossibleFormsView2 forms )
    {
       this.labels = labels;
       this.forms = forms;

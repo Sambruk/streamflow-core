@@ -169,6 +169,7 @@ import se.streamsource.streamflow.client.ui.caze.FormsAdminView;
 import se.streamsource.streamflow.client.ui.caze.PossibleCaseTypesModel;
 import se.streamsource.streamflow.client.ui.caze.PossibleFormsModel;
 import se.streamsource.streamflow.client.ui.caze.PossibleFormsView;
+import se.streamsource.streamflow.client.ui.caze.PossibleFormsView2;
 import se.streamsource.streamflow.client.ui.caze.SubmittedFormsAdminView;
 import se.streamsource.streamflow.client.ui.caze.attachments.AttachmentsModel;
 import se.streamsource.streamflow.client.ui.caze.attachments.AttachmentsView;
@@ -511,7 +512,7 @@ public class UIAssembler
 
       addMV( module,
             PossibleFormsModel.class,
-            PossibleFormsView.class );
+            PossibleFormsView2.class );
 
       addMV( module,
             CaseActionsModel.class,
