@@ -23,9 +23,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.Sizes;
 import org.jdesktop.application.Action;
-import org.jdesktop.application.Application;
 import org.jdesktop.application.ApplicationContext;
-import org.jdesktop.application.Task;
 import org.jdesktop.swingx.JXDatePicker;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
@@ -56,7 +54,6 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.LayoutFocusTraversalPolicy;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -101,7 +98,7 @@ public class CaseGeneralView extends JScrollPane implements Observer
    private JScrollPane notePane;
    public JXDatePicker dueOnField;
    public JPanel rightForm;
-   public JPanel bottomForm;
+   public JPanel leftForm;
    public CaseLabelsView labels;
    public PossibleFormsView2 forms;
    public RefreshWhenVisible refresher;
@@ -143,14 +140,14 @@ public class CaseGeneralView extends JScrollPane implements Observer
             .bindingTemplate( CaseGeneralDTO.class );
 
       // Layout and form for the right panel
-      FormLayout rightLayout = new FormLayout( "80dlu, 5dlu, 150:grow", "pref, pref, default, pref, pref, pref, pref" );
+      FormLayout rightLayout = new FormLayout( "50dlu, 2dlu, 200:grow", "pref, pref, pref, pref, 20dlu, fill:pref:grow" );
 
       rightForm = new JPanel( rightLayout );
       rightForm.setFocusable( false );
       DefaultFormBuilder rightBuilder = new DefaultFormBuilder( rightLayout,
             rightForm );
-      rightBuilder.setBorder( Borders.createEmptyBorder( Sizes.DLUY8,
-            Sizes.DLUX4, Sizes.DLUY2, Sizes.DLUX8 ) );
+      rightBuilder.setBorder( Borders.createEmptyBorder( Sizes.DLUY2,
+            Sizes.DLUX2, Sizes.DLUY2, Sizes.DLUX2 ) );
 
       selectedCaseType.setFont( selectedCaseType.getFont().deriveFont(
             Font.BOLD ) );
@@ -159,6 +156,11 @@ public class CaseGeneralView extends JScrollPane implements Observer
       ActionMap am = getActionMap();
 
       // Description
+      rightBuilder.setExtent( 1, 1 );
+      JLabel title = new JLabel( i18n.text( WorkspaceResources.title_column_header ) );
+      title.setBorder( BorderFactory.createEmptyBorder( 0, 2, 0, 0 ) );
+      rightBuilder.add( title );
+      rightBuilder.nextLine();
       rightBuilder.setExtent( 3, 1 );
       rightBuilder.add( caseBinder.bind( descriptionField = (JTextField) TEXTFIELD.newField(), template.description() ) );
       rightBuilder.nextLine();
@@ -172,10 +174,8 @@ public class CaseGeneralView extends JScrollPane implements Observer
       caseTypeButton.setHorizontalAlignment( SwingConstants.LEFT );
       rightBuilder.setExtent( 1, 1 );
       rightBuilder.add( caseTypeButton );
-      //rightBuilder.nextColumn();
-      //rightBuilder.nextColumn();
       rightBuilder.add( selectedCaseType,
-            new CellConstraints( 3, 2, 1, 1, CellConstraints.LEFT, CellConstraints.BOTTOM, new Insets( 5, 0, 0, 0 ) ) );
+            new CellConstraints( 3, 3, 1, 1, CellConstraints.LEFT, CellConstraints.BOTTOM, new Insets( 0, 0, 0, 0 ) ) );
 
       rightBuilder.nextLine();
 
@@ -189,11 +189,11 @@ public class CaseGeneralView extends JScrollPane implements Observer
 
       labelButton.setHorizontalAlignment( SwingConstants.LEFT );
       rightBuilder.add( labelButton,
-            new CellConstraints( 1, 3, 1, 1, CellConstraints.FILL, CellConstraints.TOP, new Insets( 5, 0, 0, 0 ) ) );
+            new CellConstraints( 1, 4, 1, 1, CellConstraints.FILL, CellConstraints.TOP, new Insets( 0, 0, 0, 0 ) ) );
 
       labels.setPreferredSize( new Dimension( 500, 80 ) );
       rightBuilder.add( labels,
-            new CellConstraints( 3, 3, 1, 1, CellConstraints.LEFT, CellConstraints.TOP, new Insets( 5, 0, 0, 0 ) ) );
+            new CellConstraints( 3, 4, 1, 1, CellConstraints.LEFT, CellConstraints.TOP, new Insets( 0, 0, 0, 0 ) ) );
       rightBuilder.nextLine();
 
       // Due date
@@ -207,13 +207,9 @@ public class CaseGeneralView extends JScrollPane implements Observer
 
       // Forms
       rightBuilder.add( new JLabel( i18n.text( WorkspaceResources.forms_label ) ),
-            cc.xy( 1, 5, CellConstraints.FILL, CellConstraints.TOP ) );
-      rightBuilder.nextLine();
-      forms.setPreferredSize( new Dimension( 500, 80 ) );
+            cc.xy( 1, 6, CellConstraints.LEFT, CellConstraints.TOP ) );
       rightBuilder.add( forms,
-            new CellConstraints( 3, 5, 1, 1, CellConstraints.LEFT, CellConstraints.TOP, new Insets( 5, 0, 0, 0 ) ) );
-
-      rightBuilder.nextLine();
+            new CellConstraints( 3, 6, 1, 1, CellConstraints.FILL, CellConstraints.FILL, new Insets( 0, 4, 0, 0 ) ) );
 
       // Limit pickable dates to future
       Calendar calendar = Calendar.getInstance();
@@ -223,33 +219,34 @@ public class CaseGeneralView extends JScrollPane implements Observer
 
 
       // Layout and form for the bottom panel
-      FormLayout bottomLayout = new FormLayout( "250dlu:grow",
-            "15dlu,fill:pref:grow" );
+      FormLayout leftLayout = new FormLayout( "200dlu:grow",
+            "pref,fill:pref:grow" );
 
-      bottomForm = new JPanel();
-      bottomForm.setFocusable( false );
-      DefaultFormBuilder bottomBuilder = new DefaultFormBuilder( bottomLayout,
-            bottomForm );
-      bottomBuilder.setBorder( Borders.createEmptyBorder( Sizes.DLUY2,
-            Sizes.DLUX8, Sizes.DLUY8, Sizes.DLUX8 ) );
+      leftForm = new JPanel();
+      leftForm.setPreferredSize( new Dimension( 200, 100 ) );
+      leftForm.setFocusable( false );
+      DefaultFormBuilder leftBuilder = new DefaultFormBuilder( leftLayout,
+            leftForm );
+      leftBuilder.setBorder( Borders.createEmptyBorder( Sizes.DLUY2,
+            Sizes.DLUX2, Sizes.DLUY2, Sizes.DLUX2 ) );
 
       notePane = (JScrollPane) TEXTAREA.newField();
       notePane.setMinimumSize( new Dimension( 10, 50 ) );
 
-      BindingFormBuilder bottomBindingBuilder = new BindingFormBuilder(
-            bottomBuilder, caseBinder );
-      bottomBindingBuilder.appendLine( WorkspaceResources.note_label,
+      BindingFormBuilder leftBindingBuilder = new BindingFormBuilder(
+            leftBuilder, caseBinder );
+      leftBindingBuilder.appendLine( WorkspaceResources.note_label,
             notePane, template.note() );
 
       JPanel formsContainer = new JPanel( new GridLayout( 1, 2 ) );
       formsContainer.setBorder( Borders.createEmptyBorder( "2dlu, 2dlu, 2dlu, 2dlu" ) );
-      formsContainer.add( notePane );
+      formsContainer.add( leftForm );
       formsContainer.add( rightForm );
 
 /*
       JPanel borderLayoutContainer = new JPanel( new BorderLayout() );
       borderLayoutContainer.add( formsContainer, BorderLayout.NORTH );
-      borderLayoutContainer.add( bottomForm, BorderLayout.CENTER );
+      borderLayoutContainer.add( leftForm, BorderLayout.CENTER );
 */
 
       setViewportView( formsContainer );

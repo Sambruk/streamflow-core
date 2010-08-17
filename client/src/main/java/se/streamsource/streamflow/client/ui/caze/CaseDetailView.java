@@ -43,7 +43,7 @@ import java.awt.event.KeyEvent;
 public class CaseDetailView
       extends JPanel
 {
-   private JTabbedPane tabs = new JTabbedPane(JTabbedPane.BOTTOM);
+   private JTabbedPane tabs = new JTabbedPane( JTabbedPane.BOTTOM );
 
    private ConversationsView conversationsView;
    private CaseGeneralView generalView;
@@ -64,13 +64,13 @@ public class CaseDetailView
                           @Uses CaseActionsView actionsView,
                           @Structure ObjectBuilderFactory obf )
    {
-      super(new BorderLayout());
+      super( new BorderLayout() );
       this.infoView = infoView;
-      this.infoView.setPreferredSize( new Dimension( 800,50 ));
+      this.infoView.setPreferredSize( new Dimension( 800, 50 ) );
 
       this.actionsView = actionsView;
       tabs.setFocusable( true );
-      this.setBorder(BorderFactory.createEmptyBorder());
+      this.setBorder( BorderFactory.createEtchedBorder() );
 
       this.conversationsView = conversationsView;
       this.generalView = generalView;
@@ -105,11 +105,11 @@ public class CaseDetailView
          }
       } );
 
-      add(infoView, BorderLayout.NORTH);
+      add( infoView, BorderLayout.NORTH );
 
-      add(tabs, BorderLayout.CENTER);
+      add( tabs, BorderLayout.CENTER );
 
-      add( actionsView, BorderLayout.EAST);
+      add( actionsView, BorderLayout.EAST );
    }
 
    public void setCaseModel( CaseModel model )
@@ -122,9 +122,9 @@ public class CaseDetailView
          conversationsView.setModel( model.conversations() );
          contactsView.setModel( model.contacts() );
          formsView.setModel( model.forms() );
-         attachmentsView.setModel (model.attachments() );
+         attachmentsView.setModel( model.attachments() );
 
-         actionsView.setModel(model.actions());
+         actionsView.setModel( model.actions() );
          actionsView.refresh();
 
          validateTree();

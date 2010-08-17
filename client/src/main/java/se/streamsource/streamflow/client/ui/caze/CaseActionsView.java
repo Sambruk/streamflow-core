@@ -76,7 +76,7 @@ public class CaseActionsView extends JPanel
    public CaseActionsView( @Service ApplicationContext context )
    {
       setLayout( new BorderLayout() );
-      setBorder( new EmptyBorder( 5, 5, 5, 10 ) );
+      setBorder( new EmptyBorder( 5, 5, 5, 5 ) );
       actionsPanel.setLayout( new GridLayout( 0, 1, 5, 5 ) );
       add( actionsPanel, BorderLayout.NORTH );
       setActionMap( context.getActionMap( this ) );
