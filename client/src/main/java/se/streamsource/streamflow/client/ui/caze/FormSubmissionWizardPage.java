@@ -25,11 +25,13 @@ import com.jgoodies.validation.ValidationResultModel;
 import com.jgoodies.validation.util.DefaultValidationResultModel;
 import com.jgoodies.validation.util.ValidationUtils;
 import com.jgoodies.validation.view.ValidationResultViewFactory;
+import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.JXDatePicker;
 import org.netbeans.spi.wizard.Wizard;
 import org.netbeans.spi.wizard.WizardPage;
 import org.netbeans.spi.wizard.WizardPanelNavResult;
 import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.util.DateFunctions;
@@ -86,7 +88,9 @@ public class FormSubmissionWizardPage
    private ValidationResultModel validationResultModel;
    private FormSubmissionModel model;
 
-   public FormSubmissionWizardPage( @Uses PageSubmissionValue page,
+
+   public FormSubmissionWizardPage( @Service ApplicationContext context,
+                                    @Uses PageSubmissionValue page,
                                     @Uses FormSubmissionModel model)
    {
       super( page.title().get() );
@@ -122,7 +126,7 @@ public class FormSubmissionWizardPage
          } else if ( fieldValue instanceof ListBoxFieldValue )
          {
             ListBoxFieldValue field = (ListBoxFieldValue) fieldValue;
-            component = new JComboBox( field.values().get().toArray() );
+            component = new ListBoxPanel( context, field.values().get(), field.multiple().get() );
          } else if ( fieldValue instanceof CommentFieldValue )
          {
             String comment = value.field().get().note().get();
@@ -136,10 +140,6 @@ public class FormSubmissionWizardPage
          } else if ( fieldValue instanceof NumberFieldValue )
          {
             NumberFieldValue field = (NumberFieldValue) fieldValue;
-            /*NumberFormat numberInstance = NumberFormat.getNumberInstance();
-            numberInstance.setParseIntegerOnly( field.integer().get() );
-            component = new JFormattedTextField( numberInstance );
-            */
             component = field.integer().get() ? new IntegerTextField() : new DoubleTextField();
          } else if ( fieldValue instanceof TextAreaFieldValue)
          {

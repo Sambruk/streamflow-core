@@ -32,6 +32,7 @@ import se.streamsource.streamflow.client.ui.administration.AdministrationResourc
 import se.streamsource.streamflow.client.ui.caze.CheckboxesPanel;
 import se.streamsource.streamflow.client.ui.caze.DoubleTextField;
 import se.streamsource.streamflow.client.ui.caze.IntegerTextField;
+import se.streamsource.streamflow.client.ui.caze.ListBoxPanel;
 import se.streamsource.streamflow.client.ui.caze.OptionButtonsPanel;
 import se.streamsource.streamflow.client.ui.caze.RemovableLabel;
 
@@ -49,6 +50,10 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.ListDataEvent;
+import javax.swing.event.ListDataListener;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.NumberFormatter;
 import java.awt.Component;
@@ -104,6 +109,7 @@ public class   StateBinder
             JXDatePicker.class,
             JComboBox.class,
             CheckboxesPanel.class,
+            ListBoxPanel.class,
             OptionButtonsPanel.class,
             RemovableLabel.class);
 
@@ -469,7 +475,18 @@ public class   StateBinder
             });
 
             return binding;
-         } else if ( component instanceof OptionButtonsPanel )
+         } else if ( component instanceof ListBoxPanel)
+         {
+            final ListBoxPanel listbox = (ListBoxPanel) component;
+            listbox.addChangeListener( new ChangeListener()
+            {
+               public void stateChanged( ChangeEvent e )
+               {
+                  binding.updateProperty( listbox.getSelected() );
+               }
+            });
+            return binding;
+         }else if ( component instanceof OptionButtonsPanel )
          {
            final OptionButtonsPanel optionsPanel = (OptionButtonsPanel) component;
             optionsPanel.addActionPerformedListener( new ActionListener()
@@ -541,6 +558,10 @@ public class   StateBinder
          {
             CheckboxesPanel multi = (CheckboxesPanel) component;
             multi.setChecked( (String) value );
+         } else if ( component instanceof ListBoxPanel )
+         {
+            ListBoxPanel listbox = (ListBoxPanel) component;
+            listbox.addItems( (String) value );
          } else if ( component instanceof OptionButtonsPanel ) {
             OptionButtonsPanel optionsPanel = (OptionButtonsPanel) component;
             optionsPanel.setSelected( (String) value );

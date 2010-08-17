@@ -27,6 +27,7 @@ import se.streamsource.dci.api.DeleteInteraction;
 import se.streamsource.dci.api.Interactions;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
+import se.streamsource.streamflow.domain.form.ListBoxFieldValue;
 import se.streamsource.streamflow.domain.form.NumberFieldValue;
 import se.streamsource.streamflow.domain.form.SelectionFieldValue;
 import se.streamsource.streamflow.domain.form.TextAreaFieldValue;
@@ -79,6 +80,9 @@ public interface FormFieldContext
    @RequiresRoles( SelectionFieldValue.class)
    public void changeselectionelementname( NamedIndexDTO newNameDTO );
 
+   @RequiresRoles( ListBoxFieldValue.class )
+   public void changemultiple( BooleanDTO multiple );
+
    public void move( StringValue direction );
 
    abstract class Mixin
@@ -107,6 +111,17 @@ public interface FormFieldContext
          Mandatory mandatoryField = context.get( Mandatory.class );
 
          mandatoryField.changeMandatory( mandatory.bool().get() );
+      }
+
+      public void changemultiple( BooleanDTO multiple )
+      {
+         FieldValueDefinition definition = context.get( FieldValueDefinition.class );
+         ListBoxFieldValue value = context.get( ListBoxFieldValue.class );
+
+         ValueBuilder<ListBoxFieldValue> builder = value.buildWith();
+         builder.prototype().multiple().set( multiple.bool().get() );
+
+         definition.changeFieldValue( builder.newInstance() );
       }
 
       public void changewidth( IntegerDTO newWidth )
