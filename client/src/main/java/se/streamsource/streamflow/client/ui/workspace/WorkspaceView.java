@@ -63,6 +63,8 @@ import javax.swing.ListSelectionModel;
 import javax.swing.Popup;
 import javax.swing.PopupFactory;
 import javax.swing.SwingUtilities;
+import javax.swing.UIDefaults;
+import javax.swing.UIManager;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
@@ -72,8 +74,12 @@ import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
@@ -108,6 +114,8 @@ public class WorkspaceView
 
    private CasesDetailView2 detailView;
    private CasesModel casesModel;
+
+ 
 
    public WorkspaceView( final @Service ApplicationContext context,
                          final @Structure ObjectBuilderFactory obf )
@@ -156,11 +164,16 @@ public class WorkspaceView
       contextToolbar.add( showSearchButton );
 
       JPanel contextPanel = new JPanel( new BorderLayout() );
+      JPanel leftContext = new JPanel( new FlowLayout(FlowLayout.LEFT, 0, 0));
+      leftContext.setBorder( BorderFactory.createEmptyBorder( 5,0,0,0 ));
       selectContextButton = new JButton( getActionMap().get( "selectContext" ) );
-      contextPanel.add( selectContextButton, BorderLayout.WEST );
+      leftContext.add( selectContextButton );
       selectedContext = new JLabel();
-      selectedContext.setFont( selectedContext.getFont().deriveFont( Font.ITALIC ) );
-      contextPanel.add( selectedContext, BorderLayout.CENTER );
+      selectedContext.setFont( selectedContext.getFont().deriveFont( Font.BOLD ) );
+   
+
+      leftContext.add( selectedContext );
+      contextPanel.add( leftContext, BorderLayout.WEST );
       contextPanel.add( contextToolbar, BorderLayout.EAST );
 
       JPanel searchPanel = new JPanel( new BorderLayout() );
@@ -174,7 +187,7 @@ public class WorkspaceView
       searchPanel.add( searchView, BorderLayout.CENTER );
 
       topPanel = new JPanel( topLayout );
-      topPanel.setBorder( BorderFactory.createEmptyBorder( 0, 0, 5, 0 ) );
+      topPanel.setBorder( BorderFactory.createEmptyBorder( 0, 0 , 5, 0 ) );
       topPanel.add( contextPanel, "context" );
       topPanel.add( searchPanel, "search" );
 
@@ -325,7 +338,14 @@ public class WorkspaceView
                   String nodeString = node.toString().split( "\\(" )[0];
                   String selectedContextText = ((TreeNode) node).getParent() + " : " + nodeString;
 
-                  selectedContext.setText( selectedContextText );
+                  selectedContext.setOpaque( true );
+                  UIDefaults uiDefaults = UIManager.getDefaults();
+                  selectedContext.setBackground( uiDefaults.getColor( "Menu.selectionBackground" ) );
+                  selectedContext.setForeground( uiDefaults.getColor( "Menu.selectionForeground" ) );
+                  selectedContext.setText( "  " + selectedContextText + " " );
+                  FontMetrics fm = selectedContext.getFontMetrics( selectedContext.getFont() );
+                  int width = fm.stringWidth( selectedContext.getText() );
+                  selectedContext.setPreferredSize( new Dimension( width , 22 ));
 
                   // show blank detail view
                   detailView.show( null );
@@ -346,6 +366,9 @@ public class WorkspaceView
 
             } else
             {
+               selectedContext.setOpaque( false );
+               selectedContext.setBackground( selectedContext.getParent().getBackground() );
+               selectedContext.setForeground( selectedContext.getParent().getForeground() );
                selectedContext.setText( "" );
                remove( currentSelection );
                currentSelection = new JLabel();
