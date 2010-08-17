@@ -140,7 +140,7 @@ public class CaseGeneralView extends JScrollPane implements Observer
             .bindingTemplate( CaseGeneralDTO.class );
 
       // Layout and form for the right panel
-      FormLayout rightLayout = new FormLayout( "50dlu, 2dlu, 200:grow", "pref, pref, pref, pref, 20dlu, fill:pref:grow" );
+      FormLayout rightLayout = new FormLayout( "70dlu, 2dlu, 200:grow", "pref, pref, pref, pref, 20dlu, fill:pref:grow" );
 
       rightForm = new JPanel( rightLayout );
       rightForm.setFocusable( false );
@@ -172,10 +172,11 @@ public class CaseGeneralView extends JScrollPane implements Observer
             .getValue( javax.swing.Action.ACCELERATOR_KEY ),
             JComponent.WHEN_IN_FOCUSED_WINDOW );
       caseTypeButton.setHorizontalAlignment( SwingConstants.LEFT );
-      rightBuilder.setExtent( 1, 1 );
-      rightBuilder.add( caseTypeButton );
+
+      rightBuilder.add( caseTypeButton,
+            new CellConstraints( 1, 3, 1, 1, CellConstraints.FILL, CellConstraints.TOP, new Insets( 2, 0, 5, 0 ) ) );
       rightBuilder.add( selectedCaseType,
-            new CellConstraints( 3, 3, 1, 1, CellConstraints.LEFT, CellConstraints.BOTTOM, new Insets( 0, 0, 0, 0 ) ) );
+            new CellConstraints( 3, 3, 1, 1, CellConstraints.LEFT, CellConstraints.BOTTOM, new Insets( 2, 0, 0, 0 ) ) );
 
       rightBuilder.nextLine();
 
@@ -189,11 +190,11 @@ public class CaseGeneralView extends JScrollPane implements Observer
 
       labelButton.setHorizontalAlignment( SwingConstants.LEFT );
       rightBuilder.add( labelButton,
-            new CellConstraints( 1, 4, 1, 1, CellConstraints.FILL, CellConstraints.TOP, new Insets( 0, 0, 0, 0 ) ) );
+            new CellConstraints( 1, 4, 1, 1, CellConstraints.FILL, CellConstraints.TOP, new Insets( 5, 0, 0, 0 ) ) );
 
       labels.setPreferredSize( new Dimension( 500, 80 ) );
       rightBuilder.add( labels,
-            new CellConstraints( 3, 4, 1, 1, CellConstraints.LEFT, CellConstraints.TOP, new Insets( 0, 0, 0, 0 ) ) );
+            new CellConstraints( 3, 4, 1, 1, CellConstraints.LEFT, CellConstraints.TOP, new Insets( 5, 0, 0, 0 ) ) );
       rightBuilder.nextLine();
 
       // Due date
@@ -201,7 +202,8 @@ public class CaseGeneralView extends JScrollPane implements Observer
       rightBuilder.add( new JLabel( i18n.text( WorkspaceResources.due_on_label ) ) );
       rightBuilder.nextColumn();
       rightBuilder.nextColumn();
-      rightBuilder.add( caseBinder.bind( dueOnField = (JXDatePicker) DATEPICKER.newField(), template.dueOn() ) );
+      rightBuilder.add( caseBinder.bind( dueOnField = (JXDatePicker) DATEPICKER.newField(), template.dueOn() ),
+            new CellConstraints( 3, 5, 1, 1, CellConstraints.LEFT, CellConstraints.BOTTOM, new Insets( 0, 0, 0, 0 ) ) );
       dueOnField.setFormats( DateFormat.getDateInstance( DateFormat.MEDIUM, Locale.getDefault() ) );
       rightBuilder.nextLine();
 
@@ -209,7 +211,7 @@ public class CaseGeneralView extends JScrollPane implements Observer
       rightBuilder.add( new JLabel( i18n.text( WorkspaceResources.forms_label ) ),
             cc.xy( 1, 6, CellConstraints.LEFT, CellConstraints.TOP ) );
       rightBuilder.add( forms,
-            new CellConstraints( 3, 6, 1, 1, CellConstraints.FILL, CellConstraints.FILL, new Insets( 0, 4, 0, 0 ) ) );
+            new CellConstraints( 3, 6, 1, 1, CellConstraints.FILL, CellConstraints.FILL, new Insets( 5, 0, 0, 0 ) ) );
 
       // Limit pickable dates to future
       Calendar calendar = Calendar.getInstance();

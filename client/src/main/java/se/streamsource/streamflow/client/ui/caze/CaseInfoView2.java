@@ -33,10 +33,7 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTable;
-import javax.swing.border.LineBorder;
 import java.awt.Color;
-import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.Insets;
 import java.text.SimpleDateFormat;
 import java.util.Observable;
@@ -64,12 +61,12 @@ public class CaseInfoView2 extends JPanel implements Observer
    {
       this.setFocusable( false );
       setFont( getFont().deriveFont( getFont().getSize() - 2 ) );
-      
+
       FormLayout layout = new FormLayout( "25dlu,200dlu,70dlu,70dlu,70dlu", "10dlu,15dlu" );
       DefaultFormBuilder builder = new DefaultFormBuilder( layout, this );
       builder.setBorder( Borders.createEmptyBorder( Sizes.DLUY4,
             Sizes.DLUX2, Sizes.DLUY2, Sizes.DLUX2 ) );
-      
+
       JLabel statusHeader = new JLabel( i18n.text( WorkspaceResources.case_status_header ) );
       statusHeader.setFocusable( false );
       statusHeader.setForeground( Color.GRAY );
@@ -92,17 +89,17 @@ public class CaseInfoView2 extends JPanel implements Observer
 
       CellConstraints cc = new CellConstraints();
 
-      builder.add( statusHeader, new CellConstraints(1,1,1,1,CellConstraints.LEFT, CellConstraints.BOTTOM, new Insets( 0,5,0,0) ) );
+      builder.add( statusHeader, new CellConstraints( 1, 1, 1, 1, CellConstraints.LEFT, CellConstraints.BOTTOM, new Insets( 0, 5, 0, 0 ) ) );
       builder.add( titleHeader, "2,1,left,bottom" );
       builder.add( typeHeader, "3,1,left,bottom" );
       builder.add( ownerHeader, "4,1,left,bottom" );
       builder.add( assignedHeader, "5,1,left,bottom" );
 
       builder.add( statusPanel, "1,2,left,top" );
-      builder.add( title, "2,2,left,bottom" );
-      builder.add( caseType, "3,2,left,bottom" );
-      builder.add( owner, "4,2,left,bottom" );
-      builder.add( assignedTo, "5,2,left,bottom" );
+      builder.add( title, "2,2,left,top" );
+      builder.add( caseType, "3,2,left,top" );
+      builder.add( owner, "4,2,left,top" );
+      builder.add( assignedTo, "5,2,left,top" );
 
    }
 
@@ -129,7 +126,7 @@ public class CaseInfoView2 extends JPanel implements Observer
       comp.setBorder( BorderFactory.createEtchedBorder() );
       statusPanel.add( comp );
 
-      title.setText( (aCase.caseId().get() != null ? "#" + aCase.caseId().get() + " " : "" ) + aCase.text().get() );
+      title.setText( (aCase.caseId().get() != null ? "#" + aCase.caseId().get() + " " : "") + aCase.text().get() );
 
       if (aCase.caseType().get() != null)
          caseType.setText( aCase.caseType().get() + (aCase.resolution().get() != null ? "(" + aCase.resolution().get() + ")" : "") );
