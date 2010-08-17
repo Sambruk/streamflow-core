@@ -34,6 +34,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Insets;
 import java.text.SimpleDateFormat;
 import java.util.Observable;
@@ -124,6 +125,7 @@ public class CaseInfoView2 extends JPanel implements Observer
       statusPanel.removeAll();
       JComponent comp = (JComponent) statusRenderer.getTableCellRendererComponent( fakeTable, aCase.status().get(), false, false, 0, 0 );
       comp.setBorder( BorderFactory.createEtchedBorder() );
+      comp.setPreferredSize( new Dimension( 15, 15 ) );
       statusPanel.add( comp );
 
       title.setText( (aCase.caseId().get() != null ? "#" + aCase.caseId().get() + " " : "") + aCase.text().get() );
