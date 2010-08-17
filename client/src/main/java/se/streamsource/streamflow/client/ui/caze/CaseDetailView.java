@@ -50,12 +50,12 @@ public class CaseDetailView
    private ContactsAdminView contactsView;
    private FormsAdminView formsView;
    private CaseModel model;
-   private CaseInfoView infoView;
+   private CaseInfoView2 infoView;
    private AttachmentsView attachmentsView;
    private CaseActionsView actionsView;
 
    public CaseDetailView( @Service ApplicationContext appContext,
-                          @Uses CaseInfoView infoView,
+                          @Uses CaseInfoView2 infoView,
                           @Uses CaseGeneralView generalView,
                           @Uses ConversationsView conversationsView,
                           @Uses ContactsAdminView contactsView,

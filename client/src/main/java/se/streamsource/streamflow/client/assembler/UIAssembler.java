@@ -143,7 +143,7 @@ import se.streamsource.streamflow.client.ui.caze.CaseFormsModel;
 import se.streamsource.streamflow.client.ui.caze.CaseGeneralModel;
 import se.streamsource.streamflow.client.ui.caze.CaseGeneralView;
 import se.streamsource.streamflow.client.ui.caze.CaseInfoModel;
-import se.streamsource.streamflow.client.ui.caze.CaseInfoView;
+import se.streamsource.streamflow.client.ui.caze.CaseInfoView2;
 import se.streamsource.streamflow.client.ui.caze.CaseLabelsDialog;
 import se.streamsource.streamflow.client.ui.caze.CaseLabelsModel;
 import se.streamsource.streamflow.client.ui.caze.CaseLabelsView;
@@ -168,7 +168,6 @@ import se.streamsource.streamflow.client.ui.caze.FormSubmissionWizardPage;
 import se.streamsource.streamflow.client.ui.caze.FormsAdminView;
 import se.streamsource.streamflow.client.ui.caze.PossibleCaseTypesModel;
 import se.streamsource.streamflow.client.ui.caze.PossibleFormsModel;
-import se.streamsource.streamflow.client.ui.caze.PossibleFormsView;
 import se.streamsource.streamflow.client.ui.caze.PossibleFormsView2;
 import se.streamsource.streamflow.client.ui.caze.SubmittedFormsAdminView;
 import se.streamsource.streamflow.client.ui.caze.attachments.AttachmentsModel;
@@ -466,7 +465,7 @@ public class UIAssembler
 
       addMV( module, CasesTableModel.class, CaseTableView.class );
 
-      addMV( module, CaseInfoModel.class, CaseInfoView.class );
+      addMV( module, CaseInfoModel.class, CaseInfoView2.class );
 
       addModels( module, CasesModel.class, CaseFormsModel.class );
 
