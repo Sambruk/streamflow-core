@@ -97,10 +97,10 @@ public class CaseInfoView2 extends JPanel implements Observer
       builder.add( assignedHeader, "5,1,left,bottom" );
 
       builder.add( statusPanel, "1,2,left,top" );
-      builder.add( title, "2,2,left,top" );
-      builder.add( caseType, "3,2,left,top" );
-      builder.add( owner, "4,2,left,top" );
-      builder.add( assignedTo, "5,2,left,top" );
+      builder.add( title, "2,2,left,center" );
+      builder.add( caseType, "3,2,left,center" );
+      builder.add( owner, "4,2,left,center" );
+      builder.add( assignedTo, "5,2,left,center" );
 
    }
 
