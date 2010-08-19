@@ -47,7 +47,7 @@ public class StreamflowWebAssembler
       }
 
       // Version name rules: x.y.sprint.revision
-      assembly.setVersion( "1.1.5.2083" );
+      assembly.setVersion( "1.1.6.2236" );
 
       LayerAssembly configurationLayer = assembly.layerAssembly( "Configuration" );
       LayerAssembly domainInfrastructureLayer = assembly.layerAssembly( "Domain infrastructure" );
@@ -58,7 +58,7 @@ public class StreamflowWebAssembler
 
       webLayer.uses( appLayer, contextLayer, domainLayer, domainInfrastructureLayer );
       appLayer.uses( contextLayer, domainLayer, domainInfrastructureLayer, configurationLayer );
-      contextLayer.uses(domainLayer, domainInfrastructureLayer);
+      contextLayer.uses( domainLayer, domainInfrastructureLayer );
       domainLayer.uses( domainInfrastructureLayer );
       domainInfrastructureLayer.uses( configurationLayer );
 
@@ -79,6 +79,6 @@ public class StreamflowWebAssembler
 
    protected void assembleWebLayer( LayerAssembly webLayer ) throws AssemblyException
    {
-      new WebAssembler().assemble(webLayer);
+      new WebAssembler().assemble( webLayer );
    }
 }

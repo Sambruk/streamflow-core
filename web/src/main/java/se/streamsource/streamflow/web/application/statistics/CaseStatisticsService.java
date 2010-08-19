@@ -434,11 +434,9 @@ public interface CaseStatisticsService
          prototype.caseId().set( aCase.caseId().get() );
          prototype.createdOn().set( new Date( aCase.createdOn().get().getTime() ) );
          Date closeDate = aCase.closedOn().get();
-         if (closeDate != null)
-         {
-            prototype.closedOn().set( new Date( closeDate.getTime() ) );
-            prototype.duration().set( closeDate.getTime() - aCase.createdOn().get().getTime() );
-         }
+         prototype.closedOn().set( new Date( closeDate.getTime() ) );
+         prototype.duration().set( closeDate.getTime() - aCase.createdOn().get().getTime() );
+
          CaseType caseType = aCase.caseType().get();
          if (caseType != null)
          {

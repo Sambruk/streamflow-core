@@ -42,40 +42,40 @@ import org.qi4j.migration.assembly.MigrationBuilder;
 import org.qi4j.spi.service.importer.NewObjectImporter;
 import org.qi4j.spi.uuid.UuidIdentityGeneratorService;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.factory.DomainEventFactoryService;
 import se.streamsource.streamflow.infrastructure.time.TimeService;
-import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
-import se.streamsource.streamflow.web.infrastructure.caching.CachingServiceComposite;
-import se.streamsource.streamflow.web.infrastructure.event.MemoryEventStoreService;
 import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStoreService;
+import se.streamsource.streamflow.web.infrastructure.caching.CachingServiceComposite;
 import se.streamsource.streamflow.web.infrastructure.database.DataSourceService;
 import se.streamsource.streamflow.web.infrastructure.database.LiquibaseService;
 import se.streamsource.streamflow.web.infrastructure.database.ServiceInstanceImporter;
 import se.streamsource.streamflow.web.infrastructure.event.JdbmEventStoreService;
+import se.streamsource.streamflow.web.infrastructure.event.MemoryEventStoreService;
 import se.streamsource.streamflow.web.infrastructure.index.EmbeddedSolrService;
 import se.streamsource.streamflow.web.infrastructure.index.SolrQueryService;
 import se.streamsource.streamflow.web.resource.EventsCommandResult;
 
 import javax.sql.DataSource;
 
-import static org.qi4j.api.service.ServiceTags.tags;
-import static org.qi4j.bootstrap.ImportedServiceDeclaration.NEW_OBJECT;
+import static org.qi4j.api.service.ServiceTags.*;
+import static org.qi4j.bootstrap.ImportedServiceDeclaration.*;
 
 /**
  * JAVADOC
  */
 public class InfrastructureAssembler
 {
-   public void assemble( LayerAssembly layer)
+   public void assemble( LayerAssembly layer )
          throws AssemblyException
    {
-      caching(layer.moduleAssembly( "Caching" ));
-      database(layer.moduleAssembly( "Database" ));
-      entityStore(layer.moduleAssembly( "Entity store" ));
-      entityFinder(layer.moduleAssembly( "Entity finder" ));
-      events(layer.moduleAssembly( "Events" ));
-      searchEngine(layer.moduleAssembly( "Search engine" ));
-      attachments(layer.moduleAssembly( "Attachments store" ));
+      caching( layer.moduleAssembly( "Caching" ) );
+      database( layer.moduleAssembly( "Database" ) );
+      entityStore( layer.moduleAssembly( "Entity store" ) );
+      entityFinder( layer.moduleAssembly( "Entity finder" ) );
+      events( layer.moduleAssembly( "Events" ) );
+      searchEngine( layer.moduleAssembly( "Search engine" ) );
+      attachments( layer.moduleAssembly( "Attachments store" ) );
    }
 
    private void caching( ModuleAssembly moduleAssembly ) throws AssemblyException
@@ -103,7 +103,7 @@ public class InfrastructureAssembler
    private void events( ModuleAssembly module ) throws AssemblyException
    {
       module.importServices( EventsCommandResult.class ).importedBy( NEW_OBJECT ).visibleIn( Visibility.application );
-      module.addObjects(EventsCommandResult.class); 
+      module.addObjects( EventsCommandResult.class );
       module.addValues( TransactionEvents.class, DomainEvent.class ).visibleIn( Visibility.application );
       module.addServices( DomainEventFactoryService.class ).visibleIn( Visibility.application );
       module.addObjects( TimeService.class );
@@ -112,8 +112,7 @@ public class InfrastructureAssembler
       if (module.layerAssembly().applicationAssembly().mode() == Application.Mode.production)
       {
          module.addServices( JdbmEventStoreService.class ).identifiedBy( "eventstore" ).setMetaInfo( tags( "domain" ) ).visibleIn( Visibility.application );
-      }
-      else
+      } else
          module.addServices( MemoryEventStoreService.class ).identifiedBy( "eventstore" ).visibleIn( Visibility.application );
    }
 
@@ -132,7 +131,7 @@ public class InfrastructureAssembler
 
       module.addObjects( EntityStateSerializer.class, EntityTypeSerializer.class );
       module.addServices( RdfIndexingEngineService.class ).instantiateOnStartup().visibleIn( Visibility.application );
-      module.addServices( RdfQueryParserFactory.class);
+      module.addServices( RdfQueryParserFactory.class );
    }
 
    private void entityStore( ModuleAssembly module ) throws AssemblyException
@@ -169,19 +168,19 @@ public class InfrastructureAssembler
                renameManyAssociation( "roles", "projectRoles" ).
                end().
 
-               toVersion("0.2.18.0").
+               toVersion( "0.2.18.0" ).
                toVersion( "0.3.20.962" ).
                renamePackage( "se.streamsource.streamflow.web.domain.form", "se.streamsource.streamflow.web.domain.entity.form" ).
                withEntities( "FieldEntity",
                      "FieldTemplateEntity",
                      "FormEntity",
-                     "FormTemplateEntity").
+                     "FormTemplateEntity" ).
                end().
-               renameEntity( "se.streamsource.streamflow.web.domain.label.LabelEntity","se.streamsource.streamflow.web.domain.entity.label.LabelEntity" ).
-               renamePackage("se.streamsource.streamflow.web.domain.organization", "se.streamsource.streamflow.web.domain.entity.organization").
+               renameEntity( "se.streamsource.streamflow.web.domain.label.LabelEntity", "se.streamsource.streamflow.web.domain.entity.label.LabelEntity" ).
+               renamePackage( "se.streamsource.streamflow.web.domain.organization", "se.streamsource.streamflow.web.domain.entity.organization" ).
                withEntities( "OrganizationalUnitEntity",
                      "OrganizationEntity",
-                     "OrganizationsEntity").
+                     "OrganizationsEntity" ).
                end().
                renameEntity( "se.streamsource.streamflow.web.domain.group.GroupEntity", "se.streamsource.streamflow.web.domain.entity.organization.GroupEntity" ).
                renameEntity( "se.streamsource.streamflow.web.domain.role.RoleEntity", "se.streamsource.streamflow.web.domain.entity.organization.RoleEntity" ).
@@ -189,13 +188,13 @@ public class InfrastructureAssembler
                withEntities( "ProjectEntity", "ProjectRoleEntity" ).
                end().
                renamePackage( "se.streamsource.streamflow.web.domain.task", "se.streamsource.streamflow.web.domain.entity.task" ).
-               withEntities( "TaskEntity").
+               withEntities( "TaskEntity" ).
                end().
                renamePackage( "se.streamsource.streamflow.web.domain.tasktype", "se.streamsource.streamflow.web.domain.entity.tasktype" ).
-               withEntities( "TaskTypeEntity").
+               withEntities( "TaskTypeEntity" ).
                end().
                renamePackage( "se.streamsource.streamflow.web.domain.user", "se.streamsource.streamflow.web.domain.entity.user" ).
-               withEntities( "UserEntity").
+               withEntities( "UserEntity" ).
                end().
 
                toVersion( "0.5.23.1349" ).forEntities( "se.streamsource.streamflow.web.domain.entity.form.FieldEntity" ).
@@ -204,7 +203,7 @@ public class InfrastructureAssembler
                   public boolean upgrade( JSONObject state, StateStore stateStore, Migrator migrator ) throws JSONException
                   {
                      JSONObject fieldValue = state.getJSONObject( "properties" ).getJSONObject( "fieldValue" );
-                     if (fieldValue.get( "_type" ).equals("se.streamsource.streamflow.domain.form.PageBreakFieldValue"))
+                     if (fieldValue.get( "_type" ).equals( "se.streamsource.streamflow.domain.form.PageBreakFieldValue" ))
                      {
                         fieldValue.put( "_type", "se.streamsource.streamflow.domain.form.CommentFieldValue" );
                         return true;
@@ -217,7 +216,7 @@ public class InfrastructureAssembler
                   {
                      return false;
                   }
-               })
+               } )
                .end().
 
                toVersion( "0.6.24.1488" ).forEntities( "se.streamsource.streamflow.web.domain.entity.task.TaskEntity" ).
@@ -228,17 +227,17 @@ public class InfrastructureAssembler
                      JSONArray contacts = state.getJSONObject( "properties" ).getJSONArray( "contacts" );
 
                      boolean changed = false;
-                     for ( int i=0; i<contacts.length(); i++ )
+                     for (int i = 0; i < contacts.length(); i++)
                      {
                         JSONObject contact = contacts.getJSONObject( i );
                         JSONArray emails = contact.getJSONArray( "emailAddresses" );
 
-                        for ( int j=0; j<emails.length(); j++ )
+                        for (int j = 0; j < emails.length(); j++)
                         {
                            JSONObject email = emails.getJSONObject( j );
                            String emailString = (String) email.get( "emailAddress" );
 
-                           if ( !emailString.matches( "(.*@.*)?" ) )
+                           if (!emailString.matches( "(.*@.*)?" ))
                            {
                               email.put( "emailAddress", "" );
                               changed = true;
@@ -252,7 +251,7 @@ public class InfrastructureAssembler
                   {
                      return false;
                   }
-               }).end()
+               } ).end()
                .forEntities( "se.streamsource.streamflow.web.domain.entity.user.UserEntity" ).
                custom( new EntityMigrationOperation()
                {
@@ -262,12 +261,12 @@ public class InfrastructureAssembler
                      JSONArray emails = contact.getJSONArray( "emailAddresses" );
 
                      boolean changed = false;
-                     for ( int j=0; j<emails.length(); j++ )
+                     for (int j = 0; j < emails.length(); j++)
                      {
                         JSONObject email = emails.getJSONObject( j );
                         String emailString = (String) email.get( "emailAddress" );
 
-                        if ( !emailString.matches( "(.*@.*)?" ) )
+                        if (!emailString.matches( "(.*@.*)?" ))
                         {
                            email.put( "emailAddress", "" );
                            changed = true;
@@ -281,74 +280,75 @@ public class InfrastructureAssembler
                   {
                      return false;
                   }
-               }).end().
+               } ).end().
 
                toVersion( "0.7.25.1665" ).
-               renameEntity( "se.streamsource.streamflow.web.domain.entity.task.TaskEntity","se.streamsource.streamflow.web.domain.entity.caze.CaseEntity" ).
+               renameEntity( "se.streamsource.streamflow.web.domain.entity.task.TaskEntity", "se.streamsource.streamflow.web.domain.entity.caze.CaseEntity" ).
                renameEntity( "se.streamsource.streamflow.web.domain.entity.tasktype.TaskTypeEntity", "se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity" ).
                forEntities( "se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity" ).
-                  renameManyAssociation( "taskTypes", "caseTypes" ).
+               renameManyAssociation( "taskTypes", "caseTypes" ).
                end().
                forEntities( "se.streamsource.streamflow.web.domain.entity.caze.CaseEntity" ).
-                  renameAssociation( "taskType", "caseType" ).
-                  renameProperty( "taskId", "caseId" ).
-                  custom( new EntityMigrationOperation()
+               renameAssociation( "taskType", "caseType" ).
+               renameProperty( "taskId", "caseId" ).
+               custom( new EntityMigrationOperation()
+               {
+                  public boolean upgrade( JSONObject state, StateStore stateStore, Migrator migrator ) throws JSONException
                   {
-                     public boolean upgrade( JSONObject state, StateStore stateStore, Migrator migrator ) throws JSONException
-                     {
-                        String status = state.getJSONObject( "properties" ).getString( "status" );
+                     String status = state.getJSONObject( "properties" ).getString( "status" );
 
-                        if (status.equals("ACTIVE"))
-                           status = "OPEN";
-                        else if (status.equals( "COMPLETED" ))
-                           status = "CLOSED";
-                        else if (status.equals("DROPPED"))
-                           status = "CLOSED";
-                        else if (status.equals("DONE"))
-                           status = "OPEN";
-                        else if (status.equals("DELEGATED"))
-                           status = "OPEN";
+                     if (status.equals( "ACTIVE" ))
+                        status = "OPEN";
+                     else if (status.equals( "COMPLETED" ))
+                        status = "CLOSED";
+                     else if (status.equals( "DROPPED" ))
+                        status = "CLOSED";
+                     else if (status.equals( "DONE" ))
+                        status = "OPEN";
+                     else if (status.equals( "DELEGATED" ))
+                        status = "OPEN";
 
-                        state.getJSONObject( "properties" ).put( "status", status );
+                     state.getJSONObject( "properties" ).put( "status", status );
 
-                        return true;
-                     }
+                     return true;
+                  }
 
-                     public boolean downgrade( JSONObject state, StateStore stateStore, Migrator migrator ) throws JSONException
-                     {
-                        return false;
-                     }
-                  }).
+                  public boolean downgrade( JSONObject state, StateStore stateStore, Migrator migrator ) throws JSONException
+                  {
+                     return false;
+                  }
+               } ).
                end().
                forEntities( "se.streamsource.streamflow.web.domain.entity.project.ProjectEntity" ).
-                  renameManyAssociation( "selectedTaskTypes", "selectedCaseTypes" ).
+               renameManyAssociation( "selectedTaskTypes", "selectedCaseTypes" ).
                end().
                forEntities( "se.streamsource.streamflow.web.domain.entity.organization.AccessPointEntity" ).
-                  renameAssociation( "taskType", "caseType" ).
+               renameAssociation( "taskType", "caseType" ).
                end().
                toVersion( "1.1.5.2083" ).
-                  forEntities( "se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity" ).
-                     removeManyAssociation( "fieldDefinitions" ).
-               end().toVersion( "1.1.6.2236" ).
-                  forEntities( "se.streamsource.streamflow.web.domain.entity.form.FieldEntity" ).
+               forEntities( "se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity" ).
+               removeManyAssociation( "fieldDefinitions" ).
+               end().
+               toVersion( "1.1.6.2236" ).
+               forEntities( "se.streamsource.streamflow.web.domain.entity.form.FieldEntity" ).
                custom( new EntityMigrationOperation()
                {
                   public boolean upgrade( JSONObject state, StateStore stateStore, Migrator migrator ) throws JSONException
                   {
                      JSONObject fieldValue = state.getJSONObject( "properties" ).getJSONObject( "fieldValue" );
 
-                     if (fieldValue.get( "_type" ).equals("se.streamsource.streamflow.domain.form.SelectionFieldValue"))
+                     if (fieldValue.get( "_type" ).equals( "se.streamsource.streamflow.domain.form.SelectionFieldValue" ))
                      {
-                        if ( fieldValue.get( "multiple" ) != null )
+                        if (fieldValue.get( "multiple" ) != null)
                         {
-                           if ( fieldValue.get( "multiple" ).equals( "true" ) )
+                           if (fieldValue.get( "multiple" ).equals( "true" ))
                            {
                               fieldValue.put( "_type", "se.streamsource.streamflow.domain.form.CheckboxesFieldValue" );
                            } else
                            {
                               fieldValue.put( "_type", "se.streamsource.streamflow.domain.form.OptionButtonsFieldValue" );
                            }
-                           migrator.removeProperty( fieldValue, "multiple" );
+                           fieldValue.remove( "multiple" );
                            return true;
                         }
                      }
@@ -359,7 +359,8 @@ public class InfrastructureAssembler
                   {
                      return false;
                   }
-               });
+               } )
+               .end();
 
          module.addServices( MigrationService.class ).setMetaInfo( migrationBuilder );
          module.addObjects( MigrationEventLogger.class );
@@ -379,7 +380,7 @@ public class InfrastructureAssembler
       if (mode.equals( Application.Mode.production ))
       {
          // Liquibase migration
-    	 module.addServices( LiquibaseService.class ).instantiateOnStartup();
+         module.addServices( LiquibaseService.class ).instantiateOnStartup();
       }
    }
 }
