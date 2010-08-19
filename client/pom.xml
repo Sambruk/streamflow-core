@@ -13,6 +13,34 @@
     <name>Streamflow client</name>
     <description>Streamflow client</description>
 
+    <build>
+        <plugins>
+            <!-- Resources -->
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.4.1</version>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>
+                        <!-- here the phase you need -->
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/classes
+                            </outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${basedir}/../target/maven-shared-archive-resources</directory>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
     <dependencies>
         <!-- Domain -->
         <dependency>

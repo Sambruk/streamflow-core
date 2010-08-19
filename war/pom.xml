@@ -44,6 +44,9 @@
                                         <include>**/*.html</include>
                                     </includes>
                                 </resource>
+                                <resource>
+                                    <directory>${basedir}/../target/maven-shared-archive-resources</directory>
+                                </resource>
                             </resources>
                         </configuration>
                     </execution>
@@ -148,36 +151,36 @@
             </plugin>
         </plugins>
     </build>
-   <!-- <profiles>
-        <profile>
-            <id>streamflow-nightly</id>
-            <activation>
-                <property>
-                    <name>!release</name>
-                </property>
-            </activation>
-            <properties>
-                <deploy.server>${deploy.nightly.server}</deploy.server>
-                <cargo.url>http://${deploy.nightly.server}/manager</cargo.url>
-                <cargo.username>${cargo.nightly.username}</cargo.username>
-                <cargo.password>${cargo.nightly.password}</cargo.password>
-            </properties>
-        </profile>
-        <profile>
-            <id>streamflow-release</id>
-            <activation>
-                <property>
-                    <name>release</name>
-                </property>
-            </activation>
-            <properties>
-                <deploy.server>${deploy.release.server}</deploy.server>
-                <cargo.url>http://${deploy.release.server}/manager</cargo.url>
-                <cargo.username>${cargo.release.username}</cargo.username>
-                <cargo.password>${cargo.release.password}</cargo.password>
-            </properties>
-        </profile>
-    </profiles> -->
+    <!-- <profiles>
+       <profile>
+           <id>streamflow-nightly</id>
+           <activation>
+               <property>
+                   <name>!release</name>
+               </property>
+           </activation>
+           <properties>
+               <deploy.server>${deploy.nightly.server}</deploy.server>
+               <cargo.url>http://${deploy.nightly.server}/manager</cargo.url>
+               <cargo.username>${cargo.nightly.username}</cargo.username>
+               <cargo.password>${cargo.nightly.password}</cargo.password>
+           </properties>
+       </profile>
+       <profile>
+           <id>streamflow-release</id>
+           <activation>
+               <property>
+                   <name>release</name>
+               </property>
+           </activation>
+           <properties>
+               <deploy.server>${deploy.release.server}</deploy.server>
+               <cargo.url>http://${deploy.release.server}/manager</cargo.url>
+               <cargo.username>${cargo.release.username}</cargo.username>
+               <cargo.password>${cargo.release.password}</cargo.password>
+           </properties>
+       </profile>
+   </profiles> -->
 
     <dependencies>
         <!-- Web -->
