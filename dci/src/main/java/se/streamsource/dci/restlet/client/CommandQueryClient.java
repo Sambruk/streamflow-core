@@ -182,7 +182,13 @@ public class CommandQueryClient
          throw new ResourceException( client.getStatus() );
       } else
       {
-         responseHandler.handleResponse( client.getResponse() );
+         try
+         {
+            responseHandler.handleResponse( client.getResponse() );
+         } finally
+         {
+            client.getResponse().release();
+         }
       }
    }
 
@@ -279,7 +285,13 @@ public class CommandQueryClient
                throw new ResourceException( client.getStatus() );
             } else
             {
-               responseHandler.handleResponse( client.getResponse() );
+               try
+               {
+                  responseHandler.handleResponse( client.getResponse() );
+               } finally
+               {
+                  client.getResponse().release();
+               }
             }
             break;
          } catch (ResourceException e)
@@ -324,7 +336,13 @@ public class CommandQueryClient
                throw new ResourceException( client.getStatus() );
             } else
             {
-               responseHandler.handleResponse( client.getResponse() );
+               try
+               {
+                  responseHandler.handleResponse( client.getResponse() );
+               } finally
+               {
+                  client.getResponse().release();
+               }
             }
 
             break;

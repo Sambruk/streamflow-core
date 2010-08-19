@@ -27,6 +27,5 @@ public class NullResponseHandler
 {
    public void handleResponse( Response response ) throws ResourceException
    {
-      
    }
 }
