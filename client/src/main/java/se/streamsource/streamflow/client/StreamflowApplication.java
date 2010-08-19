@@ -367,7 +367,7 @@ public class StreamflowApplication
    @Action
    public void showAbout()
    {
-      dialogs.showOkDialog( getMainFrame(), new AboutDialog() );
+      dialogs.showOkDialog( getMainFrame(), new AboutDialog( getContext() ) );
    }
 
    @Action
