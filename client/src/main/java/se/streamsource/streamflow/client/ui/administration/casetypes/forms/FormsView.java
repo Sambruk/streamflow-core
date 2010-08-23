@@ -51,6 +51,7 @@ import se.streamsource.streamflow.client.ui.administration.label.SelectionDialog
 import ca.odell.glazedlists.swing.EventListModel;
 
 import com.jgoodies.forms.factories.Borders;
+import se.streamsource.streamflow.util.Strings;
 
 /**
  * JAVADOC
@@ -114,7 +115,7 @@ public class FormsView
       dialogs.showOkCancelHelpDialog( this, formDialog, i18n.text( AdministrationResources.create_new_form ) );
 
       String name = formDialog.name();
-      if (name != null && !"".equals( name ))
+      if (Strings.notEmpty( name ) )
       {
          model.createForm( name );
          model.refresh();

@@ -38,6 +38,7 @@ import se.streamsource.streamflow.client.ui.ConfirmationDialog;
 import se.streamsource.streamflow.client.ui.NameDialog;
 import se.streamsource.streamflow.client.ui.OptionsAction;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.util.Strings;
 
 import javax.swing.ActionMap;
 import javax.swing.JButton;
@@ -104,7 +105,7 @@ public class CaseTypesView
 
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.add_casetype_title ) );
 
-      if (dialog.name() != null)
+      if (Strings.notEmpty( dialog.name() ))
       {
          model.newCaseType( dialog.name() );
          model.refresh();
@@ -133,7 +134,7 @@ public class CaseTypesView
       NameDialog dialog = nameDialogs.iterator().next();
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.rename_casetype_title ) );
 
-      if (dialog.name() != null)
+      if (Strings.notEmpty( dialog.name() ))
       {
          LinkValue item = (LinkValue) projectList.getSelectedValue();
          model.getCaseTypeModel( item.id().get() ).changeDescription( dialog.name() );

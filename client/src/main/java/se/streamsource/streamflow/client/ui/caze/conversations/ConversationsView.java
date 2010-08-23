@@ -37,6 +37,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.ui.NameDialog;
 import se.streamsource.streamflow.client.ui.caze.CaseResources;
 import se.streamsource.streamflow.resource.conversation.ConversationDTO;
+import se.streamsource.streamflow.util.Strings;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -139,7 +140,7 @@ public class ConversationsView
       NameDialog dialog = topicDialogs.iterator().next();
       dialogs.showOkCancelHelpDialog( this, dialog, text( CaseResources.new_conversation_topic ) );
 
-      if (dialog.name() != null )
+      if ( Strings.notEmpty( dialog.name() ) )
       {
          model.createConversation( dialog.name() );
          list.setSelectedIndex( model.conversations().size() - 1 );

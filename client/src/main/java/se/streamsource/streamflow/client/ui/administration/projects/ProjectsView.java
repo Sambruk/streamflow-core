@@ -35,6 +35,7 @@ import se.streamsource.streamflow.client.ui.ConfirmationDialog;
 import se.streamsource.streamflow.client.ui.NameDialog;
 import se.streamsource.streamflow.client.ui.OptionsAction;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.util.Strings;
 
 import javax.swing.ActionMap;
 import javax.swing.JButton;
@@ -100,7 +101,7 @@ public class ProjectsView
 
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.add_project_title ) );
 
-      if (dialog.name() != null)
+      if (Strings.notEmpty( dialog.name() ) )
       {
          model.newProject( dialog.name() );
       }
@@ -126,7 +127,7 @@ public class ProjectsView
       NameDialog dialog = nameDialogs.iterator().next();
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.change_project_title ) );
 
-      if (dialog.name() != null)
+      if (Strings.notEmpty( dialog.name() ) )
       {
          model.changeDescription( (LinkValue)projectList.getSelectedValue(), dialog.name() );
       }

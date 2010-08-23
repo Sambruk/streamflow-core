@@ -57,6 +57,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.ConfirmationDialog;
 import se.streamsource.streamflow.client.ui.NameDialog;
 import se.streamsource.streamflow.client.ui.OptionsAction;
+import se.streamsource.streamflow.util.Strings;
 
 /**
  * JAVADOC
@@ -203,7 +204,7 @@ public class AdministrationOutlineView
 
       NameDialog dialog = nameDialogs.iterator().next();
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.change_ou_title ) );
-      if (dialog.name() != null)
+      if (Strings.notEmpty( dialog.name() ))
       {
          if (node instanceof MutableTreeNode)
          {
@@ -221,7 +222,7 @@ public class AdministrationOutlineView
 
       NameDialog dialog = nameDialogs.iterator().next();
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.create_ou_title ) );
-      if (dialog.name() != null)
+      if (Strings.notEmpty( dialog.name() ))
       {
          ArrayList<Integer> expandedRows = new ArrayList<Integer>();
          for (int i = 0; i < tree.getRowCount(); i++)

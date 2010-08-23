@@ -33,6 +33,7 @@ import se.streamsource.streamflow.client.ui.NameDialog;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.PageListItemValue;
+import se.streamsource.streamflow.util.Strings;
 
 import javax.swing.Action;
 import javax.swing.ActionMap;
@@ -214,7 +215,7 @@ public class FieldsView
       NameDialog dialog = pageCreationDialog.iterator().next();
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( AdministrationResources.add_page_title ) );
 
-      if (dialog.name() != null && !"".equals( dialog.name() ))
+      if (Strings.notEmpty( dialog.name() ))
       {
          fieldList.getList().clearSelection();
          model.addPage( dialog.name() );

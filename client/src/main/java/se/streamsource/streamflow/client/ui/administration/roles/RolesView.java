@@ -34,6 +34,7 @@ import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 import se.streamsource.streamflow.client.ui.ConfirmationDialog;
 import se.streamsource.streamflow.client.ui.NameDialog;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.util.Strings;
 
 import javax.swing.JButton;
 import javax.swing.JList;
@@ -85,7 +86,7 @@ public class RolesView
       NameDialog dialog = nameDialogs.iterator().next();
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.add_role_title ) );
       String name = dialog.name();
-      if (name != null)
+      if ( Strings.notEmpty( name ) )
       {
          model.createRole( name );
          model.refresh();

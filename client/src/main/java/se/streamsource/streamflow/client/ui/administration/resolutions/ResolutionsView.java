@@ -39,6 +39,7 @@ import se.streamsource.streamflow.client.ui.ConfirmationDialog;
 import se.streamsource.streamflow.client.ui.NameDialog;
 import se.streamsource.streamflow.client.ui.OptionsAction;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.util.Strings;
 
 import javax.swing.ActionMap;
 import javax.swing.JButton;
@@ -107,7 +108,7 @@ public class ResolutionsView
 
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.add_resolution_title ) );
 
-      if (dialog.name() != null)
+      if ( Strings.notEmpty( dialog.name() ) )
       {
          list.clearSelection();
          model.create( dialog.name() );
@@ -151,7 +152,7 @@ public class ResolutionsView
       NameDialog dialog = nameDialogs.iterator().next();
       dialogs.showOkCancelHelpDialog( this, dialog );
 
-      if (dialog.name() != null)
+      if ( Strings.notEmpty( dialog.name() ) )
       {
          model.changeDescription( (LinkValue) list.getSelectedValue(), dialog.name() );
          model.refresh();

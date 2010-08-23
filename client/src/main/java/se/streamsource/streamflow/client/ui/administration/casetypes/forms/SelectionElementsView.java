@@ -33,6 +33,7 @@ import se.streamsource.streamflow.client.ui.ConfirmationDialog;
 import se.streamsource.streamflow.client.ui.NameDialog;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.util.Strings;
 
 import javax.swing.ActionMap;
 import javax.swing.DefaultListCellRenderer;
@@ -142,7 +143,7 @@ public class SelectionElementsView
 
       dialogs.showOkCancelHelpDialog( this, dialog , i18n.text( AdministrationResources.name_label ));
 
-      if ( dialog.name() != null &&  !dialog.name().equals( "" ))
+      if ( Strings.notEmpty( dialog.name() ) )
       {
          model.addElement( dialog.name() );
          elementList.setSelectedIndex( elementList.getModel().getSize() - 1 );
@@ -195,7 +196,7 @@ public class SelectionElementsView
 
       dialogs.showOkCancelHelpDialog( this, dialog , i18n.text( AdministrationResources.rename ));
 
-      if ( dialog.name() != null &&  !dialog.name().equals( "" ))
+      if ( Strings.notEmpty( dialog.name() ))
       {
          model.changeElementName( dialog.name(), elementList.getSelectedIndex() );
       }
