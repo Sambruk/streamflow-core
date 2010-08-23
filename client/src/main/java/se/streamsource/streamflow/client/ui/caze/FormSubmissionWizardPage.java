@@ -282,6 +282,10 @@ public class FormSubmissionWizardPage
          {
             JXDatePicker datePicker = (JXDatePicker) component;
             value = datePicker.getDate()==null ? "" : datePicker.getEditor().getText(  );
+         } else if (component instanceof ListBoxPanel)
+         {
+            ListBoxPanel listBox = (ListBoxPanel) component;
+            value = listBox.getSelected();
          }
 
          if ( entry.getKey().mandatory().get() )
