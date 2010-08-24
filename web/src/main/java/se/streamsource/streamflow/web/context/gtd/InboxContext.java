@@ -45,8 +45,6 @@ public interface InboxContext
 {
    LinksValue cases();
 
-   public void createcase();
-
    abstract class Mixin
          extends InteractionsMixin
          implements InboxContext
@@ -62,18 +60,6 @@ public interface InboxContext
          Query<Case> query = builder.newQuery( module.unitOfWorkFactory().currentUnitOfWork() ).orderBy( orderBy( templateFor( CreatedOn.class ).createdOn() ) );
 
          return CasesContext.Mixin.buildCaseList( query, module, context.get( Reference.class ).getBaseRef().getPath() );
-      }
-
-
-      public void createcase()
-      {
-         Drafts drafts = context.get( Drafts.class );
-         CaseEntity caze = drafts.createDraft();
-
-         Owner owner = context.get( Owner.class );
-         caze.changeOwner( owner );
-
-         caze.open();
       }
    }
 }

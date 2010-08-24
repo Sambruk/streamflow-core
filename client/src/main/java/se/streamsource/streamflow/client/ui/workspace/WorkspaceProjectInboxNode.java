@@ -35,7 +35,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 
 public class WorkspaceProjectInboxNode
       extends DefaultMutableTreeNode
-      implements EventListener, CaseCreationNode
+      implements EventListener
 {
    @Uses
    CommandQueryClient client;
@@ -73,16 +73,5 @@ public class WorkspaceProjectInboxNode
    public void notifyEvent( DomainEvent event )
    {
       model.notifyEvent( event );
-   }
-
-   public void createDraft()
-   {
-      try
-      {
-         client.postCommand( "createcase" );
-      } catch (ResourceException e)
-      {
-         throw new OperationException(WorkspaceResources.could_not_perform_operation, e);
-      }
    }
 }

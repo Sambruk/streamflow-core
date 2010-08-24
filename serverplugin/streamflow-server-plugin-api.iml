@@ -9,27 +9,27 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="streamflow-common" exported="" />
-    <orderEntry type="library" exported="" name="Maven: org.qi4j.core:qi4j-core-api:1.2-SNAPSHOT" level="project" />
-    <orderEntry type="library" exported="" name="Maven: org.qi4j.core:qi4j-core-bootstrap:1.2-SNAPSHOT" level="project" />
-    <orderEntry type="library" exported="" name="Maven: org.qi4j.core:qi4j-core-spi:1.2-SNAPSHOT" level="project" />
-    <orderEntry type="library" exported="" name="Maven: org.qi4j.library:qi4j-lib-constraints:1.2-SNAPSHOT" level="project" />
-    <orderEntry type="module" module-name="streamflow-dci" exported="" />
-    <orderEntry type="library" exported="" scope="RUNTIME" name="Maven: org.qi4j.core:qi4j-core-runtime:1.2-SNAPSHOT" level="project" />
-    <orderEntry type="library" exported="" scope="RUNTIME" name="Maven: asm:asm:3.2" level="project" />
-    <orderEntry type="library" exported="" scope="RUNTIME" name="Maven: asm:asm-commons:3.2" level="project" />
-    <orderEntry type="library" exported="" scope="RUNTIME" name="Maven: asm:asm-tree:3.2" level="project" />
-    <orderEntry type="library" exported="" name="Maven: org.restlet.jee:org.restlet:2.0-RC3" level="project" />
-    <orderEntry type="library" exported="" name="Maven: org.osgi:org.osgi.core:4.0.0" level="project" />
-    <orderEntry type="library" exported="" name="Maven: org.restlet.jee:org.restlet.ext.xml:2.0-RC3" level="project" />
-    <orderEntry type="library" exported="" name="Maven: org.restlet.jee:org.restlet.ext.servlet:2.0-RC3" level="project" />
-    <orderEntry type="library" exported="" name="Maven: org.apache.velocity:velocity:1.6.3" level="project" />
-    <orderEntry type="library" exported="" name="Maven: commons-collections:commons-collections:3.2.1" level="project" />
-    <orderEntry type="library" exported="" name="Maven: commons-lang:commons-lang:2.4" level="project" />
-    <orderEntry type="library" exported="" name="Maven: oro:oro:2.0.8" level="project" />
-    <orderEntry type="library" exported="" name="Maven: org.ccil.cowan.tagsoup:tagsoup:1.2" level="project" />
-    <orderEntry type="library" exported="" name="Maven: org.sitemesh:sitemesh:3.0-alpha-1" level="project" />
-    <orderEntry type="library" exported="" name="Maven: org.slf4j:slf4j-api:1.6.0" level="project" />
+    <orderEntry type="module" module-name="streamflow-common" />
+    <orderEntry type="library" name="Maven: org.qi4j.core:qi4j-core-api:1.2-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: org.qi4j.core:qi4j-core-bootstrap:1.2-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: org.qi4j.core:qi4j-core-spi:1.2-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: org.qi4j.library:qi4j-lib-constraints:1.2-SNAPSHOT" level="project" />
+    <orderEntry type="module" module-name="streamflow-dci" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.qi4j.core:qi4j-core-runtime:1.2-SNAPSHOT" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: asm:asm:3.2" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: asm:asm-commons:3.2" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: asm:asm-tree:3.2" level="project" />
+    <orderEntry type="library" name="Maven: org.restlet.jee:org.restlet:2.0-RC3" level="project" />
+    <orderEntry type="library" name="Maven: org.osgi:org.osgi.core:4.0.0" level="project" />
+    <orderEntry type="library" name="Maven: org.restlet.jee:org.restlet.ext.xml:2.0-RC3" level="project" />
+    <orderEntry type="library" name="Maven: org.restlet.jee:org.restlet.ext.servlet:2.0-RC3" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.velocity:velocity:1.6.3" level="project" />
+    <orderEntry type="library" name="Maven: commons-collections:commons-collections:3.2.1" level="project" />
+    <orderEntry type="library" name="Maven: commons-lang:commons-lang:2.4" level="project" />
+    <orderEntry type="library" name="Maven: oro:oro:2.0.8" level="project" />
+    <orderEntry type="library" name="Maven: org.ccil.cowan.tagsoup:tagsoup:1.2" level="project" />
+    <orderEntry type="library" name="Maven: org.sitemesh:sitemesh:3.0-alpha-1" level="project" />
+    <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.6.0" level="project" />
   </component>
 </module>
 

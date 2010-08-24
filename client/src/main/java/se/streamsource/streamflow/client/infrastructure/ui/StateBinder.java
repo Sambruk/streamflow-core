@@ -26,6 +26,7 @@ import org.qi4j.api.constraint.ConstraintViolationException;
 import org.qi4j.api.property.GenericPropertyInfo;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.util.DateFunctions;
+import org.qi4j.library.constraints.annotation.MaxLength;
 import org.qi4j.runtime.composite.ConstraintsCheck;
 import org.qi4j.runtime.property.PropertyInstance;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
@@ -52,6 +53,8 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 import javax.swing.text.JTextComponent;
@@ -85,7 +88,7 @@ import java.util.Set;
 /**
  * JAVADOC
  */
-public class   StateBinder
+public class StateBinder
       extends Observable
 {
    ResourceBundle errorMessages;
@@ -343,7 +346,7 @@ public class   StateBinder
          notifyObservers( objectProperty );
       }
 
-      private Property<Object> property()
+      Property<Object> property()
       {
          if (property instanceof Method)
          {
@@ -406,6 +409,31 @@ public class   StateBinder
                   KeyboardFocusManager.getCurrentKeyboardFocusManager().focusNextComponent( textField );
                }
             } );
+
+/*
+            final MaxLength maxLength = binding.property().metaInfo( MaxLength.class );
+            if (maxLength != null)
+            {
+               textField.getDocument().addDocumentListener( new DocumentListener()
+               {
+                  public void insertUpdate( DocumentEvent e )
+                  {
+                     if (textField.getDocument().getLength() > maxLength.value())
+                     {
+                        JOptionPane.showMessageDialog( textField, "Maximum length:"+maxLength.value() );
+                     }
+                  }
+
+                  public void removeUpdate( DocumentEvent e )
+                  {
+                  }
+
+                  public void changedUpdate( DocumentEvent e )
+                  {
+                  }
+               });
+            }
+*/
 
             return binding;
          } else if (component instanceof JTextArea)

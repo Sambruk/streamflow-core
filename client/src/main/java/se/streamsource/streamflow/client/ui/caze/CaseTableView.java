@@ -75,20 +75,16 @@ public class CaseTableView
    protected StreamflowApplication application;
 
    protected JXTable caseTable;
-   protected CaseCreationNode caseCreation;
    protected CasesTableModel model;
    private CasesDetailView2 detailsView;
-   protected EntityReference dialogSelection;
 
    public void init( @Service ApplicationContext context,
-                     @Uses @Optional CaseCreationNode node,
                      @Uses final CasesModel casesModel,
                      @Uses final CasesTableModel model,
                      @Uses final CasesDetailView2 detailsView,
                      @Uses TableFormat tableFormat )
    {
       setLayout( new BorderLayout() );
-      this.caseCreation = node;
       this.model = model;
       this.detailsView = detailsView;
       setLayout( new BorderLayout() );

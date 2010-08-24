@@ -130,17 +130,18 @@ public class WorkspaceView
       MacOsUIWrapper.convertAccelerators( context.getActionMap(
             WorkspaceView.class, this ) );
 
-      ActionMap am = getActionMap();
+      final ActionMap am = getActionMap();
 
       // Create Case
       javax.swing.Action createCaseAction = am.get( "createCase" );
+      createCaseAction.setEnabled( false );
       JButton createCaseButton = new JButton( createCaseAction );
 //      NotificationGlassPane.registerButton(createCaseButton);
       createCaseButton.registerKeyboardAction( createCaseAction, (KeyStroke) createCaseAction
             .getValue( javax.swing.Action.ACCELERATOR_KEY ),
             JComponent.WHEN_IN_FOCUSED_WINDOW );
 
-      // Create Case
+      // Refresh case list
       javax.swing.Action refreshAction = am.get( "refresh" );
       JButton refreshButton = new JButton( refreshAction );
 //      NotificationGlassPane.registerButton(refreshButton);
@@ -148,7 +149,7 @@ public class WorkspaceView
             .getValue( javax.swing.Action.ACCELERATOR_KEY ),
             JComponent.WHEN_IN_FOCUSED_WINDOW );
 
-      // Create Case
+      // Show search
       javax.swing.Action showSearchAction = am.get( "showSearch" );
       JButton showSearchButton = new JButton( showSearchAction );
 //      NotificationGlassPane.registerButton(showSearchButton);
@@ -326,6 +327,9 @@ public class WorkspaceView
                   } );
 
                }
+
+               // Determine whether the Create case button should be enabled
+               am.get( "createCase" ).setEnabled( node instanceof CaseCreationNode );
 
                if (view != null)
                {

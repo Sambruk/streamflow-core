@@ -8,9 +8,9 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="streamflow-war" exported="" />
-    <orderEntry type="library" exported="" scope="RUNTIME" name="Maven: org.codehaus.mojo.webstart:webstart-jnlp-servlet:1.0-6.0-02_ea_b02" level="project" />
-    <orderEntry type="module" module-name="streamflow-help-sv_gov" exported="" />
+    <orderEntry type="module" module-name="streamflow-war" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.codehaus.mojo.webstart:webstart-jnlp-servlet:1.0-6.0-02_ea_b02" level="project" />
+    <orderEntry type="module" module-name="streamflow-help-sv_gov" />
   </component>
 </module>
 
