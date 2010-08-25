@@ -20,15 +20,12 @@ package se.streamsource.streamflow.web.context.organizations;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.unitofwork.UnitOfWork;
-import se.streamsource.dci.api.IndexInteraction;
-import se.streamsource.dci.api.Interactions;
-import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.ContextMixin;
+import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.value.*;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
-import se.streamsource.dci.value.StringValue;
-import se.streamsource.streamflow.web.domain.entity.organization.GroupEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationQueries;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationVisitor;
@@ -50,7 +47,7 @@ import static org.qi4j.api.query.QueryExpressions.templateFor;
  */
 @Mixins(MembersContext.Mixin.class)
 public interface MembersContext
-   extends SubContexts<MemberContext>, IndexInteraction<LinksValue>, Interactions
+   extends SubContexts<MemberContext>, IndexContext<LinksValue>, Context
 {
    public void addmember( EntityReferenceDTO memberId);
 
@@ -59,12 +56,12 @@ public interface MembersContext
    public LinksValue possiblegroups();
 
    abstract class Mixin
-      extends InteractionsMixin
+      extends ContextMixin
       implements MembersContext
    {
       public LinksValue index()
       {
-         Members.Data members = context.get(Members.Data.class);
+         Members.Data members = roleMap.get(Members.Data.class);
 
          return new LinksBuilder( module.valueBuilderFactory() ).rel( "member" ).addDescribables( members.members() ).newLinks();
       }
@@ -74,16 +71,16 @@ public interface MembersContext
          UnitOfWork unitOfWork = module.unitOfWorkFactory().currentUnitOfWork();
          Member member = unitOfWork.get( Member.class, memberId.entity().get().identity() );
 
-         Members members = context.get(Members.class);
+         Members members = roleMap.get(Members.class);
 
          members.addMember( member );
       }
 
       public LinksValue possibleusers()
       {
-         OwningOrganization org = context.get(OwningOrganization.class);
+         OwningOrganization org = roleMap.get(OwningOrganization.class);
          OrganizationEntity organization = (OrganizationEntity) org.organization().get();
-         Members.Data members = context.get(Members.Data.class);
+         Members.Data members = roleMap.get(Members.Data.class);
 
          Query<UserEntity> users = organization.findUsersByUsername( "*" ).newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
          users = users.orderBy( orderBy( templateFor( UserAuthentication.Data.class ).userName() ) );
@@ -105,9 +102,9 @@ public interface MembersContext
 
       public LinksValue possiblegroups()
       {
-         OrganizationQueries org = context.get(OrganizationQueries.class);
+         OrganizationQueries org = roleMap.get(OrganizationQueries.class);
 
-         final Members.Data members = context.get(Members.Data.class);
+         final Members.Data members = roleMap.get(Members.Data.class);
 
          final LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
          linksBuilder.command("addmember");
@@ -133,7 +130,7 @@ public interface MembersContext
 
       public MemberContext context( String id )
       {
-         context.set( module.unitOfWorkFactory().currentUnitOfWork().get(Member.class, id ));
+         roleMap.set( module.unitOfWorkFactory().currentUnitOfWork().get(Member.class, id ));
          return subContext( MemberContext.class );
       }
    }

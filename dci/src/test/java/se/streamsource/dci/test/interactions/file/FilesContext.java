@@ -18,9 +18,9 @@
 package se.streamsource.dci.test.interactions.file;
 
 import org.qi4j.api.mixin.Mixins;
-import se.streamsource.dci.api.Interactions;
-import se.streamsource.dci.api.InteractionsMixin;
-import se.streamsource.dci.api.IndexInteraction;
+import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.ContextMixin;
+import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.SubContexts;
 import se.streamsource.dci.value.LinksBuilder;
 import se.streamsource.dci.value.LinksValue;
@@ -30,13 +30,13 @@ import java.io.File;
 /**
  * JAVADOC
  */
-@Mixins(FilesInteractions.Mixin.class)
-public interface FilesInteractions
-   extends Interactions, IndexInteraction<LinksValue>, SubContexts<FileInteractions>
+@Mixins(FilesContext.Mixin.class)
+public interface FilesContext
+   extends Context, IndexContext<LinksValue>, SubContexts<FileContext>
 {
    abstract class Mixin
-      extends InteractionsMixin
-      implements FilesInteractions
+      extends ContextMixin
+      implements FilesContext
    {
       public LinksValue index()
       {
@@ -52,11 +52,11 @@ public interface FilesInteractions
          return builder.newLinks();
       }
 
-      public FileInteractions context( String id )
+      public FileContext context( String id )
       {
-         context.set( new File(id) );
+         roleMap.set( new File(id) );
 
-         return subContext( FileInteractions.class );
+         return subContext( FileContext.class );
       }
    }
 }

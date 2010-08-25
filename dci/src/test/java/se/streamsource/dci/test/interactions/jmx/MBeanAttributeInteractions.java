@@ -19,8 +19,8 @@ package se.streamsource.dci.test.interactions.jmx;
 
 import org.qi4j.api.value.Value;
 import org.qi4j.api.value.ValueBuilder;
-import se.streamsource.dci.api.InteractionsMixin;
-import se.streamsource.dci.api.IndexInteraction;
+import se.streamsource.dci.api.ContextMixin;
+import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.value.StringValue;
 
 import javax.management.Attribute;
@@ -43,14 +43,14 @@ import java.util.Set;
  * JAVADOC
  */
 public class MBeanAttributeInteractions
-      extends InteractionsMixin
-      implements IndexInteraction<Value>
+      extends ContextMixin
+      implements IndexContext<Value>
 {
    public Value index()
    {
       try
       {
-         Object attribute = context.get( MBeanServer.class ).getAttribute( context.get( ObjectName.class ), context.get( MBeanAttributeInfo.class ).getName() );
+         Object attribute = roleMap.get( MBeanServer.class ).getAttribute( roleMap.get( ObjectName.class ), roleMap.get( MBeanAttributeInfo.class ).getName() );
 
          if (attribute instanceof TabularDataSupport)
          {
@@ -85,7 +85,7 @@ public class MBeanAttributeInteractions
 
    public void update( StringValue newValue ) throws InstanceNotFoundException, InvalidAttributeValueException, ReflectionException, AttributeNotFoundException, MBeanException
    {
-      Attribute attribute = new Attribute( context.get( MBeanAttributeInfo.class ).getName(), newValue.string().get() );
-      context.get( MBeanServer.class ).setAttribute( context.get( ObjectName.class ), attribute );
+      Attribute attribute = new Attribute( roleMap.get( MBeanAttributeInfo.class ).getName(), newValue.string().get() );
+      roleMap.get( MBeanServer.class ).setAttribute( roleMap.get( ObjectName.class ), attribute );
    }
 }

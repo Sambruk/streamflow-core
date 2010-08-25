@@ -15,14 +15,31 @@
  * limitations under the License.
  */
 
-package se.streamsource.dci.api;
+package se.streamsource.dci.value;
 
-import org.qi4j.api.value.Value;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueComposite;
+
+import java.util.List;
 
 /**
- * JAVADOC
+ * Value representing a whole context in a URL path. Allows listing of available
+ * queries, commands, subcontexts and an index.
  */
-public interface IndexInteraction<T extends Value>
+public interface ContextValue
+   extends ValueComposite
 {
-   public T index();
+   @UseDefaults
+   Property<List<String>> queries();
+
+   @UseDefaults
+   Property<List<String>> commands();
+
+   @UseDefaults
+   Property<List<String>> contexts();
+   
+   @Optional
+   Property<ValueComposite> index();
 }

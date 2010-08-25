@@ -20,7 +20,6 @@ package se.streamsource.dci.test.interactions.file;
 import org.qi4j.api.constraint.Constraint;
 import org.qi4j.api.constraint.ConstraintDeclaration;
 import org.qi4j.api.constraint.Constraints;
-import se.streamsource.dci.api.Context;
 
 import java.io.File;
 import java.lang.annotation.Retention;

@@ -25,6 +25,8 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.dci.value.LinkValue;
 
 /**
+ * Simply set the response to HTTP 204 code.
+ *
  */
 public class NoContentResponseWriter
    implements ResponseWriter

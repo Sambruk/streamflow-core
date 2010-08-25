@@ -18,8 +18,8 @@
 package se.streamsource.streamflow.web.context;
 
 import org.qi4j.api.mixin.Mixins;
-import se.streamsource.dci.api.Interactions;
-import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.SubContext;
 import se.streamsource.streamflow.web.context.surface.SurfaceContext;
 import se.streamsource.streamflow.web.context.caze.CasesContext;
@@ -35,10 +35,10 @@ import se.streamsource.streamflow.web.domain.structure.user.Users;
  */
 @Mixins(RootContext.Mixin.class)
 public interface RootContext
-   extends Interactions
+   extends Context
 {
    /**
-    * Users context. Here is where you access all users, and methods to create users.
+    * Users roleMap. Here is where you access all users, and methods to create users.
     */
    @SubContext
    UsersContext users();
@@ -56,12 +56,12 @@ public interface RootContext
    SurfaceContext surface();
 
    abstract class Mixin
-      extends InteractionsMixin
+      extends ContextMixin
       implements RootContext
    {
       public UsersContext users()
       {
-         context.set(module.unitOfWorkFactory().currentUnitOfWork().get( Users.class, UsersEntity.USERS_ID ));
+         roleMap.set(module.unitOfWorkFactory().currentUnitOfWork().get( Users.class, UsersEntity.USERS_ID ));
          return subContext( UsersContext.class );
       }
 
@@ -72,13 +72,13 @@ public interface RootContext
 
       public OrganizationsContext organizations()
       {
-         context.set(module.unitOfWorkFactory().currentUnitOfWork().get( Organizations.class, OrganizationsEntity.ORGANIZATIONS_ID ));
+         roleMap.set(module.unitOfWorkFactory().currentUnitOfWork().get( Organizations.class, OrganizationsEntity.ORGANIZATIONS_ID ));
          return subContext( OrganizationsContext.class );
       }
 
       public SurfaceContext surface()
       {
-         context.set(module.unitOfWorkFactory().currentUnitOfWork().get( Users.class, UsersEntity.USERS_ID ));
+         roleMap.set(module.unitOfWorkFactory().currentUnitOfWork().get( Users.class, UsersEntity.USERS_ID ));
          return subContext( SurfaceContext.class );
       }
    }

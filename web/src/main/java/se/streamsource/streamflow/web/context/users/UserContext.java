@@ -20,9 +20,9 @@ package se.streamsource.streamflow.web.context.users;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.value.ValueBuilder;
 
-import se.streamsource.dci.api.Interactions;
-import se.streamsource.dci.api.InteractionsMixin;
-import se.streamsource.dci.api.IndexInteraction;
+import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.ContextMixin;
+import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.SubContext;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.StringValue;
@@ -38,7 +38,7 @@ import se.streamsource.streamflow.web.domain.structure.user.WrongPasswordExcepti
  * JAVADOC
  */
 @Mixins(UserContext.Mixin.class)
-public interface UserContext extends Interactions, IndexInteraction<LinksValue>
+public interface UserContext extends Context, IndexContext<LinksValue>
 {
    @SubContext
    WorkspaceContext workspace();
@@ -63,7 +63,7 @@ public interface UserContext extends Interactions, IndexInteraction<LinksValue>
 
    public StringValue getmessagedeliverytype();
 
-   abstract class Mixin extends InteractionsMixin implements UserContext
+   abstract class Mixin extends ContextMixin implements UserContext
    {
       public LinksValue index()
       {
@@ -77,7 +77,7 @@ public interface UserContext extends Interactions, IndexInteraction<LinksValue>
       public void changepassword(ChangePasswordCommand newPassword)
             throws WrongPasswordException
       {
-         UserAuthentication user = context.get(UserAuthentication.class);
+         UserAuthentication user = roleMap.get(UserAuthentication.class);
 
          user.changePassword(newPassword.oldPassword().get(), newPassword
                .newPassword().get());
@@ -85,15 +85,15 @@ public interface UserContext extends Interactions, IndexInteraction<LinksValue>
 
       public void resetpassword(StringValue command)
       {
-         UserAuthentication user = context.get(UserAuthentication.class);
+         UserAuthentication user = roleMap.get(UserAuthentication.class);
 
          user.resetPassword(command.string().get());
       }
 
       public void changedisabled()
       {
-         UserAuthentication user = context.get(UserAuthentication.class);
-         UserAuthentication.Data userData = context
+         UserAuthentication user = roleMap.get(UserAuthentication.class);
+         UserAuthentication.Data userData = roleMap
                .get(UserAuthentication.Data.class);
 
          user.changeEnabled(userData.disabled().get());
@@ -101,7 +101,7 @@ public interface UserContext extends Interactions, IndexInteraction<LinksValue>
 
       public void changemessagedeliverytype(StringValue newDeliveryType)
       {
-         MessageRecipient recipient = context.get(MessageRecipient.class);
+         MessageRecipient recipient = roleMap.get(MessageRecipient.class);
 
          if (MessageRecipient.MessageDeliveryTypes.email.toString().equals(
                newDeliveryType.string().get()))
@@ -117,7 +117,7 @@ public interface UserContext extends Interactions, IndexInteraction<LinksValue>
 
       public StringValue getmessagedeliverytype()
       {
-         MessageRecipient.Data recipientData = context
+         MessageRecipient.Data recipientData = roleMap
                .get(MessageRecipient.Data.class);
 
          ValueBuilder<StringValue> builder = module.valueBuilderFactory()

@@ -22,10 +22,10 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import se.streamsource.dci.api.Interactions;
+import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.ContextMixin;
+import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.value.*;
-import se.streamsource.dci.value.StringValue;
-import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.web.domain.entity.organization.GroupEntity;
@@ -39,10 +39,7 @@ import se.streamsource.streamflow.web.domain.structure.group.Participant;
 import se.streamsource.streamflow.web.domain.structure.group.Participants;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnits;
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganization;
-import se.streamsource.streamflow.web.domain.structure.project.Member;
 import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
-import se.streamsource.dci.api.InteractionsMixin;
-import se.streamsource.dci.api.IndexInteraction;
 import se.streamsource.dci.api.SubContexts;
 
 import static org.qi4j.api.query.QueryExpressions.orderBy;
@@ -53,14 +50,14 @@ import static org.qi4j.api.query.QueryExpressions.templateFor;
  */
 @Mixins(ParticipantsContext.Mixin.class)
 public interface ParticipantsContext
-   extends SubContexts<ParticipantContext>, IndexInteraction<LinksValue>, Interactions
+   extends SubContexts<ParticipantContext>, IndexContext<LinksValue>, Context
 {
    public void addparticipant( EntityReferenceDTO participantId);
    public LinksValue possibleusers();
    public LinksValue possiblegroups();
 
    abstract class Mixin
-      extends InteractionsMixin
+      extends ContextMixin
       implements ParticipantsContext
    {
       @Structure
@@ -68,7 +65,7 @@ public interface ParticipantsContext
 
       public LinksValue index()
       {
-         return new LinksBuilder(module.valueBuilderFactory()).rel( "participant" ).addDescribables( context.get( Participants.Data.class ).participants()).newLinks();
+         return new LinksBuilder(module.valueBuilderFactory()).rel( "participant" ).addDescribables( roleMap.get( Participants.Data.class ).participants()).newLinks();
       }
 
       public void addparticipant( EntityReferenceDTO participantId)
@@ -77,16 +74,16 @@ public interface ParticipantsContext
 
          Participant participant = uow.get( Participant.class, participantId.entity().get().identity() );
 
-         Participants participants = context.get(Participants.class);
+         Participants participants = roleMap.get(Participants.class);
 
          participants.addParticipant( participant );
       }
 
       public LinksValue possibleusers()
       {
-         OwningOrganization org = context.get(OwningOrganization.class);
+         OwningOrganization org = roleMap.get(OwningOrganization.class);
          OrganizationEntity organization = (OrganizationEntity) org.organization().get();
-         Participants.Data participants = context.get(Participants.Data.class);
+         Participants.Data participants = roleMap.get(Participants.Data.class);
 
          Query<UserEntity> users = organization.findUsersByUsername( "*" ).newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
          users = users.orderBy( orderBy( templateFor( UserAuthentication.Data.class ).userName() ) );
@@ -108,9 +105,9 @@ public interface ParticipantsContext
 
       public LinksValue possiblegroups()
       {
-         OrganizationQueries org = context.get(OrganizationQueries.class);
+         OrganizationQueries org = roleMap.get(OrganizationQueries.class);
 
-         final GroupEntity group = context.get(GroupEntity.class);
+         final GroupEntity group = roleMap.get(GroupEntity.class);
 
          final LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
          linksBuilder.command("addparticipant");
@@ -136,7 +133,7 @@ public interface ParticipantsContext
 
       public ParticipantContext context( String id )
       {
-         context.set(uowf.currentUnitOfWork().get( Participant.class, id ));
+         roleMap.set(uowf.currentUnitOfWork().get( Participant.class, id ));
          return subContext( ParticipantContext.class );
       }
    }

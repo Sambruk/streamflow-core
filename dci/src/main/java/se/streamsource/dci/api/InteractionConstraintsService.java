@@ -17,7 +17,6 @@
 
 package se.streamsource.dci.api;
 
-import org.qi4j.api.common.ConstructionException;
 import org.qi4j.api.constraint.Constraint;
 import org.qi4j.api.constraint.ConstraintDeclaration;
 import org.qi4j.api.constraint.Constraints;
@@ -44,9 +43,9 @@ public class InteractionConstraintsService
 
    private Map<Method, InteractionConstraintsBinding> methodsConstraints = new ConcurrentHashMap<Method, InteractionConstraintsBinding>( );
 
-   public boolean isValid(Method method, Context context)
+   public boolean isValid(Method method, RoleMap roleMap )
    {
-      return getConstraints( method ).isValid( context );
+      return getConstraints( method ).isValid( roleMap );
    }
 
    public boolean hasConstraints(Method method)
@@ -123,7 +122,7 @@ public class InteractionConstraintsService
 
    interface Binding
    {
-      boolean isValid( Context context);
+      boolean isValid( RoleMap roleMap );
    }
 
    public static class InteractionConstraintsBinding
@@ -140,12 +139,12 @@ public class InteractionConstraintsService
          return bindings != null;
       }
 
-      public boolean isValid( Context context)
+      public boolean isValid( RoleMap roleMap )
       {
          if (bindings != null)
             for (Binding constraintBinding : bindings)
             {
-               if (!constraintBinding.isValid(context))
+               if (!constraintBinding.isValid( roleMap ))
                   return false;
             }
 
@@ -167,9 +166,9 @@ public class InteractionConstraintsService
          this.roleClass = roleClass;
       }
 
-      public boolean isValid( Context context )
+      public boolean isValid( RoleMap roleMap )
       {
-         return constraint.isValid( annotation, context.get(roleClass) );
+         return constraint.isValid( annotation, roleMap.get(roleClass) );
       }
    }
 
@@ -185,9 +184,9 @@ public class InteractionConstraintsService
          this.annotation = annotation;
       }
 
-      public boolean isValid( Context context )
+      public boolean isValid( RoleMap roleMap )
       {
-         return constraint.isValid( annotation, context );
+         return constraint.isValid( annotation, roleMap );
       }
    }
 }

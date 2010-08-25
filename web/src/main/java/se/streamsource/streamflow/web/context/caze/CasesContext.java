@@ -23,35 +23,29 @@ import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.structure.Module;
 import org.restlet.data.Reference;
-import se.streamsource.dci.api.Interactions;
-import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.value.StringValue;
-import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.entity.user.SearchCaseQueries;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
 import se.streamsource.dci.api.SubContexts;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * JAVADOC
  */
 @Mixins(CasesContext.Mixin.class)
 public interface CasesContext
-      extends SubContexts<CaseContext>, Interactions
+      extends SubContexts<CaseContext>, Context
 {
    LinksValue search( StringValue query );
 
    abstract class Mixin
-         extends InteractionsMixin
+         extends ContextMixin
          implements CasesContext
    {
       public static LinksValue buildCaseList( Iterable<Case> query, Module module, String basePath )
@@ -75,18 +69,18 @@ public interface CasesContext
 
       public LinksValue search( StringValue query )
       {
-         SearchCaseQueries caseQueries = context.get( SearchCaseQueries.class );
-         String name = context.get( UserAuthentication.Data.class ).userName().get();
+         SearchCaseQueries caseQueries = roleMap.get( SearchCaseQueries.class );
+         String name = roleMap.get( UserAuthentication.Data.class ).userName().get();
          Query<Case> caseQuery = caseQueries.search( query, name );
          caseQuery.orderBy( QueryExpressions.orderBy( QueryExpressions.templateFor( Describable.Data.class ).description() ) );
 
-         return buildCaseList( caseQuery, module, context.get( Reference.class ).getBaseRef().getPath() );
+         return buildCaseList( caseQuery, module, roleMap.get( Reference.class ).getBaseRef().getPath() );
       }
 
       public CaseContext context( String id )
       {
          CaseEntity aCase = module.unitOfWorkFactory().currentUnitOfWork().get( CaseEntity.class, id );
-         context.set( aCase );
+         roleMap.set( aCase );
 
          return subContext( CaseContext.class );
       }

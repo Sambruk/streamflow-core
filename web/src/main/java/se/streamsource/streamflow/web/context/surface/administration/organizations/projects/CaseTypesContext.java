@@ -18,8 +18,8 @@
 package se.streamsource.streamflow.web.context.surface.administration.organizations.projects;
 
 import org.qi4j.api.mixin.Mixins;
-import se.streamsource.dci.api.Interactions;
-import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.SubContexts;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.domain.structure.Describable;
@@ -33,18 +33,18 @@ import se.streamsource.streamflow.web.domain.structure.organization.AccessPoint;
  */
 @Mixins(CaseTypesContext.Mixin.class)
 public interface CaseTypesContext
-   extends SubContexts<LabelsContext>, Interactions
+   extends SubContexts<LabelsContext>, Context
 {
 
 
    abstract class Mixin
-      extends InteractionsMixin
+      extends ContextMixin
       implements CaseTypesContext
    {
       public LinksValue possiblecasetypes()
       {
-         SelectedCaseTypes.Data data = context.get( SelectedCaseTypes.Data.class );
-         Describable describable = context.get( Describable.class );
+         SelectedCaseTypes.Data data = roleMap.get( SelectedCaseTypes.Data.class );
+         Describable describable = roleMap.get( Describable.class );
 
          TitledLinksBuilder builder = new TitledLinksBuilder( module.valueBuilderFactory() );
 
@@ -56,11 +56,11 @@ public interface CaseTypesContext
 
       public LabelsContext context( String id )
       {
-         AccessPoint accessPoint = context.get( AccessPoint.class );
+         AccessPoint accessPoint = roleMap.get( AccessPoint.class );
 
          CaseType caseType = module.unitOfWorkFactory().currentUnitOfWork().get( CaseType.class, id );
 
-         context.set( caseType );
+         roleMap.set( caseType );
 
          accessPoint.setCaseType( caseType );
 

@@ -18,7 +18,7 @@
 package se.streamsource.dci.restlet.server;
 
 /**
- * JAVADOC
+ * The command has no result at all (ignore it).
  */
 public class NullCommandResult
    implements CommandResult

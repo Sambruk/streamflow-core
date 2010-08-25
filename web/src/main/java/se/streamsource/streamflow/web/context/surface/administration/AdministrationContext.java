@@ -18,8 +18,8 @@
 package se.streamsource.streamflow.web.context.surface.administration;
 
 import org.qi4j.api.mixin.Mixins;
-import se.streamsource.dci.api.Interactions;
-import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.SubContext;
 import se.streamsource.streamflow.web.context.surface.administration.organizations.OrganizationsContext;
 
@@ -28,13 +28,13 @@ import se.streamsource.streamflow.web.context.surface.administration.organizatio
  */
 @Mixins(AdministrationContext.Mixin.class)
 public interface AdministrationContext
-   extends Interactions
+   extends Context
 {
    @SubContext
    OrganizationsContext organizations();
 
    abstract class Mixin
-      extends InteractionsMixin
+      extends ContextMixin
       implements AdministrationContext
    {
       public OrganizationsContext organizations()

@@ -18,9 +18,9 @@
 package se.streamsource.streamflow.web.context.conversation;
 
 import org.qi4j.api.mixin.Mixins;
-import se.streamsource.dci.api.Interactions;
-import se.streamsource.dci.api.InteractionsMixin;
-import se.streamsource.dci.api.DeleteInteraction;
+import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.DeleteContext;
+import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipant;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipants;
 
@@ -29,16 +29,16 @@ import se.streamsource.streamflow.web.domain.structure.conversation.Conversation
  */
 @Mixins(ConversationParticipantContext.Mixin.class)
 public interface ConversationParticipantContext
-   extends DeleteInteraction, Interactions
+   extends DeleteContext, Context
 {
    abstract class Mixin
-      extends InteractionsMixin
+      extends ContextMixin
       implements ConversationParticipantContext
    {
       public void delete()
       {
-         ConversationParticipant participant = context.get( ConversationParticipant.class );
-         ConversationParticipants participants = context.get( ConversationParticipants.class);
+         ConversationParticipant participant = roleMap.get( ConversationParticipant.class );
+         ConversationParticipants participants = roleMap.get( ConversationParticipants.class);
          participants.removeParticipant( participant );
       }
 

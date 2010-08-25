@@ -21,7 +21,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 
 /**
- * Base mixin for Roles. Provides access to the Context of the UoW associated
+ * Base mixin for Roles. Provides access to the RoleMap of the UoW associated
  * with the Entity of this Role.
  */
 public abstract class RoleMixin
@@ -29,8 +29,8 @@ public abstract class RoleMixin
    @Structure
    UnitOfWorkFactory uowf;
 
-   protected Context context()
+   protected RoleMap context()
    {
-      return null; // TODO uowf.currentUnitOfWork().metaInfo().get(Context.class);
+      return null; // TODO uowf.currentUnitOfWork().metaInfo().get(RoleMap.class);
    }
 }

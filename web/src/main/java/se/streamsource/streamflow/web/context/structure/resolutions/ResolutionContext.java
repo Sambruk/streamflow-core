@@ -19,9 +19,9 @@ package se.streamsource.streamflow.web.context.structure.resolutions;
 
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
-import se.streamsource.dci.api.DeleteInteraction;
-import se.streamsource.dci.api.Interactions;
-import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.DeleteContext;
+import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
@@ -29,9 +29,6 @@ import se.streamsource.streamflow.web.context.structure.DescribableContext;
 import se.streamsource.streamflow.web.domain.structure.casetype.Resolution;
 import se.streamsource.streamflow.web.domain.structure.casetype.Resolutions;
 import se.streamsource.streamflow.web.domain.structure.casetype.SelectedResolutions;
-import se.streamsource.streamflow.web.domain.structure.label.Label;
-import se.streamsource.streamflow.web.domain.structure.label.Labels;
-import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
 
 /**
  * JAVADOC
@@ -39,18 +36,18 @@ import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
 @Mixins(ResolutionContext.Mixin.class)
 public interface ResolutionContext
       extends DescribableContext,
-      DeleteInteraction,
-      Interactions
+      DeleteContext,
+      Context
 {
    LinksValue usages();
 
    abstract class Mixin
-         extends InteractionsMixin
+         extends ContextMixin
          implements ResolutionContext
    {
       public LinksValue usages()
       {
-         Query<SelectedResolutions> usageQuery = context.get( Resolutions.class).usages( context.get( Resolution.class) );
+         Query<SelectedResolutions> usageQuery = roleMap.get( Resolutions.class).usages( roleMap.get( Resolution.class) );
          LinksBuilder builder = new LinksBuilder(module.valueBuilderFactory()); // TODO What to use for path here?
          for (SelectedResolutions selectedResolutions : usageQuery)
          {
@@ -62,8 +59,8 @@ public interface ResolutionContext
 
       public void delete()
       {
-         Resolutions resolutions = context.get( Resolutions.class );
-         Resolution resolution = context.get( Resolution.class );
+         Resolutions resolutions = roleMap.get( Resolutions.class );
+         Resolution resolution = roleMap.get( Resolution.class );
 
          resolutions.removeResolution( resolution );
       }

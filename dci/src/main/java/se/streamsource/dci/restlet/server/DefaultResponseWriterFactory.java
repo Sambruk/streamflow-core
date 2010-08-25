@@ -28,7 +28,6 @@ import org.qi4j.spi.value.ValueDescriptor;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.MediaType;
-import org.restlet.data.Method;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
@@ -36,7 +35,7 @@ import org.restlet.representation.Variant;
 import org.restlet.representation.WriterRepresentation;
 import org.restlet.resource.ResourceException;
 import org.restlet.service.MetadataService;
-import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.restlet.server.velocity.ValueCompositeContext;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.LinksValue;
@@ -86,7 +85,7 @@ public class DefaultResponseWriterFactory
       contextHtmlTemplate = velocity.getTemplate( "rest/template/context.htm" );
    }
 
-   public ResponseWriter createWriter( List<String> segments, Class resultType, Context context, Variant variant )
+   public ResponseWriter createWriter( List<String> segments, Class resultType, RoleMap roleMap, Variant variant )
          throws Exception
    {
       if (resultType == null)
@@ -98,7 +97,7 @@ public class DefaultResponseWriterFactory
 
          if (template != null)
          {
-            return new VelocityResponseWriter( template, context, variant );
+            return new VelocityResponseWriter( template, roleMap, variant );
          } else
          {
             return new NoContentResponseWriter();
@@ -118,7 +117,7 @@ public class DefaultResponseWriterFactory
             return new JsonResponseWriter( variant );
          } else if (ValueDescriptor.class.equals(resultType))
          {
-            return new VelocityResponseWriter( formHtmlTemplate, context, variant );
+            return new VelocityResponseWriter( formHtmlTemplate, roleMap, variant );
          } else
          {
             final String extension = metadataService.getExtension( variant.getMediaType() );
@@ -128,7 +127,7 @@ public class DefaultResponseWriterFactory
 
             if (template != null)
             {
-               return new VelocityResponseWriter( template, context, variant );
+               return new VelocityResponseWriter( template, roleMap, variant );
             } else
             {
                // Check if links, then try default templates
@@ -137,14 +136,14 @@ public class DefaultResponseWriterFactory
                   // Use standard links rendering templates
                   if (variant.getMediaType().equals(MediaType.TEXT_HTML))
                   {
-                     return new VelocityResponseWriter( linksHtmlTemplate, context, variant );
+                     return new VelocityResponseWriter( linksHtmlTemplate, roleMap, variant );
                   } else if (variant.getMediaType().equals( MediaType.APPLICATION_ATOM ))
                   {
-                     return new VelocityResponseWriter( linksAtomTemplate, context, variant );
+                     return new VelocityResponseWriter( linksAtomTemplate, roleMap, variant );
                   }
                } else if (ValueDescriptor.class.equals(resultType))
                {
-                  return new VelocityResponseWriter( formHtmlTemplate, context, variant );
+                  return new VelocityResponseWriter( formHtmlTemplate, roleMap, variant );
                } else if (ValueComposite.class.isAssignableFrom( resultType ))
                {
                   // Look for type specific template
@@ -156,7 +155,7 @@ public class DefaultResponseWriterFactory
                      template = valueHtmlTemplate;
                   }
 
-                  return new VelocityResponseWriter( template, context, variant );
+                  return new VelocityResponseWriter( template, roleMap, variant );
                }
 
                throw new IllegalArgumentException( "Cannot handle URL with this variant" );
@@ -173,7 +172,7 @@ public class DefaultResponseWriterFactory
          if (!(segment.equals( "" ) || segment.equals( "." )))
             templateName += "/" + segment;
          else
-            templateName += "/context";
+            templateName += "/roleMap";
       }
       templateName += "." + extension;
 
@@ -192,8 +191,8 @@ public class DefaultResponseWriterFactory
          } catch (ResourceNotFoundException e)
          {
             // If we can't find the specific template, then check if we are looking for the
-            // context template, and if so, use the default one
-            if (templateName.getName().equals("context.htm"))
+            // roleMap template, and if so, use the default one
+            if (templateName.getName().equals("roleMap.htm"))
                template = contextHtmlTemplate;
             else
             {
@@ -214,13 +213,13 @@ public class DefaultResponseWriterFactory
    private class VelocityResponseWriter implements ResponseWriter
    {
       private Template template;
-      private Context context;
+      private RoleMap roleMap;
       private Variant variant;
 
-      public VelocityResponseWriter( Template template, Context context, Variant variant )
+      public VelocityResponseWriter( Template template, RoleMap roleMap, Variant variant )
       {
          this.template = template;
-         this.context = context;
+         this.roleMap = roleMap;
          this.variant = variant;
       }
 
@@ -234,7 +233,7 @@ public class DefaultResponseWriterFactory
                VelocityContext context = new VelocityContext();
                context.put( "request", request );
                context.put( "response", response );
-               context.put( "context", VelocityResponseWriter.this.context );
+               context.put( "roleMap", VelocityResponseWriter.this.roleMap );
 
                Object contextResult = result;
 

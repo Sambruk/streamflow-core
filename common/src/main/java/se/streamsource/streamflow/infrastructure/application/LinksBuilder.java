@@ -18,15 +18,13 @@
 package se.streamsource.streamflow.infrastructure.application;
 
 import org.qi4j.api.entity.EntityReference;
-import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.LinksValue;
-import se.streamsource.dci.value.TitledLinkValue;
 import se.streamsource.streamflow.domain.structure.Describable;
 
 /**
- * Builder for making it easier to create LinksValue/LinkValue in a Streamflow context
+ * Builder for making it easier to create LinksValue/LinkValue in a Streamflow roleMap
  */
 public class LinksBuilder
    extends se.streamsource.dci.value.LinksBuilder

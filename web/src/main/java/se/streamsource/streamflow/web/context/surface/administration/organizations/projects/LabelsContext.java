@@ -18,9 +18,9 @@
 package se.streamsource.streamflow.web.context.surface.administration.organizations.projects;
 
 import org.qi4j.api.mixin.Mixins;
-import se.streamsource.dci.api.IndexInteraction;
-import se.streamsource.dci.api.Interactions;
-import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.SubContexts;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.StringValue;
@@ -40,28 +40,28 @@ import java.util.Map;
  */
 @Mixins(LabelsContext.Mixin.class)
 public interface LabelsContext
-   extends SubContexts<LabelsContext>, IndexInteraction<LinksValue>, Interactions
+   extends SubContexts<LabelsContext>, IndexContext<LinksValue>, Context
 {
    void createaccesspoint( StringValue name );
 
    abstract class Mixin
-      extends InteractionsMixin
+      extends ContextMixin
       implements LabelsContext
    {
       public LinksValue index()
       {
-         ProjectLabelsQueries labelsQueries = context.get( ProjectLabelsQueries.class );
+         ProjectLabelsQueries labelsQueries = roleMap.get( ProjectLabelsQueries.class );
 
          TitledLinksBuilder linksBuilder = new TitledLinksBuilder( module.valueBuilderFactory() );
 
-         Map<Label,SelectedLabels> map = labelsQueries.possibleLabels( context.get( CaseType.class ) );
-         CaseType type = context.get( CaseType.class );
+         Map<Label,SelectedLabels> map = labelsQueries.possibleLabels( roleMap.get( CaseType.class ) );
+         CaseType type = roleMap.get( CaseType.class );
          StringBuilder title = new StringBuilder( type.getDescription() + ": " );
          boolean firstLabel = true;
 
          try
          {
-            List<Label> labels = context.getAll( Label.class );
+            List<Label> labels = roleMap.getAll( Label.class );
             for (Label label : map.keySet())
             {
                if ( !labels.contains( label ) )
@@ -89,17 +89,17 @@ public interface LabelsContext
 
       public void createaccesspoint( StringValue name )
       {
-         Project project = context.get( Project.class );
-         CaseType caseType = context.get( CaseType.class );
-         List<Label> labels = context.getAll( Label.class );
+         Project project = roleMap.get( Project.class );
+         CaseType caseType = roleMap.get( CaseType.class );
+         List<Label> labels = roleMap.getAll( Label.class );
 
-         AccessPoints accessPoints = context.get( AccessPoints.class );
+         AccessPoints accessPoints = roleMap.get( AccessPoints.class );
          accessPoints.createAccessPoint( name.string().get(), project, caseType, labels );
       }
 
       public LabelsContext context( String id )
       {
-         context.set( module.unitOfWorkFactory().currentUnitOfWork().get( Label.class, id ) );
+         roleMap.set( module.unitOfWorkFactory().currentUnitOfWork().get( Label.class, id ) );
 
          return subContext( LabelsContext.class);
       }

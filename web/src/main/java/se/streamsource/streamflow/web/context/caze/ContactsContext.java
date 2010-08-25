@@ -17,15 +17,13 @@
 
 package se.streamsource.streamflow.web.context.caze;
 
-import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.streamflow.domain.contact.ContactValue;
 import se.streamsource.streamflow.resource.caze.ContactsDTO;
 import se.streamsource.streamflow.web.domain.structure.caze.Contacts;
-import se.streamsource.dci.api.Interactions;
-import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.SubContexts;
 
 import java.util.List;
@@ -36,14 +34,14 @@ import java.util.List;
 @Mixins(ContactsContext.Mixin.class)
 public interface ContactsContext
    extends
-      SubContexts<ContactContext>, Interactions
+      SubContexts<ContactContext>, Context
 {
    public void add( ContactValue newContact );
 
    ContactsDTO contacts();
 
    abstract class Mixin
-      extends InteractionsMixin
+      extends ContextMixin
       implements ContactsContext
    {
       public ContactsDTO contacts()
@@ -52,7 +50,7 @@ public interface ContactsContext
          ValueBuilder<ContactValue> contactBuilder = module.valueBuilderFactory().newValueBuilder( ContactValue.class );
          List<ContactValue> list = builder.prototype().contacts().get();
 
-         Contacts.Data contacts = context.get( Contacts.Data.class );
+         Contacts.Data contacts = roleMap.get( Contacts.Data.class );
 
          for (ContactValue contact : contacts.contacts().get())
          {
@@ -72,17 +70,17 @@ public interface ContactsContext
 
       public void add( ContactValue newContact )
       {
-         Contacts contacts = context.get(Contacts.class);
+         Contacts contacts = roleMap.get(Contacts.class);
          contacts.addContact( newContact );
       }
 
       public ContactContext context( String id )
       {
          Integer index = Integer.decode( id );
-         context.set( index, Integer.class);
+         roleMap.set( index, Integer.class);
 
-         ContactValue contact = context.get( Contacts.Data.class ).contacts().get().get( index );
-         context.set(contact, ContactValue.class);
+         ContactValue contact = roleMap.get( Contacts.Data.class ).contacts().get().get( index );
+         roleMap.set(contact, ContactValue.class);
 
          return subContext( ContactContext.class );
       }

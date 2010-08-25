@@ -20,7 +20,7 @@ package se.streamsource.dci.value;
 import org.qi4j.api.property.Property;
 
 /**
- * JAVADOC
+ * A single link that has an additional title.
  */
 public interface TitledLinkValue
    extends LinkValue

@@ -22,7 +22,7 @@ import org.qi4j.api.concern.ConcernOf;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.web.domain.entity.gtd.Drafts;
 import se.streamsource.streamflow.web.infrastructure.caching.Caches;
 import se.streamsource.streamflow.web.infrastructure.caching.Caching;
@@ -44,8 +44,8 @@ public abstract class UpdateCaseCountDraftsConcern
 
    public void createdraft()
    {
-      Context context = uowf.currentUnitOfWork().metaInfo().get( Context.class );
-      Drafts drafts = context.get( Drafts.class );
+      RoleMap roleMap = uowf.currentUnitOfWork().metaInfo().get( RoleMap.class );
+      Drafts drafts = roleMap.get( Drafts.class );
 
       // Update drafts for user
       new Caching(caching, Caches.CASECOUNTS).addToCache( drafts.toString(), 1 );

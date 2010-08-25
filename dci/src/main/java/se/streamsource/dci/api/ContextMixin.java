@@ -24,27 +24,27 @@ import org.qi4j.api.structure.Module;
 
 /**
  * All mixins with interactions should extend this base class. It primarily provides
- * easy access to the Context and makes it possible to create new sub-contexts.
+ * easy access to the RoleMap and makes it possible to create new sub-contexts.
  */
-public abstract class InteractionsMixin
+public abstract class ContextMixin
 {
-   public
+   protected
    @Uses
-   Context context;
+   RoleMap roleMap;
 
    protected
    @Structure
    Module module;
 
-   protected <T> T subContext( Class<T> interactionsClass )
+   protected <T> T subContext( Class<T> contextClass )
    {
-      Context subContext = new Context( context );
+      RoleMap subRoleMap = new RoleMap( roleMap );
 
-      module.unitOfWorkFactory().currentUnitOfWork().metaInfo().set( subContext );
+      module.unitOfWorkFactory().currentUnitOfWork().metaInfo().set( subRoleMap );
 
-      if (TransientComposite.class.isAssignableFrom( interactionsClass ))
-         return module.transientBuilderFactory().newTransientBuilder( interactionsClass ).use( subContext ).newInstance();
+      if (TransientComposite.class.isAssignableFrom( contextClass ))
+         return module.transientBuilderFactory().newTransientBuilder( contextClass ).use( subRoleMap ).newInstance();
       else
-         return module.objectBuilderFactory().newObjectBuilder( interactionsClass ).use( subContext ).newInstance();
+         return module.objectBuilderFactory().newObjectBuilder( contextClass ).use( subRoleMap ).newInstance();
    }
 }

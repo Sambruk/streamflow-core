@@ -22,7 +22,7 @@ import org.restlet.Response;
 import org.restlet.resource.ResourceException;
 
 /**
- * JAVADOC
+ * Implementations of this interface are responsible for taking the result and writing it to the response.
  */
 public interface ResponseWriter
 {

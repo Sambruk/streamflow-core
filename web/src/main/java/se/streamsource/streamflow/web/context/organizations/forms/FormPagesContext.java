@@ -18,7 +18,7 @@
 package se.streamsource.streamflow.web.context.organizations.forms;
 
 import org.qi4j.api.mixin.Mixins;
-import se.streamsource.dci.api.Interactions;
+import se.streamsource.dci.api.Context;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
@@ -26,7 +26,7 @@ import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.web.domain.entity.form.PageQueries;
 import se.streamsource.streamflow.web.domain.structure.form.Page;
 import se.streamsource.streamflow.web.domain.structure.form.Pages;
-import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.SubContexts;
 
 /**
@@ -34,33 +34,33 @@ import se.streamsource.dci.api.SubContexts;
  */
 @Mixins(FormPagesContext.Mixin.class)
 public interface FormPagesContext
-   extends SubContexts<FormPageContext>, Interactions
+   extends SubContexts<FormPageContext>, Context
 {
    public LinksValue pages();
    public ListValue pagessummary();
    public void add( StringValue name );
 
    abstract class Mixin
-      extends InteractionsMixin
+      extends ContextMixin
       implements FormPagesContext
    {
       public LinksValue pages()
       {
-         Pages.Data pages = context.get(Pages.Data.class);
+         Pages.Data pages = roleMap.get(Pages.Data.class);
 
          return new LinksBuilder( module.valueBuilderFactory() ).rel("page").addDescribables( pages.pages() ).newLinks();
       }
 
       public ListValue pagessummary()
       {
-         PageQueries pageQueries = context.get(PageQueries.class);
+         PageQueries pageQueries = roleMap.get(PageQueries.class);
 
          return pageQueries.getPagesSummary();
       }
 
       public void add( StringValue name )
       {
-         Pages pages = context.get(Pages.class);;
+         Pages pages = roleMap.get(Pages.class);;
 
          pages.createPage( name.string().get() );
       }
@@ -69,10 +69,10 @@ public interface FormPagesContext
       {
          Page page = module.unitOfWorkFactory().currentUnitOfWork().get( Page.class, id );
 
-         if (!context.get( Pages.Data.class ).pages().contains( page ))
+         if (!roleMap.get( Pages.Data.class ).pages().contains( page ))
             throw new IllegalArgumentException("Page is not a member of this form");
 
-         context.set(page);
+         roleMap.set(page);
          return subContext( FormPageContext.class );
       }
    }

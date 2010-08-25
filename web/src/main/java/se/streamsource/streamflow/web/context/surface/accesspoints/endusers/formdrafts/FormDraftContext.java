@@ -20,14 +20,11 @@ package se.streamsource.streamflow.web.context.surface.accesspoints.endusers.for
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.value.ValueBuilder;
-import org.restlet.data.Form;
-import org.restlet.representation.Representation;
-import se.streamsource.dci.api.IndexInteraction;
-import se.streamsource.dci.api.Interactions;
-import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.ContextMixin;
+import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.SubContext;
 import se.streamsource.dci.value.LinksValue;
-import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
 import se.streamsource.streamflow.domain.form.FormSubmissionValue;
 import se.streamsource.streamflow.domain.form.PageSubmissionValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
@@ -36,15 +33,12 @@ import se.streamsource.streamflow.resource.roles.IntegerDTO;
 import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.formdrafts.summary.SummaryContext;
 import se.streamsource.streamflow.web.domain.structure.form.FormSubmission;
 
-import java.util.Map;
-import java.util.Set;
-
 /**
  * JAVADOC
  */
 @Mixins(FormDraftContext.Mixin.class)
 public interface FormDraftContext
-   extends Interactions, IndexInteraction<PageSubmissionValue>
+   extends Context, IndexContext<PageSubmissionValue>
 {
    // queries
    LinksValue pages();
@@ -66,19 +60,19 @@ public interface FormDraftContext
    void discard( IntegerDTO dummy );
 
    abstract class Mixin
-      extends InteractionsMixin
+      extends ContextMixin
       implements FormDraftContext
    {
       public PageSubmissionValue index()
       {
-         FormSubmissionValue value = context.get( FormSubmissionValue.class );
+         FormSubmissionValue value = roleMap.get( FormSubmissionValue.class );
 
          return value.pages().get().get( value.currentPage().get() );
       }
 
       public LinksValue pages()
       {
-         FormSubmissionValue value = context.get( FormSubmissionValue.class );
+         FormSubmissionValue value = roleMap.get( FormSubmissionValue.class );
 
          LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() );
 
@@ -112,7 +106,7 @@ public interface FormDraftContext
 
       private ValueBuilder<FormSubmissionValue> incrementPage( int increment )
       {
-         ValueBuilder<FormSubmissionValue> builder = context.get( FormSubmission.Data.class ).formSubmissionValue().get().buildWith();
+         ValueBuilder<FormSubmissionValue> builder = roleMap.get( FormSubmission.Data.class ).formSubmissionValue().get().buildWith();
          int page = builder.prototype().currentPage().get() + increment;
          int pages = builder.prototype().pages().get().size();
 
@@ -126,7 +120,7 @@ public interface FormDraftContext
 
       public void updatefield( FieldDTO field )
       {
-         FormSubmission formSubmission = context.get( FormSubmission.class );
+         FormSubmission formSubmission = roleMap.get( FormSubmission.class );
 
          formSubmission.changeFieldValue( EntityReference.parseEntityReference( field.field().get() ), field.value().get() );
       }
@@ -134,15 +128,15 @@ public interface FormDraftContext
       private void updateFormSubmission( ValueBuilder<FormSubmissionValue> builder )
       {
          FormSubmissionValue newFormValue = builder.newInstance();
-         FormSubmission formSubmission = context.get( FormSubmission.class );
+         FormSubmission formSubmission = roleMap.get( FormSubmission.class );
          formSubmission.changeFormSubmission( newFormValue );
 
-         context.set( newFormValue );
+         roleMap.set( newFormValue );
       }
 
       public SummaryContext summary()
       {
-         context.set( this );
+         roleMap.set( this );
          return subContext( SummaryContext.class );
       }
 

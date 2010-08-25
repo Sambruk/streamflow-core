@@ -18,14 +18,14 @@
 package se.streamsource.streamflow.web.context.organizations;
 
 import org.qi4j.api.mixin.Mixins;
-import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.DeleteContext;
+import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.streamflow.web.context.organizations.forms.FormsContext;
 import se.streamsource.streamflow.web.context.structure.labels.LabelsContext;
 import se.streamsource.streamflow.web.context.structure.labels.SelectedLabelsContext;
 import se.streamsource.streamflow.web.domain.structure.project.Projects;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
-import se.streamsource.dci.api.Interactions;
-import se.streamsource.dci.api.DeleteInteraction;
+import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.SubContext;
 import se.streamsource.streamflow.web.context.structure.DescribableContext;
 
@@ -34,9 +34,9 @@ import se.streamsource.streamflow.web.context.structure.DescribableContext;
  */
 @Mixins(ProjectContext.Mixin.class)
 public interface ProjectContext
-   extends DeleteInteraction,
+   extends DeleteContext,
       DescribableContext,
-      Interactions
+      Context
 {
    @SubContext
    MembersContext members();
@@ -57,13 +57,13 @@ public interface ProjectContext
    SelectedCaseTypesContext selectedcasetypes();
 
    abstract class Mixin
-      extends InteractionsMixin
+      extends ContextMixin
       implements ProjectContext
    {
       public void delete()
       {
-         Projects projects = context.get(Projects.class);
-         Project project = context.get(Project.class);
+         Projects projects = roleMap.get(Projects.class);
+         Project project = roleMap.get(Project.class);
 
          projects.removeProject( project );
       }

@@ -15,25 +15,17 @@
  * limitations under the License.
  */
 
-package se.streamsource.dci.test;
+package se.streamsource.dci.api;
 
-import org.qi4j.api.composite.TransientBuilderFactory;
-import org.qi4j.api.injection.scope.Structure;
-import se.streamsource.dci.api.Context;
-import se.streamsource.dci.restlet.server.RootInteractionsFactory;
-import se.streamsource.dci.test.interactions.RootInteractions;
+import org.restlet.resource.ResourceException;
+
+import java.io.IOException;
 
 /**
  * JAVADOC
  */
-public class TestRootInteractionsFactory
-   implements RootInteractionsFactory
+public interface DeleteContext
 {
-   @Structure
-   TransientBuilderFactory tbf;
-
-   public Object getRoot( Context context )
-   {
-      return tbf.newTransientBuilder( RootInteractions.class ).use( context ).newInstance();
-   }
+   void delete()
+         throws ResourceException, IOException;
 }

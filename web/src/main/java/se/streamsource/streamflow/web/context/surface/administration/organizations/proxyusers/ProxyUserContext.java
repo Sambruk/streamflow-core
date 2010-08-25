@@ -20,10 +20,10 @@ package se.streamsource.streamflow.web.context.surface.administration.organizati
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.value.ValueBuilder;
 import org.restlet.resource.ResourceException;
-import se.streamsource.dci.api.DeleteInteraction;
-import se.streamsource.dci.api.IndexInteraction;
-import se.streamsource.dci.api.Interactions;
-import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.DeleteContext;
+import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.web.domain.structure.user.ProxyUser;
 import se.streamsource.streamflow.web.domain.structure.user.ProxyUsers;
@@ -34,37 +34,37 @@ import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
  */
 @Mixins(ProxyUserContext.Mixin.class)
 public interface ProxyUserContext
-      extends Interactions, DeleteInteraction, IndexInteraction<StringValue>
+      extends Context, DeleteContext, IndexContext<StringValue>
 {
    void resetpassword( StringValue newPassword );
 
    void changeenabled();
 
    abstract class Mixin
-         extends InteractionsMixin
+         extends ContextMixin
          implements ProxyUserContext
    {
 
       public void changeenabled()
       {
-         UserAuthentication userAuth = context.get( UserAuthentication.class );
-         UserAuthentication.Data userAuthData = context.get( UserAuthentication.Data.class );
+         UserAuthentication userAuth = roleMap.get( UserAuthentication.class );
+         UserAuthentication.Data userAuthData = roleMap.get( UserAuthentication.Data.class );
          userAuth.changeEnabled( userAuthData.disabled().get() );
       }
 
       public void resetpassword( StringValue newPassword )
       {
-         UserAuthentication authentication = context.get( UserAuthentication.class );
+         UserAuthentication authentication = roleMap.get( UserAuthentication.class );
 
          authentication.resetPassword( newPassword.toString() );
       }
 
       public void delete() throws ResourceException
       {
-         ProxyUsers.Data proxyUsers = context.get( ProxyUsers.Data.class );
-         ProxyUser proxyUser = context.get( ProxyUser.class );
-         UserAuthentication userAuth = context.get( UserAuthentication.class );
-         UserAuthentication.Data userAuthData = context.get( UserAuthentication.Data.class );
+         ProxyUsers.Data proxyUsers = roleMap.get( ProxyUsers.Data.class );
+         ProxyUser proxyUser = roleMap.get( ProxyUser.class );
+         UserAuthentication userAuth = roleMap.get( UserAuthentication.class );
+         UserAuthentication.Data userAuthData = roleMap.get( UserAuthentication.Data.class );
 
          if (proxyUsers.proxyUsers().contains( proxyUser ))
          {
@@ -76,7 +76,7 @@ public interface ProxyUserContext
 
       public StringValue index()
       {
-         ProxyUser user = context.get( ProxyUser.class );
+         ProxyUser user = roleMap.get( ProxyUser.class );
 
          ValueBuilder<StringValue> builder = module.valueBuilderFactory().newValueBuilder( StringValue.class );
 

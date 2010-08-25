@@ -21,9 +21,8 @@ import org.qi4j.api.common.Visibility;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.restlet.client.SwingCommandQueryClient;
-import se.streamsource.dci.value.IndexValue;
+import se.streamsource.dci.value.ContextValue;
 import se.streamsource.streamflow.client.domain.individual.AccountEntity;
 import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
 import se.streamsource.streamflow.client.domain.individual.IndividualEntity;
@@ -60,6 +59,6 @@ public class DomainAssembler
       module.addObjects( SwingCommandQueryClient.class
       ).visibleIn( Visibility.application );
 
-      module.addValues( IndexValue.class );
+      module.addValues( ContextValue.class );
    }
 }

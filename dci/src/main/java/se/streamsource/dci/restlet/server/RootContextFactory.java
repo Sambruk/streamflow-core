@@ -15,17 +15,14 @@
  * limitations under the License.
  */
 
-package se.streamsource.dci.api;
+package se.streamsource.dci.restlet.server;
 
-import org.restlet.resource.ResourceException;
-
-import java.io.IOException;
+import se.streamsource.dci.api.RoleMap;
 
 /**
- * JAVADOC
+ * Factory for the root context corresponding to "/" in the path.
  */
-public interface DeleteInteraction
+public interface RootContextFactory
 {
-   void delete()
-         throws ResourceException, IOException;
+   Object getRoot( RoleMap roleMap );
 }

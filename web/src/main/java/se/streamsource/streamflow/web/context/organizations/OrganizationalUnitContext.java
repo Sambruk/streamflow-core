@@ -22,8 +22,8 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
-import se.streamsource.dci.api.DeleteInteraction;
-import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.ContextMixin;
+import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.streamflow.domain.organization.MergeOrganizationalUnitException;
 import se.streamsource.streamflow.domain.organization.MoveOrganizationalUnitException;
 import se.streamsource.streamflow.domain.organization.OpenProjectExistsException;
@@ -33,7 +33,7 @@ import se.streamsource.streamflow.web.context.structure.labels.LabelsContext;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnitRefactoring;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnits;
-import se.streamsource.dci.api.Interactions;
+import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.SubContext;
 import se.streamsource.streamflow.web.context.structure.DescribableContext;
 import se.streamsource.streamflow.web.context.structure.labels.SelectedLabelsContext;
@@ -43,7 +43,7 @@ import se.streamsource.streamflow.web.context.structure.labels.SelectedLabelsCon
  */
 @Mixins(OrganizationalUnitContext.Mixin.class)
 public interface OrganizationalUnitContext
-   extends DescribableContext, DeleteInteraction, Interactions
+   extends DescribableContext, DeleteContext, Context
 {
    public void move( EntityReferenceDTO moveValue ) throws ResourceException;
    public void merge( EntityReferenceDTO moveValue ) throws ResourceException;
@@ -73,7 +73,7 @@ public interface OrganizationalUnitContext
    OrganizationalUnitsContext organizationalunits();
 
    abstract class Mixin
-      extends InteractionsMixin
+      extends ContextMixin
       implements OrganizationalUnitContext
    {
       @Structure
@@ -81,7 +81,7 @@ public interface OrganizationalUnitContext
 
       public void move( EntityReferenceDTO moveValue ) throws ResourceException
       {
-         OrganizationalUnitRefactoring ou = context.get(OrganizationalUnitRefactoring.class);
+         OrganizationalUnitRefactoring ou = roleMap.get(OrganizationalUnitRefactoring.class);
          OrganizationalUnits toEntity = uowf.currentUnitOfWork().get( OrganizationalUnits.class, moveValue.entity().get().identity() );
 
          try
@@ -95,7 +95,7 @@ public interface OrganizationalUnitContext
 
       public void merge( EntityReferenceDTO moveValue ) throws ResourceException
       {
-         OrganizationalUnitRefactoring ou = context.get(OrganizationalUnitRefactoring.class);
+         OrganizationalUnitRefactoring ou = roleMap.get(OrganizationalUnitRefactoring.class);
          OrganizationalUnit toEntity = uowf.currentUnitOfWork().get( OrganizationalUnit.class, moveValue.entity().get().identity() );
 
          try
@@ -109,7 +109,7 @@ public interface OrganizationalUnitContext
 
       public void delete() throws ResourceException
       {
-         OrganizationalUnitRefactoring ou = context.get(OrganizationalUnitRefactoring.class);
+         OrganizationalUnitRefactoring ou = roleMap.get(OrganizationalUnitRefactoring.class);
 
          try
          {

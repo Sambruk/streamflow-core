@@ -17,8 +17,8 @@
 
 package se.streamsource.dci.test.interactions.jmx;
 
-import se.streamsource.dci.api.IndexInteraction;
-import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.ContextNotFoundException;
 import se.streamsource.dci.api.SubContexts;
 import se.streamsource.dci.value.LinksBuilder;
@@ -32,13 +32,13 @@ import javax.management.ObjectName;
  * JAVADOC
  */
 public class JmxServerInteractions
-   extends InteractionsMixin
-   implements IndexInteraction<LinksValue>, SubContexts<DomainInteractions>
+   extends ContextMixin
+   implements IndexContext<LinksValue>, SubContexts<DomainInteractions>
 {
    public LinksValue index()
    {
       LinksBuilder builder = new LinksBuilder(module.valueBuilderFactory());
-      for (String domain : context.get( MBeanServer.class ).getDomains())
+      for (String domain : roleMap.get( MBeanServer.class ).getDomains())
       {
          builder.addLink( domain, domain );
       }
@@ -50,7 +50,7 @@ public class JmxServerInteractions
    {
       try
       {
-         context.set( new ObjectName(id+":*") );
+         roleMap.set( new ObjectName(id+":*") );
 
          return subContext( DomainInteractions.class );
       } catch (MalformedObjectNameException e)

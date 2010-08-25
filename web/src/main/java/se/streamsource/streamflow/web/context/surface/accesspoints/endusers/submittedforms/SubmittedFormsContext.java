@@ -18,9 +18,9 @@
 package se.streamsource.streamflow.web.context.surface.accesspoints.endusers.submittedforms;
 
 import org.qi4j.api.mixin.Mixins;
-import se.streamsource.dci.api.Interactions;
-import se.streamsource.dci.api.InteractionsMixin;
-import se.streamsource.dci.api.IndexInteraction;
+import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.streamflow.resource.caze.SubmittedFormsListDTO;
 import se.streamsource.streamflow.web.domain.entity.form.SubmittedFormsQueries;
 
@@ -29,16 +29,16 @@ import se.streamsource.streamflow.web.domain.entity.form.SubmittedFormsQueries;
  */
 @Mixins(SubmittedFormsContext.Mixin.class)
 public interface SubmittedFormsContext
-   extends Interactions, IndexInteraction<SubmittedFormsListDTO>
+   extends Context, IndexContext<SubmittedFormsListDTO>
 {
 
    abstract class Mixin
-      extends InteractionsMixin
+      extends ContextMixin
       implements SubmittedFormsContext
    {
       public SubmittedFormsListDTO index()
       {
-         SubmittedFormsQueries forms = context.get( SubmittedFormsQueries.class );
+         SubmittedFormsQueries forms = roleMap.get( SubmittedFormsQueries.class );
          return forms.getSubmittedForms();
       }
    }

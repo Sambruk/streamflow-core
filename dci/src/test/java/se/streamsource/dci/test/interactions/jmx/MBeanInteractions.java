@@ -17,9 +17,9 @@
 
 package se.streamsource.dci.test.interactions.jmx;
 
-import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.ContextNotFoundException;
-import se.streamsource.dci.api.IndexInteraction;
+import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.SubContexts;
 import se.streamsource.dci.value.LinksBuilder;
 import se.streamsource.dci.value.LinksValue;
@@ -33,18 +33,18 @@ import javax.management.ObjectName;
  * JAVADOC
  */
 public class MBeanInteractions
-   extends InteractionsMixin
-      implements IndexInteraction<LinksValue>, SubContexts<MBeanAttributeInteractions>
+   extends ContextMixin
+      implements IndexContext<LinksValue>, SubContexts<MBeanAttributeInteractions>
 {
    public LinksValue index()
    {
       LinksBuilder builder = new LinksBuilder(module.valueBuilderFactory());
-      MBeanAttributeInfo[] attributes = context.get(MBeanInfo.class).getAttributes();
+      MBeanAttributeInfo[] attributes = roleMap.get(MBeanInfo.class).getAttributes();
       for (MBeanAttributeInfo attribute : attributes)
       {
          try
          {
-            Object value = context.get( MBeanServer.class ).getAttribute( context.get( ObjectName.class), attribute.getName() );
+            Object value = roleMap.get( MBeanServer.class ).getAttribute( roleMap.get( ObjectName.class), attribute.getName() );
             builder.addLink( attribute.getDescription()+(value instanceof String ? "="+ value.toString():""), attribute.getName());
          } catch (Exception e)
          {
@@ -57,10 +57,10 @@ public class MBeanInteractions
 
    public MBeanAttributeInteractions context( String id ) throws ContextNotFoundException
    {
-      for (MBeanAttributeInfo mBeanAttributeInfo : context.get( MBeanInfo.class ).getAttributes())
+      for (MBeanAttributeInfo mBeanAttributeInfo : roleMap.get( MBeanInfo.class ).getAttributes())
       {
          if (mBeanAttributeInfo.getName().equals(id))
-            context.set( mBeanAttributeInfo );
+            roleMap.set( mBeanAttributeInfo );
       }
 
       return subContext( MBeanAttributeInteractions.class );

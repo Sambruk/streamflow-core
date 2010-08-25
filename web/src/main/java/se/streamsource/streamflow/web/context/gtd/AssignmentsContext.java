@@ -21,8 +21,8 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
 import org.restlet.data.Reference;
-import se.streamsource.dci.api.Interactions;
-import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.web.context.caze.CasesContext;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
@@ -41,36 +41,36 @@ import static org.qi4j.api.query.QueryExpressions.templateFor;
  */
 @Mixins(AssignmentsContext.Mixin.class)
 public interface AssignmentsContext
-   extends Interactions
+   extends Context
 {
    LinksValue cases();
 
    public void createcase();
 
    abstract class Mixin
-      extends InteractionsMixin
+      extends ContextMixin
       implements AssignmentsContext
    {
       public LinksValue cases( )
       {
-         AssignmentsQueries assignments = context.get( AssignmentsQueries.class);
+         AssignmentsQueries assignments = roleMap.get( AssignmentsQueries.class);
 
-         QueryBuilder<Assignable> builder = assignments.assignments( context.get( Assignee.class ) );
+         QueryBuilder<Assignable> builder = assignments.assignments( roleMap.get( Assignee.class ) );
          Query query = builder.newQuery( module.unitOfWorkFactory().currentUnitOfWork() ).orderBy( orderBy( templateFor( CreatedOn.class ).createdOn() ) );
-         return CasesContext.Mixin.buildCaseList( query, module, context.get( Reference.class).getBaseRef().getPath());
+         return CasesContext.Mixin.buildCaseList( query, module, roleMap.get( Reference.class).getBaseRef().getPath());
       }
 
       public void createcase()
       {
-         Drafts drafts = context.get( Drafts.class );
+         Drafts drafts = roleMap.get( Drafts.class );
          CaseEntity caze = drafts.createDraft();
 
-         Owner owner = context.get( Owner.class);
+         Owner owner = roleMap.get( Owner.class);
          caze.changeOwner( owner );
 
          caze.open();
 
-         caze.assignTo( context.get(Assignee.class) );
+         caze.assignTo( roleMap.get(Assignee.class) );
       }
    }
 }

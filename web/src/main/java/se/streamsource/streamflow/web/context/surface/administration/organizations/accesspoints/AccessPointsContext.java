@@ -18,9 +18,9 @@
 package se.streamsource.streamflow.web.context.surface.administration.organizations.accesspoints;
 
 import org.qi4j.api.mixin.Mixins;
-import se.streamsource.dci.api.IndexInteraction;
-import se.streamsource.dci.api.Interactions;
-import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.SubContexts;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.StringValue;
@@ -34,17 +34,17 @@ import se.streamsource.streamflow.web.domain.structure.organization.AccessPoints
  */
 @Mixins(AccessPointsContext.Mixin.class)
 public interface AccessPointsContext
-   extends SubContexts<AccessPointContext>, IndexInteraction<LinksValue>, Interactions
+   extends SubContexts<AccessPointContext>, IndexContext<LinksValue>, Context
 {
    public void createaccesspoint( StringValue name );
    
    abstract class Mixin
-      extends InteractionsMixin
+      extends ContextMixin
       implements AccessPointsContext
    {
       public LinksValue index()
       {
-         AccessPoints.Data data = context.get( AccessPoints.Data.class );
+         AccessPoints.Data data = roleMap.get( AccessPoints.Data.class );
 
          LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
 
@@ -55,20 +55,20 @@ public interface AccessPointsContext
 
       public void createaccesspoint( StringValue name )
       {
-         AccessPoints accessPoints = context.get( AccessPoints.class );
+         AccessPoints accessPoints = roleMap.get( AccessPoints.class );
          accessPoints.createAccessPoint( name.string().get() );
       }
 
       public AccessPointContext context( String id )
       {
-         AccessPoints.Data data = context.get( AccessPoints.Data.class );
+         AccessPoints.Data data = roleMap.get( AccessPoints.Data.class );
 
          for (AccessPoint accessPoint : data.accessPoints())
          {
             AccessPointEntity entity = (AccessPointEntity) accessPoint;
             if ( entity.identity().get().equals( id ) )
             {
-               context.set( accessPoint );
+               roleMap.set( accessPoint );
             }
          }
          return subContext( AccessPointContext.class);

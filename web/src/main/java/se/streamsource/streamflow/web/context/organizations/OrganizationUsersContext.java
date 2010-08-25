@@ -21,6 +21,7 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
 import org.qi4j.api.unitofwork.UnitOfWork;
+import se.streamsource.dci.api.Context;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
@@ -29,8 +30,7 @@ import se.streamsource.streamflow.web.domain.structure.organization.Organization
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationParticipations;
 import se.streamsource.streamflow.web.domain.structure.user.User;
 import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
-import se.streamsource.dci.api.Interactions;
-import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.SubContexts;
 
 import static org.qi4j.api.query.QueryExpressions.orderBy;
@@ -41,7 +41,7 @@ import static org.qi4j.api.query.QueryExpressions.templateFor;
  */
 @Mixins(OrganizationUsersContext.Mixin.class)
 public interface OrganizationUsersContext
-   extends SubContexts<OrganizationUserContext>, Interactions
+   extends SubContexts<OrganizationUserContext>, Context
 {
    public LinksValue users();
 
@@ -50,12 +50,12 @@ public interface OrganizationUsersContext
    public void join( EntityReferenceDTO userDTO );
 
    abstract class Mixin
-      extends InteractionsMixin
+      extends ContextMixin
       implements OrganizationUsersContext
    {
       public LinksValue users()
       {
-         OrganizationParticipationsQueries participants = context.get(OrganizationParticipationsQueries.class);
+         OrganizationParticipationsQueries participants = roleMap.get(OrganizationParticipationsQueries.class);
 
          QueryBuilder<User> builder = participants.users();
          Query<User> query = builder.newQuery( module.unitOfWorkFactory().currentUnitOfWork() ).orderBy( orderBy( templateFor( UserAuthentication.Data.class ).userName() ) );
@@ -65,7 +65,7 @@ public interface OrganizationUsersContext
 
       public LinksValue possibleusers()
       {
-         OrganizationParticipationsQueries participants = context.get(OrganizationParticipationsQueries.class);
+         OrganizationParticipationsQueries participants = roleMap.get(OrganizationParticipationsQueries.class);
 
          Query<User> query = participants.possibleUsers();
 
@@ -76,7 +76,7 @@ public interface OrganizationUsersContext
       {
          UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
 
-         Organization org = context.get( Organization.class );
+         Organization org = roleMap.get( Organization.class );
 
          OrganizationParticipations user = uow.get( OrganizationParticipations.class, userDTO.entity().get().identity() );
          user.join( org );
@@ -84,7 +84,7 @@ public interface OrganizationUsersContext
 
       public OrganizationUserContext context( String id )
       {
-         context.set( module.unitOfWorkFactory().currentUnitOfWork().get( User.class, id ));
+         roleMap.set( module.unitOfWorkFactory().currentUnitOfWork().get( User.class, id ));
          return subContext( OrganizationUserContext.class );
       }
    }

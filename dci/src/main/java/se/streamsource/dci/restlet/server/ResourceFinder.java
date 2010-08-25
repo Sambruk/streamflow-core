@@ -27,7 +27,7 @@ import org.restlet.resource.Finder;
 import org.restlet.resource.ServerResource;
 
 /**
- * JAVADOC
+ * Finder that instantiates ServerResources using Qi4j.
  */
 public class ResourceFinder extends Finder
 {

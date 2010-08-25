@@ -20,7 +20,8 @@ package se.streamsource.streamflow.web.context.organizations.forms;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.streamflow.domain.form.CheckboxesFieldValue;
 import se.streamsource.streamflow.domain.form.ComboBoxFieldValue;
 import se.streamsource.streamflow.domain.form.CommentFieldValue;
@@ -31,14 +32,12 @@ import se.streamsource.streamflow.domain.form.FieldValue;
 import se.streamsource.streamflow.domain.form.ListBoxFieldValue;
 import se.streamsource.streamflow.domain.form.NumberFieldValue;
 import se.streamsource.streamflow.domain.form.OptionButtonsFieldValue;
-import se.streamsource.streamflow.domain.form.SelectionFieldValue;
 import se.streamsource.streamflow.domain.form.TextAreaFieldValue;
 import se.streamsource.streamflow.domain.form.TextFieldValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.web.domain.entity.form.FieldEntity;
 import se.streamsource.streamflow.web.domain.structure.form.Fields;
-import se.streamsource.dci.api.Interactions;
 import se.streamsource.dci.api.SubContexts;
 
 /**
@@ -46,25 +45,25 @@ import se.streamsource.dci.api.SubContexts;
  */
 @Mixins(FormFieldsContext.Mixin.class)
 public interface FormFieldsContext
-      extends SubContexts<FormFieldContext>, Interactions
+      extends SubContexts<FormFieldContext>, Context
 {
    public LinksValue fields();
    public void add( CreateFieldDTO createFieldDTO );
 
    abstract class Mixin
-         extends InteractionsMixin
+         extends ContextMixin
          implements FormFieldsContext
    {
       public LinksValue fields()
       {
-         Fields.Data fields = context.get(Fields.Data.class);
+         Fields.Data fields = roleMap.get(Fields.Data.class);
 
          return new LinksBuilder( module.valueBuilderFactory() ).rel( "field" ).addDescribables( fields.fields() ).newLinks();
       }
 
       public void add( CreateFieldDTO createFieldDTO )
       {
-         Fields fields = context.get(Fields.class);
+         Fields fields = roleMap.get(Fields.class);
 
          fields.createField( createFieldDTO.name().get(), getFieldValue( createFieldDTO.fieldType().get() ) );
       }
@@ -116,8 +115,8 @@ public interface FormFieldsContext
       public FormFieldContext context( String id )
       {
          FieldEntity field = module.unitOfWorkFactory().currentUnitOfWork().get( FieldEntity.class, id );
-         context.set( field );
-         context.set( field.fieldValue().get() );
+         roleMap.set( field );
+         roleMap.set( field.fieldValue().get() );
          return subContext( FormFieldContext.class );
       }
    }

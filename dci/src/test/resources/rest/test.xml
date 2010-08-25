@@ -5,7 +5,7 @@
         <title>
             RootContext (Streamflow web 0.5-SNAPSHOT API)
         </title>
-        <meta content="se.streamsource.streamflow.web.context.RootContext interface" name="keywords"/>
+        <meta content="se.streamsource.streamflow.web.roleMap.RootContext interface" name="keywords"/>
         <link href="../../../../../javadoc.css" rel="stylesheet" title="Style" type="text/css"/>
         <script type="text/javascript">
             function windowTitle()
@@ -106,21 +106,21 @@
                 <td bgcolor="white" class="NavBarCell2" colspan="1" rowspan="1">
                     <font size="-2">
                          
-                        <a href="../../../../../se/streamsource/streamflow/web/context/ContextsAssembler.html"
-                           shape="rect" title="class in se.streamsource.streamflow.web.context">
+                        <a href="../../../../../se/streamsource/streamflow/web/roleMap/ContextsAssembler.html"
+                           shape="rect" title="class in se.streamsource.streamflow.web.roleMap">
                             <b>PREV CLASS</b>
                         </a>
                          
                          
-                        <a href="../../../../../se/streamsource/streamflow/web/context/RootContext.Mixin.html"
-                           shape="rect" title="class in se.streamsource.streamflow.web.context">
+                        <a href="../../../../../se/streamsource/streamflow/web/roleMap/RootContext.Mixin.html"
+                           shape="rect" title="class in se.streamsource.streamflow.web.roleMap">
                             <b>NEXT CLASS</b>
                         </a>
                     </font>
                 </td>
                 <td bgcolor="white" class="NavBarCell2" colspan="1" rowspan="1">
                     <font size="-2">
-                        <a href="../../../../../index.html?se/streamsource/streamflow/web/context/RootContext.html"
+                        <a href="../../../../../index.html?se/streamsource/streamflow/web/roleMap/RootContext.html"
                            shape="rect" target="_top">
                             <b>FRAMES</b>
                         </a>
@@ -171,7 +171,7 @@
 
         <h2>
             <font size="-1">
-                se.streamsource.streamflow.web.context
+                se.streamsource.streamflow.web.roleMap
             </font>
             <br clear="none"/>
             Interface RootContext
@@ -180,7 +180,7 @@
             <dt>
                 <b>All Superinterfaces:</b>
             </dt>
-            <dd>org.qi4j.api.composite.Composite, se.streamsource.dci.context.Interactions,<a
+            <dd>org.qi4j.api.composite.Composite, se.streamsource.dci.roleMap.Interactions,<a
                     href="http://java.sun.com/j2se/1.5.0/docs/api/java/io/Serializable.html" shape="rect"
                     title="class or interface in java.io">Serializable</a>, org.qi4j.api.composite.TransientComposite
             </dd>
@@ -190,8 +190,8 @@
                 <b>All Known Implementing Classes:</b>
             </dt>
             <dd>
-                <a href="../../../../../se/streamsource/streamflow/web/context/RootContext.Mixin.html" shape="rect"
-                   title="class in se.streamsource.streamflow.web.context">RootContext.Mixin
+                <a href="../../../../../se/streamsource/streamflow/web/roleMap/RootContext.Mixin.html" shape="rect"
+                   title="class in se.streamsource.streamflow.web.roleMap">RootContext.Mixin
                 </a>
             </dd>
         </dl>
@@ -201,14 +201,14 @@
         </dl>
         <pre>
             <font size="-1">@Mixins(value=<a
-                    href="../../../../../se/streamsource/streamflow/web/context/RootContext.Mixin.html" shape="rect"
-                    title="class in se.streamsource.streamflow.web.context">RootContext.Mixin.class</a>)
+                    href="../../../../../se/streamsource/streamflow/web/roleMap/RootContext.Mixin.html" shape="rect"
+                    title="class in se.streamsource.streamflow.web.roleMap">RootContext.Mixin.class</a>)
             </font>
             public interface
             <b>RootContext</b>
         </pre>
         <dl>
-            <dt>extends se.streamsource.dci.api.Interactions</dt>
+            <dt>extends se.streamsource.dci.api.Context</dt>
         </dl>
 
 
@@ -243,8 +243,8 @@
                     <td colspan="1" rowspan="1">
                         <code>
                             <b>
-                                <a href="../../../../../se/streamsource/streamflow/web/context/RootContext.Mixin.html"
-                                   shape="rect" title="class in se.streamsource.streamflow.web.context">
+                                <a href="../../../../../se/streamsource/streamflow/web/roleMap/RootContext.Mixin.html"
+                                   shape="rect" title="class in se.streamsource.streamflow.web.roleMap">
                                     RootContext.Mixin
                                 </a>
                             </b>
@@ -271,9 +271,9 @@
                     <td align="right" colspan="1" rowspan="1" valign="top" width="1%">
                         <font size="-1">
                             <code> 
-                                <a href="../../../../../se/streamsource/streamflow/web/context/organizations/OrganizationsContext.html"
+                                <a href="../../../../../se/streamsource/streamflow/web/roleMap/organizations/OrganizationsContext.html"
                                    shape="rect"
-                                   title="interface in se.streamsource.streamflow.web.context.organizations">
+                                   title="interface in se.streamsource.streamflow.web.roleMap.organizations">
                                     OrganizationsContext
                                 </a>
                             </code>
@@ -282,7 +282,7 @@
                     <td colspan="1" rowspan="1">
                         <code>
                             <b>
-                                <a href="../../../../../se/streamsource/streamflow/web/context/RootContext.html#organizations()"
+                                <a href="../../../../../se/streamsource/streamflow/web/roleMap/RootContext.html#organizations()"
                                    shape="rect">organizations
                                 </a>
                             </b>
@@ -297,8 +297,8 @@
                     <td align="right" colspan="1" rowspan="1" valign="top" width="1%">
                         <font size="-1">
                             <code> 
-                                <a href="../../../../../se/streamsource/streamflow/web/context/task/TasksContext.html"
-                                   shape="rect" title="interface in se.streamsource.streamflow.web.context.caze">
+                                <a href="../../../../../se/streamsource/streamflow/web/roleMap/task/TasksContext.html"
+                                   shape="rect" title="interface in se.streamsource.streamflow.web.roleMap.caze">
                                     TasksContext
                                 </a>
                             </code>
@@ -307,7 +307,7 @@
                     <td colspan="1" rowspan="1">
                         <code>
                             <b>
-                                <a href="../../../../../se/streamsource/streamflow/web/context/RootContext.html#tasks()"
+                                <a href="../../../../../se/streamsource/streamflow/web/roleMap/RootContext.html#tasks()"
                                    shape="rect">tasks
                                 </a>
                             </b>
@@ -322,8 +322,8 @@
                     <td align="right" colspan="1" rowspan="1" valign="top" width="1%">
                         <font size="-1">
                             <code> 
-                                <a href="../../../../../se/streamsource/streamflow/web/context/users/UsersContext.html"
-                                   shape="rect" title="interface in se.streamsource.streamflow.web.context.users">
+                                <a href="../../../../../se/streamsource/streamflow/web/roleMap/users/UsersContext.html"
+                                   shape="rect" title="interface in se.streamsource.streamflow.web.roleMap.users">
                                     UsersContext
                                 </a>
                             </code>
@@ -332,7 +332,7 @@
                     <td colspan="1" rowspan="1">
                         <code>
                             <b>
-                                <a href="../../../../../se/streamsource/streamflow/web/context/RootContext.html#users()"
+                                <a href="../../../../../se/streamsource/streamflow/web/roleMap/RootContext.html#users()"
                                    shape="rect">users
                                 </a>
                             </b>
@@ -340,21 +340,21 @@
                         </code>
 
                         <br clear="none"/>
-                                  Users context.
+                                  Users roleMap.
                     </td>
                 </tr>
             </table>
              
-            <a name="methods_inherited_from_class_se.streamsource.dci.api.Interactions" shape="rect"/>
+            <a name="methods_inherited_from_class_se.streamsource.dci.api.Context" shape="rect"/>
             <table border="1" cellpadding="3" cellspacing="0" summary="" width="100%">
                 <tr bgcolor="#EEEEFF" class="TableSubHeadingColor">
                     <th align="left" colspan="1" rowspan="1">
-                        <b>Methods inherited from interface se.streamsource.dci.api.Interactions</b>
+                        <b>Methods inherited from interface se.streamsource.dci.api.Context</b>
                     </th>
                 </tr>
                 <tr bgcolor="white" class="TableRowColor">
                     <td colspan="1" rowspan="1">
-                        <code>context</code>
+                        <code>roleMap</code>
                     </td>
                 </tr>
             </table>
@@ -396,13 +396,13 @@
         <pre>
             <font size="-1">@SubContext
             </font>
-            <a href="../../../../../se/streamsource/streamflow/web/context/users/UsersContext.html" shape="rect"
-               title="interface in se.streamsource.streamflow.web.context.users">UsersContext
+            <a href="../../../../../se/streamsource/streamflow/web/roleMap/users/UsersContext.html" shape="rect"
+               title="interface in se.streamsource.streamflow.web.roleMap.users">UsersContext
             </a>
             <b>users</b>()
         </pre>
         <dl>
-            <dd>Users context. Here is where you access all users, and methods to create users.
+            <dd>Users roleMap. Here is where you access all users, and methods to create users.
                 <p>
                 </p>
             </dd>
@@ -422,8 +422,8 @@
         <pre>
             <font size="-1">@SubContext
             </font>
-            <a href="../../../../../se/streamsource/streamflow/web/context/task/TasksContext.html" shape="rect"
-               title="interface in se.streamsource.streamflow.web.context.caze">TasksContext
+            <a href="../../../../../se/streamsource/streamflow/web/roleMap/task/TasksContext.html" shape="rect"
+               title="interface in se.streamsource.streamflow.web.roleMap.caze">TasksContext
             </a>
             <b>tasks</b>()
         </pre>
@@ -448,8 +448,8 @@
         <pre>
             <font size="-1">@SubContext
             </font>
-            <a href="../../../../../se/streamsource/streamflow/web/context/organizations/OrganizationsContext.html"
-               shape="rect" title="interface in se.streamsource.streamflow.web.context.organizations">
+            <a href="../../../../../se/streamsource/streamflow/web/roleMap/organizations/OrganizationsContext.html"
+               shape="rect" title="interface in se.streamsource.streamflow.web.roleMap.organizations">
                 OrganizationsContext
             </a>
             <b>organizations</b>()
@@ -549,21 +549,21 @@
                 <td bgcolor="white" class="NavBarCell2" colspan="1" rowspan="1">
                     <font size="-2">
                          
-                        <a href="../../../../../se/streamsource/streamflow/web/context/ContextsAssembler.html"
-                           shape="rect" title="class in se.streamsource.streamflow.web.context">
+                        <a href="../../../../../se/streamsource/streamflow/web/roleMap/ContextsAssembler.html"
+                           shape="rect" title="class in se.streamsource.streamflow.web.roleMap">
                             <b>PREV CLASS</b>
                         </a>
                          
                          
-                        <a href="../../../../../se/streamsource/streamflow/web/context/RootContext.Mixin.html"
-                           shape="rect" title="class in se.streamsource.streamflow.web.context">
+                        <a href="../../../../../se/streamsource/streamflow/web/roleMap/RootContext.Mixin.html"
+                           shape="rect" title="class in se.streamsource.streamflow.web.roleMap">
                             <b>NEXT CLASS</b>
                         </a>
                     </font>
                 </td>
                 <td bgcolor="white" class="NavBarCell2" colspan="1" rowspan="1">
                     <font size="-2">
-                        <a href="../../../../../index.html?se/streamsource/streamflow/web/context/RootContext.html"
+                        <a href="../../../../../index.html?se/streamsource/streamflow/web/roleMap/RootContext.html"
                            shape="rect" target="_top">
                             <b>FRAMES</b>
                         </a>

@@ -21,10 +21,10 @@ import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.value.ValueBuilder;
 import org.restlet.resource.ResourceException;
-import se.streamsource.dci.api.DeleteInteraction;
-import se.streamsource.dci.api.IndexInteraction;
-import se.streamsource.dci.api.Interactions;
-import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.ContextMixin;
+import se.streamsource.dci.api.DeleteContext;
+import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.SubContext;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.LinksValue;
@@ -58,7 +58,7 @@ import java.util.Map;
  */
 @Mixins(AccessPointContext.Mixin.class)
 public interface AccessPointContext
-      extends IndexInteraction<AccessPointValue>, Interactions, DeleteInteraction
+      extends IndexContext<AccessPointValue>, Context, DeleteContext
 {
    void changedescription( StringValue name )
          throws IllegalArgumentException;
@@ -81,17 +81,17 @@ public interface AccessPointContext
    LinksValue possibleforms();
 
    abstract class Mixin
-         extends InteractionsMixin
+         extends ContextMixin
          implements AccessPointContext
    {
       public AccessPointValue index()
       {
          ValueBuilder<AccessPointValue> builder = module.valueBuilderFactory().newValueBuilder( AccessPointValue.class );
 
-         AccessPoint accessPoint = context.get( AccessPoint.class );
-         AccessPointSettings.Data accessPointData = context.get( AccessPointSettings.Data.class );
-         SelectedForms.Data forms = context.get( SelectedForms.Data.class );
-         Labelable.Data labelsData = context.get( Labelable.Data.class );
+         AccessPoint accessPoint = roleMap.get( AccessPoint.class );
+         AccessPointSettings.Data accessPointData = roleMap.get( AccessPointSettings.Data.class );
+         SelectedForms.Data forms = roleMap.get( SelectedForms.Data.class );
+         Labelable.Data labelsData = roleMap.get( Labelable.Data.class );
 
          builder.prototype().accessPoint().set( createLinkValue( accessPoint ) );
          if (accessPointData.project().get() != null)
@@ -122,8 +122,8 @@ public interface AccessPointContext
 
       public void delete() throws ResourceException
       {
-         AccessPoint accessPoint = context.get( AccessPoint.class );
-         AccessPoints accessPoints = context.get( AccessPoints.class );
+         AccessPoint accessPoint = roleMap.get( AccessPoint.class );
+         AccessPoints accessPoints = roleMap.get( AccessPoints.class );
 
          accessPoints.removeAccessPoint( accessPoint );
       }
@@ -132,7 +132,7 @@ public interface AccessPointContext
             throws IllegalArgumentException
       {
          // check if the new description is valid
-         AccessPoints.Data accessPoints = context.get( AccessPoints.Data.class );
+         AccessPoints.Data accessPoints = roleMap.get( AccessPoints.Data.class );
          List<AccessPoint> accessPointsList = accessPoints.accessPoints().toList();
          for (AccessPoint accessPoint : accessPointsList)
          {
@@ -142,14 +142,14 @@ public interface AccessPointContext
             }
          }
 
-         context.get( AccessPoint.class ).changeDescription( name.string().get() );
+         roleMap.get( AccessPoint.class ).changeDescription( name.string().get() );
       }
 
       public LinksValue possibleprojects()
       {
 
          final LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
-         OrganizationQueries organizationQueries = context.get( OrganizationQueries.class );
+         OrganizationQueries organizationQueries = roleMap.get( OrganizationQueries.class );
          organizationQueries.visitOrganization( new OrganizationVisitor()
          {
             @Override
@@ -166,7 +166,7 @@ public interface AccessPointContext
 
       public LinksValue possiblecasetypes()
       {
-         AccessPointSettings.Data accessPoint = context.get( AccessPointSettings.Data.class );
+         AccessPointSettings.Data accessPoint = roleMap.get( AccessPointSettings.Data.class );
          Project project = accessPoint.project().get();
 
          LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() );
@@ -180,7 +180,7 @@ public interface AccessPointContext
 
       public void setproject( StringValue id )
       {
-         AccessPoint accessPoint = context.get( AccessPoint.class );
+         AccessPoint accessPoint = roleMap.get( AccessPoint.class );
 
          Project project = module.unitOfWorkFactory().currentUnitOfWork().get( Project.class, id.string().get() );
 
@@ -189,7 +189,7 @@ public interface AccessPointContext
 
       public void setcasetype( StringValue id )
       {
-         AccessPoint accessPoint = context.get( AccessPoint.class );
+         AccessPoint accessPoint = roleMap.get( AccessPoint.class );
 
          CaseType caseType = module.unitOfWorkFactory().currentUnitOfWork().get( CaseType.class, id.string().get() );
 
@@ -198,8 +198,8 @@ public interface AccessPointContext
 
       public LinksValue possiblelabels()
       {
-         AccessPointSettings.Data accessPoint = context.get( AccessPointSettings.Data.class );
-         Labelable.Data labelsData = context.get( Labelable.Data.class );
+         AccessPointSettings.Data accessPoint = roleMap.get( AccessPointSettings.Data.class );
+         Labelable.Data labelsData = roleMap.get( Labelable.Data.class );
          Project project = accessPoint.project().get();
          CaseType caseType = accessPoint.caseType().get();
 
@@ -230,8 +230,8 @@ public interface AccessPointContext
 
       public LinksValue possibleforms()
       {
-         AccessPointSettings.Data accessPoint = context.get( AccessPointSettings.Data.class );
-         SelectedForms.Data selected = context.get( SelectedForms.Data.class );
+         AccessPointSettings.Data accessPoint = roleMap.get( AccessPointSettings.Data.class );
+         SelectedForms.Data selected = roleMap.get( SelectedForms.Data.class );
          CaseType caseType = accessPoint.caseType().get();
 
          LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() );
@@ -254,8 +254,8 @@ public interface AccessPointContext
 
       public void setform( StringValue id )
       {
-         SelectedForms forms = context.get( SelectedForms.class );
-         SelectedForms.Data formsData = context.get( SelectedForms.Data.class );
+         SelectedForms forms = roleMap.get( SelectedForms.class );
+         SelectedForms.Data formsData = roleMap.get( SelectedForms.Data.class );
 
          // remove what's there - should only be one or none
          List<Form> selectedForms = formsData.selectedForms().toList();

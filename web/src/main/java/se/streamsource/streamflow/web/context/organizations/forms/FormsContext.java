@@ -18,9 +18,9 @@
 package se.streamsource.streamflow.web.context.organizations.forms;
 
 import org.qi4j.api.mixin.Mixins;
-import se.streamsource.dci.api.IndexInteraction;
-import se.streamsource.dci.api.Interactions;
-import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.value.*;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
@@ -33,32 +33,32 @@ import se.streamsource.dci.api.SubContexts;
  */
 @Mixins(FormsContext.Mixin.class)
 public interface FormsContext
-   extends SubContexts<FormContext>, IndexInteraction<LinksValue>, Interactions
+   extends SubContexts<FormContext>, IndexContext<LinksValue>, Context
 {
    void createform( StringValue formName );
 
 
    abstract class Mixin
-      extends InteractionsMixin
+      extends ContextMixin
       implements FormsContext
    {
       public LinksValue index()
       {
-         Forms.Data forms = context.get(Forms.Data.class);
+         Forms.Data forms = roleMap.get(Forms.Data.class);
 
          return new LinksBuilder( module.valueBuilderFactory() ).rel("form").addDescribables( forms.forms() ).newLinks();
       }
 
       public void createform( StringValue formName )
       {
-         Forms forms = context.get(Forms.class);
+         Forms forms = roleMap.get(Forms.class);
          Form form = forms.createForm();
          form.changeDescription( formName.string().get() );
       }
 
       public FormContext context( String id )
       {
-         context.set(module.unitOfWorkFactory().currentUnitOfWork().get( Form.class, id ));
+         roleMap.set(module.unitOfWorkFactory().currentUnitOfWork().get( Form.class, id ));
          return subContext( FormContext.class );
       }
    }

@@ -74,7 +74,6 @@ import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -189,7 +188,7 @@ public class WorkspaceView
 
       topPanel = new JPanel( topLayout );
       topPanel.setBorder( BorderFactory.createEmptyBorder( 0, 0 , 5, 0 ) );
-      topPanel.add( contextPanel, "context" );
+      topPanel.add( contextPanel, "roleMap" );
       topPanel.add( searchPanel, "search" );
 
       add( topPanel, BorderLayout.NORTH );
@@ -502,7 +501,7 @@ public class WorkspaceView
    @Action
    public void hideSearch()
    {
-      topLayout.show( topPanel, "context" );
+      topLayout.show( topPanel, "roleMap" );
 
       TreePath[] selection = workspaceTree.getSelectionPaths();
       workspaceTree.clearSelection();

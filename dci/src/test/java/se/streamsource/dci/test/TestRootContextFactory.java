@@ -15,14 +15,25 @@
  * limitations under the License.
  */
 
-package se.streamsource.dci.api;
+package se.streamsource.dci.test;
 
-import org.qi4j.api.composite.TransientComposite;
+import org.qi4j.api.composite.TransientBuilderFactory;
+import org.qi4j.api.injection.scope.Structure;
+import se.streamsource.dci.api.RoleMap;
+import se.streamsource.dci.restlet.server.RootContextFactory;
+import se.streamsource.dci.test.interactions.RootContext;
 
 /**
- * Base interface for interactions
+ * JAVADOC
  */
-public interface Interactions
-   extends TransientComposite
+public class TestRootContextFactory
+   implements RootContextFactory
 {
+   @Structure
+   TransientBuilderFactory tbf;
+
+   public Object getRoot( RoleMap roleMap )
+   {
+      return tbf.newTransientBuilder( RootContext.class ).use( roleMap ).newInstance();
+   }
 }

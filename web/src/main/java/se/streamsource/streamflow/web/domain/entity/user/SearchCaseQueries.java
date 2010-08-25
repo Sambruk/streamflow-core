@@ -280,7 +280,7 @@ public interface SearchCaseQueries
       }
 
       /**
-       * Get the calling user from the access controller context.
+       * Get the calling user from the access controller roleMap.
        *
        * @param search
        * @return

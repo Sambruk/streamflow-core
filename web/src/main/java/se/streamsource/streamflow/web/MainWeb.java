@@ -17,7 +17,6 @@
 
 package se.streamsource.streamflow.web;
 
-import org.apache.log4j.xml.DOMConfigurator;
 import org.restlet.Application;
 import org.restlet.Component;
 import org.restlet.Context;
@@ -30,8 +29,6 @@ import org.restlet.routing.Filter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.streamsource.streamflow.web.rest.StreamflowRestApplication;
-
-import java.net.URL;
 
 /**
  * JAVADOC
@@ -93,7 +90,7 @@ public class MainWeb
 
    public Restlet getApplication()
    {
-      // Set context classloader so that resources are taken from this bundle
+      // Set roleMap classloader so that resources are taken from this bundle
       return new ClassLoaderFilter(application.getContext(), application);
    }
 

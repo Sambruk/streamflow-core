@@ -18,11 +18,9 @@
 package se.streamsource.streamflow.web.context.users.workspace;
 
 import org.qi4j.api.mixin.Mixins;
-import se.streamsource.dci.api.Interactions;
-import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.SubContext;
-import se.streamsource.streamflow.web.context.gtd.AssignmentsContext;
-import se.streamsource.streamflow.web.context.gtd.InboxContext;
 import se.streamsource.streamflow.web.context.structure.labels.LabelsContext;
 import se.streamsource.streamflow.web.context.users.UserAdministrationContext;
 
@@ -31,7 +29,7 @@ import se.streamsource.streamflow.web.context.users.UserAdministrationContext;
  */
 @Mixins(WorkspaceUserContext.Mixin.class)
 public interface WorkspaceUserContext
-   extends Interactions
+   extends Context
 {
    @SubContext
    DraftsContext drafts();
@@ -43,7 +41,7 @@ public interface WorkspaceUserContext
    UserAdministrationContext administration();
 
    abstract class Mixin
-      extends InteractionsMixin
+      extends ContextMixin
       implements WorkspaceUserContext
    {
       public DraftsContext drafts()

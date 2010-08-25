@@ -17,7 +17,6 @@
 
 package se.streamsource.dci.test;
 
-import org.apache.velocity.app.VelocityEngine;
 import org.qi4j.api.common.Visibility;
 import org.qi4j.bootstrap.ApplicationAssembler;
 import org.qi4j.bootstrap.ApplicationAssembly;
@@ -26,17 +25,15 @@ import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.spi.service.importer.NewObjectImporter;
-import org.restlet.Restlet;
 import se.streamsource.dci.api.InteractionConstraintsService;
 import se.streamsource.dci.restlet.server.CommandResult;
 import se.streamsource.dci.restlet.server.DCIAssembler;
 import se.streamsource.dci.restlet.server.DefaultResponseWriterFactory;
 import se.streamsource.dci.restlet.server.NullCommandResult;
 import se.streamsource.dci.restlet.server.ResourceFinder;
-import se.streamsource.dci.restlet.server.ResponseWriterFactory;
-import se.streamsource.dci.test.interactions.RootInteractions;
-import se.streamsource.dci.test.interactions.file.FileInteractions;
-import se.streamsource.dci.test.interactions.file.FilesInteractions;
+import se.streamsource.dci.test.interactions.RootContext;
+import se.streamsource.dci.test.interactions.file.FileContext;
+import se.streamsource.dci.test.interactions.file.FilesContext;
 import se.streamsource.dci.test.interactions.jmx.DomainInteractions;
 import se.streamsource.dci.test.interactions.jmx.JmxServerInteractions;
 import se.streamsource.dci.test.interactions.jmx.MBeanAttributeInteractions;
@@ -82,16 +79,16 @@ public class TestAssembler
 
    public void assemble( ModuleAssembly module ) throws AssemblyException
    {
-      module.importServices( TestRootInteractionsFactory.class ).importedBy( NewObjectImporter.class );
-      module.addObjects( TestRootInteractionsFactory.class );
+      module.importServices( TestRootContextFactory.class ).importedBy( NewObjectImporter.class );
+      module.addObjects( TestRootContextFactory.class );
 
       // Use defaults
       module.addObjects( DefaultResponseWriterFactory.class,
             NullCommandResult.class );
 
-      module.addTransients( RootInteractions.class,
-            FilesInteractions.class,
-            FileInteractions.class);
+      module.addTransients( RootContext.class,
+            FilesContext.class,
+            FileContext.class);
 
       module.addObjects( JmxServerInteractions.class, DomainInteractions.class, MBeanInteractions.class, MBeanAttributeInteractions.class );
 

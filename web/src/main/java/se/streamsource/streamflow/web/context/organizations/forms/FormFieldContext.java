@@ -23,8 +23,8 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
-import se.streamsource.dci.api.DeleteInteraction;
-import se.streamsource.dci.api.Interactions;
+import se.streamsource.dci.api.DeleteContext;
+import se.streamsource.dci.api.Context;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
 import se.streamsource.streamflow.domain.form.ListBoxFieldValue;
@@ -41,7 +41,7 @@ import se.streamsource.streamflow.web.domain.entity.form.FieldEntity;
 import se.streamsource.streamflow.web.domain.structure.form.Field;
 import se.streamsource.streamflow.web.domain.structure.form.FieldValueDefinition;
 import se.streamsource.streamflow.web.domain.structure.form.Fields;
-import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.RequiresRoles;
 import se.streamsource.streamflow.web.domain.structure.form.Mandatory;
 
@@ -50,7 +50,7 @@ import se.streamsource.streamflow.web.domain.structure.form.Mandatory;
  */
 @Mixins(FormFieldContext.Mixin.class)
 public interface FormFieldContext
-      extends DeleteInteraction, DescribableContext, NotableContext, Interactions
+      extends DeleteContext, DescribableContext, NotableContext, Context
 {
    public FieldDefinitionValue field();
 
@@ -86,7 +86,7 @@ public interface FormFieldContext
    public void move( StringValue direction );
 
    abstract class Mixin
-         extends InteractionsMixin
+         extends ContextMixin
          implements FormFieldContext
    {
       @Structure
@@ -94,7 +94,7 @@ public interface FormFieldContext
 
       public FieldDefinitionValue field()
       {
-         FieldEntity fieldEntity = context.get( FieldEntity.class );
+         FieldEntity fieldEntity = roleMap.get( FieldEntity.class );
 
          ValueBuilder<FieldDefinitionValue> builder = module.valueBuilderFactory().newValueBuilder( FieldDefinitionValue.class );
          builder.prototype().field().set( EntityReference.getEntityReference( fieldEntity ) );
@@ -108,15 +108,15 @@ public interface FormFieldContext
 
       public void updatemandatory( BooleanDTO mandatory )
       {
-         Mandatory mandatoryField = context.get( Mandatory.class );
+         Mandatory mandatoryField = roleMap.get( Mandatory.class );
 
          mandatoryField.changeMandatory( mandatory.bool().get() );
       }
 
       public void changemultiple( BooleanDTO multiple )
       {
-         FieldValueDefinition definition = context.get( FieldValueDefinition.class );
-         ListBoxFieldValue value = context.get( ListBoxFieldValue.class );
+         FieldValueDefinition definition = roleMap.get( FieldValueDefinition.class );
+         ListBoxFieldValue value = roleMap.get( ListBoxFieldValue.class );
 
          ValueBuilder<ListBoxFieldValue> builder = value.buildWith();
          builder.prototype().multiple().set( multiple.bool().get() );
@@ -126,8 +126,8 @@ public interface FormFieldContext
 
       public void changewidth( IntegerDTO newWidth )
       {
-         FieldValueDefinition fieldValueDefinition = context.get( FieldValueDefinition.class );
-         TextFieldValue value = context.get( TextFieldValue.class );
+         FieldValueDefinition fieldValueDefinition = roleMap.get( FieldValueDefinition.class );
+         TextFieldValue value = roleMap.get( TextFieldValue.class );
 
          ValueBuilder<TextFieldValue> builder = value.buildWith();
          builder.prototype().width().set( newWidth.integer().get() );
@@ -137,8 +137,8 @@ public interface FormFieldContext
 
       public void changerows( IntegerDTO newRows )
       {
-         FieldValueDefinition fieldValueDefinition = context.get( FieldValueDefinition.class );
-         TextAreaFieldValue value = context.get( TextAreaFieldValue.class );
+         FieldValueDefinition fieldValueDefinition = roleMap.get( FieldValueDefinition.class );
+         TextAreaFieldValue value = roleMap.get( TextAreaFieldValue.class );
 
          ValueBuilder<TextAreaFieldValue> builder = value.buildWith();
          builder.prototype().rows().set( newRows.integer().get() );
@@ -148,8 +148,8 @@ public interface FormFieldContext
 
       public void changecols( IntegerDTO newRows )
       {
-         FieldValueDefinition fieldValueDefinition = context.get( FieldValueDefinition.class );
-         TextAreaFieldValue value = context.get( TextAreaFieldValue.class );
+         FieldValueDefinition fieldValueDefinition = roleMap.get( FieldValueDefinition.class );
+         TextAreaFieldValue value = roleMap.get( TextAreaFieldValue.class );
 
          ValueBuilder<TextAreaFieldValue> builder = value.buildWith();
          builder.prototype().cols().set( newRows.integer().get() );
@@ -159,8 +159,8 @@ public interface FormFieldContext
 
       public void changeinteger( BooleanDTO integerDto )
       {
-         FieldValueDefinition definition = context.get( FieldValueDefinition.class );
-         NumberFieldValue value = context.get( NumberFieldValue.class );
+         FieldValueDefinition definition = roleMap.get( FieldValueDefinition.class );
+         NumberFieldValue value = roleMap.get( NumberFieldValue.class );
 
          ValueBuilder<NumberFieldValue> builder = value.buildWith();
          builder.prototype().integer().set( integerDto.bool().get() );
@@ -170,8 +170,8 @@ public interface FormFieldContext
 
       public void addselectionelement( StringValue name )
       {
-         FieldValueDefinition fieldValueDefinition = context.get( FieldValueDefinition.class );
-         SelectionFieldValue value = context.get( SelectionFieldValue.class );
+         FieldValueDefinition fieldValueDefinition = roleMap.get( FieldValueDefinition.class );
+         SelectionFieldValue value = roleMap.get( SelectionFieldValue.class );
 
          ValueBuilder<SelectionFieldValue> builder = value.buildWith();
          builder.prototype().values().get().add( name.string().get() );
@@ -180,8 +180,8 @@ public interface FormFieldContext
 
       public void removeselectionelement( IntegerDTO index )
       {
-         FieldValueDefinition fieldValueDefinition = context.get( FieldValueDefinition.class );
-         SelectionFieldValue value = context.get( SelectionFieldValue.class );
+         FieldValueDefinition fieldValueDefinition = roleMap.get( FieldValueDefinition.class );
+         SelectionFieldValue value = roleMap.get( SelectionFieldValue.class );
 
          ValueBuilder<SelectionFieldValue> builder = value.buildWith();
          if (builder.prototype().values().get().size() > index.integer().get())
@@ -193,8 +193,8 @@ public interface FormFieldContext
 
       public void moveselectionelement( NamedIndexDTO moveElement )
       {
-         FieldValueDefinition fieldValueDefinition = context.get( FieldValueDefinition.class );
-         SelectionFieldValue value = context.get( SelectionFieldValue.class );
+         FieldValueDefinition fieldValueDefinition = roleMap.get( FieldValueDefinition.class );
+         SelectionFieldValue value = roleMap.get( SelectionFieldValue.class );
 
          ValueBuilder<SelectionFieldValue> builder = value.buildWith();
          String element = builder.prototype().values().get().remove( moveElement.index().get().intValue() );
@@ -210,8 +210,8 @@ public interface FormFieldContext
 
       public void changeselectionelementname( NamedIndexDTO newNameDTO )
       {
-         FieldValueDefinition fieldValueDefinition = context.get( FieldValueDefinition.class );
-         SelectionFieldValue value = context.get( SelectionFieldValue.class );
+         FieldValueDefinition fieldValueDefinition = roleMap.get( FieldValueDefinition.class );
+         SelectionFieldValue value = roleMap.get( SelectionFieldValue.class );
 
          ValueBuilder<SelectionFieldValue> builder = value.buildWith();
          builder.prototype().values().get().set( newNameDTO.index().get(), newNameDTO.name().get() );
@@ -221,9 +221,9 @@ public interface FormFieldContext
 
       public void move( StringValue direction )
       {
-         Field field = context.get( Field.class );
-         Fields fields = context.get( Fields.class );
-         Fields.Data fieldsData = context.get( Fields.Data.class );
+         Field field = roleMap.get( Field.class );
+         Fields fields = roleMap.get( Fields.class );
+         Fields.Data fieldsData = roleMap.get( Fields.Data.class );
 
          int index = fieldsData.fields().toList().indexOf( field );
          if (direction.string().get().equalsIgnoreCase( "up" ))
@@ -242,8 +242,8 @@ public interface FormFieldContext
 
       public void delete()
       {
-         Field field = context.get( Field.class );
-         Fields fields = context.get( Fields.class );
+         Field field = roleMap.get( Field.class );
+         Fields fields = roleMap.get( Fields.class );
 
          fields.removeField( field );
       }

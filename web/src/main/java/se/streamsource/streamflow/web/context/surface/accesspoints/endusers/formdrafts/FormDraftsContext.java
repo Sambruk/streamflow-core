@@ -19,9 +19,9 @@ package se.streamsource.streamflow.web.context.surface.accesspoints.endusers.for
 
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.mixin.Mixins;
-import se.streamsource.dci.api.IndexInteraction;
-import se.streamsource.dci.api.Interactions;
-import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.ContextMixin;
+import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.SubContexts;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
@@ -33,18 +33,18 @@ import se.streamsource.streamflow.web.domain.structure.form.FormSubmissions;
  */
 @Mixins(FormDraftsContext.Mixin.class)
 public interface FormDraftsContext
-   extends Interactions, IndexInteraction<LinksValue>, SubContexts<FormDraftContext>
+   extends Context, IndexContext<LinksValue>, SubContexts<FormDraftContext>
 {
    FormDraftContext context( String id );
 
    abstract class Mixin
-      extends InteractionsMixin
+      extends ContextMixin
       implements FormDraftsContext
    {
 
       public LinksValue index()
       {
-         FormSubmissions.Data data = context.get( FormSubmissions.Data.class );
+         FormSubmissions.Data data = roleMap.get( FormSubmissions.Data.class );
 
          LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() );
          for (FormSubmission form : data.formSubmissions())
@@ -56,15 +56,15 @@ public interface FormDraftsContext
 
       public FormDraftContext context( String id )
       {
-         FormSubmissions.Data data = context.get( FormSubmissions.Data.class );
+         FormSubmissions.Data data = roleMap.get( FormSubmissions.Data.class );
 
          for (FormSubmission formSubmission : data.formSubmissions())
          {
             EntityReference entityReference = EntityReference.getEntityReference( formSubmission );
             if ( entityReference.identity().equals( id ))
             {
-               context.set( formSubmission );
-               context.set( formSubmission.getFormSubmission() );
+               roleMap.set( formSubmission );
+               roleMap.set( formSubmission.getFormSubmission() );
                return subContext( FormDraftContext.class );
             }
          }

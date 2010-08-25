@@ -20,7 +20,7 @@ package se.streamsource.streamflow.web.context;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.service.ServiceFinder;
 import org.qi4j.api.service.ServiceReference;
-import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.api.InteractionConstraint;
 import se.streamsource.dci.api.InteractionConstraintDeclaration;
 
@@ -43,7 +43,7 @@ public @interface ServiceAvailable
       @Structure
       ServiceFinder finder;
 
-      public boolean isValid( ServiceAvailable serviceAvailable, Context context )
+      public boolean isValid( ServiceAvailable serviceAvailable, RoleMap roleMap )
       {
          ServiceReference ref = finder.findService( serviceAvailable.value() );
          return ref != null && ref.isActive();

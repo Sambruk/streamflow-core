@@ -20,9 +20,9 @@ package se.streamsource.streamflow.web.context.structure.resolutions;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
-import se.streamsource.dci.api.IndexInteraction;
-import se.streamsource.dci.api.Interactions;
-import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.SubContexts;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.StringValue;
@@ -46,14 +46,14 @@ import se.streamsource.streamflow.web.domain.structure.project.Project;
  */
 @Mixins(SelectedResolutionsContext.Mixin.class)
 public interface SelectedResolutionsContext
-   extends SubContexts<SelectedResolutionContext>, IndexInteraction<LinksValue>, Interactions
+   extends SubContexts<SelectedResolutionContext>, IndexContext<LinksValue>, Context
 {
    public LinksValue possibleresolutions();
    public void createresolution( StringValue name );
    public void addresolution( EntityReferenceDTO resolutionDTO );
 
    abstract class Mixin
-         extends InteractionsMixin
+         extends ContextMixin
          implements SelectedResolutionsContext
    {
       @Structure
@@ -61,15 +61,15 @@ public interface SelectedResolutionsContext
 
       public LinksValue index()
       {
-         SelectedResolutions.Data resolutions = context.get(SelectedResolutions.Data.class);
+         SelectedResolutions.Data resolutions = roleMap.get(SelectedResolutions.Data.class);
 
          return new LinksBuilder( module.valueBuilderFactory() ).rel( "resolution" ).addDescribables( resolutions.selectedResolutions() ).newLinks();
       }
 
       public LinksValue possibleresolutions()
       {
-         OrganizationQueries organizationQueries = context.get(OrganizationQueries.class);
-         final SelectedResolutions.Data selectedResolutions = context.get(SelectedResolutions.Data.class);
+         OrganizationQueries organizationQueries = roleMap.get(OrganizationQueries.class);
+         final SelectedResolutions.Data selectedResolutions = roleMap.get(SelectedResolutions.Data.class);
 
          final LinksBuilder builder = new LinksBuilder(module.valueBuilderFactory()).command( "addresolution" );
          organizationQueries.visitOrganization( new OrganizationVisitor()
@@ -121,8 +121,8 @@ public interface SelectedResolutionsContext
 
       public void createresolution( StringValue name )
       {
-         Resolutions resolutions = context.get(Resolutions.class);
-         SelectedResolutions selectedResolutions = context.get(SelectedResolutions.class);
+         Resolutions resolutions = roleMap.get(Resolutions.class);
+         SelectedResolutions selectedResolutions = roleMap.get(SelectedResolutions.class);
 
          Resolution resolution = resolutions.createResolution( name.string().get() );
          selectedResolutions.addSelectedResolution( resolution );
@@ -130,7 +130,7 @@ public interface SelectedResolutionsContext
 
       public void addresolution( EntityReferenceDTO resolutionDTO )
       {
-         SelectedResolutions resolutions = context.get( SelectedResolutions.class);
+         SelectedResolutions resolutions = roleMap.get( SelectedResolutions.class);
          Resolution resolution = module.unitOfWorkFactory().currentUnitOfWork().get( Resolution.class, resolutionDTO.entity().get().identity() );
 
          resolutions.addSelectedResolution( resolution );
@@ -138,7 +138,7 @@ public interface SelectedResolutionsContext
 
       public SelectedResolutionContext context( String id )
       {
-         context.set( module.unitOfWorkFactory().currentUnitOfWork().get(Resolution.class, id ));
+         roleMap.set( module.unitOfWorkFactory().currentUnitOfWork().get(Resolution.class, id ));
          return subContext( SelectedResolutionContext.class );
       }
    }

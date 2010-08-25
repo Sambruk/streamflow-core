@@ -18,27 +18,27 @@
 package se.streamsource.streamflow.web.context.structure.labels;
 
 import org.qi4j.api.mixin.Mixins;
-import se.streamsource.dci.api.Interactions;
-import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.ContextMixin;
+import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
-import se.streamsource.dci.api.DeleteInteraction;
 
 /**
  * JAVADOC
  */
 @Mixins(SelectedLabelContext.Mixin.class)
 public interface SelectedLabelContext
-   extends DeleteInteraction, Interactions
+   extends DeleteContext, Context
 {
    abstract class Mixin
-      extends InteractionsMixin
+      extends ContextMixin
       implements SelectedLabelContext
    {
       public void delete()
       {
-         SelectedLabels labels = context.get( SelectedLabels.class);
-         Label label = context.get( Label.class);
+         SelectedLabels labels = roleMap.get( SelectedLabels.class);
+         Label label = roleMap.get( Label.class);
 
          labels.removeSelectedLabel( label );
       }

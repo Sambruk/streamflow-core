@@ -21,8 +21,8 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
 import org.restlet.data.Reference;
-import se.streamsource.dci.api.Interactions;
-import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
@@ -37,7 +37,7 @@ import se.streamsource.dci.api.SubContext;
  */
 @Mixins(CaseContext.Mixin.class)
 public interface CaseContext
-   extends Interactions, CaseActionsContext
+   extends Context, CaseActionsContext
 {
    CaseValue info();
 
@@ -57,7 +57,7 @@ public interface CaseContext
    AttachmentsContext attachments();
 
    abstract class Mixin
-      extends InteractionsMixin
+      extends ContextMixin
       implements CaseContext
    {
       public static CaseValue caseDTO( CaseEntity aCase, Module module, String basePath )
@@ -106,7 +106,7 @@ public interface CaseContext
 
       public CaseValue info()
       {
-         return caseDTO(context.get( CaseEntity.class ), module, context.get( Reference.class ).getBaseRef().getPath());
+         return caseDTO( roleMap.get( CaseEntity.class ), module, roleMap.get( Reference.class ).getBaseRef().getPath());
       }
 
       public CaseGeneralContext general()

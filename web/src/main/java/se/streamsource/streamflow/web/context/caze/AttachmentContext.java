@@ -27,9 +27,9 @@ import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.Representation;
-import se.streamsource.dci.api.DeleteInteraction;
-import se.streamsource.dci.api.Interactions;
-import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.DeleteContext;
+import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.streamflow.domain.attachment.UpdateAttachmentValue;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
@@ -39,7 +39,6 @@ import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Date;
 
 import static se.streamsource.streamflow.util.Strings.notEmpty;
 
@@ -48,14 +47,14 @@ import static se.streamsource.streamflow.util.Strings.notEmpty;
  */
 @Mixins(AttachmentContext.Mixin.class)
 public interface AttachmentContext
-   extends DeleteInteraction, Interactions
+   extends DeleteContext, Context
 {
    public void update( UpdateAttachmentValue updateValue);
 
    public Representation download() throws IOException, URISyntaxException;
 
    abstract class Mixin
-      extends InteractionsMixin
+      extends ContextMixin
       implements AttachmentContext
    {
       @Structure
@@ -66,8 +65,8 @@ public interface AttachmentContext
 
       public void delete() throws IOException
       {
-         Attachments attachments = context.get( Attachments.class);
-         Attachment attachment = context.get(Attachment.class);
+         Attachments attachments = roleMap.get( Attachments.class);
+         Attachment attachment = roleMap.get(Attachment.class);
 
          AttachedFile.Data fileData = (AttachedFile.Data) attachment;
          
@@ -87,8 +86,8 @@ public interface AttachmentContext
 
       public void update( UpdateAttachmentValue updateValue )
       {
-         AttachedFile.Data fileData = context.get(AttachedFile.Data.class );
-         AttachedFile file = context.get(AttachedFile.class );
+         AttachedFile.Data fileData = roleMap.get(AttachedFile.Data.class );
+         AttachedFile file = roleMap.get(AttachedFile.class );
 
          String name = updateValue.name().get();
          if (notEmpty( name ) && !fileData.name().get().equals(name))
@@ -109,7 +108,7 @@ public interface AttachmentContext
 
       public Representation download() throws IOException, URISyntaxException
       {
-         AttachedFile.Data fileData = context.get(AttachedFile.Data.class );
+         AttachedFile.Data fileData = roleMap.get(AttachedFile.Data.class );
 
          String id = new URI(fileData.uri().get()).getSchemeSpecificPart();
 

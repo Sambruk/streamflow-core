@@ -22,7 +22,7 @@ import org.qi4j.api.concern.ConcernOf;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
@@ -50,14 +50,14 @@ public abstract class UpdateCaseCountCacheConcern
 
    public void assign()
    {
-      Context context = uowf.currentUnitOfWork().metaInfo().get( Context.class );
-      CaseEntity caze = context.get( CaseEntity.class );
+      RoleMap roleMap = uowf.currentUnitOfWork().metaInfo().get( RoleMap.class );
+      CaseEntity caze = roleMap.get( CaseEntity.class );
 
       // Update inbox cache
       caching.addToCache( caze.owner().get().toString(), -1 );
 
       // Update assignments for user
-      Assignee assignee = context.get( Assignee.class );
+      Assignee assignee = roleMap.get( Assignee.class );
       caching.addToCache(caze.owner().get().toString()+":"+assignee.toString(), 1 );
 
       next.assign();
@@ -65,8 +65,8 @@ public abstract class UpdateCaseCountCacheConcern
 
    public void open()
    {
-      Context context = uowf.currentUnitOfWork().metaInfo().get( Context.class );
-      CaseEntity caze = context.get( CaseEntity.class );
+      RoleMap roleMap = uowf.currentUnitOfWork().metaInfo().get( RoleMap.class );
+      CaseEntity caze = roleMap.get( CaseEntity.class );
 
       // Update inbox cache
       caching.addToCache( caze.owner().get().toString(), 1 );
@@ -79,13 +79,13 @@ public abstract class UpdateCaseCountCacheConcern
 
    public void close()
    {
-      Context context = uowf.currentUnitOfWork().metaInfo().get( Context.class );
-      CaseEntity caze = context.get( CaseEntity.class );
+      RoleMap roleMap = uowf.currentUnitOfWork().metaInfo().get( RoleMap.class );
+      CaseEntity caze = roleMap.get( CaseEntity.class );
 
       if (caze.isAssigned())
       {
          // Update assignments for user
-         Assignee assignee = context.get( Assignee.class );
+         Assignee assignee = roleMap.get( Assignee.class );
          caching.addToCache( caze.owner().get().toString()+":"+assignee.toString(), 1 );
       } else
       {
@@ -98,13 +98,13 @@ public abstract class UpdateCaseCountCacheConcern
 
    public void resolve( EntityReferenceDTO resolution )
    {
-      Context context = uowf.currentUnitOfWork().metaInfo().get( Context.class );
-      CaseEntity caze = context.get( CaseEntity.class );
+      RoleMap roleMap = uowf.currentUnitOfWork().metaInfo().get( RoleMap.class );
+      CaseEntity caze = roleMap.get( CaseEntity.class );
 
       if (caze.isAssigned())
       {
          // Update assignments for user
-         Assignee assignee = context.get( Assignee.class );
+         Assignee assignee = roleMap.get( Assignee.class );
          caching.addToCache( caze.owner().get().toString()+":"+assignee.toString() , -1 );
       } else
       {
@@ -117,8 +117,8 @@ public abstract class UpdateCaseCountCacheConcern
 
    public void sendto( EntityReferenceDTO entity )
    {
-      Context context = uowf.currentUnitOfWork().metaInfo().get( Context.class );
-      CaseEntity caze = context.get( CaseEntity.class );
+      RoleMap roleMap = uowf.currentUnitOfWork().metaInfo().get( RoleMap.class );
+      CaseEntity caze = roleMap.get( CaseEntity.class );
 
       Owner owner = caze.owner().get();
       if (owner != null) // If no owner, then it is still in drafts mode - no cache to fix
@@ -126,7 +126,7 @@ public abstract class UpdateCaseCountCacheConcern
          if (caze.isAssigned())
          {
             // Update assignments for user
-            Assignee assignee = context.get( Assignee.class );
+            Assignee assignee = roleMap.get( Assignee.class );
             caching.addToCache( owner.toString()+":"+assignee.toString(), -1 );
          } else
          {
@@ -143,11 +143,11 @@ public abstract class UpdateCaseCountCacheConcern
 
    public void reopen()
    {
-      Context context = uowf.currentUnitOfWork().metaInfo().get( Context.class );
-      CaseEntity caze = context.get( CaseEntity.class );
+      RoleMap roleMap = uowf.currentUnitOfWork().metaInfo().get( RoleMap.class );
+      CaseEntity caze = roleMap.get( CaseEntity.class );
 
       // Update assignments for user
-      Assignee assignee = context.get( Assignee.class );
+      Assignee assignee = roleMap.get( Assignee.class );
       caching.addToCache( caze.owner().get().toString()+":"+assignee.toString(), 1 );
 
       next.reopen();
@@ -155,11 +155,11 @@ public abstract class UpdateCaseCountCacheConcern
 
    public void unassign()
    {
-      Context context = uowf.currentUnitOfWork().metaInfo().get( Context.class );
-      CaseEntity caze = context.get( CaseEntity.class );
+      RoleMap roleMap = uowf.currentUnitOfWork().metaInfo().get( RoleMap.class );
+      CaseEntity caze = roleMap.get( CaseEntity.class );
 
       // Update assignments for user
-      Assignee assignee = context.get( Assignee.class );
+      Assignee assignee = roleMap.get( Assignee.class );
       caching.addToCache( caze.owner().get().toString()+":"+assignee.toString(), -1 );
 
       // Update inbox cache
@@ -170,15 +170,15 @@ public abstract class UpdateCaseCountCacheConcern
 
    public void delete()
    {
-      Context context = uowf.currentUnitOfWork().metaInfo().get( Context.class );
-      CaseEntity caze = context.get( CaseEntity.class );
+      RoleMap roleMap = uowf.currentUnitOfWork().metaInfo().get( RoleMap.class );
+      CaseEntity caze = roleMap.get( CaseEntity.class );
 
       if (caze.hasOwner())
       {
          if (caze.isAssigned())
          {
             // Update assignments for user
-            Assignee assignee = context.get( Assignee.class );
+            Assignee assignee = roleMap.get( Assignee.class );
             caching.addToCache( caze.owner().get().toString()+":"+assignee.toString(), -1 );
          } else
          {

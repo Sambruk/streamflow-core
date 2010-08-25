@@ -20,9 +20,9 @@ package se.streamsource.streamflow.web.context.surface.administration.organizati
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.unitofwork.UnitOfWork;
-import se.streamsource.dci.api.Interactions;
-import se.streamsource.dci.api.InteractionsMixin;
-import se.streamsource.dci.api.IndexInteraction;
+import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.SubContexts;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
@@ -35,10 +35,10 @@ import se.streamsource.streamflow.web.domain.structure.organization.Organization
  */
 @Mixins(OrganizationsContext.Mixin.class)
 public interface OrganizationsContext
-   extends SubContexts<OrganizationContext>, IndexInteraction<LinksValue>, Interactions
+   extends SubContexts<OrganizationContext>, IndexContext<LinksValue>, Context
 {
    abstract class Mixin
-      extends InteractionsMixin
+      extends ContextMixin
       implements OrganizationsContext
    {
       public LinksValue index()
@@ -55,7 +55,7 @@ public interface OrganizationsContext
 
       public OrganizationContext context( String id )
       {
-         context.set( module.unitOfWorkFactory().currentUnitOfWork().get( Organization.class, id ) );
+         roleMap.set( module.unitOfWorkFactory().currentUnitOfWork().get( Organization.class, id ) );
 
          return subContext( OrganizationContext.class);
       }

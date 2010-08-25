@@ -25,6 +25,8 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.dci.value.LinkValue;
 
 /**
+ * Do a redirect as response.
+ *
  */
 public class RedirectResponseWriter
    implements ResponseWriter

@@ -20,8 +20,8 @@ package se.streamsource.streamflow.web.context.structure.labels;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
-import se.streamsource.dci.api.Interactions;
-import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
@@ -33,7 +33,7 @@ import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.label.Labels;
 import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
-import se.streamsource.dci.api.IndexInteraction;
+import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.SubContexts;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
@@ -46,14 +46,14 @@ import se.streamsource.streamflow.web.domain.structure.project.Project;
  */
 @Mixins(SelectedLabelsContext.Mixin.class)
 public interface SelectedLabelsContext
-   extends SubContexts<SelectedLabelContext>, IndexInteraction<LinksValue>, Interactions
+   extends SubContexts<SelectedLabelContext>, IndexContext<LinksValue>, Context
 {
    public LinksValue possiblelabels();
    public void createlabel( StringValue name );
    public void addlabel( EntityReferenceDTO labelDTO );
 
    abstract class Mixin
-         extends InteractionsMixin
+         extends ContextMixin
          implements SelectedLabelsContext
    {
       @Structure
@@ -61,15 +61,15 @@ public interface SelectedLabelsContext
 
       public LinksValue index()
       {
-         SelectedLabels.Data labels = context.get(SelectedLabels.Data.class);
+         SelectedLabels.Data labels = roleMap.get(SelectedLabels.Data.class);
 
          return new LinksBuilder( module.valueBuilderFactory() ).rel( "label" ).addDescribables( labels.selectedLabels() ).newLinks();
       }
 
       public LinksValue possiblelabels()
       {
-         OrganizationQueries orgQueries = context.get(OrganizationQueries.class);
-         final SelectedLabels.Data selectedLabels = context.get(SelectedLabels.Data.class);
+         OrganizationQueries orgQueries = roleMap.get(OrganizationQueries.class);
+         final SelectedLabels.Data selectedLabels = roleMap.get(SelectedLabels.Data.class);
 
          final LinksBuilder builder = new LinksBuilder(module.valueBuilderFactory()).command( "addlabel" );
 
@@ -129,8 +129,8 @@ public interface SelectedLabelsContext
 
       public void createlabel( StringValue name )
       {
-         Labels labels = context.get(Labels.class);
-         SelectedLabels selectedLabels = context.get(SelectedLabels.class);
+         Labels labels = roleMap.get(Labels.class);
+         SelectedLabels selectedLabels = roleMap.get(SelectedLabels.class);
 
          Label label = labels.createLabel( name.string().get() );
          selectedLabels.addSelectedLabel( label );
@@ -138,7 +138,7 @@ public interface SelectedLabelsContext
 
       public void addlabel( EntityReferenceDTO labelDTO )
       {
-         SelectedLabels labels = context.get( SelectedLabels.class);
+         SelectedLabels labels = roleMap.get( SelectedLabels.class);
          Label label = module.unitOfWorkFactory().currentUnitOfWork().get( Label.class, labelDTO.entity().get().identity() );
 
          labels.addSelectedLabel( label );
@@ -146,7 +146,7 @@ public interface SelectedLabelsContext
 
       public SelectedLabelContext context( String id )
       {
-         context.set( module.unitOfWorkFactory().currentUnitOfWork().get(Label.class, id ));
+         roleMap.set( module.unitOfWorkFactory().currentUnitOfWork().get(Label.class, id ));
          return subContext( SelectedLabelContext.class );
       }
    }

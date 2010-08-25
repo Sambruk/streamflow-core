@@ -52,7 +52,7 @@ public class StreamflowWebAssembler
       LayerAssembly configurationLayer = assembly.layerAssembly( "Configuration" );
       LayerAssembly domainInfrastructureLayer = assembly.layerAssembly( "Domain infrastructure" );
       LayerAssembly domainLayer = assembly.layerAssembly( "Domain" );
-      LayerAssembly contextLayer = assembly.layerAssembly( "Interactions" );
+      LayerAssembly contextLayer = assembly.layerAssembly( "Context" );
       LayerAssembly appLayer = assembly.layerAssembly( "Application" );
       LayerAssembly webLayer = assembly.layerAssembly( "Web" );
 

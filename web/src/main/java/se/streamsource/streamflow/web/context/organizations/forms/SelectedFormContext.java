@@ -18,9 +18,9 @@
 package se.streamsource.streamflow.web.context.organizations.forms;
 
 import org.qi4j.api.mixin.Mixins;
-import se.streamsource.dci.api.Interactions;
-import se.streamsource.dci.api.InteractionsMixin;
-import se.streamsource.dci.api.DeleteInteraction;
+import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.DeleteContext;
+import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
 import se.streamsource.streamflow.web.domain.structure.form.SelectedForms;
 
@@ -29,16 +29,16 @@ import se.streamsource.streamflow.web.domain.structure.form.SelectedForms;
  */
 @Mixins(SelectedFormContext.Mixin.class)
 public interface SelectedFormContext
-   extends DeleteInteraction, Interactions
+   extends DeleteContext, Context
 {
    abstract class Mixin
-      extends InteractionsMixin
+      extends ContextMixin
       implements SelectedFormContext
    {
       public void delete()
       {
-         SelectedForms forms = context.get(SelectedForms.class);
-         Form form = context.get(Form.class);
+         SelectedForms forms = roleMap.get(SelectedForms.class);
+         Form form = roleMap.get(Form.class);
          forms.removeSelectedForm( form );
       }
    }

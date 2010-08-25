@@ -23,8 +23,8 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.dci.api.DeleteInteraction;
-import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.DeleteContext;
+import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.domain.interaction.gtd.Actions;
 import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
@@ -61,7 +61,7 @@ import static se.streamsource.streamflow.domain.interaction.gtd.CaseStates.OPEN;
 @Concerns(UpdateCaseCountCacheConcern.class)
 @Mixins(CaseActionsContext.Mixin.class)
 public interface CaseActionsContext
-      extends DeleteInteraction // , InteractionConstraints
+      extends DeleteContext // , InteractionConstraints
 {
    // List possible actions
    public Actions actions();
@@ -116,7 +116,7 @@ public interface CaseActionsContext
    public void delete();
 
    abstract class Mixin
-         extends InteractionsMixin
+         extends ContextMixin
          implements CaseActionsContext
    {
       @Structure
@@ -131,8 +131,8 @@ public interface CaseActionsContext
          ValueBuilder<Actions> builder = vbf.newValueBuilder( se.streamsource.streamflow.domain.interaction.gtd.Actions.class );
          List<String> actions = builder.prototype().actions().get();
 
-         PossibleActions possibleActions = context.get( PossibleActions.class );
-         Actor actor = context.get(Actor.class);
+         PossibleActions possibleActions = roleMap.get( PossibleActions.class );
+         Actor actor = roleMap.get(Actor.class);
 
          possibleActions.addActions( actor, actions );
 
@@ -142,9 +142,9 @@ public interface CaseActionsContext
       public LinksValue possiblesendto()
       {
          LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() ).command( "sendto" );
-         List<Project> projects = context.get( CaseTypeQueries.class ).possibleProjects();
-         Ownable ownable = context.get(Ownable.class);
-         CaseType caseType = context.get( TypedCase.Data.class).caseType().get();
+         List<Project> projects = roleMap.get( CaseTypeQueries.class ).possibleProjects();
+         Ownable ownable = roleMap.get(Ownable.class);
+         CaseType caseType = roleMap.get( TypedCase.Data.class).caseType().get();
          for (Project project : projects)
          {
             if (!ownable.isOwnedBy( (Owner) project ))
@@ -159,7 +159,7 @@ public interface CaseActionsContext
       public LinksValue possibleresolutions()
       {
          LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() ).command( "resolve" );
-         CaseType type = context.get( TypedCase.Data.class ).caseType().get();
+         CaseType type = roleMap.get( TypedCase.Data.class ).caseType().get();
          if (type != null)
          {
             Iterable<Resolution> resolutions = type.getSelectedResolutions();
@@ -171,9 +171,9 @@ public interface CaseActionsContext
       // Commands
       public void assign()
       {
-         Assignable assignable = context.get(Assignable.class);
+         Assignable assignable = roleMap.get(Assignable.class);
 
-         Assignee assignee = context.get(Actor.class);
+         Assignee assignee = roleMap.get(Actor.class);
 
          if (!assignable.isAssigned())
          {
@@ -183,16 +183,16 @@ public interface CaseActionsContext
 
       public void open()
       {
-         Status aCase = context.get( Status.class);
+         Status aCase = roleMap.get( Status.class);
 
          aCase.open();
       }
 
       public void close()
       {
-         CaseEntity aCase = context.get( CaseEntity.class);
+         CaseEntity aCase = roleMap.get( CaseEntity.class);
 
-         Actor actor = context.get(Actor.class);
+         Actor actor = roleMap.get(Actor.class);
 
          if (!aCase.isAssigned())
          {
@@ -206,11 +206,11 @@ public interface CaseActionsContext
       {
          Resolution resolution = uowf.currentUnitOfWork().get( Resolution.class, resolutionDTO.entity().get().identity() );
 
-         Assignable assignable = context.get( Assignable.class);
-         Resolvable resolvable = context.get( Resolvable.class);
-         Status status = context.get( Status.class);
+         Assignable assignable = roleMap.get( Assignable.class);
+         Resolvable resolvable = roleMap.get( Resolvable.class);
+         Status status = roleMap.get( Status.class);
 
-         Actor actor = context.get(Actor.class);
+         Actor actor = roleMap.get(Actor.class);
 
          if (!assignable.isAssigned())
          {
@@ -224,12 +224,12 @@ public interface CaseActionsContext
 
       public void onhold()
       {
-         context.get(Status.class).onHold();
+         roleMap.get(Status.class).onHold();
       }
 
       public void sendto( EntityReferenceDTO entity )
       {
-         CaseEntity aCase = context.get( CaseEntity.class);
+         CaseEntity aCase = roleMap.get( CaseEntity.class);
 
          Owner toOwner = uowf.currentUnitOfWork().get( Owner.class, entity.entity().get().identity() );
 
@@ -240,25 +240,25 @@ public interface CaseActionsContext
 
       public void reopen()
       {
-         Status caze = context.get( CaseEntity.class);
+         Status caze = roleMap.get( CaseEntity.class);
          caze.reopen();
       }
 
       public void resume()
       {
-         context.get(Status.class).resume();
+         roleMap.get(Status.class).resume();
       }
 
       public void unassign()
       {
-         Assignable caze = context.get( CaseEntity.class);
+         Assignable caze = roleMap.get( CaseEntity.class);
 
          caze.unassign();
       }
 
       public void delete()
       {
-         Removable caze = context.get( CaseEntity.class);
+         Removable caze = roleMap.get( CaseEntity.class);
          caze.deleteEntity();
       }
    }

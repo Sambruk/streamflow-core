@@ -28,7 +28,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
-import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.streamflow.resource.user.NewUserCommand;
 import se.streamsource.streamflow.resource.user.UserEntityListDTO;
 import se.streamsource.streamflow.web.context.RequiresPermission;
@@ -36,7 +36,7 @@ import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.entity.user.UsersQueries;
 import se.streamsource.streamflow.web.domain.structure.user.User;
 import se.streamsource.streamflow.web.domain.structure.user.Users;
-import se.streamsource.dci.api.Interactions;
+import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.SubContexts;
 
 import java.io.BufferedReader;
@@ -53,7 +53,7 @@ import java.util.regex.Pattern;
  */
 @Mixins(UsersContext.Mixin.class)
 public interface UsersContext
-   extends SubContexts<UserContext>, Interactions
+   extends SubContexts<UserContext>, Context
 {
    // Queries
    @RequiresPermission("administrator")
@@ -67,12 +67,12 @@ public interface UsersContext
    void importusers( Representation representation ) throws ResourceException;
 
    abstract class Mixin
-      extends InteractionsMixin
+      extends ContextMixin
       implements UsersContext
    {
       public UserEntityListDTO users()
       {
-         UsersQueries orgs = context.get(UsersQueries.class);
+         UsersQueries orgs = roleMap.get(UsersQueries.class);
 
          return orgs.users();
       }
@@ -81,7 +81,7 @@ public interface UsersContext
       {
          UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
 
-         Users users = context.get(Users.class);
+         Users users = roleMap.get(Users.class);
          User user = users.createUser( command.username().get(), command.password().get() );
       }
 
@@ -89,14 +89,14 @@ public interface UsersContext
       {
          boolean badRequest = false;
          String errors = "<html>";
-         Locale locale = context.get(Locale.class);
+         Locale locale = roleMap.get(Locale.class);
 
          ResourceBundle bundle = ResourceBundle.getBundle(
                UsersContext.class.getName(), locale );
 
          UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
 
-         Users organizations = context.get(Users.class);
+         Users organizations = roleMap.get(Users.class);
 
          try
          {
@@ -206,7 +206,7 @@ public interface UsersContext
       public UserContext context( String id )
       {
          UserEntity user = module.unitOfWorkFactory().currentUnitOfWork().get( UserEntity.class, id );
-         context.set( user );
+         roleMap.set( user );
 
          return subContext( UserContext.class);
       }

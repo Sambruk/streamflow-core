@@ -19,9 +19,9 @@ package se.streamsource.streamflow.web.context.organizations.forms;
 
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWork;
-import se.streamsource.dci.api.IndexInteraction;
-import se.streamsource.dci.api.Interactions;
-import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.SubContexts;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.domain.structure.Describable;
@@ -45,28 +45,28 @@ import se.streamsource.streamflow.web.domain.structure.project.Project;
  */
 @Mixins(SelectedFormsContext.Mixin.class)
 public interface SelectedFormsContext
-   extends SubContexts<SelectedFormContext>, IndexInteraction<LinksValue>, Interactions
+   extends SubContexts<SelectedFormContext>, IndexContext<LinksValue>, Context
 {
    public LinksValue possibleforms();
 
    public void addform( EntityReferenceDTO caseTypeDTO );
 
    abstract class Mixin
-      extends InteractionsMixin
+      extends ContextMixin
       implements SelectedFormsContext
    {
       public LinksValue index()
       {
-         SelectedForms.Data forms = context.get(SelectedForms.Data.class);
+         SelectedForms.Data forms = roleMap.get(SelectedForms.Data.class);
 
          return new LinksBuilder( module.valueBuilderFactory() ).rel("selectedform").addDescribables( forms.selectedForms() ).newLinks();
       }
 
       public LinksValue possibleforms()
       {
-         OrganizationQueries organizationQueries = context.get(OrganizationQueries.class);
+         OrganizationQueries organizationQueries = roleMap.get(OrganizationQueries.class);
 
-         final SelectedForms.Data selectedForms = context.get(SelectedForms.Data.class);
+         final SelectedForms.Data selectedForms = roleMap.get(SelectedForms.Data.class);
 
          final LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() ).command( "addform" );
 
@@ -132,7 +132,7 @@ public interface SelectedFormsContext
       {
          UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
 
-         SelectedForms selectedForms = context.get(SelectedForms.class);
+         SelectedForms selectedForms = roleMap.get(SelectedForms.class);
          Form form = uow.get( Form.class, formDTO.entity().get().identity() );
 
          selectedForms.addSelectedForm( form );
@@ -140,7 +140,7 @@ public interface SelectedFormsContext
 
       public SelectedFormContext context( String id )
       {
-         context.set( module.unitOfWorkFactory().currentUnitOfWork().get( Form.class, id ));
+         roleMap.set( module.unitOfWorkFactory().currentUnitOfWork().get( Form.class, id ));
          return subContext( SelectedFormContext.class );
       }
    }

@@ -19,9 +19,9 @@ package se.streamsource.streamflow.web.context.structure.labels;
 
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
-import se.streamsource.dci.api.DeleteInteraction;
-import se.streamsource.dci.api.Interactions;
-import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.DeleteContext;
+import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
@@ -36,18 +36,18 @@ import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
 @Mixins(LabelContext.Mixin.class)
 public interface LabelContext
       extends DescribableContext,
-      DeleteInteraction,
-      Interactions
+      DeleteContext,
+      Context
 {
    LinksValue usages();
 
    abstract class Mixin
-         extends InteractionsMixin
+         extends ContextMixin
          implements LabelContext
    {
       public LinksValue usages()
       {
-         Query<SelectedLabels> usageQuery = context.get( Labels.class).usages( context.get(Label.class) );
+         Query<SelectedLabels> usageQuery = roleMap.get( Labels.class).usages( roleMap.get(Label.class) );
          LinksBuilder builder = new LinksBuilder(module.valueBuilderFactory()); // TODO What to use for path here?
          for (SelectedLabels selectedLabels : usageQuery)
          {
@@ -59,8 +59,8 @@ public interface LabelContext
 
       public void delete()
       {
-         Labels labels = context.get( Labels.class );
-         Label label = context.get( Label.class );
+         Labels labels = roleMap.get( Labels.class );
+         Label label = roleMap.get( Label.class );
 
          labels.removeLabel( label );
       }

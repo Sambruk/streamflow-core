@@ -124,7 +124,7 @@ public class InteractionsAssembler
    public void assemble( LayerAssembly layer )
          throws AssemblyException
    {
-      interactions( layer.moduleAssembly( "Interactions" ) );
+      interactions( layer.moduleAssembly( "Context" ) );
    }
 
    private void interactions( ModuleAssembly module ) throws AssemblyException

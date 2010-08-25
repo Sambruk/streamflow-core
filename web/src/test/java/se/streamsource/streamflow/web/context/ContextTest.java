@@ -38,8 +38,8 @@ import org.qi4j.spi.structure.ApplicationModelSPI;
 import org.qi4j.spi.structure.ApplicationSPI;
 import org.qi4j.spi.structure.ModuleSPI;
 import org.restlet.data.Reference;
-import se.streamsource.dci.api.Context;
-import se.streamsource.dci.api.IndexInteraction;
+import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.api.SubContexts;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.LinksValue;
@@ -58,7 +58,7 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * Base class for context tests. Context tests should subclass this test and use the fluent API provided
+ * Base class for roleMap tests. RoleMap tests should subclass this test and use the fluent API provided
  * by this class to do testing of contexts.
  */
 public abstract class ContextTest
@@ -185,14 +185,14 @@ public abstract class ContextTest
    // Helper methods
    protected static RootContext root(Object... contextObjects)
    {
-      Context context = new Context();
+      RoleMap roleMap = new RoleMap();
       for (Object contextObject : contextObjects)
       {
-         context.set( contextObject );
+         roleMap.set( contextObject );
       }
-      unitOfWorkFactory.currentUnitOfWork().metaInfo().set( context );
+      unitOfWorkFactory.currentUnitOfWork().metaInfo().set( roleMap );
 
-      return transientBuilderFactory.newTransientBuilder( RootContext.class ).use( context ).newInstance();
+      return transientBuilderFactory.newTransientBuilder( RootContext.class ).use( roleMap ).newInstance();
    }
 
    protected static <T> T value( Class<T> valueClass, String json )
@@ -253,9 +253,9 @@ public abstract class ContextTest
 
    protected static <T> T subContext( SubContexts subContexts, String name )
    {
-      if (subContexts instanceof IndexInteraction)
+      if (subContexts instanceof IndexContext)
       {
-         IndexInteraction<LinksValue> index = (IndexInteraction<LinksValue>) subContexts;
+         IndexContext<LinksValue> index = (IndexContext<LinksValue>) subContexts;
          LinkValue link = findLink(index.index(), name);
          return (T)subContexts.context( link.id().get() );
       } else

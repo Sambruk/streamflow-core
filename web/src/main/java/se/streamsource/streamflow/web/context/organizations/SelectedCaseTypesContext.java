@@ -19,7 +19,9 @@ package se.streamsource.streamflow.web.context.organizations;
 
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWork;
-import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
@@ -27,8 +29,6 @@ import se.streamsource.streamflow.web.domain.Specification;
 import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypesQueries;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.SelectedCaseTypes;
-import se.streamsource.dci.api.Interactions;
-import se.streamsource.dci.api.IndexInteraction;
 import se.streamsource.dci.api.SubContexts;
 
 /**
@@ -36,27 +36,27 @@ import se.streamsource.dci.api.SubContexts;
  */
 @Mixins(SelectedCaseTypesContext.Mixin.class)
 public interface SelectedCaseTypesContext
-   extends SubContexts<SelectedCaseTypeContext>, IndexInteraction<LinksValue>, Interactions
+   extends SubContexts<SelectedCaseTypeContext>, IndexContext<LinksValue>, Context
 {
    public LinksValue possiblecasetypes();
 
    public void addcasetype( EntityReferenceDTO caseTypeDTO );
 
    abstract class Mixin
-      extends InteractionsMixin
+      extends ContextMixin
       implements SelectedCaseTypesContext
    {
       public LinksValue index()
       {
-         SelectedCaseTypes.Data caseTypes = context.get( SelectedCaseTypes.Data.class);
+         SelectedCaseTypes.Data caseTypes = roleMap.get( SelectedCaseTypes.Data.class);
 
          return new LinksBuilder( module.valueBuilderFactory() ).rel("casetype").addDescribables( caseTypes.selectedCaseTypes() ).newLinks();
       }
 
       public LinksValue possiblecasetypes()
       {
-         final SelectedCaseTypes.Data selectedLabels = context.get( SelectedCaseTypes.Data.class);
-         CaseTypesQueries caseTypes = context.get( CaseTypesQueries.class);
+         final SelectedCaseTypes.Data selectedLabels = roleMap.get( SelectedCaseTypes.Data.class);
+         CaseTypesQueries caseTypes = roleMap.get( CaseTypesQueries.class);
          LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() ).command( "addcasetype" );
          caseTypes.caseTypes( builder, new Specification<CaseType>()
          {
@@ -72,7 +72,7 @@ public interface SelectedCaseTypesContext
       {
          UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
 
-         SelectedCaseTypes caseTypes = context.get( SelectedCaseTypes.class);
+         SelectedCaseTypes caseTypes = roleMap.get( SelectedCaseTypes.class);
          CaseType caseType = uow.get( CaseType.class, caseTypeDTO.entity().get().identity() );
 
          caseTypes.addSelectedCaseType( caseType );
@@ -80,7 +80,7 @@ public interface SelectedCaseTypesContext
 
       public SelectedCaseTypeContext context( String id )
       {
-         context.set( module.unitOfWorkFactory().currentUnitOfWork().get( CaseType.class, id ));
+         roleMap.set( module.unitOfWorkFactory().currentUnitOfWork().get( CaseType.class, id ));
          return subContext( SelectedCaseTypeContext.class );
       }
    }

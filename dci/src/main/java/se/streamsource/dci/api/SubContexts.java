@@ -18,7 +18,7 @@
 package se.streamsource.dci.api;
 
 /**
- * Interactions that have sub-contexts should extends this interface and
+ * Context that have sub-contexts should extends this interface and
  * indicate the type of interactions that can be created.
  */
 public interface SubContexts<T>

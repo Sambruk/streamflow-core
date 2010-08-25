@@ -18,29 +18,27 @@
 package se.streamsource.streamflow.web.context.structure.resolutions;
 
 import org.qi4j.api.mixin.Mixins;
-import se.streamsource.dci.api.DeleteInteraction;
-import se.streamsource.dci.api.Interactions;
-import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.DeleteContext;
+import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.streamflow.web.domain.structure.casetype.Resolution;
 import se.streamsource.streamflow.web.domain.structure.casetype.SelectedResolutions;
-import se.streamsource.streamflow.web.domain.structure.label.Label;
-import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
 
 /**
  * JAVADOC
  */
 @Mixins(SelectedResolutionContext.Mixin.class)
 public interface SelectedResolutionContext
-   extends DeleteInteraction, Interactions
+   extends DeleteContext, Context
 {
    abstract class Mixin
-      extends InteractionsMixin
+      extends ContextMixin
       implements SelectedResolutionContext
    {
       public void delete()
       {
-         SelectedResolutions resolutions = context.get( SelectedResolutions.class);
-         Resolution resolution = context.get( Resolution.class);
+         SelectedResolutions resolutions = roleMap.get( SelectedResolutions.class);
+         Resolution resolution = roleMap.get( Resolution.class);
 
          resolutions.removeSelectedResolution( resolution );
       }

@@ -19,26 +19,26 @@ package se.streamsource.streamflow.web.context.structure.labels;
 
 import org.qi4j.api.mixin.Mixins;
 import org.restlet.resource.ResourceException;
-import se.streamsource.dci.api.Interactions;
+import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.ContextMixin;
+import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.label.Labelable;
-import se.streamsource.dci.api.InteractionsMixin;
-import se.streamsource.dci.api.DeleteInteraction;
 
 /**
  * JAVADOC
  */
 @Mixins(LabeledContext.Mixin.class)
 public interface LabeledContext
-   extends DeleteInteraction, Interactions
+   extends DeleteContext, Context
 {
    abstract class Mixin
-      extends InteractionsMixin
+      extends ContextMixin
       implements LabeledContext
    {
       public void delete() throws ResourceException
       {
-         context.get( Labelable.class ).removeLabel( context.get( Label.class ));
+         roleMap.get( Labelable.class ).removeLabel( roleMap.get( Label.class ));
       }
    }
 }

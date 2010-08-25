@@ -51,7 +51,7 @@ public class StreamflowWebContextTestAssembler
       ApplicationAssembly applicationAssembly = appLayer.applicationAssembly();
       LayerAssembly layer1 = applicationAssembly.layerAssembly( "Layer 1" );
       layer1.uses(
-            applicationAssembly.layerAssembly("Interactions" ), 
+            applicationAssembly.layerAssembly("Context" ),
             applicationAssembly.layerAssembly("Domain infrastructure" ),
             applicationAssembly.layerAssembly("Domain" ));
       ModuleAssembly moduleAssembly = layer1.moduleAssembly( "Module 1" );

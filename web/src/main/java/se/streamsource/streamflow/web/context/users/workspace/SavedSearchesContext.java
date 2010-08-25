@@ -21,9 +21,9 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
 import se.streamsource.dci.api.ContextNotFoundException;
-import se.streamsource.dci.api.IndexInteraction;
-import se.streamsource.dci.api.Interactions;
-import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.SubContexts;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.infrastructure.application.TitledLinksBuilder;
@@ -36,13 +36,13 @@ import se.streamsource.streamflow.web.domain.structure.user.profile.SavedSearch;
  */
 @Mixins(SavedSearchesContext.Mixin.class)
 public interface SavedSearchesContext
-      extends SubContexts<SavedSearchContext>, IndexInteraction<LinksValue>, Interactions
+      extends SubContexts<SavedSearchContext>, IndexContext<LinksValue>, Context
 {
    public void addsearch( SearchValue search );
 
    abstract class Mixin
-         extends InteractionsMixin
-         implements IndexInteraction<LinksValue>,
+         extends ContextMixin
+         implements IndexContext<LinksValue>,
          SavedSearchesContext
    {
       @Structure
@@ -51,7 +51,7 @@ public interface SavedSearchesContext
       public LinksValue index()
       {
          TitledLinksBuilder builder = new TitledLinksBuilder( module.valueBuilderFactory() );
-         SavedSearches.Data searches = context.get( SavedSearches.Data.class );
+         SavedSearches.Data searches = roleMap.get( SavedSearches.Data.class );
          for (SavedSearch search : searches.searches().toList())
          {
             builder.addDescribable( search, ((SavedSearch.Data) search).query().get() );
@@ -62,13 +62,13 @@ public interface SavedSearchesContext
 
       public void addsearch( SearchValue search )
       {
-         SavedSearches searches = context.get( SavedSearches.class );
+         SavedSearches searches = roleMap.get( SavedSearches.class );
          searches.createSavedSearch( search );
       }
 
       public SavedSearchContext context( String id ) throws ContextNotFoundException
       {
-         context.set( module.unitOfWorkFactory().currentUnitOfWork().get( SavedSearch.class, id ) );
+         roleMap.set( module.unitOfWorkFactory().currentUnitOfWork().get( SavedSearch.class, id ) );
          return subContext( SavedSearchContext.class );
       }
    }

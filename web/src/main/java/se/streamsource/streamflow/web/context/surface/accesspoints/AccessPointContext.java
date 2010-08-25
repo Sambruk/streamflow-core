@@ -20,9 +20,9 @@ package se.streamsource.streamflow.web.context.surface.accesspoints;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.value.ValueBuilder;
-import se.streamsource.dci.api.IndexInteraction;
-import se.streamsource.dci.api.Interactions;
-import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.ContextMixin;
+import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.SubContext;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.EndUsersContext;
@@ -36,23 +36,23 @@ import se.streamsource.streamflow.web.domain.structure.organization.AccessPointS
  */
 @Mixins(AccessPointContext.Mixin.class)
 public interface AccessPointContext
-      extends IndexInteraction<StringValue>, Interactions
+      extends IndexContext<StringValue>, Context
 {
    @SubContext
    EndUsersContext endusers();
 
 
    abstract class Mixin
-         extends InteractionsMixin
+         extends ContextMixin
          implements AccessPointContext
    {
       public StringValue index()
       {
          ValueBuilder<StringValue> builder = module.valueBuilderFactory().newValueBuilder( StringValue.class );
          StringBuilder sb = new StringBuilder();
-         AccessPoint accessPoint = context.get( AccessPoint.class );
-         AccessPointSettings.Data data = context.get( AccessPointSettings.Data.class );
-         Labelable.Data labelsData = context.get( Labelable.Data.class );
+         AccessPoint accessPoint = roleMap.get( AccessPoint.class );
+         AccessPointSettings.Data data = roleMap.get( AccessPointSettings.Data.class );
+         Labelable.Data labelsData = roleMap.get( Labelable.Data.class );
          sb.append( accessPoint.getDescription() ).append( "(" ).append( EntityReference.getEntityReference( accessPoint ) ).append( ")" );
          sb.append( ": Project=" );
          sb.append( data.project().get().getDescription() );

@@ -22,16 +22,15 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
-import se.streamsource.dci.api.IndexInteraction;
-import se.streamsource.dci.api.Interactions;
-import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.SubContexts;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.resource.conversation.ConversationDTO;
-import se.streamsource.streamflow.web.context.conversation.ConversationContext;
 import se.streamsource.streamflow.web.domain.entity.conversation.ConversationEntity;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversation;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipant;
@@ -46,12 +45,12 @@ import se.streamsource.streamflow.web.domain.structure.created.Creator;
 @Mixins(ConversationsContext.Mixin.class)
 public interface ConversationsContext
    extends
-      SubContexts<ConversationContext>, IndexInteraction<LinksValue>, Interactions
+      SubContexts<ConversationContext>, IndexContext<LinksValue>, Context
 {
    public void create( StringValue topic );
 
    abstract class Mixin
-      extends InteractionsMixin
+      extends ContextMixin
       implements ConversationsContext
    {
       @Structure
@@ -62,7 +61,7 @@ public interface ConversationsContext
          LinksBuilder links = new LinksBuilder( module.valueBuilderFactory() );
          ValueBuilder<ConversationDTO> builder = module.valueBuilderFactory().newValueBuilder( ConversationDTO.class );
 
-         Conversations.Data conversations = context.get( Conversations.Data.class );
+         Conversations.Data conversations = roleMap.get( Conversations.Data.class );
 
          for (Conversation conversation : conversations.conversations())
          {
@@ -81,15 +80,15 @@ public interface ConversationsContext
 
       public void create( StringValue topic )
       {
-         Conversations conversations = context.get(Conversations.class);
-         Conversation conversation = conversations.createConversation( topic.string().get(), context.get( Creator.class) );
-         ((ConversationEntity)conversation).addParticipant( context.get( ConversationParticipant.class ) );
+         Conversations conversations = roleMap.get(Conversations.class);
+         Conversation conversation = conversations.createConversation( topic.string().get(), roleMap.get( Creator.class) );
+         ((ConversationEntity)conversation).addParticipant( roleMap.get( ConversationParticipant.class ) );
 
       }
 
       public ConversationContext context( String id )
       {
-         context.set( module.unitOfWorkFactory().currentUnitOfWork().get( Conversation.class, id ) );
+         roleMap.set( module.unitOfWorkFactory().currentUnitOfWork().get( Conversation.class, id ) );
 
          return subContext( ConversationContext.class );
       }

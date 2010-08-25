@@ -106,7 +106,7 @@
                                 <artifactId>streamflow-war</artifactId>
                                 <type>war</type>
                                 <properties>
-                                    <context>streamflow</context>
+                                    <roleMap>streamflow</roleMap>
                                 </properties>
                             </deployable>
                         </deployables>

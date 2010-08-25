@@ -19,7 +19,7 @@ package se.streamsource.streamflow.web.context;
 
 import se.streamsource.dci.api.InteractionConstraint;
 import se.streamsource.dci.api.InteractionConstraintDeclaration;
-import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.web.domain.interaction.security.Authorization;
 
 import javax.security.auth.Subject;
@@ -40,11 +40,11 @@ public @interface RequiresPermission
    class RequiresPermissionConstraint
       implements InteractionConstraint<RequiresPermission>
    {
-      public boolean isValid( RequiresPermission requiresPermission, Context context )
+      public boolean isValid( RequiresPermission requiresPermission, RoleMap roleMap )
       {
-         Authorization policy = context.get( Authorization.class );
+         Authorization policy = roleMap.get( Authorization.class );
 
-         Iterator<Principal> principalIterator = context.get( Subject.class ).getPrincipals( Principal.class ).iterator();
+         Iterator<Principal> principalIterator = roleMap.get( Subject.class ).getPrincipals( Principal.class ).iterator();
          if (principalIterator.hasNext())
          {
             Principal principal = principalIterator.next();

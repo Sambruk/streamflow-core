@@ -23,5 +23,5 @@ package se.streamsource.dci.api;
 
 public interface InteractionConstraint<ANNOTATION extends java.lang.annotation.Annotation>
 {
-   boolean isValid(ANNOTATION annotation, Context context);
+   boolean isValid(ANNOTATION annotation, RoleMap roleMap );
 }

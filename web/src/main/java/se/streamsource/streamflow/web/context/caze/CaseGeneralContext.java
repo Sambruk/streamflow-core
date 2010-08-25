@@ -24,9 +24,9 @@ import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.dci.api.IndexInteraction;
-import se.streamsource.dci.api.Interactions;
-import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.ContextMixin;
+import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.SubContext;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.LinksValue;
@@ -54,8 +54,8 @@ import static se.streamsource.streamflow.domain.interaction.gtd.CaseStates.*;
 @Mixins(CaseGeneralContext.Mixin.class)
 public interface CaseGeneralContext
    extends
-      IndexInteraction<CaseGeneralDTO>,
-      Interactions
+      IndexContext<CaseGeneralDTO>,
+      Context
 {
    @RequiresStatus( {DRAFT,OPEN } )
    void changedueon( DateDTO dueOnValue );
@@ -76,7 +76,7 @@ public interface CaseGeneralContext
    LabelableContext labels();
 
    abstract class Mixin
-      extends InteractionsMixin
+      extends ContextMixin
       implements CaseGeneralContext
    {
       @Structure
@@ -84,13 +84,13 @@ public interface CaseGeneralContext
 
       public void changedescription( StringValue stringValue )
       {
-         Describable describable = context.get( Describable.class );
+         Describable describable = roleMap.get( Describable.class );
          describable.changeDescription( stringValue.string().get() );
       }
 
       public void changenote( StringValue noteValue )
       {
-         Notable notable = context.get( Notable.class );
+         Notable notable = roleMap.get( Notable.class );
          notable.changeNote( noteValue.string().get() );
       }
 
@@ -98,7 +98,7 @@ public interface CaseGeneralContext
       {
          ValueBuilderFactory vbf = module.valueBuilderFactory();
          ValueBuilder<CaseGeneralDTO> builder = vbf.newValueBuilder( CaseGeneralDTO.class );
-         CaseEntity aCase = context.get( CaseEntity.class );
+         CaseEntity aCase = roleMap.get( CaseEntity.class );
          builder.prototype().description().set( aCase.description().get() );
 
          //ValueBuilder<ListValue> labelsBuilder = vbf.newValueBuilder( ListValue.class );
@@ -135,13 +135,13 @@ public interface CaseGeneralContext
 
       public void changedueon( DateDTO dueOnValue )
       {
-         DueOn dueOn = context.get(DueOn.class);
+         DueOn dueOn = roleMap.get(DueOn.class);
          dueOn.dueOn( dueOnValue.date().get() );
       }
 
       public LinksValue possiblecasetypes()
       {
-         CaseTypeQueries aCase = context.get( CaseTypeQueries.class);
+         CaseTypeQueries aCase = roleMap.get( CaseTypeQueries.class);
          LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() ).command( "casetype" );
 
          aCase.possibleCaseTypes(builder);
@@ -152,7 +152,7 @@ public interface CaseGeneralContext
       public void casetype( EntityReferenceDTO dto )
       {
          UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
-         TypedCase aCase = context.get( TypedCase.class);
+         TypedCase aCase = roleMap.get( TypedCase.class);
 
          EntityReference entityReference = dto.entity().get();
          if (entityReference != null )
@@ -165,7 +165,7 @@ public interface CaseGeneralContext
 
       public LinksValue possibleforms()
       {
-         TypedCase.Data typedCase = context.get( TypedCase.Data.class);
+         TypedCase.Data typedCase = roleMap.get( TypedCase.Data.class);
 
          CaseType caseType = typedCase.caseType().get();
 

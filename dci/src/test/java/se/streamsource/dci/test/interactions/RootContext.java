@@ -18,10 +18,10 @@
 package se.streamsource.dci.test.interactions;
 
 import org.qi4j.api.mixin.Mixins;
-import se.streamsource.dci.api.Interactions;
-import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.SubContext;
-import se.streamsource.dci.test.interactions.file.FilesInteractions;
+import se.streamsource.dci.test.interactions.file.FilesContext;
 import se.streamsource.dci.test.interactions.jmx.JmxServerInteractions;
 
 import java.lang.management.ManagementFactory;
@@ -29,28 +29,28 @@ import java.lang.management.ManagementFactory;
 /**
  * JAVADOC
  */
-@Mixins(RootInteractions.Mixin.class)
-public interface RootInteractions
-   extends Interactions
+@Mixins(RootContext.Mixin.class)
+public interface RootContext
+   extends Context
 {
    @SubContext
-   FilesInteractions files();
+   FilesContext files();
 
    @SubContext
    JmxServerInteractions jmx();
 
    abstract class Mixin
-      extends InteractionsMixin
-      implements RootInteractions
+      extends ContextMixin
+      implements RootContext
    {
-      public FilesInteractions files()
+      public FilesContext files()
       {
-         return subContext( FilesInteractions.class );
+         return subContext( FilesContext.class );
       }
 
       public JmxServerInteractions jmx()
       {
-         context.set( ManagementFactory.getPlatformMBeanServer() );
+         roleMap.set( ManagementFactory.getPlatformMBeanServer() );
          return subContext( JmxServerInteractions.class );
       }
    }

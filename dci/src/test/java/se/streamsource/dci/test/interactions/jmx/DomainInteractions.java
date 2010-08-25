@@ -17,7 +17,7 @@
 
 package se.streamsource.dci.test.interactions.jmx;
 
-import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.ContextNotFoundException;
 import se.streamsource.dci.api.SubContexts;
 import se.streamsource.dci.value.LinksBuilder;
@@ -31,12 +31,12 @@ import java.util.Set;
  * JAVADOC
  */
 public class DomainInteractions
-      extends InteractionsMixin
+      extends ContextMixin
       implements SubContexts<MBeanInteractions>
 {
    public LinksValue index()
    {
-      Set<ObjectName> mbeans = context.get( MBeanServer.class ).queryNames( context.get( ObjectName.class ), null );
+      Set<ObjectName> mbeans = roleMap.get( MBeanServer.class ).queryNames( roleMap.get( ObjectName.class ), null );
 
       LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() );
       for (ObjectName mbean : mbeans)
@@ -51,10 +51,10 @@ public class DomainInteractions
    {
       try
       {
-         ObjectName mbeanName = new ObjectName( context.get( ObjectName.class ).getDomain() + ":" + id );
+         ObjectName mbeanName = new ObjectName( roleMap.get( ObjectName.class ).getDomain() + ":" + id );
 
-         context.set( mbeanName );
-         context.set( context.get( MBeanServer.class ).getMBeanInfo( mbeanName ) );
+         roleMap.set( mbeanName );
+         roleMap.set( roleMap.get( MBeanServer.class ).getMBeanInfo( mbeanName ) );
 
          return subContext( MBeanInteractions.class );
       } catch (Exception e)

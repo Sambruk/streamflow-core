@@ -20,13 +20,13 @@ package se.streamsource.streamflow.web.context.users.workspace;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
-import se.streamsource.dci.api.IndexInteraction;
+import se.streamsource.dci.api.IndexContext;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.web.domain.entity.user.ProjectQueries;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
-import se.streamsource.dci.api.Interactions;
-import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.SubContexts;
 
 /**
@@ -34,11 +34,11 @@ import se.streamsource.dci.api.SubContexts;
  */
 @Mixins(WorkspaceProjectsContext.Mixin.class)
 public interface WorkspaceProjectsContext
-   extends SubContexts<WorkspaceProjectContext>, IndexInteraction<LinksValue>, Interactions
+   extends SubContexts<WorkspaceProjectContext>, IndexContext<LinksValue>, Context
 {
 
    abstract class Mixin
-      extends InteractionsMixin
+      extends ContextMixin
       implements WorkspaceProjectsContext, SubContexts<WorkspaceProjectContext>
    {
       @Structure
@@ -47,14 +47,14 @@ public interface WorkspaceProjectsContext
       public LinksValue index()
       {
          LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
-         ProjectQueries projectQueries = context.get( ProjectQueries.class);
+         ProjectQueries projectQueries = roleMap.get( ProjectQueries.class);
          return linksBuilder.addDescribables( projectQueries.allProjects()).newLinks();
       }
 
       public WorkspaceProjectContext context( String id )
       {
          Project project = module.unitOfWorkFactory().currentUnitOfWork().get( Project.class, id );
-         context.set( project);
+         roleMap.set( project);
 
          return subContext( WorkspaceProjectContext.class );
       }

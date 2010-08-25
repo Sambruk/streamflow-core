@@ -21,9 +21,9 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
-import se.streamsource.dci.api.IndexInteraction;
-import se.streamsource.dci.api.Interactions;
-import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.SubContext;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.resource.conversation.ConversationDTO;
@@ -36,7 +36,7 @@ import se.streamsource.streamflow.web.domain.structure.conversation.Messages;
  */
 @Mixins(ConversationContext.Mixin.class)
 public interface ConversationContext
-      extends /*DeleteInteraction,*/ Interactions, IndexInteraction<ConversationDTO>
+      extends /*DeleteContext,*/ Context, IndexContext<ConversationDTO>
 {
    @SubContext
    MessagesContext messages();
@@ -45,7 +45,7 @@ public interface ConversationContext
    ConversationParticipantsContext participants();
 
    abstract class Mixin
-         extends InteractionsMixin
+         extends ContextMixin
          implements ConversationContext
    {
       @Structure
@@ -54,7 +54,7 @@ public interface ConversationContext
       public ConversationDTO index()
       {
          ValueBuilder<ConversationDTO> builder = module.valueBuilderFactory().newValueBuilder( ConversationDTO.class );
-         ConversationEntity conversation = context.get( ConversationEntity.class );
+         ConversationEntity conversation = roleMap.get( ConversationEntity.class );
 
          builder.prototype().id().set( conversation.identity().get() );
          builder.prototype().href().set( conversation.identity().get() );                           
@@ -69,8 +69,8 @@ public interface ConversationContext
 
       /*public void delete()
       {
-         Conversations conversations = context.role(Conversations.class);
-         Integer index = context.role(Integer.class);
+         Conversations conversations = roleMap.role(Conversations.class);
+         Integer index = roleMap.role(Integer.class);
 
          conversations.deleteConversation( index );
 

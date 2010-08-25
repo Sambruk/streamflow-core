@@ -22,10 +22,10 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.qi4j.api.mixin.Mixins;
 import org.restlet.data.MediaType;
 import org.restlet.representation.OutputRepresentation;
+import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.streamflow.resource.overview.ProjectSummaryListDTO;
 import se.streamsource.streamflow.web.domain.entity.user.OverviewQueries;
-import se.streamsource.dci.api.Interactions;
-import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.SubContext;
 
 import java.io.IOException;
@@ -37,7 +37,7 @@ import java.util.Locale;
  */
 @Mixins(OverviewContext.Mixin.class)
 public interface OverviewContext
-   extends Interactions
+   extends Context
 {
    public ProjectSummaryListDTO projectsummary();
    public OutputRepresentation generateexcelprojectsummary() throws IOException;
@@ -46,23 +46,23 @@ public interface OverviewContext
    OverviewProjectsContext projects();
 
    abstract class Mixin
-      extends InteractionsMixin
+      extends ContextMixin
       implements OverviewContext
    {
       public ProjectSummaryListDTO projectsummary()
       {
-         OverviewQueries queries = context.get( OverviewQueries.class);
+         OverviewQueries queries = roleMap.get( OverviewQueries.class);
 
          return queries.getProjectsSummary();
       }
 
       public OutputRepresentation generateexcelprojectsummary() throws IOException
       {
-         Locale locale = context.get(Locale.class);
+         Locale locale = roleMap.get(Locale.class);
 
          final Workbook workbook = new HSSFWorkbook();
 
-         OverviewQueries queries = context.get(OverviewQueries.class);
+         OverviewQueries queries = roleMap.get(OverviewQueries.class);
 
          queries.generateExcelProjectSummary( locale, workbook );
 

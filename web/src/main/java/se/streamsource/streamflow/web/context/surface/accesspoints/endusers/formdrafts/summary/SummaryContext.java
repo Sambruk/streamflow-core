@@ -19,9 +19,9 @@ package se.streamsource.streamflow.web.context.surface.accesspoints.endusers.for
 
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.value.ValueBuilder;
-import se.streamsource.dci.api.IndexInteraction;
-import se.streamsource.dci.api.Interactions;
-import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.streamflow.domain.form.FormSubmissionValue;
 import se.streamsource.streamflow.resource.roles.IntegerDTO;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
@@ -34,7 +34,7 @@ import se.streamsource.streamflow.web.domain.structure.user.AnonymousEndUser;
  */
 @Mixins(SummaryContext.Mixin.class)
 public interface SummaryContext
-   extends Interactions, IndexInteraction<FormSubmissionValue>
+   extends Context, IndexContext<FormSubmissionValue>
 {
 
    void submit();
@@ -44,43 +44,43 @@ public interface SummaryContext
    void gotopage( IntegerDTO page );
 
    abstract class Mixin
-      extends InteractionsMixin
+      extends ContextMixin
       implements SummaryContext
    {
       public FormSubmissionValue index()
       {
-         return context.get( FormSubmissionValue.class );
+         return roleMap.get( FormSubmissionValue.class );
       }
 
       public void submit()
       {
-         EndUserCases userCases = context.get( EndUserCases.class );
-         AnonymousEndUser user = context.get( AnonymousEndUser.class );
-         FormSubmission formSubmission = context.get( FormSubmission.class );
-         Case aCase = context.get( Case.class );
+         EndUserCases userCases = roleMap.get( EndUserCases.class );
+         AnonymousEndUser user = roleMap.get( AnonymousEndUser.class );
+         FormSubmission formSubmission = roleMap.get( FormSubmission.class );
+         Case aCase = roleMap.get( Case.class );
 
          userCases.submitForm( aCase, formSubmission , user );
       }
 
       public void submitandsend()
       {
-         EndUserCases userCases = context.get( EndUserCases.class );
-         AnonymousEndUser user = context.get( AnonymousEndUser.class );
-         FormSubmission formSubmission = context.get( FormSubmission.class );
-         Case aCase = context.get( Case.class );
+         EndUserCases userCases = roleMap.get( EndUserCases.class );
+         AnonymousEndUser user = roleMap.get( AnonymousEndUser.class );
+         FormSubmission formSubmission = roleMap.get( FormSubmission.class );
+         Case aCase = roleMap.get( Case.class );
 
          userCases.submitFormAndSendCase( aCase, formSubmission, user );
       }
 
       public void gotopage( IntegerDTO page)
       {
-         FormSubmissionValue value = context.get( FormSubmissionValue.class );
+         FormSubmissionValue value = roleMap.get( FormSubmissionValue.class );
          ValueBuilder<FormSubmissionValue> valueBuilder = value.buildWith();
 
          valueBuilder.prototype().currentPage().set( page.integer().get() );
 
          FormSubmissionValue newFormValue = valueBuilder.newInstance();
-         FormSubmission formSubmission = context.get( FormSubmission.class );
+         FormSubmission formSubmission = roleMap.get( FormSubmission.class );
          formSubmission.changeFormSubmission( newFormValue );
       }
    }

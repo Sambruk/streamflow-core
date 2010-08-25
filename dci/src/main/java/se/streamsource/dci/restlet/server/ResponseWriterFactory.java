@@ -18,15 +18,15 @@
 package se.streamsource.dci.restlet.server;
 
 import org.restlet.representation.Variant;
-import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.RoleMap;
 
 import java.util.List;
 
 /**
- * JAVADOC
+ * Factory for ResponseWriter.
  */
 public interface ResponseWriterFactory
 {
-   public ResponseWriter createWriter( List<String> segments, Class resultType, Context context, Variant variant )
+   public ResponseWriter createWriter( List<String> segments, Class resultType, RoleMap roleMap, Variant variant )
          throws Exception;
 }

@@ -20,14 +20,14 @@ package se.streamsource.streamflow.web.context.organizations;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
-import se.streamsource.dci.api.Interactions;
-import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseTypes;
-import se.streamsource.dci.api.IndexInteraction;
+import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.SubContexts;
 
 /**
@@ -35,12 +35,12 @@ import se.streamsource.dci.api.SubContexts;
  */
 @Mixins(CaseTypesContext.Mixin.class)
 public interface CaseTypesContext
-   extends SubContexts<CaseTypeContext>, IndexInteraction<LinksValue>, Interactions
+   extends SubContexts<CaseTypeContext>, IndexContext<LinksValue>, Context
 {
    public void createcasetype( StringValue name );
 
    abstract class Mixin
-      extends InteractionsMixin
+      extends ContextMixin
       implements CaseTypesContext
    {
       @Structure
@@ -48,19 +48,19 @@ public interface CaseTypesContext
 
       public LinksValue index()
       {
-         CaseTypes.Data caseTypes = context.get( CaseTypes.Data.class);
+         CaseTypes.Data caseTypes = roleMap.get( CaseTypes.Data.class);
          return new LinksBuilder(module.valueBuilderFactory()).rel( "casetype" ).addDescribables( caseTypes.caseTypes()).newLinks();
       }
 
       public void createcasetype( StringValue name )
       {
-         CaseTypes caseTypes = context.get( CaseTypes.class);
+         CaseTypes caseTypes = roleMap.get( CaseTypes.class);
          caseTypes.createCaseType( name.string().get() );
       }
 
       public CaseTypeContext context( String id )
       {
-         context.set( module.unitOfWorkFactory().currentUnitOfWork().get( CaseType.class, id ));
+         roleMap.set( module.unitOfWorkFactory().currentUnitOfWork().get( CaseType.class, id ));
 
          return subContext( CaseTypeContext.class );
       }

@@ -20,7 +20,6 @@ package se.streamsource.streamflow.web.context.caze;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.FileUploadException;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.qi4j.api.entity.Identity;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.mixin.Mixins;
@@ -33,9 +32,9 @@ import org.restlet.data.Status;
 import org.restlet.ext.fileupload.RestletFileUpload;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
-import se.streamsource.dci.api.IndexInteraction;
-import se.streamsource.dci.api.Interactions;
-import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.ContextMixin;
+import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.SubContexts;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.domain.attachment.AttachmentValue;
@@ -45,7 +44,6 @@ import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachments;
 import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
@@ -59,12 +57,12 @@ import java.util.List;
 @Mixins(AttachmentsContext.Mixin.class)
 public interface AttachmentsContext
       extends
-      SubContexts<AttachmentContext>, IndexInteraction<LinksValue>, Interactions
+      SubContexts<AttachmentContext>, IndexContext<LinksValue>, Context
 {
    public void createattachment( Response response ) throws IOException, URISyntaxException;
 
    abstract class Mixin
-         extends InteractionsMixin
+         extends ContextMixin
          implements AttachmentsContext
    {
       @Service
@@ -75,7 +73,7 @@ public interface AttachmentsContext
 
       public LinksValue index()
       {
-         Attachments.Data attachments = context.get( Attachments.Data.class );
+         Attachments.Data attachments = roleMap.get( Attachments.Data.class );
 
          LinksBuilder links = new LinksBuilder( module.valueBuilderFactory() ).rel( "attachment" );
          ValueBuilder<AttachmentValue> builder = module.valueBuilderFactory().newValueBuilder( AttachmentValue.class );
@@ -145,7 +143,7 @@ public interface AttachmentsContext
                      attachment.changeSize(fi.getSize());
 
                      // Try to set mimetype
-                     MediaType mediaType = context.get( Application.class ).getMetadataService().getMediaType( fi.getName().split("\\." )[1]);
+                     MediaType mediaType = roleMap.get( Application.class ).getMetadataService().getMediaType( fi.getName().split("\\." )[1]);
                      if (mediaType != null)
                         attachment.changeMimeType( mediaType.getName() );
                   }
@@ -170,13 +168,13 @@ public interface AttachmentsContext
 
          String url = "store:" + id;
 
-         Attachments attachments = context.get( Attachments.class );
+         Attachments attachments = roleMap.get( Attachments.class );
          return attachments.createAttachment( url );
       }
 
       public AttachmentContext context( String id )
       {
-         context.set( module.unitOfWorkFactory().currentUnitOfWork().get( Attachment.class, id ) );
+         roleMap.set( module.unitOfWorkFactory().currentUnitOfWork().get( Attachment.class, id ) );
 
          return subContext( AttachmentContext.class );
       }

@@ -18,21 +18,16 @@
 package se.streamsource.dci.restlet.server;
 
 import org.apache.velocity.app.VelocityEngine;
-import org.qi4j.api.common.Visibility;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
-import org.qi4j.bootstrap.ImportedServiceDeclaration;
 import org.qi4j.bootstrap.ModuleAssembly;
-import org.qi4j.spi.service.importer.NewObjectImporter;
 import org.restlet.service.MetadataService;
-import se.streamsource.dci.api.InteractionConstraintsService;
+import se.streamsource.dci.value.ContextValue;
 import se.streamsource.dci.value.EntityValue;
-import se.streamsource.dci.value.IndexValue;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.StringValue;
 
-import java.util.Dictionary;
 import java.util.Properties;
 
 import static org.qi4j.bootstrap.ImportedServiceDeclaration.NEW_OBJECT;
@@ -54,6 +49,6 @@ public class DCIAssembler
 
       module.importServices( MetadataService.class );
 
-      module.addValues( IndexValue.class, EntityValue.class, LinksValue.class, LinkValue.class, StringValue.class );
+      module.addValues( ContextValue.class, EntityValue.class, LinksValue.class, LinkValue.class, StringValue.class );
    }
 }

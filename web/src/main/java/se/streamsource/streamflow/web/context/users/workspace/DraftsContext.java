@@ -22,8 +22,8 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
 import org.restlet.data.Reference;
-import se.streamsource.dci.api.Interactions;
-import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.web.context.caze.CasesContext;
 import se.streamsource.streamflow.web.domain.entity.gtd.Drafts;
@@ -40,29 +40,29 @@ import static org.qi4j.api.query.QueryExpressions.templateFor;
 @Concerns(UpdateCaseCountDraftsConcern.class)
 @Mixins(DraftsContext.Mixin.class)
 public interface DraftsContext
-      extends Interactions
+      extends Context
 {
    LinksValue cases();
 
    void createdraft();
 
    abstract class Mixin
-      extends InteractionsMixin
+      extends ContextMixin
       implements DraftsContext
    {
       public LinksValue cases( )
       {
-         DraftsQueries inbox = context.get( DraftsQueries.class);
+         DraftsQueries inbox = roleMap.get( DraftsQueries.class);
 
          QueryBuilder<Case> builder = inbox.drafts();
          Query<Case> query = builder.newQuery( module.unitOfWorkFactory().currentUnitOfWork() ).orderBy( orderBy( templateFor( CreatedOn.class ).createdOn() ) );
 
-         return CasesContext.Mixin.buildCaseList(query, module, context.get( Reference.class).getBaseRef().getPath());
+         return CasesContext.Mixin.buildCaseList(query, module, roleMap.get( Reference.class).getBaseRef().getPath());
       }
 
       public void createdraft()
       {
-         Drafts drafts = context.get( Drafts.class );
+         Drafts drafts = roleMap.get( Drafts.class );
          drafts.createDraft();
       }
    }

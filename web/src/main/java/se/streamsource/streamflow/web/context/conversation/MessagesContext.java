@@ -22,9 +22,9 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.value.ValueBuilder;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
-import se.streamsource.dci.api.Interactions;
-import se.streamsource.dci.api.InteractionsMixin;
-import se.streamsource.dci.api.IndexInteraction;
+import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.ContextMixin;
+import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.SubContexts;
 import se.streamsource.dci.value.*;
 import se.streamsource.dci.value.StringValue;
@@ -42,19 +42,19 @@ import se.streamsource.streamflow.web.domain.structure.conversation.Messages;
  */
 @Mixins(MessagesContext.Mixin.class)
 public interface MessagesContext
-      extends SubContexts<MessageContext>, IndexInteraction<LinksValue>, Interactions
+      extends SubContexts<MessageContext>, IndexContext<LinksValue>, Context
 {
    public void addmessage( StringValue message ) throws ResourceException;
 
    abstract class Mixin
-         extends InteractionsMixin
+         extends ContextMixin
          implements MessagesContext
    {
       public LinksValue index()
       {
          LinksBuilder links = new LinksBuilder( module.valueBuilderFactory() );
          ValueBuilder<MessageDTO> builder = module.valueBuilderFactory().newValueBuilder( MessageDTO.class );
-         ConversationEntity conversation = context.get( ConversationEntity.class );
+         ConversationEntity conversation = roleMap.get( ConversationEntity.class );
 
          for (Message message : conversation.messages())
          {
@@ -77,8 +77,8 @@ public interface MessagesContext
       {
          try
          {
-            Messages messages = context.get( Messages.class );
-            messages.createMessage( message.string().get(), context.get( ConversationParticipant.class ) );
+            Messages messages = roleMap.get( Messages.class );
+            messages.createMessage( message.string().get(), roleMap.get( ConversationParticipant.class ) );
          } catch (IllegalArgumentException e)
          {
             throw new ResourceException( Status.CLIENT_ERROR_FORBIDDEN, e.getMessage() );
@@ -88,7 +88,7 @@ public interface MessagesContext
 
       public MessageContext context( String id )
       {
-         context.set( module.unitOfWorkFactory().currentUnitOfWork().get( Message.class, id ) );
+         roleMap.set( module.unitOfWorkFactory().currentUnitOfWork().get( Message.class, id ) );
          return subContext( MessageContext.class );
       }
    }

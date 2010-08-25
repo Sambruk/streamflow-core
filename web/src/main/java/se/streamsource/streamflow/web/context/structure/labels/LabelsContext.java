@@ -20,9 +20,9 @@ package se.streamsource.streamflow.web.context.structure.labels;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
-import se.streamsource.dci.api.IndexInteraction;
-import se.streamsource.dci.api.Interactions;
-import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.ContextMixin;
+import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.api.Context;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.dci.value.LinksValue;
@@ -35,12 +35,12 @@ import se.streamsource.dci.api.SubContexts;
  */
 @Mixins(LabelsContext.Mixin.class)
 public interface LabelsContext
-   extends Interactions, SubContexts<LabelContext>, IndexInteraction<LinksValue>
+   extends Context, SubContexts<LabelContext>, IndexContext<LinksValue>
 {
    void createlabel( StringValue name );
 
    abstract class Mixin
-      extends InteractionsMixin
+      extends ContextMixin
       implements LabelsContext
    {
       @Structure
@@ -48,19 +48,19 @@ public interface LabelsContext
 
       public LinksValue index()
       {
-         return new LinksBuilder(module.valueBuilderFactory()).rel( "label" ).addDescribables( context.get(Labels.class).getLabels()).newLinks();
+         return new LinksBuilder(module.valueBuilderFactory()).rel( "label" ).addDescribables( roleMap.get(Labels.class).getLabels()).newLinks();
       }
 
       public void createlabel( StringValue name )
       {
-         Labels labels = context.get(Labels.class);
+         Labels labels = roleMap.get(Labels.class);
 
          labels.createLabel( name.string().get() );
       }
 
       public LabelContext context( String id )
       {
-         context.set(module.unitOfWorkFactory().currentUnitOfWork().get( Label.class, id ));
+         roleMap.set(module.unitOfWorkFactory().currentUnitOfWork().get( Label.class, id ));
 
          return subContext( LabelContext.class );
       }

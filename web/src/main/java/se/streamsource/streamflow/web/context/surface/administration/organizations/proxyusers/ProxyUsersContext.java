@@ -17,15 +17,13 @@
 
 package se.streamsource.streamflow.web.context.surface.administration.organizations.proxyusers;
 
-import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.value.ValueBuilder;
+import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.ContextNotFoundException;
-import se.streamsource.dci.api.IndexInteraction;
-import se.streamsource.dci.api.Interactions;
-import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.SubContexts;
-import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.resource.user.NewProxyUserCommand;
 import se.streamsource.streamflow.resource.user.ProxyUserDTO;
 import se.streamsource.streamflow.resource.user.ProxyUserListDTO;
@@ -41,24 +39,24 @@ import java.util.List;
  */
 @Mixins(ProxyUsersContext.Mixin.class)
 public interface ProxyUsersContext
-   extends Interactions, IndexInteraction<ProxyUserListDTO>, SubContexts<ProxyUserContext>
+   extends Context, IndexContext<ProxyUserListDTO>, SubContexts<ProxyUserContext>
 {
    // commands
    void createproxyuser( NewProxyUserCommand proxyUser );
 
    abstract class Mixin
-      extends InteractionsMixin
+      extends ContextMixin
       implements ProxyUsersContext
    {
       public void createproxyuser( NewProxyUserCommand proxyUser )
       {
-         Organization organization = context.get( Organization.class );
+         Organization organization = roleMap.get( Organization.class );
          organization.createProxyUser( proxyUser.description().get(), proxyUser.password().get() );
       }
 
       public ProxyUserListDTO index()
       {
-         ProxyUsers.Data data = context.get( ProxyUsers.Data.class );
+         ProxyUsers.Data data = roleMap.get( ProxyUsers.Data.class );
 
          ValueBuilder<ProxyUserListDTO> listBuilder = module.valueBuilderFactory().newValueBuilder( ProxyUserListDTO.class );
 
@@ -79,7 +77,7 @@ public interface ProxyUsersContext
 
       public ProxyUserContext context( String id ) throws ContextNotFoundException
       {
-         context.set( module.unitOfWorkFactory().currentUnitOfWork().get( ProxyUser.class, id ));
+         roleMap.set( module.unitOfWorkFactory().currentUnitOfWork().get( ProxyUser.class, id ));
 
          return subContext( ProxyUserContext.class );
       }

@@ -21,21 +21,19 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.dci.api.IndexInteraction;
-import se.streamsource.dci.api.Interactions;
-import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.ContextMixin;
+import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.SubContext;
 import se.streamsource.streamflow.resource.caze.EndUserCaseDTO;
 import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.formdrafts.FormDraftsContext;
 import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.requiredforms.RequiredFormsContext;
 import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.submittedforms.SubmittedFormsContext;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
-import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.form.EndUserCases;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.label.Labelable;
-import se.streamsource.streamflow.web.domain.structure.organization.AccessPoint;
 import se.streamsource.streamflow.web.domain.structure.organization.AccessPointSettings;
 
 /**
@@ -43,7 +41,7 @@ import se.streamsource.streamflow.web.domain.structure.organization.AccessPointS
  */
 @Mixins(CaseContext.Mixin.class)
 public interface CaseContext
-      extends IndexInteraction<EndUserCaseDTO>, Interactions
+      extends IndexContext<EndUserCaseDTO>, Context
 {
    // commands
    void sendtofunction();
@@ -58,7 +56,7 @@ public interface CaseContext
    FormDraftsContext formdrafts();
 
    abstract class Mixin
-         extends InteractionsMixin
+         extends ContextMixin
          implements CaseContext
    {
       @Structure
@@ -66,12 +64,12 @@ public interface CaseContext
 
       public EndUserCaseDTO index()
       {
-         Case aCase = context.get( Case.class );
+         Case aCase = roleMap.get( Case.class );
 
          ValueBuilder<EndUserCaseDTO> builder = vbf.newValueBuilder( EndUserCaseDTO.class );
          builder.prototype().description().set( aCase.getDescription() );
-         AccessPointSettings.Data accessPoint = context.get( AccessPointSettings.Data.class );
-         Labelable.Data labelsData = context.get( Labelable.Data.class );
+         AccessPointSettings.Data accessPoint = roleMap.get( AccessPointSettings.Data.class );
+         Labelable.Data labelsData = roleMap.get( Labelable.Data.class );
 
          builder.prototype().project().set( accessPoint.project().get().getDescription() );
          builder.prototype().caseType().set( accessPoint.caseType().get().getDescription() );
@@ -86,8 +84,8 @@ public interface CaseContext
 
       public void sendtofunction()
       {
-         CaseEntity aCase = context.get( CaseEntity.class);
-         EndUserCases cases = context.get( EndUserCases.class );
+         CaseEntity aCase = roleMap.get( CaseEntity.class);
+         EndUserCases cases = roleMap.get( EndUserCases.class );
          cases.sendToFunction( aCase );
       }
 

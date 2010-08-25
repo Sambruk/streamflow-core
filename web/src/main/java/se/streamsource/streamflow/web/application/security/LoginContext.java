@@ -20,7 +20,7 @@ package se.streamsource.streamflow.web.application.security;
 import java.util.Date;
 
 /**
- * Login context
+ * Login roleMap
  */
 public class LoginContext
 {

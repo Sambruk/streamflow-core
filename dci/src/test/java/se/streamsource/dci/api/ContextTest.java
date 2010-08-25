@@ -17,10 +17,7 @@
 
 package se.streamsource.dci.api;
 
-import org.hamcrest.CoreMatchers;
-import org.junit.Assert;
 import org.junit.Test;
-import se.streamsource.dci.api.Context;
 
 import java.util.Arrays;
 
@@ -32,63 +29,63 @@ import static org.junit.Assert.assertThat;
  */
 public class ContextTest
 {
-   Context context = new Context();
+   RoleMap roleMap = new RoleMap();
 
    @Test
    public void whenRoleSetThenGetWorks()
    {
       Foo foo = new Foo();
 
-      context.set( foo );
+      roleMap.set( foo );
 
-      assertThat(context.get( Foo.class ), equalTo( foo ));
-      assertThat(context.get( Object.class ), equalTo( (Object) foo ));
+      assertThat( roleMap.get( Foo.class ), equalTo( foo ));
+      assertThat( roleMap.get( Object.class ), equalTo( (Object) foo ));
    }
 
    @Test(expected=IllegalArgumentException.class)
    public void whenRoleNotSetThenGetFails()
    {
-      context.get( Bar.class );
+      roleMap.get( Bar.class );
    }
 
    @Test
    public void whenRoleSetInParentThenGetWorks()
    {
-      Context childContext = new Context(context);
+      RoleMap childRoleMap = new RoleMap( roleMap );
 
       Foo foo = new Foo();
 
-      context.set( foo );
+      roleMap.set( foo );
 
-      assertThat(childContext.get( Foo.class ), equalTo( foo ));
+      assertThat( childRoleMap.get( Foo.class ), equalTo( foo ));
    }
 
    @Test
    public void whenRoleSetInParentAndChildThenGetReturnsChild()
    {
-      Context childContext = new Context(context);
+      RoleMap childRoleMap = new RoleMap( roleMap );
 
       Foo foo = new Foo();
       Foo childFoo = new Foo();
 
-      context.set( foo );
-      childContext.set( childFoo );
+      roleMap.set( foo );
+      childRoleMap.set( childFoo );
 
-      assertThat(childContext.get( Foo.class ), equalTo( childFoo ));
+      assertThat( childRoleMap.get( Foo.class ), equalTo( childFoo ));
    }
 
    @Test
    public void whenRoleSetInParentAndChildThenGetAllReturnsBoth()
    {
-      Context childContext = new Context(context);
+      RoleMap childRoleMap = new RoleMap( roleMap );
 
       Foo foo = new Foo();
       Foo childFoo = new Foo();
 
-      context.set( foo );
-      childContext.set( childFoo );
+      roleMap.set( foo );
+      childRoleMap.set( childFoo );
 
-      assertThat(childContext.getAll( Foo.class ), equalTo( Arrays.asList(childFoo, foo )));
+      assertThat( childRoleMap.getAll( Foo.class ), equalTo( Arrays.asList(childFoo, foo )));
    }
 
    public static class Foo

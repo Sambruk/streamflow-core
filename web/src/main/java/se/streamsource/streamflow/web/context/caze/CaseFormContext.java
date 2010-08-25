@@ -19,21 +19,18 @@ package se.streamsource.streamflow.web.context.caze;
 
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.value.ValueBuilder;
-import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
+import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.streamflow.domain.form.FieldValueDTO;
 import se.streamsource.streamflow.domain.form.FormSubmissionValue;
-import se.streamsource.streamflow.domain.form.PageSubmissionValue;
-import se.streamsource.streamflow.resource.roles.IntegerDTO;
 import se.streamsource.streamflow.web.domain.structure.form.FormSubmission;
-import se.streamsource.dci.api.Interactions;
-import se.streamsource.dci.api.InteractionsMixin;
 
 /**
  * JAVADOC
  */
 @Mixins(CaseFormContext.Mixin.class)
 public interface CaseFormContext
-   extends Interactions
+   extends Context
 {
    public FormSubmissionValue formsubmission();
    public void updatefield( FieldValueDTO field );
@@ -41,12 +38,12 @@ public interface CaseFormContext
    public void nextpage();
 
    abstract class Mixin
-      extends InteractionsMixin
+      extends ContextMixin
       implements CaseFormContext
    {
       public FormSubmissionValue formsubmission()
       {
-         FormSubmission formSubmission = context.get(FormSubmission.class);
+         FormSubmission formSubmission = roleMap.get(FormSubmission.class);
 
          return formSubmission.getFormSubmission();
       }
@@ -57,14 +54,14 @@ public interface CaseFormContext
 
          if ( builder != null )
          {
-            FormSubmission formSubmission = context.get(FormSubmission.class);
+            FormSubmission formSubmission = roleMap.get(FormSubmission.class);
             formSubmission.changeFormSubmission( builder.newInstance() );
          }
       }
 
       private ValueBuilder<FormSubmissionValue> incrementPage( int increment )
       {
-         ValueBuilder<FormSubmissionValue> builder = context.get( FormSubmission.Data.class ).formSubmissionValue().get().buildWith();
+         ValueBuilder<FormSubmissionValue> builder = roleMap.get( FormSubmission.Data.class ).formSubmissionValue().get().buildWith();
          int page = builder.prototype().currentPage().get() + increment;
          int pages = builder.prototype().pages().get().size();
 
@@ -82,14 +79,14 @@ public interface CaseFormContext
 
          if ( builder != null )
          {
-            FormSubmission formSubmission = context.get(FormSubmission.class);
+            FormSubmission formSubmission = roleMap.get(FormSubmission.class);
             formSubmission.changeFormSubmission( builder.newInstance() );
          }
       }
 
       public void updatefield( FieldValueDTO field )
       {
-         FormSubmission formSubmission = context.get(FormSubmission.class);
+         FormSubmission formSubmission = roleMap.get(FormSubmission.class);
          formSubmission.changeFieldValue( field.field().get(), field.value().get() );
       }
 

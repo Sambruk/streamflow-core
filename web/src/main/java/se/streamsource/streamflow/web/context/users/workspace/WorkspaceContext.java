@@ -17,15 +17,14 @@
 
 package se.streamsource.streamflow.web.context.users.workspace;
 
-import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
-import se.streamsource.dci.api.Interactions;
-import se.streamsource.dci.api.InteractionsMixin;
+import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.SubContext;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
@@ -44,7 +43,7 @@ import se.streamsource.streamflow.web.infrastructure.caching.CachingService;
  */
 @Mixins(WorkspaceContext.Mixin.class)
 public interface WorkspaceContext
-      extends Interactions
+      extends Context
 {
    LinksValue casecounts();
 
@@ -58,7 +57,7 @@ public interface WorkspaceContext
    SavedSearchesContext savedsearches();
 
    abstract class Mixin
-         extends InteractionsMixin
+         extends ContextMixin
          implements WorkspaceContext
    {
       @Structure
@@ -81,7 +80,7 @@ public interface WorkspaceContext
          UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
 
          Element caseCount;
-         DraftsQueries drafts = context.get( DraftsQueries.class );
+         DraftsQueries drafts = roleMap.get( DraftsQueries.class );
          if ((caseCount = caching.get( drafts.toString())) == null )
          {
             caseCount = new Element(drafts.toString(), Long.toString(drafts.drafts().newQuery( uow ).count()));
@@ -89,7 +88,7 @@ public interface WorkspaceContext
          }
          builder.addLink( (String) caseCount.getObjectValue(), "drafts" );
 
-         for (Project project : context.get( ProjectQueries.class ).allProjects())
+         for (Project project : roleMap.get( ProjectQueries.class ).allProjects())
          {
             if ((caseCount = caching.get( project.toString())) == null )
             {
@@ -99,9 +98,9 @@ public interface WorkspaceContext
 
             builder.addLink( (String) caseCount.getObjectValue(), project+"/inbox" );
 
-            if ((caseCount = caching.get( project.toString()+":"+context.get( Assignee.class).toString())) == null )
+            if ((caseCount = caching.get( project.toString()+":"+ roleMap.get( Assignee.class).toString())) == null )
             {
-               caseCount = new Element(project.toString()+":"+context.get( Assignee.class).toString(), Long.toString(((AssignmentsQueries)project).assignments( context.get( Assignee.class) ).newQuery( uow ).count()));
+               caseCount = new Element(project.toString()+":"+ roleMap.get( Assignee.class).toString(), Long.toString(((AssignmentsQueries)project).assignments( roleMap.get( Assignee.class) ).newQuery( uow ).count()));
                caching.put( caseCount );
             }
 
