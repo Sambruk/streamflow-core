@@ -58,17 +58,17 @@ public class APIRouter
       super( context );
       this.factory = factory;
 
-      Restlet cqr = factory.newObjectBuilder( CommandQueryRestlet.class ).use(context).newInstance();
+      Restlet cqr = factory.newObjectBuilder( CommandQueryRestlet.class ).use( context ).newInstance();
 
       Filter performanceLoggingFilter = new PerformanceLoggingFilter( context, cqr );
 
       Authenticator auth = new ChallengeAuthenticator( getContext(), ChallengeScheme.HTTP_BASIC, "Streamflow" );
       auth.setNext( performanceLoggingFilter );
 
-      attachDefault( new ExtensionMediaTypeFilter( getContext(), auth) );
+      attachDefault( new ExtensionMediaTypeFilter( getContext(), auth ) );
 
       // Events
-      attach( "/events/domain", new ExtensionMediaTypeFilter( getContext(), createServerResourceFinder( DomainEventsServerResource.class )), Template.MODE_STARTS_WITH );
+      attach( "/events/domain", new ExtensionMediaTypeFilter( getContext(), createServerResourceFinder( DomainEventsServerResource.class ) ), Template.MODE_STARTS_WITH );
 
       // Admin resources
       Router adminRouter = new Router( getContext() );
@@ -80,11 +80,10 @@ public class APIRouter
       attach( "/admin", new ExtensionMediaTypeFilter( getContext(), adminRouter ) );
 
 
-
       // Version info
       Directory directory = new Directory( getContext(), "clap://thread/static/" );
       directory.setListingAllowed( true );
-      attach( "/static", directory );
+      attach( "/static", createDirectoryGuard( directory ) );
    }
 
    private Restlet createServerResourceFinder( Class<? extends ServerResource> resource )
@@ -104,6 +103,13 @@ public class APIRouter
          return auth;
       } else
          return finder;
+   }
+
+   private Restlet createDirectoryGuard( Directory dir )
+   {
+      Authenticator guard = new ChallengeAuthenticator( getContext(), ChallengeScheme.HTTP_BASIC, "Streamflow" );
+      guard.setNext( dir );
+      return guard;
    }
 
    private static class PerformanceLoggingFilter extends Filter
@@ -130,12 +136,12 @@ public class APIRouter
             long end = System.nanoTime();
             long requestTime = (end - start) / 1000000L;
 
-            if (request.getMethod().equals( Method.GET))
+            if (request.getMethod().equals( Method.GET ))
             {
-               queryPerformanceMonitor.info( "{}\t{}\t{}", new Object[]{requestTime, request.getResourceRef().getLastSegment(), request.getResourceRef() } );
+               queryPerformanceMonitor.info( "{}\t{}\t{}", new Object[]{requestTime, request.getResourceRef().getLastSegment(), request.getResourceRef()} );
             } else
             {
-               commandPerformanceMonitor.info( "{}\t{}\t{}", new Object[]{requestTime, request.getResourceRef().getLastSegment(), request.getResourceRef() } );
+               commandPerformanceMonitor.info( "{}\t{}\t{}", new Object[]{requestTime, request.getResourceRef().getLastSegment(), request.getResourceRef()} );
             }
          }
       }
