@@ -23,6 +23,7 @@
         <project>
             <groupId>beanshell</groupId>
             <artifactId>bsh</artifactId>
+            <name>Beanshell</name>
             <organization>
                 <name>BeanShell Community</name>
                 <url>http://www.beanshell.org/</url>
@@ -33,6 +34,7 @@
         <project>
             <groupId>c3p0</groupId>
             <artifactId>c3p0</artifactId>
+            <name>C3PO</name>
             <organization>
                 <name>Steve Waldman</name>
                 <url>http://c3p0.sourceforge.net</url>
@@ -43,6 +45,7 @@
         <project>
             <groupId>com.jgoodies</groupId>
             <artifactId>forms</artifactId>
+            <name>JGoodies Forms</name>
             <organization>
                 <name>JGoodies Forms</name>
                 <url>https://forms.dev.java.net/</url>
@@ -53,6 +56,7 @@
         <project>
             <groupId>com.jgoodies</groupId>
             <artifactId>looks</artifactId>
+            <name>JGoodies Looks</name>
             <organization>
                 <name>JGoodies Looks</name>
                 <url>https://looks.dev.java.net/</url>
@@ -63,10 +67,45 @@
         <project>
             <groupId>com.jgoodies</groupId>
             <artifactId>validation</artifactId>
+            <name>JGoodies Validation</name>
             <organization>
                 <name>JGoodies Validation</name>
                 <url>https://validationt.dev.java.net/</url>
             </organization>
+        </project>
+    </supplement>
+    <supplement>
+        <project>
+            <groupId>commons-dbcp</groupId>
+            <artifactId>commons-dbcp</artifactId>
+            <name>Commons DBCP</name>
+            <organization>
+                <name>The Apache Software Foundation</name>
+                <url>http://www.apache.org/</url>
+            </organization>
+            <licenses>
+                <license>
+                    <name>The Apache Software License, Version 2.0</name>
+                    <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+                </license>
+            </licenses>
+        </project>
+    </supplement>
+    <supplement>
+        <project>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <name>Commons Loogging</name>
+            <organization>
+                <name>The Apache Software Foundation</name>
+                <url>http://www.apache.org/</url>
+            </organization>
+            <licenses>
+                <license>
+                    <name>The Apache Software License, Version 2.0</name>
+                    <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+                </license>
+            </licenses>
         </project>
     </supplement>
     <supplement>
@@ -105,6 +144,7 @@
         <project>
             <groupId>dnsjava</groupId>
             <artifactId>dnsjava</artifactId>
+            <name>Dnsjava</name>
             <organization>
                 <name>Brian Wellington</name>
                 <url>www.dnsjava.org</url>
@@ -238,13 +278,15 @@
         <project>
             <groupId>javax.activation</groupId>
             <artifactId>activation</artifactId>
+            <name>JavaBeans Activation Framework</name>
             <organization>
                 <name>Sun Microsystems, Inc., JavaBeans Activation Framework (JAF)</name>
                 <url>http://java.sun.com/products/javabeans/jaf/index.jsp</url>
             </organization>
             <licenses>
                 <license>
-                    <name>COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) Version 1.0</name>
+                    <name>COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) Version 1.0 (Packaged inside the library)
+                    </name>
                     <url>/LICENSE.txt</url>
                 </license>
             </licenses>
@@ -254,6 +296,7 @@
         <project>
             <groupId>javax.help</groupId>
             <artifactId>javahelp</artifactId>
+            <name>JavaHelp</name>
             <organization>
                 <name>Sun Microsystems, Inc.</name>
                 <url>https://javahelp.dev.java.net/</url>
@@ -270,6 +313,7 @@
         <project>
             <groupId>javax.jms</groupId>
             <artifactId>jms</artifactId>
+            <name>JMS</name>
             <organization>
                 <name>Sun Microsystems, Inc., Java Message Service</name>
                 <url>http://java.sun.com/products/jms</url>
@@ -286,6 +330,7 @@
         <project>
             <groupId>javax.mail</groupId>
             <artifactId>mail</artifactId>
+            <name>JavaMail</name>
             <organization>
                 <name>Sun Microsystems, Inc., Java Mail API</name>
                 <url>https://glassfish.dev.java.net/javaee5/mail/</url>
@@ -312,6 +357,7 @@
         <project>
             <groupId>jdbm</groupId>
             <artifactId>jdbm</artifactId>
+            <name>JDBM</name>
             <organization>
                 <name>JDBM Project</name>
                 <url>http://jdbm.sourceforge.net</url>
@@ -328,6 +374,7 @@
         <project>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
+            <name>MySQL Connector</name>
             <organization>
                 <name>MySql AB</name>
                 <url>http://dev.mysql.com/usingmysql/java/</url>
@@ -348,16 +395,92 @@
         <project>
             <groupId>net.java.dev.glazedlists</groupId>
             <artifactId>glazedlists_java15</artifactId>
+            <name>Glazedlists</name>
             <organization>
                 <name>PublicObject.com</name>
                 <url>http://publicobject.com/glazedlists/</url>
             </organization>
+            <licenses>
+                <license>
+                    <name>GNU Lesser General Public License</name>
+                    <url>http://www.gnu.org/copyleft/lesser.html</url>
+                </license>
+            </licenses>
+        </project>
+    </supplement>
+    <supplement>
+        <project>
+            <groupId>net.jcip</groupId>
+            <artifactId>jcip-annotations</artifactId>
+            <name>Java Concurrency in Practice</name>
+            <organization>
+                <name>Java Concurrency in Practice</name>
+                <url>http://jcip.net</url>
+            </organization>
+            <licenses>
+                <license>
+                    <name>Public Domain</name>
+                    <url>http://creativecommons.org/licenses/publicdomain</url>
+                </license>
+            </licenses>
+        </project>
+    </supplement>
+    <supplement>
+        <project>
+            <groupId>net.sf.ehcache</groupId>
+            <artifactId>ehcache-core</artifactId>
+            <name>Ehcache Core</name>
+            <organization>
+                <name>Terracotta, Inc.</name>
+                <url>http://www.ehcache.org/</url>
+            </organization>
+            <licenses>
+                <license>
+                    <name>The Apache Software License, Version 2.0</name>
+                    <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+                </license>
+            </licenses>
+        </project>
+    </supplement>
+    <supplement>
+        <project>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <name>HttpClient</name>
+            <organization>
+                <name>Apache Software Foundation</name>
+                <url>http://www.apache.org/</url>
+            </organization>
+            <licenses>
+                <license>
+                    <name>The Apache Software License, Version 2.0</name>
+                    <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+                </license>
+            </licenses>
+        </project>
+    </supplement>
+    <supplement>
+        <project>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpmime</artifactId>
+            <name>HttpMime</name>
+            <organization>
+                <name>Apache Software Foundation</name>
+                <url>http://www.apache.org/</url>
+            </organization>
+            <licenses>
+                <license>
+                    <name>The Apache Software License, Version 2.0</name>
+                    <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+                </license>
+            </licenses>
         </project>
     </supplement>
     <supplement>
         <project>
             <groupId>org.ccil.cowan.tagsoup</groupId>
             <artifactId>tagsoup</artifactId>
+            <name>Tagsoup</name>
             <organization>
                 <name>John Cowan</name>
                 <url>http://home.ccil.org/~cowan/XML/tagsoup/</url>
@@ -378,8 +501,9 @@
         <project>
             <groupId>org.jdesktop</groupId>
             <artifactId>appframework</artifactId>
+            <name>JDesktop</name>
             <organization>
-                <name>JDesktop</name>
+                <name>JDesktop Application Framework</name>
                 <url>https://appframework.dev.java.net</url>
             </organization>
             <licenses>
@@ -394,6 +518,7 @@
         <project>
             <groupId>org.jdesktop</groupId>
             <artifactId>swing-worker</artifactId>
+            <name>JDesktop SwingWorker</name>
             <organization>
                 <name>JDesktop</name>
                 <url>https://swingworker.dev.java.net</url>
@@ -410,6 +535,7 @@
         <project>
             <groupId>org.liquibase</groupId>
             <artifactId>liquibase-core</artifactId>
+            <name>Liquibase</name>
             <organization>
                 <name>LiquiBase Community</name>
                 <url>http://www.liquibase.org</url>
@@ -418,8 +544,26 @@
     </supplement>
     <supplement>
         <project>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <name>OSGi Core</name>
+            <organization>
+                <name>OSGi Alliance</name>
+                <url>http://www.osgi.org</url>
+            </organization>
+            <licenses>
+                <license>
+                    <name>Eclipse Public License Version 1.0</name>
+                    <url>http://www.eclipse.org/legal/epl-v10.html</url>
+                </license>
+            </licenses>
+        </project>
+    </supplement>
+    <supplement>
+        <project>
             <groupId>org.qi4j.core</groupId>
             <artifactId>qi4j-core-api</artifactId>
+            <name>Qi4j Core</name>
             <organization>
                 <name>Qi4j</name>
                 <url>http://www.qi4j.org</url>
@@ -430,6 +574,7 @@
         <project>
             <groupId>org.qi4j.core</groupId>
             <artifactId>qi4j-core-bootstrap</artifactId>
+            <name>Qi4j Core Bootstrap</name>
             <organization>
                 <name>Qi4j</name>
                 <url>http://www.qi4j.org</url>
@@ -440,6 +585,7 @@
         <project>
             <groupId>org.qi4j.core</groupId>
             <artifactId>qi4j-core-runtime</artifactId>
+            <name>Qi4j Core Runtime</name>
             <organization>
                 <name>Qi4j</name>
                 <url>http://www.qi4j.org</url>
@@ -450,6 +596,7 @@
         <project>
             <groupId>org.qi4j.core</groupId>
             <artifactId>qi4j-core-spi</artifactId>
+            <name>Qi4j Core SPI</name>
             <organization>
                 <name>Qi4j</name>
                 <url>http://www.qi4j.org</url>
@@ -460,6 +607,7 @@
         <project>
             <groupId>org.qi4j.core</groupId>
             <artifactId>qi4j-core-testsupport</artifactId>
+            <name>Qi4j Core Testsupport</name>
             <organization>
                 <name>Qi4j</name>
                 <url>http://www.qi4j.org</url>
@@ -470,6 +618,7 @@
         <project>
             <groupId>org.qi4j.extension</groupId>
             <artifactId>qi4j-entitystore-jdbm</artifactId>
+            <name>Qi4j Extension JDBM</name>
             <organization>
                 <name>Qi4j</name>
                 <url>http://www.qi4j.org</url>
@@ -480,6 +629,7 @@
         <project>
             <groupId>org.qi4j.extension</groupId>
             <artifactId>qi4j-entitystore-preferences</artifactId>
+            <name>Qi4j Ext EntityStore Preferences</name>
             <organization>
                 <name>Qi4j</name>
                 <url>http://www.qi4j.org</url>
@@ -490,6 +640,7 @@
         <project>
             <groupId>org.qi4j.extension</groupId>
             <artifactId>qi4j-entitystore-rest</artifactId>
+            <name>Qi4j Ext EntityStore REST</name>
             <organization>
                 <name>Qi4j</name>
                 <url>http://www.qi4j.org</url>
@@ -500,6 +651,7 @@
         <project>
             <groupId>org.qi4j.extension</groupId>
             <artifactId>qi4j-indexing-rdf</artifactId>
+            <name>Qi4j Ext Indexing RDF</name>
             <organization>
                 <name>Qi4j</name>
                 <url>http://www.qi4j.org</url>
@@ -510,6 +662,7 @@
         <project>
             <groupId>org.qi4j.extension</groupId>
             <artifactId>qi4j-migration</artifactId>
+            <name>Qi4j Ext Migration</name>
             <organization>
                 <name>Qi4j</name>
                 <url>http://www.qi4j.org</url>
@@ -520,6 +673,7 @@
         <project>
             <groupId>org.qi4j.extension</groupId>
             <artifactId>qi4j-reindexer</artifactId>
+            <name>Qi4j Ext Reindexer</name>
             <organization>
                 <name>Qi4j</name>
                 <url>http://www.qi4j.org</url>
@@ -530,6 +684,7 @@
         <project>
             <groupId>org.qi4j.library</groupId>
             <artifactId>qi4j-lib-constraints</artifactId>
+            <name>Qi4j Lib Constraints</name>
             <organization>
                 <name>Qi4j</name>
                 <url>http://www.qi4j.org</url>
@@ -540,6 +695,7 @@
         <project>
             <groupId>org.qi4j.library</groupId>
             <artifactId>qi4j-lib-locking</artifactId>
+            <name>Qi4j Lib Locking</name>
             <organization>
                 <name>Qi4j</name>
                 <url>http://www.qi4j.org</url>
@@ -550,6 +706,7 @@
         <project>
             <groupId>org.qi4j.library</groupId>
             <artifactId>qi4j-lib-rdf</artifactId>
+            <name>Qi4j Lib RDF</name>
             <organization>
                 <name>Qi4j</name>
                 <url>http://www.qi4j.org</url>
@@ -560,6 +717,7 @@
         <project>
             <groupId>org.qi4j.swing</groupId>
             <artifactId>qi4j-swing-envisage</artifactId>
+            <name>Qi4j Swing Envisage</name>
             <organization>
                 <name>Qi4j</name>
                 <url>http://www.qi4j.org</url>
@@ -570,16 +728,58 @@
         <project>
             <groupId>org.restlet.jee</groupId>
             <artifactId>org.restlet.ext.atom</artifactId>
+            <name>Restlet Extension - Atom</name>
             <organization>
                 <name>Noelios Technologies</name>
                 <url>http://www.restlet.org</url>
             </organization>
+            <licenses>
+                <license>
+                    <name>CDDL 1.0 license</name>
+                    <url>http://www.opensource.org/licenses/cddl1.php</url>
+                </license>
+            </licenses>
+        </project>
+    </supplement>
+    <supplement>
+        <project>
+            <groupId>org.restlet.jee</groupId>
+            <artifactId>org.restlet.ext.fileupload</artifactId>
+            <name>Restlet Extension - FileUpload</name>
+            <organization>
+                <name>Noelios Technologies</name>
+                <url>http://www.restlet.org</url>
+            </organization>
+            <licenses>
+                <license>
+                    <name>CDDL 1.0 license</name>
+                    <url>http://www.opensource.org/licenses/cddl1.php</url>
+                </license>
+            </licenses>
+        </project>
+    </supplement>
+    <supplement>
+        <project>
+            <groupId>org.restlet.jee</groupId>
+            <artifactId>org.restlet.ext.httpclient</artifactId>
+            <name>Restlet Extension - Apache HTTP Client</name>
+            <organization>
+                <name>Noelios Technologies</name>
+                <url>http://www.restlet.org</url>
+            </organization>
+            <licenses>
+                <license>
+                    <name>CDDL 1.0 license</name>
+                    <url>http://www.opensource.org/licenses/cddl1.php</url>
+                </license>
+            </licenses>
         </project>
     </supplement>
     <supplement>
         <project>
             <groupId>org.restlet.jee</groupId>
             <artifactId>org.restlet.ext.net</artifactId>
+            <name>Restlet Extension - Net</name>
             <organization>
                 <name>Noelios Technologies</name>
                 <url>http://www.restlet.org</url>
@@ -596,6 +796,7 @@
         <project>
             <groupId>org.restlet.jee</groupId>
             <artifactId>org.restlet.ext.servlet</artifactId>
+            <name>Restlet Extension - Servlet</name>
             <organization>
                 <name>Noelios Technologies</name>
                 <url>http://www.restlet.org</url>
@@ -612,6 +813,7 @@
         <project>
             <groupId>org.restlet.jee</groupId>
             <artifactId>org.restlet.ext.xml</artifactId>
+            <name>Restlet Extension - XML</name>
             <organization>
                 <name>Noelios Technologies</name>
                 <url>http://www.restlet.org</url>
@@ -628,6 +830,7 @@
         <project>
             <groupId>org.restlet.jee</groupId>
             <artifactId>org.restlet</artifactId>
+            <name>Restlet</name>
             <organization>
                 <name>Noelios Technologies</name>
                 <url>http://www.restlet.org</url>
@@ -644,6 +847,7 @@
         <project>
             <groupId>org.sitemesh</groupId>
             <artifactId>sitemesh</artifactId>
+            <name>Sitemesh</name>
             <organization>
                 <name>Sitemesh</name>
                 <url>www.sitemesh.org</url>
@@ -666,6 +870,7 @@
         <project>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
+            <name>Slf4j API</name>
             <licenses>
                 <license>
                     <name>MIT License</name>
@@ -702,6 +907,7 @@
         <project>
             <groupId>org.subethamail</groupId>
             <artifactId>subethasmtp</artifactId>
+            <name>SubEtha SMTP</name>
             <organization>
                 <name>SubEtha SMTP</name>
                 <url>http://subethasmtp.googlecode.com</url>
@@ -712,6 +918,7 @@
         <project>
             <groupId>org.swinglabs</groupId>
             <artifactId>swingx</artifactId>
+            <name>Swinglabs</name>
             <organization>
                 <name>Swinglabs</name>
                 <url>https://swingx.dev.java.net/</url>
@@ -728,6 +935,7 @@
         <project>
             <groupId>org.swinglabs</groupId>
             <artifactId>wizard</artifactId>
+            <name>Swinglabs Wizard</name>
             <organization>
                 <name>Swinglabs</name>
                 <url>https://wizard.dev.java.net/</url>
@@ -744,13 +952,14 @@
         <project>
             <groupId>oro</groupId>
             <artifactId>oro</artifactId>
+            <name>Apache Oro</name>
             <organization>
                 <name>Apache Software Foundation</name>
                 <url>http://apache.org</url>
             </organization>
             <licenses>
                 <license>
-                    <name>Apache License v1.1</name>
+                    <name>Apache License v1.1 (Packaged with library)</name>
                     <url>/LICENSE.txt</url>
                 </license>
             </licenses>
@@ -760,6 +969,7 @@
         <project>
             <groupId>stax</groupId>
             <artifactId>stax-api</artifactId>
+            <name>STAX API</name>
             <organization>
                 <name>Codehouse</name>
                 <url>http://stax.codehaus.org/</url>
@@ -770,6 +980,7 @@
         <project>
             <groupId>sun-javamail</groupId>
             <artifactId>mail</artifactId>
+            <name>Java Mail</name>
             <organization>
                 <name>Sun Java</name>
                 <url>http://java.sun.com</url>
@@ -786,6 +997,7 @@
         <project>
             <groupId>woodstox</groupId>
             <artifactId>wstx-asl</artifactId>
+            <name>Woodstox</name>
             <organization>
                 <name>Codehouse</name>
                 <url>http://woodstox.codehaus.org</url>

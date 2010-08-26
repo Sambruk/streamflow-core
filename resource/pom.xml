@@ -6,7 +6,7 @@
     <groupId>se.streamsource.streamflow</groupId>
     <artifactId>streamflow-jar-resource-bundle</artifactId>
     <name>Streamflow License Bundle</name>
-    <version>1.0</version>
+    <version>1.1</version>
 
     <build>
         <plugins>
@@ -22,8 +22,8 @@
                         </goals>
                     </execution>
                 </executions>
-             </plugin>
-            
+            </plugin>
+
         </plugins>
     </build>
 
