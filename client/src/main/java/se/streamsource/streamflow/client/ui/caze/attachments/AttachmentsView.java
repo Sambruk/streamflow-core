@@ -42,9 +42,17 @@ import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.KeyStroke;
+import javax.swing.LayoutFocusTraversalPolicy;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -69,11 +77,12 @@ public class AttachmentsView
    private AttachmentsModel attachmentsModel;
    public RefreshWhenVisible refresher;
 
-   public void init( @Service ApplicationContext context )
+   //public void init( @Service ApplicationContext context )
+   public AttachmentsView( @Service ApplicationContext context )
    {
       setLayout( new BorderLayout() );
 
-      ActionMap am = context.getActionMap( this );
+      final ActionMap am = context.getActionMap( this );
 
       TableFormat tableFormat = new AttachmentsTableFormatter();
 
@@ -107,12 +116,31 @@ public class AttachmentsView
       toolbar.add( new JButton( am.get( "open" ) ) );
       attachments.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "remove" ), am.get( "open" ) ) );
 
-
+      attachments.getInputMap( ).put( KeyStroke.getKeyStroke( KeyEvent.VK_ENTER, 0 ), "open" );
+      attachments.getInputMap(  ).put( KeyStroke.getKeyStroke( KeyEvent.VK_DELETE, 0 ), "remove" );
+      attachments.setActionMap( am );
+      
+      attachments.addMouseListener( new MouseAdapter()
+      {
+         public void mouseClicked( MouseEvent me )
+         {
+            int obj = attachments.getSelectedRow();
+            if (obj == -1) return;
+            if (me.getClickCount() == 2)
+            {
+               am.get("open").actionPerformed( new ActionEvent( this,
+                     ActionEvent.ACTION_PERFORMED,
+                     "open" ) );
+               me.consume();
+            }
+         }
+      } );
+      
       JScrollPane attachmentsScrollPane = new JScrollPane( attachments );
 
       add( attachmentsScrollPane, BorderLayout.CENTER );
       add( toolbar, BorderLayout.SOUTH );
-
+      
       refresher = new RefreshWhenVisible( this );
       addAncestorListener( refresher );
    }
