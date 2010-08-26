@@ -37,6 +37,7 @@ import se.streamsource.streamflow.domain.form.OptionButtonsFieldValue;
 import se.streamsource.streamflow.domain.form.TextAreaFieldValue;
 import se.streamsource.streamflow.domain.form.TextFieldValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.util.Strings;
 
 import java.util.List;
 
@@ -134,6 +135,7 @@ public interface FormSubmission
 
       private boolean validate( CheckboxesFieldValue definition, String value )
       {
+         if ( "".equals( value )) return true;
          return validateMultiple( definition.values().get(), value );
       }
 
@@ -172,6 +174,7 @@ public interface FormSubmission
 
       private boolean validate( ListBoxFieldValue definition, String value )
       {
+         if ( "".equals( value )) return true; 
          if ( definition.multiple().get() )
          {
             return validateMultiple( definition.values().get(), value );
@@ -183,6 +186,7 @@ public interface FormSubmission
 
       private boolean validate( NumberFieldValue definition, String value )
       {
+         if ( "".equals( value )) return true;
          try
          {
             Object o = (definition.integer().get() ? Integer.parseInt( value ) : Double.parseDouble( value ));  
