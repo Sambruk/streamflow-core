@@ -35,6 +35,7 @@ import javax.swing.JTextPane;
 import javax.swing.Popup;
 import javax.swing.PopupFactory;
 import javax.swing.border.BevelBorder;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Point;
@@ -160,6 +161,7 @@ public class AboutDialog
       Box box2 = Box.createVerticalBox();
       InputStream is = getClass().getResourceAsStream( "/" + fileName );
       JTextPane txt = new JTextPane();
+      txt.setBorder( BorderFactory.createLineBorder( Color.BLACK, 2 ) );
       try
       {
          String content = new String( IOUtil.readBytes( is ) );
