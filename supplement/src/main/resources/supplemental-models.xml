@@ -112,6 +112,7 @@
         <project>
             <groupId>com.sun.jdmk</groupId>
             <artifactId>jmxtools</artifactId>
+            <name>Sun JavaManagement Jmxtools</name>
             <organization>
                 <name>Sun Microsystems, Inc.</name>
                 <url>http://java.sun.com/products/JavaManagement/</url>
@@ -128,6 +129,7 @@
         <project>
             <groupId>com.sun.jmx</groupId>
             <artifactId>jmxri</artifactId>
+            <name>Sun JavaManagement Jmxri</name>
             <organization>
                 <name>Sun Microsystems, Inc</name>
                 <url>http://java.sun.com/products/JavaManagement/</url>
@@ -858,6 +860,7 @@
         <project>
             <groupId>org.slf4j</groupId>
             <artifactId>jul-to-slf4j</artifactId>
+            <name>Slf4j - JavaUtil Loggin to slf4j Bridge</name>
             <licenses>
                 <license>
                     <name>MIT License</name>
@@ -895,6 +898,7 @@
         <project>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
+            <name>Slf4j Simple</name>
             <licenses>
                 <license>
                     <name>MIT License</name>
