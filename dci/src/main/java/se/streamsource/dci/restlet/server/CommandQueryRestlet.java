@@ -698,6 +698,10 @@ public class CommandQueryRestlet
 
       List<MediaType> possibleMediaTypes = Arrays.asList( MediaType.TEXT_HTML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM );
       MediaType responseType = request.getClientInfo().getPreferredMediaType( possibleMediaTypes );
+
+      if (responseType == null)
+         responseType = MediaType.TEXT_HTML;
+      
       Variant variant = new Variant( responseType, language );
       variant.setCharacterSet( CharacterSet.UTF_8 );
 

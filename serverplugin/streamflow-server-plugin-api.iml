@@ -19,10 +19,10 @@
     <orderEntry type="library" scope="RUNTIME" name="Maven: asm:asm:3.2" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: asm:asm-commons:3.2" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: asm:asm-tree:3.2" level="project" />
-    <orderEntry type="library" name="Maven: org.restlet.jee:org.restlet:2.0-RC3" level="project" />
+    <orderEntry type="library" name="Maven: org.restlet.jee:org.restlet:2.0.0" level="project" />
     <orderEntry type="library" name="Maven: org.osgi:org.osgi.core:4.0.0" level="project" />
-    <orderEntry type="library" name="Maven: org.restlet.jee:org.restlet.ext.xml:2.0-RC3" level="project" />
-    <orderEntry type="library" name="Maven: org.restlet.jee:org.restlet.ext.servlet:2.0-RC3" level="project" />
+    <orderEntry type="library" name="Maven: org.restlet.jee:org.restlet.ext.xml:2.0.0" level="project" />
+    <orderEntry type="library" name="Maven: org.restlet.jee:org.restlet.ext.servlet:2.0.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.velocity:velocity:1.6.3" level="project" />
     <orderEntry type="library" name="Maven: commons-collections:commons-collections:3.2.1" level="project" />
     <orderEntry type="library" name="Maven: commons-lang:commons-lang:2.4" level="project" />
