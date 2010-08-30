@@ -51,9 +51,9 @@ public class FileConfigurationTest
 
       System.setProperty( "os.name", "Mac OS X" );
 
-      String user = System.getProperty( "user.home" );
+      File user = config.user();
       Assert.assertThat( "OS is correct", config.os(), CoreMatchers.equalTo( FileConfiguration.OS.mac ) );
-      Assert.assertThat( "configuration is correct", config.configurationDirectory(), CoreMatchers.equalTo( new File( user + "/Library/Preferences/StreamFlowServer" ) ) );
+      Assert.assertThat( "configuration is correct", config.configurationDirectory(), CoreMatchers.equalTo( new File( user, "/Library/Preferences/StreamFlowServer" ) ) );
    }
 
    @Test
@@ -62,8 +62,8 @@ public class FileConfigurationTest
       objectBuilderFactory.newObjectBuilder( FileConfigurationTest.class ).injectTo( this );
       System.setProperty( "os.name", "Linux" );
 
-      String user = System.getProperty( "user.home" );
+      File user = config.user();
       Assert.assertThat( "OS is correct", config.os(), CoreMatchers.equalTo( FileConfiguration.OS.unix ) );
-      Assert.assertThat( "configuration is correct", config.configurationDirectory(), CoreMatchers.equalTo( new File( user + "/.StreamFlowServer/etc" ) ) );
+      Assert.assertThat( "configuration is correct", config.configurationDirectory(), CoreMatchers.equalTo( new File( user, "/.StreamFlowServer/etc" ) ) );
    }
 }

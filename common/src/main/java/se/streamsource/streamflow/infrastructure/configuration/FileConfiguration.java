@@ -52,6 +52,8 @@ public interface FileConfiguration
 
    OS os();
 
+   File user();
+
    File configurationDirectory();
 
    File dataDirectory();
@@ -67,6 +69,8 @@ public interface FileConfiguration
       Property<OS> os();
 
       Property<String> application();
+
+      Property<File> user();
 
       Property<File> configuration();
 
@@ -100,10 +104,14 @@ public interface FileConfiguration
          data.os().set( os );
          logger.info( "Operating system:" + os.name() );
 
-         // Get bundle with application name and configured directories
+         // Get user directory
          String user = System.getenv( "USERPROFILE" ); // On Windows we use this instead of user.home
          if (user == null)
             user = System.getProperty( "user.home" );
+
+         data.user().set(new File(user));
+
+         // Get bundle with application name and configured directories
          ResourceBundle bundle = ResourceBundle.getBundle( FileConfiguration.class.getName(), new Locale( os.name() ) );
 
          // Set application name. This is taken from the Qi4j application but can be overriden by a system property
@@ -139,6 +147,11 @@ public interface FileConfiguration
       public OS os()
       {
          return data.os().get();
+      }
+
+      public File user()
+      {
+          return data.user().get();
       }
 
       public File configurationDirectory()
