@@ -196,7 +196,9 @@ public class AttachmentsView
          InputStream in = attachmentsModel.download( attachment );
          try
          {
-            BioUtils.copy( in, out );
+            ProgressMonitorInputStream pmis = new ProgressMonitorInputStream(null, "Loading", in);
+            pmis.getProgressMonitor().setMaximum(attachment.size().get().intValue());
+            BioUtils.copy( new BufferedInputStream(pmis, 1024), new BufferedOutputStream(out, 4096) );
          } catch (IOException e)
          {
             in.close();
