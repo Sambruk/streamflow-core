@@ -86,5 +86,19 @@ public enum WorkspaceResources
    attachment_name,
    attachment_size,
    choose_message_delivery_type,
-   choose_project, choose_form, save_search, query_label, incomplete_data, handle_searches, could_not_change_name, could_not_change_query, could_not_change_description, create_attachment, case_separator, attachments, caze, attachment
+   choose_project,
+   choose_form,
+   save_search,
+   query_label,
+   incomplete_data,
+   handle_searches,
+   could_not_change_name,
+   could_not_change_query,
+   could_not_change_description,
+   create_attachment,
+   case_separator,
+   attachments,
+   caze,
+   uploading_file,
+   attachment
 }

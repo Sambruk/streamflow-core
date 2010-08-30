@@ -51,6 +51,7 @@ import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
 import se.streamsource.streamflow.infrastructure.event.source.helper.EventQuery;
 
+import javax.swing.*;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -81,11 +82,9 @@ public class AttachmentsModel
       return eventList;
    }
 
-   public void createAttachment( final File file) throws IOException
+   public void createAttachment( final File file, InputStream in) throws IOException
    {
-      FileInputStream fin = new FileInputStream(file);
-
-      Representation input = new InputRepresentation(new BufferedInputStream(fin));
+      Representation input = new InputRepresentation(new BufferedInputStream(in));
       Form disposition = new Form();
       disposition.set( Disposition.NAME_FILENAME, file.getName() );
       disposition.set( Disposition.NAME_SIZE, Long.toString(file.length()) );
@@ -142,7 +141,7 @@ public class AttachmentsModel
          }
       });
 
-      fin.close();
+      in.close();
    }
 
    public void refresh() throws OperationException

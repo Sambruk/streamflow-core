@@ -82,12 +82,12 @@ public class AttachmentsTableFormatter
          case 1:
             long size = attachmentValue.size().get();
 
-            if (size > 1024)
-            {
-               return size/1024+" KB";
-            } else if (size > 1000*1024)
+            if (size > 1000*1024)
             {
                return size/(1000*1024)+" MB";
+            } else if (size > 1024)
+            {
+               return size/1024+" KB";
             } else
                return size+"";
 

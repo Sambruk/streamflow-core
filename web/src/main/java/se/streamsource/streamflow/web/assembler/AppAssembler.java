@@ -18,52 +18,31 @@
 package se.streamsource.streamflow.web.assembler;
 
 import org.qi4j.api.common.Visibility;
-import org.qi4j.api.service.ServiceSelector;
 import org.qi4j.api.structure.Application;
 import org.qi4j.bootstrap.AssemblyException;
-import org.qi4j.bootstrap.ImportedServiceDeclaration;
 import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.index.reindexer.ReindexerService;
 import org.qi4j.rest.MBeanServerImporter;
-import org.qi4j.spi.entitystore.EntityStore;
-import org.qi4j.spi.query.NamedEntityFinder;
 import org.qi4j.spi.service.importer.NewObjectImporter;
-import org.qi4j.spi.service.importer.ServiceSelectorImporter;
 import org.restlet.security.Verifier;
 import se.streamsource.streamflow.infrastructure.event.replay.DomainEventPlayerService;
 import se.streamsource.streamflow.web.application.console.ConsoleResultValue;
 import se.streamsource.streamflow.web.application.console.ConsoleScriptValue;
 import se.streamsource.streamflow.web.application.console.ConsoleService;
 import se.streamsource.streamflow.web.application.mail.MailService;
-import se.streamsource.streamflow.web.application.management.CompositeMBean;
-import se.streamsource.streamflow.web.application.management.ErrorLogService;
-import se.streamsource.streamflow.web.application.management.EventManagerService;
-import se.streamsource.streamflow.web.application.management.LoggingService;
-import se.streamsource.streamflow.web.application.management.ManagerComposite;
-import se.streamsource.streamflow.web.application.management.ManagerService;
-import se.streamsource.streamflow.web.application.management.ReindexOnStartupService;
+import se.streamsource.streamflow.web.application.management.*;
 import se.streamsource.streamflow.web.application.management.jmxconnector.JmxConnectorService;
 import se.streamsource.streamflow.web.application.migration.StartupMigrationService;
 import se.streamsource.streamflow.web.application.notification.NotificationService;
 import se.streamsource.streamflow.web.application.organization.BootstrapAssembler;
-import se.streamsource.streamflow.web.application.organization.BootstrapDataService;
-import se.streamsource.streamflow.web.application.organization.TestDataService;
 import se.streamsource.streamflow.web.application.security.PasswordVerifierService;
-import se.streamsource.streamflow.web.application.statistics.CaseStatisticsService;
-import se.streamsource.streamflow.web.application.statistics.CaseStatisticsValue;
-import se.streamsource.streamflow.web.application.statistics.FormFieldStatisticsValue;
-import se.streamsource.streamflow.web.application.statistics.JdbcStatisticsStore;
-import se.streamsource.streamflow.web.application.statistics.LoggingStatisticsStore;
-import se.streamsource.streamflow.web.application.statistics.RelatedStatisticsValue;
-import se.streamsource.streamflow.web.application.statistics.StatisticsService;
-import se.streamsource.streamflow.web.infrastructure.caching.CachingServiceComposite;
+import se.streamsource.streamflow.web.application.statistics.*;
 
 import javax.management.MBeanServer;
 
 import static org.qi4j.api.common.Visibility.application;
 import static org.qi4j.api.common.Visibility.layer;
-import static org.qi4j.api.common.Visibility.module;
 
 /**
  * JAVADOC
@@ -105,24 +84,21 @@ public class AppAssembler
 
    private void statistics( ModuleAssembly module ) throws AssemblyException
    {
-/*
-      module.addServices( StatisticsService.class ).
-            identifiedBy( "statistics" ).
-            instantiateOnStartup().
-            visibleIn( Visibility.layer );
-*/
-      module.addServices( CaseStatisticsService.class ).
-            identifiedBy( "statistics" ).
-            instantiateOnStartup().
-            visibleIn( layer );
-      module.addServices( LoggingStatisticsStore.class ).
-            identifiedBy( "logstatisticsstore" ).
-            instantiateOnStartup().
-            visibleIn( Visibility.module );
-      module.addServices( JdbcStatisticsStore.class ).
-            identifiedBy( "jdbcstatisticsstore" ).
-            instantiateOnStartup().
-            visibleIn( Visibility.module );
+      if (module.layerAssembly().applicationAssembly().mode().equals(Application.Mode.production))
+      {
+         module.addServices( CaseStatisticsService.class ).
+               identifiedBy( "statistics" ).
+               instantiateOnStartup().
+               visibleIn( layer );
+         module.addServices( LoggingStatisticsStore.class ).
+               identifiedBy( "logstatisticsstore" ).
+               instantiateOnStartup().
+               visibleIn( Visibility.module );
+         module.addServices( JdbcStatisticsStore.class ).
+               identifiedBy( "jdbcstatisticsstore" ).
+               instantiateOnStartup().
+               visibleIn( Visibility.module );
+      }
 
       module.addValues( RelatedStatisticsValue.class, FormFieldStatisticsValue.class, CaseStatisticsValue.class ).visibleIn( layer );
    }

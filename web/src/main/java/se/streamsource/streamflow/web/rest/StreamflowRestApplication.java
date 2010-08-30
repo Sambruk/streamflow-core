@@ -51,8 +51,6 @@ public class StreamflowRestApplication
 
    @Structure
    ObjectBuilderFactory factory;
-   @Structure
-   UnitOfWorkFactory unitOfWorkFactory;
 
    @Optional
    @Service
@@ -97,7 +95,7 @@ public class StreamflowRestApplication
          {
             // Start Qi4j
             Energy4Java is = new Energy4Java();
-            app = is.newApplication( new StreamflowWebAssembler( this, getMetadataService() ) );
+//            app = is.newApplication( new StreamflowWebAssembler( this, getMetadataService() ) );
             app = is.newApplication( new StreamflowWebAssembler( getMetadataService() ) );
 
             app.activate();

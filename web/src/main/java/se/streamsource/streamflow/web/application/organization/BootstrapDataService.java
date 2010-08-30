@@ -26,9 +26,10 @@ import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import static org.qi4j.api.usecase.UsecaseBuilder.newUsecase;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import se.streamsource.streamflow.domain.contact.ContactValue;
 import se.streamsource.streamflow.web.domain.Specification;
 import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity;
@@ -42,16 +43,13 @@ import se.streamsource.streamflow.web.domain.entity.user.UsersEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
-import se.streamsource.streamflow.web.domain.structure.form.Form;
-import se.streamsource.streamflow.web.domain.structure.group.Group;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.role.PermissionsEnum;
 import se.streamsource.streamflow.web.domain.structure.role.Role;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.qi4j.api.usecase.UsecaseBuilder.newUsecase;
 
 /**
  * Ensure that the most basic entities are always created. This includes:
@@ -124,7 +122,7 @@ public interface BootstrapDataService
             if (orgs.count() == 0)
             {
                // Create default organization
-               Organization ou = organizations.createOrganization( "Organization" );
+               organizations.createOrganization( "Organization" );
                uow.complete();
                uow = uowf.newUnitOfWork( newUsecase( "Bootstrap data" ) );
                orgs = uow.get( organizations ).organizations().newQuery( uow );
@@ -232,6 +230,7 @@ public interface BootstrapDataService
             }
 
             uow.complete();
+            logger.info( "Bootstrap of domain model complete" );
 
          } catch (Exception e)
          {

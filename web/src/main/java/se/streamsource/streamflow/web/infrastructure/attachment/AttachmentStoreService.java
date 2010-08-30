@@ -67,7 +67,7 @@ public interface AttachmentStoreService
          try
          {
             out = new BufferedOutputStream(new FileOutputStream(file));
-            IOUtils.copyLarge( in,  out);
+            IOUtils.copyLarge( new BufferedInputStream(in, 1024),  out);
 
             in.close();
             out.close();

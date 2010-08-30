@@ -36,14 +36,7 @@ import se.streamsource.streamflow.client.ui.ConfirmationDialog;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.domain.attachment.AttachmentValue;
 
-import javax.swing.ActionMap;
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.KeyStroke;
-import javax.swing.LayoutFocusTraversalPolicy;
+import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import java.awt.*;
@@ -53,10 +46,7 @@ import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 
 /**
  * JAVADOC
@@ -87,6 +77,13 @@ public class AttachmentsView
       TableFormat tableFormat = new AttachmentsTableFormatter();
 
       tableModel = new EventJXTableModel<AttachmentValue>( new BasicEventList<AttachmentValue>(), tableFormat );
+
+      attachments.setFocusTraversalKeys( KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS,
+            KeyboardFocusManager.getCurrentKeyboardFocusManager()
+                  .getDefaultFocusTraversalKeys( KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS ) );
+      attachments.setFocusTraversalKeys( KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS,
+            KeyboardFocusManager.getCurrentKeyboardFocusManager()
+                  .getDefaultFocusTraversalKeys( KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS ) );
 
       TableColumn nameColumn = new TableColumn( 0 );
       nameColumn.setHeaderValue( tableFormat.getColumnName( 0 ) );
@@ -152,7 +149,15 @@ public class AttachmentsView
 
       if (fileChooser.showDialog( this, i18n.text( WorkspaceResources.create_attachment ) ) == JFileChooser.APPROVE_OPTION)
       {
-         attachmentsModel.createAttachment( fileChooser.getSelectedFile() );
+         // Progress bar for upload
+         JProgressBar progressBar;
+
+         File selectedFile = fileChooser.getSelectedFile();
+
+         FileInputStream fin = new FileInputStream(selectedFile);
+         ProgressMonitorInputStream pmis = new ProgressMonitorInputStream(this, i18n.text(WorkspaceResources.uploading_file), fin);
+
+         attachmentsModel.createAttachment(selectedFile, pmis);
          attachmentsModel.refresh();
       }
    }
@@ -199,7 +204,7 @@ public class AttachmentsView
             throw e;
          }
 
-         // Open file
+         // Open filek
          Desktop.getDesktop().edit( file );
       }
    }
