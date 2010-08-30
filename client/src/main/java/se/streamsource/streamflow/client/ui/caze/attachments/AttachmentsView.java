@@ -202,10 +202,32 @@ public class AttachmentsView
             in.close();
             out.close();
             throw e;
+         } finally
+         {
+            try
+            {
+               in.close();
+               out.close();
+            } catch (IOException e)
+            {
+               // Ignore
+            }
          }
 
-         // Open filek
-         Desktop.getDesktop().edit( file );
+         // Open file
+         try
+         {
+            Desktop.getDesktop().edit( file );
+         } catch (IOException e)
+         {
+            try
+            {
+               Desktop.getDesktop().open( file );
+            } catch (IOException e1)
+            {
+               dialogs.showOkDialog( this, new JLabel(i18n.text( WorkspaceResources.could_not_open_attachment)) );
+            }
+         }
       }
    }
 

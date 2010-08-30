@@ -107,27 +107,30 @@ public class AccountSelector
             String response = dataModel.accountModel( (Integer) evt.getNewValue() ).test();
             System.out.print( response );
 
-            String str;
-            BufferedReader reader = new BufferedReader(
-                  new StringReader( response ) );
-
-            while ((str = reader.readLine()) != null)
+            if (response != null)
             {
-               str = str.trim();
-               if (str.startsWith( "Version:" ))
+               String str;
+               BufferedReader reader = new BufferedReader(
+                     new StringReader( response ) );
+   
+               while ((str = reader.readLine()) != null)
                {
-                  int toIndex = str.indexOf( '-' ) != -1 ? str.indexOf( '-' ) : str.lastIndexOf( '.' );
-
-                  if (toIndex == -1)
-                     throw new ResourceException( Status.CLIENT_ERROR_NOT_FOUND );
-
-                  String serverVersion = str.substring( str.indexOf( ":" ) + 1, toIndex );
-
-                  if (!clientVersion.startsWith( serverVersion.trim() ))
+                  str = str.trim();
+                  if (str.startsWith( "Version:" ))
                   {
-                     String msg = MessageFormat.format( i18n.text( AccountResources.version_missmatch ), clientVersion, serverVersion );
-                     dialogs.showOkDialog( this, new InfoDialog( context, msg ), "Info" );
-                     throw new PropertyVetoException( msg, evt );
+                     int toIndex = str.indexOf( '-' ) != -1 ? str.indexOf( '-' ) : str.lastIndexOf( '.' );
+
+                     if (toIndex == -1)
+                        throw new ResourceException( Status.CLIENT_ERROR_NOT_FOUND );
+
+                     String serverVersion = str.substring( str.indexOf( ":" ) + 1, toIndex );
+
+                     if (!clientVersion.startsWith( serverVersion.trim() ))
+                     {
+                        String msg = MessageFormat.format( i18n.text( AccountResources.version_missmatch ), clientVersion, serverVersion );
+                        dialogs.showOkDialog( this, new InfoDialog( context, msg ), "Info" );
+                        throw new PropertyVetoException( msg, evt );
+                     }
                   }
                }
             }

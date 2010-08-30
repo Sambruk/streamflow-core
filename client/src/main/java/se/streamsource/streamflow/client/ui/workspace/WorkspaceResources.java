@@ -100,5 +100,6 @@ public enum WorkspaceResources
    attachments,
    caze,
    uploading_file,
-   attachment
+   attachment,
+   could_not_open_attachment
 }
