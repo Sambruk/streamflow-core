@@ -31,7 +31,7 @@ import static se.streamsource.streamflow.infrastructure.event.DomainEvent.CREATE
 @Mixins(Describable.Mixin.class)
 public interface Describable
 {
-   void changeDescription( @Optional @MaxLength(50) String newDescription );
+   void changeDescription( @Optional String newDescription );
 
    String getDescription();
 
