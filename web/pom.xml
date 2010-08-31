@@ -48,10 +48,11 @@
                 <artifactId>maven-jetty-plugin</artifactId>
                 <configuration>
                     <systemProperties>
+<!--    Uncomment to run in development mode
                         <systemProperty>
                           <name>mode</name>
                            <value>development</value>
-                        </systemProperty>
+                        </systemProperty> -->
                      </systemProperties>
                     
                     <contextPath>/streamflow</contextPath>
