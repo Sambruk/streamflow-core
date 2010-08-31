@@ -80,16 +80,22 @@ public class AttachmentsTableFormatter
          }
 
          case 1:
-            long size = attachmentValue.size().get();
+            try
+            {
+               long size = attachmentValue.size().get();
 
-            if (size > 1000*1024)
+               if (size > 1000*1024)
+               {
+                  return size/(1000*1024)+" MB";
+               } else if (size > 1024)
+               {
+                  return size/1024+" KB";
+               } else
+                  return size+"";
+            } catch (Exception e)
             {
-               return size/(1000*1024)+" MB";
-            } else if (size > 1024)
-            {
-               return size/1024+" KB";
-            } else
-               return size+"";
+               return "";
+            }
 
          case 2:
             return attachmentValue.modificationDate().get() == null ? "" : DateFormat.getDateInstance( DateFormat.MEDIUM ).format( attachmentValue.modificationDate().get());

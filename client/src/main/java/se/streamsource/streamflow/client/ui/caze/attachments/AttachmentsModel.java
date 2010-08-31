@@ -92,8 +92,6 @@ public class AttachmentsModel
 
       input.setDisposition( new Disposition(Disposition.TYPE_NONE, disposition) );
 
-
-
       client.postCommand( "createattachment", input, new ResponseHandler()
       {
          public void handleResponse( Response response ) throws ResourceException
@@ -140,8 +138,6 @@ public class AttachmentsModel
             }
          }
       });
-
-      in.close();
    }
 
    public void refresh() throws OperationException

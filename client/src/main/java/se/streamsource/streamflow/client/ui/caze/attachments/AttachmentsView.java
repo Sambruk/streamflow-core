@@ -21,9 +21,12 @@ import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.gui.TableFormat;
 import ca.odell.glazedlists.swing.EventJXTableModel;
 import org.jdesktop.application.Action;
+import org.jdesktop.application.Application;
 import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Task;
 import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.decorator.HighlighterFactory;
+import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.engine.io.BioUtils;
@@ -106,6 +109,7 @@ public class AttachmentsView
       attachments.addHighlighter( HighlighterFactory.createAlternateStriping() );
 
       attachments.setModel( tableModel );
+      attachments.setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
 
       JPanel toolbar = new JPanel();
       toolbar.add( new JButton( am.get( "add" ) ) );
@@ -142,24 +146,18 @@ public class AttachmentsView
       addAncestorListener( refresher );
    }
 
-   @Action
-   public void add() throws IOException
+   @Action(block = Task.BlockingScope.APPLICATION)
+   public Task add() throws IOException
    {
       JFileChooser fileChooser = new JFileChooser();
 
       if (fileChooser.showDialog( this, i18n.text( WorkspaceResources.create_attachment ) ) == JFileChooser.APPROVE_OPTION)
       {
-         // Progress bar for upload
-         JProgressBar progressBar;
+         final File selectedFile = fileChooser.getSelectedFile();
 
-         File selectedFile = fileChooser.getSelectedFile();
-
-         FileInputStream fin = new FileInputStream(selectedFile);
-         ProgressMonitorInputStream pmis = new ProgressMonitorInputStream(this, i18n.text(WorkspaceResources.uploading_file), fin);
-
-         attachmentsModel.createAttachment(selectedFile, pmis);
-         attachmentsModel.refresh();
-      }
+         return new AddAttachmentTask( selectedFile );
+      } else
+         return null;
    }
 
    @Action
@@ -183,11 +181,73 @@ public class AttachmentsView
    }
 
    @Action
-   public void open() throws IOException
+   public Task open() throws IOException
    {
       for (int i : attachments.getSelectedRows())
       {
          AttachmentValue attachment = attachmentsModel.getEventList().get( attachments.convertRowIndexToModel( i ) );
+
+         return new OpenAttachmentTask(attachment);
+      }
+
+      return null;
+   }
+
+   public void setModel( AttachmentsModel attachmentsModel )
+   {
+      this.attachmentsModel = attachmentsModel;
+      tableModel = new EventJXTableModel<AttachmentValue>( attachmentsModel.getEventList(), new AttachmentsTableFormatter() );
+      attachments.setModel( tableModel );
+      refresher.setRefreshable( attachmentsModel );
+   }
+
+   private class AddAttachmentTask extends Task<Void,Void>
+   {
+      private final File selectedFile;
+
+      public AddAttachmentTask( File selectedFile )
+      {
+         super( Application.getInstance() );
+         this.selectedFile = selectedFile;
+
+         setUserCanCancel( false );
+      }
+
+      @Override
+      protected Void doInBackground() throws Exception
+      {
+         setMessage( getResourceMap().getString( "description" ));
+
+         FileInputStream fin = new FileInputStream(selectedFile);
+
+         attachmentsModel.createAttachment( selectedFile, fin );
+         return null;
+      }
+
+      @Override
+      protected void finished()
+      {
+         attachmentsModel.refresh();
+      }
+   }
+
+   private class OpenAttachmentTask extends Task<File,Void>
+   {
+      private final AttachmentValue attachment;
+
+      public OpenAttachmentTask( AttachmentValue attachment )
+      {
+         super( Application.getInstance() );
+         this.attachment = attachment;
+
+         setUserCanCancel( false );
+      }
+
+      @Override
+      protected File doInBackground() throws Exception
+      {
+         setMessage( getResourceMap().getString( "description" ));
+
          String fileName = attachment.text().get();
          String[] fileNameParts = fileName.split( "\\." );
          File file = File.createTempFile( fileNameParts[0] + "_", "." + fileNameParts[1] );
@@ -196,9 +256,7 @@ public class AttachmentsView
          InputStream in = attachmentsModel.download( attachment );
          try
          {
-            ProgressMonitorInputStream pmis = new ProgressMonitorInputStream(null, "Loading", in);
-            pmis.getProgressMonitor().setMaximum(attachment.size().get().intValue());
-            BioUtils.copy( new BufferedInputStream(pmis, 1024), new BufferedOutputStream(out, 4096) );
+            BioUtils.copy( new BufferedInputStream(in, 1024), new BufferedOutputStream(out, 4096) );
          } catch (IOException e)
          {
             in.close();
@@ -215,7 +273,12 @@ public class AttachmentsView
                // Ignore
             }
          }
+         return file;
+      }
 
+      @Override
+      protected void succeeded( File file )
+      {
          // Open file
          Desktop desktop = Desktop.getDesktop();
          try
@@ -228,17 +291,9 @@ public class AttachmentsView
                desktop.open( file );
             } catch (IOException e1)
             {
-               dialogs.showMessageDialog( this, i18n.text( WorkspaceResources.could_not_open_attachment), "" );
+               dialogs.showMessageDialog( AttachmentsView.this, i18n.text( WorkspaceResources.could_not_open_attachment), "" );
             }
          }
       }
-   }
-
-   public void setModel( AttachmentsModel attachmentsModel )
-   {
-      this.attachmentsModel = attachmentsModel;
-      tableModel = new EventJXTableModel<AttachmentValue>( attachmentsModel.getEventList(), new AttachmentsTableFormatter() );
-      attachments.setModel( tableModel );
-      refresher.setRefreshable( attachmentsModel );
    }
 }
