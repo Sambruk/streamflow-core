@@ -61,11 +61,11 @@ public class FieldEditorTextAreaFieldValueView
       DefaultFormBuilder formBuilder = new DefaultFormBuilder( formLayout, fieldPanel );
       formBuilder.setBorder(Borders.createEmptyBorder("4dlu, 4dlu, 4dlu, 4dlu"));
 
-      StateBinder fieldDefinitionBinder = new StateBinder();
+      StateBinder fieldDefinitionBinder = obf.newObject( StateBinder.class );
       fieldDefinitionBinder.setResourceMap( context.getResourceMap( getClass() ) );
       FieldDefinitionValue fieldDefinitionTemplate = fieldDefinitionBinder.bindingTemplate( FieldDefinitionValue.class );
 
-      StateBinder fieldValueBinder = new StateBinder();
+      StateBinder fieldValueBinder = obf.newObject( StateBinder.class );
       fieldValueBinder.setResourceMap( context.getResourceMap( getClass() ) );
       TextAreaFieldValue fieldValueTemplate = fieldValueBinder.bindingTemplate( TextAreaFieldValue.class );
 

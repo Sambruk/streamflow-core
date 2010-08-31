@@ -23,7 +23,9 @@ import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationActionMap;
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.property.Property;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
@@ -64,7 +66,7 @@ public class ProfileDialog extends JScrollPane implements Observer
    public JRadioButton noneButton;
    public JRadioButton emailButton;
 
-   public ProfileDialog(@Service ApplicationContext context)
+   public ProfileDialog(@Service ApplicationContext context, @Structure ObjectBuilderFactory obf)
    {
       ApplicationActionMap am = context.getActionMap(this);
       setActionMap(am);
@@ -77,17 +79,17 @@ public class ProfileDialog extends JScrollPane implements Observer
       FormLayout contactLayout = new FormLayout("75dlu, 5dlu, 120dlu:grow",
             "pref, pref, pref, pref, pref, pref, pref, pref, pref, pref, pref, pref");
 
-      contactBinder = new StateBinder();
+      contactBinder = obf.newObject( StateBinder.class );
       contactBinder.setResourceMap(context.getResourceMap(getClass()));
       ContactValue contactTemplate = contactBinder
             .bindingTemplate(ContactValue.class);
 
-      phoneNumberBinder = new StateBinder();
+      phoneNumberBinder = obf.newObject( StateBinder.class );
       phoneNumberBinder.setResourceMap(context.getResourceMap(getClass()));
       ContactPhoneValue phoneTemplate = phoneNumberBinder
             .bindingTemplate(ContactPhoneValue.class);
 
-      emailBinder = new StateBinder();
+      emailBinder = obf.newObject( StateBinder.class );
       emailBinder.setResourceMap(context.getResourceMap(getClass()));
       ContactEmailValue emailTemplate = emailBinder
             .bindingTemplate(ContactEmailValue.class);

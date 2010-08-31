@@ -35,6 +35,8 @@ import javax.swing.JTextField;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueBuilder;
 import org.restlet.resource.ResourceException;
@@ -74,7 +76,7 @@ public class ContactView
    public JTextField addressField = (JTextField) TEXTFIELD.newField();
    public JTextField phoneField = (JTextField) TEXTFIELD.newField();
 
-   public ContactView( @Service ApplicationContext appContext )
+   public ContactView( @Service ApplicationContext appContext, @Structure ObjectBuilderFactory obf )
    {
       setLayout( layout );
 
@@ -90,19 +92,19 @@ public class ContactView
       scrollPane.setBorder(BorderFactory.createEmptyBorder());
       DefaultFormBuilder builder = new DefaultFormBuilder( formLayout, form );
 
-      contactBinder = new StateBinder();
+      contactBinder = obf.newObject( StateBinder.class );
       contactBinder.setResourceMap( appContext.getResourceMap( getClass() ) );
       ContactValue template = contactBinder.bindingTemplate( ContactValue.class );
 
-      phoneNumberBinder = new StateBinder();
+      phoneNumberBinder = obf.newObject( StateBinder.class );
       phoneNumberBinder.setResourceMap( appContext.getResourceMap( getClass() ) );
       ContactPhoneValue phoneTemplate = phoneNumberBinder.bindingTemplate( ContactPhoneValue.class );
 
-      addressBinder = new StateBinder();
+      addressBinder = obf.newObject( StateBinder.class );
       addressBinder.setResourceMap( appContext.getResourceMap( getClass() ) );
       ContactAddressValue addressTemplate = addressBinder.bindingTemplate( ContactAddressValue.class );
 
-      emailBinder = new StateBinder();
+      emailBinder = obf.newObject( StateBinder.class );
       emailBinder.setResourceMap( appContext.getResourceMap( getClass() ) );
       ContactEmailValue emailTemplate = emailBinder.bindingTemplate( ContactEmailValue.class );
 

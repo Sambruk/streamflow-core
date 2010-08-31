@@ -26,6 +26,7 @@ import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
@@ -79,7 +80,7 @@ public class HandleSearchesDialog
 
    private RefreshWhenVisible refresher;
 
-   public HandleSearchesDialog( @Service ApplicationContext context, @Structure ValueBuilderFactory vbf, @Uses SavedSearchesModel model )
+   public HandleSearchesDialog( @Service ApplicationContext context, @Structure ValueBuilderFactory vbf, @Structure ObjectBuilderFactory obf, @Uses SavedSearchesModel model )
    {
       super( new BorderLayout() );
       setBorder( new EmptyBorder( 5, 5, 5, 5 ) );
@@ -117,7 +118,7 @@ public class HandleSearchesDialog
       form.setFocusable( false );
       DefaultFormBuilder builder = new DefaultFormBuilder( layout,
             form );
-      searchBinder = new StateBinder();
+      searchBinder = obf.newObject( StateBinder.class );
       searchBinder.setResourceMap( context.getResourceMap( getClass() ) );
       SearchValue template = searchBinder.bindingTemplate( SearchValue.class );
 

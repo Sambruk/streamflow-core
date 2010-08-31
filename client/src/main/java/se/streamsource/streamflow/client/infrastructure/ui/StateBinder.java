@@ -23,12 +23,14 @@ import org.jdesktop.swingx.JXDialog;
 import org.jdesktop.swingx.JXErrorPane;
 import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.constraint.ConstraintViolationException;
+import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.property.GenericPropertyInfo;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.util.DateFunctions;
 import org.qi4j.library.constraints.annotation.MaxLength;
 import org.qi4j.runtime.composite.ConstraintsCheck;
 import org.qi4j.runtime.property.PropertyInstance;
+import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.caze.CheckboxesPanel;
 import se.streamsource.streamflow.client.ui.caze.DoubleTextField;
@@ -57,8 +59,11 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
+import javax.swing.event.UndoableEditListener;
+import javax.swing.text.BadLocationException;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.NumberFormatter;
+import javax.swing.undo.UndoableEdit;
 import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.Frame;
@@ -68,10 +73,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.beans.PropertyVetoException;
+import java.beans.VetoableChangeListener;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.text.MessageFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -91,6 +100,9 @@ import java.util.Set;
 public class StateBinder
       extends Observable
 {
+   @Service
+   DialogService dialogs;
+
    ResourceBundle errorMessages;
    Map<Class<? extends Component>, Binder> binders = new HashMap<Class<? extends Component>, Binder>();
    Set<Binding> bindings = new HashSet<Binding>();
@@ -114,7 +126,7 @@ public class StateBinder
             CheckboxesPanel.class,
             ListBoxPanel.class,
             OptionButtonsPanel.class,
-            RemovableLabel.class);
+            RemovableLabel.class );
 
       errorMessages = ResourceBundle.getBundle( getClass().getName() );
    }
@@ -366,6 +378,17 @@ public class StateBinder
             return (Property<Object>) property;
          }
       }
+
+      public Object getConstraint( Class annotationClass )
+      {
+         if (property instanceof Method)
+         {
+            return ((Method) property).getAnnotation( annotationClass );
+         } else
+         {
+            return ((Property<Object>) property).metaInfo( annotationClass );
+         }
+      }
    }
 
    private class DefaultBinder
@@ -410,17 +433,33 @@ public class StateBinder
                }
             } );
 
-/*
-            final MaxLength maxLength = binding.property().metaInfo( MaxLength.class );
-            if (maxLength != null)
+            if (binding.getConstraint( MaxLength.class ) != null)
             {
+               final MaxLength maxLength = ((MaxLength) binding.getConstraint( MaxLength.class ));
+
                textField.getDocument().addDocumentListener( new DocumentListener()
                {
                   public void insertUpdate( DocumentEvent e )
                   {
                      if (textField.getDocument().getLength() > maxLength.value())
                      {
-                        JOptionPane.showMessageDialog( textField, "Maximum length:"+maxLength.value() );
+
+                        dialogs.showMessageDialog( textField,
+                              new MessageFormat(i18n.text( StreamflowResources.max_length )).format( new Object[]{ ""+maxLength.value()} ).toString(),
+                              i18n.text( StreamflowResources.invalid_input  ) );
+                        SwingUtilities.invokeLater( new Runnable(){
+
+                           public void run()
+                           {
+                              try
+                              {
+                                 textField.setText( textField.getDocument().getText( 0, maxLength.value() ) );
+                              } catch (BadLocationException e1)
+                              {
+                                 // do nothing
+                              }
+                           }
+                        });
                      }
                   }
 
@@ -431,9 +470,9 @@ public class StateBinder
                   public void changedUpdate( DocumentEvent e )
                   {
                   }
-               });
+               } );
             }
-*/
+
 
             return binding;
          } else if (component instanceof JTextArea)
@@ -483,27 +522,29 @@ public class StateBinder
          {
             final JComboBox comboBox = (JComboBox) component;
 
-            comboBox.addActionListener( new ActionListener() {
+            comboBox.addActionListener( new ActionListener()
+            {
 
                public void actionPerformed( ActionEvent actionEvent )
                {
-                  binding.updateProperty( ((JComboBox)actionEvent.getSource()).getSelectedItem() );
+                  binding.updateProperty( ((JComboBox) actionEvent.getSource()).getSelectedItem() );
                }
-            });
+            } );
             return binding;
          } else if (component instanceof CheckboxesPanel)
          {
             final CheckboxesPanel multi = (CheckboxesPanel) component;
-            multi.addActionPerformedListener( new ActionListener() {
+            multi.addActionPerformedListener( new ActionListener()
+            {
 
                public void actionPerformed( ActionEvent actionEvent )
                {
                   binding.updateProperty( multi.getChecked() );
                }
-            });
+            } );
 
             return binding;
-         } else if ( component instanceof ListBoxPanel)
+         } else if (component instanceof ListBoxPanel)
          {
             final ListBoxPanel listbox = (ListBoxPanel) component;
             listbox.addChangeListener( new ChangeListener()
@@ -512,30 +553,31 @@ public class StateBinder
                {
                   binding.updateProperty( listbox.getSelected() );
                }
-            });
+            } );
             return binding;
-         }else if ( component instanceof OptionButtonsPanel )
+         } else if (component instanceof OptionButtonsPanel)
          {
-           final OptionButtonsPanel optionsPanel = (OptionButtonsPanel) component;
+            final OptionButtonsPanel optionsPanel = (OptionButtonsPanel) component;
             optionsPanel.addActionPerformedListener( new ActionListener()
             {
                public void actionPerformed( ActionEvent actionEvent )
                {
-                  binding.updateProperty( ((JRadioButton)actionEvent.getSource()).getText() );
+                  binding.updateProperty( ((JRadioButton) actionEvent.getSource()).getText() );
                }
-            });
+            } );
             return binding;
-         } else if ( component instanceof RemovableLabel )
+         } else if (component instanceof RemovableLabel)
          {
             final RemovableLabel removableLabel = (RemovableLabel) component;
-            removableLabel.addActionListener( new ActionListener(){
+            removableLabel.addActionListener( new ActionListener()
+            {
 
                public void actionPerformed( ActionEvent e )
                {
                   //removableLabel.setListItemValue( null );
                   binding.updateProperty( null );
                }
-            });
+            } );
             return binding;
          }
 
@@ -568,9 +610,9 @@ public class StateBinder
          {
             JXDatePicker datePicker = (JXDatePicker) component;
 
-            if ( value instanceof String)
+            if (value instanceof String)
             {
-               if ( !((String) value).isEmpty() )
+               if (!((String) value).isEmpty())
                {
                   datePicker.setDate( DateFunctions.fromString( (String) value ) );
                }
@@ -586,17 +628,18 @@ public class StateBinder
          {
             CheckboxesPanel multi = (CheckboxesPanel) component;
             multi.setChecked( (String) value );
-         } else if ( component instanceof ListBoxPanel )
+         } else if (component instanceof ListBoxPanel)
          {
             ListBoxPanel listbox = (ListBoxPanel) component;
             listbox.addItems( (String) value );
-         } else if ( component instanceof OptionButtonsPanel ) {
+         } else if (component instanceof OptionButtonsPanel)
+         {
             OptionButtonsPanel optionsPanel = (OptionButtonsPanel) component;
             optionsPanel.setSelected( (String) value );
-         } else if ( component instanceof RemovableLabel )
+         } else if (component instanceof RemovableLabel)
          {
             RemovableLabel removableLabel = (RemovableLabel) component;
-            removableLabel.setText( (String)value );
+            removableLabel.setText( (String) value );
          }
 
       }
@@ -640,24 +683,24 @@ public class StateBinder
                   return false;
                }
             } */
-            if ( input instanceof IntegerTextField )
+            if (input instanceof IntegerTextField)
             {
-               IntegerTextField field = (IntegerTextField)input;
+               IntegerTextField field = (IntegerTextField) input;
                try
                {
                   value = Integer.parseInt( field.getText() );
-               }  catch ( NumberFormatException e)
+               } catch (NumberFormatException e)
                {
                   field.setText( "" );
                   return false;
                }
-            } else if ( input instanceof DoubleTextField)
+            } else if (input instanceof DoubleTextField)
             {
                DoubleTextField field = (DoubleTextField) input;
                try
                {
                   value = Double.parseDouble( field.getText() );
-               }  catch ( NumberFormatException e)
+               } catch (NumberFormatException e)
                {
                   field.setText( "" );
                   return false;

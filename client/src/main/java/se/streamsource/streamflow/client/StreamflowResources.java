@@ -41,5 +41,8 @@ public enum StreamflowResources
    removal_confirmation,
    not_implemented,
    apache_border,
-   general_info, third_party_border
+   general_info,
+   third_party_border,
+   invalid_input,
+   max_length
 }

@@ -28,6 +28,7 @@ import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
@@ -53,11 +54,11 @@ public class ChangePasswordDialog
 
    private ChangePasswordCommand command;
 
-   public ChangePasswordDialog( @Service ApplicationContext context, @Structure ValueBuilderFactory vbf )
+   public ChangePasswordDialog( @Service ApplicationContext context, @Structure ValueBuilderFactory vbf, @Structure ObjectBuilderFactory obf )
    {
       setActionMap( context.getActionMap( this ) );
 
-      StateBinder binder = new StateBinder();
+      StateBinder binder = obf.newObject( StateBinder.class );
       binder.bindingTemplate( ChangePasswordCommand.class );
 
       FormLayout layout = new FormLayout(
@@ -65,7 +66,7 @@ public class ChangePasswordDialog
       DefaultFormBuilder builder = new DefaultFormBuilder( layout, this );
 //      builder.setDefaultDialogBorder();
 
-      StateBinder passwordBinder = new StateBinder();
+      StateBinder passwordBinder = obf.newObject( StateBinder.class );
       passwordBinder.setResourceMap( context.getResourceMap( getClass() ) );
 
       command = vbf.newValue( ChangePasswordCommand.class ).<ChangePasswordCommand>buildWith().prototype();

@@ -62,11 +62,11 @@ public class FieldEditorNumberFieldValueView
       DefaultFormBuilder formBuilder = new DefaultFormBuilder( formLayout, fieldPanel );
       formBuilder.setBorder(Borders.createEmptyBorder("4dlu, 4dlu, 4dlu, 4dlu"));
 
-      fieldDefinitionBinder = new StateBinder();
+      fieldDefinitionBinder = obf.newObject( StateBinder.class );
       fieldDefinitionBinder.setResourceMap( context.getResourceMap( getClass() ) );
       FieldDefinitionValue fieldDefinitionTemplate = fieldDefinitionBinder.bindingTemplate( FieldDefinitionValue.class );
 
-      fieldValueBinder = new StateBinder();
+      fieldValueBinder = obf.newObject( StateBinder.class );
       fieldValueBinder.setResourceMap( context.getResourceMap( getClass() ) );
       NumberFieldValue fieldValueTemplate = fieldValueBinder.bindingTemplate( NumberFieldValue.class );
 

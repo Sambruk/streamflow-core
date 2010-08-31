@@ -29,6 +29,7 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilder;
+import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
@@ -98,6 +99,7 @@ public class AccessPointView
    private StateBinder accessPointBinder;
 
    public AccessPointView( @Service ApplicationContext appContext,
+                           @Structure ObjectBuilderFactory obf,
                            @Uses CaseLabelsView labels,
                            @Uses AccessPointModel model )
    {
@@ -106,7 +108,7 @@ public class AccessPointView
 
       setLayout( new BorderLayout() );
 
-      accessPointBinder = new StateBinder();
+      accessPointBinder = obf.newObject( StateBinder.class );
       accessPointBinder.addConverter( new StateBinder.Converter()
       {
          public Object toComponent( Object value )

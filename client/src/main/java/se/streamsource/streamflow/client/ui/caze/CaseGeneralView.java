@@ -27,8 +27,10 @@ import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.JXDatePicker;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilder;
+import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.dci.value.LinkValue;
@@ -107,18 +109,20 @@ public class CaseGeneralView extends JScrollPane implements Observer
    public JButton labelButton;
 
    public CaseGeneralView( @Service ApplicationContext appContext,
-                           @Uses CaseLabelsView labels, @Uses PossibleFormsView2 forms )
+                           @Uses CaseLabelsView labels, @Uses PossibleFormsView2 forms,
+                           @Structure ObjectBuilderFactory obf )
    {
       this.labels = labels;
       this.forms = forms;
       this.setBorder( BorderFactory.createEmptyBorder() );
       getVerticalScrollBar().setUnitIncrement( 30 );
+      this.dialogs = dialogs;
 
       setActionMap( appContext.getActionMap( this ) );
       MacOsUIWrapper.convertAccelerators( appContext.getActionMap(
             CaseGeneralView.class, this ) );
 
-      caseBinder = new StateBinder();
+      caseBinder = obf.newObject( StateBinder.class );
       caseBinder.addConverter( new StateBinder.Converter()
       {
          public Object toComponent( Object value )

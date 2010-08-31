@@ -97,7 +97,7 @@ public class FormEditAdminView
 //      formBuilder.setDefaultDialogBorder();
       formBuilder.setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
 
-      formValueBinder = new StateBinder();
+      formValueBinder = obf.newObject( StateBinder.class );
       formValueBinder.setResourceMap( context.getResourceMap( getClass() ) );
       FormValue formValueTemplate = formValueBinder.bindingTemplate( FormValue.class );
 

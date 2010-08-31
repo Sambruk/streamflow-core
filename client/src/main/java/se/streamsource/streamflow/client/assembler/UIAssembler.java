@@ -27,6 +27,7 @@ import se.streamsource.streamflow.client.StreamflowApplication;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.ExceptionHandlerService;
 import se.streamsource.streamflow.client.infrastructure.ui.JavaHelp;
+import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
 import se.streamsource.streamflow.client.infrastructure.ui.UncaughtExceptionHandler;
 import se.streamsource.streamflow.client.ui.AccountSelector;
 import se.streamsource.streamflow.client.ui.ApplicationInitializationService;
@@ -435,6 +436,8 @@ public class UIAssembler
       module.addServices(
             ExceptionHandlerService.class ).instantiateOnStartup();
       module.importServices( DialogService.class ).importedBy( NewObjectImporter.class ).visibleIn( application );
+
+      module.addObjects( StateBinder.class ).visibleIn( layer );
    }
 
    private void overview( ModuleAssembly module ) throws AssemblyException

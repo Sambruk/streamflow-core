@@ -22,7 +22,9 @@ import com.jgoodies.forms.factories.Borders;
 import com.jgoodies.forms.layout.FormLayout;
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.property.Property;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
@@ -53,6 +55,7 @@ public class PageEditView
    private PageEditModel model;
 
    public PageEditView( @Service ApplicationContext context,
+                        @Structure ObjectBuilderFactory obf,
                         @Uses PageEditModel model)
    {
       this.model = model;
@@ -66,7 +69,7 @@ public class PageEditView
       DefaultFormBuilder formBuilder = new DefaultFormBuilder( formLayout, fieldPanel );
       formBuilder.setBorder(Borders.createEmptyBorder("4dlu, 4dlu, 4dlu, 4dlu"));
       
-      nameBinder = new StateBinder();
+      nameBinder = obf.newObject( StateBinder.class );
       nameBinder.setResourceMap( context.getResourceMap( getClass() ) );
       PageDefinitionValue definitionValue = nameBinder.bindingTemplate( PageDefinitionValue.class );
 

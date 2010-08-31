@@ -28,6 +28,7 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilder;
+import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
@@ -88,7 +89,7 @@ public class AccountView extends JScrollPane
    public JPanel accountForm;
    public JPanel contactForm;
 
-   public AccountView(@Service ApplicationContext context)
+   public AccountView(@Service ApplicationContext context, @Structure ObjectBuilderFactory obf )
    {
       this.context = context;
       ActionMap am = context.getActionMap(this);
@@ -106,9 +107,9 @@ public class AccountView extends JScrollPane
             accountForm);
       // accountBuilder.setDefaultDialogBorder();
 
-      accountBinder = new StateBinder();
+      accountBinder = obf.newObject( StateBinder.class );
       accountBinder.setResourceMap(context.getResourceMap(getClass()));
-      connectedBinder = new StateBinder();
+      connectedBinder = obf.newObject( StateBinder.class );
       AccountSettingsValue accountTemplate = accountBinder
             .bindingTemplate(AccountSettingsValue.class);
 

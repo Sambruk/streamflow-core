@@ -32,7 +32,9 @@ import org.netbeans.spi.wizard.WizardPage;
 import org.netbeans.spi.wizard.WizardPanelNavResult;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.util.DateFunctions;
 import org.restlet.resource.ResourceException;
@@ -87,6 +89,9 @@ public class FormSubmissionWizardPage
    private java.util.Map<StateBinder, EntityReference> fieldBinders;
    private ValidationResultModel validationResultModel;
    private FormSubmissionModel model;
+
+   @Structure
+   private ObjectBuilderFactory obf;
 
 
    public FormSubmissionWizardPage( @Service ApplicationContext context,
@@ -193,7 +198,7 @@ public class FormSubmissionWizardPage
 
       componentFieldMap.put( value.field().get(), component );
 
-      StateBinder stateBinder = new StateBinder();
+      StateBinder stateBinder = obf.newObject( StateBinder.class );
       FieldSubmissionValue value1 = stateBinder.bindingTemplate( FieldSubmissionValue.class );
 
       bb.append( getName( value ), component, value1.value(), stateBinder );
