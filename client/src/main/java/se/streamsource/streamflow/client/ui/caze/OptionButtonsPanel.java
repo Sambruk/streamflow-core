@@ -19,67 +19,47 @@ package se.streamsource.streamflow.client.ui.caze;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
+import org.qi4j.api.injection.scope.Uses;
+import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
+import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
+import se.streamsource.streamflow.domain.form.OptionButtonsFieldValue;
 
 import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
-import javax.swing.ButtonModel;
-import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
-public class OptionButtonsPanel extends JPanel
+public class OptionButtonsPanel
+      extends AbstractFieldPanel
 {
 
    private ButtonGroup group;
 
-   public OptionButtonsPanel( List<String> elements )
+   public OptionButtonsPanel( @Uses FieldSubmissionValue field, @Uses OptionButtonsFieldValue fieldValue )
    {
+      super( field );
       JPanel panel = new JPanel( new BorderLayout( ));
       FormLayout formLayout = new FormLayout( "200dlu", "" );
       DefaultFormBuilder formBuilder = new DefaultFormBuilder( formLayout, panel );
 
       group = new ButtonGroup();
-      for (String element : elements)
+      for ( String element : fieldValue.values().get() )
       {
          JRadioButton button = new JRadioButton( element );
          group.add( button );
          formBuilder.append( button );
          formBuilder.nextLine();
       }
-
-      add( panel, BorderLayout.CENTER );
+      add( panel, BorderLayout.WEST );
    }
 
-   public void addActionPerformedListener( ActionListener listener )
-   {
 
-      Enumeration<AbstractButton> buttonEnumeration = group.getElements();
-      while ( buttonEnumeration.hasMoreElements() )
-      {
-         buttonEnumeration.nextElement().addActionListener( listener );
-      }
-   }
-
-   public void setSelected( String name )
-   {
-      Enumeration<AbstractButton> buttonEnumeration = group.getElements();
-      while ( buttonEnumeration.hasMoreElements() )
-      {
-         AbstractButton button = buttonEnumeration.nextElement();
-         if ( button.getText().equals( name ))
-         {
-            group.setSelected( button.getModel(), true );
-         }
-      }
-   }
-
-   public String getSelected()
+   @Override
+   public String getValue()
    {
       Enumeration<AbstractButton> buttonEnumeration = group.getElements();
       while ( buttonEnumeration.hasMoreElements() )
@@ -87,6 +67,45 @@ public class OptionButtonsPanel extends JPanel
          AbstractButton button = buttonEnumeration.nextElement();
          if ( button.isSelected() ) return button.getText();
       }
-      return null;
+      return "";
+   }
+
+   @Override
+   public void setValue( String newValue )
+   {
+      Enumeration<AbstractButton> buttonEnumeration = group.getElements();
+      while ( buttonEnumeration.hasMoreElements() )
+      {
+         AbstractButton button = buttonEnumeration.nextElement();
+         if ( button.getText().equals( newValue ))
+         {
+            group.setSelected( button.getModel(), true );
+         }
+      }
+   }
+
+   @Override
+   public boolean validateValue( Object newValue )
+   {
+      return true;
+   }
+
+   @Override
+   public void setBinding( final StateBinder.Binding binding )
+   {
+      ActionListener listener = new ActionListener()
+      {
+         public void actionPerformed( ActionEvent e )
+         {
+            binding.updateProperty( getValue() );
+         }
+      };
+      Enumeration<AbstractButton> buttonEnumeration = group.getElements();
+      while ( buttonEnumeration.hasMoreElements() )
+      {
+         AbstractButton button = buttonEnumeration.nextElement();
+         button.addActionListener( listener );
+      }
+
    }
 }

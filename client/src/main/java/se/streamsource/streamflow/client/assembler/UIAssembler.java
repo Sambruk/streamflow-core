@@ -159,18 +159,27 @@ import se.streamsource.streamflow.client.ui.caze.CasesDetailView2;
 import se.streamsource.streamflow.client.ui.caze.CasesModel;
 import se.streamsource.streamflow.client.ui.caze.CasesTableModel;
 import se.streamsource.streamflow.client.ui.caze.CasesView;
+import se.streamsource.streamflow.client.ui.caze.CheckboxesPanel;
+import se.streamsource.streamflow.client.ui.caze.ComboBoxPanel;
 import se.streamsource.streamflow.client.ui.caze.ContactModel;
 import se.streamsource.streamflow.client.ui.caze.ContactView;
 import se.streamsource.streamflow.client.ui.caze.ContactsAdminView;
 import se.streamsource.streamflow.client.ui.caze.ContactsModel;
 import se.streamsource.streamflow.client.ui.caze.ContactsView;
+import se.streamsource.streamflow.client.ui.caze.DatePanel;
+import se.streamsource.streamflow.client.ui.caze.DoublePanel;
 import se.streamsource.streamflow.client.ui.caze.FormSubmissionModel;
 import se.streamsource.streamflow.client.ui.caze.FormSubmissionWizardPage;
 import se.streamsource.streamflow.client.ui.caze.FormsAdminView;
+import se.streamsource.streamflow.client.ui.caze.IntegerPanel;
+import se.streamsource.streamflow.client.ui.caze.ListBoxPanel;
+import se.streamsource.streamflow.client.ui.caze.OptionButtonsPanel;
 import se.streamsource.streamflow.client.ui.caze.PossibleCaseTypesModel;
 import se.streamsource.streamflow.client.ui.caze.PossibleFormsModel;
 import se.streamsource.streamflow.client.ui.caze.PossibleFormsView2;
 import se.streamsource.streamflow.client.ui.caze.SubmittedFormsAdminView;
+import se.streamsource.streamflow.client.ui.caze.TextAreaFieldPanel;
+import se.streamsource.streamflow.client.ui.caze.TextFieldPanel;
 import se.streamsource.streamflow.client.ui.caze.attachments.AttachmentsModel;
 import se.streamsource.streamflow.client.ui.caze.attachments.AttachmentsView;
 import se.streamsource.streamflow.client.ui.caze.conversations.ConversationModel;
@@ -462,7 +471,10 @@ public class UIAssembler
    private void caze( ModuleAssembly module ) throws AssemblyException
    {
       addViews( module, CasesView.class, CasesDetailView2.class, ContactsAdminView.class,
-            FormsAdminView.class, SubmittedFormsAdminView.class );
+            FormsAdminView.class, SubmittedFormsAdminView.class, CheckboxesPanel.class,
+            ComboBoxPanel.class, OptionButtonsPanel.class, ListBoxPanel.class, DatePanel.class,
+            IntegerPanel.class, DoublePanel.class, TextAreaFieldPanel.class, TextFieldPanel.class
+      );
 
       addDialogs( module, CaseLabelsDialog.class );
 

@@ -19,28 +19,35 @@ package se.streamsource.streamflow.client.ui.caze;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
+import org.qi4j.api.injection.scope.Uses;
+import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
+import se.streamsource.streamflow.domain.form.CheckboxesFieldValue;
+import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
 
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-public class CheckboxesPanel extends JPanel
+public class CheckboxesPanel
+      extends AbstractFieldPanel
 {
 
    Map<String, JCheckBox> checkBoxMap;
 
-   public CheckboxesPanel( List<String> elements )
+   public CheckboxesPanel( @Uses FieldSubmissionValue field, @Uses CheckboxesFieldValue fieldValue )
    {
+      super( field );
+
       JPanel panel = new JPanel( new BorderLayout( ));
       FormLayout formLayout = new FormLayout( "200dlu", "" );
       DefaultFormBuilder formBuilder = new DefaultFormBuilder( formLayout, panel );
 
       checkBoxMap = new HashMap<String, JCheckBox>();
-      for (String element : elements)
+      for ( String element : fieldValue.values().get() )
       {
          JCheckBox checkBox = new JCheckBox( element );
          checkBoxMap.put( element, checkBox );
@@ -48,18 +55,22 @@ public class CheckboxesPanel extends JPanel
          formBuilder.nextLine();
       }
 
-      add( panel, BorderLayout.CENTER );
+      add( panel, BorderLayout.WEST );
    }
 
-   public void addActionPerformedListener( ActionListener listener )
+   @Override
+   public void setValue( String newValue )
    {
-      for (JCheckBox box : checkBoxMap.values())
+      if ( newValue == null || newValue.equals( "" )) return;
+      String[] boxes = newValue.split( ", " );
+      for (String box : boxes)
       {
-         box.addActionListener( listener );
+         checkBoxMap.get( box ).setSelected( true );
       }
    }
 
-   public String getChecked()
+   @Override
+   public String getValue()
    {
       StringBuilder sb = new StringBuilder();
       boolean first = true;
@@ -75,13 +86,24 @@ public class CheckboxesPanel extends JPanel
       return sb.toString();
    }
 
-   public void setChecked( String checked )
+   @Override
+   public boolean validateValue( Object newValue )
    {
-      if ( checked == null || checked.equals( "" )) return;
-      String[] boxes = checked.split( ", " );
-      for (String box : boxes)
+      return true;
+   }
+
+   @Override
+   public void setBinding( final StateBinder.Binding binding )
+   {
+      ActionListener listener = new ActionListener() {
+         public void actionPerformed( ActionEvent e )
+         {
+            binding.updateProperty( getValue()  );
+         }
+      };
+      for (JCheckBox box : checkBoxMap.values())
       {
-         checkBoxMap.get( box ).setSelected( true );
+         box.addActionListener( listener );
       }
    }
 }

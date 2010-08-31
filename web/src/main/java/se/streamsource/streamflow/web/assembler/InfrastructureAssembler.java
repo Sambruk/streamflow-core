@@ -339,18 +339,20 @@ public class InfrastructureAssembler
 
                      if (fieldValue.get( "_type" ).equals( "se.streamsource.streamflow.domain.form.SelectionFieldValue" ))
                      {
-                        if (fieldValue.get( "multiple" ) != null)
+                        try {
+                           if ( fieldValue.getBoolean( "multiple" ) )
+                            {
+                               fieldValue.put( "_type", "se.streamsource.streamflow.domain.form.CheckboxesFieldValue" );
+                            } else
+                            {
+                               fieldValue.put( "_type", "se.streamsource.streamflow.domain.form.OptionButtonsFieldValue" );
+                            }
+                            fieldValue.remove( "multiple" );
+                        } catch (JSONException e)
                         {
-                           if (fieldValue.get( "multiple" ).equals( "true" ))
-                           {
-                              fieldValue.put( "_type", "se.streamsource.streamflow.domain.form.CheckboxesFieldValue" );
-                           } else
-                           {
-                              fieldValue.put( "_type", "se.streamsource.streamflow.domain.form.OptionButtonsFieldValue" );
-                           }
-                           fieldValue.remove( "multiple" );
-                           return true;
+                           fieldValue.put( "_type", "se.streamsource.streamflow.domain.form.CheckboxesFieldValue" );
                         }
+                        return true;
                      }
                      return false;
                   }
@@ -360,7 +362,37 @@ public class InfrastructureAssembler
                      return false;
                   }
                } )
-               .end();
+               .end().
+               toVersion( "1.1.7.2311" ).
+               forEntities( "se.streamsource.streamflow.web.domain.entity.form.FieldEntity" ).
+               custom( new EntityMigrationOperation()
+               {
+                  public boolean upgrade( JSONObject state, StateStore stateStore, Migrator migrator ) throws JSONException
+                  {
+                     JSONObject fieldValue = state.getJSONObject( "properties" ).getJSONObject( "fieldValue" );
+
+                     if (fieldValue.get( "_type" ).equals( "se.streamsource.streamflow.domain.form.ListBoxFieldValue" ))
+                     {
+                        try
+                        {
+                           if (!fieldValue.getBoolean( "multiple" ))
+                           {
+                              fieldValue.put( "_type", "se.streamsource.streamflow.domain.form.ComboBoxFieldValue" );
+                           }
+                           fieldValue.remove( "multiple" );
+                        } catch (JSONException e)
+                        {
+                           return false;
+                        }
+                        return true;
+                     }
+                     return false;                  }
+
+                  public boolean downgrade( JSONObject state, StateStore stateStore, Migrator migrator ) throws JSONException
+                  {
+                     return false;
+                  }
+               });
 
          module.addServices( MigrationService.class ).setMetaInfo( migrationBuilder );
          module.addObjects( MigrationEventLogger.class );

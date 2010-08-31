@@ -30,6 +30,8 @@ import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.dci.value.LinkValue;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
@@ -37,6 +39,7 @@ import ca.odell.glazedlists.EventList;
 import java.util.List;
 
 public class PossibleFormsModel
+   implements EventListener
 {
    @Uses
    CommandQueryClient client;
@@ -109,6 +112,14 @@ public class PossibleFormsModel
       } catch (ResourceException e)
       {
          throw new OperationException(WorkspaceResources.could_not_discard_form_submission, e);
+      }
+   }
+
+   public void notifyEvent( DomainEvent event )
+   {
+      for (FormSubmissionModel formSubmitModel : formSubmitModels)
+      {
+         formSubmitModel.notifyEvent( event );
       }
    }
 }

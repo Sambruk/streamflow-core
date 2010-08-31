@@ -175,13 +175,7 @@ public interface FormSubmission
       private boolean validate( ListBoxFieldValue definition, String value )
       {
          if ( "".equals( value )) return true; 
-         if ( definition.multiple().get() )
-         {
-            return validateMultiple( definition.values().get(), value );
-         } else
-         {
-            return definition.values().get().contains( value );
-         }
+         return validateMultiple( definition.values().get(), value );
       }
 
       private boolean validate( NumberFieldValue definition, String value )
@@ -209,7 +203,7 @@ public interface FormSubmission
 
       private boolean validate( TextFieldValue definition, String value )
       {
-         return value != null && value.length() <= definition.width().get();
+         return value != null;
 
       }
 

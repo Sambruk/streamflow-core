@@ -69,7 +69,6 @@ public class FieldEditorListBoxFieldValueView
 
       fieldValueBinder = obf.newObject( StateBinder.class );
       fieldValueBinder.setResourceMap( context.getResourceMap( getClass() ) );
-      ListBoxFieldValue fieldValueTemplate = fieldValueBinder.bindingTemplate( ListBoxFieldValue.class );
 
       formBuilder.append( i18n.text( AdministrationResources.type_label ), new JLabel( i18n.text( AdministrationResources.listbox ) ) );
       formBuilder.nextLine();
@@ -88,10 +87,6 @@ public class FieldEditorListBoxFieldValueView
       formBuilder.nextColumn(2);
       formBuilder.add(fieldDefinitionBinder.bind( TEXTAREA.newField(), fieldDefinitionTemplate.note() ) );
       formBuilder.nextLine();
-
-      formBuilder.add(new JLabel(i18n.text(AdministrationResources.multi_selection)));
-      formBuilder.nextColumn(2);
-      formBuilder.add(fieldValueBinder.bind( CHECKBOX.newField(), fieldValueTemplate.multiple() ) );
 
       FieldValueObserver observer = obf.newObjectBuilder( FieldValueObserver.class ).use( model ).newInstance();
       fieldValueBinder.addObserver( observer );

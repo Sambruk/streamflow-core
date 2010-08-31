@@ -47,7 +47,7 @@ public class StreamflowWebAssembler
       }
 
       // Version name rules: x.y.sprint.revision
-      assembly.setVersion( "1.1.6.2236" );
+      assembly.setVersion( "1.1.7.2311" );
 
       LayerAssembly configurationLayer = assembly.layerAssembly( "Configuration" );
       LayerAssembly domainInfrastructureLayer = assembly.layerAssembly( "Domain infrastructure" );

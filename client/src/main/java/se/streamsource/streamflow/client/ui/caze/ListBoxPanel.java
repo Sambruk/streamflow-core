@@ -24,8 +24,14 @@ import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationActionMap;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.calendar.DateSelectionModel;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
+import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
 import se.streamsource.streamflow.client.ui.administration.form.SelectionModel;
+import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
+import se.streamsource.streamflow.domain.form.FieldValue;
+import se.streamsource.streamflow.domain.form.ListBoxFieldValue;
 
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
@@ -43,28 +49,26 @@ import java.util.List;
 
 import static javax.swing.ListSelectionModel.*;
 
-public class ListBoxPanel extends JPanel
+public class ListBoxPanel
+      extends AbstractFieldPanel
 {
    private JButton left;
    private JButton right;
    private JList selectedElements;
-   private ChangeListener listener;
    private JList possibleElements;
-   private Boolean multiple;
 
-   public ListBoxPanel( ApplicationContext context, List<String> elements, Boolean multiple )
+   public ListBoxPanel( @Uses FieldSubmissionValue field, @Uses ListBoxFieldValue fieldValue, @Service ApplicationContext context )
    {
-      super( new BorderLayout( ) );
+      super( field );
 
       FormLayout formLayout = new FormLayout(
-         "80dlu, 30dlu, 80dlu",
-         "20dlu, 20dlu, 20dlu, 20dlu" );
+            "80dlu, 30dlu, 80dlu",
+            "20dlu, 20dlu, 20dlu, 20dlu" );
 
       DefaultFormBuilder formBuilder = new DefaultFormBuilder( formLayout, this );
 
-      this.multiple = multiple;
       DefaultListModel listModel = new DefaultListModel();
-      for (String element : elements)
+      for (String element : fieldValue.values().get() )
       {
          listModel.addElement( element );
       }
@@ -75,7 +79,7 @@ public class ListBoxPanel extends JPanel
       right = new JButton( map.get("left") );
       left = new JButton( map.get("right") );
 
-      possibleElements.setSelectionMode( multiple ? MULTIPLE_INTERVAL_SELECTION : SINGLE_SELECTION );
+      possibleElements.setSelectionMode( MULTIPLE_INTERVAL_SELECTION );
       possibleElements.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( map.get("left") ) );
       selectedElements.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( map.get("right") ) );
 
@@ -93,23 +97,12 @@ public class ListBoxPanel extends JPanel
       DefaultListModel possibleModel = (DefaultListModel) possibleElements.getModel();
       Object[] selectedValues = possibleElements.getSelectedValues();
 
-      if ( !multiple )
+      for (Object value : selectedValues)
       {
-         if ( model.size() == 1 )
-         {
-            possibleModel.addElement( model.remove( 0 ) );
-         }
-         model.addElement( selectedValues[0] );
-         possibleModel.removeElement( selectedValues[0] );
-      } else 
-      {
-         for (Object value : selectedValues)
-         {
-            model.addElement( value );
-            possibleModel.removeElement( value );
-         }
+         model.addElement( value );
+         possibleModel.removeElement( value );
       }
-      listener.stateChanged( new ChangeEvent( this ) );
+      binding.updateProperty( getValue() );
    }
 
    @Action
@@ -124,15 +117,11 @@ public class ListBoxPanel extends JPanel
          possibleModel.addElement( value );
          model.removeElement( value );
       }
-      listener.stateChanged( new ChangeEvent( this ) );
+      binding.updateProperty( getValue() );
    }
 
-   public void addChangeListener( ChangeListener listener )
-   {
-      this.listener = listener;
-   }
-
-   public String getSelected()
+   @Override
+   public String getValue()
    {
       StringBuilder sb = new StringBuilder();
       boolean first = true;
@@ -147,10 +136,11 @@ public class ListBoxPanel extends JPanel
       return sb.toString();
    }
 
-   public void addItems( String items )
+   @Override
+   public void setValue( String newValue )
    {
-      if ( items == null || items.equals( "" )) return;
-      String[] elements = items.split( ", " );
+      if ( newValue == null || newValue.equals( "" )) return;
+      String[] elements = newValue.split( ", " );
       DefaultListModel model = (DefaultListModel) selectedElements.getModel();
       DefaultListModel possibleModel = (DefaultListModel) possibleElements.getModel();
 
@@ -159,5 +149,17 @@ public class ListBoxPanel extends JPanel
          model.addElement( element );
          possibleModel.removeElement( element );
       }
+   }
+
+   @Override
+   public boolean validateValue( Object newValue )
+   {
+      return true;
+   }
+
+   @Override
+   public void setBinding( StateBinder.Binding binding )
+   {
+      this.binding = binding;
    }
 }

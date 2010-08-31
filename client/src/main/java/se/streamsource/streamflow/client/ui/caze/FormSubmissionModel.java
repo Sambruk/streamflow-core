@@ -31,6 +31,11 @@ import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.domain.form.FormSubmissionValue;
 import se.streamsource.streamflow.domain.form.FieldValueDTO;
 import se.streamsource.streamflow.domain.form.PageSubmissionValue;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.EventListener;
+import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
+import se.streamsource.streamflow.infrastructure.event.source.helper.EventParameters;
+import se.streamsource.streamflow.infrastructure.event.source.helper.EventVisitorFilter;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -39,11 +44,14 @@ import java.util.ArrayList;
  * Model for handling a form submission and subsequently submitting it
  */
 public class FormSubmissionModel
+   implements EventListener, EventVisitor
 {
    private ValueBuilderFactory vbf;
    private CommandQueryClient client;
    private FormSubmissionValue formSubmission;
-   private List<WizardPage> pages;
+   private List<FormSubmissionWizardPage> pages;
+
+   EventVisitorFilter eventFilter = new EventVisitorFilter( this, "changedFormSubmission" );
 
    public FormSubmissionModel(@Uses CommandQueryClient client,
                               @Structure ObjectBuilderFactory obf,
@@ -58,7 +66,7 @@ public class FormSubmissionModel
       {
          throw new OperationException( WorkspaceResources.could_not_get_form_submission, e );
       }
-      pages = new ArrayList<WizardPage>( formSubmission.pages().get().size() );
+      pages = new ArrayList<FormSubmissionWizardPage>( formSubmission.pages().get().size() );
       for (PageSubmissionValue page : formSubmission.pages().get())
       {
          if ( page.fields().get() != null && page.fields().get().size() >0 )
@@ -98,5 +106,26 @@ public class FormSubmissionModel
    public void nextPage()
    {
       client.putCommand( "nextpage" );
+   }
+
+   public boolean visit( DomainEvent event )
+   {
+      if ( "changedFormSubmission".equals( event.name().get() ))
+      {
+         FormSubmissionValue value = vbf.newValueFromJSON( FormSubmissionValue.class, EventParameters.getParameter( event, "param1" ) );
+         for ( int i=0; i<value.pages().get().size(); i++ )
+         {
+            PageSubmissionValue pageSubmissionValue = value.pages().get().get( i );
+            FormSubmissionWizardPage submissionWizardPage = pages.get( i );
+
+            submissionWizardPage.updatePage( pageSubmissionValue );
+         }
+      }
+      return false;
+   }
+
+   public void notifyEvent( DomainEvent event )
+   {
+      eventFilter.visit( event );
    }
 }

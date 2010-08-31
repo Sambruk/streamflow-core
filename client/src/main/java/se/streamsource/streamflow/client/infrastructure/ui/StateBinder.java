@@ -20,7 +20,6 @@ package se.streamsource.streamflow.client.infrastructure.ui;
 import org.jdesktop.application.ResourceMap;
 import org.jdesktop.swingx.JXDatePicker;
 import org.jdesktop.swingx.JXDialog;
-import org.jdesktop.swingx.JXErrorPane;
 import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.constraint.ConstraintViolationException;
 import org.qi4j.api.injection.scope.Service;
@@ -32,38 +31,33 @@ import org.qi4j.runtime.composite.ConstraintsCheck;
 import org.qi4j.runtime.property.PropertyInstance;
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.ui.caze.AbstractFieldPanel;
 import se.streamsource.streamflow.client.ui.caze.CheckboxesPanel;
-import se.streamsource.streamflow.client.ui.caze.DoubleTextField;
-import se.streamsource.streamflow.client.ui.caze.IntegerTextField;
+import se.streamsource.streamflow.client.ui.caze.ComboBoxPanel;
+import se.streamsource.streamflow.client.ui.caze.DatePanel;
+import se.streamsource.streamflow.client.ui.caze.DoublePanel;
+import se.streamsource.streamflow.client.ui.caze.IntegerPanel;
 import se.streamsource.streamflow.client.ui.caze.ListBoxPanel;
 import se.streamsource.streamflow.client.ui.caze.OptionButtonsPanel;
 import se.streamsource.streamflow.client.ui.caze.RemovableLabel;
+import se.streamsource.streamflow.client.ui.caze.TextAreaFieldPanel;
+import se.streamsource.streamflow.client.ui.caze.TextFieldPanel;
 
-import javax.swing.ButtonModel;
 import javax.swing.InputVerifier;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
-import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
-import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.event.ListDataEvent;
-import javax.swing.event.ListDataListener;
-import javax.swing.event.UndoableEditListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.JTextComponent;
-import javax.swing.text.NumberFormatter;
-import javax.swing.undo.UndoableEdit;
 import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.Frame;
@@ -73,15 +67,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.beans.PropertyVetoException;
-import java.beans.VetoableChangeListener;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.text.MessageFormat;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -113,10 +103,18 @@ public class StateBinder
    {
       Binder defaultBinder = new DefaultBinder( this );
       registerBinder( defaultBinder,
+            AbstractFieldPanel.class,
+            TextFieldPanel.class,
+            TextAreaFieldPanel.class,
+            IntegerPanel.class,
+            DoublePanel.class,
+            CheckboxesPanel.class,
+            OptionButtonsPanel.class,
+            ListBoxPanel.class,
+            ComboBoxPanel.class,
+            DatePanel.class,
             JLabel.class,
             JTextField.class,
-            IntegerTextField.class,
-            DoubleTextField.class,
             JTextArea.class,
             JScrollPane.class,
             JPasswordField.class,
@@ -326,7 +324,7 @@ public class StateBinder
          }
       }
 
-      void updateProperty( Object newValue )
+      public void updateProperty( Object newValue )
             throws IllegalArgumentException
       {
          Property<Object> objectProperty = property();
@@ -405,7 +403,12 @@ public class StateBinder
       {
          final Binding binding = new Binding( this, component, property, stateBinder );
 
-         if (component instanceof JPasswordField)
+         if ( component instanceof AbstractFieldPanel )
+         {
+            ((AbstractFieldPanel) component).setBinding( binding );
+            return binding;
+
+         } else if (component instanceof JPasswordField)
          {
             final JPasswordField passwordField = (JPasswordField) component;
             passwordField.setInputVerifier( new PropertyInputVerifier( binding ) );
@@ -522,62 +525,25 @@ public class StateBinder
          {
             final JComboBox comboBox = (JComboBox) component;
 
-            comboBox.addActionListener( new ActionListener()
-            {
+            comboBox.addActionListener( new ActionListener() {
 
                public void actionPerformed( ActionEvent actionEvent )
                {
-                  binding.updateProperty( ((JComboBox) actionEvent.getSource()).getSelectedItem() );
+                  binding.updateProperty( ((JComboBox)actionEvent.getSource()).getSelectedItem() );
                }
-            } );
+            });
             return binding;
-         } else if (component instanceof CheckboxesPanel)
-         {
-            final CheckboxesPanel multi = (CheckboxesPanel) component;
-            multi.addActionPerformedListener( new ActionListener()
-            {
-
-               public void actionPerformed( ActionEvent actionEvent )
-               {
-                  binding.updateProperty( multi.getChecked() );
-               }
-            } );
-
-            return binding;
-         } else if (component instanceof ListBoxPanel)
-         {
-            final ListBoxPanel listbox = (ListBoxPanel) component;
-            listbox.addChangeListener( new ChangeListener()
-            {
-               public void stateChanged( ChangeEvent e )
-               {
-                  binding.updateProperty( listbox.getSelected() );
-               }
-            } );
-            return binding;
-         } else if (component instanceof OptionButtonsPanel)
-         {
-            final OptionButtonsPanel optionsPanel = (OptionButtonsPanel) component;
-            optionsPanel.addActionPerformedListener( new ActionListener()
-            {
-               public void actionPerformed( ActionEvent actionEvent )
-               {
-                  binding.updateProperty( ((JRadioButton) actionEvent.getSource()).getText() );
-               }
-            } );
-            return binding;
-         } else if (component instanceof RemovableLabel)
+         } else if ( component instanceof RemovableLabel )
          {
             final RemovableLabel removableLabel = (RemovableLabel) component;
-            removableLabel.addActionListener( new ActionListener()
-            {
+            removableLabel.addActionListener( new ActionListener(){
 
                public void actionPerformed( ActionEvent e )
                {
                   //removableLabel.setListItemValue( null );
                   binding.updateProperty( null );
                }
-            } );
+            });
             return binding;
          }
 
@@ -587,7 +553,12 @@ public class StateBinder
 
       public void updateComponent( Component component, Object value )
       {
-         if (component instanceof JPasswordField)
+
+         if ( component instanceof AbstractFieldPanel )
+         {
+            AbstractFieldPanel panel = (AbstractFieldPanel) component;
+            panel.setValue( value == null ? "" : value.toString() );
+         } else if (component instanceof JPasswordField)
          {
             JPasswordField passwordField = (JPasswordField) component;
             passwordField.setText( value == null ? "" : value.toString() );
@@ -610,9 +581,9 @@ public class StateBinder
          {
             JXDatePicker datePicker = (JXDatePicker) component;
 
-            if (value instanceof String)
+            if ( value instanceof String)
             {
-               if (!((String) value).isEmpty())
+               if ( !((String) value).isEmpty() )
                {
                   datePicker.setDate( DateFunctions.fromString( (String) value ) );
                }
@@ -624,24 +595,11 @@ public class StateBinder
          {
             JComboBox box = (JComboBox) component;
             box.setSelectedItem( value );
-         } else if (component instanceof CheckboxesPanel)
+         } else if ( component instanceof RemovableLabel )
          {
-            CheckboxesPanel multi = (CheckboxesPanel) component;
-            multi.setChecked( (String) value );
-         } else if (component instanceof ListBoxPanel)
-         {
-            ListBoxPanel listbox = (ListBoxPanel) component;
-            listbox.addItems( (String) value );
-         } else if (component instanceof OptionButtonsPanel)
-         {
-            OptionButtonsPanel optionsPanel = (OptionButtonsPanel) component;
-            optionsPanel.setSelected( (String) value );
-         } else if (component instanceof RemovableLabel)
-         {
-            RemovableLabel removableLabel = (RemovableLabel) component;
-            removableLabel.setText( (String) value );
+               RemovableLabel removableLabel = (RemovableLabel) component;
+               removableLabel.setText( (String)value );
          }
-
       }
    }
 
@@ -663,49 +621,7 @@ public class StateBinder
          {
             Object value = null;
 
-            /*if ( input instanceof JFormattedTextField )
-            {
-               JFormattedTextField formattedTextField = (JFormattedTextField) input;
-               NumberFormatter formatter = (NumberFormatter) formattedTextField.getFormatter();
-               NumberFormat format = (NumberFormat) formatter.getFormat();
-               try
-               {
-                  if ( format.isParseIntegerOnly() )
-                  {
-                     value = Integer.parseInt( formattedTextField.getText() );
-                  }  else
-                  {
-                     value = Double.parseDouble( formattedTextField.getText() );
-                  }
-               } catch ( NumberFormatException e)
-               {
-                  formattedTextField.setText( "" );
-                  return false;
-               }
-            } */
-            if (input instanceof IntegerTextField)
-            {
-               IntegerTextField field = (IntegerTextField) input;
-               try
-               {
-                  value = Integer.parseInt( field.getText() );
-               } catch (NumberFormatException e)
-               {
-                  field.setText( "" );
-                  return false;
-               }
-            } else if (input instanceof DoubleTextField)
-            {
-               DoubleTextField field = (DoubleTextField) input;
-               try
-               {
-                  value = Double.parseDouble( field.getText() );
-               } catch (NumberFormatException e)
-               {
-                  field.setText( "" );
-                  return false;
-               }
-            } else if (input instanceof JTextComponent)
+            if (input instanceof JTextComponent)
             {
                value = ((JTextComponent) input).getText();
             } else if (input instanceof JXDatePicker)

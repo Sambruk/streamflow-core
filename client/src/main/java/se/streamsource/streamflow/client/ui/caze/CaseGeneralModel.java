@@ -222,6 +222,8 @@ public class CaseGeneralModel extends Observable implements Refreshable,
       eventFilter.visit( event );
 
       caseLabelsModel.notifyEvent( event );
+
+      possibleFormsModel.notifyEvent( event );
    }
 
    public boolean visit( DomainEvent event )

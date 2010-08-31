@@ -17,17 +17,10 @@
 
 package se.streamsource.streamflow.domain.form;
 
-import org.qi4j.api.common.UseDefaults;
-import org.qi4j.api.property.Property;
-
-import java.util.List;
-
 /**
  * JAVADOC
  */
 public interface ListBoxFieldValue
       extends SelectionFieldValue
 {
-   @UseDefaults
-   Property<Boolean> multiple();
 }

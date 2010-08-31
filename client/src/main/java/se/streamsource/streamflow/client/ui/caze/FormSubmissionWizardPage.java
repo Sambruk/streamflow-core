@@ -63,7 +63,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.JTextField;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.FocusAdapter;
@@ -83,24 +82,23 @@ import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBui
  */
 public class FormSubmissionWizardPage
       extends WizardPage
-   implements Observer
+      implements Observer
 {
-   private java.util.Map<FieldDefinitionValue, JComponent> componentFieldMap;
+   private java.util.Map<String, AbstractFieldPanel> componentFieldMap;
    private java.util.Map<StateBinder, EntityReference> fieldBinders;
    private ValidationResultModel validationResultModel;
    private FormSubmissionModel model;
-
-   @Structure
    private ObjectBuilderFactory obf;
 
 
-   public FormSubmissionWizardPage( @Service ApplicationContext context,
+   public FormSubmissionWizardPage( @Structure ObjectBuilderFactory obf,
                                     @Uses PageSubmissionValue page,
                                     @Uses FormSubmissionModel model)
    {
       super( page.title().get() );
       this.model = model;
-      componentFieldMap = new HashMap<FieldDefinitionValue, JComponent>();
+      this.obf = obf;
+      componentFieldMap = new HashMap<String, AbstractFieldPanel>();
       validationResultModel = new DefaultValidationResultModel();
       setLayout(new BorderLayout());
       final JPanel panel = new JPanel( new FormLayout( ) );
@@ -112,59 +110,23 @@ public class FormSubmissionWizardPage
 
       for (FieldSubmissionValue value : page.fields().get() )
       {
-         JComponent component = null;
+         AbstractFieldPanel component;
          FieldValue fieldValue = value.field().get().fieldValue().get();
-         if ( fieldValue instanceof CheckboxesFieldValue )
+         if ( !(fieldValue instanceof CommentFieldValue) )
          {
-            CheckboxesFieldValue field = (CheckboxesFieldValue) fieldValue;
-            component = new CheckboxesPanel( field.values().get() );
-         } else if ( fieldValue instanceof ComboBoxFieldValue )
+            component = getComponent( value );
+            componentFieldMap.put( value.field().get().field().get().identity(), component );
+            StateBinder stateBinder = component.bindComponent( bb, value );
+            stateBinder.addObserver( this );
+            fieldBinders.put( stateBinder, value.field().get().field().get() );
+
+         } else
          {
-            ComboBoxFieldValue field = (ComboBoxFieldValue) fieldValue;
-            JComboBox box = new JComboBox( field.values().get().toArray() );
-            box.setEditable( true );
-            component = box;
-         } else if ( fieldValue instanceof OptionButtonsFieldValue )
-         {
-            OptionButtonsFieldValue field = (OptionButtonsFieldValue) fieldValue;
-            component = new OptionButtonsPanel( field.values().get() );
-         } else if ( fieldValue instanceof ListBoxFieldValue )
-         {
-            ListBoxFieldValue field = (ListBoxFieldValue) fieldValue;
-            component = new ListBoxPanel( context, field.values().get(), field.multiple().get() );
-         } else if ( fieldValue instanceof CommentFieldValue )
-         {
+            // comment field does not have any input component
             String comment = value.field().get().note().get();
             comment = comment.replaceAll( "\n", "<br/>" );
             bb.append( new JLabel( "<html>"+comment+"</html>" ) );
-         } else if ( fieldValue instanceof DateFieldValue )
-         {
-            JXDatePicker datePicker = new JXDatePicker();
-            datePicker.setFormats( DateFormat.getDateInstance( DateFormat.MEDIUM, Locale.getDefault() ) );
-            component = datePicker;
-         } else if ( fieldValue instanceof NumberFieldValue )
-         {
-            NumberFieldValue field = (NumberFieldValue) fieldValue;
-            component = field.integer().get() ? new IntegerTextField() : new DoubleTextField();
-         } else if ( fieldValue instanceof TextAreaFieldValue)
-         {
-            TextAreaFieldValue textAreaFieldValue = (TextAreaFieldValue) fieldValue;
-            JScrollPane scroll = (JScrollPane) TEXTAREA.newField();
-            JTextArea text = (JTextArea) scroll.getViewport().getView();
-            text.setRows( textAreaFieldValue.rows().get());
-            text.setColumns( textAreaFieldValue.cols().get() );
-            component = scroll;
-         } else if ( fieldValue instanceof TextFieldValue )
-         {
-            TextFieldValue textFieldValue = (TextFieldValue) fieldValue;
-            component = new JTextField( textFieldValue.width().get() );
          }
-
-         if ( component != null )
-         {
-            bindComponent( bb, value, component );
-         }
-
       }
 
       JComponent validationResultsComponent = ValidationResultViewFactory.createReportList(validationResultModel);
@@ -175,8 +137,8 @@ public class FormSubmissionWizardPage
 
       final JScrollPane scroll = new JScrollPane(panel);
       add(scroll,  BorderLayout.CENTER);
-      
-     for( Component component : panel.getComponents())
+
+      for( Component component : panel.getComponents())
       {
          component.addFocusListener( new FocusAdapter(){
 
@@ -187,37 +149,6 @@ public class FormSubmissionWizardPage
             }
          });
       }
-   }
-
-   private void bindComponent( BindingFormBuilder bb, FieldSubmissionValue value, JComponent component )
-   {
-      if ( value.field().get().note().get().length() > 0 )
-      {
-         component.setToolTipText( value.field().get().note().get() );
-      }
-
-      componentFieldMap.put( value.field().get(), component );
-
-      StateBinder stateBinder = obf.newObject( StateBinder.class );
-      FieldSubmissionValue value1 = stateBinder.bindingTemplate( FieldSubmissionValue.class );
-
-      bb.append( getName( value ), component, value1.value(), stateBinder );
-
-      fieldBinders.put( stateBinder, value.field().get().field().get() );
-      stateBinder.addObserver( this );
-      stateBinder.updateWith( value );
-   }
-
-   private String getName( FieldSubmissionValue value )
-   {
-      StringBuilder componentName = new StringBuilder( "<html>" );
-      componentName.append( value.field().get().description().get() );
-      if ( value.field().get().mandatory().get() )
-      {
-         componentName.append( " <font color='red'>*</font>" );
-      }
-      componentName.append( "</html>" );
-      return componentName.toString();
    }
 
    @Override
@@ -256,48 +187,16 @@ public class FormSubmissionWizardPage
    private ValidationResult validatePage( ) {
       ValidationResult validationResult = new ValidationResult();
 
-
-      for (Map.Entry<FieldDefinitionValue, JComponent> entry : componentFieldMap.entrySet())
+      for (AbstractFieldPanel component : componentFieldMap.values())
       {
 
-         JComponent component = entry.getValue();
-         String value = "";
-         if ( component instanceof CheckboxesPanel)
-         {
-            value = ((CheckboxesPanel) component).getChecked();
-         } else if ( component instanceof JComboBox)
-         {
-            JComboBox box = (JComboBox) component;
-            if ( box.getSelectedItem() != null)
-            {
-               value = box.getSelectedItem().toString();
-            }
-         } else if ( component instanceof OptionButtonsPanel )
-         {
-           value = ((OptionButtonsPanel) component).getSelected();
-         } else if (component instanceof JScrollPane)
-         {
-            JTextArea textArea = (JTextArea) ((JScrollPane) component).getViewport().getView();
-            value = textArea.getText();
-         } else if (component instanceof JTextField)
-         {
-            JTextField textField = (JTextField) component;
-            value = textField.getText(  );
-         } else if (component instanceof JXDatePicker)
-         {
-            JXDatePicker datePicker = (JXDatePicker) component;
-            value = datePicker.getDate()==null ? "" : datePicker.getEditor().getText(  );
-         } else if (component instanceof ListBoxPanel)
-         {
-            ListBoxPanel listBox = (ListBoxPanel) component;
-            value = listBox.getSelected();
-         }
+         String value = component.getValue();
 
-         if ( entry.getKey().mandatory().get() )
+         if ( component.mandatory() )
          {
-            if (ValidationUtils.isEmpty( value ))
+            if ( ValidationUtils.isEmpty( value ) )
             {
-               validationResult.addError( i18n.text(WorkspaceResources.mandatory_field_missing) + ": " + entry.getKey().description().get() );
+               validationResult.addError( i18n.text(WorkspaceResources.mandatory_field_missing) + ": " + component.title() );
             }
          }
       }
@@ -324,4 +223,66 @@ public class FormSubmissionWizardPage
          }
       }
    }
+
+   public void updatePage( PageSubmissionValue page )
+   {
+      for (FieldSubmissionValue field : page.fields().get())
+      {
+         if ( !(field.field().get().fieldValue().get() instanceof CommentFieldValue) )
+         {
+            AbstractFieldPanel component = componentFieldMap.get( field.field().get().field().get().identity() );
+            String value = component.getValue();
+            if ( field.value().get()!=null && !field.value().get().equals( value ))
+            {
+               component.setValue( field.value().get() );
+            }
+         }
+      }
+   }
+
+   private AbstractFieldPanel getComponent(FieldSubmissionValue field )
+   {
+      FieldValue fieldValue = field.field().get().fieldValue().get();
+      if ( fieldValue instanceof CheckboxesFieldValue)
+      {
+         CheckboxesFieldValue checkboxes = (CheckboxesFieldValue) fieldValue;
+         return obf.newObjectBuilder( CheckboxesPanel.class ).use( field, checkboxes ).newInstance();
+      } else if ( fieldValue instanceof ComboBoxFieldValue)
+      {
+         ComboBoxFieldValue comboBox = (ComboBoxFieldValue) fieldValue;
+         return obf.newObjectBuilder( ComboBoxPanel.class ).use( field, comboBox ).newInstance();
+      } else if ( fieldValue instanceof OptionButtonsFieldValue)
+      {
+         OptionButtonsFieldValue optionButtons = (OptionButtonsFieldValue) fieldValue;
+         return obf.newObjectBuilder( OptionButtonsPanel.class ).use( field, optionButtons  ).newInstance();
+      } else if ( fieldValue instanceof ListBoxFieldValue)
+      {
+         ListBoxFieldValue listBox = (ListBoxFieldValue) fieldValue;
+         return obf.newObjectBuilder( ListBoxPanel.class ).use( field, listBox ).newInstance();
+      } else if ( fieldValue instanceof DateFieldValue)
+      {
+         return obf.newObjectBuilder(DatePanel.class).use( field ).newInstance();
+      } else if ( fieldValue instanceof NumberFieldValue)
+      {
+         NumberFieldValue number = (NumberFieldValue) fieldValue;
+         if ( number.integer().get() )
+         {
+            return obf.newObjectBuilder(IntegerPanel.class ).use( field, number ).newInstance();
+         } else
+         {
+            return obf.newObjectBuilder( DoublePanel.class ).use( field, number ).newInstance();
+         }
+      } else if ( fieldValue instanceof TextAreaFieldValue )
+      {
+         TextAreaFieldValue textAreaFieldValue = (TextAreaFieldValue) fieldValue;
+         return obf.newObjectBuilder( TextAreaFieldPanel.class ).use( field, textAreaFieldValue ).newInstance();
+      } else if ( fieldValue instanceof TextFieldValue)
+      {
+         TextFieldValue textFieldValue = (TextFieldValue) fieldValue;
+         return obf.newObjectBuilder( TextFieldPanel.class ).use( field, textFieldValue ).newInstance();
+      }
+
+      throw new IllegalArgumentException( "Could not create component from type: "+ field );
+   }
+
 }
