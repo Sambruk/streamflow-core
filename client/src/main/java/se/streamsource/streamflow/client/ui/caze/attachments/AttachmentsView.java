@@ -217,17 +217,18 @@ public class AttachmentsView
          }
 
          // Open file
+         Desktop desktop = Desktop.getDesktop();
          try
          {
-            Desktop.getDesktop().edit( file );
+            desktop.edit( file );
          } catch (IOException e)
          {
             try
             {
-               Desktop.getDesktop().open( file );
+               desktop.open( file );
             } catch (IOException e1)
             {
-               dialogs.showOkDialog( this, new JLabel(i18n.text( WorkspaceResources.could_not_open_attachment)) );
+               dialogs.showMessageDialog( this, i18n.text( WorkspaceResources.could_not_open_attachment), "" );
             }
          }
       }

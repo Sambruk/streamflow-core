@@ -28,6 +28,7 @@ import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import java.awt.*;
@@ -103,7 +104,7 @@ public class DialogService
       JButton okButton = new JButton(ok);
       dialog.getContentPane().add(BorderLayout.SOUTH, createOKBar(okButton));
       dialog.getContentPane().add(BorderLayout.CENTER, main);
-      dialog.setMinimumSize(new Dimension(300, 200));
+      dialog.setMinimumSize(new Dimension(300, 100));
       dialog.pack();
       dialog.setLocationRelativeTo(owner);
       dialog.setVisible(true);
@@ -152,5 +153,27 @@ public class DialogService
    public void showOkDialog(Component component, JComponent main, String title)
    {
       showOkDialog(component, main).setTitle(title);
+   }
+
+   public void showMessageDialog(Component component, String message, String title)
+   {
+      MessageLabel messageLabel = new MessageLabel( message );
+      messageLabel.setActionMap( context.getActionMap(messageLabel ));
+      showOkDialog(component, messageLabel ).setTitle(title);
+   }
+
+   public static class MessageLabel
+      extends JLabel
+   {
+      private MessageLabel( String text )
+      {
+         super( text );
+      }
+
+      @org.jdesktop.application.Action
+      public void execute()
+      {
+
+      }
    }
 }
