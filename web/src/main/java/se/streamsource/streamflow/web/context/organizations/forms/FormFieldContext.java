@@ -80,9 +80,6 @@ public interface FormFieldContext
    @RequiresRoles( SelectionFieldValue.class)
    public void changeselectionelementname( NamedIndexDTO newNameDTO );
 
-   @RequiresRoles( ListBoxFieldValue.class )
-   public void changemultiple( BooleanDTO multiple );
-
    public void move( StringValue direction );
 
    abstract class Mixin
