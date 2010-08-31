@@ -113,17 +113,6 @@ public interface FormFieldContext
          mandatoryField.changeMandatory( mandatory.bool().get() );
       }
 
-      public void changemultiple( BooleanDTO multiple )
-      {
-         FieldValueDefinition definition = roleMap.get( FieldValueDefinition.class );
-         ListBoxFieldValue value = roleMap.get( ListBoxFieldValue.class );
-
-         ValueBuilder<ListBoxFieldValue> builder = value.buildWith();
-         builder.prototype().multiple().set( multiple.bool().get() );
-
-         definition.changeFieldValue( builder.newInstance() );
-      }
-
       public void changewidth( IntegerDTO newWidth )
       {
          FieldValueDefinition fieldValueDefinition = roleMap.get( FieldValueDefinition.class );
