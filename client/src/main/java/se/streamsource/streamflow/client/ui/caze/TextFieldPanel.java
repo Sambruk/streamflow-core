@@ -39,6 +39,7 @@ public class TextFieldPanel
    public TextFieldPanel( @Uses FieldSubmissionValue field, @Uses TextFieldValue fieldValue )
    {
       super( field );
+      setLayout( new BorderLayout( ) );
 
       textField = new JTextField();
       textField.setColumns( fieldValue.width().get() );

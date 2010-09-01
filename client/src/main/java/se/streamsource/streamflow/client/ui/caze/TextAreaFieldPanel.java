@@ -39,6 +39,7 @@ public class TextAreaFieldPanel
    public TextAreaFieldPanel( @Uses FieldSubmissionValue field, @Uses TextAreaFieldValue fieldValue )
    {
       super( field );
+      setLayout( new BorderLayout( ) );
 
       JScrollPane scroll = (JScrollPane) TEXTAREA.newField();
       text = (JTextArea) scroll.getViewport().getView();
