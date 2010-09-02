@@ -23,11 +23,12 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
-import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.ContextMixin;
+import se.streamsource.dci.api.DeleteContext;
+import se.streamsource.dci.api.RequiresRoles;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
-import se.streamsource.streamflow.domain.form.ListBoxFieldValue;
 import se.streamsource.streamflow.domain.form.NumberFieldValue;
 import se.streamsource.streamflow.domain.form.SelectionFieldValue;
 import se.streamsource.streamflow.domain.form.TextAreaFieldValue;
@@ -41,8 +42,7 @@ import se.streamsource.streamflow.web.domain.entity.form.FieldEntity;
 import se.streamsource.streamflow.web.domain.structure.form.Field;
 import se.streamsource.streamflow.web.domain.structure.form.FieldValueDefinition;
 import se.streamsource.streamflow.web.domain.structure.form.Fields;
-import se.streamsource.dci.api.ContextMixin;
-import se.streamsource.dci.api.RequiresRoles;
+import se.streamsource.streamflow.web.domain.structure.form.Hint;
 import se.streamsource.streamflow.web.domain.structure.form.Mandatory;
 
 /**
@@ -56,8 +56,13 @@ public interface FormFieldContext
 
    public void updatemandatory( BooleanDTO mandatory );
 
+   public void updatehint( StringValue hint );
+
    @RequiresRoles(TextFieldValue.class)
    public void changewidth( IntegerDTO newWidth );
+
+   @RequiresRoles(TextFieldValue.class)
+   public void changeregularexpression( StringValue regularExpression );
 
    @RequiresRoles(TextAreaFieldValue.class)
    public void changerows( IntegerDTO newRows );
@@ -68,16 +73,16 @@ public interface FormFieldContext
    @RequiresRoles(NumberFieldValue.class)
    public void changeinteger( BooleanDTO integerDto );
 
-   @RequiresRoles( SelectionFieldValue.class)
+   @RequiresRoles(SelectionFieldValue.class)
    public void addselectionelement( StringValue name );
 
-   @RequiresRoles( SelectionFieldValue.class)
+   @RequiresRoles(SelectionFieldValue.class)
    public void removeselectionelement( IntegerDTO index );
 
-   @RequiresRoles( SelectionFieldValue.class)
+   @RequiresRoles(SelectionFieldValue.class)
    public void moveselectionelement( NamedIndexDTO moveElement );
 
-   @RequiresRoles( SelectionFieldValue.class)
+   @RequiresRoles(SelectionFieldValue.class)
    public void changeselectionelementname( NamedIndexDTO newNameDTO );
 
    public void move( StringValue direction );
@@ -99,6 +104,7 @@ public interface FormFieldContext
          builder.prototype().description().set( fieldEntity.description().get() );
          builder.prototype().fieldValue().set( fieldEntity.fieldValue().get() );
          builder.prototype().mandatory().set( fieldEntity.isMandatory() );
+         builder.prototype().hint().set( fieldEntity.hint().get() );
 
          return builder.newInstance();
       }
@@ -110,6 +116,12 @@ public interface FormFieldContext
          mandatoryField.changeMandatory( mandatory.bool().get() );
       }
 
+      public void updatehint( StringValue hint )
+      {
+         Hint hintField = roleMap.get( Hint.class );
+         hintField.changeHint( hint.string().get() );
+      }
+
       public void changewidth( IntegerDTO newWidth )
       {
          FieldValueDefinition fieldValueDefinition = roleMap.get( FieldValueDefinition.class );
@@ -117,6 +129,17 @@ public interface FormFieldContext
 
          ValueBuilder<TextFieldValue> builder = value.buildWith();
          builder.prototype().width().set( newWidth.integer().get() );
+
+         fieldValueDefinition.changeFieldValue( builder.newInstance() );
+      }
+
+      public void changeregularexpression( StringValue regularExpression )
+      {
+         FieldValueDefinition fieldValueDefinition = roleMap.get( FieldValueDefinition.class );
+         TextFieldValue value = roleMap.get( TextFieldValue.class );
+
+         ValueBuilder<TextFieldValue> builder = value.buildWith();
+         builder.prototype().regularExpression().set( regularExpression.string().get() );
 
          fieldValueDefinition.changeFieldValue( builder.newInstance() );
       }

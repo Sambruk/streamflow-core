@@ -47,18 +47,18 @@ public class FieldEditorCommentFieldValueView
    StateBinder fieldValueBinder;
 
    public FieldEditorCommentFieldValueView( @Service ApplicationContext context,
-                                     @Uses FieldValueEditModel model,
-                                     @Structure ObjectBuilderFactory obf)
+                                            @Uses FieldValueEditModel model,
+                                            @Structure ObjectBuilderFactory obf )
    {
       JPanel panel = new JPanel( new BorderLayout() );
 
       JPanel fieldPanel = new JPanel();
       FormLayout formLayout = new FormLayout(
             "45dlu, 5dlu, 150dlu:grow",
-            "pref, pref, 5dlu, top:70dlu:grow" );
+            "pref, pref, 5dlu, pref, top:70dlu:grow" );
 
       DefaultFormBuilder formBuilder = new DefaultFormBuilder( formLayout, fieldPanel );
-      formBuilder.setBorder(Borders.createEmptyBorder("4dlu, 4dlu, 4dlu, 4dlu"));
+      formBuilder.setBorder( Borders.createEmptyBorder( "4dlu, 4dlu, 4dlu, 4dlu" ) );
 
       fieldDefinitionBinder = obf.newObject( StateBinder.class );
       fieldDefinitionBinder.setResourceMap( context.getResourceMap( getClass() ) );
@@ -70,14 +70,19 @@ public class FieldEditorCommentFieldValueView
       formBuilder.append( i18n.text( AdministrationResources.type_label ), new JLabel( i18n.text( AdministrationResources.comment_field_type ) ) );
       formBuilder.nextLine();
 
-      formBuilder.add(new JLabel(i18n.text(AdministrationResources.name_label)));
-      formBuilder.nextColumn(2);
-      formBuilder.add(fieldDefinitionBinder.bind( TEXTFIELD.newField(), fieldDefinitionTemplate.description() ) );
-      formBuilder.nextLine(2);
+      formBuilder.add( new JLabel( i18n.text( AdministrationResources.name_label ) ) );
+      formBuilder.nextColumn( 2 );
+      formBuilder.add( fieldDefinitionBinder.bind( TEXTFIELD.newField(), fieldDefinitionTemplate.description() ) );
+      formBuilder.nextLine( 2 );
 
-      formBuilder.add(new JLabel(i18n.text(AdministrationResources.comment_label)));
-      formBuilder.nextColumn(2);
-      formBuilder.add(fieldDefinitionBinder.bind( TEXTAREA.newField(), fieldDefinitionTemplate.note() ) );
+      formBuilder.add( new JLabel( i18n.text( AdministrationResources.hint_label ) ) );
+      formBuilder.nextColumn( 2 );
+      formBuilder.add( fieldDefinitionBinder.bind( TEXTFIELD.newField(), fieldDefinitionTemplate.hint() ) );
+      formBuilder.nextLine();
+
+      formBuilder.add( new JLabel( i18n.text( AdministrationResources.comment_label ) ) );
+      formBuilder.nextColumn( 2 );
+      formBuilder.add( fieldDefinitionBinder.bind( TEXTAREA.newField(), fieldDefinitionTemplate.note() ) );
 
 //      formBuilder.append( i18n.text( AdministrationResources.type_label ), new JLabel( i18n.text( AdministrationResources.comment_field_type ) ) );
 //

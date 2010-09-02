@@ -29,7 +29,6 @@ import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
-import se.streamsource.streamflow.domain.form.ListBoxFieldValue;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -49,7 +48,7 @@ public class FieldEditorListBoxFieldValueView
 
    public FieldEditorListBoxFieldValueView( @Service ApplicationContext context,
                                             @Uses FieldValueEditModel model,
-                                            @Structure ObjectBuilderFactory obf)
+                                            @Structure ObjectBuilderFactory obf )
    {
       JPanel panel = new JPanel( new BorderLayout() );
 
@@ -58,10 +57,10 @@ public class FieldEditorListBoxFieldValueView
 //            "200dlu", "" );
       FormLayout formLayout = new FormLayout(
             "45dlu, 5dlu, 150dlu:grow",
-            "pref, pref, pref, 5dlu, top:110dlu, pref" );
+            "pref, pref, pref, 5dlu, pref, top:110dlu, pref" );
 
       DefaultFormBuilder formBuilder = new DefaultFormBuilder( formLayout, fieldPanel );
-      formBuilder.setBorder(Borders.createEmptyBorder("4dlu, 4dlu, 4dlu, 4dlu"));
+      formBuilder.setBorder( Borders.createEmptyBorder( "4dlu, 4dlu, 4dlu, 4dlu" ) );
 
       fieldDefinitionBinder = obf.newObject( StateBinder.class );
       fieldDefinitionBinder.setResourceMap( context.getResourceMap( getClass() ) );
@@ -73,19 +72,24 @@ public class FieldEditorListBoxFieldValueView
       formBuilder.append( i18n.text( AdministrationResources.type_label ), new JLabel( i18n.text( AdministrationResources.listbox ) ) );
       formBuilder.nextLine();
 
-      formBuilder.add(new JLabel(i18n.text(AdministrationResources.mandatory)));
-      formBuilder.nextColumn(2);
-      formBuilder.add(fieldDefinitionBinder.bind( CHECKBOX.newField(), fieldDefinitionTemplate.mandatory() ) );
+      formBuilder.add( new JLabel( i18n.text( AdministrationResources.mandatory ) ) );
+      formBuilder.nextColumn( 2 );
+      formBuilder.add( fieldDefinitionBinder.bind( CHECKBOX.newField(), fieldDefinitionTemplate.mandatory() ) );
       formBuilder.nextLine();
 
-      formBuilder.add(new JLabel(i18n.text(AdministrationResources.name_label)));
-      formBuilder.nextColumn(2);
-      formBuilder.add(fieldDefinitionBinder.bind( TEXTFIELD.newField(), fieldDefinitionTemplate.description() ) );
-      formBuilder.nextLine(2);
+      formBuilder.add( new JLabel( i18n.text( AdministrationResources.name_label ) ) );
+      formBuilder.nextColumn( 2 );
+      formBuilder.add( fieldDefinitionBinder.bind( TEXTFIELD.newField(), fieldDefinitionTemplate.description() ) );
+      formBuilder.nextLine( 2 );
 
-      formBuilder.add(new JLabel(i18n.text(AdministrationResources.description_label)));
-      formBuilder.nextColumn(2);
-      formBuilder.add(fieldDefinitionBinder.bind( TEXTAREA.newField(), fieldDefinitionTemplate.note() ) );
+      formBuilder.add( new JLabel( i18n.text( AdministrationResources.hint_label ) ) );
+      formBuilder.nextColumn( 2 );
+      formBuilder.add( fieldDefinitionBinder.bind( TEXTFIELD.newField(), fieldDefinitionTemplate.hint() ) );
+      formBuilder.nextLine();
+
+      formBuilder.add( new JLabel( i18n.text( AdministrationResources.description_label ) ) );
+      formBuilder.nextColumn( 2 );
+      formBuilder.add( fieldDefinitionBinder.bind( TEXTAREA.newField(), fieldDefinitionTemplate.note() ) );
       formBuilder.nextLine();
 
       FieldValueObserver observer = obf.newObjectBuilder( FieldValueObserver.class ).use( model ).newInstance();

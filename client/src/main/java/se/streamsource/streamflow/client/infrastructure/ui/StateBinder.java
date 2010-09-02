@@ -403,7 +403,7 @@ public class StateBinder
       {
          final Binding binding = new Binding( this, component, property, stateBinder );
 
-         if ( component instanceof AbstractFieldPanel )
+         if (component instanceof AbstractFieldPanel)
          {
             ((AbstractFieldPanel) component).setBinding( binding );
             return binding;
@@ -448,9 +448,10 @@ public class StateBinder
                      {
 
                         dialogs.showMessageDialog( textField,
-                              new MessageFormat(i18n.text( StreamflowResources.max_length )).format( new Object[]{ ""+maxLength.value()} ).toString(),
-                              i18n.text( StreamflowResources.invalid_input  ) );
-                        SwingUtilities.invokeLater( new Runnable(){
+                              new MessageFormat( i18n.text( StreamflowResources.max_length ) ).format( new Object[]{"" + maxLength.value()} ).toString(),
+                              i18n.text( StreamflowResources.invalid_input ) );
+                        SwingUtilities.invokeLater( new Runnable()
+                        {
 
                            public void run()
                            {
@@ -462,7 +463,7 @@ public class StateBinder
                                  // do nothing
                               }
                            }
-                        });
+                        } );
                      }
                   }
 
@@ -525,25 +526,27 @@ public class StateBinder
          {
             final JComboBox comboBox = (JComboBox) component;
 
-            comboBox.addActionListener( new ActionListener() {
+            comboBox.addActionListener( new ActionListener()
+            {
 
                public void actionPerformed( ActionEvent actionEvent )
                {
-                  binding.updateProperty( ((JComboBox)actionEvent.getSource()).getSelectedItem() );
+                  binding.updateProperty( ((JComboBox) actionEvent.getSource()).getSelectedItem() );
                }
-            });
+            } );
             return binding;
-         } else if ( component instanceof RemovableLabel )
+         } else if (component instanceof RemovableLabel)
          {
             final RemovableLabel removableLabel = (RemovableLabel) component;
-            removableLabel.addActionListener( new ActionListener(){
+            removableLabel.addActionListener( new ActionListener()
+            {
 
                public void actionPerformed( ActionEvent e )
                {
                   //removableLabel.setListItemValue( null );
                   binding.updateProperty( null );
                }
-            });
+            } );
             return binding;
          }
 
@@ -554,7 +557,7 @@ public class StateBinder
       public void updateComponent( Component component, Object value )
       {
 
-         if ( component instanceof AbstractFieldPanel )
+         if (component instanceof AbstractFieldPanel)
          {
             AbstractFieldPanel panel = (AbstractFieldPanel) component;
             panel.setValue( value == null ? "" : value.toString() );
@@ -581,9 +584,9 @@ public class StateBinder
          {
             JXDatePicker datePicker = (JXDatePicker) component;
 
-            if ( value instanceof String)
+            if (value instanceof String)
             {
-               if ( !((String) value).isEmpty() )
+               if (!((String) value).isEmpty())
                {
                   datePicker.setDate( DateFunctions.fromString( (String) value ) );
                }
@@ -595,10 +598,10 @@ public class StateBinder
          {
             JComboBox box = (JComboBox) component;
             box.setSelectedItem( value );
-         } else if ( component instanceof RemovableLabel )
+         } else if (component instanceof RemovableLabel)
          {
-               RemovableLabel removableLabel = (RemovableLabel) component;
-               removableLabel.setText( (String)value );
+            RemovableLabel removableLabel = (RemovableLabel) component;
+            removableLabel.setText( (String) value );
          }
       }
    }

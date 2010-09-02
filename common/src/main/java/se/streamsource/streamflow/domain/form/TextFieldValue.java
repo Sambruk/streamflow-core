@@ -17,8 +17,8 @@
 
 package se.streamsource.streamflow.domain.form;
 
-import org.qi4j.api.property.Property;
 import org.qi4j.api.common.Optional;
+import org.qi4j.api.property.Property;
 
 /**
  * JAVADOC
@@ -27,4 +27,7 @@ public interface TextFieldValue
       extends FieldValue
 {
    Property<Integer> width();
+
+   @Optional
+   Property<String> regularExpression();
 }

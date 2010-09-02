@@ -25,13 +25,11 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
-import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
 import se.streamsource.streamflow.domain.form.TextAreaFieldValue;
-import se.streamsource.streamflow.domain.form.TextFieldValue;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -49,17 +47,17 @@ public class FieldEditorTextAreaFieldValueView
 
    public FieldEditorTextAreaFieldValueView( @Service ApplicationContext context,
                                              @Uses FieldValueEditModel model,
-                                             @Structure ObjectBuilderFactory obf)
+                                             @Structure ObjectBuilderFactory obf )
    {
       JPanel panel = new JPanel( new BorderLayout() );
 
       JPanel fieldPanel = new JPanel();
       FormLayout formLayout = new FormLayout(
             "45dlu, 5dlu, 150dlu:grow",
-            "pref, pref, pref, pref, pref, 5dlu, top:70dlu:grow" );
+            "pref, pref, pref, pref, pref, 5dlu, pref, top:70dlu:grow" );
 
       DefaultFormBuilder formBuilder = new DefaultFormBuilder( formLayout, fieldPanel );
-      formBuilder.setBorder(Borders.createEmptyBorder("4dlu, 4dlu, 4dlu, 4dlu"));
+      formBuilder.setBorder( Borders.createEmptyBorder( "4dlu, 4dlu, 4dlu, 4dlu" ) );
 
       StateBinder fieldDefinitionBinder = obf.newObject( StateBinder.class );
       fieldDefinitionBinder.setResourceMap( context.getResourceMap( getClass() ) );
@@ -72,28 +70,33 @@ public class FieldEditorTextAreaFieldValueView
       formBuilder.append( i18n.text( AdministrationResources.type_label ), new JLabel( i18n.text( AdministrationResources.textarea ) ) );
       formBuilder.nextLine();
 
-      formBuilder.add(new JLabel(i18n.text(AdministrationResources.mandatory)));
-      formBuilder.nextColumn(2);
+      formBuilder.add( new JLabel( i18n.text( AdministrationResources.mandatory ) ) );
+      formBuilder.nextColumn( 2 );
       formBuilder.add( fieldDefinitionBinder.bind( CHECKBOX.newField(), fieldDefinitionTemplate.mandatory() ) );
       formBuilder.nextLine();
 
-      formBuilder.add(new JLabel(i18n.text(AdministrationResources.cols_label)));
-      formBuilder.nextColumn(2);
+      formBuilder.add( new JLabel( i18n.text( AdministrationResources.cols_label ) ) );
+      formBuilder.nextColumn( 2 );
       formBuilder.add( fieldValueBinder.bind( TEXTFIELD.newField(), fieldValueTemplate.cols() ) );
       formBuilder.nextLine();
 
-      formBuilder.add(new JLabel(i18n.text(AdministrationResources.rows_label)));
-      formBuilder.nextColumn(2);
+      formBuilder.add( new JLabel( i18n.text( AdministrationResources.rows_label ) ) );
+      formBuilder.nextColumn( 2 );
       formBuilder.add( fieldValueBinder.bind( TEXTFIELD.newField(), fieldValueTemplate.rows() ) );
       formBuilder.nextLine();
 
-      formBuilder.add(new JLabel(i18n.text(AdministrationResources.name_label)));
-      formBuilder.nextColumn(2);
+      formBuilder.add( new JLabel( i18n.text( AdministrationResources.name_label ) ) );
+      formBuilder.nextColumn( 2 );
       formBuilder.add( fieldDefinitionBinder.bind( TEXTFIELD.newField(), fieldDefinitionTemplate.description() ) );
-      formBuilder.nextLine(2);
+      formBuilder.nextLine( 2 );
 
-      formBuilder.add(new JLabel(i18n.text(AdministrationResources.description_label)));
-      formBuilder.nextColumn(2);
+      formBuilder.add( new JLabel( i18n.text( AdministrationResources.hint_label ) ) );
+      formBuilder.nextColumn( 2 );
+      formBuilder.add( fieldDefinitionBinder.bind( TEXTFIELD.newField(), fieldDefinitionTemplate.hint() ) );
+      formBuilder.nextLine();
+
+      formBuilder.add( new JLabel( i18n.text( AdministrationResources.description_label ) ) );
+      formBuilder.nextColumn( 2 );
       formBuilder.add( fieldDefinitionBinder.bind( TEXTAREA.newField(), fieldDefinitionTemplate.note() ) );
       formBuilder.nextLine();
 

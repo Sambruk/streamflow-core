@@ -119,9 +119,9 @@ public enum AdministrationResources
    fields_label,
    type_label,
    could_not_get_fields,
-   add_project_title, 
+   add_project_title,
    change_project_title,
-   add_label_title, 
+   add_label_title,
    rename_label_title,
    choose_label_title,
    choose_form_title,
@@ -129,7 +129,7 @@ public enum AdministrationResources
    rename_group_title,
    add_user_or_group_title,
    add_role_title,
-   create_ou_title, 
+   create_ou_title,
    change_ou_title,
    create_new_form,
    could_not_remove_label,
@@ -142,7 +142,7 @@ public enum AdministrationResources
    create_user_title,
    reset_password_title,
    could_not_add_label,
-   add_casetype_title, 
+   add_casetype_title,
    rename_casetype_title,
    choose_casetypes_title,
    could_not_remove_casetype,
@@ -171,8 +171,8 @@ public enum AdministrationResources
    page_break,
    field_type_selection,
    change_selection_field_name,
-   multi_selection, 
-   add_field_to_form, 
+   multi_selection,
+   add_field_to_form,
    could_not_create_page,
    could_not_find_field,
    could_not_move_page,
@@ -210,6 +210,6 @@ public enum AdministrationResources
    could_not_rename_proxyuser,
    members_tab,
    could_not_reset_password, remove_proxyuser_title, could_not_remove_proxyuser,
-   cols_label
+   hint_label, regularexpression_label, cols_label
 
 }
