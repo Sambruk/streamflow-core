@@ -27,6 +27,7 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.application.error.ErrorResources;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
@@ -112,7 +113,7 @@ public class AccountSelector
                String str;
                BufferedReader reader = new BufferedReader(
                      new StringReader( response ) );
-   
+
                while ((str = reader.readLine()) != null)
                {
                   str = str.trim();
@@ -138,7 +139,14 @@ public class AccountSelector
 
       } catch (ResourceException e)
       {
-         String msg = i18n.text( AccountResources.resource_failure ) + " \r\n" + e.getStatus().toString();
+         String msg;
+         if (Status.CLIENT_ERROR_UNAUTHORIZED.equals( e.getStatus() ))
+         {
+            msg = i18n.text( ErrorResources.unauthorized_access );
+         } else
+         {
+            msg = i18n.text( AccountResources.resource_failure ) + " \r\n" + e.getStatus().toString();
+         }
          dialogs.showOkDialog( this, new InfoDialog( context, msg ), "Info" );
          throw new PropertyVetoException( msg, evt );
       } catch (IOException e)
