@@ -119,7 +119,7 @@ import static org.qi4j.bootstrap.ImportedServiceDeclaration.*;
 /**
  * JAVADOC
  */
-public class InteractionsAssembler
+public class ContextAssembler
 {
    public void assemble( LayerAssembly layer )
          throws AssemblyException
