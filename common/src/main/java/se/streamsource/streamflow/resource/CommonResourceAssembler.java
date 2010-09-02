@@ -34,6 +34,7 @@ import se.streamsource.streamflow.infrastructure.application.PageListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ResourceValue;
 import se.streamsource.streamflow.infrastructure.application.TreeNodeValue;
 import se.streamsource.streamflow.infrastructure.application.TreeValue;
+import se.streamsource.streamflow.resource.caze.CaseFormDTO;
 import se.streamsource.streamflow.resource.caze.CaseGeneralDTO;
 import se.streamsource.streamflow.resource.caze.CaseValue;
 import se.streamsource.streamflow.resource.caze.CasesQuery;
@@ -103,6 +104,7 @@ public class CommonResourceAssembler
             PageListItemValue.class,
             CaseValue.class,
             CaseGeneralDTO.class,
+            CaseFormDTO.class,
             ContactsDTO.class,
             EndUserCaseDTO.class,
             ConversationDTO.class,

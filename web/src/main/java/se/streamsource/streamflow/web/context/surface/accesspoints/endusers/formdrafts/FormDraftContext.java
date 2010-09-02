@@ -38,10 +38,12 @@ import se.streamsource.streamflow.web.domain.structure.form.FormSubmission;
  */
 @Mixins(FormDraftContext.Mixin.class)
 public interface FormDraftContext
-   extends Context, IndexContext<PageSubmissionValue>
+   extends Context, IndexContext<FormSubmissionValue>
 {
    // queries
    LinksValue pages();
+
+
 
    // commands
    @HasNextPage
@@ -63,11 +65,10 @@ public interface FormDraftContext
       extends ContextMixin
       implements FormDraftContext
    {
-      public PageSubmissionValue index()
+      public FormSubmissionValue index()
       {
-         FormSubmissionValue value = roleMap.get( FormSubmissionValue.class );
 
-         return value.pages().get().get( value.currentPage().get() );
+         return roleMap.get( FormSubmissionValue.class );
       }
 
       public LinksValue pages()

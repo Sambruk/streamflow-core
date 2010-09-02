@@ -17,16 +17,22 @@
 
 package se.streamsource.streamflow.web.context.surface.accesspoints.endusers;
 
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.query.Query;
+import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.SubContexts;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
+import se.streamsource.streamflow.resource.caze.CaseFormDTO;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.entity.gtd.DraftsQueries;
+import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.form.EndUserCases;
+import se.streamsource.streamflow.web.domain.structure.form.FormSubmissions;
 import se.streamsource.streamflow.web.domain.structure.user.AnonymousEndUser;
 
 /**
@@ -40,6 +46,9 @@ public interface EndUserContext
    void createcase( );
 
    void createcasewithform( );
+
+   // query
+   CaseFormDTO findcasewithform();
 
    abstract class Mixin
       extends ContextMixin
@@ -73,6 +82,20 @@ public interface EndUserContext
          CaseEntity caseEntity = module.unitOfWorkFactory().currentUnitOfWork().get( CaseEntity.class, id );
          roleMap.set( caseEntity );
          return subContext( CaseContext.class );
+      }
+
+      public CaseFormDTO findcasewithform()
+      {
+         ValueBuilder<CaseFormDTO> builder = module.valueBuilderFactory().newValueBuilder( CaseFormDTO.class );
+         DraftsQueries queries = roleMap.get( DraftsQueries.class );
+         Query<Case> query = queries.drafts().newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
+         for (Case aCase : query)
+         {
+            builder.prototype().caze().set( EntityReference.getEntityReference( aCase ));
+            builder.prototype().form().set( EntityReference.getEntityReference( ((FormSubmissions.Data) aCase).formSubmissions().get( 0 ) ));
+            break;
+         }
+         return builder.newInstance();
       }
    }
 }
