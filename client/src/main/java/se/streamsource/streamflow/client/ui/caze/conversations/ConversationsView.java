@@ -116,6 +116,7 @@ public class ConversationsView
       } );
 
       JScrollPane scroll = new JScrollPane( list, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER );
+      scroll.setMinimumSize( new Dimension(250, 100) );
       left.add( scroll, BorderLayout.CENTER );
 
       JPanel addPanel = new JPanel();
@@ -128,7 +129,7 @@ public class ConversationsView
       left.add( addPanel, BorderLayout.SOUTH );
 
       setLeftComponent( left );
-      this.setDividerLocation( 200 );
+      this.setDividerLocation( -1 );
 
       refresher = new RefreshWhenVisible( this );
       addAncestorListener( refresher );
