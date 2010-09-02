@@ -39,7 +39,7 @@ public enum Icons
 
    details,
    inbox,
-   
+
    calendar,
 
    // Tabs
@@ -50,16 +50,18 @@ public enum Icons
 
    // Admin
    account,
-   organization, 
+   organization,
    organizationalUnit,
-   
+
    // Conversations
    conversations,
    participants,
-   
+
    // Forms
    formSubmit,
    formMandatorySubmit,
-   formSubmitted, 
-   
+   formSubmitted,
+
+   empty
+
 }

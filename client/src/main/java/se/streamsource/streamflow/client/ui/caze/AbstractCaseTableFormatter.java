@@ -36,7 +36,7 @@ public abstract class AbstractCaseTableFormatter
    protected String[] columnNames;
    protected Class[] columnClasses;
 
-   StringBuilder description = new StringBuilder( );
+   StringBuilder description = new StringBuilder();
 
    public int getColumnCount()
    {
@@ -67,7 +67,7 @@ public abstract class AbstractCaseTableFormatter
             description.setLength( 0 );
 
             if (caseValue.caseId().get() != null)
-               description.append( "#" ).append( caseValue.caseId()).append(" " );
+               description.append( "#" ).append( caseValue.caseId() ).append( " " );
 
             description.append( caseValue.text().get() );
 
@@ -88,17 +88,15 @@ public abstract class AbstractCaseTableFormatter
 
          case 1:
             ArrayList<String> icons = new ArrayList<String>();
-            if(caseValue.hasContacts().get())
-               icons.add( Icons.projects.toString() );
-            if ( caseValue.hasConversations().get())
-               icons.add( Icons.conversations.toString() );
-            if ( caseValue.hasSubmittedForms().get() )
-               icons.add( Icons.formSubmitted.toString() );
-            if ( caseValue.hasAttachments().get() )
-               icons.add( Icons.attachments.toString() );
+
+            icons.add( caseValue.hasContacts().get() ? Icons.projects.toString() : "empty" );
+            icons.add( caseValue.hasConversations().get() ? Icons.conversations.toString() : "empty" );
+            icons.add( caseValue.hasSubmittedForms().get() ? Icons.metadata.toString() : "empty" );
+            icons.add( caseValue.hasAttachments().get() ? Icons.attachments.toString() : "empty" );
+
             return icons;
          case 2:
-            return caseValue.caseType().get() == null ? null : (caseValue.caseType().get() + (caseValue.resolution().get() == null ? "" : "("+caseValue.resolution().get()+")"));
+            return caseValue.caseType().get() == null ? null : (caseValue.caseType().get() + (caseValue.resolution().get() == null ? "" : "(" + caseValue.resolution().get() + ")"));
 
          case 3:
             return caseValue.creationDate().get();

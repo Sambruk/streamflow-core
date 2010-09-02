@@ -28,8 +28,6 @@ import org.jdesktop.swingx.decorator.PainterHighlighter;
 import org.jdesktop.swingx.painter.PinstripePainter;
 import org.jdesktop.swingx.renderer.DefaultTableRenderer;
 import org.jdesktop.swingx.renderer.StringValue;
-import org.qi4j.api.common.Optional;
-import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.Icons;
@@ -42,7 +40,7 @@ import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
 import se.streamsource.streamflow.resource.caze.CaseValue;
 
 import javax.swing.ActionMap;
-import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -134,25 +132,27 @@ public class CaseTableView
             return format.format( time );
          }
       } ) );
-      caseTable.setDefaultRenderer( ArrayList.class, new DefaultTableRenderer(){
+      caseTable.setDefaultRenderer( ArrayList.class, new DefaultTableRenderer()
+      {
 
          @Override
          public Component getTableCellRendererComponent( JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column )
          {
-            JPanel renderer = new JPanel( new FlowLayout( FlowLayout.LEFT));
-    
-            ArrayList<String> icons = (ArrayList<String>)value;
-            for ( String icon : icons )
+            JPanel renderer = new JPanel( new FlowLayout( FlowLayout.LEFT ) );
+            //BoxLayout box = new BoxLayout( renderer, BoxLayout.X_AXIS );
+
+            ArrayList<String> icons = (ArrayList<String>) value;
+            for (String icon : icons)
             {
-               JLabel iconLabel = new JLabel( i18n.icon( Icons.valueOf( icon ), 12 ), SwingConstants.LEADING );
-               iconLabel.setText( null );
+               ImageIcon image = i18n.icon( Icons.valueOf( icon ), 11 );
+               JLabel iconLabel = image != null ? new JLabel( image, SwingConstants.LEADING ) : new JLabel( "   " );
                renderer.add( iconLabel );
             }
-            if ( isSelected )
+            if (isSelected)
                renderer.setBackground( table.getSelectionBackground() );
             return renderer;
          }
-      });
+      } );
       caseTable.setDefaultRenderer( CaseStates.class, new CaseStatusTableCellRenderer() );
 
       caseTable.addHighlighter( HighlighterFactory.createAlternateStriping() );
