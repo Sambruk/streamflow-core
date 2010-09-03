@@ -53,6 +53,7 @@ public class CaseInfoView2 extends JPanel implements Observer
    private JLabel caseType = new JLabel();
    private JLabel owner = new JLabel();
    private JLabel assignedTo = new JLabel();
+   private JLabel createdBy = new JLabel();
 
    private CaseStatusTableCellRenderer statusRenderer;
    private JTable fakeTable;
@@ -63,7 +64,7 @@ public class CaseInfoView2 extends JPanel implements Observer
       this.setFocusable( false );
       setFont( getFont().deriveFont( getFont().getSize() - 2 ) );
 
-      FormLayout layout = new FormLayout( "25dlu,200dlu,70dlu,70dlu,70dlu", "10dlu,15dlu" );
+      FormLayout layout = new FormLayout( "25dlu,180dlu,60dlu,60dlu,60dlu,60dlu", "10dlu,15dlu" );
       DefaultFormBuilder builder = new DefaultFormBuilder( layout, this );
       builder.setBorder( Borders.createEmptyBorder( Sizes.DLUY4,
             Sizes.DLUX2, Sizes.DLUY2, Sizes.DLUX2 ) );
@@ -71,15 +72,23 @@ public class CaseInfoView2 extends JPanel implements Observer
       JLabel statusHeader = new JLabel( i18n.text( WorkspaceResources.case_status_header ) );
       statusHeader.setFocusable( false );
       statusHeader.setForeground( Color.GRAY );
+
       JLabel titleHeader = new JLabel( i18n.text( WorkspaceResources.case_separator ) );
       titleHeader.setFocusable( false );
       titleHeader.setForeground( Color.GRAY );
+
       JLabel typeHeader = new JLabel( i18n.text( WorkspaceResources.casetype_column_header ) );
       typeHeader.setFocusable( false );
       typeHeader.setForeground( Color.GRAY );
+
       JLabel ownerHeader = new JLabel( i18n.text( WorkspaceResources.owner ) );
       ownerHeader.setFocusable( false );
       ownerHeader.setForeground( Color.GRAY );
+
+      JLabel createdHeader = new JLabel( i18n.text( WorkspaceResources.created_column_header ) );
+      createdHeader.setFocusable( false );
+      createdHeader.setForeground( Color.GRAY );
+
       JLabel assignedHeader = new JLabel( i18n.text( WorkspaceResources.assigned_to_header ) );
       assignedHeader.setFocusable( false );
       assignedHeader.setForeground( Color.GRAY );
@@ -94,13 +103,15 @@ public class CaseInfoView2 extends JPanel implements Observer
       builder.add( titleHeader, "2,1,left,bottom" );
       builder.add( typeHeader, "3,1,left,bottom" );
       builder.add( ownerHeader, "4,1,left,bottom" );
-      builder.add( assignedHeader, "5,1,left,bottom" );
+      builder.add( createdHeader, "5,1,left,bottom" );
+      builder.add( assignedHeader, "6,1,left,bottom" );
 
       builder.add( statusPanel, "1,2,left,top" );
       builder.add( title, "2,2,left,center" );
       builder.add( caseType, "3,2,left,center" );
       builder.add( owner, "4,2,left,center" );
-      builder.add( assignedTo, "5,2,left,center" );
+      builder.add( createdBy, "5,2,left,center" );
+      builder.add( assignedTo, "6,2,left,center" );
 
    }
 
@@ -128,19 +139,29 @@ public class CaseInfoView2 extends JPanel implements Observer
       comp.setPreferredSize( new Dimension( 15, 15 ) );
       statusPanel.add( comp );
 
-      title.setText( (aCase.caseId().get() != null ? "#" + aCase.caseId().get() + " " : "") + aCase.text().get() );
+      String titleText = (aCase.caseId().get() != null ? "#" + aCase.caseId().get() + " " : "") + aCase.text().get();
+      title.setText( titleText );
+      title.setToolTipText( titleText );
 
+      String caseTypeText = "";
       if (aCase.caseType().get() != null)
-         caseType.setText( aCase.caseType().get() + (aCase.resolution().get() != null ? "(" + aCase.resolution().get() + ")" : "") );
-      else
-         caseType.setText( "" );
+         caseType.setText( caseTypeText = aCase.caseType().get() + (aCase.resolution().get() != null ? "(" + aCase.resolution().get() + ")" : "") );
 
-      owner.setText( aCase.owner().get() );
+      caseType.setToolTipText( caseTypeText );
 
-      if (aCase.assignedTo().get() == null)
-         assignedTo.setText( "" );
-      else
-         assignedTo.setText( aCase.assignedTo().get() );
+      String ownerText = aCase.owner().get();
+      owner.setText( ownerText );
+      owner.setToolTipText( ownerText );
+
+      String createdByText = aCase.createdBy().get();
+      createdBy.setText( createdByText );
+      createdBy.setToolTipText( createdByText );
+
+      String assignedToText = "";
+      if (aCase.assignedTo().get() != null)
+         assignedTo.setText( assignedToText = aCase.assignedTo().get() );
+
+      assignedTo.setToolTipText( assignedToText );
 
       this.repaint();
    }
