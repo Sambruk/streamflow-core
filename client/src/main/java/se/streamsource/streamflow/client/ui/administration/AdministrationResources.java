@@ -209,7 +209,13 @@ public enum AdministrationResources
    could_not_create_proxyuser,
    could_not_rename_proxyuser,
    members_tab,
-   could_not_reset_password, remove_proxyuser_title, could_not_remove_proxyuser,
-   hint_label, regularexpression_label, cols_label
+   could_not_reset_password,
+   remove_proxyuser_title,
+   could_not_remove_proxyuser,
+   form_id_label, 
+   hint_label, 
+   regularexpression_label,
+   field_id_label,
+   cols_label
 
 }
