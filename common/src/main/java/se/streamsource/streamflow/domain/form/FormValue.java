@@ -22,7 +22,7 @@ import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
 
 /**
- * JAVADOC
+ * Value for forms.
  */
 public interface FormValue
       extends ValueComposite
@@ -32,4 +32,6 @@ public interface FormValue
    Property<String> description();
 
    Property<String> note();
+
+   Property<String> id();
 }

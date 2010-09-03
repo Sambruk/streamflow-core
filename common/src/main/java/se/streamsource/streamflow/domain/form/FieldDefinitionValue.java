@@ -38,6 +38,8 @@ public interface FieldDefinitionValue
 
    Property<String> note();
 
+   Property<String> fieldId();
+
    Property<FieldValue> fieldValue();
 
    @UseDefaults
