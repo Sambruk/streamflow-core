@@ -22,9 +22,21 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee
     http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd" version="2.4">
-    <welcome-file-list>
-        <welcome-file>index.html</welcome-file>
-        <welcome-file>index.jsp</welcome-file>
-    </welcome-file-list>
+
+    <servlet>
+        <servlet-name>StreamflowPluginServlet</servlet-name>
+        <servlet-class>se.streamsource.streamflow.server.plugin.restlet.StreamflowPluginServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+
+        <init-param>
+            <param-name>assembler</param-name>
+            <param-value>se.streamsource.streamflow.reference.assembler.PluginAssembler</param-value>
+        </init-param>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>StreamflowPluginServlet</servlet-name>
+        <url-pattern>/*</url-pattern>
+    </servlet-mapping>
 
 </web-app>

@@ -15,58 +15,41 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.rest;
+package se.streamsource.streamflow.server.plugin.restlet;
 
-import org.qi4j.api.common.Optional;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.Energy4Java;
 import org.qi4j.spi.structure.ApplicationSPI;
 import org.restlet.Application;
 import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.data.MediaType;
+import org.restlet.data.Protocol;
 import org.restlet.routing.Router;
-import org.restlet.security.Enroler;
-import org.restlet.security.Verifier;
-import se.streamsource.streamflow.web.assembler.StreamflowWebAssembler;
-import se.streamsource.streamflow.web.application.security.DefaultEnroler;
-import se.streamsource.streamflow.web.resource.APIRouter;
-
+import org.restlet.routing.Template;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * JAVADOC
+ * Application for Streamflow SPI Plugin implementations.
  */
-public class StreamflowRestApplication
+public class StreamflowPluginRestApplication
       extends Application
 {
    public static final MediaType APPLICATION_SPARQL_JSON = new MediaType( "application/sparql-results+json", "SPARQL JSON" );
 
-   final Logger logger = LoggerFactory.getLogger( "streamflow" );
+   final Logger logger = LoggerFactory.getLogger( "plugin" );
 
-   @Structure
-   ObjectBuilderFactory factory;
-
-   @Optional
-   @Service
-   Verifier verifier;
-
-   Enroler enroler = new DefaultEnroler();
-
-   @Structure
    ApplicationSPI app;
 
-   public StreamflowRestApplication( @Uses Context parentContext ) throws Exception
+   private Assembler assembler;
+
+   public StreamflowPluginRestApplication( Context parentContext, Assembler assembler ) throws Exception
    {
       super( parentContext );
+      this.assembler = assembler;
 
       getMetadataService().addExtension( "srj", APPLICATION_SPARQL_JSON );
-
    }
 
    /**
@@ -75,15 +58,16 @@ public class StreamflowRestApplication
    @Override
    public Restlet createInboundRoot()
    {
+/*
       getContext().setDefaultVerifier( verifier );
       getContext().setDefaultEnroler( enroler );
+*/
 
-      Router versions = new Router( getContext() );
+      Router pluginRouter = new Router( getContext() );
 
-      Router api = factory.newObjectBuilder( APIRouter.class ).use( getContext() ).newInstance();
-      versions.attachDefault( api );
+      pluginRouter.attach( "/contacts", (Restlet) app.findModule("Web", "REST").objectBuilderFactory().newObject(ContactLookupRestlet.class ), Template.MODE_STARTS_WITH);
 
-      return versions;
+      return pluginRouter;
    }
 
    @Override
@@ -95,11 +79,9 @@ public class StreamflowRestApplication
          {
             // Start Qi4j
             Energy4Java is = new Energy4Java();
-            app = is.newApplication( new StreamflowWebAssembler( getMetadataService() ) );
+            app = is.newApplication( new PluginApplicationAssembler(assembler) );
 
             app.activate();
-
-            app.findModule( "Web", "REST" ).objectBuilderFactory().newObjectBuilder( StreamflowRestApplication.class ).injectTo( this );
 
             super.start();
          } catch (Exception e)
@@ -117,7 +99,7 @@ public class StreamflowRestApplication
       {
          super.stop();
 
-         logger.info( "Passivating Streamflow" );
+         logger.info( "Passivating Streamflow plugins" );
          app.passivate();
       }
    }

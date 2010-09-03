@@ -30,6 +30,7 @@
     <orderEntry type="library" name="Maven: org.ccil.cowan.tagsoup:tagsoup:1.2" level="project" />
     <orderEntry type="library" name="Maven: org.sitemesh:sitemesh:3.0-alpha-1" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.6.0" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: javax.servlet:servlet-api:2.5" level="project" />
   </component>
 </module>
 

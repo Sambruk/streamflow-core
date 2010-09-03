@@ -70,6 +70,7 @@ public class MainWeb
          component = new Component();
          component.getClients().add( Protocol.CLAP );
          component.getClients().add( Protocol.FILE );
+         component.getClients().add( Protocol.HTTP );
          application = new StreamflowRestApplication( component.getContext().createChildContext() );
 
          component.getDefaultHost().attach( "/streamflow", application );

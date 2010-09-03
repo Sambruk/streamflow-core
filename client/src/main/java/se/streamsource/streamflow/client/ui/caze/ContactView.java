@@ -136,10 +136,10 @@ public class ContactView
       builder.nextColumn(2);
       builder.add(contactBinder.bind( TEXTAREA.newField(), template.note() ) );
 
-      //builder.nextLine(2);
-      //builder.add(new JLabel(i18n.text(WorkspaceResources.lookup_contact_label )));
-      //builder.nextColumn(2);
-      //builder.add(new JButton(getActionMap().get( "lookupContact" )) );
+      builder.nextLine(2);
+      builder.add(new JLabel(i18n.text(WorkspaceResources.lookup_contact_label )));
+      builder.nextColumn(2);
+      builder.add(new JButton(getActionMap().get( "lookupContact" )) );
 
       contactBinder.addObserver( this );
       phoneNumberBinder.addObserver( this );
@@ -249,10 +249,17 @@ public class ContactView
 
          for (ContactValue contactValue : contacts.contacts().get())
          {
+            if (defaultFocusField.getText().equals("") && !contactValue.name().get().equals(""))
+            {
+               model.changeName( contactValue.name().get() );
+               defaultFocusField.setText( contactValue.name().get() );
+            }
+
             for (ContactPhoneValue contactPhoneValue : contactValue.phoneNumbers().get())
             {
                if (!contactPhoneValue.phoneNumber().get().equals("") && model.getPhoneNumber().phoneNumber().get().equals(""))
                {
+                  model.changePhoneNumber( contactPhoneValue.phoneNumber().get() );
                   phoneField.setText( contactPhoneValue.phoneNumber().get() );
                }
             }
@@ -262,6 +269,7 @@ public class ContactView
             {
                if (!addressValue.address().get().equals("") && model.getAddress().address().get().equals(""))
                {
+                  model.changeAddress( addressValue.address().get() );
                   addressField.setText( addressValue.address().get() );
                }
             }

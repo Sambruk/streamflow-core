@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.plugin.eventlogger;
+package se.streamsource.streamflow.reference.eventlogger;
 
 import org.slf4j.LoggerFactory;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;

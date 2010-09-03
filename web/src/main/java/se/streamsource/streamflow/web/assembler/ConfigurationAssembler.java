@@ -38,6 +38,7 @@ import se.streamsource.streamflow.web.application.statistics.StatisticsConfigura
 import se.streamsource.streamflow.web.configuration.ServiceConfiguration;
 import se.streamsource.streamflow.web.infrastructure.database.DataSourceConfiguration;
 import se.streamsource.streamflow.web.infrastructure.database.LiquibaseConfiguration;
+import se.streamsource.streamflow.web.infrastructure.plugin.PluginConfiguration;
 
 import java.util.prefs.Preferences;
 
@@ -70,6 +71,9 @@ public class ConfigurationAssembler
       module.addEntities( JmxConnectorConfiguration.class ).visibleIn( Visibility.application );
       module.addEntities( MigrationConfiguration.class ).visibleIn( Visibility.application );
       module.addEntities( MailConfiguration.class ).visibleIn( Visibility.application );
+
+      // Plugin configurations
+      module.addEntities( PluginConfiguration.class ).visibleIn( Visibility.application );
 
       module.forMixin( ReindexerConfiguration.class ).declareDefaults().loadValue().set( 50 );
       module.forMixin( DataSourceConfiguration.class ).declareDefaults().properties().set("");

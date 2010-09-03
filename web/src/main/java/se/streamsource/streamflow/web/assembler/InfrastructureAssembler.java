@@ -45,6 +45,10 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.factory.DomainEventFactoryService;
 import se.streamsource.streamflow.infrastructure.time.TimeService;
+import se.streamsource.streamflow.server.plugin.contact.ContactAddressValue;
+import se.streamsource.streamflow.server.plugin.contact.ContactEmailValue;
+import se.streamsource.streamflow.server.plugin.contact.ContactPhoneValue;
+import se.streamsource.streamflow.server.plugin.contact.ContactValue;
 import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStoreService;
 import se.streamsource.streamflow.web.infrastructure.caching.CachingServiceComposite;
 import se.streamsource.streamflow.web.infrastructure.database.DataSourceService;
@@ -54,6 +58,7 @@ import se.streamsource.streamflow.web.infrastructure.event.JdbmEventStoreService
 import se.streamsource.streamflow.web.infrastructure.event.MemoryEventStoreService;
 import se.streamsource.streamflow.web.infrastructure.index.EmbeddedSolrService;
 import se.streamsource.streamflow.web.infrastructure.index.SolrQueryService;
+import se.streamsource.streamflow.web.infrastructure.plugin.contact.ContactLookupService;
 import se.streamsource.streamflow.web.resource.EventsCommandResult;
 
 import javax.sql.DataSource;
@@ -76,6 +81,20 @@ public class InfrastructureAssembler
       events( layer.moduleAssembly( "Events" ) );
       searchEngine( layer.moduleAssembly( "Search engine" ) );
       attachments( layer.moduleAssembly( "Attachments store" ) );
+      plugins(layer.moduleAssembly( "Plugins" ));
+   }
+
+   private void plugins( ModuleAssembly moduleAssembly ) throws AssemblyException
+   {
+      moduleAssembly.addServices( ContactLookupService.class ).
+            identifiedBy( "contactlookup" ).
+            visibleIn( Visibility.application ).
+            instantiateOnStartup();
+
+      moduleAssembly.addValues( ContactValue.class,
+            ContactAddressValue.class,
+            ContactEmailValue.class,
+            ContactPhoneValue.class).visibleIn( Visibility.application );
    }
 
    private void caching( ModuleAssembly moduleAssembly ) throws AssemblyException
