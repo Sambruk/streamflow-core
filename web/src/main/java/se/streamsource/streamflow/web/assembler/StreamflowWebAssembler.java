@@ -64,7 +64,7 @@ public class StreamflowWebAssembler
 
       assembleWebLayer( webLayer );
       assembleApplicationLayer( appLayer );
-      new InteractionsAssembler().assemble( contextLayer );
+      new ContextAssembler().assemble( contextLayer );
       new DomainAssembler().assemble( domainLayer );
       new InfrastructureAssembler().assemble( domainInfrastructureLayer );
       new ConfigurationAssembler().assemble( configurationLayer );
