@@ -23,6 +23,7 @@ import se.streamsource.streamflow.domain.structure.Removable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
+import se.streamsource.streamflow.web.domain.structure.form.FormId;
 import se.streamsource.streamflow.web.domain.structure.form.Pages;
 
 /**
@@ -34,6 +35,7 @@ public interface FormEntity
 
       // Data
       Describable.Data,
+      FormId.Data,
       Notable.Data,
       Pages.Data,
       Ownable.Data,

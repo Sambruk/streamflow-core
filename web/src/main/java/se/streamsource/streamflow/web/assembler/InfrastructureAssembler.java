@@ -392,7 +392,15 @@ public class InfrastructureAssembler
                   {
                      return false;
                   }
-               });
+               })
+               .end().
+               toVersion( "1.1.7.2360" ).
+               forEntities( "se.streamsource.streamflow.web.domain.entity.form.FieldEntity" ).
+                  addProperty( "fieldId", "field" ).
+               end().
+               forEntities( "se.streamsource.streamflow.web.domain.entity.form.FormEntity" ).
+                  addProperty( "formId", "form" ).
+               end();
 
          module.addServices( MigrationService.class ).setMetaInfo( migrationBuilder );
          module.addObjects( MigrationEventLogger.class );

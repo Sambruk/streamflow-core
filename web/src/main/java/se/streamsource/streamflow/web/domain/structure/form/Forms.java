@@ -30,6 +30,7 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.web.domain.entity.form.FormEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.ChangesOwner;
 
 /**
@@ -108,7 +109,8 @@ public interface Forms
 
       public Form createdForm( DomainEvent event, String id )
       {
-         EntityBuilder<Form> builder = uowf.currentUnitOfWork().newEntityBuilder( Form.class, id );
+         EntityBuilder<FormEntity> builder = uowf.currentUnitOfWork().newEntityBuilder( FormEntity.class, id );
+         builder.instance().formId().set( "form"+(forms().count()+1) );
          Form form = builder.newInstance();
          data.forms().add( form );
          return form;

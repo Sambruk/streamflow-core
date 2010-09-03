@@ -27,6 +27,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.util.Classes;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.library.constraints.annotation.GreaterThan;
 import se.streamsource.streamflow.domain.form.FieldValue;
@@ -112,6 +113,10 @@ public interface Fields
 
          EntityBuilder<Field> builder = uowf.currentUnitOfWork().newEntityBuilder( Field.class, id );
          builder.instanceFor(FieldValueDefinition.Data.class).fieldValue().set( fieldValue );
+         String fieldId = Classes.interfacesOf( fieldValue.getClass()).iterator().next().getSimpleName();
+         fieldId = fieldId.substring( 0, fieldId.length()-"FieldValue".length() );
+         fieldId += data.fields().count()+1;
+         builder.instanceFor(FieldId.Data.class).fieldId().set( fieldId );
 
          Field field = builder.newInstance();
 

@@ -27,6 +27,7 @@ import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
  */
 public interface Form
  extends Describable,
+      FormId,
       Notable,
       Pages,
       Ownable,

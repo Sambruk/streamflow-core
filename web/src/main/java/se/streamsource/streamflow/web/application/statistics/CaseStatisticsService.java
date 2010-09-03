@@ -71,7 +71,9 @@ import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.Resolution;
 import se.streamsource.streamflow.web.domain.structure.form.Field;
+import se.streamsource.streamflow.web.domain.structure.form.FieldId;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
+import se.streamsource.streamflow.web.domain.structure.form.FormId;
 import se.streamsource.streamflow.web.domain.structure.form.Page;
 import se.streamsource.streamflow.web.domain.structure.group.Group;
 import se.streamsource.streamflow.web.domain.structure.group.Participation;
@@ -160,7 +162,7 @@ public interface CaseStatisticsService
                   uow.discard();
                }
             }
-         } ).route( new EventQuery().withNames( "changedDescription" ).onEntityTypes(
+         } ).route( new EventQuery().withNames( "changedDescription", "changedFieldId", "changedFormId" ).onEntityTypes(
                LabelEntity.class.getName(),
                UserEntity.class.getName(),
                GroupEntity.class.getName(),
@@ -414,7 +416,17 @@ public interface CaseStatisticsService
       {
          ValueBuilder<RelatedStatisticsValue> builder = module.valueBuilderFactory().newValueBuilder( RelatedStatisticsValue.class );
          builder.prototype().identity().set( entity.identity().get() );
-         builder.prototype().description().set( ((Describable) entity).getDescription() );
+         if (entity instanceof Form)
+         {
+            builder.prototype().description().set( ((FormId.Data) entity).formId().get() );
+         } else if (entity instanceof Field)
+         {
+            builder.prototype().description().set( ((FieldId.Data) entity).fieldId().get() );
+         } else
+         {
+            builder.prototype().description().set( ((Describable) entity).getDescription() );
+         }
+
          builder.prototype().relatedType().set( type );
          return builder.newInstance();
       }
