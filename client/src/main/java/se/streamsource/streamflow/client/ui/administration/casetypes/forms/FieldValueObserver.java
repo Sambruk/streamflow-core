@@ -62,6 +62,15 @@ public class FieldValueObserver
          {
             throw new OperationException( CaseResources.could_not_change_note, e );
          }
+      } else if (property.qualifiedName().name().equals( "fieldId" ))
+      {
+         try
+         {
+            model.changeFieldId( (String) property.get() );
+         } catch (ResourceException e)
+         {
+            throw new OperationException( CaseResources.could_not_update_field, e );
+         }
       } else if (property.qualifiedName().name().equals( "width" ))
       {
          try

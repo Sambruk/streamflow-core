@@ -68,7 +68,7 @@ public class FieldValueEditModel
    {
       ValueBuilder<BooleanDTO> builder = vbf.newValueBuilder( BooleanDTO.class );
       builder.prototype().bool().set( mandatory );
-      client.putCommand( "updatemandatory", builder.newInstance() );
+      client.putCommand( "changemandatory", builder.newInstance() );
    }
 
    public void changeDescription( String newDescription ) throws ResourceException
@@ -83,6 +83,13 @@ public class FieldValueEditModel
       ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
       builder.prototype().string().set( newNote );
       client.putCommand( "changenote", builder.newInstance() );
+   }
+
+   public void changeFieldId( String newId ) throws ResourceException
+   {
+      ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
+      builder.prototype().string().set( newId );
+      client.putCommand( "changefieldid", builder.newInstance() );
    }
 
    public void changeWidth( Integer newWidth ) throws ResourceException

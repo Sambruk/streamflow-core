@@ -90,6 +90,11 @@ public class FieldEditorCheckboxesFieldValueView
       formBuilder.add( new JLabel( i18n.text( AdministrationResources.description_label ) ) );
       formBuilder.nextColumn( 2 );
       formBuilder.add( fieldDefinitionBinder.bind( TEXTAREA.newField(), fieldDefinitionTemplate.note() ) );
+      formBuilder.nextLine();
+
+      formBuilder.add( new JLabel( i18n.text( AdministrationResources.field_id_label ) ) );
+      formBuilder.nextColumn( 2 );
+      formBuilder.add( fieldDefinitionBinder.bind( TEXTFIELD.newField(), fieldDefinitionTemplate.fieldId() ) );
 
       FieldValueObserver observer = obf.newObjectBuilder( FieldValueObserver.class ).use( model ).newInstance();
       fieldValueBinder.addObserver( observer );

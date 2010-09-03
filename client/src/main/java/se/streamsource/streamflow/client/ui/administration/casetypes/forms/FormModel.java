@@ -153,6 +153,11 @@ public class FormModel
       client.putCommand( "changenote", note );
    }
 
+   public void changeFormId( StringValue id )
+   {
+      client.putCommand( "changeformid", id );
+   }
+
    public FieldsModel getFieldsModel()
    {
       return fieldsModels.get( formValue.form().get().identity() );

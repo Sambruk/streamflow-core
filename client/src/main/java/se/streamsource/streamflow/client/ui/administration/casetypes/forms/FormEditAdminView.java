@@ -104,7 +104,8 @@ public class FormEditAdminView
       BindingFormBuilder bb = new BindingFormBuilder( formBuilder, formValueBinder );
 
       bb.appendLine( AdministrationResources.name_label, TEXTFIELD, formValueTemplate.description() ).
-            appendLine( AdministrationResources.description_label, TEXTAREA, formValueTemplate.note() );
+         appendLine( AdministrationResources.description_label, TEXTAREA, formValueTemplate.note() ).
+         appendLine( AdministrationResources.form_id_label, TEXTFIELD, formValueTemplate.id() );
 
       formValueBinder.addObserver( this );
 
@@ -223,6 +224,17 @@ public class FormEditAdminView
             ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
             builder.prototype().string().set( (String) property.get() );
             model.changeNote( builder.newInstance() );
+         } catch (ResourceException e)
+         {
+            throw new OperationException( CaseResources.could_not_change_note, e );
+         }
+      }else if (property.qualifiedName().name().equals( "id" ))
+      {
+         try
+         {
+            ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
+            builder.prototype().string().set( (String) property.get() );
+            model.changeFormId( builder.newInstance() );
          } catch (ResourceException e)
          {
             throw new OperationException( CaseResources.could_not_change_note, e );
