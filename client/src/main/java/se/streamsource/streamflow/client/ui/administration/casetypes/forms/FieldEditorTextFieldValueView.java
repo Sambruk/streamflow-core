@@ -92,7 +92,7 @@ public class FieldEditorTextFieldValueView
 
       formBuilder.add( new JLabel( i18n.text( AdministrationResources.hint_label ) ) );
       formBuilder.nextColumn( 2 );
-      formBuilder.add( fieldDefinitionBinder.bind( TEXTFIELD.newField(), fieldDefinitionTemplate.hint() ) );
+      formBuilder.add( fieldValueBinder.bind( TEXTFIELD.newField(), fieldValueTemplate.hint() ) );
       formBuilder.nextLine();
 
       formBuilder.add( new JLabel( i18n.text( AdministrationResources.description_label ) ) );

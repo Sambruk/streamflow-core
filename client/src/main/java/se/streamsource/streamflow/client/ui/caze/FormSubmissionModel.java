@@ -17,19 +17,19 @@
 
 package se.streamsource.streamflow.client.ui.caze;
 
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.entity.EntityReference;
-import org.qi4j.api.value.ValueBuilderFactory;
-import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import org.restlet.resource.ResourceException;
 import org.netbeans.spi.wizard.WizardPage;
+import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
+import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
-import se.streamsource.streamflow.domain.form.FormSubmissionValue;
 import se.streamsource.streamflow.domain.form.FieldValueDTO;
+import se.streamsource.streamflow.domain.form.FormSubmissionValue;
 import se.streamsource.streamflow.domain.form.PageSubmissionValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
@@ -37,14 +37,14 @@ import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
 import se.streamsource.streamflow.infrastructure.event.source.helper.EventParameters;
 import se.streamsource.streamflow.infrastructure.event.source.helper.EventVisitorFilter;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Model for handling a form submission and subsequently submitting it
  */
 public class FormSubmissionModel
-   implements EventListener, EventVisitor
+      implements EventListener, EventVisitor
 {
    private ValueBuilderFactory vbf;
    private CommandQueryClient client;
@@ -53,9 +53,9 @@ public class FormSubmissionModel
 
    EventVisitorFilter eventFilter = new EventVisitorFilter( this, "changedFormSubmission" );
 
-   public FormSubmissionModel(@Uses CommandQueryClient client,
-                              @Structure ObjectBuilderFactory obf,
-                              @Structure ValueBuilderFactory vbf)
+   public FormSubmissionModel( @Uses CommandQueryClient client,
+                               @Structure ObjectBuilderFactory obf,
+                               @Structure ValueBuilderFactory vbf )
    {
       this.vbf = vbf;
       this.client = client;
@@ -69,9 +69,9 @@ public class FormSubmissionModel
       pages = new ArrayList<FormSubmissionWizardPage>( formSubmission.pages().get().size() );
       for (PageSubmissionValue page : formSubmission.pages().get())
       {
-         if ( page.fields().get() != null && page.fields().get().size() >0 )
+         if (page.fields().get() != null && page.fields().get().size() > 0)
          {
-            pages.add( obf.newObjectBuilder( FormSubmissionWizardPage.class)
+            pages.add( obf.newObjectBuilder( FormSubmissionWizardPage.class )
                   .use( this, page ).newInstance() );
          }
       }
@@ -79,7 +79,7 @@ public class FormSubmissionModel
 
    public WizardPage[] getPages()
    {
-      WizardPage[] wizardPages = new WizardPage[ pages.size() ];
+      WizardPage[] wizardPages = new WizardPage[pages.size()];
       pages.toArray( wizardPages );
       return wizardPages;
    }
@@ -95,7 +95,7 @@ public class FormSubmissionModel
       builder.prototype().field().set( reference );
       builder.prototype().value().set( name );
 
-      client.putCommand( "updatefield", builder.newInstance());
+      client.putCommand( "updatefield", builder.newInstance() );
    }
 
    public void previousPage()
@@ -110,10 +110,10 @@ public class FormSubmissionModel
 
    public boolean visit( DomainEvent event )
    {
-      if ( "changedFormSubmission".equals( event.name().get() ))
+      if ("changedFormSubmission".equals( event.name().get() ))
       {
          FormSubmissionValue value = vbf.newValueFromJSON( FormSubmissionValue.class, EventParameters.getParameter( event, "param1" ) );
-         for ( int i=0; i<value.pages().get().size(); i++ )
+         for (int i = 0; i < value.pages().get().size(); i++)
          {
             PageSubmissionValue pageSubmissionValue = value.pages().get().get( i );
             FormSubmissionWizardPage submissionWizardPage = pages.get( i );

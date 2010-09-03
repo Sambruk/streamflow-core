@@ -60,14 +60,14 @@ public enum CaseResources
    case_status_on_hold_text,
 
    // Conversation
-   could_not_remove_conversation_participant, 
-   could_not_add_conversation_participant, 
-   heading_label, 
-   message_label, 
-   new_conversation_topic, 
-   could_not_add_message, 
-   could_not_create_conversation, 
-   could_not_add_participant, 
+   could_not_remove_conversation_participant,
+   could_not_add_conversation_participant,
+   heading_label,
+   message_label,
+   new_conversation_topic,
+   could_not_add_message,
+   could_not_create_conversation,
+   could_not_add_participant,
    could_not_remove_participant,
-   choose_participant
+   could_not_change_hint, could_not_change_regularexpression, choose_participant
 }

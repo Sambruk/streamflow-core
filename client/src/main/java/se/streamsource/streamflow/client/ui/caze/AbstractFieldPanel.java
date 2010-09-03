@@ -17,32 +17,13 @@
 
 package se.streamsource.streamflow.client.ui.caze;
 
-import org.jdesktop.swingx.JXDatePicker;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
-import se.streamsource.streamflow.domain.form.CheckboxesFieldValue;
-import se.streamsource.streamflow.domain.form.ComboBoxFieldValue;
-import se.streamsource.streamflow.domain.form.DateFieldValue;
 import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
-import se.streamsource.streamflow.domain.form.FieldValue;
-import se.streamsource.streamflow.domain.form.ListBoxFieldValue;
-import se.streamsource.streamflow.domain.form.NumberFieldValue;
-import se.streamsource.streamflow.domain.form.OptionButtonsFieldValue;
-import se.streamsource.streamflow.domain.form.TextAreaFieldValue;
-import se.streamsource.streamflow.domain.form.TextFieldValue;
 
-import javax.swing.JComboBox;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.event.ChangeListener;
-import java.text.DateFormat;
-import java.util.EventListener;
-import java.util.Locale;
-
-import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.*;
 
 /**
  * Abstract class that each field type must extend
@@ -68,7 +49,7 @@ public abstract class AbstractFieldPanel extends JPanel
 
    public StateBinder bindComponent( BindingFormBuilder bb, FieldSubmissionValue value )
    {
-      if ( value.field().get().note().get().length() > 0 )
+      if (value.field().get().note().get().length() > 0)
       {
          setToolTipText( value.field().get().note().get() );
       }
@@ -92,11 +73,11 @@ public abstract class AbstractFieldPanel extends JPanel
       return field.field().get().mandatory().get();
    }
 
-   private String componentName( )
+   protected String componentName()
    {
       StringBuilder componentName = new StringBuilder( "<html>" );
       componentName.append( title() );
-      if ( mandatory() )
+      if (mandatory())
       {
          componentName.append( " <font color='red'>*</font>" );
       }

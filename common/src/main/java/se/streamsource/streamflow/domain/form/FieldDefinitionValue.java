@@ -17,7 +17,6 @@
 
 package se.streamsource.streamflow.domain.form;
 
-import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.property.Property;
@@ -32,9 +31,6 @@ public interface FieldDefinitionValue
    Property<EntityReference> field();
 
    Property<String> description();
-
-   @Optional
-   Property<String> hint();
 
    Property<String> note();
 

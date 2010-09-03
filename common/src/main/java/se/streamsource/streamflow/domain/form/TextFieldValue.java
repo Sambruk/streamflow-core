@@ -30,4 +30,7 @@ public interface TextFieldValue
 
    @Optional
    Property<String> regularExpression();
+
+   @Optional
+   Property<String> hint();
 }

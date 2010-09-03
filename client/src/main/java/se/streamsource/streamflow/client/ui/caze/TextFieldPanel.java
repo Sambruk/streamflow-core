@@ -18,28 +18,30 @@
 package se.streamsource.streamflow.client.ui.caze;
 
 import org.qi4j.api.injection.scope.Uses;
+import se.streamsource.streamflow.client.infrastructure.ui.RegexPatternFormatter;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
 import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
-import se.streamsource.streamflow.domain.form.FieldValue;
 import se.streamsource.streamflow.domain.form.TextFieldValue;
+import se.streamsource.streamflow.util.Strings;
 
 import javax.swing.InputVerifier;
 import javax.swing.JComponent;
 import javax.swing.JTextField;
 import javax.swing.text.JTextComponent;
 import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.text.ParseException;
 
 public class TextFieldPanel
       extends AbstractFieldPanel
 {
    private JTextField textField;
+   private TextFieldValue fieldValue;
 
    public TextFieldPanel( @Uses FieldSubmissionValue field, @Uses TextFieldValue fieldValue )
    {
       super( field );
-      setLayout( new BorderLayout( ) );
+      setLayout( new BorderLayout() );
+      this.fieldValue = fieldValue;
 
       textField = new JTextField();
       textField.setColumns( fieldValue.width().get() );
@@ -72,9 +74,41 @@ public class TextFieldPanel
          @Override
          public boolean verify( JComponent input )
          {
+            if (Strings.notEmpty( fieldValue.regularExpression().get() )
+                  && Strings.notEmpty( ((JTextComponent) input).getText() ))
+            {
+               try
+               {
+                  new RegexPatternFormatter( fieldValue.regularExpression().get() ).stringToValue( ((JTextComponent) input).getText() );
+                  return true;
+
+               } catch (ParseException e)
+               {
+                  throw new IllegalArgumentException( fieldValue.hint().get(), e );
+               }
+            }
             binding.updateProperty( ((JTextComponent) input).getText() );
             return true;
          }
-      });
+      } );
    }
+
+   @Override
+   protected String componentName()
+   {
+      StringBuilder componentName = new StringBuilder( "<html>" );
+      componentName.append( title() );
+      if (Strings.notEmpty( fieldValue.hint().get() ))
+      {
+         componentName.append( " <font color='#778899'>(" + fieldValue.hint().get() + ")</font>" );
+      }
+
+      if (mandatory())
+      {
+         componentName.append( " <font color='red'>*</font>" );
+      }
+      componentName.append( "</html>" );
+      return componentName.toString();
+   }
+
 }

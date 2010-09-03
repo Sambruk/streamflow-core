@@ -27,7 +27,7 @@ import java.util.Observable;
 import java.util.Observer;
 
 public class FieldValueObserver
-   implements Observer
+      implements Observer
 {
    @Uses
    private FieldValueEditModel model;
@@ -102,12 +102,12 @@ public class FieldValueObserver
       {
          try
          {
-            model.changeMultiple( (Boolean) property.get());
+            model.changeMultiple( (Boolean) property.get() );
          } catch (ResourceException e)
          {
             throw new OperationException( CaseResources.could_not_change_multiple, e );
          }
-      } else if ( property.qualifiedName().name().equals( "comment" ))
+      } else if (property.qualifiedName().name().equals( "comment" ))
       {
          try
          {
@@ -116,7 +116,7 @@ public class FieldValueObserver
          {
             throw new OperationException( CaseResources.could_not_change_comment, e );
          }
-      } else if ( property.qualifiedName().name().equals( "integer" ))
+      } else if (property.qualifiedName().name().equals( "integer" ))
       {
          try
          {
@@ -124,6 +124,24 @@ public class FieldValueObserver
          } catch (ResourceException e)
          {
             throw new OperationException( CaseResources.could_not_change_comment, e );
+         }
+      } else if (property.qualifiedName().name().equals( "hint" ))
+      {
+         try
+         {
+            model.changeHint( (String) property.get() );
+         } catch (ResourceException e)
+         {
+            throw new OperationException( CaseResources.could_not_change_hint, e );
+         }
+      } else if (property.qualifiedName().name().equals( "regularExpression" ))
+      {
+         try
+         {
+            model.changeRegularExpression( (String) property.get() );
+         } catch (ResourceException e)
+         {
+            throw new OperationException( CaseResources.could_not_change_regularexpression, e );
          }
       }
 

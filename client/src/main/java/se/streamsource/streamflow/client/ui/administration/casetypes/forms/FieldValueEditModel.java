@@ -22,6 +22,8 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.client.OperationException;
@@ -34,9 +36,6 @@ import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
 import se.streamsource.streamflow.infrastructure.event.source.helper.EventVisitorFilter;
 import se.streamsource.streamflow.resource.roles.BooleanDTO;
 import se.streamsource.streamflow.resource.roles.IntegerDTO;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * JAVADOC
@@ -140,6 +139,20 @@ public class FieldValueEditModel
       ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
       builder.prototype().string().set( direction );
       client.postCommand( "move", builder.newInstance() );
+   }
+
+   public void changeHint( String hint ) throws ResourceException
+   {
+      ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
+      builder.prototype().string().set( hint );
+      client.putCommand( "changehint", builder.newInstance() );
+   }
+
+   public void changeRegularExpression( String regularExpression ) throws ResourceException
+   {
+      ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
+      builder.prototype().string().set( regularExpression );
+      client.putCommand( "changeregularexpression", builder.newInstance() );
    }
 
    public void refresh() throws OperationException

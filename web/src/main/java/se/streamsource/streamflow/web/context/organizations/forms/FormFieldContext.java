@@ -29,7 +29,6 @@ import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.RequiresRoles;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
-import se.streamsource.streamflow.domain.form.ListBoxFieldValue;
 import se.streamsource.streamflow.domain.form.NumberFieldValue;
 import se.streamsource.streamflow.domain.form.SelectionFieldValue;
 import se.streamsource.streamflow.domain.form.TextAreaFieldValue;
@@ -44,7 +43,6 @@ import se.streamsource.streamflow.web.domain.structure.form.Field;
 import se.streamsource.streamflow.web.domain.structure.form.FieldId;
 import se.streamsource.streamflow.web.domain.structure.form.FieldValueDefinition;
 import se.streamsource.streamflow.web.domain.structure.form.Fields;
-import se.streamsource.streamflow.web.domain.structure.form.Hint;
 import se.streamsource.streamflow.web.domain.structure.form.Mandatory;
 
 /**
@@ -59,7 +57,7 @@ public interface FormFieldContext
    public void changemandatory( BooleanDTO mandatory );
 
    public void changefieldid( StringValue id );
-   
+
    public void changehint( StringValue hint );
 
    @RequiresRoles(TextFieldValue.class)
@@ -109,7 +107,6 @@ public interface FormFieldContext
          builder.prototype().fieldId().set( fieldEntity.fieldId().get() );
          builder.prototype().fieldValue().set( fieldEntity.fieldValue().get() );
          builder.prototype().mandatory().set( fieldEntity.isMandatory() );
-         builder.prototype().hint().set( fieldEntity.hint().get() );
 
          return builder.newInstance();
       }
@@ -130,8 +127,13 @@ public interface FormFieldContext
 
       public void changehint( StringValue hint )
       {
-         Hint hintField = roleMap.get( Hint.class );
-         hintField.changeHint( hint.string().get() );
+         FieldValueDefinition fieldValueDefinition = roleMap.get( FieldValueDefinition.class );
+         TextFieldValue value = roleMap.get( TextFieldValue.class );
+
+         ValueBuilder<TextFieldValue> builder = value.buildWith();
+         builder.prototype().hint().set( hint.string().get() );
+
+         fieldValueDefinition.changeFieldValue( builder.newInstance() );
       }
 
       public void changewidth( IntegerDTO newWidth )
