@@ -31,7 +31,12 @@ import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.resource.caze.FieldDTO;
 import se.streamsource.streamflow.resource.roles.IntegerDTO;
 import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.formdrafts.summary.SummaryContext;
+import se.streamsource.streamflow.web.domain.structure.caze.Case;
+import se.streamsource.streamflow.web.domain.structure.form.EndUserCases;
+import se.streamsource.streamflow.web.domain.structure.form.Form;
 import se.streamsource.streamflow.web.domain.structure.form.FormSubmission;
+import se.streamsource.streamflow.web.domain.structure.form.FormSubmissions;
+import se.streamsource.streamflow.web.domain.structure.organization.AccessPoint;
 
 /**
  * JAVADOC
@@ -42,8 +47,6 @@ public interface FormDraftContext
 {
    // queries
    LinksValue pages();
-
-
 
    // commands
    @HasNextPage
@@ -58,8 +61,7 @@ public interface FormDraftContext
    @HasNextPage(false)
    SummaryContext summary();
 
-   // parameter only needed to make the command work
-   void discard( IntegerDTO dummy );
+   void discard( );
 
    abstract class Mixin
       extends ContextMixin
@@ -141,9 +143,18 @@ public interface FormDraftContext
          return subContext( SummaryContext.class );
       }
 
-      public void discard( IntegerDTO dummy )
+      /**
+       * discard form and remove case
+       */
+      public void discard( )
       {
-         // todo
+         FormSubmission formSubmission = roleMap.get( FormSubmission.class );
+         FormSubmissions data = roleMap.get( FormSubmissions.class );
+         Form form = module.unitOfWorkFactory().currentUnitOfWork().get( Form.class, formSubmission.getFormSubmission().form().get().identity() );
+         data.discardFormSubmission( form );
+
+         EndUserCases cases = roleMap.get( EndUserCases.class );
+         cases.discardCase( roleMap.get( Case.class ) );
       }
    }
 }

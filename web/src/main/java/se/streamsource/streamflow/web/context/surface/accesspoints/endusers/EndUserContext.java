@@ -32,7 +32,10 @@ import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.entity.gtd.DraftsQueries;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.form.EndUserCases;
+import se.streamsource.streamflow.web.domain.structure.form.Form;
+import se.streamsource.streamflow.web.domain.structure.form.FormSubmission;
 import se.streamsource.streamflow.web.domain.structure.form.FormSubmissions;
+import se.streamsource.streamflow.web.domain.structure.form.SelectedForms;
 import se.streamsource.streamflow.web.domain.structure.user.AnonymousEndUser;
 
 /**
@@ -91,10 +94,17 @@ public interface EndUserContext
          Query<Case> query = queries.drafts().newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
          for (Case aCase : query)
          {
-            builder.prototype().caze().set( EntityReference.getEntityReference( aCase ));
-            builder.prototype().form().set( EntityReference.getEntityReference( ((FormSubmissions.Data) aCase).formSubmissions().get( 0 ) ));
-            break;
+            SelectedForms.Data data = roleMap.get( SelectedForms.Data.class );
+            Form form = data.selectedForms().get( 0 );
+            FormSubmission formSubmission = aCase.getFormSubmission( form );
+            if ( formSubmission != null )
+            {
+               builder.prototype().caze().set( EntityReference.getEntityReference( aCase ));
+               builder.prototype().form().set( EntityReference.getEntityReference( formSubmission ));
+               return builder.newInstance();
+            }
          }
+
          return builder.newInstance();
       }
    }

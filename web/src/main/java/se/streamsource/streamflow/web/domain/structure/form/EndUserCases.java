@@ -43,6 +43,8 @@ public interface EndUserCases
 
    void sendToFunction( Case caze );
 
+   void discardCase( Case caze );
+
    abstract class Mixin
          implements EndUserCases
    {
@@ -58,7 +60,7 @@ public interface EndUserCases
       public CaseEntity createCaseWithForm( AnonymousEndUser endUser )
       {
          CaseEntity caseEntity = createCase( endUser );
-         caseEntity.createFormSubmission( selectedForms.selectedForms().get( 0 ));
+         caseEntity.createFormSubmission( selectedForms.selectedForms().get( 0 ) );
          return caseEntity;
       }
 
@@ -91,8 +93,14 @@ public interface EndUserCases
       {
          CaseEntity caseEntity = (CaseEntity) caze;
          caseEntity.unassign();
-         caseEntity.changeOwner( (ProjectEntity) accesspoint.project().get() );
+         caseEntity.changeOwner( accesspoint.project().get() );
          caseEntity.open();
+      }
+
+      public void discardCase( Case caze )
+      {
+         CaseEntity caseEntity = (CaseEntity) caze;
+         caseEntity.removeEntity();
       }
    }
 }
