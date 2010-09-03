@@ -25,13 +25,13 @@ import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.ContextMixin;
-import se.streamsource.dci.value.EntityValue;
-import se.streamsource.dci.value.LinksValue;
+import se.streamsource.dci.value.*;
 import se.streamsource.streamflow.domain.form.FormValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.web.domain.entity.form.FormEntity;
 import se.streamsource.streamflow.web.domain.entity.form.PossibleFormMoveToQueries;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
+import se.streamsource.streamflow.web.domain.structure.form.FormId;
 import se.streamsource.streamflow.web.domain.structure.form.Forms;
 import se.streamsource.dci.api.SubContext;
 import se.streamsource.streamflow.web.context.structure.DescribableContext;
@@ -49,6 +49,8 @@ public interface FormContext
    LinksValue possiblemoveto();
 
    void move( EntityValue to);
+
+   public void changeformid( StringValue stringValue );
 
    @SubContext
    FormPagesContext pages();
@@ -69,6 +71,7 @@ public interface FormContext
          builder.prototype().note().set( form.note().get() );
          builder.prototype().description().set( form.description().get() );
          builder.prototype().form().set( EntityReference.parseEntityReference( form.identity().get() ) );
+         builder.prototype().id().set( form.formId().get() );
 
          return builder.newInstance();
       }
@@ -86,6 +89,12 @@ public interface FormContext
          Forms toForms = module.unitOfWorkFactory().currentUnitOfWork().get( Forms.class, to.entity().get() );
          Form form = roleMap.get(Form.class);
          roleMap.get( Forms.class ).moveForm(form, toForms);
+      }
+
+      public void changeformid( StringValue stringValue )
+      {
+         FormId form = roleMap.get( FormId.class );
+         form.changeFormId( stringValue.string().get() );
       }
 
       public void delete()

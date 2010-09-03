@@ -29,6 +29,7 @@ import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.RequiresRoles;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
+import se.streamsource.streamflow.domain.form.ListBoxFieldValue;
 import se.streamsource.streamflow.domain.form.NumberFieldValue;
 import se.streamsource.streamflow.domain.form.SelectionFieldValue;
 import se.streamsource.streamflow.domain.form.TextAreaFieldValue;
@@ -40,6 +41,7 @@ import se.streamsource.streamflow.web.context.structure.DescribableContext;
 import se.streamsource.streamflow.web.context.structure.NotableContext;
 import se.streamsource.streamflow.web.domain.entity.form.FieldEntity;
 import se.streamsource.streamflow.web.domain.structure.form.Field;
+import se.streamsource.streamflow.web.domain.structure.form.FieldId;
 import se.streamsource.streamflow.web.domain.structure.form.FieldValueDefinition;
 import se.streamsource.streamflow.web.domain.structure.form.Fields;
 import se.streamsource.streamflow.web.domain.structure.form.Hint;
@@ -54,9 +56,11 @@ public interface FormFieldContext
 {
    public FieldDefinitionValue field();
 
-   public void updatemandatory( BooleanDTO mandatory );
+   public void changemandatory( BooleanDTO mandatory );
 
-   public void updatehint( StringValue hint );
+   public void changefieldid( StringValue id );
+   
+   public void changehint( StringValue hint );
 
    @RequiresRoles(TextFieldValue.class)
    public void changewidth( IntegerDTO newWidth );
@@ -102,6 +106,7 @@ public interface FormFieldContext
          builder.prototype().field().set( EntityReference.getEntityReference( fieldEntity ) );
          builder.prototype().note().set( fieldEntity.note().get() );
          builder.prototype().description().set( fieldEntity.description().get() );
+         builder.prototype().fieldId().set( fieldEntity.fieldId().get() );
          builder.prototype().fieldValue().set( fieldEntity.fieldValue().get() );
          builder.prototype().mandatory().set( fieldEntity.isMandatory() );
          builder.prototype().hint().set( fieldEntity.hint().get() );
@@ -109,14 +114,21 @@ public interface FormFieldContext
          return builder.newInstance();
       }
 
-      public void updatemandatory( BooleanDTO mandatory )
+      public void changemandatory( BooleanDTO mandatory )
       {
          Mandatory mandatoryField = roleMap.get( Mandatory.class );
 
          mandatoryField.changeMandatory( mandatory.bool().get() );
       }
 
-      public void updatehint( StringValue hint )
+      public void changefieldid( StringValue id )
+      {
+         FieldId fieldId = roleMap.get( FieldId.class );
+
+         fieldId.changeFieldId( id.string().get() );
+      }
+
+      public void changehint( StringValue hint )
       {
          Hint hintField = roleMap.get( Hint.class );
          hintField.changeHint( hint.string().get() );
