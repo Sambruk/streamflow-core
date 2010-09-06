@@ -76,6 +76,23 @@
     </supplement>
     <supplement>
         <project>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <name>Commons Codec</name>
+            <organization>
+                <name>The Apache Software Foundation</name>
+                <url>http://www.apache.org/</url>
+            </organization>
+            <licenses>
+                <license>
+                    <name>The Apache Software License, Version 2.0</name>
+                    <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+                </license>
+            </licenses>
+        </project>
+    </supplement>
+    <supplement>
+        <project>
             <groupId>commons-dbcp</groupId>
             <artifactId>commons-dbcp</artifactId>
             <name>Commons DBCP</name>
@@ -95,7 +112,24 @@
         <project>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
-            <name>Commons Loogging</name>
+            <name>Commons Logging</name>
+            <organization>
+                <name>The Apache Software Foundation</name>
+                <url>http://www.apache.org/</url>
+            </organization>
+            <licenses>
+                <license>
+                    <name>The Apache Software License, Version 2.0</name>
+                    <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+                </license>
+            </licenses>
+        </project>
+    </supplement>
+    <supplement>
+        <project>
+            <groupId>commons-pool</groupId>
+            <artifactId>commons-pool</artifactId>
+            <name>Commons Pool</name>
             <organization>
                 <name>The Apache Software Foundation</name>
                 <url>http://www.apache.org/</url>
@@ -305,8 +339,10 @@
             </organization>
             <licenses>
                 <license>
-                    <name>GNU Version 2.0</name>
-                    <url>https://javahelp.dev.java.net/license.txt</url>
+                    <name>GNU Version 2.0 with Classpath Exception</name>
+                    <url>https://javahelp.dev.java.net/license.txt and
+                        http://www.gnu.org/software/classpath/license.html
+                    </url>
                 </license>
             </licenses>
         </project>
@@ -487,6 +523,23 @@
                 <name>John Cowan</name>
                 <url>http://home.ccil.org/~cowan/XML/tagsoup/</url>
             </organization>
+        </project>
+    </supplement>
+    <supplement>
+        <project>
+            <groupId>org.codehaus.mojo.webstart</groupId>
+            <artifactId>webstart-jnlp-servlet</artifactId>
+            <name>JNLP Servlet</name>
+            <organization>
+                <name>Sun Microsystems</name>
+                <url>http://www.sun.com</url>
+            </organization>
+            <licenses>
+                <license>
+                    <name>Sun Microsystems, Inc. Binary Code License Agreement</name>
+                    <url>http://java.sun.com/j2se/1.3/jre/j2re1_3_0.license</url>
+                </license>
+            </licenses>
         </project>
     </supplement>
     <supplement>
@@ -885,7 +938,8 @@
     <supplement>
         <project>
             <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j</artifactId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <name>SLF4J LOG4J-12 Binding</name>
             <licenses>
                 <license>
                     <name>MIT License</name>
@@ -1008,8 +1062,8 @@
             </organization>
             <licenses>
                 <license>
-                    <name>Apache License 2.0</name>
-                    <url>/LICENSE.txt</url>
+                    <name>The Apache Software License, Version 2.0</name>
+                    <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
                 </license>
             </licenses>
         </project>
