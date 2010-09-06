@@ -24,6 +24,7 @@ import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
 import se.streamsource.streamflow.server.plugin.contact.ContactAddressValue;
 import se.streamsource.streamflow.server.plugin.contact.ContactEmailValue;
+import se.streamsource.streamflow.server.plugin.contact.ContactList;
 import se.streamsource.streamflow.server.plugin.contact.ContactPhoneValue;
 import se.streamsource.streamflow.server.plugin.contact.ContactValue;
 
@@ -56,7 +57,8 @@ public class PluginApplicationAssembler
 
       ModuleAssembly moduleAssembly = pluginLayer.moduleAssembly( "Plugin" );
 
-      moduleAssembly.addValues( ContactValue.class,
+      moduleAssembly.addValues( ContactList.class,
+            ContactValue.class,
             ContactAddressValue.class,
             ContactEmailValue.class,
             ContactPhoneValue.class).visibleIn( Visibility.application );

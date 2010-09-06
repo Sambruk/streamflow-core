@@ -34,6 +34,5 @@ public interface User
       Participant,
       OrganizationParticipations,
       UserAuthentication,
-      Describable
-{
+      Describable{
 }

@@ -18,18 +18,24 @@
 package se.streamsource.streamflow.web.assembler;
 
 import org.qi4j.api.common.Visibility;
+import org.qi4j.api.service.ServiceSelector;
 import org.qi4j.api.structure.Application;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.index.reindexer.ReindexerService;
 import org.qi4j.rest.MBeanServerImporter;
+import org.qi4j.spi.query.NamedEntityFinder;
+import org.qi4j.spi.query.NamedQueries;
+import org.qi4j.spi.query.NamedQueryDescriptor;
 import org.qi4j.spi.service.importer.NewObjectImporter;
+import org.qi4j.spi.service.importer.ServiceSelectorImporter;
 import org.restlet.security.Verifier;
 import se.streamsource.streamflow.infrastructure.event.replay.DomainEventPlayerService;
 import se.streamsource.streamflow.web.application.console.ConsoleResultValue;
 import se.streamsource.streamflow.web.application.console.ConsoleScriptValue;
 import se.streamsource.streamflow.web.application.console.ConsoleService;
+import se.streamsource.streamflow.web.application.contact.StreamflowContactLookupService;
 import se.streamsource.streamflow.web.application.mail.MailService;
 import se.streamsource.streamflow.web.application.management.*;
 import se.streamsource.streamflow.web.application.management.jmxconnector.JmxConnectorService;
@@ -38,6 +44,7 @@ import se.streamsource.streamflow.web.application.notification.NotificationServi
 import se.streamsource.streamflow.web.application.organization.BootstrapAssembler;
 import se.streamsource.streamflow.web.application.security.PasswordVerifierService;
 import se.streamsource.streamflow.web.application.statistics.*;
+import se.streamsource.streamflow.web.infrastructure.index.NamedSolrDescriptor;
 
 import javax.management.MBeanServer;
 
@@ -67,6 +74,22 @@ public class AppAssembler
       new BootstrapAssembler().assemble( layer.moduleAssembly( "Bootstrap" ) );
 
       statistics(layer.moduleAssembly( "Statistics" ));
+
+      contactLookup(layer.moduleAssembly( "Contact lookup" ));
+   }
+
+   private void contactLookup( ModuleAssembly moduleAssembly ) throws AssemblyException
+   {
+      moduleAssembly.addServices( StreamflowContactLookupService.class ).visibleIn( Visibility.application);
+
+      NamedQueries namedQueries = new NamedQueries();
+      NamedQueryDescriptor queryDescriptor = new NamedSolrDescriptor( "solrquery", "" );
+      namedQueries.addQuery( queryDescriptor );
+
+      moduleAssembly.importServices( NamedEntityFinder.class ).
+            importedBy( ServiceSelectorImporter.class ).
+            setMetaInfo( ServiceSelector.withId( "solr" ) ).
+            setMetaInfo( namedQueries );
    }
 
    private void mail( ModuleAssembly module ) throws AssemblyException

@@ -31,6 +31,7 @@ import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ClientResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import se.streamsource.streamflow.server.plugin.contact.ContactList;
 import se.streamsource.streamflow.server.plugin.contact.ContactLookup;
 import se.streamsource.streamflow.server.plugin.contact.ContactValue;
 import se.streamsource.streamflow.web.infrastructure.plugin.PluginConfiguration;
@@ -67,7 +68,7 @@ public interface ContactLookupService
       {
       }
 
-      public Iterable<ContactValue> lookup( ContactValue contactTemplate )
+      public ContactList lookup( ContactValue contactTemplate )
       {
          try
          {
@@ -79,26 +80,14 @@ public interface ContactLookupService
             Representation result = clientResource.post( post );
 
             // Parse response
-            // Result is a JSON-array of ContactValue's
             String json = result.getText();
-
-            JSONArray array = new JSONArray(json);
-            List<ContactValue> contacts = new ArrayList<ContactValue>( );
-            for (int i = 0; i < array.length(); i++)
-            {
-               JSONObject contactObject = array.getJSONObject( i );
-               String contactString = contactObject.toString();
-               ContactValue contact = vbf.newValueFromJSON( ContactValue.class, contactString );
-               contacts.add(contact);
-            }
-
-            return contacts;
+            return vbf.newValueFromJSON( ContactList.class, json );
          } catch (Exception e)
          {
             log.error( "Could not get contacts from plugin", e );
 
             // Return empty list
-            return Collections.emptyList();
+            return vbf.newValue( ContactList.class );
          }
       }
    }

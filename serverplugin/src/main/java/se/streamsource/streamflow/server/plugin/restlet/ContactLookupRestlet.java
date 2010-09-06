@@ -29,6 +29,7 @@ import org.restlet.data.Method;
 import org.restlet.data.Status;
 import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.StringRepresentation;
+import se.streamsource.streamflow.server.plugin.contact.ContactList;
 import se.streamsource.streamflow.server.plugin.contact.ContactLookup;
 import se.streamsource.streamflow.server.plugin.contact.ContactValue;
 
@@ -74,19 +75,10 @@ public class ContactLookupRestlet
          }
 
          // Call plugin
-         Iterable<ContactValue> lookups = contactLookup.lookup( contactTemplate );
+         ContactList lookups = contactLookup.lookup( contactTemplate );
 
          // Send response
-         StringBuilder stringBuilder = new StringBuilder();
-         stringBuilder.append( "[" );
-         String comma = "";
-         for (ContactValue lookup : lookups)
-         {
-            stringBuilder.append( comma ).append( lookup.toJSON() );
-            comma = ",";
-         }
-         stringBuilder.append( "]" );
-         String json = stringBuilder.toString();
+         String json = lookups.toJSON();
 
          StringRepresentation result = new StringRepresentation( json, MediaType.APPLICATION_JSON, Language.DEFAULT, CharacterSet.UTF_8 );
          response.setStatus( Status.SUCCESS_OK );

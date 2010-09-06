@@ -57,8 +57,8 @@ public class StreamflowWebAssembler
       LayerAssembly webLayer = assembly.layerAssembly( "Web" );
 
       webLayer.uses( appLayer, contextLayer, domainLayer, domainInfrastructureLayer );
-      appLayer.uses( contextLayer, domainLayer, domainInfrastructureLayer, configurationLayer );
-      contextLayer.uses( domainLayer, domainInfrastructureLayer );
+      appLayer.uses( domainLayer, domainInfrastructureLayer, configurationLayer );
+      contextLayer.uses( domainLayer, appLayer, domainInfrastructureLayer );
       domainLayer.uses( domainInfrastructureLayer );
       domainInfrastructureLayer.uses( configurationLayer );
 

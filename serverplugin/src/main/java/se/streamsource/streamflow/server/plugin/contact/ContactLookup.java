@@ -29,5 +29,5 @@ public interface ContactLookup
     * @param contactTemplate partially filled in template with contact information.
     * @return possible matches
     */
-   Iterable<ContactValue> lookup(ContactValue contactTemplate);
+   ContactList lookup(ContactValue contactTemplate);
 }

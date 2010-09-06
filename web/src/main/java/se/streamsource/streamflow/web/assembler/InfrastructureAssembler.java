@@ -47,6 +47,7 @@ import se.streamsource.streamflow.infrastructure.event.factory.DomainEventFactor
 import se.streamsource.streamflow.infrastructure.time.TimeService;
 import se.streamsource.streamflow.server.plugin.contact.ContactAddressValue;
 import se.streamsource.streamflow.server.plugin.contact.ContactEmailValue;
+import se.streamsource.streamflow.server.plugin.contact.ContactList;
 import se.streamsource.streamflow.server.plugin.contact.ContactPhoneValue;
 import se.streamsource.streamflow.server.plugin.contact.ContactValue;
 import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStoreService;
@@ -91,7 +92,8 @@ public class InfrastructureAssembler
             visibleIn( Visibility.application ).
             instantiateOnStartup();
 
-      moduleAssembly.addValues( ContactValue.class,
+      moduleAssembly.addValues( ContactList.class,
+            ContactValue.class,
             ContactAddressValue.class,
             ContactEmailValue.class,
             ContactPhoneValue.class).visibleIn( Visibility.application );

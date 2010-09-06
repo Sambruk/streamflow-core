@@ -253,9 +253,9 @@ public class CommandQueryRestlet
             ResponseWriter writer = responseWriterFactory.createWriter( segments, ContextValue.class, roleMap, getVariant( request ) );
 
             contextInfo( request, response, context, roleMap, writer );
-         } else if (lastSegment.equals( "roleMap" ))
+         } else if (lastSegment.equals( "context" ))
          {
-            String contextId = request.getResourceRef().getQueryAsForm().getFirstValue( "roleMap" );
+            String contextId = request.getResourceRef().getQueryAsForm().getFirstValue( "context" );
             if (contextId == null)
             {
                ResponseWriter responseWriter = responseWriterFactory.createWriter( segments, Context.class, roleMap, getVariant( request ) );

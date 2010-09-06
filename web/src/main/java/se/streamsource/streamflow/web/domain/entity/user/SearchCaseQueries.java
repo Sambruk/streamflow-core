@@ -18,6 +18,7 @@
 package se.streamsource.streamflow.web.domain.entity.user;
 
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.structure.Module;
@@ -30,6 +31,7 @@ import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity;
 import se.streamsource.streamflow.web.domain.entity.label.LabelEntity;
 import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
+import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -49,7 +51,7 @@ import java.util.regex.PatternSyntaxException;
 @Mixins(SearchCaseQueries.Mixin.class)
 public interface SearchCaseQueries
 {
-   Query<Case> search( StringValue query, String userName );
+   Query<Case> search( StringValue query);
 
    abstract class Mixin
          implements SearchCaseQueries
@@ -57,7 +59,10 @@ public interface SearchCaseQueries
       @Structure
       Module module;
 
-      public Query<Case> search( StringValue query, String userName )
+      @This
+      UserAuthentication.Data user;
+
+      public Query<Case> search( StringValue query)
       {
          UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
 
@@ -166,6 +171,7 @@ public interface SearchCaseQueries
                } else if (search.hasName( "createdBy" ))
                {
                   StringBuilder creatorQueryBuilder = new StringBuilder( "type:se.streamsource.streamflow.web.domain.entity.user.UserEntity" );
+                  String userName = user.userName().get();
                   creatorQueryBuilder.append( " description:" ).append( getUserInSearch( search.getValue(), userName ) );
 
                   Query<UserEntity> users = module.queryBuilderFactory()
@@ -203,6 +209,7 @@ public interface SearchCaseQueries
                   buildDateQuery( queryBuilder, search );
                } else if (search.hasName( "assignedTo" ))
                {
+                  String userName = user.userName().get();
                   queryBuilder.append( " " ).append( search.getName() ).append( ":" ).append( getUserInSearch( search.getValue(), userName ) );
                } else
                {

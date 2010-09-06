@@ -70,8 +70,7 @@ public interface CasesContext
       public LinksValue search( StringValue query )
       {
          SearchCaseQueries caseQueries = roleMap.get( SearchCaseQueries.class );
-         String name = roleMap.get( UserAuthentication.Data.class ).userName().get();
-         Query<Case> caseQuery = caseQueries.search( query, name );
+         Query<Case> caseQuery = caseQueries.search( query );
          caseQuery.orderBy( QueryExpressions.orderBy( QueryExpressions.templateFor( Describable.Data.class ).description() ) );
 
          return buildCaseList( caseQuery, module, roleMap.get( Reference.class ).getBaseRef().getPath() );

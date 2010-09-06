@@ -21,11 +21,13 @@ import org.ccil.cowan.tagsoup.Parser;
 import org.qi4j.api.Qi4j;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 import se.streamsource.streamflow.server.plugin.contact.ContactAddressValue;
+import se.streamsource.streamflow.server.plugin.contact.ContactList;
 import se.streamsource.streamflow.server.plugin.contact.ContactLookup;
 import se.streamsource.streamflow.server.plugin.contact.ContactPhoneValue;
 import se.streamsource.streamflow.server.plugin.contact.ContactValue;
@@ -53,7 +55,10 @@ public class EniroContactLookupService
    @Structure
    Qi4j qi4j;
 
-   public Iterable<ContactValue> lookup( ContactValue contactTemplate )
+   @Structure
+   ValueBuilderFactory vbf;
+
+   public ContactList lookup( ContactValue contactTemplate )
    {
       String searchString = "";
 
@@ -65,7 +70,7 @@ public class EniroContactLookupService
          searchString += contactTemplate.phoneNumbers().get().get( 0 ).phoneNumber().get();
       }
 
-      List<ContactValue> possibleContacts = new ArrayList<ContactValue>();
+      ValueBuilder<ContactList> possibleContacts = vbf.newValueBuilder( ContactList.class );
 
       // Make Eniro REST call
       Node doc;
@@ -89,7 +94,7 @@ public class EniroContactLookupService
       } catch (Exception ex)
       {
          ex.printStackTrace();
-         return possibleContacts;
+         return possibleContacts.newInstance();
       }
 
       // Parse result
@@ -130,13 +135,13 @@ public class EniroContactLookupService
 
             builder.prototype().phoneNumbers().get().add( phoneBuilder.newInstance() );
 
-            possibleContacts.add( builder.newInstance() );
+            possibleContacts.prototype().contacts().get().add( builder.newInstance() );
          }
       } catch (XPathExpressionException e)
       {
          e.printStackTrace();
       }
 
-      return possibleContacts;
+      return possibleContacts.newInstance();
    }
 }

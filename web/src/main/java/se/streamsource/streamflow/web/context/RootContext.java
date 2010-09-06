@@ -55,6 +55,9 @@ public interface RootContext
    @SubContext
    SurfaceContext surface();
 
+   @SubContext
+   ServicesContext services();
+
    abstract class Mixin
       extends ContextMixin
       implements RootContext
@@ -81,5 +84,12 @@ public interface RootContext
          roleMap.set(module.unitOfWorkFactory().currentUnitOfWork().get( Users.class, UsersEntity.USERS_ID ));
          return subContext( SurfaceContext.class );
       }
+
+      public ServicesContext services()
+      {
+         return subContext( ServicesContext.class );
+      }
+
+
    }
 }

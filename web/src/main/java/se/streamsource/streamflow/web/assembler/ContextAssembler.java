@@ -28,6 +28,7 @@ import se.streamsource.dci.api.InteractionConstraintsService;
 import se.streamsource.streamflow.web.context.RequiresPermission;
 import se.streamsource.streamflow.web.context.RootContext;
 import se.streamsource.streamflow.web.context.ServiceAvailable;
+import se.streamsource.streamflow.web.context.ServicesContext;
 import se.streamsource.streamflow.web.context.caze.AttachmentContext;
 import se.streamsource.streamflow.web.context.caze.AttachmentsContext;
 import se.streamsource.streamflow.web.context.caze.CaseContext;
@@ -229,6 +230,9 @@ public class ContextAssembler
             AttachmentContext.class,
             SavedSearchesContext.class,
             SavedSearchContext.class,
+
+            // Services
+            ServicesContext.class,
 
             // Surface
             SurfaceContext.class,
