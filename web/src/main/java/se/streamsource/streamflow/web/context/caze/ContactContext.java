@@ -33,6 +33,7 @@ import se.streamsource.streamflow.domain.contact.ContactEmailValue;
 import se.streamsource.streamflow.domain.contact.ContactPhoneValue;
 import se.streamsource.streamflow.domain.contact.ContactValue;
 import se.streamsource.streamflow.resource.caze.ContactsDTO;
+import se.streamsource.streamflow.server.plugin.contact.ContactList;
 import se.streamsource.streamflow.server.plugin.contact.ContactLookup;
 import se.streamsource.streamflow.web.context.ServiceAvailable;
 import se.streamsource.streamflow.web.domain.structure.caze.Contacts;
@@ -201,10 +202,10 @@ public interface ContactContext
             if (contactLookup != null)
             {
                ContactLookup lookup = contactLookup.get();
-               Iterable<se.streamsource.streamflow.server.plugin.contact.ContactValue> possibleContacts = lookup.lookup( pluginContact );
+               ContactList possibleContacts = lookup.lookup( pluginContact );
                List<ContactValue> contactList = builder.prototype().contacts().get();
 
-               for (se.streamsource.streamflow.server.plugin.contact.ContactValue possibleContact : possibleContacts)
+               for (se.streamsource.streamflow.server.plugin.contact.ContactValue possibleContact : possibleContacts.contacts().get())
                {
                   contactList.add( vbf.newValueFromJSON( ContactValue.class, possibleContact.toJSON() ));
                }
