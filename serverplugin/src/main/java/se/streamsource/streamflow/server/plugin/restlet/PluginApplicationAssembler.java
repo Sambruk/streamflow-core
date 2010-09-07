@@ -25,11 +25,15 @@ import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
+import org.qi4j.entitystore.prefs.PreferencesEntityStoreInfo;
+import org.qi4j.entitystore.prefs.PreferencesEntityStoreService;
 import se.streamsource.streamflow.server.plugin.contact.ContactAddressValue;
 import se.streamsource.streamflow.server.plugin.contact.ContactEmailValue;
 import se.streamsource.streamflow.server.plugin.contact.ContactList;
 import se.streamsource.streamflow.server.plugin.contact.ContactPhoneValue;
 import se.streamsource.streamflow.server.plugin.contact.ContactValue;
+
+import java.util.prefs.Preferences;
 
 /**
  * Assembler for the plugin application
@@ -69,6 +73,26 @@ public class PluginApplicationAssembler
       pluginAssembler.assemble( moduleAssembly );
 
       webLayer.uses( pluginLayer );
+
+      LayerAssembly configurationLayer = app.layerAssembly( "Configurations" );
+      ModuleAssembly configurationModuleAssembly = configurationLayer.moduleAssembly( "Configuration" );
+
+      // Preferences storage
+      ClassLoader cl = Thread.currentThread().getContextClassLoader();
+      Thread.currentThread().setContextClassLoader( null );
+      Preferences node;
+      try
+      {
+         node = Preferences.userRoot().node( "streamsource/streamflow/reference-plugin" );
+      } finally
+      {
+         Thread.currentThread().setContextClassLoader( cl );
+      }
+
+      configurationModuleAssembly.addServices( PreferencesEntityStoreService.class ).setMetaInfo( new PreferencesEntityStoreInfo( node ) ).visibleIn( Visibility.application );
+
+
+      pluginLayer.uses( configurationLayer );
 
       return app;
    }

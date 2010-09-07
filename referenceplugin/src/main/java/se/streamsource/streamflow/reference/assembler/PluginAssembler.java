@@ -20,9 +20,9 @@ package se.streamsource.streamflow.reference.assembler;
 import org.qi4j.api.common.Visibility;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
-import org.qi4j.bootstrap.ImportedServiceDeclaration;
 import org.qi4j.bootstrap.ModuleAssembly;
-import se.streamsource.streamflow.reference.contact.EniroContactLookupService;
+import se.streamsource.streamflow.reference.contact.StreamflowContactLookupPlugin;
+import se.streamsource.streamflow.reference.contact.StreamflowContactLookupPluginConfiguration;
 
 /**
  * Register reference plugins in the plugin application
@@ -32,9 +32,12 @@ public class PluginAssembler
 {
    public void assemble( ModuleAssembly module ) throws AssemblyException
    {
-      module.importServices( EniroContactLookupService.class ).
-            importedBy( ImportedServiceDeclaration.NEW_OBJECT ).
-            visibleIn( Visibility.application );
-      module.addObjects( EniroContactLookupService.class );
+      module.addServices( StreamflowContactLookupPlugin.class ).
+            identifiedBy( "streamflowcontactlookup" ).
+            visibleIn( Visibility.application ).
+            instantiateOnStartup();
+
+      module.addEntities( StreamflowContactLookupPluginConfiguration.class ).visibleIn( Visibility.application );
+
    }
 }

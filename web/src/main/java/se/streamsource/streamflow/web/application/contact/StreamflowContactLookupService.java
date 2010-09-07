@@ -1,15 +1,18 @@
-/*
- * Copyright (c) 2010, Rickard Öberg. All Rights Reserved.
+/**
+ *
+ * Copyright 2009-2010 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package se.streamsource.streamflow.web.application.contact;
@@ -27,18 +30,15 @@ import se.streamsource.streamflow.server.plugin.contact.ContactLookup;
 import se.streamsource.streamflow.server.plugin.contact.ContactValue;
 import se.streamsource.streamflow.web.domain.structure.caze.Contacts;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * JAVADOC
  */
 @Mixins(StreamflowContactLookupService.Mixin.class)
 public interface StreamflowContactLookupService
-   extends ServiceComposite, ContactLookup
+      extends ServiceComposite, ContactLookup
 {
    class Mixin
-      implements ContactLookup
+         implements ContactLookup
    {
       @Structure
       QueryBuilderFactory qbf;
@@ -54,8 +54,8 @@ public interface StreamflowContactLookupService
 
          StringBuilder queryString = new StringBuilder();
 
-         if (!contactTemplate.name().get().equals(""))
-            queryString.append( "name:\"" ).append( contactTemplate.name().get() ).append("\"");
+         if (!contactTemplate.name().get().equals( "" ))
+            queryString.append( "name:\"" ).append( contactTemplate.name().get() ).append( "\"" );
 
          // TODO If no query string, then return empty list
 
@@ -71,8 +71,8 @@ public interface StreamflowContactLookupService
             // TODO Find case with contact
             for (se.streamsource.streamflow.domain.contact.ContactValue contactValue : contact.contacts().get())
             {
-               if (!contactTemplate.name().get().equals("") && contactValue.name().equals(contactTemplate.name()))
-                  listBuilder.prototype().contacts().get().add( vbf.newValueFromJSON( ContactValue.class, contactValue.toJSON()) );
+               if (!contactTemplate.name().get().equals( "" ) && contactValue.name().equals( contactTemplate.name() ))
+                  listBuilder.prototype().contacts().get().add( vbf.newValueFromJSON( ContactValue.class, contactValue.toJSON() ) );
             }
          }
 

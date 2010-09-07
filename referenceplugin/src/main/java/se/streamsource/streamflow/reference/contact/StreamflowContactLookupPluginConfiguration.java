@@ -15,20 +15,21 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.server.plugin.contact;
+package se.streamsource.streamflow.reference.contact;
 
 import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.configuration.ConfigurationComposite;
 import org.qi4j.api.property.Property;
-import org.qi4j.api.value.ValueComposite;
 
-import java.util.List;
-
-/**
- * List of contacts
- */
-public interface ContactList
-      extends ValueComposite
+public interface StreamflowContactLookupPluginConfiguration
+      extends ConfigurationComposite
 {
    @UseDefaults
-   Property<List<ContactValue>> contacts();
+   Property<String> url();
+
+   @UseDefaults
+   Property<String> accountname();
+
+   @UseDefaults
+   Property<String> password();
 }
