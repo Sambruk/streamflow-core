@@ -15,20 +15,19 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.domain.form;
+package se.streamsource.dci.value;
 
-import org.qi4j.api.property.Property;
-import org.qi4j.api.value.ValueComposite;
+import org.qi4j.api.constraint.Constraint;
 import org.qi4j.library.constraints.annotation.MaxLength;
 
 /**
- * JAVADOC
+ *
  */
-public interface CreateFieldDTO
-      extends ValueComposite
+public class StringValueMaxLength
+      implements Constraint<MaxLength, StringValue>
 {
-   @MaxLength(100)
-   Property<String> name();
-
-   Property<FieldTypes> fieldType();
+   public boolean isValid( MaxLength annotation, StringValue argument )
+   {
+      return argument.string().get().length() <= annotation.value();
+   }
 }

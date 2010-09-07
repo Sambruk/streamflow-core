@@ -95,7 +95,7 @@ public class FormSubmissionModel
       builder.prototype().field().set( reference );
       builder.prototype().value().set( name );
 
-      client.putCommand( "updatefield", builder.newInstance() );
+      client.postCommand( "updatefield", builder.newInstance() );
    }
 
    public void previousPage()

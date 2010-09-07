@@ -17,12 +17,14 @@
 
 package se.streamsource.streamflow.web.context.surface.accesspoints.endusers;
 
+import org.qi4j.api.constraint.Constraints;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.mixin.Mixins;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.SubContexts;
+import se.streamsource.dci.value.StringValueMaxLength;
 import se.streamsource.streamflow.web.application.security.UserPrincipal;
 import se.streamsource.streamflow.web.domain.structure.user.AnonymousEndUser;
 import se.streamsource.streamflow.web.domain.structure.user.EndUsers;
@@ -34,10 +36,12 @@ import java.util.Set;
  * JAVADOC
  */
 @Mixins(EndUsersContext.Mixin.class)
+@Constraints(StringValueMaxLength.class)
 public interface EndUsersContext
       extends SubContexts<EndUserContext>, Context
 {
    // command
+
    void createenduser() throws ResourceException;
 
    abstract class Mixin
@@ -51,7 +55,7 @@ public interface EndUsersContext
          user.changeDescription( "Anonymous" );
       }
 
-      public EndUserContext context( String id)
+      public EndUserContext context( String id )
       {
          AnonymousEndUser endUser = module.unitOfWorkFactory().currentUnitOfWork().get( AnonymousEndUser.class, id );
          Subject subject = roleMap.get( Subject.class );

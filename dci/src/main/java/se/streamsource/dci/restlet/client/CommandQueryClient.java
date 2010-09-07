@@ -22,8 +22,6 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.property.StateHolder;
-import org.qi4j.api.structure.Module;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.api.value.ValueComposite;
 import org.qi4j.spi.Qi4jSPI;
@@ -56,13 +54,13 @@ import java.util.Collections;
 public class CommandQueryClient
 {
    @Structure
-   private  ValueBuilderFactory vbf;
+   private ValueBuilderFactory vbf;
 
    @Structure
-   private  ObjectBuilderFactory obf;
+   private ObjectBuilderFactory obf;
 
    @Structure
-   private  Qi4jSPI spi;
+   private Qi4jSPI spi;
 
    @Uses
    protected ResponseHandler responseHandler;
@@ -143,9 +141,9 @@ public class CommandQueryClient
       } );
    }
 
-   public void postLink( LinkValue link) throws ResourceException
+   public void postLink( LinkValue link ) throws ResourceException
    {
-      postCommand(link.href().get(), new EmptyRepresentation());
+      postCommand( link.href().get(), new EmptyRepresentation() );
    }
 
    public void postCommand( String operation ) throws ResourceException
@@ -170,18 +168,16 @@ public class CommandQueryClient
    public void postCommand( String operation, Representation commandRepresentation, ResponseHandler responseHandler )
          throws ResourceException
    {
-      Reference ref = new Reference( reference.toUri().toString()+operation );
+      Reference ref = new Reference( reference.toUri().toString() + operation );
       ClientResource client = new ClientResource( ref );
       ClientInfo info = new ClientInfo();
       info.setAcceptedMediaTypes( Collections.singletonList( new Preference<MediaType>( MediaType.APPLICATION_JSON ) ) );
       client.setClientInfo( info );
       client.setNext( this.client );
-      client.post( commandRepresentation );
-      if (!client.getStatus().isSuccess())
+      try
       {
-         throw new ResourceException( client.getStatus() );
-      } else
-      {
+         client.post( commandRepresentation );
+
          try
          {
             responseHandler.handleResponse( client.getResponse() );
@@ -189,6 +185,10 @@ public class CommandQueryClient
          {
             client.getResponse().release();
          }
+
+      } catch (ResourceException e)
+      {
+         handleError( client.getResponse() );
       }
    }
 
@@ -229,7 +229,7 @@ public class CommandQueryClient
    private ClientResource invokeQuery( String operation, ValueComposite queryValue )
          throws ResourceException
    {
-      Reference ref = new Reference( reference.toUri().toString()+operation );
+      Reference ref = new Reference( reference.toUri().toString() + operation );
       if (queryValue != null)
          setQueryParameters( ref, queryValue );
 
@@ -262,7 +262,7 @@ public class CommandQueryClient
       else
          commandRepresentation = new EmptyRepresentation();
 
-      Reference ref = new Reference( reference.toUri().toString());
+      Reference ref = new Reference( reference.toUri().toString() );
 
       if (operation != null)
       {
@@ -319,7 +319,7 @@ public class CommandQueryClient
    public void delete() throws ResourceException
    {
 
-      ClientResource client = new ClientResource( new Reference(reference.toUri()).toString(  ));
+      ClientResource client = new ClientResource( new Reference( reference.toUri() ).toString() );
       ClientInfo info = new ClientInfo();
       info.setAcceptedMediaTypes( Collections.singletonList( new Preference<MediaType>( MediaType.APPLICATION_JSON ) ) );
       client.setClientInfo( info );
@@ -376,12 +376,12 @@ public class CommandQueryClient
 
    public CommandQueryClient getClient( String relativePath )
    {
-      Reference reference = new Reference(this.reference, relativePath);
+      Reference reference = new Reference( this.reference, relativePath );
       return obf.newObjectBuilder( getClass() ).use( client, new Context(), reference, responseHandler ).newInstance();
    }
 
-   public CommandQueryClient getClient( LinkValue link)
+   public CommandQueryClient getClient( LinkValue link )
    {
       return getClient( link.href().get() );
    }
-   }
+}

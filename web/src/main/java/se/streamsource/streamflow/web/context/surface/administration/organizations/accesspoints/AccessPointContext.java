@@ -17,18 +17,21 @@
 
 package se.streamsource.streamflow.web.context.surface.administration.organizations.accesspoints;
 
+import org.qi4j.api.constraint.Constraints;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.library.constraints.annotation.MaxLength;
 import org.restlet.resource.ResourceException;
+import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.IndexContext;
-import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.SubContext;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.StringValue;
+import se.streamsource.dci.value.StringValueMaxLength;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.application.AccessPointValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
@@ -47,8 +50,8 @@ import se.streamsource.streamflow.web.domain.structure.organization.AccessPoint;
 import se.streamsource.streamflow.web.domain.structure.organization.AccessPointSettings;
 import se.streamsource.streamflow.web.domain.structure.organization.AccessPoints;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnits;
-import se.streamsource.streamflow.web.domain.structure.project.Projects;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
+import se.streamsource.streamflow.web.domain.structure.project.Projects;
 
 import java.util.List;
 import java.util.Map;
@@ -57,10 +60,11 @@ import java.util.Map;
  * JAVADOC
  */
 @Mixins(AccessPointContext.Mixin.class)
+@Constraints(StringValueMaxLength.class)
 public interface AccessPointContext
       extends IndexContext<AccessPointValue>, Context, DeleteContext
 {
-   void changedescription( StringValue name )
+   void changedescription( @MaxLength(50) StringValue name )
          throws IllegalArgumentException;
 
    void setproject( StringValue id );
@@ -240,9 +244,9 @@ public interface AccessPointContext
          {
 
             List<Form> forms = ((SelectedForms.Data) caseType).selectedForms().toList();
-            for( Form f : forms)
+            for (Form f : forms)
             {
-               if(!selected.selectedForms().contains( f ))
+               if (!selected.selectedForms().contains( f ))
                {
                   builder.addDescribable( f );
                }
@@ -259,7 +263,7 @@ public interface AccessPointContext
 
          // remove what's there - should only be one or none
          List<Form> selectedForms = formsData.selectedForms().toList();
-         for( Form f : selectedForms )
+         for (Form f : selectedForms)
          {
             forms.removeSelectedForm( f );
          }

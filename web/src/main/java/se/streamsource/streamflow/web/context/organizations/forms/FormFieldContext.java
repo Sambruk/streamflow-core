@@ -18,25 +18,28 @@
 package se.streamsource.streamflow.web.context.organizations.forms;
 
 import org.qi4j.api.constraint.ConstraintViolationException;
+import org.qi4j.api.constraint.Constraints;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.library.constraints.annotation.MaxLength;
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.RequiresRoles;
 import se.streamsource.dci.value.StringValue;
+import se.streamsource.dci.value.StringValueMaxLength;
 import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
 import se.streamsource.streamflow.domain.form.NumberFieldValue;
 import se.streamsource.streamflow.domain.form.SelectionFieldValue;
 import se.streamsource.streamflow.domain.form.TextAreaFieldValue;
 import se.streamsource.streamflow.domain.form.TextFieldValue;
+import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.resource.roles.BooleanDTO;
 import se.streamsource.streamflow.resource.roles.IntegerDTO;
 import se.streamsource.streamflow.resource.roles.NamedIndexDTO;
-import se.streamsource.streamflow.web.context.structure.DescribableContext;
 import se.streamsource.streamflow.web.context.structure.NotableContext;
 import se.streamsource.streamflow.web.domain.entity.form.FieldEntity;
 import se.streamsource.streamflow.web.domain.structure.form.Field;
@@ -49,10 +52,13 @@ import se.streamsource.streamflow.web.domain.structure.form.Mandatory;
  * JAVADOC
  */
 @Mixins(FormFieldContext.Mixin.class)
+@Constraints(StringValueMaxLength.class)
 public interface FormFieldContext
-      extends DeleteContext, DescribableContext, NotableContext, Context
+      extends DeleteContext, NotableContext, Context
 {
    public FieldDefinitionValue field();
+
+   public void changedescription( @MaxLength(100) StringValue description );
 
    public void changemandatory( BooleanDTO mandatory );
 
@@ -109,6 +115,12 @@ public interface FormFieldContext
          builder.prototype().mandatory().set( fieldEntity.isMandatory() );
 
          return builder.newInstance();
+      }
+
+      public void changedescription( StringValue description )
+      {
+         Describable describable = roleMap.get( Describable.class );
+         describable.changeDescription( description.string().get() );
       }
 
       public void changemandatory( BooleanDTO mandatory )

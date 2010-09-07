@@ -17,13 +17,16 @@
 
 package se.streamsource.streamflow.web.context.surface.administration.organizations.accesspoints;
 
+import org.qi4j.api.constraint.Constraints;
 import org.qi4j.api.mixin.Mixins;
-import se.streamsource.dci.api.IndexContext;
+import org.qi4j.library.constraints.annotation.MaxLength;
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.ContextMixin;
+import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.SubContexts;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.StringValue;
+import se.streamsource.dci.value.StringValueMaxLength;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.web.domain.entity.organization.AccessPointEntity;
 import se.streamsource.streamflow.web.domain.structure.organization.AccessPoint;
@@ -33,14 +36,15 @@ import se.streamsource.streamflow.web.domain.structure.organization.AccessPoints
  * JAVADOC
  */
 @Mixins(AccessPointsContext.Mixin.class)
+@Constraints(StringValueMaxLength.class)
 public interface AccessPointsContext
-   extends SubContexts<AccessPointContext>, IndexContext<LinksValue>, Context
+      extends SubContexts<AccessPointContext>, IndexContext<LinksValue>, Context
 {
-   public void createaccesspoint( StringValue name );
-   
+   public void createaccesspoint( @MaxLength(50) StringValue name );
+
    abstract class Mixin
-      extends ContextMixin
-      implements AccessPointsContext
+         extends ContextMixin
+         implements AccessPointsContext
    {
       public LinksValue index()
       {
@@ -66,12 +70,12 @@ public interface AccessPointsContext
          for (AccessPoint accessPoint : data.accessPoints())
          {
             AccessPointEntity entity = (AccessPointEntity) accessPoint;
-            if ( entity.identity().get().equals( id ) )
+            if (entity.identity().get().equals( id ))
             {
                roleMap.set( accessPoint );
             }
          }
-         return subContext( AccessPointContext.class);
+         return subContext( AccessPointContext.class );
       }
    }
 }

@@ -17,15 +17,18 @@
 
 package se.streamsource.streamflow.web.context.structure.resolutions;
 
+import org.qi4j.api.constraint.Constraints;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
-import se.streamsource.dci.api.IndexContext;
+import org.qi4j.library.constraints.annotation.MaxLength;
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.ContextMixin;
+import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.SubContexts;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.StringValue;
+import se.streamsource.dci.value.StringValueMaxLength;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.web.domain.structure.casetype.Resolution;
 import se.streamsource.streamflow.web.domain.structure.casetype.Resolutions;
@@ -34,33 +37,34 @@ import se.streamsource.streamflow.web.domain.structure.casetype.Resolutions;
  * JAVADOC
  */
 @Mixins(ResolutionsContext.Mixin.class)
+@Constraints(StringValueMaxLength.class)
 public interface ResolutionsContext
-   extends Context, IndexContext<LinksValue>,SubContexts<ResolutionContext>
+      extends Context, IndexContext<LinksValue>, SubContexts<ResolutionContext>
 {
-   void createresolution( StringValue name );
+   void createresolution( @MaxLength(50) StringValue name );
 
    abstract class Mixin
-      extends ContextMixin
-      implements ResolutionsContext
+         extends ContextMixin
+         implements ResolutionsContext
    {
       @Structure
       Module module;
 
       public LinksValue index()
       {
-         return new LinksBuilder(module.valueBuilderFactory()).rel( "resolution" ).addDescribables( roleMap.get( Resolutions.class).getResolutions()).newLinks();
+         return new LinksBuilder( module.valueBuilderFactory() ).rel( "resolution" ).addDescribables( roleMap.get( Resolutions.class ).getResolutions() ).newLinks();
       }
 
       public void createresolution( StringValue name )
       {
-         Resolutions resolutions = roleMap.get(Resolutions.class);
+         Resolutions resolutions = roleMap.get( Resolutions.class );
 
          resolutions.createResolution( name.string().get() );
       }
 
       public ResolutionContext context( String id )
       {
-         roleMap.set(module.unitOfWorkFactory().currentUnitOfWork().get( Resolution.class, id ));
+         roleMap.set( module.unitOfWorkFactory().currentUnitOfWork().get( Resolution.class, id ) );
 
          return subContext( ResolutionContext.class );
       }

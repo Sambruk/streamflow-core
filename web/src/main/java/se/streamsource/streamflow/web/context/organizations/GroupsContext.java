@@ -17,56 +17,60 @@
 
 package se.streamsource.streamflow.web.context.organizations;
 
+import org.qi4j.api.constraint.Constraints;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
+import org.qi4j.library.constraints.annotation.MaxLength;
+import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.IndexContext;
-import se.streamsource.dci.api.Context;
-import se.streamsource.dci.value.*;
+import se.streamsource.dci.api.SubContexts;
+import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.StringValue;
+import se.streamsource.dci.value.StringValueMaxLength;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.web.domain.entity.organization.GroupEntity;
 import se.streamsource.streamflow.web.domain.structure.group.Group;
 import se.streamsource.streamflow.web.domain.structure.group.Groups;
-import se.streamsource.dci.api.SubContexts;
 
 /**
  * JAVADOC
  */
 @Mixins(GroupsContext.Mixin.class)
+@Constraints(StringValueMaxLength.class)
 public interface GroupsContext
-   extends SubContexts<GroupContext>, IndexContext<LinksValue>, Context
+      extends SubContexts<GroupContext>, IndexContext<LinksValue>, Context
 {
-   public void creategroup( StringValue name );
+   public void creategroup( @MaxLength(50) StringValue name );
 
    abstract class Mixin
-      extends ContextMixin
-      implements GroupsContext
+         extends ContextMixin
+         implements GroupsContext
    {
       @Structure
       Module module;
 
       public LinksValue index()
       {
-         Groups.Data groups = roleMap.get(Groups.Data.class);
+         Groups.Data groups = roleMap.get( Groups.Data.class );
 
          return new LinksBuilder( module.valueBuilderFactory() ).rel( "group" ).addDescribables( groups.groups() ).newLinks();
       }
 
       public void creategroup( StringValue name )
       {
-         Groups groups = roleMap.get(Groups.class);
+         Groups groups = roleMap.get( Groups.class );
          groups.createGroup( name.string().get() );
       }
 
       public GroupContext context( String id )
       {
          Group group = module.unitOfWorkFactory().currentUnitOfWork().get( GroupEntity.class, id );
-         if (!roleMap.get(Groups.Data.class).groups().contains( group ))
-            throw new IllegalArgumentException("Invalid group");
-         
-         roleMap.set( group, GroupEntity.class);
+         if (!roleMap.get( Groups.Data.class ).groups().contains( group ))
+            throw new IllegalArgumentException( "Invalid group" );
+
+         roleMap.set( group, GroupEntity.class );
 
          return subContext( GroupContext.class );
       }

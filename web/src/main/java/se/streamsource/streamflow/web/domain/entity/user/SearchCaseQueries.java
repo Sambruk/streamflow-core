@@ -49,9 +49,10 @@ import java.util.regex.PatternSyntaxException;
  * JAVADOC
  */
 @Mixins(SearchCaseQueries.Mixin.class)
-public interface SearchCaseQueries
+public interface
+      SearchCaseQueries
 {
-   Query<Case> search( StringValue query);
+   Query<Case> search( StringValue query );
 
    abstract class Mixin
          implements SearchCaseQueries
@@ -62,7 +63,7 @@ public interface SearchCaseQueries
       @This
       UserAuthentication.Data user;
 
-      public Query<Case> search( StringValue query)
+      public Query<Case> search( StringValue query )
       {
          UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
 

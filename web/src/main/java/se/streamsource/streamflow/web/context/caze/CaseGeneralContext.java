@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.web.context.caze;
 
+import org.qi4j.api.constraint.Constraints;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
@@ -24,13 +25,15 @@ import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
+import org.qi4j.library.constraints.annotation.MaxLength;
+import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.IndexContext;
-import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.SubContext;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.StringValue;
+import se.streamsource.dci.value.StringValueMaxLength;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.domain.structure.Notable;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
@@ -52,32 +55,34 @@ import static se.streamsource.streamflow.domain.interaction.gtd.CaseStates.*;
  * JAVADOC
  */
 @Mixins(CaseGeneralContext.Mixin.class)
+@Constraints(StringValueMaxLength.class)
 public interface CaseGeneralContext
-   extends
+      extends
       IndexContext<CaseGeneralDTO>,
       Context
 {
-   @RequiresStatus( {DRAFT,OPEN } )
+   @RequiresStatus({DRAFT, OPEN})
    void changedueon( DateDTO dueOnValue );
 
-   @RequiresStatus( {DRAFT,OPEN } )
+   @RequiresStatus({DRAFT, OPEN})
    void casetype( EntityReferenceDTO dto );
 
-   @RequiresStatus({DRAFT,OPEN } )
-   void changedescription( StringValue stringValue );
+   @RequiresStatus({DRAFT, OPEN})
+   void changedescription( @MaxLength(50) StringValue stringValue );
 
-   @RequiresStatus( {DRAFT,OPEN } )
+   @RequiresStatus({DRAFT, OPEN})
    void changenote( StringValue noteValue );
 
    LinksValue possiblecasetypes();
+
    LinksValue possibleforms();
 
    @SubContext
    LabelableContext labels();
 
    abstract class Mixin
-      extends ContextMixin
-      implements CaseGeneralContext
+         extends ContextMixin
+         implements CaseGeneralContext
    {
       @Structure
       Module module;
@@ -135,16 +140,16 @@ public interface CaseGeneralContext
 
       public void changedueon( DateDTO dueOnValue )
       {
-         DueOn dueOn = roleMap.get(DueOn.class);
+         DueOn dueOn = roleMap.get( DueOn.class );
          dueOn.dueOn( dueOnValue.date().get() );
       }
 
       public LinksValue possiblecasetypes()
       {
-         CaseTypeQueries aCase = roleMap.get( CaseTypeQueries.class);
+         CaseTypeQueries aCase = roleMap.get( CaseTypeQueries.class );
          LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() ).command( "casetype" );
 
-         aCase.possibleCaseTypes(builder);
+         aCase.possibleCaseTypes( builder );
 
          return builder.newLinks();
       }
@@ -152,10 +157,10 @@ public interface CaseGeneralContext
       public void casetype( EntityReferenceDTO dto )
       {
          UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
-         TypedCase aCase = roleMap.get( TypedCase.class);
+         TypedCase aCase = roleMap.get( TypedCase.class );
 
          EntityReference entityReference = dto.entity().get();
-         if (entityReference != null )
+         if (entityReference != null)
          {
             CaseType caseType = uow.get( CaseType.class, entityReference.identity() );
             aCase.changeCaseType( caseType );
@@ -165,17 +170,17 @@ public interface CaseGeneralContext
 
       public LinksValue possibleforms()
       {
-         TypedCase.Data typedCase = roleMap.get( TypedCase.Data.class);
+         TypedCase.Data typedCase = roleMap.get( TypedCase.Data.class );
 
          CaseType caseType = typedCase.caseType().get();
 
          if (caseType != null)
          {
             SelectedForms.Data forms = (SelectedForms.Data) caseType;
-            return new LinksBuilder(module.valueBuilderFactory()).addDescribables( forms.selectedForms() ).newLinks();
+            return new LinksBuilder( module.valueBuilderFactory() ).addDescribables( forms.selectedForms() ).newLinks();
          } else
          {
-            return new LinksBuilder(module.valueBuilderFactory()).newLinks();
+            return new LinksBuilder( module.valueBuilderFactory() ).newLinks();
          }
       }
 

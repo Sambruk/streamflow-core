@@ -36,7 +36,6 @@ public interface SavedSearchContext
       DeleteContext,
       Context
 {
-   public void changedescription( StringValue name );
 
    public void changequery( StringValue query );
 
@@ -53,12 +52,6 @@ public interface SavedSearchContext
       {
          SavedSearch savedSearch = roleMap.get( SavedSearch.class );
          savedSearch.changeQuery( query.string().get() );
-      }
-
-      public void changedescription( StringValue name )
-      {
-         SavedSearch savedSearch = roleMap.get( SavedSearch.class );
-         savedSearch.changeDescription( name.string().get() );
       }
    }
 }

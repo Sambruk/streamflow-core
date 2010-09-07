@@ -17,29 +17,33 @@
 
 package se.streamsource.streamflow.web.context.organizations;
 
+import org.qi4j.api.constraint.Constraints;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.library.constraints.annotation.MaxLength;
 import se.streamsource.dci.api.Context;
-import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.ContextMixin;
-import se.streamsource.dci.value.StringValue;
-import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
+import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.api.SubContexts;
 import se.streamsource.dci.value.LinksValue;
+import se.streamsource.dci.value.StringValue;
+import se.streamsource.dci.value.StringValueMaxLength;
+import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.web.domain.structure.role.Role;
 import se.streamsource.streamflow.web.domain.structure.role.Roles;
-import se.streamsource.dci.api.SubContexts;
 
 /**
  * JAVADOC
  */
 @Mixins(RolesContext.Mixin.class)
+@Constraints(StringValueMaxLength.class)
 public interface RolesContext
-   extends SubContexts<RoleContext>, IndexContext<LinksValue>, Context
+      extends SubContexts<RoleContext>, IndexContext<LinksValue>, Context
 {
-   void createrole( StringValue name );
+   void createrole( @MaxLength(50) StringValue name );
 
    abstract class Mixin
-      extends ContextMixin
-      implements RolesContext
+         extends ContextMixin
+         implements RolesContext
    {
       public LinksValue index()
       {
@@ -50,14 +54,14 @@ public interface RolesContext
 
       public void createrole( StringValue name )
       {
-         Roles roles = roleMap.get(Roles.class);
+         Roles roles = roleMap.get( Roles.class );
 
          roles.createRole( name.string().get() );
       }
 
       public RoleContext context( String id )
       {
-         roleMap.set( module.unitOfWorkFactory().currentUnitOfWork().get( Role.class, id ));
+         roleMap.set( module.unitOfWorkFactory().currentUnitOfWork().get( Role.class, id ) );
 
          return subContext( RoleContext.class );
       }

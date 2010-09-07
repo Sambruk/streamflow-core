@@ -67,49 +67,49 @@ public class FieldValueEditModel
    {
       ValueBuilder<BooleanDTO> builder = vbf.newValueBuilder( BooleanDTO.class );
       builder.prototype().bool().set( mandatory );
-      client.putCommand( "changemandatory", builder.newInstance() );
+      client.postCommand( "changemandatory", builder.newInstance() );
    }
 
    public void changeDescription( String newDescription ) throws ResourceException
    {
       ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
       builder.prototype().string().set( newDescription );
-      client.putCommand( "changedescription", builder.newInstance() );
+      client.postCommand( "changedescription", builder.newInstance() );
    }
 
    public void changeNote( String newNote ) throws ResourceException
    {
       ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
       builder.prototype().string().set( newNote );
-      client.putCommand( "changenote", builder.newInstance() );
+      client.postCommand( "changenote", builder.newInstance() );
    }
 
    public void changeFieldId( String newId ) throws ResourceException
    {
       ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
       builder.prototype().string().set( newId );
-      client.putCommand( "changefieldid", builder.newInstance() );
+      client.postCommand( "changefieldid", builder.newInstance() );
    }
 
    public void changeWidth( Integer newWidth ) throws ResourceException
    {
       ValueBuilder<IntegerDTO> builder = vbf.newValueBuilder( IntegerDTO.class );
       builder.prototype().integer().set( newWidth );
-      client.putCommand( "changewidth", builder.newInstance() );
+      client.postCommand( "changewidth", builder.newInstance() );
    }
 
    public void changeRows( Integer newWidth ) throws ResourceException
    {
       ValueBuilder<IntegerDTO> builder = vbf.newValueBuilder( IntegerDTO.class );
       builder.prototype().integer().set( newWidth );
-      client.putCommand( "changerows", builder.newInstance() );
+      client.postCommand( "changerows", builder.newInstance() );
    }
 
    public void changeCols( Integer newWidth ) throws ResourceException
    {
       ValueBuilder<IntegerDTO> builder = vbf.newValueBuilder( IntegerDTO.class );
       builder.prototype().integer().set( newWidth );
-      client.putCommand( "changecols", builder.newInstance() );
+      client.postCommand( "changecols", builder.newInstance() );
    }
 
 
@@ -117,21 +117,21 @@ public class FieldValueEditModel
    {
       ValueBuilder<BooleanDTO> builder = vbf.newValueBuilder( BooleanDTO.class );
       builder.prototype().bool().set( multiple );
-      client.putCommand( "changemultiple", builder.newInstance() );
+      client.postCommand( "changemultiple", builder.newInstance() );
    }
 
    public void changeInteger( Boolean multiple ) throws ResourceException
    {
       ValueBuilder<BooleanDTO> builder = vbf.newValueBuilder( BooleanDTO.class );
       builder.prototype().bool().set( multiple );
-      client.putCommand( "changeinteger", builder.newInstance() );
+      client.postCommand( "changeinteger", builder.newInstance() );
    }
 
    public void changeComment( String comment ) throws ResourceException
    {
       ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
       builder.prototype().string().set( comment );
-      client.putCommand( "changecomment", builder.newInstance() );
+      client.postCommand( "changecomment", builder.newInstance() );
    }
 
    public void move( String direction ) throws ResourceException
@@ -145,14 +145,14 @@ public class FieldValueEditModel
    {
       ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
       builder.prototype().string().set( hint );
-      client.putCommand( "changehint", builder.newInstance() );
+      client.postCommand( "changehint", builder.newInstance() );
    }
 
    public void changeRegularExpression( String regularExpression ) throws ResourceException
    {
       ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
       builder.prototype().string().set( regularExpression );
-      client.putCommand( "changeregularexpression", builder.newInstance() );
+      client.postCommand( "changeregularexpression", builder.newInstance() );
    }
 
    public void refresh() throws OperationException

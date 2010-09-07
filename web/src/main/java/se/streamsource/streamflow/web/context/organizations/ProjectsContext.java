@@ -17,47 +17,51 @@
 
 package se.streamsource.streamflow.web.context.organizations;
 
+import org.qi4j.api.constraint.Constraints;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.library.constraints.annotation.MaxLength;
+import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.IndexContext;
-import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
+import se.streamsource.dci.api.SubContexts;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.StringValue;
-import se.streamsource.streamflow.web.domain.structure.project.Projects;
+import se.streamsource.dci.value.StringValueMaxLength;
+import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
-import se.streamsource.dci.api.Context;
-import se.streamsource.dci.api.SubContexts;
+import se.streamsource.streamflow.web.domain.structure.project.Projects;
 
 /**
  * JAVADOC
  */
 @Mixins(ProjectsContext.Mixin.class)
+@Constraints(StringValueMaxLength.class)
 public interface ProjectsContext
-   extends SubContexts<ProjectContext>, IndexContext<LinksValue>, Context
+      extends SubContexts<ProjectContext>, IndexContext<LinksValue>, Context
 {
-   void createproject( StringValue name );
+   void createproject( @MaxLength(50) StringValue name );
 
    abstract class Mixin
-      extends ContextMixin
-      implements ProjectsContext
+         extends ContextMixin
+         implements ProjectsContext
    {
       public LinksValue index()
       {
-         Projects.Data projectsState = roleMap.get(Projects.Data.class);
+         Projects.Data projectsState = roleMap.get( Projects.Data.class );
 
          return new LinksBuilder( module.valueBuilderFactory() ).rel( "project" ).addDescribables( projectsState.projects() ).newLinks();
       }
 
       public void createproject( StringValue name )
       {
-         Projects projects = roleMap.get(Projects.class);
+         Projects projects = roleMap.get( Projects.class );
 
          projects.createProject( name.string().get() );
       }
 
       public ProjectContext context( String id )
       {
-         roleMap.set(module.unitOfWorkFactory().currentUnitOfWork().get( Project.class, id));
+         roleMap.set( module.unitOfWorkFactory().currentUnitOfWork().get( Project.class, id ) );
          return subContext( ProjectContext.class );
       }
    }
