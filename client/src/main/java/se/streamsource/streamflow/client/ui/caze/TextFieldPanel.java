@@ -80,8 +80,6 @@ public class TextFieldPanel
                try
                {
                   new RegexPatternFormatter( fieldValue.regularExpression().get() ).stringToValue( ((JTextComponent) input).getText() );
-                  return true;
-
                } catch (ParseException e)
                {
                   throw new IllegalArgumentException( fieldValue.hint().get(), e );
