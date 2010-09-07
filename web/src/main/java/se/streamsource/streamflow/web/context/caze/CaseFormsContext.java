@@ -25,11 +25,12 @@ import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.ContextMixin;
-import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
-import se.streamsource.streamflow.resource.roles.IntegerDTO;
+import se.streamsource.dci.api.SubContexts;
 import se.streamsource.streamflow.resource.caze.EffectiveFieldsDTO;
 import se.streamsource.streamflow.resource.caze.SubmittedFormDTO;
 import se.streamsource.streamflow.resource.caze.SubmittedFormsListDTO;
+import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
+import se.streamsource.streamflow.resource.roles.IntegerDTO;
 import se.streamsource.streamflow.web.domain.entity.form.FormSubmissionEntity;
 import se.streamsource.streamflow.web.domain.entity.form.FormSubmissionsQueries;
 import se.streamsource.streamflow.web.domain.entity.form.SubmittedFormsQueries;
@@ -38,7 +39,6 @@ import se.streamsource.streamflow.web.domain.structure.form.FormSubmission;
 import se.streamsource.streamflow.web.domain.structure.form.FormSubmissions;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedForms;
 import se.streamsource.streamflow.web.domain.structure.form.Submitter;
-import se.streamsource.dci.api.SubContexts;
 
 /**
  * JAVADOC
@@ -51,7 +51,7 @@ public interface CaseFormsContext
 
    public EffectiveFieldsDTO effectivefields();
 
-   public SubmittedFormDTO submittedform( IntegerDTO index);
+   public SubmittedFormDTO submittedform( IntegerDTO index );
 
    public void createformsubmission( EntityReferenceDTO formDTO );
 
@@ -70,27 +70,27 @@ public interface CaseFormsContext
 
       public SubmittedFormsListDTO listsubmittedforms()
       {
-         SubmittedFormsQueries forms = roleMap.get(SubmittedFormsQueries.class);
+         SubmittedFormsQueries forms = roleMap.get( SubmittedFormsQueries.class );
          return forms.getSubmittedForms();
       }
 
       public EffectiveFieldsDTO effectivefields()
       {
-         SubmittedFormsQueries fields = roleMap.get(SubmittedFormsQueries.class);
+         SubmittedFormsQueries fields = roleMap.get( SubmittedFormsQueries.class );
 
          return fields.effectiveFields();
       }
 
-      public SubmittedFormDTO submittedform( IntegerDTO index)
+      public SubmittedFormDTO submittedform( IntegerDTO index )
       {
-         SubmittedFormsQueries forms = roleMap.get(SubmittedFormsQueries.class);
+         SubmittedFormsQueries forms = roleMap.get( SubmittedFormsQueries.class );
 
          return forms.getSubmittedForm( index.integer().get() );
       }
 
       public void createformsubmission( EntityReferenceDTO formDTO )
       {
-         FormSubmissions formSubmissions = roleMap.get(FormSubmissions.class);
+         FormSubmissions formSubmissions = roleMap.get( FormSubmissions.class );
 
          Form form = uowf.currentUnitOfWork().get( Form.class, formDTO.entity().get().identity() );
 
@@ -101,7 +101,7 @@ public interface CaseFormsContext
       {
          UnitOfWork uow = uowf.currentUnitOfWork();
 
-         FormSubmissions formSubmissions = roleMap.get(FormSubmissions.class);
+         FormSubmissions formSubmissions = roleMap.get( FormSubmissions.class );
 
          Form form = uowf.currentUnitOfWork().get( Form.class, formDTO.entity().get().identity() );
 
@@ -110,7 +110,7 @@ public interface CaseFormsContext
 
       public EntityReferenceDTO formsubmission( EntityReferenceDTO formDTO )
       {
-         FormSubmissionsQueries formSubmissions = roleMap.get(FormSubmissionsQueries.class);
+         FormSubmissionsQueries formSubmissions = roleMap.get( FormSubmissionsQueries.class );
 
          return formSubmissions.getFormSubmission( formDTO.entity().get() );
       }
@@ -119,9 +119,9 @@ public interface CaseFormsContext
       {
          UnitOfWork uow = uowf.currentUnitOfWork();
 
-         EntityReferenceDTO dto = roleMap.get(FormSubmissionsQueries.class).getFormSubmission( formDTO.entity().get() );
+         EntityReferenceDTO dto = roleMap.get( FormSubmissionsQueries.class ).getFormSubmission( formDTO.entity().get() );
 
-         if ( dto == null )
+         if (dto == null)
          {
             throw new ResourceException( Status.CLIENT_ERROR_CONFLICT );
          }
@@ -129,14 +129,17 @@ public interface CaseFormsContext
          FormSubmission formSubmission =
                uow.get( FormSubmission.class, dto.entity().get().identity() );
 
-         Submitter submitter = roleMap.get(Submitter.class);
+         Submitter submitter = roleMap.get( Submitter.class );
 
-         roleMap.get( SubmittedForms.class).submitForm( formSubmission, submitter );
+         roleMap.get( SubmittedForms.class ).submitForm( formSubmission, submitter );
+
+         // discard since the form is already submitted.
+         discard( formDTO );
       }
 
       public CaseFormContext context( String id )
       {
-         roleMap.set( uowf.currentUnitOfWork().get( FormSubmissionEntity.class, id ));
+         roleMap.set( uowf.currentUnitOfWork().get( FormSubmissionEntity.class, id ) );
 
          return subContext( CaseFormContext.class );
       }

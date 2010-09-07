@@ -17,29 +17,29 @@
 
 package se.streamsource.streamflow.client.ui.caze;
 
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
-import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.dci.value.LinkValue;
+import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
-import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
-import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
-import ca.odell.glazedlists.BasicEventList;
-import ca.odell.glazedlists.EventList;
 
 import java.util.List;
 
 public class PossibleFormsModel
-   implements EventListener
+      implements EventListener
 {
    @Uses
    CommandQueryClient client;
@@ -50,17 +50,17 @@ public class PossibleFormsModel
    @Structure
    ValueBuilderFactory vbf;
 
-   BasicEventList<LinkValue> forms = new BasicEventList<LinkValue>( );
+   BasicEventList<LinkValue> forms = new BasicEventList<LinkValue>();
 
    WeakModelMap<String, FormSubmissionModel> formSubmitModels = new WeakModelMap<String, FormSubmissionModel>()
    {
       @Override
-      protected FormSubmissionModel newModel(String key)
+      protected FormSubmissionModel newModel( String key )
       {
          try
          {
             ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
-            builder.prototype().entity().set( EntityReference.parseEntityReference( key ));
+            builder.prototype().entity().set( EntityReference.parseEntityReference( key ) );
 
             client.postCommand( "createformsubmission", builder.newInstance() );
             EntityReferenceDTO formSubmission = client.query( "formsubmission", builder.newInstance(), EntityReferenceDTO.class );
@@ -68,7 +68,7 @@ public class PossibleFormsModel
                   .use( client.getSubClient( formSubmission.entity().get().identity() ) ).newInstance();
          } catch (ResourceException e)
          {
-            throw new OperationException(WorkspaceResources.could_not_get_form, e);
+            throw new OperationException( WorkspaceResources.could_not_get_form, e );
          }
       }
    };
@@ -83,9 +83,9 @@ public class PossibleFormsModel
       return forms;
    }
 
-   public FormSubmissionModel getFormSubmitModel(String key)
+   public FormSubmissionModel getFormSubmitModel( String key )
    {
-      return formSubmitModels.get(key);
+      return formSubmitModels.get( key );
    }
 
    public void submit( EntityReference form )
@@ -95,9 +95,10 @@ public class PossibleFormsModel
       try
       {
          client.postCommand( "submit", builder.newInstance() );
+         formSubmitModels.remove( form.identity() );
       } catch (ResourceException e)
       {
-         throw new OperationException(WorkspaceResources.could_not_submit_form, e);
+         throw new OperationException( WorkspaceResources.could_not_submit_form, e );
       }
    }
 
@@ -111,7 +112,7 @@ public class PossibleFormsModel
          formSubmitModels.remove( form.identity() );
       } catch (ResourceException e)
       {
-         throw new OperationException(WorkspaceResources.could_not_discard_form_submission, e);
+         throw new OperationException( WorkspaceResources.could_not_discard_form_submission, e );
       }
    }
 

@@ -89,11 +89,11 @@ public class FormSubmissionModel
       return formSubmission.description().get();
    }
 
-   public void updateField( EntityReference reference, String name ) throws ResourceException
+   public void updateField( EntityReference reference, String value ) throws ResourceException
    {
       ValueBuilder<FieldValueDTO> builder = vbf.newValueBuilder( FieldValueDTO.class );
       builder.prototype().field().set( reference );
-      builder.prototype().value().set( name );
+      builder.prototype().value().set( value );
 
       client.postCommand( "updatefield", builder.newInstance() );
    }
@@ -110,15 +110,20 @@ public class FormSubmissionModel
 
    public boolean visit( DomainEvent event )
    {
+
       if ("changedFormSubmission".equals( event.name().get() ))
       {
          FormSubmissionValue value = vbf.newValueFromJSON( FormSubmissionValue.class, EventParameters.getParameter( event, "param1" ) );
-         for (int i = 0; i < value.pages().get().size(); i++)
-         {
-            PageSubmissionValue pageSubmissionValue = value.pages().get().get( i );
-            FormSubmissionWizardPage submissionWizardPage = pages.get( i );
 
-            submissionWizardPage.updatePage( pageSubmissionValue );
+         if (value.form().get().identity().equals( formSubmission.form().get().identity() ))
+         {
+            for (int i = 0; i < value.pages().get().size(); i++)
+            {
+               PageSubmissionValue pageSubmissionValue = value.pages().get().get( i );
+               FormSubmissionWizardPage submissionWizardPage = pages.get( i );
+
+               submissionWizardPage.updatePage( pageSubmissionValue );
+            }
          }
       }
       return false;
