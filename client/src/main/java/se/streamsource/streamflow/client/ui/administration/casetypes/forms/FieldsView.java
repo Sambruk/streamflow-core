@@ -40,7 +40,6 @@ import javax.swing.ActionMap;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.ListModel;
 import java.awt.BorderLayout;
@@ -79,7 +78,6 @@ public class FieldsView
 
       setBorder( Borders.createEmptyBorder( "2dlu, 2dlu, 2dlu, 2dlu" ) );
 
-      JScrollPane scrollPanel = new JScrollPane();
       final ActionMap am = context.getActionMap( this );
 
       JPanel toolbar = new JPanel();
@@ -95,14 +93,12 @@ public class FieldsView
       fieldList = new GroupedList();
       fieldList.setEventList( pagesAndFields );
 
-      scrollPanel.setViewportView( fieldList );
-
       JPanel titlePanel = new JPanel( new BorderLayout() );
       titlePanel.add( new JSeparator(), BorderLayout.NORTH );
       titlePanel.add( new JLabel( i18n.text( AdministrationResources.fields_label ) ), BorderLayout.CENTER );
 
       add( titlePanel, BorderLayout.NORTH );
-      add( scrollPanel, BorderLayout.CENTER );
+      add( fieldList, BorderLayout.CENTER );
       add( toolbar, BorderLayout.SOUTH );
 
       fieldList.getList().getSelectionModel().addListSelectionListener(
