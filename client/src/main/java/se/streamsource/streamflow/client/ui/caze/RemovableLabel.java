@@ -102,7 +102,7 @@ public class RemovableLabel extends JPanel
       }
 
       button = new JButton( i18n.icon( Icons.drop, 12 ) );
-      button.setBorder( new EmptyBorder( new Insets( 0, 0, 0, 0 ) ) );
+      button.setBorder( BorderFactory.createEmptyBorder( 0,0,0,0 ) );
       button.setFocusable( false );
 
       switch (buttonOrientation)
@@ -170,7 +170,7 @@ public class RemovableLabel extends JPanel
          setBorder( BorderFactory.createEtchedBorder() );
       } else
       {
-         setBorder( null );
+         setBorder( BorderFactory.createEmptyBorder( 0,0,0,0 ) );
       }
       repaint();
    }

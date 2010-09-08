@@ -145,7 +145,7 @@ public class CaseGeneralView extends JScrollPane implements Observer
 
       // Layout and form for the right panel
       FormLayout rightLayout = new FormLayout( "70dlu, 2dlu, 200:grow", "pref, pref, pref, pref, 20dlu, pref, fill:pref:grow" );
-
+                                                                              
       rightForm = new JPanel( rightLayout );
       rightForm.setFocusable( false );
       DefaultFormBuilder rightBuilder = new DefaultFormBuilder( rightLayout,
@@ -180,7 +180,7 @@ public class CaseGeneralView extends JScrollPane implements Observer
       rightBuilder.add( caseTypeButton,
             new CellConstraints( 1, 3, 1, 1, CellConstraints.FILL, CellConstraints.TOP, new Insets( 2, 0, 5, 0 ) ) );
       rightBuilder.add( selectedCaseType,
-            new CellConstraints( 3, 3, 1, 1, CellConstraints.LEFT, CellConstraints.BOTTOM, new Insets( 2, 0, 0, 0 ) ) );
+            new CellConstraints( 3, 3, 1, 1, CellConstraints.LEFT, CellConstraints.BOTTOM, new Insets( 5, 0, 0, 0 ) ) );
 
       rightBuilder.nextLine();
 
@@ -203,17 +203,18 @@ public class CaseGeneralView extends JScrollPane implements Observer
 
       // Due date
       rightBuilder.setExtent( 1, 1 );
-      rightBuilder.add( new JLabel( i18n.text( WorkspaceResources.due_on_label ) ) );
+      rightBuilder.add( new JLabel( i18n.text( WorkspaceResources.due_on_label ) ),
+              new CellConstraints(1,5,1,1, CellConstraints.LEFT, CellConstraints.TOP, new Insets(4,2,0,0)) );
       rightBuilder.nextColumn();
       rightBuilder.nextColumn();
       rightBuilder.add( caseBinder.bind( dueOnField = (JXDatePicker) DATEPICKER.newField(), template.dueOn() ),
-            new CellConstraints( 3, 5, 1, 1, CellConstraints.LEFT, CellConstraints.BOTTOM, new Insets( 0, 0, 0, 0 ) ) );
+            new CellConstraints( 3, 5, 1, 1, CellConstraints.LEFT, CellConstraints.BOTTOM, new Insets( 4, 2, 0, 0 ) ) );
       dueOnField.setFormats( DateFormat.getDateInstance( DateFormat.MEDIUM, Locale.getDefault() ) );
       rightBuilder.nextLine();
 
       // Forms
       rightBuilder.add( new JLabel( i18n.text( WorkspaceResources.forms_label ) ),
-            cc.xy( 1, 6, CellConstraints.LEFT, CellConstraints.TOP ) );
+            new CellConstraints ( 1, 6, 1, 1,CellConstraints.LEFT, CellConstraints.TOP , new Insets( 5,0,0,0 ) ) );
       rightBuilder.add( forms,
             new CellConstraints( 3, 6, 1, 1, CellConstraints.FILL, CellConstraints.FILL, new Insets( 5, 0, 0, 0 ) ) );
 

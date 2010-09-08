@@ -61,7 +61,7 @@ public class PossibleFormsView extends JPanel implements ListEventListener, Acti
    public PossibleFormsView()
    {
       setLayout( new BoxLayout( this, BoxLayout.Y_AXIS ));
-      setBorder( BorderFactory.createEmptyBorder( 2,2,2,2 ) );
+      setBorder( BorderFactory.createEmptyBorder( 2,0,2,2 ) );
       setFocusable( false );
    }
 
@@ -83,24 +83,26 @@ public class PossibleFormsView extends JPanel implements ListEventListener, Acti
       {
          PossibleFormView formView = new PossibleFormView( itemValue );
          
-         formView.setPreferredSize( new Dimension( 135, 20 ));
-         formView.setMinimumSize( new Dimension( 135, 20 ) );
-         formView.setMaximumSize( new Dimension( 135, 20 ) );
+         formView.setPreferredSize( new Dimension( 150, 25 ));
+         formView.setMinimumSize( new Dimension( 150, 25 ) );
+         formView.setMaximumSize( new Dimension( 150, 25 ) );
          formView.addActionListener( this );
-         add( formView, Component.LEFT_ALIGNMENT );
+         add( formView, Component.LEFT_ALIGNMENT );                           
          count++;
       }
 
-      this.setPreferredSize( new Dimension( 140, 25 * count) );
+      this.setPreferredSize( new Dimension( 154, 30 * count) );
 
-      SwingUtilities.invokeLater(new Runnable(){
+      /*SwingUtilities.invokeLater(new Runnable(){
 
          public void run()
-         {
-            PossibleFormsView.this.getParent().doLayout();
-            PossibleFormsView.this.getParent().repaint();
-         }
-      });
+         {*/
+            //PossibleFormsView.
+                    //this.getParent().doLayout();
+            //PossibleFormsView.
+                    //this.getParent().repaint();
+         /*}
+      }); */
    }
 
    @Override
