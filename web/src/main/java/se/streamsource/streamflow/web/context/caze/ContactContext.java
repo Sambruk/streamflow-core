@@ -25,8 +25,9 @@ import org.qi4j.api.service.ServiceImporterException;
 import org.qi4j.api.service.ServiceReference;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.ContextMixin;
+import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.domain.contact.ContactAddressValue;
 import se.streamsource.streamflow.domain.contact.ContactEmailValue;
@@ -37,7 +38,7 @@ import se.streamsource.streamflow.server.plugin.contact.ContactList;
 import se.streamsource.streamflow.server.plugin.contact.ContactLookup;
 import se.streamsource.streamflow.web.context.ServiceAvailable;
 import se.streamsource.streamflow.web.domain.structure.caze.Contacts;
-import se.streamsource.dci.api.ContextMixin;
+import se.streamsource.streamflow.web.infrastructure.plugin.contact.ContactLookupService;
 
 import java.util.List;
 
@@ -46,22 +47,28 @@ import java.util.List;
  */
 @Mixins(ContactContext.Mixin.class)
 public interface ContactContext
-   extends DeleteContext, Context
+      extends DeleteContext, Context
 {
    public void changename( StringValue name );
+
    public void changenote( StringValue note );
+
    public void changecontactid( StringValue contactId );
+
    public void changecompany( StringValue company );
+
    public void changephonenumber( ContactPhoneValue phoneValue );
+
    public void changeaddress( ContactAddressValue addressValue );
+
    public void changeemailaddress( ContactEmailValue emailValue );
 
-   @ServiceAvailable(ContactLookup.class)
+   @ServiceAvailable(ContactLookupService.class)
    public ContactsDTO searchcontacts();
 
    abstract class Mixin
-      extends ContextMixin
-      implements ContactContext
+         extends ContextMixin
+         implements ContactContext
    {
       @Structure
       ValueBuilderFactory vbf;
@@ -72,17 +79,17 @@ public interface ContactContext
 
       public void delete()
       {
-         Contacts contacts = roleMap.get(Contacts.class);
-         Integer index = roleMap.get(Integer.class);
+         Contacts contacts = roleMap.get( Contacts.class );
+         Integer index = roleMap.get( Integer.class );
 
          contacts.deleteContact( index );
       }
 
       public void changename( StringValue name )
       {
-         Contacts contacts = roleMap.get(Contacts.class);
-         Integer index = roleMap.get(Integer.class);
-         ContactValue contact = roleMap.get(ContactValue.class);
+         Contacts contacts = roleMap.get( Contacts.class );
+         Integer index = roleMap.get( Integer.class );
+         ContactValue contact = roleMap.get( ContactValue.class );
 
          ValueBuilder<ContactValue> builder = contact.buildWith();
          builder.prototype().name().set( name.string().get() );
@@ -91,9 +98,9 @@ public interface ContactContext
 
       public void changenote( StringValue note )
       {
-         Contacts contacts = roleMap.get(Contacts.class);
-         Integer index = roleMap.get(Integer.class);
-         ContactValue contact = roleMap.get(ContactValue.class);
+         Contacts contacts = roleMap.get( Contacts.class );
+         Integer index = roleMap.get( Integer.class );
+         ContactValue contact = roleMap.get( ContactValue.class );
 
          ValueBuilder<ContactValue> builder = contact.buildWith();
          builder.prototype().note().set( note.string().get() );
@@ -102,9 +109,9 @@ public interface ContactContext
 
       public void changecontactid( StringValue contactId )
       {
-         Contacts contacts = roleMap.get(Contacts.class);
-         Integer index = roleMap.get(Integer.class);
-         ContactValue contact = roleMap.get(ContactValue.class);
+         Contacts contacts = roleMap.get( Contacts.class );
+         Integer index = roleMap.get( Integer.class );
+         ContactValue contact = roleMap.get( ContactValue.class );
 
          ValueBuilder<ContactValue> builder = contact.buildWith();
          builder.prototype().contactId().set( contactId.string().get() );
@@ -113,9 +120,9 @@ public interface ContactContext
 
       public void changecompany( StringValue company )
       {
-         Contacts contacts = roleMap.get(Contacts.class);
-         Integer index = roleMap.get(Integer.class);
-         ContactValue contact = roleMap.get(ContactValue.class);
+         Contacts contacts = roleMap.get( Contacts.class );
+         Integer index = roleMap.get( Integer.class );
+         ContactValue contact = roleMap.get( ContactValue.class );
 
          ValueBuilder<ContactValue> builder = contact.buildWith();
          builder.prototype().company().set( company.string().get() );
@@ -124,9 +131,9 @@ public interface ContactContext
 
       public void changephonenumber( ContactPhoneValue phoneValue )
       {
-         Contacts contacts = roleMap.get(Contacts.class);
-         Integer index = roleMap.get(Integer.class);
-         ContactValue contact = roleMap.get(ContactValue.class);
+         Contacts contacts = roleMap.get( Contacts.class );
+         Integer index = roleMap.get( Integer.class );
+         ContactValue contact = roleMap.get( ContactValue.class );
 
          ValueBuilder<ContactValue> builder = contact.buildWith();
 
@@ -146,9 +153,9 @@ public interface ContactContext
 
       public void changeaddress( ContactAddressValue addressValue )
       {
-         Contacts contacts = roleMap.get(Contacts.class);
-         Integer index = roleMap.get(Integer.class);
-         ContactValue contact = roleMap.get(ContactValue.class);
+         Contacts contacts = roleMap.get( Contacts.class );
+         Integer index = roleMap.get( Integer.class );
+         ContactValue contact = roleMap.get( ContactValue.class );
 
          ValueBuilder<ContactValue> builder = contact.buildWith();
 
@@ -168,9 +175,9 @@ public interface ContactContext
 
       public void changeemailaddress( ContactEmailValue emailValue )
       {
-         Contacts contacts = roleMap.get(Contacts.class);
-         Integer index = roleMap.get(Integer.class);
-         ContactValue contact = roleMap.get(ContactValue.class);
+         Contacts contacts = roleMap.get( Contacts.class );
+         Integer index = roleMap.get( Integer.class );
+         ContactValue contact = roleMap.get( ContactValue.class );
 
          ValueBuilder<ContactValue> builder = contact.buildWith();
 
@@ -193,7 +200,7 @@ public interface ContactContext
       {
          // This method has to convert between the internal ContactValue and the plugin API ContactValue,
          // hence the use of JSON as intermediary
-         ContactValue contact = roleMap.get(ContactValue.class);
+         ContactValue contact = roleMap.get( ContactValue.class );
          se.streamsource.streamflow.server.plugin.contact.ContactValue pluginContact = vbf.newValueFromJSON( se.streamsource.streamflow.server.plugin.contact.ContactValue.class, contact.toJSON() );
          ValueBuilder<ContactsDTO> builder = vbf.newValueBuilder( ContactsDTO.class );
 
@@ -207,7 +214,7 @@ public interface ContactContext
 
                for (se.streamsource.streamflow.server.plugin.contact.ContactValue possibleContact : possibleContacts.contacts().get())
                {
-                  contactList.add( vbf.newValueFromJSON( ContactValue.class, possibleContact.toJSON() ));
+                  contactList.add( vbf.newValueFromJSON( ContactValue.class, possibleContact.toJSON() ) );
                }
                return builder.newInstance();
             } else

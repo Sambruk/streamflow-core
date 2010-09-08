@@ -161,6 +161,7 @@ import se.streamsource.streamflow.client.ui.caze.CasesTableModel;
 import se.streamsource.streamflow.client.ui.caze.CasesView;
 import se.streamsource.streamflow.client.ui.caze.CheckboxesPanel;
 import se.streamsource.streamflow.client.ui.caze.ComboBoxPanel;
+import se.streamsource.streamflow.client.ui.caze.ContactLookupResultDialog;
 import se.streamsource.streamflow.client.ui.caze.ContactModel;
 import se.streamsource.streamflow.client.ui.caze.ContactView;
 import se.streamsource.streamflow.client.ui.caze.ContactsAdminView;
@@ -476,7 +477,7 @@ public class UIAssembler
             IntegerPanel.class, DoublePanel.class, TextAreaFieldPanel.class, TextFieldPanel.class
       );
 
-      addDialogs( module, CaseLabelsDialog.class );
+      addDialogs( module, CaseLabelsDialog.class, ContactLookupResultDialog.class );
 
       addMV( module, CasesTableModel.class, CaseTableView.class );
 

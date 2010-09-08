@@ -17,31 +17,22 @@
 
 package se.streamsource.streamflow.client.ui.caze;
 
-import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.TEXTAREA;
-import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.TEXTFIELD;
-
-import java.awt.*;
-import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
-
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.factories.Borders;
+import com.jgoodies.forms.layout.FormLayout;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilder;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueBuilder;
 import org.restlet.resource.ResourceException;
-
 import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
@@ -49,11 +40,18 @@ import se.streamsource.streamflow.domain.contact.ContactAddressValue;
 import se.streamsource.streamflow.domain.contact.ContactEmailValue;
 import se.streamsource.streamflow.domain.contact.ContactPhoneValue;
 import se.streamsource.streamflow.domain.contact.ContactValue;
-
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.factories.Borders;
-import com.jgoodies.forms.layout.FormLayout;
 import se.streamsource.streamflow.resource.caze.ContactsDTO;
+
+import javax.swing.BorderFactory;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import java.awt.CardLayout;
+import java.util.Observable;
+import java.util.Observer;
+
+import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.*;
 
 /**
  * JAVADOC
@@ -62,6 +60,12 @@ public class ContactView
       extends JPanel
       implements Observer
 {
+   @Service
+   DialogService dialogs;
+
+   @Uses
+   protected ObjectBuilder<ContactLookupResultDialog> contactLookupResultDialog;
+
    private StateBinder contactBinder;
    private StateBinder phoneNumberBinder;
    private StateBinder emailBinder;
@@ -84,12 +88,12 @@ public class ContactView
       FormLayout formLayout = new FormLayout(
             "70dlu, 5dlu, 150dlu:grow",
             "pref, pref, pref, pref, pref, pref, 5dlu, top:70dlu:grow, pref, pref" );
-      this.setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
+      this.setBorder( Borders.createEmptyBorder( "2dlu, 2dlu, 2dlu, 2dlu" ) );
 
       form = new JPanel();
       JScrollPane scrollPane = new JScrollPane( form );
-      scrollPane.getVerticalScrollBar().setUnitIncrement(30);
-      scrollPane.setBorder(BorderFactory.createEmptyBorder());
+      scrollPane.getVerticalScrollBar().setUnitIncrement( 30 );
+      scrollPane.setBorder( BorderFactory.createEmptyBorder() );
       DefaultFormBuilder builder = new DefaultFormBuilder( formLayout, form );
 
       contactBinder = obf.newObject( StateBinder.class );
@@ -108,38 +112,38 @@ public class ContactView
       emailBinder.setResourceMap( appContext.getResourceMap( getClass() ) );
       ContactEmailValue emailTemplate = emailBinder.bindingTemplate( ContactEmailValue.class );
 
-      builder.add(new JLabel(i18n.text(WorkspaceResources.name_label)));
-      builder.nextColumn(2);
-      builder.add(contactBinder.bind( defaultFocusField = (JTextField) TEXTFIELD.newField(), template.name() ) );
+      builder.add( new JLabel( i18n.text( WorkspaceResources.name_label ) ) );
+      builder.nextColumn( 2 );
+      builder.add( contactBinder.bind( defaultFocusField = (JTextField) TEXTFIELD.newField(), template.name() ) );
       builder.nextLine();
-      builder.add(new JLabel(i18n.text(WorkspaceResources.phone_label)));
-      builder.nextColumn(2);
-      builder.add(phoneNumberBinder.bind( phoneField, phoneTemplate.phoneNumber() ) );
+      builder.add( new JLabel( i18n.text( WorkspaceResources.phone_label ) ) );
+      builder.nextColumn( 2 );
+      builder.add( phoneNumberBinder.bind( phoneField, phoneTemplate.phoneNumber() ) );
       builder.nextLine();
-      builder.add(new JLabel(i18n.text(WorkspaceResources.address_label)));
-      builder.nextColumn(2);
-      builder.add(addressBinder.bind( addressField, addressTemplate.address() ) );
+      builder.add( new JLabel( i18n.text( WorkspaceResources.address_label ) ) );
+      builder.nextColumn( 2 );
+      builder.add( addressBinder.bind( addressField, addressTemplate.address() ) );
       builder.nextLine();
-      builder.add(new JLabel(i18n.text(WorkspaceResources.email_label)));
-      builder.nextColumn(2);
-      builder.add(emailBinder.bind( TEXTFIELD.newField(), emailTemplate.emailAddress() ) );
+      builder.add( new JLabel( i18n.text( WorkspaceResources.email_label ) ) );
+      builder.nextColumn( 2 );
+      builder.add( emailBinder.bind( TEXTFIELD.newField(), emailTemplate.emailAddress() ) );
       builder.nextLine();
-      builder.add(new JLabel(i18n.text(WorkspaceResources.contact_id_label)));
-      builder.nextColumn(2);
-      builder.add(contactBinder.bind( TEXTFIELD.newField(), template.contactId() ) );
+      builder.add( new JLabel( i18n.text( WorkspaceResources.contact_id_label ) ) );
+      builder.nextColumn( 2 );
+      builder.add( contactBinder.bind( TEXTFIELD.newField(), template.contactId() ) );
       builder.nextLine();
-      builder.add(new JLabel(i18n.text(WorkspaceResources.company_label)));
-      builder.nextColumn(2);
-      builder.add(contactBinder.bind( TEXTFIELD.newField(), template.company() ) );
-      builder.nextLine(2);
-      builder.add(new JLabel(i18n.text(WorkspaceResources.note_label)));
-      builder.nextColumn(2);
-      builder.add(contactBinder.bind( TEXTAREA.newField(), template.note() ) );
+      builder.add( new JLabel( i18n.text( WorkspaceResources.company_label ) ) );
+      builder.nextColumn( 2 );
+      builder.add( contactBinder.bind( TEXTFIELD.newField(), template.company() ) );
+      builder.nextLine( 2 );
+      builder.add( new JLabel( i18n.text( WorkspaceResources.note_label ) ) );
+      builder.nextColumn( 2 );
+      builder.add( contactBinder.bind( TEXTAREA.newField(), template.note() ) );
 
-      builder.nextLine(2);
-      builder.add(new JLabel(i18n.text(WorkspaceResources.lookup_contact_label )));
-      builder.nextColumn(2);
-      builder.add(new JButton(getActionMap().get( "lookupContact" )) );
+//      builder.nextLine(2);
+//      builder.add(new JLabel(i18n.text(WorkspaceResources.lookup_contact_label )));
+//      builder.nextColumn(2);
+//      builder.add(new JButton(getActionMap().get( "lookupContact" )) );
 
       contactBinder.addObserver( this );
       phoneNumberBinder.addObserver( this );
@@ -247,6 +251,19 @@ public class ContactView
       {
          ContactsDTO contacts = model.searchContacts();
 
+         if (contacts.contacts().get().isEmpty())
+         {
+            // TODO Display message telling the user tha now contacts were found
+         } else
+         {
+
+            ContactLookupResultDialog dialog = contactLookupResultDialog.use(
+                  contacts.contacts().get() ).newInstance();
+            dialogs.showOkCancelHelpDialog( WindowUtils.findWindow( this ), dialog, i18n.text( WorkspaceResources.contacts_tab ) );
+
+            // Todo Get the selected Contact from the Table and update the GUI.
+         }
+         /*
          for (ContactValue contactValue : contacts.contacts().get())
          {
             if (defaultFocusField.getText().equals("") && !contactValue.name().get().equals(""))
@@ -273,7 +290,7 @@ public class ContactView
                   addressField.setText( addressValue.address().get() );
                }
             }
-         }
+         }      */
 
       } catch (ResourceException e)
       {

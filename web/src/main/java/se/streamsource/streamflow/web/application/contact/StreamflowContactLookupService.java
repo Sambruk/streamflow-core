@@ -105,6 +105,7 @@ public interface StreamflowContactLookupService
             {
                for (se.streamsource.streamflow.domain.contact.ContactValue contactValue : contact.contacts().get())
                {
+                  // Todo Filter the contact that belongs to the current case 
                   listBuilder.prototype().contacts().get().add( vbf.newValueFromJSON( ContactValue.class, contactValue.toJSON() ) );
                }
             }
