@@ -33,10 +33,11 @@ import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.client.StreamflowApplication;
 
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -59,7 +60,9 @@ public class PossibleFormsView extends JPanel implements ListEventListener, Acti
 
    public PossibleFormsView()
    {
-      setLayout( new FlowLayout() );
+      setLayout( new BoxLayout( this, BoxLayout.Y_AXIS ));
+      setBorder( BorderFactory.createEmptyBorder( 2,2,2,2 ) );
+      setFocusable( false );
    }
 
    public void setFormsModel( PossibleFormsModel modelForm )
@@ -74,21 +77,30 @@ public class PossibleFormsView extends JPanel implements ListEventListener, Acti
       removeAll();
 
       EventList<LinkValue> formList = modelForms.getForms();
-      if (formList.size() > 0)
-         setBorder( BorderFactory.createEtchedBorder() );
-      else
-         setBorder( BorderFactory.createEmptyBorder() );
 
+      int count = 0;
       for (LinkValue itemValue : formList)
       {
          PossibleFormView formView = new PossibleFormView( itemValue );
+         
+         formView.setPreferredSize( new Dimension( 135, 20 ));
+         formView.setMinimumSize( new Dimension( 135, 20 ) );
+         formView.setMaximumSize( new Dimension( 135, 20 ) );
          formView.addActionListener( this );
-         add( formView );
+         add( formView, Component.LEFT_ALIGNMENT );
+         count++;
       }
 
-      revalidate();
-      repaint();
+      this.setPreferredSize( new Dimension( 140, 25 * count) );
 
+      SwingUtilities.invokeLater(new Runnable(){
+
+         public void run()
+         {
+            PossibleFormsView.this.getParent().doLayout();
+            PossibleFormsView.this.getParent().repaint();
+         }
+      });
    }
 
    @Override
@@ -109,27 +121,30 @@ public class PossibleFormsView extends JPanel implements ListEventListener, Acti
    public void actionPerformed( ActionEvent e )
    {
 	   // Open up the wizard with the correct form for submission.
-      Component component = ((Component) e.getSource());
-      final PossibleFormView formsView = (PossibleFormView) component.getParent();
 
-      FormSubmissionModel model = modelForms.getFormSubmitModel( formsView.form().id().get() );
+      if ( e.getSource() instanceof PossibleFormView )
+      {
+      final PossibleFormView form = (PossibleFormView)e.getSource();   
+      FormSubmissionModel model = modelForms.getFormSubmitModel( form.form().id().get() );
 
       Wizard wizard = WizardPage.createWizard( model.getTitle(), model.getPages(), new WizardPage.WizardResultProducer()
       {
 
          public Object finish( Map map ) throws WizardException
          {
-            modelForms.submit( EntityReference.parseEntityReference( formsView.form().id().get()) );
+            modelForms.submit( EntityReference.parseEntityReference( form.form().id().get()) );
             return null;
          }
 
          public boolean cancel( Map map )
          {
-            modelForms.discard( EntityReference.parseEntityReference( formsView.form().id().get()) );
+            modelForms.discard( EntityReference.parseEntityReference( form.form().id().get()) );
             return true;
          }
       } );
       Point onScreen = main.getMainFrame().getLocationOnScreen();
       WizardDisplayer.showWizard(wizard, new Rectangle(onScreen, new Dimension( 800, 600 )));
+
+      }
    }
 }

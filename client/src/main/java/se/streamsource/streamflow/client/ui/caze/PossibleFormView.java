@@ -17,44 +17,40 @@
 
 package se.streamsource.streamflow.client.ui.caze;
 
+import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import se.streamsource.dci.value.LinkValue;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import java.awt.Color;
-import java.awt.FlowLayout;
-import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 
-public class PossibleFormView extends JPanel
-      implements FocusListener, KeyListener, MouseListener
+public class PossibleFormView extends JButton
+      implements FocusListener, KeyListener
 {
    LinkValue itemValue;
    JButton button;
 
    public PossibleFormView( LinkValue itemValue )
    {
-      super( new FlowLayout( FlowLayout.LEFT, 2, 1 ) );
+      super(itemValue.text().get(), i18n.icon( Icons.formSubmit, 16 ) ) ;
+      this.setHorizontalAlignment( SwingConstants.LEFT );
+      this.setToolTipText( itemValue.text().get() );
+      this.setBorder( BorderFactory.createEmptyBorder(2,2,2,2 ));
+      this.setFont( this.getFont().deriveFont( (float)this.getFont().getSize()  ));
+
       this.itemValue = itemValue;
 
       setFocusable( true );
       this.setRequestFocusEnabled( true );
 
-      button = new JButton( itemValue.text().get(), i18n.icon( Icons.formSubmit, 16 ) );
-
-      this.add( button );
-
       addFocusListener( this );
       addKeyListener( this );
-      addMouseListener( this );
    }
 
    public LinkValue form()
@@ -62,30 +58,18 @@ public class PossibleFormView extends JPanel
       return itemValue;
    }
 
-   @Override
-   public void setEnabled( boolean enabled )
-   {
-      button.setEnabled( enabled );
-      super.setEnabled( enabled );
-   }
-
-   public void addActionListener( ActionListener listener )
-   {
-      button.addActionListener( listener );
-   }
-
    public void focusGained( FocusEvent e )
    {
-      setBorder( BorderFactory.createEtchedBorder( Color.LIGHT_GRAY, Color.BLUE ) );
+      setBorder( BorderFactory.createLineBorder( Color.BLACK, 1 ) );
       repaint();
    }
 
    public void focusLost( FocusEvent e )
    {
-      setBorder( BorderFactory.createEtchedBorder() );
+      setBorder( BorderFactory.createEmptyBorder(2,2,2,2) );
       repaint();
    }
-
+   
    public void keyTyped( KeyEvent e )
    {
    }
@@ -95,32 +79,11 @@ public class PossibleFormView extends JPanel
       if (e.getKeyChar() == KeyEvent.VK_SPACE
             || e.getKeyChar() == KeyEvent.VK_ENTER)
       {
-         button.doClick();
+         doClick();
       }
    }
 
    public void keyReleased( KeyEvent e )
-   {
-   }
-
-   public void mouseClicked( MouseEvent e )
-   {
-      this.requestFocusInWindow();
-   }
-
-   public void mousePressed( MouseEvent e )
-   {
-   }
-
-   public void mouseReleased( MouseEvent e )
-   {
-   }
-
-   public void mouseEntered( MouseEvent e )
-   {
-   }
-
-   public void mouseExited( MouseEvent e )
    {
    }
 }

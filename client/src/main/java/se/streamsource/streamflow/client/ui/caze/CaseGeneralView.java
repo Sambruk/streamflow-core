@@ -102,14 +102,14 @@ public class CaseGeneralView extends JScrollPane implements Observer
    public JPanel rightForm;
    public JPanel leftForm;
    public CaseLabelsView labels;
-   public PossibleFormsView2 forms;
+   public PossibleFormsView forms;
    public RefreshWhenVisible refresher;
    public RemovableLabel selectedCaseType = new RemovableLabel();
    public JButton caseTypeButton;
    public JButton labelButton;
 
    public CaseGeneralView( @Service ApplicationContext appContext,
-                           @Uses CaseLabelsView labels, @Uses PossibleFormsView2 forms,
+                           @Uses CaseLabelsView labels, @Uses PossibleFormsView forms,
                            @Structure ObjectBuilderFactory obf )
    {
       this.labels = labels;
@@ -144,7 +144,7 @@ public class CaseGeneralView extends JScrollPane implements Observer
             .bindingTemplate( CaseGeneralDTO.class );
 
       // Layout and form for the right panel
-      FormLayout rightLayout = new FormLayout( "70dlu, 2dlu, 200:grow", "pref, pref, pref, pref, 20dlu, fill:pref:grow" );
+      FormLayout rightLayout = new FormLayout( "70dlu, 2dlu, 200:grow", "pref, pref, pref, pref, 20dlu, pref, fill:pref:grow" );
 
       rightForm = new JPanel( rightLayout );
       rightForm.setFocusable( false );

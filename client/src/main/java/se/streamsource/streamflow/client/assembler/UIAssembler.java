@@ -177,6 +177,7 @@ import se.streamsource.streamflow.client.ui.caze.ListBoxPanel;
 import se.streamsource.streamflow.client.ui.caze.OptionButtonsPanel;
 import se.streamsource.streamflow.client.ui.caze.PossibleCaseTypesModel;
 import se.streamsource.streamflow.client.ui.caze.PossibleFormsModel;
+import se.streamsource.streamflow.client.ui.caze.PossibleFormsView;
 import se.streamsource.streamflow.client.ui.caze.PossibleFormsView2;
 import se.streamsource.streamflow.client.ui.caze.SubmittedFormsAdminView;
 import se.streamsource.streamflow.client.ui.caze.TextAreaFieldPanel;
@@ -527,7 +528,7 @@ public class UIAssembler
 
       addMV( module,
             PossibleFormsModel.class,
-            PossibleFormsView2.class );
+            PossibleFormsView.class );
 
       addMV( module,
             CaseActionsModel.class,
