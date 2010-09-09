@@ -28,5 +28,7 @@ public interface FieldDTO
 {
    Property<String> field();
 
+   Property<String> fieldType();
+
    Property<String> value();
 }

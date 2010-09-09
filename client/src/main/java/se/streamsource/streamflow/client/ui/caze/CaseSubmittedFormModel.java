@@ -18,16 +18,19 @@
 package se.streamsource.streamflow.client.ui.caze;
 
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.util.DateFunctions;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.domain.form.DateFieldValue;
 import se.streamsource.streamflow.resource.caze.FieldDTO;
 import se.streamsource.streamflow.resource.caze.SubmittedFormDTO;
 import se.streamsource.streamflow.resource.roles.IntegerDTO;
 
 import javax.swing.table.AbstractTableModel;
+import java.text.SimpleDateFormat;
 
 public class CaseSubmittedFormModel
       extends AbstractTableModel
@@ -67,7 +70,14 @@ public class CaseSubmittedFormModel
          case 0:
             return field.field().get();
          default:
-            return field.value().get();
+            if( DateFieldValue.class.getName().equals( field.fieldType().get() ) )
+            {
+               return new SimpleDateFormat( i18n.text( WorkspaceResources.date_time_format ) ).format( DateFunctions.fromString( field.value().get() ) );
+            }
+            else
+            {
+               return field.value().get();
+            }
       }
    }
 

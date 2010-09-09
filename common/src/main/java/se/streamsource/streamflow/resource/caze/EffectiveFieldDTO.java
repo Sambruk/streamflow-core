@@ -36,5 +36,7 @@ public interface EffectiveFieldDTO
 
    Property<String> fieldName();
 
+   Property<String> fieldType();
+
    Property<String> fieldValue();
 }

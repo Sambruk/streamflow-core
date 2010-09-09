@@ -19,12 +19,14 @@ package se.streamsource.streamflow.client.ui.caze;
 
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.util.DateFunctions;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.domain.form.DateFieldValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
@@ -99,7 +101,14 @@ public class CaseEffectiveFieldsValueModel
          case 0:
             return value.fieldName().get();
          case 1:
-            return value.fieldValue().get();
+            if( DateFieldValue.class.getName().equals( value.fieldType().get() ) )
+            {
+               return formatter.format( DateFunctions.fromString( value.fieldValue().get() ) );
+            }
+            else
+            {
+               return value.fieldValue().get();
+            }
          case 2:
             return value.submitter().get();
          case 3:

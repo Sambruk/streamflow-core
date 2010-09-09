@@ -26,6 +26,7 @@ import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.domain.form.EffectiveFieldValue;
 import se.streamsource.streamflow.domain.form.EffectiveFormFieldsValue;
+import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
 import se.streamsource.streamflow.domain.form.SubmittedFieldValue;
 import se.streamsource.streamflow.domain.form.SubmittedFormValue;
 import se.streamsource.streamflow.domain.structure.Describable;
@@ -35,6 +36,7 @@ import se.streamsource.streamflow.resource.caze.FieldDTO;
 import se.streamsource.streamflow.resource.caze.SubmittedFormDTO;
 import se.streamsource.streamflow.resource.caze.SubmittedFormListDTO;
 import se.streamsource.streamflow.resource.caze.SubmittedFormsListDTO;
+import se.streamsource.streamflow.web.domain.structure.form.FieldValueDefinition;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedForms;
 
 /**
@@ -109,6 +111,8 @@ public interface SubmittedFormsQueries
             Describable.Data field = uow.get( Describable.Data.class, fieldValue.field().get().identity() );
             fieldDTO.field().set( field.description().get() );
             fieldDTO.value().set( fieldValue.value().get() );
+            FieldValueDefinition.Data fieldDefinition = uow.get( FieldValueDefinition.Data.class, fieldValue.field().get().identity() );
+            fieldDTO.fieldType().set( fieldDefinition.fieldValue().get().type().getName() );
             formDTO.values().get().add( fieldBuilder.newInstance() );
          }
 
@@ -141,6 +145,8 @@ public interface SubmittedFormsQueries
                   Describable.Data formName = uow.get( Describable.Data.class, fieldValue.form().get().identity() );
                   fieldDTO.formName().set( formName.description().get() );
                   fieldDTO.fieldName().set( fieldName.description().get() );
+                  FieldValueDefinition.Data fieldDefinition = uow.get( FieldValueDefinition.Data.class, fieldValue.field().get().identity() );
+                  fieldDTO.fieldType().set( fieldDefinition.fieldValue().get().type().getName() );
                   list.effectiveFields().get().add( fieldBuilder.newInstance() );
                }
             }
