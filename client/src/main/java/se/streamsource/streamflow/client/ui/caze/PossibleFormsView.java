@@ -91,18 +91,7 @@ public class PossibleFormsView extends JPanel implements ListEventListener, Acti
          count++;
       }
 
-      this.setPreferredSize( new Dimension( 154, 30 * count) );
-
-      /*SwingUtilities.invokeLater(new Runnable(){
-
-         public void run()
-         {*/
-            //PossibleFormsView.
-                    //this.getParent().doLayout();
-            //PossibleFormsView.
-                    //this.getParent().repaint();
-         /*}
-      }); */
+      this.setPreferredSize( new Dimension( 154, 30 * count ) );
    }
 
    @Override

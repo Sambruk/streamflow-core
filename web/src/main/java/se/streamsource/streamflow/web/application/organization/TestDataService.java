@@ -33,6 +33,7 @@ import se.streamsource.streamflow.domain.form.DateFieldValue;
 import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
 import se.streamsource.streamflow.domain.form.FormSubmissionValue;
 import se.streamsource.streamflow.domain.form.NumberFieldValue;
+import se.streamsource.streamflow.domain.form.OptionButtonsFieldValue;
 import se.streamsource.streamflow.domain.form.PageSubmissionValue;
 import se.streamsource.streamflow.domain.form.SelectionFieldValue;
 import se.streamsource.streamflow.domain.form.TextFieldValue;
@@ -206,7 +207,7 @@ public interface TestDataService
                builder.prototype().width().set( 30 );
                ValueBuilder<DateFieldValue> dateBuilder = vbf.newValueBuilder( DateFieldValue.class );
                ValueBuilder<NumberFieldValue> numberBuilder = vbf.newValueBuilder( NumberFieldValue.class );
-               ValueBuilder<SelectionFieldValue> selectionBuilder = vbf.newValueBuilder( SelectionFieldValue.class );
+               ValueBuilder<OptionButtonsFieldValue> selectionBuilder = vbf.newValueBuilder( OptionButtonsFieldValue.class );
                List<String> values = new ArrayList<String>();
                values.add( "Critical" );
                values.add( "High" );
