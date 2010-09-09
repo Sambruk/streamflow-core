@@ -82,7 +82,7 @@ public class InfrastructureAssembler
       events( layer.moduleAssembly( "Events" ) );
       searchEngine( layer.moduleAssembly( "Search engine" ) );
       attachments( layer.moduleAssembly( "Attachments store" ) );
-      plugins(layer.moduleAssembly( "Plugins" ));
+      plugins( layer.moduleAssembly( "Plugins" ) );
    }
 
    private void plugins( ModuleAssembly moduleAssembly ) throws AssemblyException
@@ -96,7 +96,7 @@ public class InfrastructureAssembler
             ContactValue.class,
             ContactAddressValue.class,
             ContactEmailValue.class,
-            ContactPhoneValue.class).visibleIn( Visibility.application );
+            ContactPhoneValue.class ).visibleIn( Visibility.application );
    }
 
    private void caching( ModuleAssembly moduleAssembly ) throws AssemblyException
@@ -360,15 +360,16 @@ public class InfrastructureAssembler
 
                      if (fieldValue.get( "_type" ).equals( "se.streamsource.streamflow.domain.form.SelectionFieldValue" ))
                      {
-                        try {
-                           if ( fieldValue.getBoolean( "multiple" ) )
-                            {
-                               fieldValue.put( "_type", "se.streamsource.streamflow.domain.form.CheckboxesFieldValue" );
-                            } else
-                            {
-                               fieldValue.put( "_type", "se.streamsource.streamflow.domain.form.OptionButtonsFieldValue" );
-                            }
-                            fieldValue.remove( "multiple" );
+                        try
+                        {
+                           if (fieldValue.getBoolean( "multiple" ))
+                           {
+                              fieldValue.put( "_type", "se.streamsource.streamflow.domain.form.CheckboxesFieldValue" );
+                           } else
+                           {
+                              fieldValue.put( "_type", "se.streamsource.streamflow.domain.form.OptionButtonsFieldValue" );
+                           }
+                           fieldValue.remove( "multiple" );
                         } catch (JSONException e)
                         {
                            fieldValue.put( "_type", "se.streamsource.streamflow.domain.form.CheckboxesFieldValue" );
@@ -407,21 +408,70 @@ public class InfrastructureAssembler
                         }
                         return true;
                      }
-                     return false;                  }
+                     return false;
+                  }
 
                   public boolean downgrade( JSONObject state, StateStore stateStore, Migrator migrator ) throws JSONException
                   {
                      return false;
                   }
-               })
+               } )
                .end().
                toVersion( "1.1.7.2360" ).
                forEntities( "se.streamsource.streamflow.web.domain.entity.form.FieldEntity" ).
-                  addProperty( "fieldId", "field" ).
+               addProperty( "fieldId", "field" ).
                end().
                forEntities( "se.streamsource.streamflow.web.domain.entity.form.FormEntity" ).
-                  addProperty( "formId", "form" ).
-               end();
+               addProperty( "formId", "form" ).
+               end().
+               toVersion( "1.1.7.2429" ).
+               forEntities( "se.streamsource.streamflow.web.domain.entity.form.FormSubmissionEntity" ).
+               custom( new EntityMigrationOperation()
+               {
+                  public boolean upgrade( JSONObject state, StateStore stateStore, Migrator migrator ) throws JSONException
+                  {
+                     boolean changed = false;
+                     JSONObject formSubmissionValue = state.getJSONObject( "properties" ).getJSONObject( "formSubmissionValue" );
+
+                     JSONArray pages = formSubmissionValue.getJSONArray( "pages" );
+
+                     for (int i = 0; i < pages.length(); i++)
+                     {
+                        JSONArray fields = pages.getJSONObject( i ).getJSONArray( "fields" );
+                        for (int j = 0; j < fields.length(); j++)
+                        {
+                           JSONObject fieldDefinitionValue = fields.getJSONObject( j ).getJSONObject( "field" );
+                           JSONObject fieldValue = fieldDefinitionValue.getJSONObject( "fieldValue" );
+
+                           if (fieldValue.get( "_type" ).equals( "se.streamsource.streamflow.domain.form.SelectionFieldValue" ))
+                           {
+                              try
+                              {
+                                 if (fieldValue.getBoolean( "multiple" ))
+                                 {
+                                    fieldValue.put( "_type", "se.streamsource.streamflow.domain.form.CheckboxesFieldValue" );
+                                 } else
+                                 {
+                                    fieldValue.put( "_type", "se.streamsource.streamflow.domain.form.OptionButtonsFieldValue" );
+                                 }
+                                 fieldValue.remove( "multiple" );
+
+                              } catch (JSONException e)
+                              {
+                                 fieldValue.put( "_type", "se.streamsource.streamflow.domain.form.CheckboxesFieldValue" );
+                              }
+                              changed = true;
+                           }
+                        }
+                     }
+                     return changed;
+                  }
+
+                  public boolean downgrade( JSONObject state, StateStore stateStore, Migrator migrator ) throws JSONException
+                  {
+                     return false;
+                  }
+               } ).end();
 
          module.addServices( MigrationService.class ).setMetaInfo( migrationBuilder );
          module.addObjects( MigrationEventLogger.class );
