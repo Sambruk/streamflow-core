@@ -23,6 +23,7 @@ import org.jdesktop.application.Application;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
+import org.restlet.engine.io.BioUtils;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
@@ -45,7 +46,10 @@ import java.awt.FlowLayout;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -205,11 +209,35 @@ public class AboutDialog
 
    private void openFile( String fileName )
    {
-      File file = new File( getClass().getResource( "/" + fileName ).getFile() );
-
       Desktop desktop = Desktop.getDesktop();
+      File file = null;
       try
       {
+         String[] fileNameParts = fileName.split( "\\." );
+         file = File.createTempFile( fileNameParts[0] + "_", "." + fileNameParts[1] );
+         FileOutputStream out = new FileOutputStream( file );
+
+         InputStream in = getClass().getResourceAsStream( "/" + fileName );
+         try
+         {
+            BioUtils.copy( new BufferedInputStream( in, 1024 ), new BufferedOutputStream( out, 4096 ) );
+         } catch (IOException e)
+         {
+            in.close();
+            out.close();
+            throw e;
+         } finally
+         {
+            try
+            {
+               in.close();
+               out.close();
+            } catch (IOException e)
+            {
+               // Ignore
+            }
+         }
+
          desktop.edit( file );
       } catch (IOException e)
       {
