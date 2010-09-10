@@ -77,7 +77,47 @@ public interface SubmittedForms
 
       public void submitForm( FormSubmission formSubmission, Submitter submitter )
       {
-         submittedForm( DomainEvent.CREATE, formSubmission, submitter );
+         if ( checkEffectiveFieldsForChange( formSubmission ) )
+         {
+            submittedForm( DomainEvent.CREATE, formSubmission, submitter );
+         }
+      }
+
+      private boolean checkEffectiveFieldsForChange( FormSubmission formSubmission )
+      {
+         if( effectiveFieldValues().get() == null )
+         {
+            return true;
+         }
+         
+         for (PageSubmissionValue page : formSubmission.getFormSubmission().pages().get())
+         {
+            for (FieldSubmissionValue field : page.fields().get())
+            {
+               for (EffectiveFieldValue effectiveField : effectiveFieldValues().get().fields().get() )
+               {
+                   if( effectiveField.field().get().equals( field.field().get().field().get() ) )
+                   {
+                      String fieldValue = field.value().get();
+                      if( fieldValue != null )
+                      {
+                         if( !fieldValue.equals( effectiveField.value().get() ))
+                         {
+                            return true;
+                         }
+                      }
+                      else
+                      {
+                         if (effectiveField.field().get() == null || !"".equals( effectiveField.value().get() ))
+                         {
+                            return true;
+                         }
+                      }
+                   }
+               }
+            }
+         }
+         return false;
       }
 
       public void submittedForm( DomainEvent event, FormSubmission formSubmission, Submitter submitter )
