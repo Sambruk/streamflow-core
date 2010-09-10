@@ -64,7 +64,7 @@ public class CaseInfoView2 extends JPanel implements Observer
       this.setFocusable( false );
       setFont( getFont().deriveFont( getFont().getSize() - 2 ) );
 
-      FormLayout layout = new FormLayout( "25dlu,180dlu,60dlu,60dlu,60dlu,60dlu", "10dlu,15dlu" );
+      FormLayout layout = new FormLayout( "25dlu,170dlu,60dlu,60dlu,90dlu,90dlu", "10dlu,15dlu" );
       DefaultFormBuilder builder = new DefaultFormBuilder( layout, this );
       builder.setBorder( Borders.createEmptyBorder( Sizes.DLUY4,
             Sizes.DLUX2, Sizes.DLUY2, Sizes.DLUX2 ) );
@@ -143,11 +143,8 @@ public class CaseInfoView2 extends JPanel implements Observer
       title.setText( titleText );
       title.setToolTipText( titleText );
 
-      String caseTypeText = "";
-      if (aCase.caseType().get() != null)
-         caseType.setText( caseTypeText = aCase.caseType().get() + (aCase.resolution().get() != null ? "(" + aCase.resolution().get() + ")" : "") );
-
-      caseType.setToolTipText( caseTypeText );
+      caseType.setText( aCase.caseType().get() != null ? aCase.caseType().get() + (aCase.resolution().get() != null ? "(" + aCase.resolution().get() + ")" : "") : "" );
+      caseType.setToolTipText( caseType.getText() );
 
       String ownerText = aCase.owner().get();
       owner.setText( ownerText );
@@ -157,11 +154,9 @@ public class CaseInfoView2 extends JPanel implements Observer
       createdBy.setText( createdByText );
       createdBy.setToolTipText( createdByText );
 
-      String assignedToText = "";
-      if (aCase.assignedTo().get() != null)
-         assignedTo.setText( assignedToText = aCase.assignedTo().get() );
 
-      assignedTo.setToolTipText( assignedToText );
+      assignedTo.setText( aCase.assignedTo().get() != null ? aCase.assignedTo().get() : "" );
+      assignedTo.setToolTipText( assignedTo.getText() );
 
       this.repaint();
    }
