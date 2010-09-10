@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.web.context.gtd;
 
+import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
@@ -39,6 +40,7 @@ import static org.qi4j.api.query.QueryExpressions.templateFor;
 /**
  * JAVADOC
  */
+@Concerns(UpdateCaseCountAssignmentsConcern.class)
 @Mixins(AssignmentsContext.Mixin.class)
 public interface AssignmentsContext
    extends Context
