@@ -34,6 +34,12 @@
                                 <resource>
                                     <directory>${basedir}/../target/maven-shared-archive-resources</directory>
                                 </resource>
+                                <resource>
+                                    <directory>${basedir}/../src/main/resources/</directory>
+                                    <includes>
+                                        <include>*.docx</include>
+                                    </includes>
+                                </resource>
                             </resources>
                         </configuration>
                     </execution>

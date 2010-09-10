@@ -23,6 +23,9 @@ import org.jdesktop.application.Application;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
+import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 
 import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
@@ -36,11 +39,13 @@ import javax.swing.Popup;
 import javax.swing.PopupFactory;
 import javax.swing.border.BevelBorder;
 import java.awt.Color;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -55,6 +60,9 @@ public class AboutDialog
 {
    private Popup popup;
    private Box box;
+
+   @Service
+   DialogService dialogs;
 
    public AboutDialog( @Service ApplicationContext context )
    {
@@ -146,13 +154,13 @@ public class AboutDialog
    @Action
    public void thirdPartyProducts()
    {
-
+      openFile( "Streamsource_SF_Third_Party_Software.docx" );
    }
 
    @Action
    public void thirdPartyLicenses()
    {
-
+      openFile( "Streamsource_Third_Party_License_Appendix.docx" );
    }
 
    private void showFile( String fileName )
@@ -193,6 +201,26 @@ public class AboutDialog
       box2.add( buttonPanel );
 
       popup.show();
+   }
+
+   private void openFile( String fileName )
+   {
+      File file = new File( getClass().getResource( "/" + fileName ).getFile() );
+
+      Desktop desktop = Desktop.getDesktop();
+      try
+      {
+         desktop.edit( file );
+      } catch (IOException e)
+      {
+         try
+         {
+            desktop.open( file );
+         } catch (IOException e1)
+         {
+            dialogs.showMessageDialog( AboutDialog.this, i18n.text( WorkspaceResources.could_not_open_file ), "" );
+         }
+      }
    }
 
    public void actionPerformed( ActionEvent e )
