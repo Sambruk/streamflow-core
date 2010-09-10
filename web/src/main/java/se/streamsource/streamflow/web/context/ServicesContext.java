@@ -17,6 +17,8 @@
 
 package se.streamsource.streamflow.web.context;
 
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.mixin.Mixins;
 import se.streamsource.dci.api.Context;
@@ -38,12 +40,16 @@ public interface ServicesContext
          extends ContextMixin
          implements ServicesContext
    {
+      @Optional
       @Service
       StreamflowContactLookupService contactLookup;
 
       public ContactList contactlookup( ContactValue template )
       {
-         return contactLookup.lookup( template );
+         if (contactLookup != null)
+            return contactLookup.lookup( template );
+         else
+            return module.valueBuilderFactory().newValue( ContactList.class );
       }
    }
 }

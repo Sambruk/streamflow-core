@@ -153,84 +153,90 @@ public class CommandQueryRestlet
       super.handle( request, response );
 
       // Find roleMap
-      Reference ref = request.getResourceRef();
-      List<String> segments = ref.getScheme().equals( "riap" ) ? ref.getRelativeRef( new Reference( "riap://application/" ) ).getSegments() : ref.getRelativeRef().getSegments();
-
-      UnitOfWork uow = uowf.newUnitOfWork( UsecaseBuilder.newUsecase( getUsecaseName( request ) ) );
-
-      RoleMap roleMap = new RoleMap();
-      uow.metaInfo().set( roleMap );
-      initContext( request, roleMap );
-
-      // Find the context first
-      Object context = null;
       try
       {
-         context = getContext( rootContextFactory.getRoot( roleMap ), segments );
-         roleMap = uow.metaInfo().get( RoleMap.class ); // Get current roleMap for this context
-      } catch (Exception e)
-      {
-         uow.discard();
-         logger.error( e.getMessage() );
-         response.setStatus( Status.SERVER_ERROR_INTERNAL );
-      }
+         Reference ref = request.getResourceRef();
+         List<String> segments = ref.getScheme().equals( "riap" ) ? ref.getRelativeRef( new Reference( "riap://application/" ) ).getSegments() : ref.getRelativeRef().getSegments();
 
-      if (context == null)
-      {
-         uow.discard();
-         response.setStatus( Status.CLIENT_ERROR_NOT_FOUND );
-         return;
-      }
+         UnitOfWork uow = uowf.newUnitOfWork( UsecaseBuilder.newUsecase( getUsecaseName( request ) ) );
 
-      // What HTTP method do we want to do
-      org.restlet.data.Method method = request.getMethod();
-      if (method.equals( org.restlet.data.Method.GET ))
-      {
-         get( request, response, context, roleMap, segments );
-      } else if (method.equals( org.restlet.data.Method.DELETE ))
-      {
-         delete( request, response, context, roleMap, segments );
-      } else if (method.equals( org.restlet.data.Method.POST) || method.equals( org.restlet.data.Method.PUT) )
-      {
-         // When doing POST/PUT we should try several times if there is a coflict when committing
-         int retries = 0;
-         while (retries < 10)
+         RoleMap roleMap = new RoleMap();
+         uow.metaInfo().set( roleMap );
+         initContext( request, roleMap );
+
+         // Find the context first
+         Object context = null;
+         try
          {
-            try
-            {
-               post( request, response, context, roleMap, segments );
-               return;
-            } catch (UnitOfWorkCompletionException e)
-            {
-               // Retry
-               uow = uowf.newUnitOfWork( UsecaseBuilder.newUsecase( getUsecaseName( request ) ) );
-
-               roleMap = new RoleMap();
-               initContext( request, roleMap );
-
-               // Find the roleMap again in the new UoW
-               context = null;
-               try
-               {
-                  context = getContext( rootContextFactory.getRoot( roleMap ), segments );
-               } catch (Exception ex)
-               {
-                  uow.discard();
-                  logger.error( e.getMessage() );
-                  response.setStatus( Status.SERVER_ERROR_INTERNAL );
-                  return;
-               }
-            }
+            context = getContext( rootContextFactory.getRoot( roleMap ), segments );
+            roleMap = uow.metaInfo().get( RoleMap.class ); // Get current roleMap for this context
+         } catch (Exception e)
+         {
+            uow.discard();
+            logger.error( e.getMessage() );
+            response.setStatus( Status.SERVER_ERROR_INTERNAL );
          }
 
-         // Give up
-         response.setStatus( Status.CLIENT_ERROR_CONFLICT );
-         response.setEntity( new StringRepresentation( "Could not complete command due to conflicts" ) );
+         if (context == null)
+         {
+            uow.discard();
+            response.setStatus( Status.CLIENT_ERROR_NOT_FOUND );
+            return;
+         }
 
-      } /*else if (request.getMethod().equals( org.restlet.data.Method.HEAD ))
-      { TODO
-         head( request, response, roleMap, interactionContext );
-      }*/
+         // What HTTP method do we want to do
+         org.restlet.data.Method method = request.getMethod();
+         if (method.equals( org.restlet.data.Method.GET ))
+         {
+            get( request, response, context, roleMap, segments );
+         } else if (method.equals( org.restlet.data.Method.DELETE ))
+         {
+            delete( request, response, context, roleMap, segments );
+         } else if (method.equals( org.restlet.data.Method.POST) || method.equals( org.restlet.data.Method.PUT) )
+         {
+            // When doing POST/PUT we should try several times if there is a coflict when committing
+            int retries = 0;
+            while (retries < 10)
+            {
+               try
+               {
+                  post( request, response, context, roleMap, segments );
+                  return;
+               } catch (UnitOfWorkCompletionException e)
+               {
+                  // Retry
+                  uow = uowf.newUnitOfWork( UsecaseBuilder.newUsecase( getUsecaseName( request ) ) );
+
+                  roleMap = new RoleMap();
+                  initContext( request, roleMap );
+
+                  // Find the roleMap again in the new UoW
+                  context = null;
+                  try
+                  {
+                     context = getContext( rootContextFactory.getRoot( roleMap ), segments );
+                  } catch (Exception ex)
+                  {
+                     uow.discard();
+                     logger.error( e.getMessage() );
+                     response.setStatus( Status.SERVER_ERROR_INTERNAL );
+                     return;
+                  }
+               }
+            }
+
+            // Give up
+            response.setStatus( Status.CLIENT_ERROR_CONFLICT );
+            response.setEntity( new StringRepresentation( "Could not complete command due to conflicts" ) );
+
+         } /*else if (request.getMethod().equals( org.restlet.data.Method.HEAD ))
+         { TODO
+            head( request, response, roleMap, interactionContext );
+         }*/
+      } finally
+      {
+         request.release(); // Release request explicitly to avoid Tomcat bug
+      }
    }
 
    private String getUsecaseName( Request request )
@@ -758,7 +764,12 @@ public class CommandQueryRestlet
       if (representation != null && MediaType.APPLICATION_JSON.equals( representation.getMediaType() ))
       {
          Class<?> valueType = method.getParameterTypes()[0];
-         Object requestValue = vbf.newValueFromJSON( valueType, request.getEntityAsText() );
+
+         String json = request.getEntityAsText();
+         if (json == null)
+            throw new ResourceException( Status.SERVER_ERROR_INTERNAL, "Bug in Tomcat encountered; notify developers!" );
+
+         Object requestValue = vbf.newValueFromJSON( valueType, json );
          args[0] = requestValue;
       } else
       {
@@ -892,6 +903,8 @@ public class CommandQueryRestlet
                if (type.equals( MediaType.APPLICATION_JSON ))
                {
                   String json = request.getEntityAsText();
+                  if (json == null)
+                     throw new ResourceException( Status.SERVER_ERROR_INTERNAL, "Bug in Tomcat encountered; notify developers!" );
 
                   Object command = vbf.newValueFromJSON( commandType, json );
                   args[0] = command;
@@ -905,7 +918,7 @@ public class CommandQueryRestlet
                   return args;
                } else if (type.equals( (MediaType.APPLICATION_WWW_FORM) ))
                {
-                  Form asForm = request.getEntityAsForm();
+                  Form asForm = new Form(request.getEntity());
                   Class<?> valueType = method.getParameterTypes()[0];
                   args[0] = getValueFromForm( (Class<ValueComposite>) valueType, asForm );
                   return args;

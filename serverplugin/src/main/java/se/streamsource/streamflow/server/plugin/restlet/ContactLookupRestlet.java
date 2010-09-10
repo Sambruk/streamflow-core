@@ -54,41 +54,47 @@ public class ContactLookupRestlet
    {
       super.handle( request, response );
 
-      if (contactLookup == null)
+      try
       {
-         response.setStatus( Status.CLIENT_ERROR_NOT_FOUND );
-         return;
-      }
-
-      if (request.getMethod().equals( Method.GET ))
-      {
-         response.setEntity( new InputRepresentation( getClass().getResourceAsStream( "contactform.html" ) ) );
-         response.setStatus( Status.SUCCESS_OK );
-      } else if (request.getMethod().equals( Method.POST ))
-      {
-         // Parse request
-         ContactValue contactTemplate;
-
-         if (request.getEntity().getMediaType().equals( MediaType.APPLICATION_JSON ))
+         if (contactLookup == null)
          {
-            contactTemplate = vbf.newValueFromJSON( ContactValue.class, request.getEntityAsText() );
-         } else
-         {
-            contactTemplate = vbf.newValueFromJSON( ContactValue.class, new Form( request.getEntity() ).getFirstValue( "template" ) );
+            response.setStatus( Status.CLIENT_ERROR_NOT_FOUND );
+            return;
          }
 
-         // Call plugin
-         ContactList lookups = contactLookup.lookup( contactTemplate );
+         if (request.getMethod().equals( Method.GET ))
+         {
+            response.setEntity( new InputRepresentation( getClass().getResourceAsStream( "contactform.html" ) ) );
+            response.setStatus( Status.SUCCESS_OK );
+         } else if (request.getMethod().equals( Method.POST ))
+         {
+            // Parse request
+            ContactValue contactTemplate;
 
-         // Send response
-         String json = lookups.toJSON();
+            if (request.getEntity().getMediaType().equals( MediaType.APPLICATION_JSON ))
+            {
+               contactTemplate = vbf.newValueFromJSON( ContactValue.class, request.getEntityAsText() );
+            } else
+            {
+               contactTemplate = vbf.newValueFromJSON( ContactValue.class, new Form( request.getEntity() ).getFirstValue( "template" ) );
+            }
 
-         StringRepresentation result = new StringRepresentation( json, MediaType.APPLICATION_JSON, Language.DEFAULT, CharacterSet.UTF_8 );
-         response.setStatus( Status.SUCCESS_OK );
-         response.setEntity( result );
-      } else
+            // Call plugin
+            ContactList lookups = contactLookup.lookup( contactTemplate );
+
+            // Send response
+            String json = lookups.toJSON();
+
+            StringRepresentation result = new StringRepresentation( json, MediaType.APPLICATION_JSON, Language.DEFAULT, CharacterSet.UTF_8 );
+            response.setStatus( Status.SUCCESS_OK );
+            response.setEntity( result );
+         } else
+         {
+            response.setStatus( Status.CLIENT_ERROR_METHOD_NOT_ALLOWED );
+         }
+      } finally
       {
-         response.setStatus( Status.CLIENT_ERROR_METHOD_NOT_ALLOWED );
+         request.release();
       }
    }
 }

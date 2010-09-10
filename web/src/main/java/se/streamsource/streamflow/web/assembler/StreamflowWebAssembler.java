@@ -22,6 +22,7 @@ import org.qi4j.bootstrap.ApplicationAssembly;
 import org.qi4j.bootstrap.ApplicationAssemblyFactory;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.LayerAssembly;
+import se.streamsource.dci.qi4j.RoleInjectionProviderFactory;
 
 /**
  * Assembly of the Streamflow Server
@@ -45,6 +46,8 @@ public class StreamflowWebAssembler
       {
          assembly.setMetaInfo( serviceObject );
       }
+
+      assembly.setMetaInfo( new RoleInjectionProviderFactory() );
 
       // Version name rules: x.y.sprint.revision
       assembly.setVersion( "1.1.7.2429" );
