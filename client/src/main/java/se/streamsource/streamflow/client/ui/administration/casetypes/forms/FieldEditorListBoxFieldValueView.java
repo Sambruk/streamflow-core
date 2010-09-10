@@ -57,7 +57,7 @@ public class FieldEditorListBoxFieldValueView
 //            "200dlu", "" );
       FormLayout formLayout = new FormLayout(
             "45dlu, 5dlu, 150dlu:grow",
-            "pref, pref, pref, 5dlu, top:110dlu, pref" );
+            "pref, pref, pref, 5dlu, top:100dlu, pref" );
 
       DefaultFormBuilder formBuilder = new DefaultFormBuilder( formLayout, fieldPanel );
       formBuilder.setBorder( Borders.createEmptyBorder( "4dlu, 4dlu, 4dlu, 4dlu" ) );
@@ -86,6 +86,10 @@ public class FieldEditorListBoxFieldValueView
       formBuilder.nextColumn( 2 );
       formBuilder.add( fieldDefinitionBinder.bind( TEXTAREA.newField(), fieldDefinitionTemplate.note() ) );
       formBuilder.nextLine();
+
+      formBuilder.add( new JLabel( i18n.text( AdministrationResources.field_id_label ) ) );
+      formBuilder.nextColumn( 2 );
+      formBuilder.add( fieldDefinitionBinder.bind( TEXTFIELD.newField(), fieldDefinitionTemplate.fieldId() ) );
 
       FieldValueObserver observer = obf.newObjectBuilder( FieldValueObserver.class ).use( model ).newInstance();
       fieldValueBinder.addObserver( observer );
