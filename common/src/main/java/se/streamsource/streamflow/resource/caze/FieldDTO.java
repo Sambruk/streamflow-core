@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.resource.caze;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
 
@@ -28,6 +29,7 @@ public interface FieldDTO
 {
    Property<String> field();
 
+   @Optional
    Property<String> fieldType();
 
    Property<String> value();
