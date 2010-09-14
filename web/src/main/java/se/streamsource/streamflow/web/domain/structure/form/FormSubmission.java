@@ -34,6 +34,7 @@ import se.streamsource.streamflow.domain.form.FormSubmissionValue;
 import se.streamsource.streamflow.domain.form.ListBoxFieldValue;
 import se.streamsource.streamflow.domain.form.NumberFieldValue;
 import se.streamsource.streamflow.domain.form.OptionButtonsFieldValue;
+import se.streamsource.streamflow.domain.form.PageSubmissionValue;
 import se.streamsource.streamflow.domain.form.TextAreaFieldValue;
 import se.streamsource.streamflow.domain.form.TextFieldValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
@@ -80,54 +81,54 @@ public interface FormSubmission
       {
          ValueBuilder<FormSubmissionValue> builder = formSubmissionValue().get().buildWith();
 
-         int currentPage = builder.prototype().currentPage().get();
-
-         List<FieldSubmissionValue> fields = builder.prototype().pages().get().get( currentPage ).fields().get();
-         for (FieldSubmissionValue field : fields)
+         for (PageSubmissionValue pageSubmissionValue : builder.prototype().pages().get())
          {
-            if (field.field().get().field().get().equals(fieldId))
+            for (FieldSubmissionValue field : pageSubmissionValue.fields().get())
             {
-               boolean update = false;
-               if (field.value().get() != null && field.value().get().equals( newValue ))
+               if (field.field().get().field().get().equals(fieldId))
                {
-                  return;
-               } // Skip update - same value
+                  boolean update = false;
+                  if (field.value().get() != null && field.value().get().equals( newValue ))
+                  {
+                     return;
+                  } // Skip update - same value
 
-               FieldValue value = field.field().get().fieldValue().get();
-               if ( value instanceof CheckboxesFieldValue )
-               {
-                  update = validate( (CheckboxesFieldValue) value, newValue );
-               } else if ( value instanceof ComboBoxFieldValue)
-               {
-                  update = validate( (ComboBoxFieldValue) value, newValue );
-               } else if ( value instanceof CommentFieldValue)
-               {
-                  update = validate( (CommentFieldValue) value, newValue );
-               } else if ( value instanceof DateFieldValue)
-               {
-                  update = validate( (DateFieldValue) value, newValue );
-               } else if ( value instanceof ListBoxFieldValue)
-               {
-                  update = validate( (ListBoxFieldValue) value, newValue );
-               } else if ( value instanceof NumberFieldValue)
-               {
-                  update = validate( (NumberFieldValue) value, newValue );
-               } else if ( value instanceof OptionButtonsFieldValue)
-               {
-                  update = validate( (OptionButtonsFieldValue) value, newValue );
-               } else if ( value instanceof TextAreaFieldValue)
-               {
-                  update = validate( (TextAreaFieldValue) value, newValue );
-               } else if ( value instanceof TextFieldValue)
-               {
-                  update = validate( (TextFieldValue) value, newValue );
-               }
+                  FieldValue value = field.field().get().fieldValue().get();
+                  if ( value instanceof CheckboxesFieldValue )
+                  {
+                     update = validate( (CheckboxesFieldValue) value, newValue );
+                  } else if ( value instanceof ComboBoxFieldValue)
+                  {
+                     update = validate( (ComboBoxFieldValue) value, newValue );
+                  } else if ( value instanceof CommentFieldValue)
+                  {
+                     update = validate( (CommentFieldValue) value, newValue );
+                  } else if ( value instanceof DateFieldValue)
+                  {
+                     update = validate( (DateFieldValue) value, newValue );
+                  } else if ( value instanceof ListBoxFieldValue)
+                  {
+                     update = validate( (ListBoxFieldValue) value, newValue );
+                  } else if ( value instanceof NumberFieldValue)
+                  {
+                     update = validate( (NumberFieldValue) value, newValue );
+                  } else if ( value instanceof OptionButtonsFieldValue)
+                  {
+                     update = validate( (OptionButtonsFieldValue) value, newValue );
+                  } else if ( value instanceof TextAreaFieldValue)
+                  {
+                     update = validate( (TextAreaFieldValue) value, newValue );
+                  } else if ( value instanceof TextFieldValue)
+                  {
+                     update = validate( (TextFieldValue) value, newValue );
+                  }
 
-               if ( update )
-               {
-                  field.value().set( newValue );
-                  changedFormSubmission( DomainEvent.CREATE, builder.newInstance() );
-                  return;
+                  if ( update )
+                  {
+                     field.value().set( newValue );
+                     changedFormSubmission( DomainEvent.CREATE, builder.newInstance() );
+                     return;
+                  }
                }
             }
          }
@@ -174,7 +175,7 @@ public interface FormSubmission
 
       private boolean validate( ListBoxFieldValue definition, String value )
       {
-         if ( "".equals( value )) return true; 
+         if ( "".equals( value )) return true;
          return validateMultiple( definition.values().get(), value );
       }
 
@@ -183,7 +184,7 @@ public interface FormSubmission
          if ( "".equals( value )) return true;
          try
          {
-            Object o = (definition.integer().get() ? Integer.parseInt( value ) : Double.parseDouble( value ));  
+            Object o = (definition.integer().get() ? Integer.parseInt( value ) : Double.parseDouble( value ));
             return true;
          } catch (NumberFormatException e)
          {

@@ -21,6 +21,7 @@ import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.mixin.Mixins;
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.ContextMixin;
+import se.streamsource.dci.api.ContextNotFoundException;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.SubContexts;
 import se.streamsource.dci.value.LinksValue;
@@ -68,7 +69,7 @@ public interface FormDraftsContext
                return subContext( FormDraftContext.class );
             }
          }
-         return null;
+         throw new ContextNotFoundException();
       }
    }
 }
