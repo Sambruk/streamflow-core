@@ -1,3 +1,20 @@
+/**
+ *
+ * Copyright 2009-2010 Streamsource AB
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package se.streamsource.streamflow.client.ui.administration;
 
 import ca.odell.glazedlists.BasicEventList;
@@ -13,17 +30,17 @@ import se.streamsource.streamflow.infrastructure.event.source.helper.EventVisito
  * This class simplifies the list update for changedDescription events.
  */
 public class LinkValueListModel
-   implements EventVisitor
+      implements EventVisitor
 {
 
-   protected EventVisitorFilter eventFilter = new EventVisitorFilter(this, "changedDescription" );
+   protected EventVisitorFilter eventFilter = new EventVisitorFilter( this, "changedDescription" );
    protected BasicEventList<LinkValue> linkValues = new BasicEventList<LinkValue>();
 
    public boolean visit( DomainEvent event )
    {
       boolean success = false;
       LinkValue updated = getLinkValue( event );
-      if( updated != null )
+      if (updated != null)
       {
          int idx = linkValues.indexOf( updated );
          ValueBuilder<LinkValue> valueBuilder = updated.buildWith();
@@ -47,14 +64,14 @@ public class LinkValueListModel
       return success;
    }
 
-   private LinkValue getLinkValue( DomainEvent event)
+   private LinkValue getLinkValue( DomainEvent event )
    {
-      if( linkValues == null )
+      if (linkValues == null)
          return null;
 
       for (LinkValue link : linkValues)
       {
-         if( link.id().get().equals( event.entity().get() ))
+         if (link.id().get().equals( event.entity().get() ))
          {
             return link;
          }
