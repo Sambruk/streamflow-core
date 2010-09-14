@@ -34,6 +34,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.ui.administration.LinkValueListModel;
 import se.streamsource.streamflow.client.ui.administration.OrganizationalUnitAdministrationModel;
 import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypesModel;
 import se.streamsource.streamflow.client.ui.administration.label.LabelsModel;
@@ -41,12 +42,17 @@ import se.streamsource.streamflow.client.ui.administration.label.SelectedLabelsM
 import se.streamsource.streamflow.client.ui.administration.casetypes.SelectedCaseTypesModel;
 import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FormsModel;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.EventListener;
+import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
+import se.streamsource.streamflow.infrastructure.event.source.helper.EventParameters;
+import se.streamsource.streamflow.infrastructure.event.source.helper.EventVisitorFilter;
 
 /**
  * List of projects in a OU
  */
 public class ProjectsModel
-      implements Refreshable
+   extends LinkValueListModel
+      implements EventListener, Refreshable
 {
    @Structure
    ObjectBuilderFactory obf;
@@ -59,8 +65,6 @@ public class ProjectsModel
 
    @Uses
    CommandQueryClient client;
-
-   BasicEventList<LinkValue> projects = new BasicEventList<LinkValue>();
 
    WeakModelMap<String, ProjectModel> projectModels = new WeakModelMap<String, ProjectModel>()
    {
@@ -88,7 +92,7 @@ public class ProjectsModel
 
    public EventList<LinkValue> getProjectList()
    {
-      return projects;
+      return linkValues;
    }
 
    public void refresh()
@@ -97,7 +101,7 @@ public class ProjectsModel
       {
          // Get Project list
          LinksValue projectsList = client.query( "index", LinksValue.class );
-         EventListSynch.synchronize( projectsList.links().get(), projects );
+         EventListSynch.synchronize( projectsList.links().get(), linkValues );
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_refresh, e );
@@ -155,6 +159,7 @@ public class ProjectsModel
 
    public void notifyEvent( DomainEvent event )
    {
+      eventFilter.visit( event );
       for (ProjectModel projectModel : projectModels)
       {
          projectModel.notifyEvent( event );

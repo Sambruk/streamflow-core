@@ -34,13 +34,17 @@ import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.ui.administration.LinkValueListModel;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
+import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
+import se.streamsource.streamflow.infrastructure.event.source.helper.EventParameters;
 
 /**
  * JAVADOC
  */
 public class GroupsModel
+   extends LinkValueListModel
       implements Refreshable, EventListener
 {
    @Uses
@@ -51,8 +55,6 @@ public class GroupsModel
 
    @Structure
    ValueBuilderFactory vbf;
-
-   BasicEventList<LinkValue> groups = new BasicEventList<LinkValue>();
 
    WeakModelMap<String, ParticipantsModel> groupModels = new WeakModelMap<String, ParticipantsModel>()
    {
@@ -65,7 +67,7 @@ public class GroupsModel
 
    public EventList<LinkValue> getGroups()
    {
-      return groups;
+      return linkValues;
    }
 
    public void createGroup( String description )
@@ -103,7 +105,7 @@ public class GroupsModel
       try
       {
          LinksValue groupsList = client.query( "index", LinksValue.class );
-         EventListSynch.synchronize( groupsList.links().get(), groups );
+         EventListSynch.synchronize( groupsList.links().get(), linkValues );
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_refresh, e );
@@ -137,9 +139,11 @@ public class GroupsModel
 
    public void notifyEvent( DomainEvent event )
    {
+      eventFilter.visit( event );
       for (ParticipantsModel participantsModel : groupModels)
       {
          participantsModel.notifyEvent( event );
       }
    }
+
 }

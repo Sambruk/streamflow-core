@@ -35,14 +35,20 @@ import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.ui.administration.LinkValueListModel;
 import se.streamsource.streamflow.client.ui.caze.CaseLabelsModel;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
+import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
+import se.streamsource.streamflow.infrastructure.event.source.helper.EventParameters;
+import se.streamsource.streamflow.infrastructure.event.source.helper.EventVisitorFilter;
+import se.streamsource.streamflow.resource.caze.CaseValue;
 
 import java.util.Observable;
 
 
 public class AccessPointsModel
+   extends LinkValueListModel
       implements EventListener, Refreshable
 {
    @Structure
@@ -53,8 +59,6 @@ public class AccessPointsModel
 
    @Uses
    CommandQueryClient client;
-
-   BasicEventList<LinkValue> accessPoints = new BasicEventList<LinkValue>();
 
    WeakModelMap<String, AccessPointModel> accessPointModels = new WeakModelMap<String, AccessPointModel>()
    {
@@ -74,7 +78,7 @@ public class AccessPointsModel
       {
          // Get AccessPoints list
          LinksValue accessPointsList = client.query( "index", LinksValue.class );
-         EventListSynch.synchronize( accessPointsList.links().get(), accessPoints );
+         EventListSynch.synchronize( accessPointsList.links().get(), linkValues );
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_refresh, e );
@@ -83,7 +87,7 @@ public class AccessPointsModel
 
    public EventList<LinkValue> getAccessPointsList()
    {
-      return accessPoints;
+      return linkValues;
    }
 
    public void newAccessPoint( String accessPointName )
@@ -138,6 +142,7 @@ public class AccessPointsModel
 
    public void notifyEvent( DomainEvent event )
    {
+      eventFilter.visit( event );
       for( AccessPointModel accessPointModel : accessPointModels )
       {
          accessPointModel.notifyEvent( event );

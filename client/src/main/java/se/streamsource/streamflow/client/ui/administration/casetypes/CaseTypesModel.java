@@ -34,6 +34,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.ui.administration.LinkValueListModel;
 import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FormsModel;
 import se.streamsource.streamflow.client.ui.administration.form.SelectedFormsModel;
 import se.streamsource.streamflow.client.ui.administration.label.SelectedLabelsModel;
@@ -46,6 +47,7 @@ import se.streamsource.streamflow.infrastructure.event.EventListener;
  * List of casetypes in an Organization
  */
 public class CaseTypesModel
+   extends LinkValueListModel
       implements Refreshable, EventListener
 {
    @Structure
@@ -56,8 +58,6 @@ public class CaseTypesModel
 
    @Uses
    CommandQueryClient client;
-
-   BasicEventList<LinkValue> eventList = new BasicEventList<LinkValue>();
 
    WeakModelMap<String, CaseTypeModel> caseTypeModels = new WeakModelMap<String, CaseTypeModel>()
    {
@@ -82,7 +82,7 @@ public class CaseTypesModel
 
    public BasicEventList<LinkValue> getCaseTypeList()
    {
-      return eventList;
+      return linkValues;
    }
 
    public void refresh()
@@ -90,7 +90,7 @@ public class CaseTypesModel
       try
       {
          // Get CaseType list
-         EventListSynch.synchronize( client.query( "index", LinksValue.class ).links().get(), eventList );
+         EventListSynch.synchronize( client.query( "index", LinksValue.class ).links().get(), linkValues );
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_refresh, e );
@@ -121,6 +121,7 @@ public class CaseTypesModel
 
    public void notifyEvent( DomainEvent event )
    {
+      eventFilter.visit( event );
       for (CaseTypeModel caseTypeModel : caseTypeModels)
       {
          caseTypeModel.notifyEvent( event );

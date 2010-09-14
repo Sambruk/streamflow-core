@@ -32,6 +32,7 @@ import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.ui.administration.LinkValueListModel;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 
@@ -39,19 +40,18 @@ import se.streamsource.streamflow.infrastructure.event.EventListener;
  * Management of labels on an organizational or user level
  */
 public class LabelsModel
+   extends LinkValueListModel
       implements EventListener, Refreshable
 {
    @Uses
    CommandQueryClient client;
-
-   BasicEventList<LinkValue> labels = new BasicEventList<LinkValue>();
 
    @Structure
    ValueBuilderFactory vbf;
 
    public EventList<LinkValue> getLabelList()
    {
-      return labels;
+      return linkValues;
    }
 
    public void refresh()
@@ -61,7 +61,7 @@ public class LabelsModel
          // Get label list
          LinksValue newList = client.query( "index", LinksValue.class );
 
-         EventListSynch.synchronize( newList.links().get(), labels );
+         EventListSynch.synchronize( newList.links().get(), linkValues );
 
       } catch (ResourceException e)
       {
@@ -123,5 +123,6 @@ public class LabelsModel
 
    public void notifyEvent( DomainEvent event )
    {
+      eventFilter.visit( event );
    }
 }
