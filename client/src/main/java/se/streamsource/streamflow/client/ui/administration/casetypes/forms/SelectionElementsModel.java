@@ -127,7 +127,7 @@ public class SelectionElementsModel
       builder.prototype().index().set( index );
       try
       {
-         client.putCommand( "changeselectionelementname", builder.newInstance() );
+         client.postCommand( "changeselectionelementname", builder.newInstance() );
          refresh();
       } catch (ResourceException e)
       {
