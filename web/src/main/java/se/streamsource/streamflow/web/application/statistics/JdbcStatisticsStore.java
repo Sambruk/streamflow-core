@@ -114,8 +114,8 @@ public interface JdbcStatisticsStore
                   statement.setString( idx++, caseStatistics.description().get() );
                   statement.setString( idx++, caseStatistics.note().get() );
                   statement.setString( idx++, caseStatistics.resolutionId().get() );
-                  statement.setDate( idx++, new java.sql.Date( caseStatistics.createdOn().get().getTime() ) );
-                  statement.setDate( idx++, new java.sql.Date( caseStatistics.closedOn().get().getTime() ) );
+                  statement.setTimestamp(  idx++, new java.sql.Timestamp( caseStatistics.createdOn().get().getTime() ) );
+                  statement.setTimestamp( idx++, new java.sql.Timestamp( caseStatistics.closedOn().get().getTime() ) );
                   statement.setLong( idx++, caseStatistics.duration().get() );
 
                   statement.setString( idx++, caseStatistics.assigneeId().get() );
