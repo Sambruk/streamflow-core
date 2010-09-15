@@ -56,7 +56,7 @@ public interface ProxyUserContext
       {
          UserAuthentication authentication = roleMap.get( UserAuthentication.class );
 
-         authentication.resetPassword( newPassword.toString() );
+         authentication.resetPassword( newPassword.string().get() );
       }
 
       public void delete() throws ResourceException
