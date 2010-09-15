@@ -18,16 +18,13 @@
 package se.streamsource.streamflow.web.application.management;
 
 import org.qi4j.api.common.QualifiedName;
-import org.qi4j.api.composite.TransientBuilder;
 import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.entity.Entity;
 import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.entity.association.EntityStateHolder;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.object.ObjectBuilder;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
@@ -61,65 +58,79 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
-import java.util.ResourceBundle;
 
 /**
- * JMX Management for Streamflow. Exposes all configurable services as MBeans,
- * as well as the default ManagerComposite
+ * Expose ConfigurationComposites through JMX. Allow configurations to be edited, and the services to be restarted.
  */
-@Mixins(ManagerService.Mixin.class)
-public interface ManagerService
+@Mixins(ConfigurationManagerService.Mixin.class)
+public interface ConfigurationManagerService
       extends ServiceComposite, Activatable
 {
    class Mixin
          implements Activatable
    {
+      @Structure
+      UnitOfWorkFactory uowf;
+
       @Service
       MBeanServer server;
 
       @Structure
-      UnitOfWorkFactory uowf;
-
-      @Structure
       Qi4jSPI spi;
 
-      @Uses
-      TransientBuilder<ManagerComposite> managerBuilder;
+      @Service
+      Iterable<ServiceReference<Configuration>> configurableServices;
 
-      @Uses
-      ObjectBuilder<CompositeMBean> mbeanBuilder;
-
-      public ObjectName objectName;
-      public ManagerComposite manager;
+      private List<ObjectName> configurableServiceNames = new ArrayList<ObjectName>();
 
       public void activate() throws Exception
       {
-         ResourceBundle bundle = ResourceBundle.getBundle( Manager.class.getName() );
-
-         Properties version = new Properties();
-         version.load( getClass().getResourceAsStream( "/version.properties" ) );
-
-         String versionString = version.getProperty( "application.name" ) + " " +
-               version.getProperty( "application.version" ) + " build:" +
-               version.getProperty( "application.buildNumber" ) + " revision:" +
-               version.getProperty( "application.revision" );
-         managerBuilder.prototype().version().set( versionString );
-
-         manager = managerBuilder.newInstance();
-         CompositeMBean mbean = mbeanBuilder.use( manager, Manager.class, bundle ).newInstance();
-
-         manager.start();
-
-         // Register the Model MBean in the MBean Server
-         objectName = new ObjectName( "Streamflow:name=Manager" );
-         server.registerMBean( mbean, objectName );
+         // Expose configurable services
+         exportConfigurableServices();
       }
+
+      private void exportConfigurableServices() throws NotCompliantMBeanException, MBeanRegistrationException, InstanceAlreadyExistsException, MalformedObjectNameException
+      {
+         for (ServiceReference<Configuration> configurableService : configurableServices)
+         {
+            String serviceClass = configurableService.get().getClass().getInterfaces()[0].getName();
+            String name = configurableService.identity();
+            ServiceDescriptor serviceDescriptor = spi.getServiceDescriptor( configurableService );
+            ModuleSPI module = (ModuleSPI) spi.getModule( configurableService );
+            EntityDescriptor descriptor = module.entityDescriptor( serviceDescriptor.configurationType().getName() );
+            List<MBeanAttributeInfo> attributes = new ArrayList<MBeanAttributeInfo>();
+            Map<String, QualifiedName> properties = new HashMap<String, QualifiedName>();
+            for (PropertyType propertyType : descriptor.entityType().properties())
+            {
+               if (propertyType.propertyType() == PropertyType.PropertyTypeEnum.MUTABLE)
+               {
+                  String propertyName = propertyType.qualifiedName().name();
+                  String type = propertyType.type().type().name();
+                  attributes.add( new MBeanAttributeInfo( propertyName, type, propertyName, true, true, type.equals( "java.lang.Boolean" ) ) );
+                  properties.put( propertyName, propertyType.qualifiedName() );
+               }
+            }
+
+            List<MBeanOperationInfo> operations = new ArrayList<MBeanOperationInfo>();
+            if (configurableService instanceof Activatable)
+            {
+               operations.add( new MBeanOperationInfo( "restart", "Restart service", new MBeanParameterInfo[0], "void", MBeanOperationInfo.ACTION_INFO ) );
+            }
+
+            MBeanInfo mbeanInfo = new MBeanInfo( serviceClass, name, attributes.toArray( new MBeanAttributeInfo[attributes.size()] ), null, operations.toArray( new MBeanOperationInfo[operations.size()] ), null );
+            Object mbean = new ConfigurableService( configurableService, mbeanInfo, name, properties );
+            ObjectName configurableServiceName = new ObjectName( "Streamflow:name=" + name );
+            server.registerMBean( mbean, configurableServiceName );
+            configurableServiceNames.add( configurableServiceName );
+         }
+      }
+
       public void passivate() throws Exception
       {
-         manager.stop();
-
-         server.unregisterMBean( objectName );
+         for (ObjectName configurableServiceName : configurableServiceNames)
+         {
+            server.unregisterMBean( configurableServiceName );
+         }
       }
 
       class ConfigurableService

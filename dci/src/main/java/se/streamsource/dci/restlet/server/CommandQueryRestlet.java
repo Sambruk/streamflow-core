@@ -194,7 +194,7 @@ public class CommandQueryRestlet
             delete( request, response, context, roleMap, segments );
          } else if (method.equals( org.restlet.data.Method.POST) || method.equals( org.restlet.data.Method.PUT) )
          {
-            // When doing POST/PUT we should try several times if there is a coflict when committing
+            // When doing POST/PUT we should try several times if there is a conflict when committing
             int retries = 0;
             while (retries < 10)
             {

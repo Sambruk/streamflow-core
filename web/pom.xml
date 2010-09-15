@@ -48,13 +48,13 @@
                 <artifactId>maven-jetty-plugin</artifactId>
                 <configuration>
                     <systemProperties>
-<!--    Uncomment to run in development mode -->
+<!--    Uncomment to run in development mode
                         <systemProperty>
                           <name>mode</name>
                            <value>development</value>
                         </systemProperty>
+-->
                      </systemProperties>
-                    
                     <contextPath>/streamflow</contextPath>
                     <connectors>
                         <connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
