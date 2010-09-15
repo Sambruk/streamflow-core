@@ -86,7 +86,7 @@ public abstract class UpdateCaseCountCacheConcern
       {
          // Update assignments for user
          Assignee assignee = roleMap.get( Assignee.class );
-         caching.addToCache( caze.owner().get().toString()+":"+assignee.toString(), 1 );
+         caching.addToCache( caze.owner().get().toString()+":"+assignee.toString(), -1 );
       } else
       {
          // Update inbox cache
