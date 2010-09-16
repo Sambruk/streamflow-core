@@ -37,6 +37,7 @@ import se.streamsource.streamflow.domain.form.OptionButtonsFieldValue;
 import se.streamsource.streamflow.domain.form.PageSubmissionValue;
 import se.streamsource.streamflow.domain.form.SelectionFieldValue;
 import se.streamsource.streamflow.domain.form.TextFieldValue;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.web.application.security.UserPrincipal;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.entity.conversation.ConversationEntity;
@@ -60,6 +61,8 @@ import se.streamsource.streamflow.web.domain.structure.organization.Organization
 import se.streamsource.streamflow.web.domain.structure.project.Member;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.project.ProjectRole;
+import se.streamsource.streamflow.web.domain.structure.user.ProxyUser;
+import se.streamsource.streamflow.web.domain.structure.user.ProxyUsers;
 import se.streamsource.streamflow.web.domain.structure.user.User;
 import se.streamsource.streamflow.web.domain.structure.user.Users;
 
@@ -315,7 +318,7 @@ public interface TestDataService
                labels.add( question );
                organization.createAccessPoint( "ComplaintAccess", invoicing, complaint, labels );
 
-               //ProxyUser proxyUser = organization.createProxyUser( "Citizens Portal", "proxy", "proxy" );
+               organization.createdProxyUser( DomainEvent.CREATE, "surface", "surface", "surface" );
 
                uow.complete();
 

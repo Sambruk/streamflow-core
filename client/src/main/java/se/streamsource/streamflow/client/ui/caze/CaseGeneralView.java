@@ -216,12 +216,7 @@ public class CaseGeneralView extends JScrollPane implements Observer
       rightBuilder.add( new JLabel( i18n.text( WorkspaceResources.forms_label ) ),
             new CellConstraints ( 1, 6, 1, 1,CellConstraints.LEFT, CellConstraints.TOP , new Insets( 5,0,0,0 ) ) );
 
-      JScrollPane formsScroll = new JScrollPane();
-      formsScroll.setBorder( BorderFactory.createEmptyBorder(0,0,0,0 ) );
-      formsScroll.setPreferredSize( new Dimension( 160, 82 ) );
-      formsScroll.setViewportView( forms );
-
-      rightBuilder.add( formsScroll,
+      rightBuilder.add( forms,
             new CellConstraints( 3, 6, 1, 1, CellConstraints.FILL, CellConstraints.FILL, new Insets( 5, 0, 0, 0 ) ) );
 
       // Limit pickable dates to future

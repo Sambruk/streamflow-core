@@ -38,6 +38,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.Popup;
 import javax.swing.PopupFactory;
+import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
 import java.awt.Color;
 import java.awt.Desktop;
@@ -74,7 +75,6 @@ public class AboutDialog
       setActionMap( am );
 
       box = Box.createVerticalBox();
-
       setActionMap( Application.getInstance().getContext().getActionMap( this ) );
 
       try
@@ -158,13 +158,13 @@ public class AboutDialog
    @Action
    public void thirdPartyProducts()
    {
-      openFile( "Streamsource_SF_Third_Party_Software.docx" );
+      openFile( "Streamsource_SF_Third_Party_Software.pdf" );
    }
 
    @Action
    public void thirdPartyLicenses()
    {
-      openFile( "Streamsource_Third_Party_License_Appendix.docx" );
+      openFile( "Streamsource_Third_Party_License_Appendix.pdf" );
    }
 
    private void showFile( String fileName )
@@ -195,7 +195,8 @@ public class AboutDialog
 
       Point origin = new Point( (int) this.getLocationOnScreen().getX() - (((int) txt.getPreferredSize().getWidth() - box.getWidth()) / 2),
             (int) this.getLocationOnScreen().getY() );
-      popup = PopupFactory.getSharedInstance().getPopup( this, box2, (int) origin.getX(), (int) origin.getY() );
+
+
       JPanel buttonPanel = new JPanel( new FlowLayout( FlowLayout.RIGHT ) );
       JButton ok = new JButton( "Ok" );
       ok.addActionListener( this );
@@ -203,7 +204,9 @@ public class AboutDialog
       buttonPanel.add( ok );
 
       box2.add( buttonPanel );
+      box2.setBorder( BorderFactory.createLineBorder( Color.BLACK ));
 
+      popup = PopupFactory.getSharedInstance().getPopup( WindowUtils.findWindow( this ), box2, (int) origin.getX(), (int) origin.getY() );
       popup.show();
    }
 

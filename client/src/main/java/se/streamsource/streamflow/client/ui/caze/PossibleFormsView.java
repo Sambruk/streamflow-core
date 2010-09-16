@@ -38,13 +38,15 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Map;
 
-public class PossibleFormsView extends JPanel implements ListEventListener, ActionListener
+public class PossibleFormsView extends JPanel
+      implements ActionListener
 {
    @Structure
    ObjectBuilderFactory obf;
@@ -60,7 +62,7 @@ public class PossibleFormsView extends JPanel implements ListEventListener, Acti
 
    public PossibleFormsView()
    {
-      setLayout( new BoxLayout( this, BoxLayout.Y_AXIS ));
+      setLayout( new GridLayout( 0, 1 ) );
       setBorder( BorderFactory.createEmptyBorder( 2,0,2,2 ) );
       setFocusable( false );
    }
@@ -68,12 +70,12 @@ public class PossibleFormsView extends JPanel implements ListEventListener, Acti
    public void setFormsModel( PossibleFormsModel modelForm )
    {
       this.modelForms = modelForm;
-      modelForm.getForms().addListEventListener( this );
       initComponents();
    }
 
    private void initComponents()
    {
+      this.setVisible( false );
       removeAll();
 
       EventList<LinkValue> formList = modelForms.getForms();
@@ -83,15 +85,20 @@ public class PossibleFormsView extends JPanel implements ListEventListener, Acti
       {
          PossibleFormView formView = new PossibleFormView( itemValue );
          
-         formView.setPreferredSize( new Dimension( 150, 25 ));
-         formView.setMinimumSize( new Dimension( 150, 25 ) );
-         formView.setMaximumSize( new Dimension( 150, 25 ) );
+         formView.setPreferredSize( new Dimension( 145, 25 ));
+         formView.setMinimumSize( new Dimension( 145, 25 ) );
+         formView.setMaximumSize( new Dimension( 145, 25 ) );
          formView.addActionListener( this );
          add( formView, Component.LEFT_ALIGNMENT );                           
          count++;
       }
 
-      this.setPreferredSize( new Dimension( 154, 30 * count ) );
+      //this.setPreferredSize( new Dimension( 290, (30 * count)/2 ) );
+
+      this.invalidate();
+      this.repaint();
+      this.setVisible(true);
+
    }
 
    @Override
@@ -103,12 +110,7 @@ public class PossibleFormsView extends JPanel implements ListEventListener, Acti
       }
       super.setEnabled( enabled );
    }
-
-   public void listChanged( ListEvent listEvent )
-   {
-      initComponents();
-   }
-
+   
    public void actionPerformed( ActionEvent e )
    {
 	   // Open up the wizard with the correct form for submission.
