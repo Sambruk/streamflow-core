@@ -37,7 +37,7 @@
                                 <resource>
                                     <directory>${basedir}/../src/main/resources/</directory>
                                     <includes>
-                                        <include>*.docx</include>
+                                        <include>*.pdf</include>
                                     </includes>
                                 </resource>
                             </resources>
