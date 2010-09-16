@@ -131,6 +131,7 @@ public interface FormSubmission
                   }
                }
             }
+
          }
       }
 
@@ -184,6 +185,8 @@ public interface FormSubmission
          if ( "".equals( value )) return true;
          try
          {
+            // quick fix to make it accept ,
+            value = value.replace( ',', '.' );
             Object o = (definition.integer().get() ? Integer.parseInt( value ) : Double.parseDouble( value ));
             return true;
          } catch (NumberFormatException e)

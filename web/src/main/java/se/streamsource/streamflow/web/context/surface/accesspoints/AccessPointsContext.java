@@ -21,6 +21,7 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.ContextMixin;
+import se.streamsource.dci.api.ContextNotFoundException;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.SubContexts;
 import se.streamsource.dci.value.LinkValue;
@@ -87,9 +88,10 @@ public interface AccessPointsContext
             if ( entity.identity().get().equals( id ) )
             {
                roleMap.set( accessPoint );
+               return subContext( AccessPointContext.class);
             }
          }
-         return subContext( AccessPointContext.class);
+         throw new ContextNotFoundException();
       }
    }
 }
