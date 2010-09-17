@@ -116,7 +116,7 @@ public class OrganizationalUnitAdministrationModel
       {
          ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
          builder.prototype().string().set( newDescription );
-         client.putCommand( "changedescription", builder.newInstance() );
+         client.postCommand( "changedescription", builder.newInstance() );
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_rename_organization, e );
