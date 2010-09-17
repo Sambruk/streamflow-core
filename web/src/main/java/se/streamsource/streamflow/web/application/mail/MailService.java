@@ -17,7 +17,6 @@
 
 package se.streamsource.streamflow.web.application.mail;
 
-import org.json.JSONObject;
 import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
@@ -57,7 +56,9 @@ import javax.mail.internet.MimeMessage;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Send and receive mail. This service
@@ -140,17 +141,17 @@ public interface MailService
                + delay
                + " min  SleepPeriod: "
                + (sleep == 0 ? 10 : sleep) + " min" );
- //        mailReceiver = Executors.newSingleThreadScheduledExecutor();
-//         mailReceiver.scheduleAtFixedRate( this, delay, (sleep == 0 ? 10 : sleep), TimeUnit.MINUTES );
+         mailReceiver = Executors.newSingleThreadScheduledExecutor();
+         mailReceiver.scheduleAtFixedRate( this, delay, (sleep == 0 ? 10 : sleep), TimeUnit.MINUTES );
 
          logger.info( "Done" );
       }
 
       public void passivate() throws Exception
       {
-//         mailReceiver.shutdown();
-//           mailReceiver.awaitTermination( 30, TimeUnit.SECONDS );
-           logger.info( "Mail service shutdown" );
+         mailReceiver.shutdown();
+         mailReceiver.awaitTermination( 30, TimeUnit.SECONDS );
+         logger.info( "Mail service shutdown" );
       }
 
       public void sendNotification( DomainEvent event ) throws Exception
@@ -164,13 +165,13 @@ public interface MailService
             emailAddress = listIter.next().emailAddress().get();
          }
 
-         String messageId = EventParameters.getParameter( event, 1);
+         String messageId = EventParameters.getParameter( event, 1 );
 
          Message.Data message = uowf.currentUnitOfWork().get( Message.Data.class, messageId );
          Conversation conversation = message.conversation().get();
          ConversationOwner owner = conversation.conversationOwner().get();
 
-         String sender = ((Contactable.Data)message.sender().get()).contact().get().name().get();
+         String sender = ((Contactable.Data) message.sender().get()).contact().get().name().get();
          String caseId = "n/a";
 
          if (owner != null)

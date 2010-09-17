@@ -49,16 +49,16 @@ http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0 ">
             <source>referenceplugin/target/streamflow-reference-plugin-${project.version}.war</source>
             <outputDirectory>plugins</outputDirectory>
         </file>
-        <file>
+        <!--<file>
             <source>src/main/resources/StreamflowReleaseNotes.pdf</source>
             <outputDirectory>.</outputDirectory>
-        </file>
+        </file> -->
         <file>
-            <source>src/main/resources/Streamsource_SF_Third_Party_Software.pdf</source>
+            <source>src/main/resources/Streamsource_SF_Third_Party_Software.txt</source>
             <outputDirectory>.</outputDirectory>
         </file>
         <file>
-            <source>src/main/resources/Streamsource_Third_Party_License_Apendix.pdf</source>
+            <source>src/main/resources/Streamsource_Third_Party_License_Apendix.txt</source>
             <outputDirectory>.</outputDirectory>
         </file>
     </files>

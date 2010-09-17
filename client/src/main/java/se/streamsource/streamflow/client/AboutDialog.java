@@ -38,7 +38,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.Popup;
 import javax.swing.PopupFactory;
-import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
 import java.awt.Color;
 import java.awt.Desktop;
@@ -91,12 +90,15 @@ public class AboutDialog
                " BuildKey: " + p.getProperty( "application.buildKey" ) + "<br>" +
                " BuildNumber: " + p.getProperty( "application.buildNumber" ) + "<br>" +
                " Revision: " + p.getProperty( "application.revision" ) + "<br><br>" +
-               " This is Streamsource AB’s Streamflow product.<br>" +
-               " Licensed under the Apache License, Version 2.0, " +
-               " see http://www.apache.org/licenses/LICENSE-2.0<br><br>" +
-               " Streamflow contains software<br>" +
-               " that is licensed by third parties to Streamsource AB<br>" +
-               " and protected by copyright.</body></html>"
+               "---" + "<br><br>" +
+               "Streamflow&#0153;<br>" +
+               "Copyright 2009-2010 Streamsource AB<br><br>" +
+               "Streamflow&#0153; is licensed under the Apache License, Version 2.0 (the \"License\").<br>" +
+               "You may not use Streamflow&#0153; except in compliance with the License.<br>" +
+               "A copy of the License is available below and may also be obtained<br>" +
+               "at http://www.apache.org/licenses/LICENSE-2.0 .<br>" +
+               "Streamflow&#0153; contains software that is licensed by third parties to Streamsource AB<br>" +
+               "and protected by copyright.</body></html>"
          );
          JPanel general = new JPanel();
          general.setBorder( BorderFactory.createTitledBorder( text( StreamflowResources.general_info ) ) );
@@ -158,13 +160,13 @@ public class AboutDialog
    @Action
    public void thirdPartyProducts()
    {
-      openFile( "Streamsource_SF_Third_Party_Software.pdf" );
+      openFile( "Streamsource_SF_Third_Party.htm" );
    }
 
    @Action
    public void thirdPartyLicenses()
    {
-      openFile( "Streamsource_Third_Party_License_Appendix.pdf" );
+      openFile( "Streamsource_Third_Party_License_Appendix.htm" );
    }
 
    private void showFile( String fileName )
@@ -204,7 +206,7 @@ public class AboutDialog
       buttonPanel.add( ok );
 
       box2.add( buttonPanel );
-      box2.setBorder( BorderFactory.createLineBorder( Color.BLACK ));
+      box2.setBorder( BorderFactory.createLineBorder( Color.BLACK ) );
 
       popup = PopupFactory.getSharedInstance().getPopup( WindowUtils.findWindow( this ), box2, (int) origin.getX(), (int) origin.getY() );
       popup.show();
