@@ -83,7 +83,9 @@ public class DoublePanel
             JTextField field = (JTextField) input;
             try
             {
-               binding.updateProperty( Double.parseDouble( field.getText() ) );
+               String value = field.getText();
+               value = value.replace( ',', '.' );
+               binding.updateProperty( Double.parseDouble( value ) );
             }  catch ( NumberFormatException e)
             {
                exception = e;
