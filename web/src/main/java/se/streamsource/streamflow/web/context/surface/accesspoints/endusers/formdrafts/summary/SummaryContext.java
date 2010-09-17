@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.web.context.surface.accesspoints.endusers.formdrafts.summary;
 
+import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.dci.api.Context;
@@ -24,6 +25,7 @@ import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.streamflow.domain.form.FormSubmissionValue;
 import se.streamsource.streamflow.resource.roles.IntegerDTO;
+import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.UpdateCaseCountCaseConcern;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.form.EndUserCases;
 import se.streamsource.streamflow.web.domain.structure.form.FormSubmission;
@@ -32,6 +34,7 @@ import se.streamsource.streamflow.web.domain.structure.user.AnonymousEndUser;
 /**
  * JAVADOC
  */
+@Concerns(UpdateCaseCountFormSummaryConcern.class)
 @Mixins(SummaryContext.Mixin.class)
 public interface SummaryContext
    extends Context, IndexContext<FormSubmissionValue>

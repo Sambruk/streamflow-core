@@ -46,7 +46,7 @@ public interface CaseContext
       extends IndexContext<EndUserCaseDTO>, Context
 {
    // commands
-   void sendtofunction();
+   void sendtoproject();
 
    @SubContext
    SubmittedFormsContext submittedforms();
@@ -84,7 +84,7 @@ public interface CaseContext
          return builder.newInstance();
       }
 
-      public void sendtofunction()
+      public void sendtoproject()
       {
          CaseEntity aCase = roleMap.get( CaseEntity.class);
          EndUserCases cases = roleMap.get( EndUserCases.class );
