@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.web.context.surface.accesspoints.endusers;
 
+import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.value.ValueBuilder;
@@ -39,6 +40,7 @@ import se.streamsource.streamflow.web.domain.structure.organization.AccessPointS
 /**
  * JAVADOC
  */
+@Concerns(UpdateCaseCountCaseConcern.class)
 @Mixins(CaseContext.Mixin.class)
 public interface CaseContext
       extends IndexContext<EndUserCaseDTO>, Context
