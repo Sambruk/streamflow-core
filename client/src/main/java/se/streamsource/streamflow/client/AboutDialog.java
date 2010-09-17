@@ -160,13 +160,13 @@ public class AboutDialog
    @Action
    public void thirdPartyProducts()
    {
-      openFile( "Streamsource_SF_Third_Party.htm" );
+      openFile( "Streamflow_Third_Party.pdf" );
    }
 
    @Action
    public void thirdPartyLicenses()
    {
-      openFile( "Streamsource_Third_Party_License_Appendix.htm" );
+      openFile( "Streamflow_Third_Party_License_Appendix.pdf" );
    }
 
    private void showFile( String fileName )

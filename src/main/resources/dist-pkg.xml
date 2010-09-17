@@ -54,11 +54,11 @@ http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0 ">
             <outputDirectory>.</outputDirectory>
         </file> -->
         <file>
-            <source>src/main/resources/Streamsource_SF_Third_Party_Software.txt</source>
+            <source>src/main/resources/Streamflow_Third_Party_Software.pdf</source>
             <outputDirectory>.</outputDirectory>
         </file>
         <file>
-            <source>src/main/resources/Streamsource_Third_Party_License_Apendix.txt</source>
+            <source>src/main/resources/Streamflow_Third_Party_License_Apendix.pdf</source>
             <outputDirectory>.</outputDirectory>
         </file>
     </files>
