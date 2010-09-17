@@ -102,5 +102,6 @@ public enum WorkspaceResources
    uploading_file,
    attachment,
    could_not_open_attachment,
+   too_long_query, 
    could_not_open_file
 }

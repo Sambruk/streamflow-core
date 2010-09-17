@@ -35,6 +35,7 @@ import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
 import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.administration.AccountModel;
 import se.streamsource.streamflow.client.ui.caze.AssignmentsCaseTableFormatter;
@@ -83,12 +84,17 @@ import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
+
 /**
  * JAVADOC
  */
 public class WorkspaceView
       extends JPanel
 {
+   @Service
+   DialogService dialogs;
+
    @Structure
    ObjectBuilderFactory obf;
 
@@ -102,7 +108,7 @@ public class WorkspaceView
    private JButton selectContextButton;
    private JTextField searchField;
 
-   private Component currentSelection = new JLabel( i18n.text( WorkspaceResources.welcome ), JLabel.CENTER );
+   private Component currentSelection = new JLabel( text( WorkspaceResources.welcome ), JLabel.CENTER );
    private Popup popup;
 
    private SearchView searchView;
@@ -188,7 +194,7 @@ public class WorkspaceView
 
       topPanel = new JPanel( topLayout );
       topPanel.setBorder( BorderFactory.createEmptyBorder( 0, 0 , 5, 0 ) );
-      topPanel.add( contextPanel, "roleMap" );
+      topPanel.add( contextPanel, "context" );
       topPanel.add( searchPanel, "search" );
 
       add( topPanel, BorderLayout.NORTH );
@@ -228,7 +234,7 @@ public class WorkspaceView
                   else if (o instanceof WorkspaceProjectNode)
                      return ((WorkspaceProjectNode) o).projectName();
                   else if (o instanceof WorkspaceProjectsNode)
-                     return i18n.text( WorkspaceResources.projects_node );
+                     return text( WorkspaceResources.projects_node );
                   else if (o instanceof WorkspaceUserDraftsNode || o instanceof WorkspaceProjectInboxNode)
                      return o.toString();
                   else if (o instanceof WorkspaceProjectAssignmentsNode)
@@ -501,7 +507,7 @@ public class WorkspaceView
    @Action
    public void hideSearch()
    {
-      topLayout.show( topPanel, "roleMap" );
+      topLayout.show( topPanel, "context" );
 
       TreePath[] selection = workspaceTree.getSelectionPaths();
       workspaceTree.clearSelection();
@@ -513,7 +519,15 @@ public class WorkspaceView
    @Action
    public void search()
    {
-      searchResultTableModel.search( searchField.getText() );
+      String searchString = searchField.getText();
+
+      if (searchString.length() > 500)
+      {
+         dialogs.showMessageDialog( this, text( WorkspaceResources.too_long_query), "" );
+      } else
+      {
+         searchResultTableModel.search( searchString );
+      }
    }
 
    @Action
