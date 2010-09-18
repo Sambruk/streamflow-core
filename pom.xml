@@ -3,7 +3,7 @@
     <groupId>se.streamsource.streamflow</groupId>
     <artifactId>streamflow</artifactId>
     <name>Streamflow (Build POM)</name>
-    <version>1.1-SNAPSHOT</version>
+    <version>1.2-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <!-- This POM is ONLY to initiate the modules to be built. -->
@@ -40,8 +40,8 @@
     </modules>
 
     <scm>
-        <connection>scm:svn:https://source.jayway.com/svn/streamsource/streamflow/branches/1.1</connection>
-        <developerConnection>scm:svn:https://source.jayway.com/svn/streamsource/streamflow/branches/1.1</developerConnection>
+        <connection>scm:svn:https://source.jayway.com/svn/streamsource/streamflow/branches/1.0</connection>
+        <developerConnection>scm:svn:https://source.jayway.com/svn/streamsource/streamflow/branches/1.0</developerConnection>
     </scm>
 
     <distributionManagement>
