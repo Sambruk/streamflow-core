@@ -46,6 +46,10 @@ http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0 ">
             <outputDirectory>streamflow</outputDirectory>
         </file>
         <file>
+            <source>web/target/streamflow-web-${project.version}.war</source>
+            <outputDirectory>streamflow</outputDirectory>
+        </file>
+        <file>
             <source>referenceplugin/target/streamflow-reference-plugin-${project.version}.war</source>
             <outputDirectory>plugins</outputDirectory>
         </file>
@@ -54,11 +58,11 @@ http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0 ">
             <outputDirectory>.</outputDirectory>
         </file> -->
         <file>
-            <source>src/main/resources/Streamflow_Third_Party_Software.pdf</source>
+            <source>src/main/resources/Streamflow_Third_Party.pdf</source>
             <outputDirectory>.</outputDirectory>
         </file>
         <file>
-            <source>src/main/resources/Streamflow_Third_Party_License_Apendix.pdf</source>
+            <source>src/main/resources/Streamflow_Third_Party_License_Appendix.pdf</source>
             <outputDirectory>.</outputDirectory>
         </file>
     </files>
