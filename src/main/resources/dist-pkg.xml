@@ -50,7 +50,7 @@ http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0 ">
             <outputDirectory>plugins</outputDirectory>
         </file>
         <!--<file>
-            <source>src/main/resources/StreamflowReleaseNotes.pdf</source>
+            <source>src/main/resources/Streamflow_Release_Notes.pdf</source>
             <outputDirectory>.</outputDirectory>
         </file> -->
         <file>
