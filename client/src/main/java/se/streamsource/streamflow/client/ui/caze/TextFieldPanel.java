@@ -17,9 +17,13 @@
 
 package se.streamsource.streamflow.client.ui.caze;
 
+import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
+import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.RegexPatternFormatter;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
 import se.streamsource.streamflow.domain.form.TextFieldValue;
 import se.streamsource.streamflow.util.Strings;
@@ -36,6 +40,9 @@ public class TextFieldPanel
 {
    private JTextField textField;
    private TextFieldValue fieldValue;
+
+   @Service
+   DialogService dialogs;
 
    public TextFieldPanel( @Uses FieldSubmissionValue field, @Uses TextFieldValue fieldValue )
    {
@@ -69,6 +76,7 @@ public class TextFieldPanel
    @Override
    public void setBinding( final StateBinder.Binding binding )
    {
+      final TextFieldPanel panel = this;
       textField.setInputVerifier( new InputVerifier()
       {
          @Override
@@ -82,13 +90,15 @@ public class TextFieldPanel
                   new RegexPatternFormatter( fieldValue.regularExpression().get() ).stringToValue( ((JTextComponent) input).getText() );
                } catch (ParseException e)
                {
-                  throw new IllegalArgumentException( fieldValue.hint().get(), e );
+                  dialogs.showMessageDialog( panel,
+                        i18n.text( CaseResources.regular_expression_does_not_validate ), "" );
+                  return false;
                }
             }
             binding.updateProperty( ((JTextComponent) input).getText() );
             return true;
          }
-      } );
+      });
    }
 
    @Override

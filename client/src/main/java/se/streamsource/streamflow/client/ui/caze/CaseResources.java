@@ -69,5 +69,10 @@ public enum CaseResources
    could_not_create_conversation,
    could_not_add_participant,
    could_not_remove_participant,
-   could_not_change_hint, could_not_change_regularexpression, choose_participant
+   could_not_change_hint,
+   could_not_change_regularexpression,
+   choose_participant,
+   regular_expression_does_not_validate,
+   invalidinteger,
+   invalidfloat
 }

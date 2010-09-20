@@ -19,8 +19,11 @@ package se.streamsource.streamflow.client.ui.caze;
 
 import org.jdesktop.swingx.JXDialog;
 import org.jdesktop.swingx.util.WindowUtils;
+import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
+import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
 import se.streamsource.streamflow.domain.form.FieldValue;
 import se.streamsource.streamflow.domain.form.NumberFieldValue;
@@ -41,6 +44,9 @@ public class DoublePanel
        extends AbstractFieldPanel
 {
    private JTextField textField;
+
+   @Service
+   DialogService dialogs;
 
    public DoublePanel( @Uses FieldSubmissionValue field, @Uses NumberFieldValue fieldValue )
    {
@@ -73,9 +79,9 @@ public class DoublePanel
    @Override
    public void setBinding( final StateBinder.Binding binding )
    {
+      final DoublePanel panel = this;
       textField.setInputVerifier( new InputVerifier()
       {
-         NumberFormatException exception;
 
          @Override
          public boolean verify( JComponent input )
@@ -88,44 +94,10 @@ public class DoublePanel
                binding.updateProperty( Double.parseDouble( value ) );
             }  catch ( NumberFormatException e)
             {
-               exception = e;
+               dialogs.showMessageDialog( panel, i18n.text( CaseResources.invalidfloat ), "");
                return false;
             }
             return true;
-         }
-
-         @Override
-         public boolean shouldYieldFocus( JComponent input )
-         {
-            boolean result = super.shouldYieldFocus( input );
-
-            if ( !result )
-            {
-               if ( exception != null )
-               {
-                  Window window = WindowUtils.findWindow( input );
-                  StringBuilder message = new StringBuilder( "<html>" );
-                  message.append( "<p>" ).append( exception.getLocalizedMessage() ).append( "</p>" );
-                  message.append( "</html>" );
-
-
-
-                  JLabel main = new JLabel( message.toString() );
-
-                  JXDialog dialog;
-                  if (window instanceof Frame)
-                     dialog = new JXDialog( (Frame) window, main );
-                  else
-                     dialog = new JXDialog( (Dialog) window, main );
-
-                  dialog.setModal( true );
-
-                  dialog.pack();
-                  dialog.setLocationRelativeTo( SwingUtilities.windowForComponent( input ) );
-                  dialog.setVisible( true );
-               }
-            }
-            return result;
          }
       });
    }
