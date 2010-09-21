@@ -33,7 +33,6 @@ import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.resource.user.NewProxyUserCommand;
-import se.streamsource.streamflow.resource.user.NewUserCommand;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -101,7 +100,7 @@ public class CreateProxyUserDialog
          command = builder.newInstance();
       } catch(ConstraintViolationException e)
       {
-         dialogs.showOkCancelHelpDialog( WindowUtils.findWindow( this ), new JLabel( i18n.text( ErrorResources.username_password_cviolation ) ) );
+         dialogs.showOkCancelHelpDialog( WindowUtils.findWindow( this ), new JLabel( i18n.text( ErrorResources.username_password_violation ) ) );
          return;
       }
       WindowUtils.findWindow( this ).dispose();

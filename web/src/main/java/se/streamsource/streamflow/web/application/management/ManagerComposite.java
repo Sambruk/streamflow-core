@@ -33,11 +33,11 @@ import org.qi4j.api.service.ServiceReference;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.usecase.UsecaseBuilder;
-import org.qi4j.entitystore.jdbm.DatabaseExport;
-import org.qi4j.entitystore.jdbm.DatabaseImport;
 import org.qi4j.index.reindexer.Reindexer;
 import org.qi4j.spi.entity.EntityState;
 import org.qi4j.spi.entitystore.EntityStore;
+import org.qi4j.spi.entitystore.ExportSupport;
+import org.qi4j.spi.entitystore.ImportSupport;
 import org.qi4j.spi.query.EntityFinder;
 import org.qi4j.spi.structure.ModuleSPI;
 import org.slf4j.Logger;
@@ -67,6 +67,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.text.ParseException;
@@ -112,10 +113,10 @@ public interface ManagerComposite
       Reindexer reindexer;
 
       @Service
-      DatabaseExport exportDatabase;
+      ExportSupport exportDatabase;
 
       @Service
-      DatabaseImport importDatabase;
+      ImportSupport importDatabase;
 
       @Service
       EventStore eventStore;
@@ -217,7 +218,7 @@ public interface ManagerComposite
          }
 
          Writer writer = new OutputStreamWriter( out, "UTF-8" );
-         exportDatabase.exportTo( writer );
+         exportDatabase.exportTo( new PrintWriter(writer) );
          writer.close();
 
          return "Database exported to:" + exportFile.getAbsolutePath();

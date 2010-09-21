@@ -117,7 +117,7 @@ public class CreateUserDialog
          command = builder.newInstance();
       } catch(ConstraintViolationException e)
       {
-         dialogs.showOkCancelHelpDialog( WindowUtils.findWindow( this ), new JLabel( i18n.text( ErrorResources.username_password_cviolation ) ) );
+         dialogs.showOkCancelHelpDialog( WindowUtils.findWindow( this ), new JLabel( i18n.text( ErrorResources.username_password_violation ) ) );
          return;
       }
       WindowUtils.findWindow( this ).dispose();

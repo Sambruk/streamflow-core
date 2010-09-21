@@ -180,7 +180,7 @@ public class CommandQueryClient
       client.setClientInfo( info );
       client.setNext( this.client );
 
-      commandRepresentation.setModificationDate( lastModified );
+      client.getConditions().setUnmodifiedSince( lastModified );
       try
       {
          client.post( commandRepresentation );

@@ -23,6 +23,9 @@ package se.streamsource.streamflow.application.error;
 public enum ErrorResources
 {
    search_string_malformed,
-   username_password_cviolation,
-   unauthorized_access, error, user_already_exists
+   username_password_violation,
+   unauthorized_access,
+   concurrent_change,
+   error,
+   user_already_exists
 }

@@ -74,54 +74,41 @@ public class UncaughtExceptionHandler implements Thread.UncaughtExceptionHandler
       {
          public void run()
          {
-            if (ex instanceof OperationException)
+            Throwable cause = ex instanceof OperationException ? ex.getCause(): ex;
+            if (cause instanceof ResourceException)
             {
-               Throwable cause = ex.getCause();
-               if (cause instanceof ResourceException)
+               ResourceException re = (ResourceException) cause;
+               if (re.getStatus().equals( Status.CLIENT_ERROR_FORBIDDEN ))
                {
-                  ResourceException re = (ResourceException) cause;
-                  if (re.getStatus().equals( Status.CLIENT_ERROR_FORBIDDEN ))
-                  {
-                     // User is not allowed to do this operation
-                     JXDialog dialog = new JXDialog( frame, new JLabel( i18n.text( StreamflowResources.operation_not_permitted ) ) );
-                     dialog.setLocationRelativeTo( frame );
-                     dialog.pack();
-                     dialog.setVisible( true );
-                     main.show( dialog );
-                     return;
-                  } else if (re.getStatus().equals( Status.CLIENT_ERROR_CONFLICT ))
-                  {
-                     // Operation failed because of a conflict
-                     JXDialog dialog = new JXDialog( frame, new JLabel( ex.getMessage() ) );
-                     dialog.setLocationRelativeTo( frame );
-                     dialog.pack();
-                     dialog.setVisible( true );
-                     main.show( dialog );
-                     return;
-                  }
+                  // User is not allowed to do this operation
+                  JXDialog dialog = new JXDialog( frame, new JLabel( i18n.text( StreamflowResources.operation_not_permitted ) ) );
+                  dialog.setLocationRelativeTo( frame );
+                  dialog.pack();
+                  dialog.setVisible( true );
+                  main.show( dialog );
+                  return;
+               } else if (re.getStatus().equals( Status.CLIENT_ERROR_CONFLICT ) || re.getStatus().equals( Status.CLIENT_ERROR_PRECONDITION_FAILED ))
+               {
+                  showErrorDialog( ex, frame, text( ErrorResources.concurrent_change ) );
+                  return;
+               } else if (re.getStatus().equals(Status.CLIENT_ERROR_UNAUTHORIZED))
+               {
+                  showErrorDialog( ex, frame, text( ErrorResources.unauthorized_access ) );
+                  return;
                }
             }
 
-
             try
             {
-               // special treatment for unauthorized access
-               if (ex.getCause() instanceof ResourceException
-                     && Status.CLIENT_ERROR_UNAUTHORIZED.equals( ((ResourceException) ex.getCause()).getStatus() ))
+               String message = ex.getMessage();
+               if (message != null)
                {
-                  showErrorDialog( ex, frame, text( ErrorResources.unauthorized_access ) );
+                  message = HtmlErrorMessageExtractor.parse( ex.getMessage() );
+                  showErrorDialog( ex, frame, text( StreamflowResources.valueOf( HtmlErrorMessageExtractor.parse( ex.getMessage() ) ) ) );
                } else
                {
-                  String message = ex.getMessage();
-                  if (message != null)
-                  {
-                     message = HtmlErrorMessageExtractor.parse( ex.getMessage() );
-                     showErrorDialog( ex, frame, text( StreamflowResources.valueOf( HtmlErrorMessageExtractor.parse( ex.getMessage() ) ) ) );
-                  } else
-                  {
-                     // once again in case the resource enum does not exist
-                     showErrorDialog( ex, frame );
-                  }
+                  // once again in case the resource enum does not exist
+                  showErrorDialog( ex, frame );
                }
             } catch (IllegalArgumentException iae)
             {
