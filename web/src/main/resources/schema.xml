@@ -457,7 +457,7 @@ any data added to them will be ignored outright.  -->
         <field name="lastModified" type="date" indexed="true" stored="true" required="true"/>
         <field name="type" type="string" indexed="true" stored="true" required="true"/>
 
-        <field name="description" type="text" indexed="true" stored="true" multiValued="true"/>
+        <field name="description" type="text" indexed="true" stored="true" multiValued="false"/>
         <field name="description_for_sort" type="string"/>
 
         <field name="note" type="text" indexed="true" stored="true" multiValued="true"/>
