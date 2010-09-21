@@ -79,7 +79,11 @@ public class APIRouter
       adminRouter.attach( "/index", createServerResourceFinder( IndexResource.class ) );
       adminRouter.attach( "/console", createServerResourceFinder( ConsoleServerResource.class ) );
       adminRouter.attach( "/search", createServerResourceFinder( SolrSearchServerResource.class ) );
-      attach( "/admin", new ExtensionMediaTypeFilter( getContext(), adminRouter ) );
+      attach( "/admin/tools", new ExtensionMediaTypeFilter( getContext(), adminRouter ) );
+
+      Directory dir = new Directory( getContext(), "clap://thread/static/admin/" );
+      dir.setIndexName( "index.html" );
+      attach( "/admin", dir );
 
 
       // Version info

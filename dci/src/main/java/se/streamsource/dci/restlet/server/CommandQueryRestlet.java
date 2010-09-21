@@ -21,6 +21,7 @@ import org.json.JSONException;
 import org.qi4j.api.common.QualifiedName;
 import org.qi4j.api.composite.TransientComposite;
 import org.qi4j.api.constraint.Name;
+import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
@@ -86,6 +87,7 @@ import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -313,6 +315,23 @@ public class CommandQueryRestlet
    private void post( Request request, Response response, Object context, RoleMap roleMap, List<String> segments )
          throws UnitOfWorkCompletionException
    {
+      // Check if-unmodified-since header
+      Date unmodified = request.getConditions().getUnmodifiedSince();
+      if (unmodified != null)
+      {
+         EntityComposite entity = roleMap.get( EntityComposite.class );
+         if (entity != null)
+         {
+            Date lastModified = new Date((spi.getEntityState( entity ).lastModified()/1000)*1000);
+//            Date lastModified = new Date(spi.getEntityState( entity ).lastModified());
+            if (!lastModified.equals( unmodified ))
+            {
+               response.setStatus( Status.CLIENT_ERROR_PRECONDITION_FAILED );
+               return;
+            }
+         }
+      }
+
       // POST on command -> perform interaction
       String lastSegment = segments.get( segments.size() - 1 );
 
@@ -373,6 +392,7 @@ public class CommandQueryRestlet
             return;
          }
          responseWriter.write( result, request, response );
+
 
       } catch (UnitOfWorkCompletionException e)
       {

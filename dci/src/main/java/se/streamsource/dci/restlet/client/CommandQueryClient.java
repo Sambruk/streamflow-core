@@ -47,6 +47,7 @@ import se.streamsource.dci.value.LinkValue;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
+import java.util.Date;
 
 /**
  * Base class for client-side Command/Query resources
@@ -71,6 +72,8 @@ public class CommandQueryClient
    @Uses
    private Reference reference;
 
+   private Date lastModified; // Keep track of last-modified on queries, and send it on commands
+
    public Reference getReference()
    {
       return reference;
@@ -92,6 +95,8 @@ public class CommandQueryClient
 
       if (result.getResponse().getStatus().isSuccess())
       {
+         lastModified = result.getResponse().getEntity().getModificationDate();
+
          String jsonValue = result.getResponse().getEntityAsText();
          T returnValue = vbf.newValueFromJSON( queryResult, jsonValue );
          return returnValue;
@@ -174,10 +179,14 @@ public class CommandQueryClient
       info.setAcceptedMediaTypes( Collections.singletonList( new Preference<MediaType>( MediaType.APPLICATION_JSON ) ) );
       client.setClientInfo( info );
       client.setNext( this.client );
+
+      commandRepresentation.setModificationDate( lastModified );
       try
       {
          client.post( commandRepresentation );
 
+         // Reset modification date
+         lastModified = null;
          try
          {
             responseHandler.handleResponse( client.getResponse() );
@@ -274,6 +283,7 @@ public class CommandQueryClient
       info.setAcceptedMediaTypes( Collections.singletonList( new Preference<MediaType>( MediaType.APPLICATION_JSON ) ) );
       client.setClientInfo( info );
       client.setNext( this.client );
+      client.getConditions().setUnmodifiedSince( lastModified );
       int tries = 3;
       while (true)
       {
@@ -285,6 +295,9 @@ public class CommandQueryClient
                throw new ResourceException( client.getStatus() );
             } else
             {
+               // Reset modification date
+               lastModified = null;
+
                try
                {
                   responseHandler.handleResponse( client.getResponse() );
@@ -336,6 +349,9 @@ public class CommandQueryClient
                throw new ResourceException( client.getStatus() );
             } else
             {
+               // Reset modification date
+               lastModified = null;
+
                try
                {
                   responseHandler.handleResponse( client.getResponse() );

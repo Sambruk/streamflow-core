@@ -21,9 +21,13 @@ import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.exception.ResourceNotFoundException;
+import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.Value;
 import org.qi4j.api.value.ValueComposite;
+import org.qi4j.spi.Qi4jSPI;
 import org.qi4j.spi.value.ValueDescriptor;
 import org.restlet.Request;
 import org.restlet.Response;
@@ -44,6 +48,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
 import java.net.URL;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
@@ -53,6 +58,12 @@ import java.util.Properties;
 public class DefaultResponseWriterFactory
       implements ResponseWriterFactory
 {
+   @Structure
+   UnitOfWorkFactory uowf;
+
+   @Structure
+   Qi4jSPI spi;
+
    VelocityEngine velocity;
 
    @Service
@@ -114,7 +125,7 @@ public class DefaultResponseWriterFactory
             return new RepresentationResponseWriter( variant );
          } else if (variant.getMediaType().equals( MediaType.APPLICATION_JSON ) && Value.class.isAssignableFrom( resultType ))
          {
-            return new JsonResponseWriter( variant );
+            return new JsonResponseWriter( variant, roleMap );
          } else if (ValueDescriptor.class.equals(resultType))
          {
             return new VelocityResponseWriter( formHtmlTemplate, roleMap, variant );
@@ -274,18 +285,29 @@ public class DefaultResponseWriterFactory
    private class JsonResponseWriter implements ResponseWriter
    {
       private Variant variant;
+      public Date lastModified;
 
-      public JsonResponseWriter( Variant variant )
+      public JsonResponseWriter( Variant variant, RoleMap roleMap )
       {
          this.variant = variant;
+
+         EntityComposite entity = roleMap.get( EntityComposite.class );
+         if (entity != null)
+         {
+            lastModified = new Date(spi.getEntityState( entity ).lastModified());
+         }
       }
 
       public void write( Object result, Request request, Response response ) throws ResourceException
       {
-         response.setEntity( new StringRepresentation( ((Value) result).toJSON(),
+         StringRepresentation representation = new StringRepresentation( ((Value) result).toJSON(),
                MediaType.APPLICATION_JSON,
                variant.getLanguages().get( 0 ),
-               variant.getCharacterSet() ));
+               variant.getCharacterSet() );
+
+         representation.setModificationDate( lastModified );
+
+         response.setEntity( representation );
          response.setStatus( Status.SUCCESS_OK );
       }
    }
