@@ -19,7 +19,6 @@ package se.streamsource.streamflow.client.ui.caze;
 
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
-import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.RegexPatternFormatter;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
@@ -108,7 +107,7 @@ public class TextFieldPanel
       componentName.append( title() );
       if (Strings.notEmpty( fieldValue.hint().get() ))
       {
-         componentName.append( " <font color='#778899'>(" + fieldValue.hint().get() + ")</font>" );
+         componentName.append( " <font color='#778899'>(" ).append( fieldValue.hint().get() ).append( ")</font>" );
       }
 
       if (mandatory())

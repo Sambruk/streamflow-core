@@ -21,11 +21,8 @@ import org.jdesktop.swingx.JXDatePicker;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.util.DateFunctions;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
-import se.streamsource.streamflow.domain.form.ComboBoxFieldValue;
 import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
-import se.streamsource.streamflow.domain.form.FieldValue;
 
-import javax.swing.JComboBox;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
