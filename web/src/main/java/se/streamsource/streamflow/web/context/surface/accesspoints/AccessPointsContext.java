@@ -29,6 +29,7 @@ import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.infrastructure.application.TitledLinksBuilder;
 import se.streamsource.streamflow.web.domain.entity.organization.AccessPointEntity;
+import se.streamsource.streamflow.web.domain.structure.form.SelectedForms;
 import se.streamsource.streamflow.web.domain.structure.organization.AccessPoint;
 import se.streamsource.streamflow.web.domain.structure.organization.AccessPoints;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
@@ -87,8 +88,14 @@ public interface AccessPointsContext
             AccessPointEntity entity = (AccessPointEntity) accessPoint;
             if ( entity.identity().get().equals( id ) )
             {
+               // accesspoint is valid if it has at least one form
                roleMap.set( accessPoint );
-               return subContext( AccessPointContext.class);
+               SelectedForms.Data forms = roleMap.get( SelectedForms.Data.class );
+               if ( forms.selectedForms().count() > 0 )
+               {
+                  return subContext( AccessPointContext.class);
+               }
+               throw new ContextNotFoundException();
             }
          }
          throw new ContextNotFoundException();
