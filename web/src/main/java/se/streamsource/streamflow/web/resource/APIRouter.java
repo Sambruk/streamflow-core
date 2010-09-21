@@ -43,6 +43,7 @@ import org.slf4j.LoggerFactory;
 import se.streamsource.dci.restlet.server.CommandQueryRestlet;
 import se.streamsource.dci.restlet.server.ResourceFinder;
 import se.streamsource.streamflow.web.resource.admin.ConsoleServerResource;
+import se.streamsource.streamflow.web.resource.admin.SolrSearchServerResource;
 import se.streamsource.streamflow.web.resource.events.DomainEventsServerResource;
 
 /**
@@ -77,6 +78,7 @@ public class APIRouter
       adminRouter.attach( "/query", createServerResourceFinder( SPARQLResource.class ), Template.MODE_STARTS_WITH );
       adminRouter.attach( "/index", createServerResourceFinder( IndexResource.class ) );
       adminRouter.attach( "/console", createServerResourceFinder( ConsoleServerResource.class ) );
+      adminRouter.attach( "/search", createServerResourceFinder( SolrSearchServerResource.class ) );
       attach( "/admin", new ExtensionMediaTypeFilter( getContext(), adminRouter ) );
 
 

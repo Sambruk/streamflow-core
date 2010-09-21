@@ -259,6 +259,19 @@
             </analyzer>
         </fieldType>
 
+        <fieldType name="phone" class="solr.TextField" positionIncrementGap="100">
+            <analyzer type="index">
+                <tokenizer class="se.streamsource.streamflow.web.infrastructure.index.SingleTokenTokenizerFactory"/>
+                <filter class="solr.WordDelimiterFilterFactory" generateWordParts="0" generateNumberParts="0"
+                        catenateWords="1" catenateNumbers="1" catenateAll="0" splitOnCaseChange="0"/>
+            </analyzer>
+            <analyzer type="query">
+                <tokenizer class="se.streamsource.streamflow.web.infrastructure.index.SingleTokenTokenizerFactory"/>
+                <filter class="solr.WordDelimiterFilterFactory" generateWordParts="0" generateNumberParts="0"
+                        catenateWords="1" catenateNumbers="1" catenateAll="0" splitOnCaseChange="0"/>
+            </analyzer>
+        </fieldType>
+
 
         <!-- Less flexible matching, but less false matches.  Probably not ideal for product names,
 but may be good for SKUs.  Can insert dashes in the wrong place and still match. -->
@@ -444,7 +457,7 @@ any data added to them will be ignored outright.  -->
         <field name="lastModified" type="date" indexed="true" stored="true" required="true"/>
         <field name="type" type="string" indexed="true" stored="true" required="true"/>
 
-        <field name="description" type="text" indexed="true" stored="true"/>
+        <field name="description" type="text" indexed="true" stored="true" multiValued="true"/>
         <field name="description_for_sort" type="string"/>
 
         <field name="note" type="text" indexed="true" stored="true" multiValued="true"/>
@@ -454,7 +467,7 @@ any data added to them will be ignored outright.  -->
         <field name="contactId" type="string" indexed="true" stored="true" multiValued="true"/>
         <field name="name" type="textgen" indexed="true" stored="true" multiValued="true"/>
         <field name="phoneNumbers" type="json" indexed="false" stored="false"/>
-        <field name="phoneNumber" type="string" indexed="true" stored="true" multiValued="true"/>
+        <field name="phoneNumber" type="phone" indexed="true" stored="true" multiValued="true"/>
         <field name="emailAddresses" type="json" indexed="false" stored="false"/>
         <field name="emailAddress" type="string" indexed="true" stored="true" multiValued="true"/>
         <field name="addresses" type="json" indexed="false" stored="false"/>

@@ -31,11 +31,10 @@ import org.restlet.security.ChallengeAuthenticator;
 import se.streamsource.dci.restlet.server.DCIAssembler;
 import se.streamsource.dci.restlet.server.DefaultResponseWriterFactory;
 import se.streamsource.dci.restlet.server.ResourceFinder;
-import se.streamsource.streamflow.web.infrastructure.caching.CachingServiceComposite;
 import se.streamsource.streamflow.web.resource.APIRouter;
-import se.streamsource.streamflow.web.resource.EventsCommandResult;
 import se.streamsource.streamflow.web.resource.StreamflowRootContextFactory;
 import se.streamsource.streamflow.web.resource.admin.ConsoleServerResource;
+import se.streamsource.streamflow.web.resource.admin.SolrSearchServerResource;
 import se.streamsource.streamflow.web.resource.events.DomainEventsServerResource;
 import se.streamsource.streamflow.web.rest.StreamflowRestApplication;
 
@@ -80,7 +79,8 @@ public class WebAssembler
             DomainEventsServerResource.class,
 
             // Admin
-            ConsoleServerResource.class
+            ConsoleServerResource.class,
+            SolrSearchServerResource.class
       );
    }
 }

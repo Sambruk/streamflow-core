@@ -25,6 +25,6 @@ import org.qi4j.spi.query.NamedEntityFinder;
 
 @Mixins({SolrEntityIndexerMixin.class, SolrEntityQueryMixin.class})
 public interface SolrQueryService
-   extends NamedEntityFinder, StateChangeListener, ServiceComposite, Activatable
+   extends NamedEntityFinder, StateChangeListener, SolrSearch, ServiceComposite, Activatable
 {
 }

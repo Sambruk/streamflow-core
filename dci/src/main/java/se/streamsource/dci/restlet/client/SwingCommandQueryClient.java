@@ -20,6 +20,7 @@ package se.streamsource.dci.restlet.client;
 import org.qi4j.api.value.ValueComposite;
 import org.restlet.resource.ResourceException;
 
+import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
 /**
@@ -36,7 +37,19 @@ public class SwingCommandQueryClient
          @Override
          protected Object doInBackground() throws Exception
          {
-            SwingCommandQueryClient.super.putCommand( operation, command );
+            try
+            {
+               SwingCommandQueryClient.super.putCommand( operation, command );
+            } catch (final ResourceException e)
+            {
+               SwingUtilities.invokeLater( new Runnable()
+               {
+                  public void run()
+                  {
+                     throw e;
+                  }
+               });
+            }
             return null;
          }
       };

@@ -37,7 +37,7 @@ import java.util.List;
 import java.util.Map;
 
 public class SolrEntityQueryMixin
-      implements NamedEntityFinder
+      implements NamedEntityFinder, SolrSearch
 {
    @Service
    private EmbeddedSolrService solr;
@@ -51,7 +51,8 @@ public class SolrEntityQueryMixin
 
          NamedList list = new NamedList();
 
-         list.add( "q", queryDescriptor.compose(variables, orderBySegments, firstResult, maxResults));
+         String queryString = queryDescriptor.compose( variables, orderBySegments, firstResult, maxResults );
+         list.add( "q", queryString );
          list.add( "rows", maxResults != 0 ? maxResults : 10000 );
          list.add( "start", firstResult );
 
@@ -90,6 +91,19 @@ public class SolrEntityQueryMixin
    public long countEntities( NamedQueryDescriptor name, String resultType, @Optional Map<String, Object> variables ) throws EntityFinderException
    {
       return 0;
+   }
+
+   public SolrDocumentList search(String queryString) throws SolrServerException
+   {
+      SolrServer server = solr.getSolrServer();
+
+      NamedList list = new NamedList();
+
+      list.add( "q", queryString );
+
+      QueryResponse query = server.query( SolrParams.toSolrParams( list ) );
+      SolrDocumentList results = query.getResults();
+      return results;
    }
 
    public String showQuery( NamedQueryDescriptor namedQueryDescriptor )
