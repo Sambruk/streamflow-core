@@ -94,4 +94,15 @@ public class ContactLookupResultFieldsValueModel extends AbstractTableModel
    {
       return columnNames[i];
    }
+
+   public ContactValue getContactValueAt( int index )
+   {
+      try
+      {
+         return effectiveFields.get( index );
+      } catch (IndexOutOfBoundsException e)
+      {
+         return null;
+      }
+   }
 }

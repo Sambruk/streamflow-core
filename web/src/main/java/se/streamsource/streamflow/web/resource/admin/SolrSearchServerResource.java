@@ -1,15 +1,18 @@
-/*
- * Copyright (c) 2010, Rickard Öberg. All Rights Reserved.
+/**
+ *
+ * Copyright 2009-2010 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package se.streamsource.streamflow.web.resource.admin;
@@ -40,7 +43,7 @@ import java.util.Map;
  * JAVADOC
  */
 public class SolrSearchServerResource
-   extends ServerResource
+      extends ServerResource
 {
    @Service
    SolrSearch search;
@@ -67,7 +70,7 @@ public class SolrSearchServerResource
                   ConsoleServerResource.class );
             String content = TemplateUtil.eval( template,
                   "$search", "",
-                  "$out", "");
+                  "$out", "" );
             return new StringRepresentation( content, MediaType.TEXT_HTML, null, CharacterSet.UTF_8 );
          } catch (IOException e)
          {
@@ -94,9 +97,9 @@ public class SolrSearchServerResource
          {
             for (Map.Entry<String, Object> stringObjectEntry : solrDocument)
             {
-               resultString+= stringObjectEntry.getKey()+"="+stringObjectEntry.getValue()+"\n";
+               resultString += stringObjectEntry.getKey() + "=" + stringObjectEntry.getValue() + "\n";
             }
-            resultString+="\n";
+            resultString += "\n";
          }
          resultString += "</pre>";
 
@@ -104,7 +107,7 @@ public class SolrSearchServerResource
                ConsoleServerResource.class );
          String content = TemplateUtil.eval( template,
                "$search", searchString,
-               "$out", resultString);
+               "$out", resultString );
          return new StringRepresentation( content, MediaType.TEXT_HTML, null, CharacterSet.UTF_8 );
       } catch (Exception e)
       {

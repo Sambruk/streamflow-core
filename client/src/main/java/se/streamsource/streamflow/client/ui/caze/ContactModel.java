@@ -83,7 +83,7 @@ public class ContactModel
    {
       ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
       builder.prototype().string().set( newId );
-      client.putCommand("changecontactid", builder.newInstance() );
+      client.putCommand( "changecontactid", builder.newInstance() );
    }
 
    public void changeCompany( String newCompany ) throws ResourceException
@@ -114,8 +114,8 @@ public class ContactModel
       client.putCommand( "changeemailaddress", builder.newInstance() );
    }
 
-   public ContactsDTO searchContacts() throws ResourceException
+   public ContactsDTO searchContacts( ContactValue query ) throws ResourceException
    {
-      return client.query( "searchcontacts", ContactsDTO.class );
+      return client.query( "searchcontacts", query, ContactsDTO.class );
    }
 }

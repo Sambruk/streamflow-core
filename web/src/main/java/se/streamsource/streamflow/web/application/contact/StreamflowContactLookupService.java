@@ -25,6 +25,7 @@ import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
+import se.streamsource.streamflow.domain.contact.ContactAddressValue;
 import se.streamsource.streamflow.server.plugin.contact.ContactEmailValue;
 import se.streamsource.streamflow.server.plugin.contact.ContactList;
 import se.streamsource.streamflow.server.plugin.contact.ContactLookup;
@@ -101,16 +102,69 @@ public interface StreamflowContactLookupService
             Query<Contacts.Data> cases = qbf
                   .newNamedQuery( Contacts.Data.class, uowf.currentUnitOfWork(), "solrquery" ).setVariable( "query", queryString.toString() );
 
+
+            se.streamsource.streamflow.domain.contact.ContactValue contactSearchCriteria = vbf.newValueFromJSON( se.streamsource.streamflow.domain.contact.ContactValue.class, contactTemplate.toJSON() );
             for (Contacts.Data contact : cases)
             {
                for (se.streamsource.streamflow.domain.contact.ContactValue contactValue : contact.contacts().get())
                {
-                  // Todo Filter the contact that belongs to the current case 
-                  listBuilder.prototype().contacts().get().add( vbf.newValueFromJSON( ContactValue.class, contactValue.toJSON() ) );
+                  if (!contactValue.equals( contactSearchCriteria ))
+                  {
+                     boolean matched = true;
+                     if (contact.contacts().get().size() > 1)
+                     {
+                        matched = matchSearchResultWithQuery( contactSearchCriteria, contactValue );
+                     }
+                     if (matched)
+                     {
+                        listBuilder.prototype().contacts().get().add( vbf.newValueFromJSON( ContactValue.class, contactValue.toJSON() ) );
+                     }
+                  }
                }
             }
          }
          return listBuilder.newInstance();
+      }
+
+      private boolean matchSearchResultWithQuery( se.streamsource.streamflow.domain.contact.ContactValue criteria, se.streamsource.streamflow.domain.contact.ContactValue result )
+      {
+         if (!criteria.name().get().isEmpty() && result.name().get().toLowerCase().contains( criteria.name().get().toLowerCase() ))
+         {
+            return true;
+         }
+
+         if (!criteria.phoneNumbers().get().isEmpty())
+         {
+            for (se.streamsource.streamflow.domain.contact.ContactPhoneValue phone : result.phoneNumbers().get())
+            {
+               if (!criteria.phoneNumbers().get().get( 0 ).phoneNumber().get().isEmpty() && phone.phoneNumber().get().contains( criteria.phoneNumbers().get().get( 0 ).phoneNumber().get() ))
+                  return true;
+            }
+         }
+
+         if (!criteria.addresses().get().isEmpty())
+         {
+            for (ContactAddressValue address : result.addresses().get())
+            {
+               if (!criteria.addresses().get().get( 0 ).address().get().isEmpty() && address.address().get().toLowerCase().contains( criteria.addresses().get().get( 0 ).address().get().toLowerCase() ))
+                  return true;
+            }
+         }
+
+         if (!criteria.emailAddresses().get().isEmpty())
+         {
+            for (se.streamsource.streamflow.domain.contact.ContactEmailValue email : result.emailAddresses().get())
+            {
+               if (!criteria.emailAddresses().get().get( 0 ).emailAddress().get().isEmpty() && email.emailAddress().get().toLowerCase().contains( criteria.emailAddresses().get().get( 0 ).emailAddress().get().toLowerCase() ))
+                  return true;
+            }
+         }
+
+         if (!criteria.contactId().get().isEmpty() && result.contactId().get().toLowerCase().contains( criteria.contactId().get().toLowerCase() ))
+         {
+            return true;
+         }
+         return false;
       }
    }
 }

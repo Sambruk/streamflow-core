@@ -26,28 +26,32 @@ import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.domain.contact.ContactValue;
 
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.util.List;
 
 public class ContactLookupResultDialog extends JPanel
 {
-   public JXTable contactList;
+   public JXTable contactTable;
+
+   private ContactValue selectedContact;
 
    public ContactLookupResultDialog( @Service ApplicationContext context, @Uses List<ContactValue> contacts )
    {
-      contactList = new JXTable();
-      contactList.setModel( new ContactLookupResultFieldsValueModel( contacts ) );
+      contactTable = new JXTable();
+      contactTable.setModel( new ContactLookupResultFieldsValueModel( contacts ) );
+      contactTable.setPreferredScrollableViewportSize( new Dimension( 400, 120 ) );
 
       setLayout( new BorderLayout() );
       setActionMap( context.getActionMap( this ) );
 
-      add( contactList, BorderLayout.CENTER );
+      add( new JScrollPane( contactTable ), BorderLayout.CENTER );
    }
 
    @Action
    public void execute()
    {
-      // TODO Get the selected Contact from the Table
 
       WindowUtils.findWindow( this ).dispose();
    }
@@ -56,5 +60,14 @@ public class ContactLookupResultDialog extends JPanel
    public void close()
    {
       WindowUtils.findWindow( this ).dispose();
+   }
+
+   public ContactValue getSelectedContact()
+   {
+      int selectedRow = contactTable.getSelectedRow();
+      if (selectedRow == -1)
+         return null;
+      else
+         return ((ContactLookupResultFieldsValueModel) contactTable.getModel()).getContactValueAt( contactTable.getSelectedRow() );
    }
 }

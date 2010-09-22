@@ -48,6 +48,8 @@ public enum CaseResources
    could_not_change_multiple,
    could_not_change_comment,
    could_not_update_field,
+   could_not_find_contacts,
+   could_not_find_search_criteria,
 
    // Case statuses
    case_status_open_icon,

@@ -30,11 +30,13 @@ import org.qi4j.api.object.ObjectBuilder;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.ui.InfoDialog;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.domain.contact.ContactAddressValue;
 import se.streamsource.streamflow.domain.contact.ContactEmailValue;
@@ -43,11 +45,13 @@ import se.streamsource.streamflow.domain.contact.ContactValue;
 import se.streamsource.streamflow.resource.caze.ContactsDTO;
 
 import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import java.awt.CardLayout;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -66,6 +70,9 @@ public class ContactView
    @Uses
    protected ObjectBuilder<ContactLookupResultDialog> contactLookupResultDialog;
 
+   @Structure
+   ValueBuilderFactory vbf;
+
    private StateBinder contactBinder;
    private StateBinder phoneNumberBinder;
    private StateBinder emailBinder;
@@ -73,18 +80,23 @@ public class ContactView
 
    ContactModel model;
 
-   public ValueBuilder<ContactValue> valueBuilder;
    private CardLayout layout = new CardLayout();
-   JTextField defaultFocusField;
    public JPanel form;
-   public JTextField addressField = (JTextField) TEXTFIELD.newField();
-   public JTextField phoneField = (JTextField) TEXTFIELD.newField();
+   private JTextField defaultFocusField;
+   private JTextField addressField = (JTextField) TEXTFIELD.newField();
+   private JTextField phoneField = (JTextField) TEXTFIELD.newField();
+   private JTextField emailField = (JTextField) TEXTFIELD.newField();
+   private JTextField contactIdField = (JTextField) TEXTFIELD.newField();
+   private JTextField companyField = (JTextField) TEXTFIELD.newField();
+
+   private ApplicationContext context;
 
    public ContactView( @Service ApplicationContext appContext, @Structure ObjectBuilderFactory obf )
    {
       setLayout( layout );
 
-      setActionMap( appContext.getActionMap( this ) );
+      context = appContext;
+      setActionMap( context.getActionMap( this ) );
       FormLayout formLayout = new FormLayout(
             "70dlu, 5dlu, 150dlu:grow",
             "pref, pref, pref, pref, pref, pref, 5dlu, top:70dlu:grow, pref, pref" );
@@ -97,19 +109,19 @@ public class ContactView
       DefaultFormBuilder builder = new DefaultFormBuilder( formLayout, form );
 
       contactBinder = obf.newObject( StateBinder.class );
-      contactBinder.setResourceMap( appContext.getResourceMap( getClass() ) );
+      contactBinder.setResourceMap( context.getResourceMap( getClass() ) );
       ContactValue template = contactBinder.bindingTemplate( ContactValue.class );
 
       phoneNumberBinder = obf.newObject( StateBinder.class );
-      phoneNumberBinder.setResourceMap( appContext.getResourceMap( getClass() ) );
+      phoneNumberBinder.setResourceMap( context.getResourceMap( getClass() ) );
       ContactPhoneValue phoneTemplate = phoneNumberBinder.bindingTemplate( ContactPhoneValue.class );
 
       addressBinder = obf.newObject( StateBinder.class );
-      addressBinder.setResourceMap( appContext.getResourceMap( getClass() ) );
+      addressBinder.setResourceMap( context.getResourceMap( getClass() ) );
       ContactAddressValue addressTemplate = addressBinder.bindingTemplate( ContactAddressValue.class );
 
       emailBinder = obf.newObject( StateBinder.class );
-      emailBinder.setResourceMap( appContext.getResourceMap( getClass() ) );
+      emailBinder.setResourceMap( context.getResourceMap( getClass() ) );
       ContactEmailValue emailTemplate = emailBinder.bindingTemplate( ContactEmailValue.class );
 
       builder.add( new JLabel( i18n.text( WorkspaceResources.name_label ) ) );
@@ -126,24 +138,24 @@ public class ContactView
       builder.nextLine();
       builder.add( new JLabel( i18n.text( WorkspaceResources.email_label ) ) );
       builder.nextColumn( 2 );
-      builder.add( emailBinder.bind( TEXTFIELD.newField(), emailTemplate.emailAddress() ) );
+      builder.add( emailBinder.bind( emailField, emailTemplate.emailAddress() ) );
       builder.nextLine();
       builder.add( new JLabel( i18n.text( WorkspaceResources.contact_id_label ) ) );
       builder.nextColumn( 2 );
-      builder.add( contactBinder.bind( TEXTFIELD.newField(), template.contactId() ) );
+      builder.add( contactBinder.bind( contactIdField, template.contactId() ) );
       builder.nextLine();
       builder.add( new JLabel( i18n.text( WorkspaceResources.company_label ) ) );
       builder.nextColumn( 2 );
-      builder.add( contactBinder.bind( TEXTFIELD.newField(), template.company() ) );
+      builder.add( contactBinder.bind( companyField, template.company() ) );
       builder.nextLine( 2 );
       builder.add( new JLabel( i18n.text( WorkspaceResources.note_label ) ) );
       builder.nextColumn( 2 );
       builder.add( contactBinder.bind( TEXTAREA.newField(), template.note() ) );
 
-//      builder.nextLine(2);
-//      builder.add(new JLabel(i18n.text(WorkspaceResources.lookup_contact_label )));
-//      builder.nextColumn(2);
-//      builder.add(new JButton(getActionMap().get( "lookupContact" )) );
+      builder.nextLine( 2 );
+      builder.add( new JLabel( i18n.text( WorkspaceResources.lookup_contact_label ) ) );
+      builder.nextColumn( 2 );
+      builder.add( new JButton( getActionMap().get( "lookupContact" ) ) );
 
       contactBinder.addObserver( this );
       phoneNumberBinder.addObserver( this );
@@ -249,52 +261,129 @@ public class ContactView
    {
       try
       {
-         ContactsDTO contacts = model.searchContacts();
+         ContactValue query = createContactQuery();
 
-         if (contacts.contacts().get().isEmpty())
+         ContactValue emptyCriteria = vbf.newValueBuilder( ContactValue.class ).newInstance();
+         if (emptyCriteria.equals( query ))
          {
-            // TODO Display message telling the user tha now contacts were found
+            String msg = i18n.text( CaseResources.could_not_find_search_criteria );
+            dialogs.showOkDialog( this, new InfoDialog( context, msg ), "Info" );
+
          } else
          {
 
-            ContactLookupResultDialog dialog = contactLookupResultDialog.use(
-                  contacts.contacts().get() ).newInstance();
-            dialogs.showOkCancelHelpDialog( WindowUtils.findWindow( this ), dialog, i18n.text( WorkspaceResources.contacts_tab ) );
+            ContactsDTO contacts = model.searchContacts( query );
 
-            // Todo Get the selected Contact from the Table and update the GUI.
+            if (contacts.contacts().get().isEmpty())
+            {
+               String msg = i18n.text( CaseResources.could_not_find_contacts );
+               dialogs.showOkDialog( this, new InfoDialog( context, msg ), "Info" );
+            } else
+            {
+
+               ContactLookupResultDialog dialog = contactLookupResultDialog.use(
+                     contacts.contacts().get() ).newInstance();
+               dialogs.showOkCancelHelpDialog( WindowUtils.findWindow( this ), dialog, i18n.text( WorkspaceResources.contacts_tab ) );
+
+               ContactValue contactValue = dialog.getSelectedContact();
+
+               if (contactValue != null)
+               {
+                  if (defaultFocusField.getText().equals( "" ) && !contactValue.name().get().equals( "" ))
+                  {
+                     model.changeName( contactValue.name().get() );
+                     defaultFocusField.setText( contactValue.name().get() );
+                  }
+
+                  for (ContactPhoneValue contactPhoneValue : contactValue.phoneNumbers().get())
+                  {
+                     if (!contactPhoneValue.phoneNumber().get().equals( "" ) && model.getPhoneNumber().phoneNumber().get().equals( "" ))
+                     {
+                        model.changePhoneNumber( contactPhoneValue.phoneNumber().get() );
+                        phoneField.setText( contactPhoneValue.phoneNumber().get() );
+                     }
+                  }
+
+                  List<ContactAddressValue> addressValues = contactValue.addresses().get();
+                  for (ContactAddressValue addressValue : addressValues)
+                  {
+                     if (!addressValue.address().get().equals( "" ) && model.getAddress().address().get().equals( "" ))
+                     {
+                        model.changeAddress( addressValue.address().get() );
+                        addressField.setText( addressValue.address().get() );
+                     }
+                  }
+
+                  List<ContactEmailValue> emailValues = contactValue.emailAddresses().get();
+                  for (ContactEmailValue emailValue : emailValues)
+                  {
+                     if (!emailValue.emailAddress().get().equals( "" ) && model.getEmailAddress().emailAddress().get().equals( "" ))
+                     {
+                        model.changeEmailAddress( emailValue.emailAddress().get() );
+                        emailField.setText( emailValue.emailAddress().get() );
+                     }
+                  }
+
+                  if (contactIdField.getText().equals( "" ) && !contactValue.contactId().get().equals( "" ))
+                  {
+                     model.changeContactId( contactValue.contactId().get() );
+                     contactIdField.setText( contactValue.contactId().get() );
+                  }
+
+                  if (companyField.getText().equals( "" ) && !contactValue.company().get().equals( "" ))
+                  {
+                     model.changeCompany( contactValue.company().get() );
+                     companyField.setText( contactValue.company().get() );
+                  }
+               }
+            }
          }
-         /*
-         for (ContactValue contactValue : contacts.contacts().get())
-         {
-            if (defaultFocusField.getText().equals("") && !contactValue.name().get().equals(""))
-            {
-               model.changeName( contactValue.name().get() );
-               defaultFocusField.setText( contactValue.name().get() );
-            }
-
-            for (ContactPhoneValue contactPhoneValue : contactValue.phoneNumbers().get())
-            {
-               if (!contactPhoneValue.phoneNumber().get().equals("") && model.getPhoneNumber().phoneNumber().get().equals(""))
-               {
-                  model.changePhoneNumber( contactPhoneValue.phoneNumber().get() );
-                  phoneField.setText( contactPhoneValue.phoneNumber().get() );
-               }
-            }
-
-            List<ContactAddressValue> addressValues = contactValue.addresses().get();
-            for (ContactAddressValue addressValue : addressValues)
-            {
-               if (!addressValue.address().get().equals("") && model.getAddress().address().get().equals(""))
-               {
-                  model.changeAddress( addressValue.address().get() );
-                  addressField.setText( addressValue.address().get() );
-               }
-            }
-         }      */
 
       } catch (ResourceException e)
       {
          e.printStackTrace();
       }
+   }
+
+   private ContactValue createContactQuery()
+   {
+      ValueBuilder<ContactValue> contactBuilder = vbf.newValueBuilder( ContactValue.class );
+
+      if (!defaultFocusField.getText().isEmpty())
+      {
+         contactBuilder.prototype().name().set( defaultFocusField.getText() );
+      }
+
+      if (!phoneField.getText().isEmpty())
+      {
+         ValueBuilder<ContactPhoneValue> builder = vbf.newValueBuilder( ContactPhoneValue.class );
+         builder.prototype().phoneNumber().set( phoneField.getText() );
+         contactBuilder.prototype().phoneNumbers().get().add( builder.newInstance() );
+      }
+
+      if (!addressField.getText().isEmpty())
+      {
+         ValueBuilder<ContactAddressValue> builder = vbf.newValueBuilder( ContactAddressValue.class );
+         builder.prototype().address().set( addressField.getText() );
+         contactBuilder.prototype().addresses().get().add( builder.newInstance() );
+      }
+
+      if (!emailField.getText().isEmpty())
+      {
+         ValueBuilder<ContactEmailValue> builder = vbf.newValueBuilder( ContactEmailValue.class );
+         builder.prototype().emailAddress().set( emailField.getText() );
+         contactBuilder.prototype().emailAddresses().get().add( builder.newInstance() );
+      }
+
+      if (!contactIdField.getText().isEmpty())
+      {
+         contactBuilder.prototype().contactId().set( contactIdField.getText() );
+      }
+
+      if (!companyField.getText().isEmpty())
+      {
+         contactBuilder.prototype().contactId().set( contactIdField.getText() );
+      }
+      return contactBuilder.newInstance();
    }
 }
