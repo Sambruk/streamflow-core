@@ -109,7 +109,7 @@ public class TransactionNotificationConcern
       return event;
    }
 
-   protected long getCurrentTimestamp()
+   protected synchronized long getCurrentTimestamp()
    {
       long timestamp = time.timeNow();
       if (timestamp <= lastTimestamp)
