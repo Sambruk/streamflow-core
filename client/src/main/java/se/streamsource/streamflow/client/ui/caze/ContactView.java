@@ -50,7 +50,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
-import java.awt.CardLayout;
+import java.awt.*;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
@@ -155,7 +155,9 @@ public class ContactView
       builder.nextLine( 2 );
       builder.add( new JLabel( i18n.text( WorkspaceResources.lookup_contact_label ) ) );
       builder.nextColumn( 2 );
-      builder.add( new JButton( getActionMap().get( "lookupContact" ) ) );
+      JPanel lookupPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+      lookupPanel.add( new JButton( getActionMap().get( "lookupContact" ) )  );
+      builder.add( lookupPanel );
 
       contactBinder.addObserver( this );
       phoneNumberBinder.addObserver( this );
