@@ -41,6 +41,7 @@ import org.qi4j.migration.assembly.EntityMigrationOperation;
 import org.qi4j.migration.assembly.MigrationBuilder;
 import org.qi4j.spi.service.importer.NewObjectImporter;
 import org.qi4j.spi.uuid.UuidIdentityGeneratorService;
+import se.streamsource.dci.restlet.client.SwingCommandQueryClient;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.factory.DomainEventFactoryService;
@@ -87,6 +88,10 @@ public class InfrastructureAssembler
 
    private void plugins( ModuleAssembly moduleAssembly ) throws AssemblyException
    {
+
+      moduleAssembly.addObjects( SwingCommandQueryClient.class
+      ).visibleIn( Visibility.module );
+
       moduleAssembly.addServices( ContactLookupService.class ).
             identifiedBy( "contactlookup" ).
             visibleIn( Visibility.application ).
@@ -97,6 +102,8 @@ public class InfrastructureAssembler
             ContactAddressValue.class,
             ContactEmailValue.class,
             ContactPhoneValue.class ).visibleIn( Visibility.application );
+
+
    }
 
    private void caching( ModuleAssembly moduleAssembly ) throws AssemblyException

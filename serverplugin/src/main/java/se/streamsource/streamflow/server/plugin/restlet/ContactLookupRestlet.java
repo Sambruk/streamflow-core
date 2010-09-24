@@ -17,10 +17,20 @@
 
 package se.streamsource.streamflow.server.plugin.restlet;
 
+import org.json.JSONException;
 import org.qi4j.api.common.Optional;
+import org.qi4j.api.common.QualifiedName;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.property.StateHolder;
+import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
+import org.qi4j.api.value.ValueComposite;
+import org.qi4j.spi.Qi4jSPI;
+import org.qi4j.spi.property.PropertyType;
+import org.qi4j.spi.structure.ModuleSPI;
+import org.qi4j.spi.value.ValueDescriptor;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
@@ -29,6 +39,7 @@ import org.restlet.data.Form;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
+import org.restlet.data.Parameter;
 import org.restlet.data.Status;
 import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.StringRepresentation;
@@ -49,6 +60,12 @@ public class ContactLookupRestlet
    @Structure
    ValueBuilderFactory vbf;
 
+   @Structure
+   private Qi4jSPI spi;
+
+   @Structure
+   private ModuleSPI module;
+
    @Override
    public void handle( Request request, Response response )
    {
@@ -64,30 +81,27 @@ public class ContactLookupRestlet
 
          if (request.getMethod().equals( Method.GET ))
          {
-            response.setEntity( new InputRepresentation( getClass().getResourceAsStream( "contactform.html" ) ) );
-            response.setStatus( Status.SUCCESS_OK );
-         } else if (request.getMethod().equals( Method.POST ))
-         {
-            // Parse request
-            ContactValue contactTemplate;
-
-            if (request.getEntity().getMediaType().equals( MediaType.APPLICATION_JSON ))
+            if (request.getResourceRef().getQuery() == null || request.getResourceRef().getQuery().isEmpty())
             {
-               contactTemplate = vbf.newValueFromJSON( ContactValue.class, request.getEntityAsText() );
+               response.setEntity( new InputRepresentation( getClass().getResourceAsStream( "contactform.html" ) ) );
+               response.setStatus( Status.SUCCESS_OK );
             } else
             {
-               contactTemplate = vbf.newValueFromJSON( ContactValue.class, new Form( request.getEntity() ).getFirstValue( "template" ) );
+               // Parse request
+               ContactValue contactTemplate;
+
+               contactTemplate = (ContactValue) getValueFromForm( ContactValue.class, request.getResourceRef().getQueryAsForm() );
+
+               // Call plugin
+               ContactList lookups = contactLookup.lookup( contactTemplate );
+
+               // Send response
+               String json = lookups.toJSON();
+
+               StringRepresentation result = new StringRepresentation( json, MediaType.APPLICATION_JSON, Language.DEFAULT, CharacterSet.UTF_8 );
+               response.setStatus( Status.SUCCESS_OK );
+               response.setEntity( result );
             }
-
-            // Call plugin
-            ContactList lookups = contactLookup.lookup( contactTemplate );
-
-            // Send response
-            String json = lookups.toJSON();
-
-            StringRepresentation result = new StringRepresentation( json, MediaType.APPLICATION_JSON, Language.DEFAULT, CharacterSet.UTF_8 );
-            response.setStatus( Status.SUCCESS_OK );
-            response.setEntity( result );
          } else
          {
             response.setStatus( Status.CLIENT_ERROR_METHOD_NOT_ALLOWED );
@@ -96,5 +110,46 @@ public class ContactLookupRestlet
       {
          request.release();
       }
+   }
+
+   private ValueComposite getValueFromForm( Class<? extends ValueComposite> valueType, final Form asForm )
+   {
+      ValueBuilder<? extends ValueComposite> builder = vbf.newValueBuilder( valueType );
+      final ValueDescriptor descriptor = spi.getValueDescriptor( builder.prototype() );
+      builder.withState( new StateHolder()
+      {
+         public <T> Property<T> getProperty( QualifiedName name )
+         {
+            return null;
+         }
+
+         public <T> Property<T> getProperty( java.lang.reflect.Method propertyMethod )
+         {
+            return null;
+         }
+
+         public void visitProperties( StateVisitor visitor )
+         {
+            for (PropertyType propertyType : descriptor.valueType().types())
+            {
+               Parameter param = asForm.getFirst( propertyType.qualifiedName().name() );
+               if (param != null)
+               {
+                  String value = param.getValue();
+                  if (value == null)
+                     value = "";
+                  try
+                  {
+                     Object valueObject = propertyType.type().fromQueryParameter( value, module );
+                     visitor.visitProperty( propertyType.qualifiedName(), valueObject );
+                  } catch (JSONException e)
+                  {
+                     throw new IllegalArgumentException( "Query parameter has invalid JSON format", e );
+                  }
+               }
+            }
+         }
+      } );
+      return builder.newInstance();
    }
 }

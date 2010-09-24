@@ -75,7 +75,7 @@ public interface ContactContext
 
       @Optional
       @Service
-      ServiceReference<ContactLookup> contactLookup;
+      ServiceReference<ContactLookupService> contactLookup;
 
       public void delete()
       {

@@ -21,17 +21,17 @@ import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.value.ValueBuilderFactory;
-import org.restlet.data.CharacterSet;
-import org.restlet.data.Language;
-import org.restlet.data.MediaType;
-import org.restlet.representation.Representation;
-import org.restlet.representation.StringRepresentation;
-import org.restlet.resource.ClientResource;
+import org.restlet.Client;
+import org.restlet.data.Protocol;
+import org.restlet.data.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.dci.restlet.client.NullResponseHandler;
 import se.streamsource.streamflow.server.plugin.contact.ContactList;
 import se.streamsource.streamflow.server.plugin.contact.ContactLookup;
 import se.streamsource.streamflow.server.plugin.contact.ContactValue;
@@ -53,11 +53,25 @@ public interface ContactLookupService
       @Structure
       ValueBuilderFactory vbf;
 
+      @Structure
+      private ObjectBuilderFactory obf;
+
+      private CommandQueryClient cqc;
+
       Logger log = LoggerFactory.getLogger( ContactLookupService.class );
 
       public void activate() throws Exception
       {
          config.configuration();
+
+         if (config.configuration().enabled().get())
+         {
+            Reference serverRef = new Reference( config.configuration().url().get() );
+            Client client = new Client( Protocol.HTTP );
+            client.start();
+
+            cqc = obf.newObjectBuilder( CommandQueryClient.class ).use( client, serverRef, new NullResponseHandler() ).newInstance();
+         }
       }
 
       public void passivate() throws Exception
@@ -68,16 +82,16 @@ public interface ContactLookupService
       {
          try
          {
-            ClientResource clientResource = new ClientResource( config.configuration().url().get() );
-
-            StringRepresentation post = new StringRepresentation( contactTemplate.toJSON(), MediaType.APPLICATION_JSON, Language.DEFAULT, CharacterSet.UTF_8 );
-
-            // Call plugin
-            Representation result = clientResource.post( post );
-
-            // Parse response
-            String json = result.getText();
-            return vbf.newValueFromJSON( ContactList.class, json );
+            return cqc.query( config.configuration().url().get(), contactTemplate, ContactList.class );
+//         ClientResource clientResource = new ClientResource( config.configuration().url().get() );
+//
+//         setQueryParameters( clientResource.getReference(), contactTemplate );
+//         // Call plugin
+//         Representation result = clientResource.get();
+//
+//         // Parse response
+//         String json = result.getText();
+//         return vbf.newValueFromJSON( ContactList.class, json );
          } catch (Exception e)
          {
             log.error( "Could not get contacts from plugin", e );
@@ -86,6 +100,5 @@ public interface ContactLookupService
             return vbf.newValue( ContactList.class );
          }
       }
-
    }
 }
