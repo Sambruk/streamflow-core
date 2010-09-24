@@ -75,6 +75,7 @@ import se.streamsource.streamflow.client.ui.administration.casetypes.forms.Field
 import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FieldEditorDateFieldValueView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FieldEditorListBoxFieldValueView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FieldEditorNumberFieldValueView;
+import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FieldEditorOpenSelectionFieldValueView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FieldEditorOptionButtonsFieldValueView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FieldEditorTextAreaFieldValueView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FieldEditorTextFieldValueView;
@@ -360,6 +361,7 @@ public class UIAssembler
             FieldEditorListBoxFieldValueView.class,
             FieldEditorNumberFieldValueView.class,
             FieldEditorOptionButtonsFieldValueView.class,
+            FieldEditorOpenSelectionFieldValueView.class, 
             FieldEditorTextAreaFieldValueView.class,
             FieldEditorTextFieldValueView.class );
 
