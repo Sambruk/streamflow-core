@@ -33,6 +33,7 @@ import se.streamsource.streamflow.domain.form.FieldValue;
 import se.streamsource.streamflow.domain.form.FormSubmissionValue;
 import se.streamsource.streamflow.domain.form.ListBoxFieldValue;
 import se.streamsource.streamflow.domain.form.NumberFieldValue;
+import se.streamsource.streamflow.domain.form.OpenSelectionFieldValue;
 import se.streamsource.streamflow.domain.form.OptionButtonsFieldValue;
 import se.streamsource.streamflow.domain.form.PageSubmissionValue;
 import se.streamsource.streamflow.domain.form.TextAreaFieldValue;
@@ -119,6 +120,9 @@ public interface FormSubmission
                   } else if ( value instanceof OptionButtonsFieldValue)
                   {
                      update = validate( (OptionButtonsFieldValue) value, newValue );
+                  } else if ( value instanceof OpenSelectionFieldValue)
+                  {
+                     update = validate( (OpenSelectionFieldValue) value, newValue );
                   } else if ( value instanceof TextAreaFieldValue)
                   {
                      update = validate( (TextAreaFieldValue) value, newValue );
@@ -137,6 +141,11 @@ public interface FormSubmission
             }
 
          }
+      }
+
+      private boolean validate( OpenSelectionFieldValue openSelectionFieldValue, String newValue )
+      {
+         return true;
       }
 
       private boolean validate( CheckboxesFieldValue definition, String value )

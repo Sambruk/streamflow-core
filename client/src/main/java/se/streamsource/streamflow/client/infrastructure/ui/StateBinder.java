@@ -38,6 +38,7 @@ import se.streamsource.streamflow.client.ui.caze.DatePanel;
 import se.streamsource.streamflow.client.ui.caze.DoublePanel;
 import se.streamsource.streamflow.client.ui.caze.IntegerPanel;
 import se.streamsource.streamflow.client.ui.caze.ListBoxPanel;
+import se.streamsource.streamflow.client.ui.caze.OpenSelectionPanel;
 import se.streamsource.streamflow.client.ui.caze.OptionButtonsPanel;
 import se.streamsource.streamflow.client.ui.caze.RemovableLabel;
 import se.streamsource.streamflow.client.ui.caze.TextAreaFieldPanel;
@@ -110,6 +111,7 @@ public class StateBinder
             DoublePanel.class,
             CheckboxesPanel.class,
             OptionButtonsPanel.class,
+            OpenSelectionPanel.class,
             ListBoxPanel.class,
             ComboBoxPanel.class,
             DatePanel.class,
@@ -121,9 +123,6 @@ public class StateBinder
             JCheckBox.class,
             JXDatePicker.class,
             JComboBox.class,
-            CheckboxesPanel.class,
-            ListBoxPanel.class,
-            OptionButtonsPanel.class,
             RemovableLabel.class );
 
       errorMessages = ResourceBundle.getBundle( getClass().getName() );

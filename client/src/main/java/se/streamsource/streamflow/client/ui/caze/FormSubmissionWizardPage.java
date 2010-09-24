@@ -52,6 +52,7 @@ import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
 import se.streamsource.streamflow.domain.form.FieldValue;
 import se.streamsource.streamflow.domain.form.ListBoxFieldValue;
 import se.streamsource.streamflow.domain.form.NumberFieldValue;
+import se.streamsource.streamflow.domain.form.OpenSelectionFieldValue;
 import se.streamsource.streamflow.domain.form.OptionButtonsFieldValue;
 import se.streamsource.streamflow.domain.form.PageSubmissionValue;
 import se.streamsource.streamflow.domain.form.TextAreaFieldValue;
@@ -255,6 +256,10 @@ public class FormSubmissionWizardPage
       {
          OptionButtonsFieldValue optionButtons = (OptionButtonsFieldValue) fieldValue;
          return obf.newObjectBuilder( OptionButtonsPanel.class ).use( field, optionButtons  ).newInstance();
+      } else if ( fieldValue instanceof OpenSelectionFieldValue )
+      {
+         OpenSelectionFieldValue openSelection = (OpenSelectionFieldValue) fieldValue;
+         return obf.newObjectBuilder( OpenSelectionPanel.class ).use( field, openSelection  ).newInstance();
       } else if ( fieldValue instanceof ListBoxFieldValue)
       {
          ListBoxFieldValue listBox = (ListBoxFieldValue) fieldValue;

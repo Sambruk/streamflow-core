@@ -175,6 +175,7 @@ import se.streamsource.streamflow.client.ui.caze.FormSubmissionWizardPage;
 import se.streamsource.streamflow.client.ui.caze.FormsAdminView;
 import se.streamsource.streamflow.client.ui.caze.IntegerPanel;
 import se.streamsource.streamflow.client.ui.caze.ListBoxPanel;
+import se.streamsource.streamflow.client.ui.caze.OpenSelectionPanel;
 import se.streamsource.streamflow.client.ui.caze.OptionButtonsPanel;
 import se.streamsource.streamflow.client.ui.caze.PossibleCaseTypesModel;
 import se.streamsource.streamflow.client.ui.caze.PossibleFormsModel;
@@ -476,7 +477,7 @@ public class UIAssembler
    {
       addViews( module, CasesView.class, CasesDetailView2.class, ContactsAdminView.class,
             FormsAdminView.class, SubmittedFormsAdminView.class, CheckboxesPanel.class,
-            ComboBoxPanel.class, OptionButtonsPanel.class, ListBoxPanel.class, DatePanel.class,
+            ComboBoxPanel.class, OptionButtonsPanel.class, OpenSelectionPanel.class, ListBoxPanel.class, DatePanel.class,
             IntegerPanel.class, DoublePanel.class, TextAreaFieldPanel.class, TextFieldPanel.class
       );
 
