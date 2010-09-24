@@ -43,6 +43,7 @@ import se.streamsource.streamflow.domain.form.FieldValue;
 import se.streamsource.streamflow.domain.form.FormValue;
 import se.streamsource.streamflow.domain.form.ListBoxFieldValue;
 import se.streamsource.streamflow.domain.form.NumberFieldValue;
+import se.streamsource.streamflow.domain.form.OpenSelectionFieldValue;
 import se.streamsource.streamflow.domain.form.OptionButtonsFieldValue;
 import se.streamsource.streamflow.domain.form.TextAreaFieldValue;
 import se.streamsource.streamflow.domain.form.TextFieldValue;
@@ -179,6 +180,11 @@ public class FormEditAdminView
                      {
                         setRightComponent(
                               obf.newObjectBuilder( FieldEditorOptionButtonsFieldValueView.class ).
+                                    use( editModel ).newInstance() );
+                     } else if ( value instanceof OpenSelectionFieldValue)
+                     {
+                        setRightComponent(
+                              obf.newObjectBuilder( FieldEditorOpenSelectionFieldValueView.class ).
                                     use( editModel ).newInstance() );
                      } else if ( value instanceof TextAreaFieldValue)
                      {

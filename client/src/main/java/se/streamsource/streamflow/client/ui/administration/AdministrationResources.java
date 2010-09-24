@@ -163,6 +163,7 @@ public enum AdministrationResources
    combobox,
    listbox,
    optionbuttons,
+   openselection,
    textarea,
    text,
    number,
@@ -216,6 +217,7 @@ public enum AdministrationResources
    hint_label, 
    regularexpression_label,
    field_id_label,
+   open_selection_name,
    cols_label
 
 }

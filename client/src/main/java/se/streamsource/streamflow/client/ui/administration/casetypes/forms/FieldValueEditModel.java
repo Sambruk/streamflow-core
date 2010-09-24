@@ -155,6 +155,13 @@ public class FieldValueEditModel
       client.postCommand( "changeregularexpression", builder.newInstance() );
    }
 
+   public void changeOpenSelectionName( String name )
+   {
+      ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
+      builder.prototype().string().set( name );
+      client.postCommand( "changeopenselectionname", builder.newInstance() );
+   }
+
    public void refresh() throws OperationException
    {
       try
@@ -185,9 +192,9 @@ public class FieldValueEditModel
    {
       return client;
    }
-
    public void remove() throws ResourceException
    {
       client.delete();
+
    }
 }

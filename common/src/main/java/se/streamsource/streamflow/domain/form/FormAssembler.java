@@ -45,6 +45,7 @@ public class FormAssembler
             ListBoxFieldValue.class,
             NumberFieldValue.class,
             OptionButtonsFieldValue.class,
+            OpenSelectionFieldValue.class,
             SelectionFieldValue.class,
             TextAreaFieldValue.class,
             TextFieldValue.class,

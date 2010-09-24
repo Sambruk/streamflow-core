@@ -143,6 +143,15 @@ public class FieldValueObserver
          {
             throw new OperationException( CaseResources.could_not_change_regularexpression, e );
          }
+      } else if (property.qualifiedName().name().equals( "openSelectionName" ))
+      {
+         try
+         {
+            model.changeOpenSelectionName( (String) property.get() );
+         } catch (ResourceException e)
+         {
+            throw new OperationException( CaseResources.could_not_change_regularexpression, e );
+         }
       }
 
    }

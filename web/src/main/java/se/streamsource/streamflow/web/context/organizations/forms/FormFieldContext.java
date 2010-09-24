@@ -33,6 +33,7 @@ import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.StringValueMaxLength;
 import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
 import se.streamsource.streamflow.domain.form.NumberFieldValue;
+import se.streamsource.streamflow.domain.form.OpenSelectionFieldValue;
 import se.streamsource.streamflow.domain.form.SelectionFieldValue;
 import se.streamsource.streamflow.domain.form.TextAreaFieldValue;
 import se.streamsource.streamflow.domain.form.TextFieldValue;
@@ -92,6 +93,9 @@ public interface FormFieldContext
 
    @RequiresRoles(SelectionFieldValue.class)
    public void changeselectionelementname( NamedIndexDTO newNameDTO );
+
+   @RequiresRoles(OpenSelectionFieldValue.class)
+   public void changeopenselectionname( StringValue name );
 
    public void move( StringValue direction );
 
@@ -250,6 +254,17 @@ public interface FormFieldContext
 
          ValueBuilder<SelectionFieldValue> builder = value.buildWith();
          builder.prototype().values().get().set( newNameDTO.index().get(), newNameDTO.name().get() );
+
+         fieldValueDefinition.changeFieldValue( builder.newInstance() );
+      }
+
+      public void changeopenselectionname( StringValue name )
+      {
+         FieldValueDefinition fieldValueDefinition = roleMap.get( FieldValueDefinition.class );
+         OpenSelectionFieldValue value = roleMap.get( OpenSelectionFieldValue.class );
+
+         ValueBuilder<OpenSelectionFieldValue> builder = value.buildWith();
+         builder.prototype().openSelectionName().set( name.string().get() );
 
          fieldValueDefinition.changeFieldValue( builder.newInstance() );
       }

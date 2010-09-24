@@ -31,6 +31,7 @@ import se.streamsource.streamflow.domain.form.FieldTypes;
 import se.streamsource.streamflow.domain.form.FieldValue;
 import se.streamsource.streamflow.domain.form.ListBoxFieldValue;
 import se.streamsource.streamflow.domain.form.NumberFieldValue;
+import se.streamsource.streamflow.domain.form.OpenSelectionFieldValue;
 import se.streamsource.streamflow.domain.form.OptionButtonsFieldValue;
 import se.streamsource.streamflow.domain.form.TextAreaFieldValue;
 import se.streamsource.streamflow.domain.form.TextFieldValue;
@@ -96,6 +97,11 @@ public interface FormFieldsContext
                break;
             case optionbuttons:
                value = vbf.newValue( OptionButtonsFieldValue.class );
+               break;
+            case openselection:
+               ValueBuilder<OpenSelectionFieldValue> valueBuilder = vbf.newValueBuilder( OpenSelectionFieldValue.class );
+               valueBuilder.prototype().openSelectionName().set( "" );
+               value = valueBuilder.newInstance();
                break;
             case textarea:
                ValueBuilder<TextAreaFieldValue> builder = vbf.newValueBuilder( TextAreaFieldValue.class );

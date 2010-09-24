@@ -65,6 +65,7 @@ public class FieldCreationDialog
             FieldTypes.combobox,
             FieldTypes.listbox,
             FieldTypes.optionbuttons,
+            FieldTypes.openselection,
             FieldTypes.date,
             FieldTypes.number,
             FieldTypes.comment} );
