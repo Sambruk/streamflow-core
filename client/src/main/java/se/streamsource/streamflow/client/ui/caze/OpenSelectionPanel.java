@@ -131,6 +131,7 @@ public class OpenSelectionPanel
       {
          public void actionPerformed( ActionEvent e )
          {
+            openSelectionTextField.setText( "" );
             openSelectionTextField.setEnabled( false );
             binding.updateProperty( getValue() );
          }
