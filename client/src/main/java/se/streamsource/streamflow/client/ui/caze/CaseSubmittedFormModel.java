@@ -28,6 +28,7 @@ import se.streamsource.streamflow.domain.form.DateFieldValue;
 import se.streamsource.streamflow.resource.caze.FieldDTO;
 import se.streamsource.streamflow.resource.caze.SubmittedFormDTO;
 import se.streamsource.streamflow.resource.roles.IntegerDTO;
+import se.streamsource.streamflow.util.Strings;
 
 import javax.swing.table.AbstractTableModel;
 import java.text.SimpleDateFormat;
@@ -41,11 +42,11 @@ public class CaseSubmittedFormModel
    private SubmittedFormDTO form;
 
    public CaseSubmittedFormModel( @Uses CommandQueryClient client,
-                                  @Uses IntegerDTO index)
+                                  @Uses IntegerDTO index )
    {
       try
       {
-         form = client.query( "submittedform", index ,SubmittedFormDTO.class );
+         form = client.query( "submittedform", index, SubmittedFormDTO.class );
       } catch (ResourceException e)
       {
          throw new OperationException( WorkspaceResources.could_not_get_submitted_form, e );
@@ -70,11 +71,11 @@ public class CaseSubmittedFormModel
          case 0:
             return field.field().get();
          default:
-            if( DateFieldValue.class.getName().equals( field.fieldType().get() ) )
+            if (DateFieldValue.class.getName().equals( field.fieldType().get() ) &&
+                  Strings.notEmpty( field.value().get() ))
             {
                return new SimpleDateFormat( i18n.text( WorkspaceResources.date_time_format ) ).format( DateFunctions.fromString( field.value().get() ) );
-            }
-            else
+            } else
             {
                return field.value().get();
             }
