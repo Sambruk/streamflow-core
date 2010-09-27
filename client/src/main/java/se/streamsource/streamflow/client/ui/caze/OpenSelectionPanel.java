@@ -103,6 +103,7 @@ public class OpenSelectionPanel
       {
          if ( selectionButton.getText().equals( newValue ))
          {
+            openSelectionTextField.setText( "" );
             openSelectionTextField.setEnabled( false );
             selectionButton.setSelected( true );
             return;

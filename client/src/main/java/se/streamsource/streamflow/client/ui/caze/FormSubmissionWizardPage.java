@@ -233,7 +233,7 @@ public class FormSubmissionWizardPage
          {
             AbstractFieldPanel component = componentFieldMap.get( field.field().get().field().get().identity() );
             String value = component.getValue();
-            if ( field.value().get()!=null && !field.value().get().equals( value ))
+            if (field.value().get() != null && !field.value().get().equals( value ) || field.field().get().fieldValue().get() instanceof OpenSelectionFieldValue)
             {
                component.setValue( field.value().get() );
             }
