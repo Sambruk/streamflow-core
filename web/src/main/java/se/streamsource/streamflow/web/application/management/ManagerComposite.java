@@ -544,7 +544,7 @@ public interface ManagerComposite
       public void refreshStatistics() throws StatisticsStoreException
       {
          logger.info( "Start refreshing statistics" );
-         statistics.refresh();
+         statistics.refreshStatistics();
          logger.info( "Finished refreshing statistics" );
       }
 

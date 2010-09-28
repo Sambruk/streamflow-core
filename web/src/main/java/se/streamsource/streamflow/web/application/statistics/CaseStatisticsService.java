@@ -92,7 +92,7 @@ import java.util.Date;
  */
 @Mixins(CaseStatisticsService.Mixin.class)
 public interface CaseStatisticsService
-      extends ServiceComposite, Activatable, CaseStatistics
+      extends ServiceComposite, Activatable, CaseStatistics, Configuration
 {
    class Mixin
          implements TransactionVisitor, Activatable, CaseStatistics
@@ -253,7 +253,7 @@ public interface CaseStatisticsService
          tracker.stop();
       }
 
-      public void refresh() throws StatisticsStoreException
+      public void refreshStatistics() throws StatisticsStoreException
       {
          log.info( "Refresh all statistics" );
 

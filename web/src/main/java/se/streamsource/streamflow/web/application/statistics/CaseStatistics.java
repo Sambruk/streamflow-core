@@ -22,5 +22,5 @@ package se.streamsource.streamflow.web.application.statistics;
  */
 public interface CaseStatistics
 {
-   public void refresh() throws StatisticsStoreException;
+   public void refreshStatistics() throws StatisticsStoreException;
 }
