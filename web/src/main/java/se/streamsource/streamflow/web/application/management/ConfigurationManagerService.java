@@ -119,7 +119,7 @@ public interface ConfigurationManagerService
 
             MBeanInfo mbeanInfo = new MBeanInfo( serviceClass, name, attributes.toArray( new MBeanAttributeInfo[attributes.size()] ), null, operations.toArray( new MBeanOperationInfo[operations.size()] ), null );
             Object mbean = new ConfigurableService( configurableService, mbeanInfo, name, properties );
-            ObjectName configurableServiceName = new ObjectName( "Streamflow:name=" + name );
+            ObjectName configurableServiceName = new ObjectName( "Streamflow:type=Configuration,name=" + name );
             server.registerMBean( mbean, configurableServiceName );
             configurableServiceNames.add( configurableServiceName );
          }

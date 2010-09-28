@@ -75,7 +75,7 @@ public interface ErrorLogService
                null, null, null, notificationInfos );
          mbean = new RequiredModelMBean( info );
 
-         objectName = new ObjectName( "Streamflow:name=errorlog" );
+         objectName = new ObjectName( "Streamflow:type=Log,name=errorlog" );
          server.registerMBean( mbean, objectName );
 
          setLevel( Level.SEVERE );

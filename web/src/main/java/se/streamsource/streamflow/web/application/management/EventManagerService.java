@@ -74,7 +74,7 @@ public interface EventManagerService
                null, null, null, notificationInfos );
          mbean = new RequiredModelMBean( info );
 
-         objectName = new ObjectName( "Streamflow:name=domainevents" );
+         objectName = new ObjectName( "Streamflow:type=Log,name=domainevents" );
          server.registerMBean( mbean, objectName );
 
          source.registerListener( this );
