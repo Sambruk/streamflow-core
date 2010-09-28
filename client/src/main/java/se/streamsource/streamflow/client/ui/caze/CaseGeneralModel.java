@@ -228,7 +228,10 @@ public class CaseGeneralModel extends Observable implements Refreshable,
 
    public boolean visit( DomainEvent event )
    {
-      refresh();
+      if (!event.usecase().get().equals( "createcase" ))
+      {
+         refresh();
+      }
       return true;
    }
 

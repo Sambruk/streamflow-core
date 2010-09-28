@@ -29,16 +29,16 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.LinkValue;
+import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
-import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
-import se.streamsource.streamflow.infrastructure.event.source.helper.EventParameters;
 import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
+import se.streamsource.streamflow.infrastructure.event.source.helper.EventParameters;
 import se.streamsource.streamflow.infrastructure.event.source.helper.EventVisitorFilter;
 import se.streamsource.streamflow.resource.caze.CaseValue;
 
@@ -112,14 +112,17 @@ public class CasesTableModel
             eventList.set( idx, valueBuilder.newInstance() );
          } else if ("addedLabel,changedCaseType,changedOwner,assignedTo,unassigned,deletedEntity".indexOf( eventName ) != -1)
          {
-            refresh();
+            if (!event.usecase().get().equals( "createcase" ))
+            {
+               refresh();
+            }
          } else if (eventName.equals( "changedStatus" ))
          {
             CaseStates newStatus = CaseStates.valueOf( EventParameters.getParameter( event, "param1" ) );
             updatedCase.status().set( newStatus );
             eventList.set( idx, valueBuilder.newInstance() );
             // update in case the case has moved to another project
-            if (CaseStates.OPEN.equals( newStatus ))
+            if (CaseStates.OPEN.equals( newStatus ) && !event.usecase().get().equals( "createcase" ))
             {
                refresh();
             }
