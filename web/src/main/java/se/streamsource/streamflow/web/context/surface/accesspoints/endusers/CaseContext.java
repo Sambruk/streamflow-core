@@ -31,6 +31,7 @@ import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.form
 import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.requiredforms.RequiredFormsContext;
 import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.submittedforms.SubmittedFormsContext;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
+import se.streamsource.streamflow.web.domain.interaction.gtd.CompletableId;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.form.EndUserCases;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
@@ -70,17 +71,10 @@ public interface CaseContext
 
          ValueBuilder<EndUserCaseDTO> builder = vbf.newValueBuilder( EndUserCaseDTO.class );
          builder.prototype().description().set( aCase.getDescription() );
-         AccessPointSettings.Data accessPoint = roleMap.get( AccessPointSettings.Data.class );
-         Labelable.Data labelsData = roleMap.get( Labelable.Data.class );
+         CompletableId.Data idData = roleMap.get( CompletableId.Data.class );
 
-         builder.prototype().project().set( accessPoint.project().get().getDescription() );
-         builder.prototype().caseType().set( accessPoint.caseType().get().getDescription() );
+         builder.prototype().caseId().set( idData.caseId().get() );
 
-
-         for (Label label : labelsData.labels())
-         {
-            builder.prototype().labels().get().add( label.getDescription() );
-         }
          return builder.newInstance();
       }
 

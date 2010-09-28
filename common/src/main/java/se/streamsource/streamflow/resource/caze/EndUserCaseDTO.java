@@ -26,19 +26,14 @@ import org.qi4j.library.constraints.annotation.MaxLength;
 import java.util.List;
 
 /**
- * General information about a case
+ * Needed information about a surface generated case
  */
 public interface EndUserCaseDTO
       extends ValueComposite
 {
-   Property<String> project();
-
-   Property<String> caseType();
-
-   @Optional
-   @UseDefaults
-   Property<List<String>> labels();
-
    @MaxLength(50)
    Property<String> description();
+
+   @Optional
+   Property<String> caseId(); 
 }
