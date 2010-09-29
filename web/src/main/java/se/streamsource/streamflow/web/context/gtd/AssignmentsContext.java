@@ -57,8 +57,7 @@ public interface AssignmentsContext
       {
          AssignmentsQueries assignments = roleMap.get( AssignmentsQueries.class);
 
-         QueryBuilder<Assignable> builder = assignments.assignments( roleMap.get( Assignee.class ) );
-         Query query = builder.newQuery( module.unitOfWorkFactory().currentUnitOfWork() ).orderBy( orderBy( templateFor( CreatedOn.class ).createdOn() ) );
+         Query query = assignments.assignments( roleMap.get( Assignee.class ) ).orderBy( orderBy( templateFor( CreatedOn.class ).createdOn() ) );
          return CasesContext.Mixin.buildCaseList( query, module, roleMap.get( Reference.class).getBaseRef().getPath());
       }
 

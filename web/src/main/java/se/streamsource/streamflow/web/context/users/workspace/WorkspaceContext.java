@@ -100,7 +100,7 @@ public interface WorkspaceContext
 
             if ((caseCount = caching.get( project.toString()+":"+ roleMap.get( Assignee.class).toString())) == null )
             {
-               caseCount = new Element(project.toString()+":"+ roleMap.get( Assignee.class).toString(), Long.toString(((AssignmentsQueries)project).assignments( roleMap.get( Assignee.class) ).newQuery( uow ).count()));
+               caseCount = new Element(project.toString()+":"+ roleMap.get( Assignee.class).toString(), Long.toString(((AssignmentsQueries)project).assignments( roleMap.get( Assignee.class) ).count()));
                caching.put( caseCount );
             }
 
