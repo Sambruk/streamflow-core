@@ -156,7 +156,6 @@ public class AccountAdministrationNode
    {
       try
       {
-         models.clear();
          organizations = accountModel.organizations();
       } catch (ResourceException e)
       {
