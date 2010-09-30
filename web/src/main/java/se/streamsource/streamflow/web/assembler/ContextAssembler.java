@@ -95,6 +95,7 @@ import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.form
 import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.formdrafts.FormDraftsContext;
 import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.formdrafts.summary.SummaryContext;
 import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.requiredforms.RequiredFormsContext;
+import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.submittedforms.SubmittedFormContext;
 import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.submittedforms.SubmittedFormsContext;
 import se.streamsource.streamflow.web.context.surface.administration.AdministrationContext;
 import se.streamsource.streamflow.web.context.surface.administration.organizations.proxyusers.ProxyUserContext;
@@ -245,6 +246,7 @@ public class ContextAssembler
             EndUserContext.class,
             EndUsersContext.class,
             SubmittedFormsContext.class,
+            SubmittedFormContext.class,
             RequiredFormsContext.class,
             FormDraftsContext.class,
             FormDraftContext.class,

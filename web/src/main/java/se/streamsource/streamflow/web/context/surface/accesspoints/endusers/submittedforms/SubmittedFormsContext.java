@@ -18,19 +18,28 @@
 package se.streamsource.streamflow.web.context.surface.accesspoints.endusers.submittedforms;
 
 import org.qi4j.api.mixin.Mixins;
+import org.restlet.representation.OutputRepresentation;
 import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.ContextNotFoundException;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.ContextMixin;
+import se.streamsource.dci.api.SubContexts;
+import se.streamsource.dci.value.LinksValue;
+import se.streamsource.streamflow.domain.form.SubmittedFormValue;
+import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.resource.caze.SubmittedFormsListDTO;
 import se.streamsource.streamflow.web.domain.entity.form.SubmittedFormsQueries;
+import se.streamsource.streamflow.web.domain.structure.form.SubmittedForms;
 
 /**
  * JAVADOC
  */
 @Mixins(SubmittedFormsContext.Mixin.class)
 public interface SubmittedFormsContext
-   extends Context, IndexContext<SubmittedFormsListDTO>
+   extends Context, IndexContext<SubmittedFormsListDTO>, SubContexts<SubmittedFormContext>
 {
+
+   LinksValue printablesubmittedforms();
 
    abstract class Mixin
       extends ContextMixin
@@ -40,6 +49,38 @@ public interface SubmittedFormsContext
       {
          SubmittedFormsQueries forms = roleMap.get( SubmittedFormsQueries.class );
          return forms.getSubmittedForms();
+      }
+
+      public SubmittedFormContext context( String id ) throws ContextNotFoundException
+      {
+         SubmittedForms.Data data = roleMap.get( SubmittedForms.Data.class );
+
+         for (SubmittedFormValue value : data.submittedForms().get())
+         {
+
+            if ( value.form().get().identity().equals( id ))
+            {
+
+               roleMap.set( value );
+               return subContext( SubmittedFormContext.class );
+            }
+         }
+
+         throw new ContextNotFoundException();
+      }
+
+      public LinksValue printablesubmittedforms()
+      {
+         SubmittedForms.Data data = roleMap.get( SubmittedForms.Data.class );
+
+         LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() );
+
+         for (SubmittedFormValue value : data.submittedForms().get())
+         {
+            builder.addLink( "SubmittedForm", value.form().get().identity() );
+         }
+
+         return builder.newLinks();
       }
    }
 }
