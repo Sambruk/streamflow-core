@@ -314,7 +314,7 @@ public class CompositeMBean
       }
    }
 
-   private Method getOperation( String s, String[] parameterTypes )
+   private Method getOperation( String s, String[] parameterTypes ) throws ReflectionException
    {
       nextoperation:
       for (int idx = 0; idx < info.getOperations().length; idx++)
@@ -334,7 +334,7 @@ public class CompositeMBean
          }
       }
 
-      return null;
+      throw new ReflectionException(new NoSuchMethodException(s));
    }
 
    @Override
