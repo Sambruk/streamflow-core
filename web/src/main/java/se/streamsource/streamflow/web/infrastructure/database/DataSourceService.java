@@ -57,6 +57,7 @@ public interface DataSourceService
       Module module;
 
       Map<String, ComboPooledDataSource> pools = new HashMap<String, ComboPooledDataSource>( );
+      Map<String, DataSourceConfiguration> configs = new HashMap<String, DataSourceConfiguration>( );
 
       @Structure
       UnitOfWorkFactory uowf;
@@ -74,6 +75,12 @@ public interface DataSourceService
             DataSources.destroy( pool );
          }
          pools.clear();
+
+         for (DataSourceConfiguration dataSourceConfiguration : configs.values())
+         {
+            uowf.getUnitOfWork( dataSourceConfiguration ).discard();
+         }
+         configs.clear();
       }
 
       public synchronized Object importService( ImportedServiceDescriptor importedServiceDescriptor ) throws ServiceImporterException
@@ -84,42 +91,43 @@ public interface DataSourceService
             // Instantiate pool
             pool = new ComboPooledDataSource( );
 
-            UnitOfWork uow = uowf.newUnitOfWork( UsecaseBuilder.newUsecase("Create DataSource pool" ));
-
             try
             {
-               DataSourceConfiguration config = getConfiguration(uow, importedServiceDescriptor.identity());
+               DataSourceConfiguration config = getConfiguration(importedServiceDescriptor.identity());
 
-               Class.forName( config.driver().get() );
-               pool.setDriverClass(config.driver().get() );
-               pool.setJdbcUrl( config.url().get());
-
-               String props = config.properties().get();
-               String[] properties = props.split( "," );
-               Properties poolProperties = new Properties();
-               for (String property : properties)
+               if (config.enabled().get())
                {
-                  if (property.trim().length() > 0)
+                  Class.forName( config.driver().get() );
+                  pool.setDriverClass(config.driver().get() );
+                  pool.setJdbcUrl( config.url().get());
+
+                  String props = config.properties().get();
+                  String[] properties = props.split( "," );
+                  Properties poolProperties = new Properties();
+                  for (String property : properties)
                   {
-                     String[] keyvalue = property.trim().split("=" );
-                     poolProperties.setProperty( keyvalue[0], keyvalue[1] );
+                     if (property.trim().length() > 0)
+                     {
+                        String[] keyvalue = property.trim().split("=" );
+                        poolProperties.setProperty( keyvalue[0], keyvalue[1] );
+                     }
                   }
+                  pool.setProperties( poolProperties );
+
+                  pool.setUser( config.username().get() );
+                  pool.setPassword( config.password().get() );
+                  pool.setMaxConnectionAge( 60*60 ); // One hour max age
+
+                  logger.info( "Starting up DataSource '"+importedServiceDescriptor.identity()+"' for:{}", pool.getUser()+"@"+pool.getJdbcUrl() );
+               } else
+               {
+                  // Not started
+                  throw new ServiceImporterException("DataSource not enabled");
                }
-               pool.setProperties( poolProperties );
-
-               pool.setUser( config.username().get() );
-               pool.setPassword( config.password().get() );
-               pool.setMaxConnectionAge( 60*60 ); // One hour max age
-
-               logger.info( "Starting up DataSource '"+importedServiceDescriptor.identity()+"' for:{}", pool.getUser()+"@"+pool.getJdbcUrl() );
-
-               uow.complete();
 
                pools.put( importedServiceDescriptor.identity(), pool );
             } catch (Exception e)
             {
-               uow.discard();
-
                throw new ServiceImporterException(e);
             }
 
@@ -141,33 +149,46 @@ public interface DataSourceService
          return pool;
       }
 
-      private DataSourceConfiguration getConfiguration( UnitOfWork uow, String identity ) throws InstantiationException
+      public synchronized DataSourceConfiguration getConfiguration( String identity ) throws InstantiationException
       {
-         try
+         DataSourceConfiguration config = configs.get( identity );
+         if (config == null)
          {
-            return uow.get( DataSourceConfiguration.class, identity );
-         } catch (NoSuchEntityException e)
-         {
-            EntityBuilder<DataSourceConfiguration> configBuilder = uow.newEntityBuilder( DataSourceConfiguration.class, identity );
+            UnitOfWork uow = uowf.newUnitOfWork( UsecaseBuilder.newUsecase("Create DataSource pool configuration" ));
 
-            // Check for defaults
-            String s = identity + ".properties";
-            InputStream asStream = DataSourceConfiguration.class.getClassLoader().getResourceAsStream( s );
-            if( asStream != null )
+            try
             {
-                try
-                {
-                    PropertyMapper.map( asStream, configBuilder.instance() );
-                }
-                catch( IOException e1 )
-                {
-                    InstantiationException exception = new InstantiationException( "Could not read underlying Properties file." );
-                    exception.initCause( e1 );
-                    throw exception;
-                }
+               config = uow.get( DataSourceConfiguration.class, identity );
+            } catch (NoSuchEntityException e)
+            {
+               EntityBuilder<DataSourceConfiguration> configBuilder = uow.newEntityBuilder( DataSourceConfiguration.class, identity );
+
+               // Check for defaults
+               String s = identity + ".properties";
+               InputStream asStream = DataSourceConfiguration.class.getClassLoader().getResourceAsStream( s );
+               if( asStream != null )
+               {
+                   try
+                   {
+                       PropertyMapper.map( asStream, configBuilder.instance() );
+                   }
+                   catch( IOException e1 )
+                   {
+                       uow.discard();
+                       InstantiationException exception = new InstantiationException( "Could not read underlying Properties file." );
+                       exception.initCause( e1 );
+                       throw exception;
+                   }
+               }
+
+               config = configBuilder.newInstance();
             }
-            return configBuilder.newInstance();
+            uow.pause();
+
+            configs.put( identity, config );
          }
+
+         return config;
       }
 
       public boolean isActive( Object o )

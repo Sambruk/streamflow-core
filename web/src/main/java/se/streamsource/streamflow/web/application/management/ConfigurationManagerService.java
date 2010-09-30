@@ -36,6 +36,8 @@ import org.qi4j.spi.entity.EntityDescriptor;
 import org.qi4j.spi.property.PropertyType;
 import org.qi4j.spi.service.ServiceDescriptor;
 import org.qi4j.spi.structure.ModuleSPI;
+import se.streamsource.streamflow.web.infrastructure.database.DataSourceConfiguration;
+import se.streamsource.streamflow.web.infrastructure.database.DataSourceService;
 
 import javax.management.Attribute;
 import javax.management.AttributeList;
@@ -54,6 +56,7 @@ import javax.management.MalformedObjectNameException;
 import javax.management.NotCompliantMBeanException;
 import javax.management.ObjectName;
 import javax.management.ReflectionException;
+import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -81,12 +84,18 @@ public interface ConfigurationManagerService
       @Service
       Iterable<ServiceReference<Configuration>> configurableServices;
 
-      private List<ObjectName> configurableServiceNames = new ArrayList<ObjectName>();
+      @Service
+      Iterable<ServiceReference<DataSource>> dataSources;
+      @Service
+      ServiceReference<DataSourceService> dataSourceService;
+
+      private List<ObjectName> configurationNames = new ArrayList<ObjectName>();
 
       public void activate() throws Exception
       {
          // Expose configurable services
          exportConfigurableServices();
+         exportDataSources();
       }
 
       private void exportConfigurableServices() throws NotCompliantMBeanException, MBeanRegistrationException, InstanceAlreadyExistsException, MalformedObjectNameException
@@ -121,29 +130,58 @@ public interface ConfigurationManagerService
             Object mbean = new ConfigurableService( configurableService, mbeanInfo, name, properties );
             ObjectName configurableServiceName = new ObjectName( "Streamflow:type=Configuration,name=" + name );
             server.registerMBean( mbean, configurableServiceName );
-            configurableServiceNames.add( configurableServiceName );
+            configurationNames.add( configurableServiceName );
+         }
+      }
+
+      private void exportDataSources() throws MalformedObjectNameException, MBeanRegistrationException, InstanceAlreadyExistsException, NotCompliantMBeanException
+      {
+         for (ServiceReference<DataSource> dataSource : dataSources)
+         {
+            String name = dataSource.identity();
+            ModuleSPI module = (ModuleSPI) spi.getModule( dataSource );
+            EntityDescriptor descriptor = module.entityDescriptor( DataSourceConfiguration.class.getName() );
+            List<MBeanAttributeInfo> attributes = new ArrayList<MBeanAttributeInfo>();
+            Map<String, QualifiedName> properties = new HashMap<String, QualifiedName>();
+            for (PropertyType propertyType : descriptor.entityType().properties())
+            {
+               if (propertyType.propertyType() == PropertyType.PropertyTypeEnum.MUTABLE)
+               {
+                  String propertyName = propertyType.qualifiedName().name();
+                  String type = propertyType.type().type().name();
+                  attributes.add( new MBeanAttributeInfo( propertyName, type, propertyName, true, true, type.equals( "java.lang.Boolean" ) ) );
+                  properties.put( propertyName, propertyType.qualifiedName() );
+               }
+            }
+
+            List<MBeanOperationInfo> operations = new ArrayList<MBeanOperationInfo>();
+            operations.add( new MBeanOperationInfo( "restart", "Restart DataSource", new MBeanParameterInfo[0], "void", MBeanOperationInfo.ACTION_INFO ) );
+
+            MBeanInfo mbeanInfo = new MBeanInfo( DataSourceConfiguration.class.getName(), name, attributes.toArray( new MBeanAttributeInfo[attributes.size()] ), null, operations.toArray( new MBeanOperationInfo[operations.size()] ), null );
+            Object mbean = new ConfigurableDataSource( dataSourceService, mbeanInfo, name, properties );
+            ObjectName configurableDataSourceName = new ObjectName( "Streamflow:type=Datasource,name=" + name );
+            server.registerMBean( mbean, configurableDataSourceName );
+            configurationNames.add( configurableDataSourceName );
          }
       }
 
       public void passivate() throws Exception
       {
-         for (ObjectName configurableServiceName : configurableServiceNames)
+         for (ObjectName configurableServiceName : configurationNames)
          {
             server.unregisterMBean( configurableServiceName );
          }
       }
 
-      class ConfigurableService
+      abstract class EditableConfiguration
             implements DynamicMBean
       {
-         ServiceReference<Configuration> service;
          MBeanInfo info;
          String identity;
          Map<String, QualifiedName> propertyNames;
 
-         ConfigurableService( ServiceReference<Configuration> service, MBeanInfo info, String identity, Map<String, QualifiedName> propertyNames )
+         EditableConfiguration( MBeanInfo info, String identity, Map<String, QualifiedName> propertyNames )
          {
-            this.service = service;
             this.info = info;
             this.identity = identity;
             this.propertyNames = propertyNames;
@@ -238,6 +276,23 @@ public interface ConfigurationManagerService
             return list;
          }
 
+         public MBeanInfo getMBeanInfo()
+         {
+            return info;
+         }
+      }
+
+      class ConfigurableService
+         extends EditableConfiguration
+      {
+         private ServiceReference<Configuration> service;
+
+         ConfigurableService( ServiceReference<Configuration> service, MBeanInfo info, String identity, Map<String, QualifiedName> propertyNames )
+         {
+            super( info, identity, propertyNames );
+            this.service = service;
+         }
+
          public Object invoke( String s, Object[] objects, String[] strings ) throws MBeanException, ReflectionException
          {
             if (s.equals( "restart" ))
@@ -264,10 +319,42 @@ public interface ConfigurationManagerService
             return "Unknown operation";
          }
 
-         public MBeanInfo getMBeanInfo()
+      }
+
+      class ConfigurableDataSource
+         extends EditableConfiguration
+      {
+         private ServiceReference<DataSourceService> service;
+
+         ConfigurableDataSource( ServiceReference<DataSourceService> service, MBeanInfo info, String identity, Map<String, QualifiedName> propertyNames )
          {
-            return info;
+            super( info, identity, propertyNames );
+            this.service = service;
          }
+
+         public Object invoke( String s, Object[] objects, String[] strings ) throws MBeanException, ReflectionException
+         {
+            if (s.equals( "restart" ))
+            {
+               try
+               {
+                  // Refresh and restart
+                  if (service.isActive())
+                  {
+                     ((Activatable) service).passivate();
+                     ((Activatable) service).activate();
+                  }
+
+                  return "Service restarted";
+               } catch (Exception e)
+               {
+                  return "Could not restart service:" + e.getMessage();
+               }
+            }
+
+            return "Unknown operation";
+         }
+
       }
    }
 }

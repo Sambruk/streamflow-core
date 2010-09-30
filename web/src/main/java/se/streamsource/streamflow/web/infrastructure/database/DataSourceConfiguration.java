@@ -27,6 +27,9 @@ import org.qi4j.api.property.Property;
 public interface DataSourceConfiguration
       extends ConfigurationComposite
 {
+   @UseDefaults
+   Property<Boolean> enabled();
+
    Property<String> driver();
 
    Property<String> url();

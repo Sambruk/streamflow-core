@@ -21,6 +21,7 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
+import org.qi4j.api.service.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.streamsource.streamflow.web.infrastructure.database.Databases;
@@ -40,16 +41,13 @@ public interface JdbcStatisticsStore
          implements StatisticsStore, Activatable
    {
       @Service
-      DataSource dataSource;
+      ServiceReference<DataSource> dataSource;
 
-      Logger log;
-
-      Databases databases;
+      private Logger log;
 
       public void activate() throws Exception
       {
          log = LoggerFactory.getLogger( JdbcStatisticsStore.class );
-         databases = new Databases( dataSource );
       }
 
       public void passivate() throws Exception
@@ -58,6 +56,8 @@ public interface JdbcStatisticsStore
 
       public void related( final RelatedStatisticsValue related ) throws StatisticsStoreException
       {
+         Databases databases = getDatabases();
+
          try
          {
             int rows = databases.update( "UPDATE descriptions SET description=?, type=? WHERE id=?", new Databases.StatementVisitor()
@@ -93,6 +93,8 @@ public interface JdbcStatisticsStore
       public void caseStatistics( final CaseStatisticsValue caseStatistics )
             throws StatisticsStoreException
       {
+         Databases databases = getDatabases();
+
          try
          {
             // Delete any old data
@@ -176,6 +178,8 @@ public interface JdbcStatisticsStore
 
       public void removedCase( final String id ) throws StatisticsStoreException
       {
+         Databases databases = getDatabases();
+
          try
          {
             Databases.StatementVisitor visitor = new Databases.StatementVisitor()
@@ -194,8 +198,10 @@ public interface JdbcStatisticsStore
          }
       }
 
-      public void clearAll()
+      public void clearAll() throws StatisticsStoreException
       {
+         Databases databases = getDatabases();
+
          try
          {
             databases.update( "DELETE FROM descriptions" );
@@ -205,6 +211,18 @@ public interface JdbcStatisticsStore
          } catch (SQLException e)
          {
             log.error( "Could not remove statistics", e );
+            throw new StatisticsStoreException("Could not remove case", e);
+         }
+      }
+
+      public Databases getDatabases() throws StatisticsStoreException
+      {
+         try
+         {
+            return new Databases(dataSource.get());
+         } catch (Exception e)
+         {
+            throw new StatisticsStoreException("DataSource not available", e);
          }
       }
    }

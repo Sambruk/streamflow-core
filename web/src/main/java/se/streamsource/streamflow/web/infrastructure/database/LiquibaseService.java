@@ -26,6 +26,8 @@ import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
+import org.qi4j.api.service.ServiceImporterException;
+import org.qi4j.api.service.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +54,7 @@ public interface LiquibaseService
       Configuration<LiquibaseConfiguration> config;
 
       @Service
-      DataSource dataSource;
+      ServiceReference<DataSource> dataSource;
 
       public void activate() throws Exception
       {
@@ -67,7 +69,7 @@ public interface LiquibaseService
          Connection c = null;
          try
          {
-            c = dataSource.getConnection();
+            c = dataSource.get().getConnection();
             Liquibase liquibase = new Liquibase( config.configuration().changeLog().get(),
                   new FileOpener()
                   {
@@ -113,6 +115,9 @@ public interface LiquibaseService
                catch (SQLException ex1)
                {
                }
+         } catch (ServiceImporterException ex)
+         {
+            log.warn( "DataSource is not available - database refactoring skipped" );
          }
       }
 
