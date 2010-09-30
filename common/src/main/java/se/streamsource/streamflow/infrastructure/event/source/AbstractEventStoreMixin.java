@@ -25,6 +25,8 @@ import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.spi.property.ValueType;
 import org.qi4j.spi.structure.ModuleSPI;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 
@@ -35,10 +37,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import static java.util.Collections.synchronizedList;
+import static java.util.Collections.*;
 
 /**
  * Base implementation for EventStores.
@@ -86,46 +86,50 @@ public abstract class AbstractEventStoreMixin
 
    // TransactionVisitor implementation
    // This is how transactions are put into the store
+
    public boolean visit( final TransactionEvents transaction )
    {
+      // Lock store so noone else can interrupt
+      lock();
       try
       {
-         // Lock store so noone else can interrupt
-         lock();
-
          storeEvents( transaction );
-
-         // Notify listeners
-         transactionNotifier.submit( new Runnable()
-         {
-            public void run()
-            {
-               synchronized(listeners)
-               {
-                  for (TransactionVisitor listener : listeners)
-                  {
-                     try
-                     {
-                        listener.visit( transaction );
-                     } catch (Exception e)
-                     {
-                        logger.warn( "Could not notify event listener", e );
-                     }
-                  }
-               }
-            }
-         });
-
-         return true;
 
       } catch (Exception e)
       {
-         lock.unlock();
+         logger.error( "Could not store events", e );
          return false;
+      } finally
+      {
+         lock.unlock();
       }
+
+      // Notify listeners
+      transactionNotifier.submit( new Runnable()
+      {
+         public void run()
+         {
+            synchronized (listeners)
+            {
+               for (TransactionVisitor listener : listeners)
+               {
+                  try
+                  {
+                     listener.visit( transaction );
+                  } catch (Exception e)
+                  {
+                     logger.warn( "Could not notify event listener", e );
+                  }
+               }
+            }
+         }
+      } );
+
+      return true;
    }
 
    // EventSource implementation
+
    public void registerListener( TransactionVisitor subscriber )
    {
       listeners.add( subscriber );

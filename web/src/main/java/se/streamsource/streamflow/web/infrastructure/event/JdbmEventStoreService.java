@@ -140,9 +140,9 @@ public interface JdbmEventStoreService
 
       public void restoreEvents( Reader in ) throws IOException
       {
+         lock();
          try
          {
-            lock();
             String valueJson;
             BufferedReader reader = new BufferedReader( in );
             int count = 0;
@@ -175,6 +175,7 @@ public interface JdbmEventStoreService
       }
 
       // EventStore implementation
+
       public void transactionsAfter( long afterTimestamp, TransactionVisitor visitor )
       {
          // Lock datastore first
