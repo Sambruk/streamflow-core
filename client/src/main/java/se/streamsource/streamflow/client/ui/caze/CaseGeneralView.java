@@ -372,7 +372,7 @@ public class CaseGeneralView extends JScrollPane implements Observer
 
       if (dialog.getSelectedReference() != null)
       {
-         model.caseType( dialog.getSelectedItem(), dialog.itemList.getTextField().getText() );
+         model.changeCaseType( dialog.getSelectedItem(), dialog.itemList.getTextField().getText() );
          // refresh();
       }
    }

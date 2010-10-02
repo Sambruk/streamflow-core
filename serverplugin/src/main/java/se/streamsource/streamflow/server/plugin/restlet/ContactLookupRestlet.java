@@ -128,7 +128,8 @@ public class ContactLookupRestlet
             return null;
          }
 
-         public void visitProperties( StateVisitor visitor )
+          public <ThrowableType extends Exception> void visitProperties( StateVisitor<ThrowableType> visitor )
+              throws ThrowableType
          {
             for (PropertyType propertyType : descriptor.valueType().types())
             {

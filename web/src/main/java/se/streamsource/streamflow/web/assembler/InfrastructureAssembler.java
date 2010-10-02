@@ -21,6 +21,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.qi4j.api.common.Visibility;
+import org.qi4j.api.concern.ConcernOf;
+import org.qi4j.api.concern.GenericConcern;
 import org.qi4j.api.structure.Application;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.LayerAssembly;
@@ -39,9 +41,12 @@ import org.qi4j.migration.MigrationService;
 import org.qi4j.migration.Migrator;
 import org.qi4j.migration.assembly.EntityMigrationOperation;
 import org.qi4j.migration.assembly.MigrationBuilder;
+import org.qi4j.spi.entity.EntityState;
+import org.qi4j.spi.entitystore.EntityStoreSPI;
+import org.qi4j.spi.entitystore.StateCommitter;
 import org.qi4j.spi.service.importer.NewObjectImporter;
 import org.qi4j.spi.uuid.UuidIdentityGeneratorService;
-import se.streamsource.dci.restlet.client.SwingCommandQueryClient;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.factory.DomainEventFactoryService;
@@ -65,8 +70,10 @@ import se.streamsource.streamflow.web.resource.EventsCommandResult;
 
 import javax.sql.DataSource;
 
-import static org.qi4j.api.service.ServiceTags.*;
-import static org.qi4j.bootstrap.ImportedServiceDeclaration.*;
+import java.lang.reflect.Method;
+
+import static org.qi4j.api.service.ServiceTags.tags;
+import static org.qi4j.bootstrap.ImportedServiceDeclaration.NEW_OBJECT;
 
 /**
  * JAVADOC
@@ -89,7 +96,7 @@ public class InfrastructureAssembler
    private void plugins( ModuleAssembly moduleAssembly ) throws AssemblyException
    {
 
-      moduleAssembly.addObjects( SwingCommandQueryClient.class
+      moduleAssembly.addObjects( CommandQueryClient.class
       ).visibleIn( Visibility.module );
 
       moduleAssembly.addServices( ContactLookupService.class ).
@@ -158,7 +165,8 @@ public class InfrastructureAssembler
       }
 
       module.addObjects( EntityStateSerializer.class, EntityTypeSerializer.class );
-      module.addServices( RdfIndexingEngineService.class ).instantiateOnStartup().visibleIn( Visibility.application );
+      module.addServices( RdfIndexingEngineService.class ).instantiateOnStartup().visibleIn( Visibility.application ).
+            withConcerns( PerformanceLogConcern.class );
       module.addServices( RdfQueryParserFactory.class );
    }
 
@@ -176,7 +184,8 @@ public class InfrastructureAssembler
       } else if (mode.equals( Application.Mode.production ))
       {
          // JDBM storage
-         module.addServices( JdbmEntityStoreService.class ).identifiedBy( "data" ).visibleIn( Visibility.application );
+         module.addServices( JdbmEntityStoreService.class ).identifiedBy( "data" ).visibleIn( Visibility.application ).
+               withConcerns( EntityStorePerformanceCheck.class );
          module.addServices( UuidIdentityGeneratorService.class ).visibleIn( Visibility.application );
 
          // Migration service
@@ -499,6 +508,45 @@ public class InfrastructureAssembler
       {
          // Liquibase migration
          module.addServices( LiquibaseService.class ).instantiateOnStartup();
+      }
+   }
+
+   public abstract static class EntityStorePerformanceCheck
+      extends ConcernOf<EntityStoreSPI>
+      implements EntityStoreSPI
+   {
+      public StateCommitter applyChanges( Iterable<EntityState> state, String version, long l )
+      {
+         long start = System.nanoTime();
+         try
+         {
+            return next.applyChanges( state, version, l );
+         } finally
+         {
+            long end = System.nanoTime();
+            long timeMicro = (end - start) / 1000;
+            double timeMilli = timeMicro / 1000.0;
+            System.out.println("Apply changes"+":"+ timeMilli );
+         }
+      }
+   }
+
+   public static class PerformanceLogConcern
+      extends GenericConcern
+   {
+      public Object invoke( Object proxy, Method method, Object[] args ) throws Throwable
+      {
+         long start = System.nanoTime();
+         try
+         {
+            return next.invoke( proxy, method, args );
+         } finally
+         {
+            long end = System.nanoTime();
+            long timeMicro = (end - start) / 1000;
+            double timeMilli = timeMicro / 1000.0;
+            System.out.println(method.getName()+":"+ timeMilli );
+         }
       }
    }
 }

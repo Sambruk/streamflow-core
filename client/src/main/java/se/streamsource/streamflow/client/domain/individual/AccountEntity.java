@@ -17,6 +17,8 @@
 
 package se.streamsource.streamflow.client.domain.individual;
 
+import java.io.IOException;
+import java.io.InputStream;
 import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
@@ -34,9 +36,7 @@ import org.restlet.Uniform;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Reference;
-import org.restlet.data.Status;
-import org.restlet.representation.Representation;
-import org.restlet.resource.ClientResource;
+import org.restlet.engine.io.BioUtils;
 import org.restlet.resource.ResourceException;
 import org.restlet.routing.Filter;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
@@ -44,8 +44,6 @@ import se.streamsource.dci.restlet.client.ResponseHandler;
 import se.streamsource.dci.restlet.client.SwingCommandQueryClient;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.resource.user.ChangePasswordCommand;
-
-import java.io.IOException;
 
 /**
  * Entity representing a client-side account
@@ -135,20 +133,14 @@ public interface AccountEntity
       public String version(Uniform client) throws ResourceException, IOException
       {
          CommandQueryClient server = server( client );
+         InputStream in = null;
+         in = server.getClient( "/streamflow/static/" ).queryStream( "version.html", null);
+/*
          ClientResource version = new ClientResource( server.getReference().clone().addSegment( "static" ).addSegment( "version.html" ));
-         version.setNext( server.getClient() );
-         Representation rep = version.get();
-
-         String response;
-         if( !Status.SUCCESS_OK.equals(version.getStatus()))
-         {
-            throw new ResourceException( version.getStatus() );
-         } else
-         {
-            response = rep.getText();
-         }
-
-         return response;
+         version.setNext( server. );
+*/
+         String version = BioUtils.toString( in );
+         return version;
       }
    }
 

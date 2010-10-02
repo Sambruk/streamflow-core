@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions targetNamespace="urn:www.sll.se/wsdl/soap/osif" xmlns:impl="urn:www.sll.se/wsdl/soap/osif" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns="http://schemas.xmlsoap.org/wsdl/">
+
+ <wsdl:types>
+  <schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="urn:www.sll.se/wsdl/soap/osif">
+
+   <complexType name="Status">
+    <sequence>
+     <element name="errorGroup" type="xsd:int"/>
+     <element name="errorGroupDescription" minOccurs="0" type="xsd:string"/>
+     <element name="errorCode" type="xsd:int"/>
+     <element name="errorCodeDescription" minOccurs="0" type="xsd:string"/>
+    </sequence>
+   </complexType>
+
+   <complexType name="Property">
+    <sequence>
+     <element name="name" type="xsd:string"/>
+     <element name="value" type="xsd:string"/>
+    </sequence>
+   </complexType>
+
+   <complexType name="GenerateChallengeRequest">
+    <sequence>
+     <element name="provider" type="xsd:int"/>
+     <element name="transactionID" minOccurs="0" type="xsd:string"/>
+     <element name="policy" minOccurs="0" type="xsd:string"/>
+    </sequence>
+   </complexType>
+   <element name="generateChallengeRequest" type="impl:GenerateChallengeRequest"/>
+
+   <complexType name="GenerateChallengeResponse">
+    <sequence>
+     <element name="status" type="impl:Status"/>
+     <element name="challenge" minOccurs="0" type="xsd:string"/>
+     <element name="transactionID" minOccurs="0" type="xsd:string"/>
+    </sequence>
+   </complexType>
+   <element name="generateChallengeResponse" type="impl:GenerateChallengeResponse"/>
+
+   <complexType name="EncodeTBSRequest">
+    <sequence>
+     <element name="provider" type="xsd:int"/>
+     <element name="transactionID" minOccurs="0" type="xsd:string"/>
+     <element name="policy" minOccurs="0" type="xsd:string"/>
+     <element name="tbsText" type="xsd:string"/>
+    </sequence>
+   </complexType>
+   <element name="encodeTBSRequest" type="impl:EncodeTBSRequest"/>
+
+   <complexType name="EncodeTBSResponse">
+    <sequence>
+     <element name="status" type="impl:Status"/>
+     <element name="text" minOccurs="0" type="xsd:string"/>
+     <element name="transactionID" minOccurs="0" type="xsd:string"/>
+    </sequence>
+   </complexType>
+   <element name="encodeTBSResponse" type="impl:EncodeTBSResponse"/>
+
+   <complexType name="VerifyAuthenticationRequest">
+    <sequence>
+     <element name="provider" type="xsd:int"/>
+     <element name="transactionID" minOccurs="0" type="xsd:string"/>
+     <element name="policy" minOccurs="0" type="xsd:string"/>
+     <element name="challenge" type="xsd:string"/>
+     <element name="signature" type="xsd:string"/>
+     <element name="host" minOccurs="0" type="xsd:string"/>
+     <element name="hiddenTbs" minOccurs="0" type="xsd:string"/>
+    </sequence>
+   </complexType>
+   <element name="verifyAuthenticationRequest" type="impl:VerifyAuthenticationRequest"/>
+
+   <complexType name="VerifyAuthenticationResponse">
+    <sequence>
+     <element name="status" type="impl:Status"/>
+     <element name="attributes" minOccurs="0" maxOccurs="unbounded" type="impl:Property"/>
+     <element name="userID" minOccurs="0" type="xsd:string"/>
+     <element name="transactionID" minOccurs="0" type="xsd:string"/>
+     <element name="certificate" minOccurs="0" type="xsd:string"/>
+    </sequence>
+   </complexType>
+   <element name="verifyAuthenticationResponse" type="impl:VerifyAuthenticationResponse"/>
+
+   <complexType name="VerifySignatureRequest">
+    <sequence>
+     <element name="provider" type="xsd:int"/>
+     <element name="transactionID" minOccurs="0" type="xsd:string"/>
+     <element name="policy" minOccurs="0" type="xsd:string"/>
+     <element name="tbsText" type="xsd:string"/>
+     <element name="userID" minOccurs="0" type="xsd:string"/>
+     <element name="signature" type="xsd:string"/>
+     <element name="host" minOccurs="0" type="xsd:string"/>
+     <element name="hiddenTbs" minOccurs="0" type="xsd:string"/>
+     <element name="nonce" minOccurs="0" type="xsd:string"/>
+    </sequence>
+   </complexType>
+   <element name="verifySignatureRequest" type="impl:VerifySignatureRequest"/>
+
+   <complexType name="VerifySignatureResponse">
+    <sequence>
+     <element name="status" type="impl:Status"/>
+     <element name="attributes" minOccurs="0" maxOccurs="unbounded" type="impl:Property"/>
+     <element name="transactionID" minOccurs="0" type="xsd:string"/>
+     <element name="certificate" minOccurs="0" type="xsd:string"/>
+    </sequence>
+   </complexType>
+   <element name="verifySignatureResponse" type="impl:VerifySignatureResponse"/>
+
+  <complexType name="VerifyCertificateRequest">
+    <sequence>
+     <element name="provider" type="xsd:int"/>
+     <element name="transactionID" minOccurs="0" type="xsd:string"/>
+     <element name="policy" minOccurs="0" type="xsd:string"/>
+     <element name="certificates" minOccurs="1" maxOccurs="unbounded" type="xsd:string"/>
+     <element name="checkUsage" type="xsd:int"/>
+    </sequence>
+   </complexType>
+   <element name="verifyCertificateRequest" type="impl:VerifyCertificateRequest"/>
+
+  <complexType name="VerifyCertificateResponse">
+    <sequence>
+     <element name="status" type="impl:Status"/>
+     <element name="attributes" minOccurs="0" maxOccurs="unbounded" type="impl:Property"/>
+     <element name="userID" minOccurs="0" type="xsd:string"/>
+     <element name="transactionID" minOccurs="0" type="xsd:string"/>
+     <element name="certificate" minOccurs="0" type="xsd:string"/>
+    </sequence>
+   </complexType>
+   <element name="verifyCertificateResponse" type="impl:VerifyCertificateResponse"/>
+
+  </schema>
+ </wsdl:types>
+
+   <wsdl:message name="GenerateChallengeInputMessage">
+      <wsdl:part name="generateChallengeRequest" element="impl:generateChallengeRequest"/>
+   </wsdl:message>
+
+   <wsdl:message name="GenerateChallengeOutputMessage">
+      <wsdl:part name="generateChallengeResponse" element="impl:generateChallengeResponse"/>
+   </wsdl:message>
+
+   <wsdl:message name="EncodeTBSInputMessage">
+      <wsdl:part name="encodeTBSRequest" element="impl:encodeTBSRequest"/>
+   </wsdl:message>
+
+   <wsdl:message name="EncodeTBSOutputMessage">
+      <wsdl:part name="encodeTBSResponse" element="impl:encodeTBSResponse"/>
+   </wsdl:message>
+
+   <wsdl:message name="VerifyAuthenticationInputMessage">
+      <wsdl:part name="verifyAuthenticationRequest" element="impl:verifyAuthenticationRequest"/>
+   </wsdl:message>
+
+   <wsdl:message name="VerifyAuthenticationOutputMessage">
+      <wsdl:part name="verifyAuthenticationResponse" element="impl:verifyAuthenticationResponse"/>
+   </wsdl:message>
+
+   <wsdl:message name="VerifySignatureInputMessage">
+      <wsdl:part name="verifySignatureRequest" element="impl:verifySignatureRequest"/>
+   </wsdl:message>
+
+   <wsdl:message name="VerifySignatureOutputMessage">
+      <wsdl:part name="verifySignatureResponse" element="impl:verifySignatureResponse"/>
+   </wsdl:message>
+
+   <wsdl:message name="VerifyCertificateInputMessage">
+      <wsdl:part name="verifyCertificateRequest" element="impl:verifyCertificateRequest"/>
+   </wsdl:message>
+
+   <wsdl:message name="VerifyCertificateOutputMessage">
+      <wsdl:part name="verifyCertificateResponse" element="impl:verifyCertificateResponse"/>
+   </wsdl:message>
+
+   <wsdl:portType name="Osif">
+
+      <wsdl:operation name="GenerateChallenge">
+         <wsdl:input name="GenerateChallengeInput" message="impl:GenerateChallengeInputMessage"/>
+         <wsdl:output name="GenerateChallengeOutput" message="impl:GenerateChallengeOutputMessage"/>
+      </wsdl:operation>
+
+      <wsdl:operation name="EncodeTBS">
+         <wsdl:input name="EncodeTBSInput" message="impl:EncodeTBSInputMessage"/>
+         <wsdl:output name="EncodeTBSOutput" message="impl:EncodeTBSOutputMessage"/>
+      </wsdl:operation>
+
+      <wsdl:operation name="VerifyAuthentication">
+         <wsdl:input name="VerifyAuthenticationInput" message="impl:VerifyAuthenticationInputMessage"/>
+         <wsdl:output name="VerifyAuthenticationOutput" message="impl:VerifyAuthenticationOutputMessage"/>
+      </wsdl:operation>
+
+      <wsdl:operation name="VerifySignature">
+         <wsdl:input name="VerifySignatureInput" message="impl:VerifySignatureInputMessage"/>
+         <wsdl:output name="VerifySignatureOutput" message="impl:VerifySignatureOutputMessage"/>
+      </wsdl:operation>
+
+      <wsdl:operation name="VerifyCertificate">
+         <wsdl:input name="VerifyCertificateInput" message="impl:VerifyCertificateInputMessage"/>
+         <wsdl:output name="VerifyCertificateOutput" message="impl:VerifyCertificateOutputMessage"/>
+      </wsdl:operation>
+
+   </wsdl:portType>
+
+   <wsdl:binding name="osifSoapBinding" type="impl:Osif">
+     <wsdlsoap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+
+     <wsdl:operation name="GenerateChallenge">
+        <wsdlsoap:operation soapAction="GenerateChallenge"/>
+        <wsdl:input name="GenerateChallengeInput">
+           <wsdlsoap:body use="literal"/>
+        </wsdl:input>
+        <wsdl:output name="GenerateChallengeOutput">
+            <wsdlsoap:body use="literal"/>
+         </wsdl:output>
+      </wsdl:operation>
+
+      <wsdl:operation name="EncodeTBS">
+         <wsdlsoap:operation soapAction="EncodeTBS"/>
+         <wsdl:input name="EncodeTBSInput">
+           <wsdlsoap:body use="literal"/>
+         </wsdl:input>
+         <wsdl:output name="EncodeTBSOutput">
+            <wsdlsoap:body use="literal"/>
+         </wsdl:output>
+      </wsdl:operation>
+
+      <wsdl:operation name="VerifyAuthentication">
+         <wsdlsoap:operation soapAction="VerifyAuthentication"/>
+         <wsdl:input name="VerifyAuthenticationInput">
+            <wsdlsoap:body use="literal"/>
+         </wsdl:input>
+         <wsdl:output name="VerifyAuthenticationOutput">
+            <wsdlsoap:body use="literal"/>
+         </wsdl:output>
+      </wsdl:operation>
+
+      <wsdl:operation name="VerifySignature">
+         <wsdlsoap:operation soapAction="VerifySignature"/>
+         <wsdl:input name="VerifySignatureInput">
+            <wsdlsoap:body use="literal"/>
+         </wsdl:input>
+         <wsdl:output name="VerifySignatureOutput">
+            <wsdlsoap:body use="literal"/>
+         </wsdl:output>
+      </wsdl:operation>
+
+      <wsdl:operation name="VerifyCertificate">
+         <wsdlsoap:operation soapAction="VerifyCertificate"/>
+         <wsdl:input name="VerifyCertificateInput">
+            <wsdlsoap:body use="literal"/>
+         </wsdl:input>
+         <wsdl:output name="VerifyCertificateOutput">
+            <wsdlsoap:body use="literal"/>
+         </wsdl:output>
+      </wsdl:operation>
+
+   </wsdl:binding>
+
+   <wsdl:service name="OsifService">
+      <wsdl:port name="osif" binding="impl:osifSoapBinding">
+          <wsdlsoap:address location="http://replace.with.actual.url/"/>
+      </wsdl:port>
+   </wsdl:service>
+
+</wsdl:definitions>

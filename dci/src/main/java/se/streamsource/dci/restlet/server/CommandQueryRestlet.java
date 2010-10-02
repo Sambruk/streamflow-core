@@ -17,6 +17,26 @@
 
 package se.streamsource.dci.restlet.server;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
+import java.net.URLDecoder;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import javax.security.auth.Subject;
 import org.json.JSONException;
 import org.qi4j.api.common.QualifiedName;
 import org.qi4j.api.composite.TransientComposite;
@@ -62,37 +82,15 @@ import org.restlet.resource.ResourceException;
 import org.restlet.security.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import se.streamsource.dci.api.DeleteContext;
-import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.ContextNotFoundException;
+import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.InteractionConstraints;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.api.SubContext;
 import se.streamsource.dci.api.SubContexts;
 import se.streamsource.dci.value.ContextValue;
-
-import javax.security.auth.Subject;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
-import java.net.URLDecoder;
-import java.security.AccessControlException;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Handle requests to command/query resources.
@@ -172,11 +170,11 @@ public class CommandQueryRestlet
          {
             context = getContext( rootContextFactory.getRoot( roleMap ), segments );
             roleMap = uow.metaInfo().get( RoleMap.class ); // Get current roleMap for this context
-         } catch (Exception e)
+         } catch (Throwable e)
          {
             uow.discard();
-            logger.error( e.getMessage() );
-            response.setStatus( Status.SERVER_ERROR_INTERNAL );
+            handleException( response, e );
+            return;
          }
 
          if (context == null)
@@ -217,11 +215,10 @@ public class CommandQueryRestlet
                   try
                   {
                      context = getContext( rootContextFactory.getRoot( roleMap ), segments );
-                  } catch (Exception ex)
+                  } catch (Throwable ex)
                   {
                      uow.discard();
-                     logger.error( e.getMessage() );
-                     response.setStatus( Status.SERVER_ERROR_INTERNAL );
+                     handleException( response, ex );
                      return;
                   }
                }
@@ -279,7 +276,7 @@ public class CommandQueryRestlet
          {
             Method method = getInteractionMethod( context, lastSegment );
             if (!constraints.isValid( method, roleMap ))
-               throw new ResourceException( Status.CLIENT_ERROR_NOT_FOUND, "Interaction not valid" );
+               throw new ResourceException( Status.CLIENT_ERROR_NOT_FOUND, "Interaction not available" );
 
             // Check whether it's a command or query
             if (isCommandMethod( method ))
@@ -297,15 +294,9 @@ public class CommandQueryRestlet
                query( request, response, context, segments, roleMap, method );
             }
          }
-      } catch (ResourceException ex)
-      {
-         logger.error( ex.getMessage(), ex );
-         response.setStatus( ex.getStatus() );
-         response.setEntity( new StringRepresentation(ex.getMessage()) );
       } catch (Throwable ex)
       {
-         logger.error( ex.getMessage(), ex );
-         response.setStatus( Status.SERVER_ERROR_INTERNAL );
+         handleException(response, ex);
       } finally
       {
          module.unitOfWorkFactory().currentUnitOfWork().discard();
@@ -319,9 +310,9 @@ public class CommandQueryRestlet
       Date unmodified = request.getConditions().getUnmodifiedSince();
       if (unmodified != null)
       {
-         EntityComposite entity = roleMap.get( EntityComposite.class );
-         if (entity != null)
+         try
          {
+            EntityComposite entity = roleMap.get( EntityComposite.class );
             Date lastModified = new Date((spi.getEntityState( entity ).lastModified()/1000)*1000);
 //            Date lastModified = new Date(spi.getEntityState( entity ).lastModified());
             if (!lastModified.equals( unmodified ))
@@ -329,6 +320,9 @@ public class CommandQueryRestlet
                response.setStatus( Status.CLIENT_ERROR_PRECONDITION_FAILED );
                return;
             }
+         } catch (IllegalArgumentException e)
+         {
+            // Ignore
          }
       }
 
@@ -388,7 +382,7 @@ public class CommandQueryRestlet
             responseWriter = responseWriterFactory.createWriter( segments, result == null ? null : result.getClass(), roleMap, variant );
          } catch (Exception e)
          {
-            response.setStatus( Status.CLIENT_ERROR_NOT_FOUND, e.getMessage() );
+            response.setStatus( Status.SERVER_ERROR_INTERNAL, e.getMessage() );
             return;
          }
          responseWriter.write( result, request, response );
@@ -398,18 +392,9 @@ public class CommandQueryRestlet
       {
          unitOfWork.discard();
          throw e; // Let the wrapping code handle retries
-      } catch (Exception e)
+      } catch (Throwable e)
       {
-         unitOfWork.discard();
-         LoggerFactory.getLogger( getClass() ).warn( "Could not complete UnitOfWork " + unitOfWork.usecase().name(), e );
-         response.setEntity( new StringRepresentation( e.getMessage() ) );
-         if ( e instanceof ResourceException)
-         {
-            response.setStatus(((ResourceException) e).getStatus());
-         } else
-         {
-            response.setStatus( Status.SERVER_ERROR_INTERNAL );
-         }
+         handleException( response, e );
       }
    }
 
@@ -432,9 +417,9 @@ public class CommandQueryRestlet
          try
          {
             responseWriter = responseWriterFactory.createWriter( segments, result.getClass(), roleMap, variant );
-         } catch (Exception e)
+         } catch (Throwable e)
          {
-            response.setStatus( Status.CLIENT_ERROR_NOT_FOUND, e.getMessage() );
+            handleException( response, e );
             return;
          }
          responseWriter.write( result, request, response );
@@ -443,8 +428,7 @@ public class CommandQueryRestlet
       {
          uowf.currentUnitOfWork().discard();
 
-         logger.error( e.getMessage() );
-         response.setStatus( Status.SERVER_ERROR_INTERNAL );
+         handleException( response, e );
       }
    }
 
@@ -506,7 +490,7 @@ public class CommandQueryRestlet
             try
             {
                context = ((SubContexts) context).context( URLDecoder.decode( segment, "UTF-8" ) );
-               segments.set( i, "roleMap" );
+               segments.set( i, "context" );
             } catch (ContextNotFoundException e)
             {
                throw new ResourceException( Status.CLIENT_ERROR_NOT_FOUND );
@@ -643,7 +627,7 @@ public class CommandQueryRestlet
       return false;
    }
 
-   private void query( Request request, Response response, Object resource, List<String> segments, RoleMap roleMap, Method queryMethod ) throws ResourceException
+   private void query( Request request, Response response, Object resource, List<String> segments, RoleMap roleMap, Method queryMethod ) throws Throwable
    {
       // Check conditions (ETag/LastModified)
       // TODO Check annotations on method
@@ -666,9 +650,9 @@ public class CommandQueryRestlet
          }
 
          responseWriter = responseWriterFactory.createWriter( segments, returnType, roleMap, variant );
-      } catch (Exception e)
+      } catch (Throwable e)
       {
-         response.setStatus( Status.CLIENT_ERROR_NOT_FOUND, e.getMessage() );
+         handleException( response, e );
          return;
       }
 
@@ -679,9 +663,14 @@ public class CommandQueryRestlet
          {
             Object queryResult = queryMethod.invoke( resource );
             responseWriter.write( queryResult, request, response );
-         } catch (Exception e)
+         } catch (InvocationTargetException e)
          {
-            throw new ResourceException( e );
+            handleException( response, e );
+            return;
+         }catch (Throwable e)
+         {
+            handleException( response, e );
+            return;
          }
       } else
       {
@@ -699,9 +688,9 @@ public class CommandQueryRestlet
                ValueDescriptor valueDescriptor = module.valueDescriptor( valueType.getName() );
 
                responseWriter.write( valueDescriptor, request, response );
-            } catch (Exception e)
+            } catch (Throwable e)
             {
-               throw new ResourceException( e );
+               handleException( response, e );
             }
 
          } else
@@ -735,7 +724,7 @@ public class CommandQueryRestlet
    }
 
    private Object invoke( Request request, final Object resource, final Method method, final Object[] args )
-         throws ResourceException
+         throws Throwable
    {
       try
       {
@@ -758,19 +747,7 @@ public class CommandQueryRestlet
          }
       } catch (InvocationTargetException e)
       {
-         if (e.getTargetException() instanceof ResourceException)
-         {
-            throw (ResourceException) e.getTargetException();
-         } else if (e.getTargetException() instanceof AccessControlException)
-         {
-            // Operation not allowed - return 403
-            throw new ResourceException( Status.CLIENT_ERROR_FORBIDDEN );
-         }
-
-         throw new ResourceException( e.getTargetException() );
-      } catch (Throwable e)
-      {
-         throw new ResourceException( e );
+         throw e.getTargetException();
       }
    }
 
@@ -845,7 +822,8 @@ public class CommandQueryRestlet
             return null;
          }
 
-         public void visitProperties( StateVisitor visitor )
+          public <ThrowableType extends Exception> void visitProperties( StateVisitor<ThrowableType> visitor )
+              throws ThrowableType
          {
             for (PropertyType propertyType : descriptor.valueType().types())
             {
@@ -868,25 +846,6 @@ public class CommandQueryRestlet
          }
       } );
       return builder.newInstance();
-   }
-
-   private Iterable<Method> getContextInteractions( Object context )
-   {
-      List<Method> methods = contextClassMethods.get( context.getClass() );
-
-      if (methods == null)
-      {
-         methods = new ArrayList<Method>();
-         Method[] allMethods = context instanceof Context ? context.getClass().getInterfaces()[0].getMethods() : context.getClass().getDeclaredMethods();
-         for (Method allMethod : allMethods)
-         {
-            if (!allMethod.isSynthetic())
-               methods.add( allMethod );
-         }
-         contextClassMethods.put( context.getClass(), methods );
-      }
-
-      return methods;
    }
 
    private Object[] getCommandArguments( Request request, Response response, Method method ) throws ResourceException
@@ -1018,5 +977,40 @@ public class CommandQueryRestlet
       }
 
       return null;
+   }
+
+   private void handleException(Response response, Throwable ex)
+   {
+      try
+      {
+         throw ex;
+      } catch (ResourceException e)
+      {
+         // IAE (or subclasses) are considered client faults
+         response.setEntity( new StringRepresentation( e.getMessage() ) );
+         response.setStatus( e.getStatus() );
+      } catch (IllegalArgumentException e)
+      {
+         // IAE (or subclasses) are considered client faults
+         response.setEntity( new StringRepresentation( e.getMessage() ) );
+         response.setStatus( Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY );
+      } catch (RuntimeException e)
+      {
+         // RuntimeExceptions are considered server faults
+         LoggerFactory.getLogger( getClass() ).warn( "Exception thrown during processing", e );
+         response.setEntity( new StringRepresentation( e.getMessage() ) );
+         response.setStatus( Status.SERVER_ERROR_INTERNAL );
+      } catch (Exception e)
+      {
+         // Checked exceptions are considered client faults
+         response.setEntity( new StringRepresentation( e.getMessage() ) );
+         response.setStatus( Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY );
+      } catch (Throwable e)
+      {
+         // Anything else are considered server faults
+         LoggerFactory.getLogger( getClass() ).error( "Exception thrown during processing", e );
+         response.setEntity( new StringRepresentation( e.getMessage() ) );
+         response.setStatus( Status.SERVER_ERROR_INTERNAL );
+      }
    }
 }

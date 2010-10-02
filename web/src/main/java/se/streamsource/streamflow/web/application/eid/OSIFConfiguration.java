@@ -15,22 +15,21 @@
  * limitations under the License.
  */
 
-package se.streamsource.dci.api;
+package se.streamsource.streamflow.web.application.eid;
 
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.configuration.ConfigurationComposite;
+import org.qi4j.api.property.Property;
 
 /**
- * Base mixin for Roles. Provides access to the RoleMap of the UoW associated
- * with the Entity of this Role.
+ * JAVADOC
  */
-public abstract class RoleMixin
+public interface OSIFConfiguration
+   extends ConfigurationComposite
 {
-   @Structure
-   UnitOfWorkFactory uowf;
-
-   protected RoleMap roleMap()
-   {
-      return uowf.currentUnitOfWork().metaInfo().get(RoleMap.class);
-   }
+   @Optional
+   Property<String> serviceURL();
+   
+   @Optional
+   Property<String> serviceId();
 }

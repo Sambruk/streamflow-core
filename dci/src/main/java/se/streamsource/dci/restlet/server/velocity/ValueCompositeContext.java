@@ -17,16 +17,14 @@
 
 package se.streamsource.dci.restlet.server.velocity;
 
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.velocity.context.AbstractContext;
 import org.qi4j.api.common.QualifiedName;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.property.StateHolder;
 import org.qi4j.api.value.ValueComposite;
-
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 /**
  * JAVADOC
@@ -80,7 +78,7 @@ public class ValueCompositeContext
    {
       final List keys = new ArrayList();
 
-      composite.state().visitProperties( new StateHolder.StateVisitor()
+      composite.state().visitProperties( new StateHolder.StateVisitor<RuntimeException>()
       {
          public void visitProperty( QualifiedName name, Object value )
          {

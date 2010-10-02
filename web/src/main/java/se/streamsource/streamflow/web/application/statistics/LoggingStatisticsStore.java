@@ -60,7 +60,7 @@ public interface LoggingStatisticsStore
       {
          final StringBuilder str = new StringBuilder();
          StateHolder state = qi4j.getState( caseStatistics);
-         state.visitProperties( new StateHolder.StateVisitor()
+         state.visitProperties( new StateHolder.StateVisitor<RuntimeException>()
          {
             public void visitProperty( QualifiedName name, Object value )
             {

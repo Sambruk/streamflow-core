@@ -129,7 +129,7 @@ public class AccountSelector
                      if (!clientVersion.startsWith( serverVersion.trim() ))
                      {
                         String msg = MessageFormat.format( i18n.text( AccountResources.version_missmatch ), clientVersion, serverVersion );
-                        dialogs.showOkDialog( this, new InfoDialog( context, msg ), "Info" );
+                        dialogs.showMessageDialog( this, msg, "Info" );
                         throw new PropertyVetoException( msg, evt );
                      }
                   }
@@ -147,12 +147,12 @@ public class AccountSelector
          {
             msg = i18n.text( AccountResources.resource_failure ) + " \r\n" + e.getStatus().toString();
          }
-         dialogs.showOkDialog( this, new InfoDialog( context, msg ), "Info" );
+         dialogs.showMessageDialog( this, msg, "Info" );
          throw new PropertyVetoException( msg, evt );
       } catch (IOException e)
       {
          String msg = i18n.text( AccountResources.cannot_read_stream );
-         dialogs.showOkDialog( this, new InfoDialog( context, msg ), "Info" );
+         dialogs.showMessageDialog( this, msg, "Info" );
          throw new PropertyVetoException( msg, evt );
       }
    }

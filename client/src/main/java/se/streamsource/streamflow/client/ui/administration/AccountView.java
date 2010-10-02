@@ -33,13 +33,13 @@ import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
+import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.FormEditor;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import se.streamsource.streamflow.client.ui.InfoDialog;
 import se.streamsource.streamflow.client.ui.workspace.TestConnectionTask;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.resource.user.ChangePasswordCommand;
@@ -51,10 +51,10 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JToggleButton;
 import javax.swing.border.EmptyBorder;
-import java.awt.BorderLayout;
-import java.awt.Insets;
+import java.awt.*;
 
-import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.*;
+import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.PASSWORD;
+import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.TEXTFIELD;
 
 /**
  * JAVADOC
@@ -179,7 +179,7 @@ public class AccountView extends JScrollPane
          public void succeeded(TaskEvent<String> stringTaskEvent)
          {
             String result = stringTaskEvent.getValue();
-            dialogs.showOkDialog( AccountView.this, new InfoDialog(context, result), "Server Version:" );
+            dialogs.showMessageDialog( AccountView.this, result, "Server Version:" );
          }
 
          @Override
@@ -190,8 +190,13 @@ public class AccountView extends JScrollPane
                throw throwableTaskEvent.getValue();
             } catch (ResourceException e)
             {
-               dialogs.showOkDialog(AccountView.this, new InfoDialog( context,
-                     i18n.text(AccountResources.connection_not_ok)+ " " + e.getStatus().toString()), "Info");
+               if (e.getStatus().equals( Status.CLIENT_ERROR_UNAUTHORIZED ))
+               {
+                  dialogs.showMessageDialog(AccountView.this, i18n.text(AccountResources.wrong_user_password), "Info");
+               } else
+               {
+                  dialogs.showMessageDialog(AccountView.this, i18n.text(AccountResources.connection_not_ok)+ " " + e.getStatus().toString(), "Info");
+               }
             } catch (Throwable throwable)
             {
                throwable.printStackTrace();

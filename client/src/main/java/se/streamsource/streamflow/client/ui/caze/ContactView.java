@@ -36,7 +36,6 @@ import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import se.streamsource.streamflow.client.ui.InfoDialog;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.domain.contact.ContactAddressValue;
 import se.streamsource.streamflow.domain.contact.ContactEmailValue;
@@ -50,13 +49,13 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
-import java.awt.CardLayout;
-import java.awt.FlowLayout;
+import java.awt.*;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
-import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.*;
+import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.TEXTAREA;
+import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.TEXTFIELD;
 
 /**
  * JAVADOC
@@ -269,7 +268,7 @@ public class ContactView
          if (emptyCriteria.equals( query ))
          {
             String msg = i18n.text( CaseResources.could_not_find_search_criteria );
-            dialogs.showOkDialog( this, new InfoDialog( context, msg ), "Info" );
+            dialogs.showMessageDialog( this, msg, "Info" );
 
          } else
          {
@@ -279,7 +278,7 @@ public class ContactView
             if (contacts.contacts().get().isEmpty())
             {
                String msg = i18n.text( CaseResources.could_not_find_contacts );
-               dialogs.showOkDialog( this, new InfoDialog( context, msg ), "Info" );
+               dialogs.showMessageDialog( this, msg, "Info" );
             } else
             {
 

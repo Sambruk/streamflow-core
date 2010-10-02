@@ -21,6 +21,8 @@ import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.exception.ResourceNotFoundException;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
@@ -28,9 +30,12 @@ import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.Value;
 import org.qi4j.api.value.ValueComposite;
 import org.qi4j.spi.Qi4jSPI;
+import org.qi4j.spi.property.PropertyDescriptor;
 import org.qi4j.spi.value.ValueDescriptor;
 import org.restlet.Request;
 import org.restlet.Response;
+import org.restlet.data.CharacterSet;
+import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
@@ -126,9 +131,13 @@ public class DefaultResponseWriterFactory
          } else if (variant.getMediaType().equals( MediaType.APPLICATION_JSON ) && Value.class.isAssignableFrom( resultType ))
          {
             return new JsonResponseWriter( variant, roleMap );
-         } else if (ValueDescriptor.class.equals(resultType))
+         } else if (ValueDescriptor.class.isAssignableFrom( resultType))
          {
-            return new VelocityResponseWriter( formHtmlTemplate, roleMap, variant );
+            if (variant.getMediaType().equals( MediaType.APPLICATION_JSON ))
+            {
+               return new JsonValueDescriptorWriter();
+            } else
+               return new VelocityResponseWriter( formHtmlTemplate, roleMap, variant );
          } else
          {
             final String extension = metadataService.getExtension( variant.getMediaType() );
@@ -203,7 +212,7 @@ public class DefaultResponseWriterFactory
          {
             // If we can't find the specific template, then check if we are looking for the
             // roleMap template, and if so, use the default one
-            if (templateName.getName().equals("roleMap.htm"))
+            if (templateName.getName().equals("context.htm"))
                template = contextHtmlTemplate;
             else
             {
@@ -291,10 +300,13 @@ public class DefaultResponseWriterFactory
       {
          this.variant = variant;
 
-         EntityComposite entity = roleMap.get( EntityComposite.class );
-         if (entity != null)
+         try
          {
+            EntityComposite entity = roleMap.get( EntityComposite.class );
             lastModified = new Date(spi.getEntityState( entity ).lastModified());
+         } catch (IllegalArgumentException e)
+         {
+            // Ignore
          }
       }
 
@@ -306,6 +318,39 @@ public class DefaultResponseWriterFactory
                variant.getCharacterSet() );
 
          representation.setModificationDate( lastModified );
+
+         response.setEntity( representation );
+         response.setStatus( Status.SUCCESS_OK );
+      }
+   }
+
+   private class JsonValueDescriptorWriter implements ResponseWriter
+   {
+      public void write( Object result, Request request, Response response ) throws ResourceException
+      {
+         JSONObject json = new JSONObject();
+
+         ValueDescriptor vd = (ValueDescriptor) result;
+
+         try
+         {
+            for (PropertyDescriptor propertyDescriptor : vd.state().properties())
+            {
+               Object o = propertyDescriptor.initialValue();
+               if (o == null)
+                  json.put( propertyDescriptor.qualifiedName().name(), JSONObject.NULL );
+               else
+                  json.put(propertyDescriptor.qualifiedName().name(), o.toString());
+            }
+         } catch (JSONException e)
+         {
+            e.printStackTrace();
+         }
+
+         StringRepresentation representation = new StringRepresentation( json.toString(),
+               MediaType.APPLICATION_JSON,
+               Language.ENGLISH,
+               CharacterSet.UTF_8 );
 
          response.setEntity( representation );
          response.setStatus( Status.SUCCESS_OK );

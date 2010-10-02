@@ -250,7 +250,7 @@ public class CaseGeneralModel extends Observable implements Refreshable,
       }
    }
 
-   public void caseType( LinkValue selected, String labelQuery )
+   public void changeCaseType( LinkValue selected, String labelQuery )
    {
       try
       {
@@ -263,7 +263,8 @@ public class CaseGeneralModel extends Observable implements Refreshable,
          // we do a search for that labels and add them to the case automatically
          if (!"".equals( labelQuery ) && selected.classes().get().toLowerCase().indexOf( labelQuery.toLowerCase() ) != -1)
          {
-            for (LinkValue link : getPossibleLabels())
+            EventList<LinkValue> possibleLabels = getPossibleLabels();
+            for (LinkValue link : possibleLabels)
             {
                if (link.text().get().toLowerCase().contains( labelQuery.toLowerCase() ))
                {

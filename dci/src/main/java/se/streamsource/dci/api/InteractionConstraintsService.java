@@ -168,7 +168,15 @@ public class InteractionConstraintsService
 
       public boolean isValid( RoleMap roleMap )
       {
-         return constraint.isValid( annotation, roleMap.get(roleClass) );
+         try
+         {
+            Object checkedObject = roleClass.equals(RoleMap.class) ? roleMap : roleMap.get(roleClass);
+
+            return constraint.isValid( annotation, checkedObject );
+         } catch (IllegalArgumentException e)
+         {
+            return false;
+         }
       }
    }
 

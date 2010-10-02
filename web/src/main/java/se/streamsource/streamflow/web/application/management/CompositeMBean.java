@@ -17,38 +17,6 @@
 
 package se.streamsource.streamflow.web.application.management;
 
-import org.apache.log4j.AppenderSkeleton;
-import org.apache.log4j.Logger;
-import org.apache.log4j.spi.LoggingEvent;
-import org.apache.log4j.spi.ThrowableInformation;
-import org.qi4j.api.common.QualifiedName;
-import org.qi4j.api.composite.TransientComposite;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.property.Property;
-import org.qi4j.api.property.StateHolder;
-import org.qi4j.spi.Qi4jSPI;
-import org.slf4j.LoggerFactory;
-
-import javax.management.Attribute;
-import javax.management.AttributeList;
-import javax.management.AttributeNotFoundException;
-import javax.management.DynamicMBean;
-import javax.management.InvalidAttributeValueException;
-import javax.management.ListenerNotFoundException;
-import javax.management.MBeanAttributeInfo;
-import javax.management.MBeanConstructorInfo;
-import javax.management.MBeanException;
-import javax.management.MBeanInfo;
-import javax.management.MBeanNotificationInfo;
-import javax.management.MBeanOperationInfo;
-import javax.management.MBeanParameterInfo;
-import javax.management.Notification;
-import javax.management.NotificationBroadcasterSupport;
-import javax.management.NotificationEmitter;
-import javax.management.NotificationFilter;
-import javax.management.NotificationListener;
-import javax.management.ReflectionException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
@@ -61,7 +29,33 @@ import java.util.ResourceBundle;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import javax.management.Attribute;
+import javax.management.AttributeList;
+import javax.management.AttributeNotFoundException;
+import javax.management.DynamicMBean;
+import javax.management.InvalidAttributeValueException;
+import javax.management.MBeanAttributeInfo;
+import javax.management.MBeanConstructorInfo;
+import javax.management.MBeanException;
+import javax.management.MBeanInfo;
+import javax.management.MBeanNotificationInfo;
+import javax.management.MBeanOperationInfo;
+import javax.management.MBeanParameterInfo;
+import javax.management.Notification;
+import javax.management.NotificationBroadcasterSupport;
+import javax.management.ReflectionException;
+import org.apache.log4j.AppenderSkeleton;
+import org.apache.log4j.Logger;
+import org.apache.log4j.spi.LoggingEvent;
+import org.apache.log4j.spi.ThrowableInformation;
+import org.qi4j.api.common.QualifiedName;
+import org.qi4j.api.composite.TransientComposite;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.property.StateHolder;
+import org.qi4j.spi.Qi4jSPI;
+import org.slf4j.LoggerFactory;
 
 /**
  * Expose a TransientComposite as an MBean. All properties are used as JMX attributes. The rest
@@ -93,7 +87,7 @@ public class CompositeMBean
       // Find state
       final List<MBeanAttributeInfo> attributes = new ArrayList<MBeanAttributeInfo>();
       state = spi.getState( composite );
-      state.visitProperties( new StateHolder.StateVisitor()
+      state.visitProperties( new StateHolder.StateVisitor<RuntimeException>()
       {
          public void visitProperty( QualifiedName name, Object value )
          {

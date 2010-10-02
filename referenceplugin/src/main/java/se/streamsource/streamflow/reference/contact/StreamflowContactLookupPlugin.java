@@ -87,7 +87,7 @@ public interface StreamflowContactLookupPlugin
 
          ref.setQuery( null );
 
-         holder.visitProperties( new StateHolder.StateVisitor()
+         holder.visitProperties( new StateHolder.StateVisitor<RuntimeException>()
          {
             public void visitProperty( QualifiedName
                   name, Object value )

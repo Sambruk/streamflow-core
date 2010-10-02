@@ -530,7 +530,7 @@ public interface ManagerComposite
       public String databaseSize()
       {
          final int[] count = {0};
-         entityStore.get().visitEntityStates( new EntityStore.EntityStateVisitor()
+         entityStore.get().visitEntityStates( new EntityStore.EntityStateVisitor<RuntimeException>()
          {
             public void visitEntityState( EntityState entityState )
             {

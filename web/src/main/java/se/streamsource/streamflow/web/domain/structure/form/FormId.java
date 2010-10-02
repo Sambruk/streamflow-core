@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.web.domain.structure.form;
 
+import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
@@ -33,6 +34,7 @@ public interface FormId
 
    interface Data
    {
+      @UseDefaults
       Property<String> formId();
 
       void changedFormId( DomainEvent event, String newId );

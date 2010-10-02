@@ -18,7 +18,6 @@
 package se.streamsource.dci.qi4j;
 
 import org.qi4j.bootstrap.InvalidInjectionException;
-import org.qi4j.runtime.entity.EntityInstance;
 import org.qi4j.runtime.injection.DependencyModel;
 import org.qi4j.runtime.injection.InjectionContext;
 import org.qi4j.runtime.injection.InjectionProvider;
@@ -28,7 +27,7 @@ import org.qi4j.runtime.model.Resolution;
 import se.streamsource.dci.api.RoleMap;
 
 /**
- * JAVADOC
+ * Injection factory for @Role annotation. Looks up role in RoleMap of current UnitOfWork's metainfo.
  */
 public class RoleInjectionProviderFactory
    implements InjectionProviderFactory
@@ -52,7 +51,7 @@ public class RoleInjectionProviderFactory
       {
          try
          {
-            return ((EntityInstance)context.compositeInstance()).unitOfWork().metaInfo().get( RoleMap.class ).get( roleType );
+            return context.moduleInstance().unitOfWorkFactory().currentUnitOfWork().metaInfo().get( RoleMap.class ).get( roleType );
          } catch (IllegalArgumentException e)
          {
             return null;

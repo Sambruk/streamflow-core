@@ -28,11 +28,13 @@ import org.qi4j.spi.Qi4jSPI;
 import org.qi4j.spi.property.PropertyTypeDescriptor;
 import org.qi4j.spi.value.ValueDescriptor;
 import org.restlet.Context;
+import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Uniform;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.MediaType;
+import org.restlet.data.Method;
 import org.restlet.data.Preference;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
@@ -40,7 +42,6 @@ import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.ObjectRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
-import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.value.LinkValue;
 
@@ -79,11 +80,6 @@ public class CommandQueryClient
       return reference;
    }
 
-   public Uniform getClient()
-   {
-      return client;
-   }
-
    public <T extends ValueComposite> T query( String operation, Class<T> queryResult ) throws ResourceException
    {
       return query( operation, null, queryResult );
@@ -91,34 +87,35 @@ public class CommandQueryClient
 
    public <T extends ValueComposite> T query( String operation, ValueComposite queryValue, Class<T> queryResult ) throws ResourceException
    {
-      ClientResource result = invokeQuery( operation, queryValue );
+      Response response = invokeQuery( operation, queryValue );
 
-      if (result.getResponse().getStatus().isSuccess())
+      if (response.getStatus().isSuccess())
       {
-         lastModified = result.getResponse().getEntity().getModificationDate();
+         lastModified = response.getEntity().getModificationDate();
 
-         String jsonValue = result.getResponse().getEntityAsText();
+         String jsonValue = response.getEntityAsText();
+
          T returnValue = vbf.newValueFromJSON( queryResult, jsonValue );
          return returnValue;
       } else
       {
          // This will throw an exception
-         handleError( result.getResponse() );
+         handleError( response );
          return null;
       }
    }
 
    public InputStream queryStream( String operation, ValueComposite queryValue ) throws ResourceException, IOException
    {
-      ClientResource result = invokeQuery( operation, queryValue );
+      Response response = invokeQuery( operation, queryValue );
 
-      if (result.getResponse().getStatus().isSuccess())
+      if (response.getStatus().isSuccess())
       {
-         return result.getResponse().getEntity().getStream();
+         return response.getEntity().getStream();
       } else
       {
          // This will throw an exception
-         handleError( result.getResponse() );
+         handleError( response );
          return null;
       }
    }
@@ -131,7 +128,7 @@ public class CommandQueryClient
 
       ref.setQuery( null );
 
-      holder.visitProperties( new StateHolder.StateVisitor()
+      holder.visitProperties( new StateHolder.StateVisitor<RuntimeException>()
       {
          public void visitProperty( QualifiedName
                name, Object value )
@@ -174,30 +171,30 @@ public class CommandQueryClient
          throws ResourceException
    {
       Reference ref = new Reference( reference.toUri().toString() + operation );
-      ClientResource client = new ClientResource( ref );
+      Request request = new Request( Method.POST, ref, commandRepresentation );
       ClientInfo info = new ClientInfo();
+      info.setAgent( "Streamflow" ); // TODO Set versions correctly
       info.setAcceptedMediaTypes( Collections.singletonList( new Preference<MediaType>( MediaType.APPLICATION_JSON ) ) );
-      client.setClientInfo( info );
-      client.setNext( this.client );
+      request.setClientInfo( info );
+      request.getConditions().setUnmodifiedSince( lastModified );
 
-      client.getConditions().setUnmodifiedSince( lastModified );
+      Response response = new Response( request );
+      client.handle( request, response );
+
+      lastModified = response.getEntity().getModificationDate();
+
       try
       {
-         client.post( commandRepresentation );
-
-         // Reset modification date
-         lastModified = null;
-         try
+         if (response.getStatus().isSuccess())
          {
-            responseHandler.handleResponse( client.getResponse() );
-         } finally
+            responseHandler.handleResponse( response );
+         } else
          {
-            client.getResponse().release();
+            handleError( response );
          }
-
-      } catch (ResourceException e)
+      } finally
       {
-         handleError( client.getResponse() );
+         response.release();
       }
    }
 
@@ -235,22 +232,23 @@ public class CommandQueryClient
       }
    }
 
-   private ClientResource invokeQuery( String operation, ValueComposite queryValue )
+   private Response invokeQuery( String operation, ValueComposite queryValue )
          throws ResourceException
    {
       Reference ref = new Reference( reference.toUri().toString() + operation );
       if (queryValue != null)
          setQueryParameters( ref, queryValue );
 
-      ClientResource client = new ClientResource( ref );
+      Request request = new Request( Method.GET, ref );
       ClientInfo info = new ClientInfo();
       info.setAcceptedMediaTypes( Collections.singletonList( new Preference<MediaType>( MediaType.APPLICATION_JSON ) ) );
-      client.setClientInfo( info );
-      client.setNext( this.client );
+      request.setClientInfo( info );
 
-      client.get( MediaType.APPLICATION_JSON );
+      Response response = new Response( request );
 
-      return client;
+      client.handle( request, response );
+
+      return response;
    }
 
    public void create() throws ResourceException
@@ -278,33 +276,35 @@ public class CommandQueryClient
          ref = ref.addSegment( operation );
       }
 
-      ClientResource client = new ClientResource( ref );
+      Request request = new Request( Method.PUT, ref );
       ClientInfo info = new ClientInfo();
       info.setAcceptedMediaTypes( Collections.singletonList( new Preference<MediaType>( MediaType.APPLICATION_JSON ) ) );
-      client.setClientInfo( info );
-      client.setNext( this.client );
-      client.getConditions().setUnmodifiedSince( lastModified );
+      request.setClientInfo( info );
+      request.getConditions().setUnmodifiedSince( lastModified );
+      request.setEntity( commandRepresentation );
       int tries = 3;
       while (true)
       {
          try
          {
-            client.put( commandRepresentation );
-            if (!client.getStatus().isSuccess())
-            {
-               throw new ResourceException( client.getStatus() );
-            } else
-            {
-               // Reset modification date
-               lastModified = null;
+            Response response = new Response( request );
+            client.handle( request, response );
 
-               try
+            try
+            {
+               if (response.getStatus().isSuccess())
                {
-                  responseHandler.handleResponse( client.getResponse() );
-               } finally
+                  // Reset modification date
+                  lastModified = null;
+
+                  responseHandler.handleResponse( response );
+               } else
                {
-                  client.getResponse().release();
+                  handleError( response );
                }
+            } finally
+            {
+               response.release();
             }
             break;
          } catch (ResourceException e)
@@ -332,33 +332,27 @@ public class CommandQueryClient
    public void delete() throws ResourceException
    {
 
-      ClientResource client = new ClientResource( new Reference( reference.toUri() ).toString() );
+      Request request = new Request( Method.DELETE, new Reference( reference.toUri() ).toString() );
       ClientInfo info = new ClientInfo();
       info.setAcceptedMediaTypes( Collections.singletonList( new Preference<MediaType>( MediaType.APPLICATION_JSON ) ) );
-      client.setClientInfo( info );
-      client.setNext( this.client );
+      request.setClientInfo( info );
 
       int tries = 3;
       while (true)
       {
+         Response response = new Response(request);
          try
          {
-            client.delete();
-            if (!client.getStatus().isSuccess())
+            client.handle(request, response);
+            if (!response.getStatus().isSuccess())
             {
-               throw new ResourceException( client.getStatus() );
+               handleError( response );
             } else
             {
                // Reset modification date
                lastModified = null;
 
-               try
-               {
-                  responseHandler.handleResponse( client.getResponse() );
-               } finally
-               {
-                  client.getResponse().release();
-               }
+               responseHandler.handleResponse( response );
             }
 
             break;
@@ -380,6 +374,9 @@ public class CommandQueryClient
                // Abort
                throw e;
             }
+         } finally
+         {
+            response.release();
          }
       }
    }

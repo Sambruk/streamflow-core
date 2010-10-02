@@ -15,22 +15,20 @@
  * limitations under the License.
  */
 
-package se.streamsource.dci.api;
+package se.streamsource.dci.restlet.server;
 
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * Base mixin for Roles. Provides access to the RoleMap of the UoW associated
- * with the Entity of this Role.
+ * Mark methods that creates new sub-resources with this annotation
  */
-public abstract class RoleMixin
+@Retention( RetentionPolicy.RUNTIME )
+@Target( { ElementType.METHOD } )
+@Documented
+public @interface SubResource
 {
-   @Structure
-   UnitOfWorkFactory uowf;
-
-   protected RoleMap roleMap()
-   {
-      return uowf.currentUnitOfWork().metaInfo().get(RoleMap.class);
-   }
 }

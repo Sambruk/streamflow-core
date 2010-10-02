@@ -94,7 +94,7 @@ public interface DummyDataService
 
             CommandQueryClient server = account.server( client );
             ClientResource version = new ClientResource(server.getReference().clone().addSegment( "static" ).addSegment( "version.html" ));
-            version.setNext( server.getClient() );
+            version.setNext( client );
 
             String response = account.version( client );
             System.out.println( response );

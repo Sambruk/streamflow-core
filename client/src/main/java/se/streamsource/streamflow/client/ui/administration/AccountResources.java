@@ -38,5 +38,10 @@ public enum AccountResources
    user_settings_separator,
    contact_info_separator,
    profile_title,
-   connection_not_ok, version_missmatch, resource_failure, cannot_read_stream, contact_info_for_user_separator
+   connection_not_ok,
+   wrong_user_password, 
+   version_missmatch,
+   resource_failure,
+   cannot_read_stream,
+   contact_info_for_user_separator
 }

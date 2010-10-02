@@ -15,22 +15,13 @@
  * limitations under the License.
  */
 
-package se.streamsource.dci.api;
-
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+package se.streamsource.streamflow.web.infrastructure.circuitbreaker;
 
 /**
- * Base mixin for Roles. Provides access to the RoleMap of the UoW associated
- * with the Entity of this Role.
- */
-public abstract class RoleMixin
+* JAVADOC
+*/
+public interface CircuitTest
 {
-   @Structure
-   UnitOfWorkFactory uowf;
-
-   protected RoleMap roleMap()
-   {
-      return uowf.currentUnitOfWork().metaInfo().get(RoleMap.class);
-   }
+   void test()
+      throws Exception;
 }
