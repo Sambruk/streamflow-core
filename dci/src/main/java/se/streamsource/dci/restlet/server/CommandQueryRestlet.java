@@ -789,7 +789,7 @@ public class CommandQueryRestlet
          {
             for (Annotation[] annotations : method.getParameterAnnotations())
             {
-               Name name = Annotations.getAnnotationOfType( annotations, Name.class );
+               Name name = Annotations.first( Annotations.isType(Name.class ), annotations);
                Object arg = asForm.getFirstValue( name.value() );
 
                // Parameter conversion
@@ -822,7 +822,7 @@ public class CommandQueryRestlet
             return null;
          }
 
-          public <ThrowableType extends Exception> void visitProperties( StateVisitor<ThrowableType> visitor )
+          public <ThrowableType extends Throwable> void visitProperties( StateVisitor<ThrowableType> visitor )
               throws ThrowableType
          {
             for (PropertyType propertyType : descriptor.valueType().types())

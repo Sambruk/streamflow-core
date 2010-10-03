@@ -25,90 +25,84 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.structure.Application;
-import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.usecase.Usecase;
 import org.qi4j.api.usecase.UsecaseBuilder;
-import org.qi4j.index.reindexer.Reindexer;
 import org.qi4j.spi.entity.EntityState;
 import org.qi4j.spi.entitystore.EntityStore;
 import org.qi4j.spi.structure.ModuleSPI;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Perform migration of all data in the EntityStore
  */
-@Mixins(StartupMigrationService.Mixin.class)
+@Mixins( StartupMigrationService.Mixin.class )
 public interface StartupMigrationService
-      extends Activatable, Configuration, ServiceComposite
+    extends Activatable, Configuration, ServiceComposite
 {
-   class Mixin
-         implements Activatable
-   {
-      final Logger logger = LoggerFactory.getLogger( StartupMigrationService.class.getName() );
-      @This
-      Configuration<StartupMigrationConfiguration> config;
+    class Mixin
+        implements Activatable
+    {
+        final Logger logger = LoggerFactory.getLogger( StartupMigrationService.class.getName() );
+        @This
+        Configuration<StartupMigrationConfiguration> config;
 
-      @Structure
-      Application application;
+        @Structure
+        Application application;
 
-      @Service
-      EntityStore entityStore;
+        @Service
+        EntityStore entityStore;
 
-      @Structure
-      UnitOfWorkFactory uowf;
+        @Structure
+        UnitOfWorkFactory uowf;
 
-      @Structure
-      ModuleSPI module;
+        @Structure
+        ModuleSPI module;
 
-      public void activate() throws Exception
-      {
-         String lsv = config.configuration().lastStartupVersion().get();
-         final int[] count = new int[]{0};
-         if (lsv != null && !lsv.equals( application.version() ))
-         {
-            // Migrate all data eagerly
-            logger.info( "Migrating data to new version" );
-            final Usecase usecase = UsecaseBuilder.newUsecase( "Migrate data" );
-            final UnitOfWork[] uow = new UnitOfWork[]{uowf.newUnitOfWork( usecase )};
-
-            entityStore.visitEntityStates( new EntityStore.EntityStateVisitor()
+        public void activate()
+            throws Exception
+        {
+            String lsv = config.configuration().lastStartupVersion().get();
+            final int[] count = new int[]{ 0 };
+            if( lsv != null && !lsv.equals( application.version() ) )
             {
+                // Migrate all data eagerly
+                logger.info( "Migrating data to new version" );
+                final Usecase usecase = UsecaseBuilder.newUsecase( "Migrate data" );
+                final UnitOfWork[] uow = new UnitOfWork[]{ uowf.newUnitOfWork( usecase ) };
 
-               public void visitEntityState( EntityState entityState )
-               {
-                  try
-                  {
-                     // Do nothing - the EntityStore will do the migration on load
-                     count[0]++;
+                entityStore.visitEntityStates( new EntityStore.EntityStateVisitor<Exception>()
+                {
+                    public void visitEntityState( EntityState entityState )
+                        throws Exception
+                    {
+                        // Do nothing - the EntityStore will do the migration on load
+                        count[ 0 ]++;
 
-                     uow[0].get( module.classLoader().loadClass( entityState.entityDescriptor().entityType().type().name() ), entityState.identity().identity() );
+                        uow[ 0 ].get( module.classLoader().loadClass( entityState.entityDescriptor()
+                            .entityType()
+                            .type().name() ), entityState.identity().identity() );
 
-                     if (count[0] % 1000 == 0)
-                     {
-                        logger.info( "Checked " + count[0] + " entities" );
-                        uow[0].complete();
-                        uow[0] = uowf.newUnitOfWork( usecase );
-                     }
-                  } catch (Exception e)
-                  {
-                     e.printStackTrace();
-                  }
-               }
-            }, module );
-            uow[0].complete();
-            logger.info( "Migration finished. Checked " + count[0] + " entities" );
-         }
-         config.configuration().lastStartupVersion().set( application.version() );
-         config.save();
+                        if( count[ 0 ] % 1000 == 0 )
+                        {
+                            logger.info( "Checked " + count[ 0 ] + " entities" );
+                            uow[ 0 ].complete();
+                            uow[ 0 ] = uowf.newUnitOfWork( usecase );
+                        }
+                    }
+                }, module );
+                uow[ 0 ].complete();
+                logger.info( "Migration finished. Checked " + count[ 0 ] + " entities" );
+            }
+            config.configuration().lastStartupVersion().set( application.version() );
+            config.save();
+        }
 
-      }
-
-      public void passivate() throws Exception
-      {
-      }
-   }
+        public void passivate()
+            throws Exception
+        {
+        }
+    }
 }

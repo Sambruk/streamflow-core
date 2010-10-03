@@ -65,6 +65,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static org.qi4j.spi.util.Annotations.*;
+
 /**
  * JAVADOC
  */
@@ -537,7 +539,7 @@ public class CommandQueryResource
       {
          for (Annotation[] annotations : method.getParameterAnnotations())
          {
-            Name name = Annotations.getAnnotationOfType( annotations, Name.class );
+            Name name = first( isType(Name.class ), annotations);
             Object arg = asForm.getFirstValue( name.value() );
 
             // Parameter conversion
@@ -632,7 +634,7 @@ public class CommandQueryResource
             return null;
          }
 
-          public <ThrowableType extends Exception> void visitProperties( StateVisitor<ThrowableType> visitor )
+          public <ThrowableType extends Throwable> void visitProperties( StateVisitor<ThrowableType> visitor )
               throws ThrowableType
          {
             for (PropertyType propertyType : descriptor.valueType().types())

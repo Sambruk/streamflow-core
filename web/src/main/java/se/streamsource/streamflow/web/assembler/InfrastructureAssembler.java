@@ -72,7 +72,7 @@ import javax.sql.DataSource;
 
 import java.lang.reflect.Method;
 
-import static org.qi4j.api.service.ServiceTags.tags;
+import static org.qi4j.api.service.qualifier.ServiceTags.tags;
 import static org.qi4j.bootstrap.ImportedServiceDeclaration.NEW_OBJECT;
 
 /**

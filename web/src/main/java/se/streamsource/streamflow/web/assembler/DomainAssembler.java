@@ -18,7 +18,7 @@
 package se.streamsource.streamflow.web.assembler;
 
 import org.qi4j.api.common.Visibility;
-import org.qi4j.api.service.ServiceSelector;
+import org.qi4j.api.service.qualifier.ServiceQualifier;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
@@ -98,7 +98,7 @@ public class DomainAssembler
 
       module.importServices( NamedEntityFinder.class ).
             importedBy( ServiceSelectorImporter.class ).
-            setMetaInfo( ServiceSelector.withId( "solr" ) ).
+            setMetaInfo( ServiceQualifier.withId( "solr" ) ).
             setMetaInfo( namedQueries );
    }
 
