@@ -63,7 +63,15 @@ public interface LoggingService
          File accessLog = new File(fileConfig.logDirectory(), "access.log");
          final Logger accessLogger = Logger.getLogger( "LogService" );
          accessLogger.addAppender( new DailyRollingFileAppender(new PatternLayout("%d %m%n"), accessLog.getAbsolutePath(), "'.'yyyy-ww" ));
+         accessLogger.setAdditivity( false );
          logger.info( "Logging HTTP access to:"+accessLog );
+
+         // SPARQL query logging
+         File sparqlLog = new File(fileConfig.logDirectory(), "sparql.log");
+         final Logger sparqlLogger = Logger.getLogger( "org.qi4j.index.rdf.query.internal.RdfQueryParserImpl" );
+         sparqlLogger.addAppender( new DailyRollingFileAppender(new PatternLayout("%m%n%n"), sparqlLog.getAbsolutePath(), "'.'yyyy-ww" ));
+         sparqlLogger.setAdditivity( false );
+         logger.info( "Logging SPARQL queries to:"+sparqlLog );
 
          // General logging
          File generalLog = new File(fileConfig.logDirectory(), "streamflow.log");
