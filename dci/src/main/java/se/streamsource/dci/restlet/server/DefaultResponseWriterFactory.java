@@ -78,7 +78,7 @@ public class DefaultResponseWriterFactory
    private Template linksAtomTemplate;
    private Template formHtmlTemplate;
    private Template valueHtmlTemplate;
-   private Template contextHtmlTemplate;
+   private Template resourceHtmlTemplate;
 
    public DefaultResponseWriterFactory( @Service VelocityEngine velocity ) throws Exception
    {
@@ -98,7 +98,7 @@ public class DefaultResponseWriterFactory
       linksAtomTemplate = velocity.getTemplate( "rest/template/links.atom" );
       formHtmlTemplate = velocity.getTemplate( "rest/template/form.htm" );
       valueHtmlTemplate = velocity.getTemplate( "rest/template/value.htm" );
-      contextHtmlTemplate = velocity.getTemplate( "rest/template/context.htm" );
+      resourceHtmlTemplate = velocity.getTemplate( "rest/template/resource.htm" );
    }
 
    public ResponseWriter createWriter( List<String> segments, Class resultType, RoleMap roleMap, Variant variant )
@@ -192,7 +192,7 @@ public class DefaultResponseWriterFactory
          if (!(segment.equals( "" ) || segment.equals( "." )))
             templateName += "/" + segment;
          else
-            templateName += "/roleMap";
+            templateName += "/resource";
       }
       templateName += "." + extension;
 
@@ -211,9 +211,9 @@ public class DefaultResponseWriterFactory
          } catch (ResourceNotFoundException e)
          {
             // If we can't find the specific template, then check if we are looking for the
-            // roleMap template, and if so, use the default one
-            if (templateName.getName().equals("context.htm"))
-               template = contextHtmlTemplate;
+            // resource template, and if so, use the default one
+            if (templateName.getName().equals("resource.htm"))
+               template = resourceHtmlTemplate;
             else
             {
                // Try looking up the stack

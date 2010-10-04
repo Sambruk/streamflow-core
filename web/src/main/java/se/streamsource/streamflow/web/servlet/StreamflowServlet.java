@@ -1,5 +1,4 @@
-/**
- *
+/*
  * Copyright 2009-2010 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -36,18 +35,23 @@ public class StreamflowServlet
    private ServletAdapter adapter;
 
    @Override
-   public void init() throws ServletException
+   public void init()
+         throws ServletException
    {
+      System.setProperty( "org.restlet.engine.loggerFacadeClass", "org.restlet.ext.slf4j.Slf4jLoggerFacade" );
+      System.setProperty( "java.util.logging.config.file", "restlet.properties");
+
       mainWeb = new MainWeb();
 
       try
       {
          mainWeb.start();
 
-         adapter = new ServletAdapter(getServletContext(), mainWeb.getApplication());
-      } catch (Throwable throwable)
+         adapter = new ServletAdapter( getServletContext(), mainWeb.getApplication() );
+      }
+      catch (Throwable throwable)
       {
-         throw new ServletException(throwable);
+         throw new ServletException( throwable );
       }
    }
 
@@ -57,7 +61,8 @@ public class StreamflowServlet
       try
       {
          mainWeb.stop();
-      } catch (Throwable throwable)
+      }
+      catch (Throwable throwable)
       {
          getServletContext().log( "Could not stop Streamflow", throwable );
       }

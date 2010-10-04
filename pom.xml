@@ -523,6 +523,11 @@
             </dependency>
             <dependency>
                 <groupId>org.restlet.jee</groupId>
+                <artifactId>org.restlet.ext.slf4j</artifactId>
+                <version>${version.restlet}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.restlet.jee</groupId>
                 <artifactId>org.restlet.ext.atom</artifactId>
                 <version>${version.restlet}</version>
             </dependency>

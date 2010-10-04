@@ -65,6 +65,15 @@
                     <stopKey>stopit</stopKey>
                     <stopPort>9999</stopPort>
                 </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>slf4j-api</artifactId>
+                        <version>1.6.1</version>
+                        <type>jar</type>
+                    </dependency>
+
+                </dependencies>
             </plugin>
 
             <plugin>
@@ -165,6 +174,10 @@
         <dependency>
             <groupId>org.restlet.jee</groupId>
             <artifactId>org.restlet.ext.xml</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.restlet.jee</groupId>
+            <artifactId>org.restlet.ext.slf4j</artifactId>
         </dependency>
         <dependency>
             <groupId>org.restlet.jee</groupId>
