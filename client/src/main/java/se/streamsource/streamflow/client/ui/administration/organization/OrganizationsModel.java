@@ -22,22 +22,25 @@ import ca.odell.glazedlists.EventList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.value.ValueBuilder;
 import org.restlet.resource.ResourceException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.LinkValue;
+import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
-import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
+import se.streamsource.streamflow.infrastructure.event.source.helper.EventParameters;
 import se.streamsource.streamflow.infrastructure.event.source.helper.EventVisitorFilter;
+import se.streamsource.streamflow.resource.caze.CaseValue;
 
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class OrganizationsModel
       implements EventListener, EventVisitor
@@ -46,7 +49,7 @@ public class OrganizationsModel
    @Structure
    ObjectBuilderFactory obf;
 
-   private EventVisitorFilter eventFilter = new EventVisitorFilter( this, "createdOrganization", "createdUser" );
+   private EventVisitorFilter eventFilter = new EventVisitorFilter( this, "createdOrganization", "createdUser", "changedDescription" );
 
    WeakModelMap<String, LinksListModel> organizationUsersModels = new WeakModelMap<String, LinksListModel>()
    {
@@ -54,7 +57,7 @@ public class OrganizationsModel
       protected LinksListModel newModel( String key )
       {
          return obf.newObjectBuilder( LinksListModel.class )
-               .use( client.getSubClient(key).getSubClient( "users" ), "users" ).newInstance();
+               .use( client.getSubClient( key ).getSubClient( "users" ), "users" ).newInstance();
       }
    };
 
@@ -62,7 +65,7 @@ public class OrganizationsModel
 
    private CommandQueryClient client;
 
-   public OrganizationsModel(@Uses CommandQueryClient client)
+   public OrganizationsModel( @Uses CommandQueryClient client )
    {
       this.client = client;
       this.refresh();
@@ -78,7 +81,7 @@ public class OrganizationsModel
    {
       try
       {
-         List<LinkValue> orgs = client.query("index", LinksValue.class).links().get();
+         List<LinkValue> orgs = client.query( "index", LinksValue.class ).links().get();
          EventListSynch.synchronize( orgs, organizations );
       } catch (ResourceException e)
       {
@@ -105,7 +108,45 @@ public class OrganizationsModel
    public boolean visit( DomainEvent event )
    {
       logger.info( "Refresh organizations" );
-      refresh();
+      LinkValue link = getLinkValue( event );
+
+      if (link != null)
+      {
+         int idx = organizations.indexOf( link );
+         ValueBuilder<CaseValue> valueBuilder = link.buildWith();
+         link = valueBuilder.prototype();
+
+         String eventName = event.name().get();
+         if (eventName.equals( "changedDescription" ))
+         {
+            try
+            {
+               String newDesc = EventParameters.getParameter( event, "param1" );
+               link.text().set( newDesc );
+               organizations.set( idx, valueBuilder.newInstance() );
+            } catch (Exception e)
+            {
+               e.printStackTrace();
+            }
+         } else
+         {
+            refresh();
+         }
+      }
       return false;
    }
+
+   private LinkValue getLinkValue( DomainEvent event )
+   {
+      for (LinkValue link : organizations)
+      {
+         if (link.id().get().equals( event.entity().get() ))
+         {
+            return link;
+         }
+      }
+
+      return null;
+   }
 }
+
