@@ -22,8 +22,10 @@ import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.AccountSelector;
 
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.SpringLayout;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 
@@ -42,7 +44,6 @@ public class AccountSelectionView
       accountSelection.setMinimumSize( new Dimension( 300, 200 ) );
       accountSelection.setPreferredSize( new Dimension( 300, 200 ) );
       accountSelection.setBorder( BorderFactory.createTitledBorder( BorderFactory.createEtchedBorder(), i18n.text( WorkspaceResources.select_account ) ) );
-      accountSelection.getInsets();
       add( accountSelection );
    }
 }
