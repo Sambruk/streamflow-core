@@ -96,7 +96,7 @@ public class CaseGeneralModel extends Observable implements Refreshable,
          ValueBuilder<StringValue> builder = vbf
                .newValueBuilder( StringValue.class );
          builder.prototype().string().set( newDescription );
-         client.putCommand( "changedescription", builder.newInstance() );
+         client.postCommand( "changedescription", builder.newInstance() );
       } catch (ResourceException e)
       {
          throw new OperationException(
@@ -111,7 +111,7 @@ public class CaseGeneralModel extends Observable implements Refreshable,
          ValueBuilder<StringValue> builder = vbf
                .newValueBuilder( StringValue.class );
          builder.prototype().string().set( newNote );
-         client.putCommand( "changenote", builder.newInstance() );
+         client.postCommand( "changenote", builder.newInstance() );
       } catch (ResourceException e)
       {
          throw new OperationException( CaseResources.could_not_change_note, e );
