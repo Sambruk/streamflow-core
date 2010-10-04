@@ -101,4 +101,10 @@ public class CasesDetailView2
    {
       return current;
    }
+
+   public void refresh()
+   {
+      layout.show( this, "blank" );
+      layout.show( this, "detail" );
+   }
 }

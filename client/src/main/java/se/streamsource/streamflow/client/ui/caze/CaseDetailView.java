@@ -22,6 +22,7 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
+import org.restlet.Component;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.caze.attachments.AttachmentsView;
@@ -114,9 +115,10 @@ public class CaseDetailView
 
    public void setCaseModel( CaseModel model )
    {
-      if (model != this.model)
+      if (model != null && model != this.model)
       {
          this.model = model;
+         model.info().refresh();
          infoView.setModel( model.info() );
          generalView.setModel( model.general() );
          conversationsView.setModel( model.conversations() );
@@ -139,5 +141,15 @@ public class CaseDetailView
    public void setSelectedTab( int index )
    {
       tabs.setSelectedIndex( index );
+   }
+
+   public void refresh()
+   {
+      if (model != null)
+      {
+         CaseModel refreshModel = model;
+         setCaseModel( null );
+         setCaseModel( refreshModel );
+      }
    }
 }

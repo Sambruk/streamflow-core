@@ -387,6 +387,19 @@ public class CommandQueryRestlet
          }
          responseWriter.write( result, request, response );
 
+         try
+         {
+            EntityComposite entity = roleMap.get( EntityComposite.class );
+            UnitOfWork lastModifiedUoW = uowf.newUnitOfWork();
+            entity = lastModifiedUoW.get( entity );
+            Date lastModified = new Date(spi.getEntityState( entity ).lastModified());
+            response.getEntity().setModificationDate( lastModified );
+            lastModifiedUoW.discard();
+         } catch (IllegalArgumentException e)
+         {
+            // Ignore
+         }
+
 
       } catch (UnitOfWorkCompletionException e)
       {

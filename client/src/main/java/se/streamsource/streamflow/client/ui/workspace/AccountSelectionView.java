@@ -22,11 +22,13 @@ import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.AccountSelector;
 
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SpringLayout;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 
 /**
@@ -37,13 +39,23 @@ public class AccountSelectionView
 {
    public AccountSelectionView( @Uses final AccountSelector accountSelector )
    {
+      setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+
       JPanel accountSelection = new JPanel( new BorderLayout() );
       JScrollPane scroll = new JScrollPane( );
       scroll.getViewport().add( accountSelector );
       accountSelection.add( scroll, BorderLayout.CENTER );
-      accountSelection.setMinimumSize( new Dimension( 300, 200 ) );
+      accountSelection.setMaximumSize( new Dimension( 300, 200 ) );
       accountSelection.setPreferredSize( new Dimension( 300, 200 ) );
       accountSelection.setBorder( BorderFactory.createTitledBorder( BorderFactory.createEtchedBorder(), i18n.text( WorkspaceResources.select_account ) ) );
-      add( accountSelection );
+
+      Box verticalBox = Box.createVerticalBox();
+      verticalBox.add( Box.createVerticalGlue());
+      verticalBox.add(accountSelection);
+      verticalBox.add(Box.createVerticalGlue());
+
+      add(Box.createHorizontalGlue());
+      add(verticalBox);
+      add(Box.createHorizontalGlue());
    }
 }

@@ -31,6 +31,7 @@ import com.jgoodies.forms.factories.Borders;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
+import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import se.streamsource.streamflow.client.infrastructure.ui.UncaughtExceptionHandler;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
@@ -66,6 +67,7 @@ public class ContactsView
    public JList contacts;
    private ContactView contactView;
    public EventListModel eventListModel;
+   private RefreshWhenVisible refresher;
 
    public ContactsView( @Service ApplicationContext context,
                         @Structure ObjectBuilderFactory obf )
@@ -131,6 +133,10 @@ public class ContactsView
          {
          }
       } );
+
+      refresher = new RefreshWhenVisible( this );
+      addAncestorListener( refresher );
+
    }
 
    @org.jdesktop.application.Action(block = COMPONENT)
@@ -192,7 +198,7 @@ public class ContactsView
       {
          setVisible( true );
       }
-
+      refresher.setRefreshable( model );
    }
 
    public ContactView getContactView()

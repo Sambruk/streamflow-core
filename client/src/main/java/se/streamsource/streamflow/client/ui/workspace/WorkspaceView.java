@@ -599,7 +599,7 @@ public class WorkspaceView
       if (currentSelection instanceof CasesView)
       {
          CasesView currentCases = (CasesView) currentSelection;
-         currentCases.getCaseTableView().getModel().refresh();
+         currentCases.refresh();
       }
    }
 }

@@ -34,6 +34,7 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
+import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
@@ -90,6 +91,7 @@ public class ContactView
    private JTextField companyField = (JTextField) TEXTFIELD.newField();
 
    private ApplicationContext context;
+   private RefreshWhenVisible refresher;
 
    public ContactView( @Service ApplicationContext appContext, @Structure ObjectBuilderFactory obf )
    {
@@ -165,7 +167,6 @@ public class ContactView
 
       add( new JPanel(), "EMPTY" );
       add( scrollPane, "CONTACT" );
-
    }
 
 
@@ -185,7 +186,6 @@ public class ContactView
       {
          layout.show( this, "EMPTY" );
       }
-
    }
 
    public void update( Observable observable, Object arg )

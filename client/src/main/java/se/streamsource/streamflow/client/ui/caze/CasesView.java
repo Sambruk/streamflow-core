@@ -59,5 +59,11 @@ public class CasesView
    {
       return detailsView.getCurrentCaseView();
    }
+
+   public void refresh()
+   {
+      caseTableView.getModel().refresh();
+      detailsView.refresh();
+   }
 }
 

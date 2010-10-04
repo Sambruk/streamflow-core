@@ -181,12 +181,11 @@ public class CommandQueryClient
       Response response = new Response( request );
       client.handle( request, response );
 
-      lastModified = response.getEntity().getModificationDate();
-
       try
       {
          if (response.getStatus().isSuccess())
          {
+            lastModified = response.getEntity().getModificationDate();
             responseHandler.handleResponse( response );
          } else
          {
@@ -295,7 +294,7 @@ public class CommandQueryClient
                if (response.getStatus().isSuccess())
                {
                   // Reset modification date
-                  lastModified = null;
+                  lastModified = response.getEntity().getModificationDate();
 
                   responseHandler.handleResponse( response );
                } else
