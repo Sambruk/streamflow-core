@@ -61,29 +61,10 @@ public interface LoggingService
 
          // Access logging
          File accessLog = new File(fileConfig.logDirectory(), "access.log");
-         final Logger accessLogger = Logger.getLogger( "org.restlet.Component.LogService" );
+         final Logger accessLogger = Logger.getLogger( "LogService" );
          accessLogger.addAppender( new DailyRollingFileAppender(new PatternLayout("%d %m%n"), accessLog.getAbsolutePath(), "'.'yyyy-ww" ));
          logger.info( "Logging HTTP access to:"+accessLog );
-         /*java.util.logging.Logger utilLogger = java.util.logging.Logger.getLogger( "org.restlet.Component.LogService" );
-         utilLogger.addHandler( new Handler(){
 
-            @Override
-            public void publish( LogRecord record )
-            {
-               accessLogger.info(record.getMessage(), record.getThrown());
-            }
-
-            @Override
-            public void flush()
-            {
-            }
-
-            @Override
-            public void close() throws SecurityException
-            {
-            }
-         });
-         */
          // General logging
          File generalLog = new File(fileConfig.logDirectory(), "streamflow.log");
          Logger.getRootLogger().addAppender( new DailyRollingFileAppender(new PatternLayout("%d %5p %c{1} - %m%n"), generalLog.getAbsolutePath(), "'.'yyyy-ww" ));

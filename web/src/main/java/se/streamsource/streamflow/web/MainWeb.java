@@ -91,7 +91,7 @@ public class MainWeb
    public Restlet getApplication()
    {
       // Set roleMap classloader so that resources are taken from this bundle
-      return new ClassLoaderFilter(application.getContext(), application);
+      return new ClassLoaderFilter(application.getContext(), component);
    }
 
    public void stop() throws Throwable
