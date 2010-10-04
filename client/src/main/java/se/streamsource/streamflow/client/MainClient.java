@@ -39,8 +39,13 @@ public class MainClient
       System.setProperty( "com.apple.mrj.application.apple.menu.about.name", "Streamflow" );
       System.setProperty( "apple.laf.useScreenMenuBar", "true" );
       System.setProperty( "dock:name", "Streamflow" );
-      Locale.setDefault( new Locale( "sv", "SE", "gov" ) );
-//        Locale.setDefault(Locale.ENGLISH);
+
+      Locale locale = Locale.getDefault();
+
+      if (locale.getLanguage().equals("sv"))
+         Locale.setDefault( new Locale( "sv", "SE", "gov" ) );
+      else
+         Locale.setDefault(Locale.ENGLISH);
 
       org.jdesktop.application.Application.launch( StreamflowApplication.class, args );
 
