@@ -30,6 +30,7 @@ import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.SubContext;
+import se.streamsource.dci.api.SubContexts;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.StringValue;
@@ -41,13 +42,20 @@ import se.streamsource.streamflow.resource.caze.CaseGeneralDTO;
 import se.streamsource.streamflow.resource.roles.DateDTO;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.web.context.structure.labels.LabelableContext;
+import se.streamsource.streamflow.web.context.structure.labels.LabeledContext;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
+import se.streamsource.streamflow.web.domain.entity.caze.CaseLabelsQueries;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseTypeQueries;
 import se.streamsource.streamflow.web.domain.interaction.gtd.DueOn;
 import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresStatus;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
 import se.streamsource.streamflow.web.domain.structure.form.SelectedForms;
+import se.streamsource.streamflow.web.domain.structure.label.Label;
+import se.streamsource.streamflow.web.domain.structure.label.Labelable;
+import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
+
+import java.util.Map;
 
 import static se.streamsource.streamflow.domain.interaction.gtd.CaseStates.*;
 
@@ -58,6 +66,7 @@ import static se.streamsource.streamflow.domain.interaction.gtd.CaseStates.*;
 @Constraints(StringValueMaxLength.class)
 public interface CaseGeneralContext
       extends
+      SubContexts<LabeledContext>,
       IndexContext<CaseGeneralDTO>,
       Context
 {
@@ -77,8 +86,9 @@ public interface CaseGeneralContext
 
    LinksValue possibleforms();
 
-   @SubContext
-   LabelableContext labels();
+   LinksValue possiblelabels();
+
+   void addlabel( EntityReferenceDTO reference );
 
    abstract class Mixin
          extends ContextMixin
@@ -106,16 +116,8 @@ public interface CaseGeneralContext
          CaseEntity aCase = roleMap.get( CaseEntity.class );
          builder.prototype().description().set( aCase.description().get() );
 
-         //ValueBuilder<ListValue> labelsBuilder = vbf.newValueBuilder( ListValue.class );
-         //ValueBuilder<ListItemValue> labelsItemBuilder = vbf.newValueBuilder( ListItemValue.class );
          LinksBuilder labelsBuilder = new LinksBuilder( module.valueBuilderFactory() );
          labelsBuilder.addDescribables( aCase.labels() );
-         /*for (Label label : aCase.labels())
-         {
-            labelsItemBuilder.prototype().entity().set( EntityReference.getEntityReference( label ) );
-            labelsItemBuilder.prototype().description().set( label.getDescription() );
-            labelsBuilder.prototype().items().get().add( labelsItemBuilder.newInstance() );
-         } */
 
          CaseType caseType = aCase.caseType().get();
          if (caseType != null)
@@ -184,9 +186,31 @@ public interface CaseGeneralContext
          }
       }
 
-      public LabelableContext labels()
+      public LinksValue possiblelabels()
       {
-         return subContext( LabelableContext.class );
+         CaseLabelsQueries labels = roleMap.get( CaseLabelsQueries.class );
+
+         LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() ).command( "addlabel" );
+         for (Map.Entry<Label, SelectedLabels> labelSelectedLabelsEntry : labels.possibleLabels().entrySet())
+         {
+            builder.addDescribable( labelSelectedLabelsEntry.getKey(), (Describable) labelSelectedLabelsEntry.getValue() );
+         }
+         return builder.newLinks();
+      }
+
+      public void addlabel( EntityReferenceDTO reference )
+      {
+         UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
+         Labelable labelable = roleMap.get( Labelable.class );
+         Label label = uow.get( Label.class, reference.entity().get().identity() );
+
+         labelable.addLabel( label );
+      }
+
+      public LabeledContext context( String id )
+      {
+         roleMap.set( module.unitOfWorkFactory().currentUnitOfWork().get( Label.class, id ) );
+         return subContext( LabeledContext.class );
       }
    }
 }

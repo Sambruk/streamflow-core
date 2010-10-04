@@ -64,7 +64,7 @@ public class CasesModel
          CommandQueryClient attachmentsClient = caseClient.getSubClient( "attachments" );
 
          PossibleFormsModel possibleFormsModel = obf.newObjectBuilder( PossibleFormsModel.class ).use( formsClient ).newInstance();
-         CaseLabelsModel labelsModel = obf.newObjectBuilder( CaseLabelsModel.class ).use( generalClient.getSubClient( "labels" ) ).newInstance();
+         CaseLabelsModel labelsModel = obf.newObjectBuilder( CaseLabelsModel.class ).use( generalClient ).newInstance();
          CaseGeneralModel generalModel = obf.newObjectBuilder( CaseGeneralModel.class ).use( generalClient, possibleFormsModel, labelsModel ).newInstance();
          ConversationsModel conversationsModel = obf.newObjectBuilder( ConversationsModel.class ).use( converationsClient ).newInstance();
          ContactsModel contactsModel = obf.newObjectBuilder( ContactsModel.class ).use( contactsClient ).newInstance();

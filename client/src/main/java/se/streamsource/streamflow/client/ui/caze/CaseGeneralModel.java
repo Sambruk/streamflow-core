@@ -166,7 +166,7 @@ public class CaseGeneralModel extends Observable implements Refreshable,
       {
          BasicEventList<LinkValue> list = new BasicEventList<LinkValue>();
 
-         LinksValue listValue = client.getSubClient( "labels" ).query( "possiblelabels",
+         LinksValue listValue = client.query( "possiblelabels",
                LinksValue.class );
          list.addAll( listValue.links().get() );
 

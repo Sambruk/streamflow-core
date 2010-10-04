@@ -22,8 +22,10 @@ import org.junit.Test;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import se.streamsource.dci.value.LinkValue;
+import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.web.application.security.UserPrincipal;
 import se.streamsource.streamflow.web.context.ContextTest;
+import se.streamsource.streamflow.web.context.organizations.CaseTypeContext;
 import se.streamsource.streamflow.web.context.organizations.OrganizationContext;
 import se.streamsource.streamflow.web.context.organizations.OrganizationalUnitContext;
 import se.streamsource.streamflow.web.context.organizations.OrganizationalUnitsContextTest;
@@ -63,6 +65,9 @@ public class CaseActionsContextTest
          OrganizationalUnitContext ou = subContext(org.organizationalunits(), "OU1");
          ProjectContext project = subContext(ou.projects(), "Project1");
          project.casetypes().createcasetype( stringValue("CaseType1") );
+         CaseTypeContext caseTypeContext = subContext(project.casetypes(), "CaseType1");
+         caseTypeContext.resolutions().createresolution( stringValue("Resolution1") );
+         caseTypeContext.selectedresolutions().addresolution( entityValue(findLink(caseTypeContext.resolutions().index(), "Resolution1").id().get()) );
          uow.complete();
       }
 
@@ -170,7 +175,7 @@ public class CaseActionsContextTest
       {
          UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
          CaseContext caze = root().cases().context( caseId );
-         caze.general().labels().addlabel( entityValue(findLink(caze.general().labels().possiblelabels(), "Label1").id().get()) );
+         caze.general().addlabel( entityValue(findLink(caze.general().possiblelabels(), "Label1").id().get()) );
          uow.complete();
          eventsOccurred("addedLabel" );
       }
@@ -203,6 +208,36 @@ public class CaseActionsContextTest
          checkActions( caseId, "sendto", "unassign", "onhold", "close", "delete" );
       }
 
+      // Resolve case
+      {
+         UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
+         uow.metaInfo().set( new UserPrincipal("test") );
+         CaseContext caze = root(user("test")).cases().context( caseId );
+         caze.resolve( entityValue(findLink(caze.possibleresolutions(), "Resolution1").id().get()) );
+         uow.complete();
+         eventsOccurred("resolved", "changedStatus" );
+      }
+
+      // Check resolved actions
+      {
+         checkActions( caseId, "reopen" );
+      }
+
+      // Reopen case
+      {
+         UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
+         uow.metaInfo().set( new UserPrincipal("test") );
+         CaseContext caze = root(user("test")).cases().context( caseId );
+         caze.reopen();
+         uow.complete();
+         eventsOccurred("changedStatus", "unresolved" );
+      }
+
+      // Check reopened actions
+      {
+         checkActions( caseId, "sendto", "unassign", "onhold", "close", "delete" );
+      }
+      
       // Close
       {
          UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
@@ -211,6 +246,11 @@ public class CaseActionsContextTest
          caze.close();
          uow.complete();
          eventsOccurred("changedStatus" );
+      }
+
+      // Check closed actions
+      {
+         checkActions( caseId, "reopen" );
       }
    }
 

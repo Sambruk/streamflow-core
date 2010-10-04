@@ -240,8 +240,14 @@ public interface CaseActionsContext
 
       public void reopen()
       {
-         Status caze = roleMap.get( CaseEntity.class);
+         // Reopen the case, take away resolution, and assign to user who did the reopen
+         Status caze = roleMap.get( Status.class);
          caze.reopen();
+         Resolvable resolvable = roleMap.get( Resolvable.class);
+         resolvable.unresolve();
+         Assignable assignable = roleMap.get( Assignable.class );
+         Assignee assignee = roleMap.get( Assignee.class );
+         assignable.assignTo( assignee );
       }
 
       public void resume()
@@ -251,14 +257,14 @@ public interface CaseActionsContext
 
       public void unassign()
       {
-         Assignable caze = roleMap.get( CaseEntity.class);
+         Assignable caze = roleMap.get( Assignable.class);
 
          caze.unassign();
       }
 
       public void delete()
       {
-         Removable caze = roleMap.get( CaseEntity.class);
+         Removable caze = roleMap.get( Removable.class);
          caze.deleteEntity();
       }
    }

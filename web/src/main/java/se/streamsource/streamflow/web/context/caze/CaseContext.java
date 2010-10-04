@@ -94,7 +94,7 @@ public interface CaseContext
          prototype.hasAttachments().set( aCase.hasAttachments() );
          
          // Labels
-         LinksBuilder labelsBuilder = new LinksBuilder(module.valueBuilderFactory()).path( "labels" ).command( "delete" );
+         LinksBuilder labelsBuilder = new LinksBuilder(module.valueBuilderFactory()).command( "delete" );
          for (Label label : aCase.labels())
          {
             labelsBuilder.addDescribable( label );
