@@ -84,6 +84,10 @@ public class DebugWindow
    public boolean visit( DomainEvent event )
    {
       eventModel.addRow( new String[]{event.usecase().get(), event.name().get(), event.entity().get(), event.parameters().get()} );
+
+      if (eventModel.getRowCount() > 100)
+         eventModel.removeRow( 0 );
+
       return true;
    }
 
