@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>se.streamsource.streamflow</groupId>
     <artifactId>streamflow</artifactId>
@@ -8,11 +9,11 @@
 
     <!-- This POM is ONLY to initiate the modules to be built. -->
     <properties>
-<!--
-        <version.qi4j-core>1.2-STREAMFLOW-24-gf02ccc3</version.qi4j-core>
-        <version.qi4j-lib>1.2-STREAMFLOW-2-g5e3ab35</version.qi4j-lib>
-        <version.qi4j-ext>1.2-STREAMFLOW-7-gb33726d</version.qi4j-ext>
--->
+        <!--
+                <version.qi4j-core>1.2-STREAMFLOW-24-gf02ccc3</version.qi4j-core>
+                <version.qi4j-lib>1.2-STREAMFLOW-2-g5e3ab35</version.qi4j-lib>
+                <version.qi4j-ext>1.2-STREAMFLOW-7-gb33726d</version.qi4j-ext>
+        -->
         <version.qi4j-core>1.2-SNAPSHOT</version.qi4j-core>
         <version.qi4j-lib>1.2-SNAPSHOT</version.qi4j-lib>
         <version.qi4j-ext>1.2-SNAPSHOT</version.qi4j-ext>
@@ -39,11 +40,13 @@
         <module>war</module>
         <module>referenceplugin</module>
         <module>help</module>
+        <module>dist</module>
     </modules>
 
     <scm>
         <connection>scm:svn:https://source.jayway.com/svn/streamsource/streamflow/branches/1.0</connection>
-        <developerConnection>scm:svn:https://source.jayway.com/svn/streamsource/streamflow/branches/1.0</developerConnection>
+        <developerConnection>scm:svn:https://source.jayway.com/svn/streamsource/streamflow/branches/1.0
+        </developerConnection>
     </scm>
 
     <distributionManagement>
@@ -137,6 +140,18 @@
             <roles>
                 <role>Scrum Master</role>
                 <role>Test Manager</role>
+            </roles>
+            <timezone>UTC+1</timezone>
+        </developer>
+        <developer>
+            <id>henrikreinhold</id>
+            <name>Henrik Reinhold</name>
+            <email>henrik.reinhold@jayway.com</email>
+            <url>http://www.jayway.com</url>
+            <organization>Jayway</organization>
+            <organizationUrl>http://www.jayway.com</organizationUrl>
+            <roles>
+                <role>Developer</role>
             </roles>
             <timezone>UTC+1</timezone>
         </developer>
@@ -336,15 +351,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.2-beta-5</version>
-                <configuration>
-                    <descriptors>
-                        <descriptor>src/main/resources/dist-pkg.xml</descriptor>
-                    </descriptors>
-                </configuration>
-            </plugin>
         </plugins>
         <resources>
             <resource>
@@ -378,7 +384,7 @@
                     <stylesheetfile>${project.parent.basedir}/src/main/javadoc/javadoc.css</stylesheetfile>
                     <overview>${project.parent.basedir}/src/main/javadoc/overview.html</overview>
                     <javadocDirectory>${project.parent.basedir}/src/main/javadoc</javadocDirectory>
-                    <excludePackageNames />
+                    <excludePackageNames/>
                     <links>
                         <link>http://java.sun.com/j2se/1.5.0/docs/api</link>
                         <link>http://www.restlet.org/documentation/snapshot/jse/api/</link>
@@ -462,6 +468,11 @@
                 <groupId>org.qi4j.library</groupId>
                 <artifactId>qi4j-lib-constraints</artifactId>
                 <version>${version.qi4j-lib}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.pdfbox</groupId>
+                <artifactId>pdfbox</artifactId>
+                <version>1.2.1</version>
             </dependency>
 
             <!-- Logging -->
@@ -607,9 +618,10 @@
                                     </goals>
                                     <configuration>
                                         <tasks>
-                                            <echo message="Deploying ${basedir}/target/${project.artifactId}-${project.version}.jar to ${deploy.dir}}" />
+                                            <echo message="Deploying ${basedir}/target/${project.artifactId}-${project.version}.jar to ${deploy.dir}}"/>
                                             <copy todir="${deploy.dir}" preservelastmodified="true">
-                                                <fileset file="${basedir}/target/${project.artifactId}-${project.version}.*" />
+                                                <fileset
+                                                        file="${basedir}/target/${project.artifactId}-${project.version}.*"/>
                                             </copy>
                                         </tasks>
                                     </configuration>

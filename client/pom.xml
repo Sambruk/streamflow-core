@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>se.streamsource.streamflow</groupId>
@@ -34,7 +35,7 @@
                                     <directory>${basedir}/../target/maven-shared-archive-resources</directory>
                                 </resource>
                                 <resource>
-                                    <directory>${basedir}/../src/main/resources/</directory>
+                                    <directory>${basedir}/../dist/zip/src/main/resources/</directory>
                                     <includes>
                                         <include>*.pdf</include>
                                     </includes>

@@ -38,47 +38,61 @@ import se.streamsource.streamflow.web.application.console.ConsoleService;
 import se.streamsource.streamflow.web.application.contact.StreamflowContactLookupService;
 import se.streamsource.streamflow.web.application.eid.OSIFService;
 import se.streamsource.streamflow.web.application.mail.MailService;
-import se.streamsource.streamflow.web.application.management.*;
+import se.streamsource.streamflow.web.application.management.CompositeMBean;
+import se.streamsource.streamflow.web.application.management.ConfigurationManagerService;
+import se.streamsource.streamflow.web.application.management.ErrorLogService;
+import se.streamsource.streamflow.web.application.management.EventManagerService;
+import se.streamsource.streamflow.web.application.management.LoggingService;
+import se.streamsource.streamflow.web.application.management.ManagerComposite;
+import se.streamsource.streamflow.web.application.management.ManagerService;
+import se.streamsource.streamflow.web.application.management.ReindexOnStartupService;
 import se.streamsource.streamflow.web.application.management.jmxconnector.JmxConnectorService;
 import se.streamsource.streamflow.web.application.migration.StartupMigrationService;
 import se.streamsource.streamflow.web.application.notification.NotificationService;
 import se.streamsource.streamflow.web.application.organization.BootstrapAssembler;
+import se.streamsource.streamflow.web.application.pdf.SubmittedFormPdfGenerator;
 import se.streamsource.streamflow.web.application.security.PasswordVerifierService;
-import se.streamsource.streamflow.web.application.statistics.*;
+import se.streamsource.streamflow.web.application.statistics.CaseStatisticsService;
+import se.streamsource.streamflow.web.application.statistics.CaseStatisticsValue;
+import se.streamsource.streamflow.web.application.statistics.FormFieldStatisticsValue;
+import se.streamsource.streamflow.web.application.statistics.JdbcStatisticsStore;
+import se.streamsource.streamflow.web.application.statistics.LoggingStatisticsStore;
+import se.streamsource.streamflow.web.application.statistics.RelatedStatisticsValue;
 import se.streamsource.streamflow.web.infrastructure.index.NamedSolrDescriptor;
 
 import javax.management.MBeanServer;
 
-import static org.qi4j.api.common.Visibility.application;
-import static org.qi4j.api.common.Visibility.layer;
+import static org.qi4j.api.common.Visibility.*;
 
 /**
  * JAVADOC
  */
 public class AppAssembler
 {
-   public void assemble( LayerAssembly layer)
+   public void assemble( LayerAssembly layer )
          throws AssemblyException
    {
-      console(layer.moduleAssembly( "Console" ));
-      migration(layer.moduleAssembly( "Migration" ));
+      console( layer.moduleAssembly( "Console" ) );
+      migration( layer.moduleAssembly( "Migration" ) );
 
       if (layer.applicationAssembly().mode().equals( Application.Mode.production ))
       {
-         management(layer.moduleAssembly( "Management" ));
-         notification(layer.moduleAssembly( "Notification" ));
-         mail(layer.moduleAssembly( "Mail" ));
+         management( layer.moduleAssembly( "Management" ) );
+         notification( layer.moduleAssembly( "Notification" ) );
+         mail( layer.moduleAssembly( "Mail" ) );
       }
 
-      security(layer.moduleAssembly( "Security" ));
+      security( layer.moduleAssembly( "Security" ) );
 
       new BootstrapAssembler().assemble( layer.moduleAssembly( "Bootstrap" ) );
 
-      statistics(layer.moduleAssembly( "Statistics" ));
+      statistics( layer.moduleAssembly( "Statistics" ) );
 
-      contactLookup(layer.moduleAssembly( "Contact lookup" ));
+      contactLookup( layer.moduleAssembly( "Contact lookup" ) );
 
-      eid(layer.moduleAssembly( "eID" ));
+      pdf( layer.moduleAssembly( "Pdf" ) );
+
+      eid( layer.moduleAssembly( "eID" ) );
    }
 
    private void eid( ModuleAssembly moduleAssembly ) throws AssemblyException
@@ -86,9 +100,14 @@ public class AppAssembler
       moduleAssembly.addServices( OSIFService.class ).visibleIn( Visibility.application );
    }
 
+   private void pdf( ModuleAssembly moduleAssembly ) throws AssemblyException
+   {
+      moduleAssembly.addServices( SubmittedFormPdfGenerator.class ).visibleIn( application );
+   }
+
    private void contactLookup( ModuleAssembly moduleAssembly ) throws AssemblyException
    {
-      moduleAssembly.addServices( StreamflowContactLookupService.class ).visibleIn( Visibility.application);
+      moduleAssembly.addServices( StreamflowContactLookupService.class ).visibleIn( Visibility.application );
 
       NamedQueries namedQueries = new NamedQueries();
       NamedQueryDescriptor queryDescriptor = new NamedSolrDescriptor( "solrquery", "" );
@@ -115,7 +134,7 @@ public class AppAssembler
 
    private void statistics( ModuleAssembly module ) throws AssemblyException
    {
-      if (module.layerAssembly().applicationAssembly().mode().equals(Application.Mode.production))
+      if (module.layerAssembly().applicationAssembly().mode().equals( Application.Mode.production ))
       {
          module.addServices( CaseStatisticsService.class ).
                identifiedBy( "statistics" ).

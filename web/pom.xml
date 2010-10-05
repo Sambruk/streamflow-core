@@ -137,6 +137,11 @@
         </dependency>
 
         <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>pdfbox</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>org.qi4j.extension</groupId>
             <artifactId>qi4j-entitystore-jdbm</artifactId>
         </dependency>

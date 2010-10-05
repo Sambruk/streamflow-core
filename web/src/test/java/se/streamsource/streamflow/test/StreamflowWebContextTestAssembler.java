@@ -26,7 +26,10 @@ import org.qi4j.bootstrap.ModuleAssembly;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
 import se.streamsource.streamflow.web.application.contact.StreamflowContactLookupService;
 import se.streamsource.streamflow.web.application.organization.BootstrapAssembler;
+import se.streamsource.streamflow.web.application.pdf.SubmittedFormPdfGenerator;
 import se.streamsource.streamflow.web.assembler.StreamflowWebAssembler;
+
+import static org.qi4j.api.common.Visibility.*;
 
 /**
  * JAVADOC
@@ -46,6 +49,7 @@ public class StreamflowWebContextTestAssembler
    protected void assembleApplicationLayer( LayerAssembly appLayer ) throws AssemblyException
    {
       appLayer.applicationAssembly().setMode( Application.Mode.test );
+      appLayer.moduleAssembly( "Pdf" ).addServices( SubmittedFormPdfGenerator.class ).visibleIn( application );
       new BootstrapAssembler().assemble( appLayer.moduleAssembly( "Bootstrap" ) );
 
 
@@ -58,6 +62,7 @@ public class StreamflowWebContextTestAssembler
       ModuleAssembly moduleAssembly = layer1.moduleAssembly( "Module 1" );
       applicationAssembly.layerAssembly( "Domain infrastructure" ).moduleAssembly( "Events" ).importServices( TransactionVisitor.class ).visibleIn( Visibility.application ).setMetaInfo( transactionVisitor );
       applicationAssembly.layerAssembly( "Context" ).moduleAssembly( "Contact Lookup" ).importServices( StreamflowContactLookupService.class ).visibleIn( Visibility.application );
+
    }
 
    @Override
