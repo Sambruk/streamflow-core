@@ -30,6 +30,7 @@ import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.domain.form.SubmittedFieldValue;
 import se.streamsource.streamflow.domain.form.SubmittedFormValue;
 import se.streamsource.streamflow.web.domain.structure.form.Field;
+import se.streamsource.streamflow.web.domain.structure.form.Form;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -81,32 +82,30 @@ public interface SubmittedFormPdfGenerator extends ServiceComposite
 
          contentStream = new PDPageContentStream( pdf, page );
          contentStream.beginText();
-         contentStream.setFont( headlineFont, headlineFontSize );
+         contentStream.setFont( headlineFont, headlineFontSize + 2 );
          y = page.getMediaBox().getHeight() - margin;
          contentStream.moveTextPositionByAmount( margin, y );
 
-//         Form form = uowFactory.currentUnitOfWork().get( Form.class, value.form().get().identity() );
-//         List<String> formDescriptionLines = createLinesFromText( form.getDescription(), headlineFont, headlineFontSize, maxStringLength );
-//
-//         for (String formDescriptionLine : formDescriptionLines)
-//         {
-//
-//            contentStream.moveTextPositionByAmount( 0, -headlineFontHeight );
-//            y -= headlineFontHeight;
-//            contentStream.drawString( formDescriptionLine);
-//         }
-//
-//         contentStream.setFont( valueFont, valueFontSize );
-//         contentStream.moveTextPositionByAmount( 0, -valueFontHeight );
-//         y -= valueFontHeight;
-//         contentStream.drawString( value.submissionDate().get().toString());
-//         User user = uowFactory.currentUnitOfWork().get( User.class, value.submitter().get().identity() );
-//         contentStream.drawString( " " +  user.getDescription());
-//         contentStream.moveTextPositionByAmount( 0, -4 );
-//         y -= 4;
-//         contentStream.drawLine( 0,y, maxStringLength+margin, y );
-//         contentStream.moveTextPositionByAmount( 0, -4 );
-//         y -= 4;
+         Form form = uowFactory.currentUnitOfWork().get( Form.class, value.form().get().identity() );
+         List<String> formDescriptionLines = createLinesFromText( form.getDescription(), headlineFont, headlineFontSize + 2, maxStringLength );
+
+         for (String formDescriptionLine : formDescriptionLines)
+         {
+
+            contentStream.moveTextPositionByAmount( 0, -headlineFontHeight + 2 );
+            y -= headlineFontHeight + 2;
+            contentStream.drawString( formDescriptionLine );
+         }
+
+         contentStream.setFont( valueFont, valueFontSize - 1 );
+         contentStream.moveTextPositionByAmount( 0, -valueFontHeight - 1 );
+         y -= valueFontHeight - 1;
+         contentStream.drawString( value.submissionDate().get().toString() );
+         contentStream.moveTextPositionByAmount( 0, -4 );
+         y -= 4;
+         contentStream.drawLine( margin, y, maxStringLength + margin, y );
+         contentStream.moveTextPositionByAmount( 0, -4 );
+         y -= 4;
 
 
          for (SubmittedFieldValue submittedFieldValue : value.values().get())
