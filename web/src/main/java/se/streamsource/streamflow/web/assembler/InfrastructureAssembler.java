@@ -43,6 +43,7 @@ import org.qi4j.migration.assembly.EntityMigrationOperation;
 import org.qi4j.migration.assembly.MigrationBuilder;
 import org.qi4j.spi.entity.EntityState;
 import org.qi4j.spi.entitystore.EntityStoreSPI;
+import org.qi4j.spi.entitystore.EntityStoreUnitOfWork;
 import org.qi4j.spi.entitystore.StateCommitter;
 import org.qi4j.spi.service.importer.NewObjectImporter;
 import org.qi4j.spi.uuid.UuidIdentityGeneratorService;
@@ -515,12 +516,12 @@ public class InfrastructureAssembler
       extends ConcernOf<EntityStoreSPI>
       implements EntityStoreSPI
    {
-      public StateCommitter applyChanges( Iterable<EntityState> state, String version, long l )
+      public StateCommitter applyChanges( EntityStoreUnitOfWork unitOfWork, Iterable<EntityState> state, String version, long lastModified )
       {
          long start = System.nanoTime();
          try
          {
-            return next.applyChanges( state, version, l );
+            return next.applyChanges( unitOfWork, state, version, lastModified );
          } finally
          {
             long end = System.nanoTime();
