@@ -22,11 +22,13 @@ import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.QueryBuilder;
 import org.qi4j.api.query.QueryBuilderFactory;
-import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.domain.structure.Describable;
+import se.streamsource.streamflow.domain.structure.Removable;
 import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
+
+import static org.qi4j.api.query.QueryExpressions.*;
 
 @Mixins(OrganizationsQueries.Mixin.class)
 public interface OrganizationsQueries
@@ -52,15 +54,15 @@ public interface OrganizationsQueries
 
       public OrganizationEntity getOrganizationByName( String name )
       {
-         Describable.Data template = QueryExpressions.templateFor( Describable.Data.class );
+         Describable.Data template = templateFor( Describable.Data.class );
          return qbf.newQueryBuilder( OrganizationEntity.class ).
-               where( QueryExpressions.eq( template.description(), name ) ).
+               where( eq( template.description(), name ) ).
                newQuery( uowf.currentUnitOfWork() ).find();
       }
 
       public QueryBuilder<OrganizationEntity> organizations()
       {
-         return qbf.newQueryBuilder( OrganizationEntity.class );
+         return qbf.newQueryBuilder( OrganizationEntity.class ).where( eq( templateFor( Removable.Data.class ).removed(), false ) );
       }
    }
 }

@@ -38,7 +38,6 @@ import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
 import se.streamsource.streamflow.infrastructure.event.source.helper.EventParameters;
 import se.streamsource.streamflow.infrastructure.event.source.helper.EventVisitorFilter;
-import se.streamsource.streamflow.resource.caze.CaseValue;
 
 import java.util.List;
 
@@ -113,7 +112,7 @@ public class OrganizationsModel
       if (link != null)
       {
          int idx = organizations.indexOf( link );
-         ValueBuilder<CaseValue> valueBuilder = link.buildWith();
+         ValueBuilder<LinkValue> valueBuilder = link.buildWith();
          link = valueBuilder.prototype();
 
          String eventName = event.name().get();
