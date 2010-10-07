@@ -40,7 +40,7 @@
         <module>war</module>
         <module>referenceplugin</module>
         <module>help</module>
-        <!-- <module>dist</module> -->
+        <module>dist</module>
     </modules>
 
     <scm>

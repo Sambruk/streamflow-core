@@ -1,0 +1,41 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>se.streamsource.streamflow</groupId>
+        <artifactId>dist</artifactId>
+        <version>1.2-SNAPSHOT</version>
+    </parent>
+    <artifactId>ear</artifactId>
+    <groupId>se.streamsource.streamflow.dist</groupId>
+    <version>1.2-SNAPSHOT</version>
+    <packaging>ear</packaging>
+    <name>Streamflow Ear</name>
+    <description>Streamflow Ear Distribution</description>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-ear-plugin</artifactId>
+                <configuration>
+                    <displayName>Streamflow EAR</displayName>
+                    <finalName>streamflow-${version}</finalName>
+                    <modules>
+                        <webModule>
+                            <groupId>se.streamsource.streamflow</groupId>
+                            <artifactId>streamflow-web</artifactId>
+                            <contextRoot>/streamflow</contextRoot>
+                        </webModule>
+                        <webModule>
+                            <groupId>se.streamsource.streamflow</groupId>
+                            <artifactId>streamflow-war</artifactId>
+                            <contextRoot>/client</contextRoot>
+                        </webModule>
+                    </modules>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+
+</project>

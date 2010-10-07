@@ -1,0 +1,36 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>se.streamsource.streamflow</groupId>
+        <artifactId>streamflow</artifactId>
+        <version>1.2-SNAPSHOT</version>
+    </parent>
+    <artifactId>dist</artifactId>
+    <groupId>se.streamsource.streamflow</groupId>
+    <version>1.2-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <name>Streamflow Distribution</name>
+    <description>Streamflow Distribution</description>
+
+    <modules>
+        <module>ear</module>
+        <module>zip</module>
+    </modules>
+
+    <dependencies>
+        <dependency>
+            <groupId>se.streamsource.streamflow</groupId>
+            <artifactId>streamflow-web</artifactId>
+            <version>${version}</version>
+            <type>war</type>
+        </dependency>
+        <dependency>
+            <groupId>se.streamsource.streamflow</groupId>
+            <artifactId>streamflow-war</artifactId>
+            <version>${version}</version>
+            <type>war</type>
+        </dependency>
+    </dependencies>
+
+</project>
