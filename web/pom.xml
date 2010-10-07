@@ -12,9 +12,6 @@
     <packaging>war</packaging>
     <name>Streamflow web application</name>
     <description>Streamflow web application</description>
-    <properties>
-        <deploy.dir>${glassfish.domain}/autodeploy</deploy.dir>
-    </properties>
 
     <build>
         <plugins>
@@ -74,14 +71,6 @@
                     </dependency>
 
                 </dependencies>
-            </plugin>
-
-            <plugin>
-                <artifactId>maven-antrun-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>wagon-maven-plugin</artifactId>
             </plugin>
         </plugins>
     </build>

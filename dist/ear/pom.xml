@@ -12,6 +12,9 @@
     <packaging>ear</packaging>
     <name>Streamflow Ear</name>
     <description>Streamflow Ear Distribution</description>
+    <properties>
+        <deploy.dir>${glassfish.domain}/autodeploy</deploy.dir>
+    </properties>
 
     <build>
         <plugins>
@@ -33,6 +36,17 @@
                         </webModule>
                     </modules>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>wagon-maven-plugin</artifactId>
+                <configuration>
+                    <fromFile>target/streamflow-${version}.ear</fromFile>
+                    <toFile>streamflow-${version}.ear</toFile>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
             </plugin>
         </plugins>
     </build>

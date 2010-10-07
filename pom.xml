@@ -618,10 +618,12 @@
                                     </goals>
                                     <configuration>
                                         <tasks>
-                                            <echo message="Deploying ${basedir}/target/${project.artifactId}-${project.version}.jar to ${deploy.dir}}"/>
+                                            <echo message="Deploying ${basedir}/target/${project.artifactId}-${project.version} to ${deploy.dir}}"/>
                                             <copy todir="${deploy.dir}" preservelastmodified="true">
-                                                <fileset
-                                                        file="${basedir}/target/${project.artifactId}-${project.version}.*"/>
+                                                <fileset dir="${basedir}/target/">
+                                                    <include name="*.war"/>
+                                                    <include name="*.ear"/>
+                                                </fileset>
                                             </copy>
                                         </tasks>
                                     </configuration>
@@ -650,10 +652,8 @@
                                 </execution>
                             </executions>
                             <configuration>
-                                <fromFile>target/${project.build.finalName}.war</fromFile>
                                 <serverId>deploy.streamflow</serverId>
                                 <url>scp://${deploy.server}${deploy.server.domain}/autodeploy</url>
-                                <toFile>${project.build.finalName}.war</toFile>
                             </configuration>
                         </plugin>
                     </plugins>

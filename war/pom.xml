@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>se.streamsource.streamflow</groupId>
@@ -13,9 +14,6 @@
     <packaging>war</packaging>
     <name>Streamflow war</name>
     <description>Streamflow WAR packaging</description>
-    <properties>
-        <deploy.dir>${glassfish.domain}/autodeploy</deploy.dir>
-    </properties>
 
     <build>
         <plugins>
@@ -80,106 +78,8 @@
                     <outputDirectory>${project.build.directory}/${project.build.finalName}/webstart</outputDirectory>
                 </configuration>
             </plugin>
-
-            <!-- <plugin>
-                <groupId>org.codehaus.cargo</groupId>
-                <artifactId>cargo-maven2-plugin</artifactId>
-                <configuration>
-                    <container>
-                        <containerId>tomcat6x</containerId>
-                        <type>remote</type>
-                    </container>
-                    <configuration>
-                        <type>runtime</type>
-                        <properties>
-                            <cargo.tomcat.manager.url>${cargo.url}</cargo.tomcat.manager.url>
-                            <cargo.remote.username>${cargo.username}</cargo.remote.username>
-                            <cargo.remote.password>${cargo.password}</cargo.remote.password>
-                        </properties>
-                    </configuration>
-                    <deployer>
-                        <type>remote</type>
-                        <deployables>
-                            <deployable>
-                                <groupId>se.streamsource.streamflow</groupId>
-                                <artifactId>streamflow-war</artifactId>
-                                <type>war</type>
-                                <properties>
-                                    <roleMap>streamflow</roleMap>
-                                </properties>
-                            </deployable>
-                        </deployables>
-                    </deployer>
-                </configuration>
-            </plugin> -->
-
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>wagon-maven-plugin</artifactId>
-                <configuration>
-                    <fromFile>target/${project.build.finalName}.war</fromFile>
-                    <toFile>${project.build.finalName}.war</toFile>
-                </configuration>
-            </plugin>
-
-            <!-- <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                
-                                <executions>
-                                    <execution>
-                                        <phase>deploy</phase>
-                                        <goals>
-                                            <goal>exec</goal>
-                                        </goals>
-                                    </execution>
-                                </executions>
-
-                <configuration>
-                    <executable>ssh</executable>
-                    <arguments>
-                        <argument>-i</argument>
-                        <argument>${ec2.privateKey}</argument>
-                        <argument>root@${deploy.server}</argument>
-                        <argument>sh deploy.sh</argument>
-                    </arguments>
-                </configuration>
-            </plugin> -->
-            <plugin>
-                <artifactId>maven-antrun-plugin</artifactId>
-            </plugin>
         </plugins>
     </build>
-    <!-- <profiles>
-       <profile>
-           <id>streamflow-nightly</id>
-           <activation>
-               <property>
-                   <name>!release</name>
-               </property>
-           </activation>
-           <properties>
-               <deploy.server>${deploy.nightly.server}</deploy.server>
-               <cargo.url>http://${deploy.nightly.server}/manager</cargo.url>
-               <cargo.username>${cargo.nightly.username}</cargo.username>
-               <cargo.password>${cargo.nightly.password}</cargo.password>
-           </properties>
-       </profile>
-       <profile>
-           <id>streamflow-release</id>
-           <activation>
-               <property>
-                   <name>release</name>
-               </property>
-           </activation>
-           <properties>
-               <deploy.server>${deploy.release.server}</deploy.server>
-               <cargo.url>http://${deploy.release.server}/manager</cargo.url>
-               <cargo.username>${cargo.release.username}</cargo.username>
-               <cargo.password>${cargo.release.password}</cargo.password>
-           </properties>
-       </profile>
-   </profiles> -->
 
     <dependencies>
         <!-- Web -->
