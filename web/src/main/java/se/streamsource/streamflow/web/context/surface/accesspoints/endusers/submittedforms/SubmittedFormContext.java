@@ -22,6 +22,7 @@ import org.apache.pdfbox.pdfwriter.COSWriter;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.mixin.Mixins;
+import org.restlet.data.Disposition;
 import org.restlet.data.MediaType;
 import org.restlet.representation.OutputRepresentation;
 import se.streamsource.dci.api.Context;
@@ -87,6 +88,11 @@ public interface SubmittedFormContext
                }
             }
          };
+
+         Disposition disposition = new Disposition();
+         disposition.setFilename( "formsummary.pdf" );
+         disposition.setType( Disposition.TYPE_ATTACHMENT );
+         representation.setDisposition( disposition );
 
          return representation;
       }
