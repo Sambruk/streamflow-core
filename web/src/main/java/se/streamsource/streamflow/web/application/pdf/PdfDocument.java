@@ -171,6 +171,12 @@ public class PdfDocument
 
    public PDDocument closeAndReturn()
    {
+      close();
+      return pdf;
+   }
+
+   private void close()
+   {
       if (contentStream != null)
       {
          try
@@ -189,6 +195,7 @@ public class PdfDocument
             }
          }
       }
-      return pdf;
    }
+
+
 }

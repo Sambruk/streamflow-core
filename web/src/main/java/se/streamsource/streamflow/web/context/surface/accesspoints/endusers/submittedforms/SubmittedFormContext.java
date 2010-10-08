@@ -21,7 +21,9 @@ import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.pdfwriter.COSWriter;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.restlet.data.Disposition;
 import org.restlet.data.MediaType;
 import org.restlet.representation.OutputRepresentation;
@@ -29,6 +31,7 @@ import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.streamflow.domain.form.SubmittedFormValue;
 import se.streamsource.streamflow.web.application.pdf.SubmittedFormPdfGenerator;
+import se.streamsource.streamflow.web.domain.structure.form.Form;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -53,9 +56,14 @@ public interface SubmittedFormContext
       @Service
       SubmittedFormPdfGenerator pdfGenerator;
 
+      @Structure
+      UnitOfWorkFactory uowFactory;
+
       public OutputRepresentation generateformaspdf() throws IOException
       {
          SubmittedFormValue submittedFormValue = roleMap.get( SubmittedFormValue.class );
+
+         Form form = uowFactory.currentUnitOfWork().get( Form.class, submittedFormValue.form().get().identity() );
 
          final PDDocument pdf = pdfGenerator.generatepdf( submittedFormValue );
 
@@ -90,7 +98,7 @@ public interface SubmittedFormContext
          };
 
          Disposition disposition = new Disposition();
-         disposition.setFilename( "formsummary.pdf" );
+         disposition.setFilename( form.getDescription() + ".pdf" );
          disposition.setType( Disposition.TYPE_ATTACHMENT );
          representation.setDisposition( disposition );
 

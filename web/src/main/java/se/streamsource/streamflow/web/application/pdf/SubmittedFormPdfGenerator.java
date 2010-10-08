@@ -23,12 +23,18 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import se.streamsource.streamflow.domain.form.DateFieldValue;
 import se.streamsource.streamflow.domain.form.SubmittedFieldValue;
 import se.streamsource.streamflow.domain.form.SubmittedFormValue;
-import se.streamsource.streamflow.web.domain.structure.form.Field;
+import se.streamsource.streamflow.web.domain.entity.form.FieldEntity;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 
 @Mixins(SubmittedFormPdfGenerator.Mixin.class)
@@ -59,17 +65,32 @@ public interface SubmittedFormPdfGenerator extends ServiceComposite
          Form form = uowFactory.currentUnitOfWork().get( Form.class, value.form().get().identity() );
 
          document.println( form.getDescription(), h1Font );
-         document.println( value.submissionDate().get().toString(), descFont );
+         document.println( DateFormat.getDateInstance( DateFormat.MEDIUM, Locale.getDefault() ).format( value.submissionDate().get() ), descFont );
 
          document.line();
 
 
          for (SubmittedFieldValue submittedFieldValue : value.values().get())
          {
-            Field field = uowFactory.currentUnitOfWork().get( Field.class, submittedFieldValue.field().get().identity() );
+            FieldEntity field = uowFactory.currentUnitOfWork().get( FieldEntity.class, submittedFieldValue.field().get().identity() );
 
             document.print( field.getDescription() + ":", h2Font );
-            document.println( submittedFieldValue.value().get(), valueFont );
+            if (field.fieldValue().get() instanceof DateFieldValue)
+            {
+               try
+               {
+
+                  Date date = (new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'" )).parse( submittedFieldValue.value().get() );
+                  document.println( DateFormat.getDateInstance( DateFormat.MEDIUM, Locale.getDefault() ).format( date ), valueFont );
+               } catch (ParseException e)
+               {
+                  document.println( "N/A", valueFont );
+               }
+
+            } else
+            {
+               document.println( submittedFieldValue.value().get(), valueFont );
+            }
             document.println( "", valueFont );
          }
 
