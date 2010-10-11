@@ -318,6 +318,6 @@ public class AdministrationTreeView
    public void notifyTransactions( Iterable<TransactionEvents> transactions )
    {
       if (Events.matches( transactions, Events.withNames("changedDescription", "removedOrganizationalUnit", "addedOrganizationalUnit" )))
-         model.refresh();
+         model.notifyTransactions( transactions );
    }
 }

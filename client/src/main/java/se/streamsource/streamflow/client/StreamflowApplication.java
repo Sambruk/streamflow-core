@@ -337,6 +337,9 @@ public class StreamflowApplication
 
    private void dispatchTransactions( Component component, Iterable<TransactionEvents> transactionEventsIterable )
    {
+      if (!component.isVisible())
+         return;
+
       if (component instanceof TransactionListener)
          ((TransactionListener) component).notifyTransactions( transactionEventsIterable );
 
@@ -346,7 +349,6 @@ public class StreamflowApplication
          for (Component childComponent : container.getComponents())
          {
             // Only dispatch to visible components - they will refresh once visible anyway
-            if (childComponent.isVisible())
                dispatchTransactions( childComponent, transactionEventsIterable );
          }
       }

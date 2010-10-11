@@ -170,7 +170,7 @@ public class Events
       };
    }
 
-   public static Specification onEntityTypes( final String... entityTypes )
+   public static Specification<DomainEvent> onEntityTypes( final String... entityTypes )
    {
       return new Specification<DomainEvent>()
       {
@@ -186,7 +186,7 @@ public class Events
       };
    }
 
-   public static Specification by( final String... by )
+   public static Specification<DomainEvent> by( final String... by )
    {
       return new Specification<DomainEvent>()
       {
@@ -202,7 +202,7 @@ public class Events
       };
    }
 
-   public static Specification paramIs( final String name, final String value )
+   public static Specification<DomainEvent> paramIs( final String name, final String value )
    {
       return new Specification<DomainEvent>()
       {

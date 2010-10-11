@@ -48,7 +48,7 @@ public class CasesView
 
       JPanel welcomePanel = new JPanel(new BorderLayout());
       welcomePanel.add( new JLabel( text( WorkspaceResources.welcome ), JLabel.CENTER ), BorderLayout.CENTER );
-      this.detailsView = obf.newObjectBuilder( CasesDetailView2.class ).newInstance();;
+      this.detailsView = obf.newObjectBuilder( CasesDetailView2.class ).newInstance();
 
       splitPane = new JSplitPane( JSplitPane.VERTICAL_SPLIT );
       splitPane.setOneTouchExpandable( true );

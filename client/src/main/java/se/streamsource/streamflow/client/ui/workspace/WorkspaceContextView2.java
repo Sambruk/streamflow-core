@@ -65,7 +65,6 @@ import static se.streamsource.streamflow.infrastructure.event.source.helper.Even
  */
 public class WorkspaceContextView2
       extends JPanel
-   implements TransactionListener
 {
    private JList contextList;
    private JScrollPane workspaceContextScroll;
@@ -116,14 +115,5 @@ public class WorkspaceContextView2
    public JList getWorkspaceContextList()
    {
       return contextList;
-   }
-
-   public void notifyTransactions( Iterable<TransactionEvents> transactions )
-   {
-      if (Events.matches( transactions, withNames("joinedProject", "leftProject", "joinedGroup", "leftGroup",
-            "createdProject", "removedProject", "changedDescription" )))
-      {
-         contextModel.refresh();
-      }
    }
 }

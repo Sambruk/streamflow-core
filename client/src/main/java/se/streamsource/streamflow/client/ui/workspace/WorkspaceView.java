@@ -401,7 +401,6 @@ public class WorkspaceView
 
    public void notifyTransactions( Iterable<TransactionEvents> transactions )
    {
-      contextView.notifyTransactions( transactions );
    }
 
    class CaseSelectionListener

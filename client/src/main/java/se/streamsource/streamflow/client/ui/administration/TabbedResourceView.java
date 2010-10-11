@@ -81,8 +81,8 @@ public class TabbedResourceView
       addTab( "administrators", AdministrationResources.administrators_tab, AdministratorsView.class );
 
       addTab( "surface", AdministrationResources.surface_tab, TabbedResourceView.class );
-      addTab( "surface", AdministrationResources.accesspoints_tab, AccessPointsView.class );
-      addTab( "surface", AdministrationResources.proxyusers_tab, ProxyUsersView.class );
+      addTab( "accesspoints", AdministrationResources.accesspoints_tab, AccessPointsView.class );
+      addTab( "proxyusers", AdministrationResources.proxyusers_tab, ProxyUsersView.class );
 
    }
 
