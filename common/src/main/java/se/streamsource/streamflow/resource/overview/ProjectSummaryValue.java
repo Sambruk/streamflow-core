@@ -15,12 +15,19 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.infrastructure.event;
+package se.streamsource.streamflow.resource.overview;
 
-/**
- * JAVADOC
- */
-public interface EventListener
+import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueComposite;
+import se.streamsource.dci.value.LinkValue;
+
+public interface ProjectSummaryValue
+      extends LinkValue
 {
-   void notifyEvent( DomainEvent event );
+   @UseDefaults
+   Property<Long> inboxCount();
+
+   @UseDefaults
+   Property<Long> assignedCount();
 }

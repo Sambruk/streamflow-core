@@ -30,6 +30,7 @@ import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.Value;
 import org.qi4j.api.value.ValueComposite;
 import org.qi4j.spi.Qi4jSPI;
+import org.qi4j.spi.entity.EntityState;
 import org.qi4j.spi.property.PropertyDescriptor;
 import org.qi4j.spi.value.ValueDescriptor;
 import org.restlet.Request;
@@ -38,6 +39,7 @@ import org.restlet.data.CharacterSet;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
+import org.restlet.data.Tag;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.Variant;
@@ -294,7 +296,8 @@ public class DefaultResponseWriterFactory
    private class JsonResponseWriter implements ResponseWriter
    {
       private Variant variant;
-      public Date lastModified;
+      private Date lastModified;
+      private Tag tag;
 
       public JsonResponseWriter( Variant variant, RoleMap roleMap )
       {
@@ -303,7 +306,9 @@ public class DefaultResponseWriterFactory
          try
          {
             EntityComposite entity = roleMap.get( EntityComposite.class );
-            lastModified = new Date(spi.getEntityState( entity ).lastModified());
+            EntityState state = spi.getEntityState( entity );
+            lastModified = new Date( state.lastModified());
+            tag = new Tag(state.identity().identity()+"/"+state.version());
          } catch (IllegalArgumentException e)
          {
             // Ignore
@@ -317,7 +322,11 @@ public class DefaultResponseWriterFactory
                variant.getLanguages().get( 0 ),
                variant.getCharacterSet() );
 
-         representation.setModificationDate( lastModified );
+         if (tag != null)
+         {
+            representation.setModificationDate( lastModified );
+            representation.setTag( tag );
+         }
 
          response.setEntity( representation );
          response.setStatus( Status.SUCCESS_OK );

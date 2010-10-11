@@ -28,6 +28,7 @@ import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.StringValueMaxLength;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
+import se.streamsource.streamflow.web.domain.entity.form.PossibleFormMoveToQueries;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
 import se.streamsource.streamflow.web.domain.structure.form.Forms;
 
@@ -39,8 +40,9 @@ import se.streamsource.streamflow.web.domain.structure.form.Forms;
 public interface FormsContext
       extends SubContexts<FormContext>, IndexContext<LinksValue>, Context
 {
-   void createform( @MaxLength(50) StringValue formName );
+   LinksValue possiblemoveto();
 
+   void createform( @MaxLength(50) StringValue formName );
 
    abstract class Mixin
          extends ContextMixin
@@ -51,6 +53,14 @@ public interface FormsContext
          Forms.Data forms = roleMap.get( Forms.Data.class );
 
          return new LinksBuilder( module.valueBuilderFactory() ).rel( "form" ).addDescribables( forms.forms() ).newLinks();
+      }
+
+      public LinksValue possiblemoveto()
+      {
+         LinksBuilder builder = new LinksBuilder(module.valueBuilderFactory());
+         builder.command( "move" );
+         roleMap.get( PossibleFormMoveToQueries.class).possibleMoveFormTo( builder );
+         return builder.newLinks();
       }
 
       public void createform( StringValue formName )

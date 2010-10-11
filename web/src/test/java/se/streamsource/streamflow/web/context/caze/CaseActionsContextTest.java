@@ -118,7 +118,7 @@ public class CaseActionsContextTest
       {
          UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
          DraftsContext drafts = root().users().context("test").workspace().user().drafts();
-         drafts.createdraft();
+         drafts.createcase();
          uow.complete();
          eventsOccurred("createdCase", "addedContact" );
       }
@@ -175,7 +175,7 @@ public class CaseActionsContextTest
       {
          UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
          CaseContext caze = root().cases().context( caseId );
-         caze.general().addlabel( entityValue(findLink(caze.general().possiblelabels(), "Label1").id().get()) );
+         caze.general().labels().addlabel( entityValue(findLink(caze.general().labels().possiblelabels(), "Label1").id().get()) );
          uow.complete();
          eventsOccurred("addedLabel" );
       }

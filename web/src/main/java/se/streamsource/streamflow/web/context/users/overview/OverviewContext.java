@@ -23,7 +23,11 @@ import org.qi4j.api.mixin.Mixins;
 import org.restlet.data.MediaType;
 import org.restlet.representation.OutputRepresentation;
 import se.streamsource.dci.api.ContextMixin;
-import se.streamsource.streamflow.resource.overview.ProjectSummaryListDTO;
+import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.api.SubContexts;
+import se.streamsource.dci.value.LinksValue;
+import se.streamsource.streamflow.resource.overview.ProjectSummaryValuex;
+import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
 import se.streamsource.streamflow.web.domain.entity.user.OverviewQueries;
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.SubContext;
@@ -37,19 +41,15 @@ import java.util.Locale;
  */
 @Mixins(OverviewContext.Mixin.class)
 public interface OverviewContext
-   extends Context
+   extends Context, IndexContext<LinksValue>, SubContexts<OverviewProjectContext>
 {
-   public ProjectSummaryListDTO projectsummary();
    public OutputRepresentation generateexcelprojectsummary() throws IOException;
-
-   @SubContext
-   OverviewProjectsContext projects();
 
    abstract class Mixin
       extends ContextMixin
       implements OverviewContext
    {
-      public ProjectSummaryListDTO projectsummary()
+      public LinksValue index()
       {
          OverviewQueries queries = roleMap.get( OverviewQueries.class);
 
@@ -78,9 +78,11 @@ public interface OverviewContext
          return representation;
       }
 
-      public OverviewProjectsContext projects()
+      public OverviewProjectContext context( String id )
       {
-         return subContext( OverviewProjectsContext.class );
+         roleMap.set( module.unitOfWorkFactory().currentUnitOfWork().get( ProjectEntity.class, id ));
+         return subContext( OverviewProjectContext.class );
       }
+
    }
 }

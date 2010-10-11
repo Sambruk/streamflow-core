@@ -66,7 +66,6 @@ import static se.streamsource.streamflow.domain.interaction.gtd.CaseStates.*;
 @Constraints(StringValueMaxLength.class)
 public interface CaseGeneralContext
       extends
-      SubContexts<LabeledContext>,
       IndexContext<CaseGeneralDTO>,
       Context
 {
@@ -84,11 +83,8 @@ public interface CaseGeneralContext
 
    LinksValue possiblecasetypes();
 
-   LinksValue possibleforms();
-
-   LinksValue possiblelabels();
-
-   void addlabel( EntityReferenceDTO reference );
+   @SubContext
+   LabelableContext labels();
 
    abstract class Mixin
          extends ContextMixin
@@ -116,9 +112,6 @@ public interface CaseGeneralContext
          CaseEntity aCase = roleMap.get( CaseEntity.class );
          builder.prototype().description().set( aCase.description().get() );
 
-         LinksBuilder labelsBuilder = new LinksBuilder( module.valueBuilderFactory() );
-         labelsBuilder.addDescribables( aCase.labels() );
-
          CaseType caseType = aCase.caseType().get();
          if (caseType != null)
          {
@@ -130,7 +123,6 @@ public interface CaseGeneralContext
             builder.prototype().caseType().set( caseTypeBuilder.newInstance() );
          }
 
-         builder.prototype().labels().set( labelsBuilder.newLinks() );
          builder.prototype().note().set( aCase.note().get() );
          builder.prototype().creationDate().set( aCase.createdOn().get() );
          builder.prototype().caseId().set( aCase.caseId().get() );
@@ -170,47 +162,9 @@ public interface CaseGeneralContext
             aCase.changeCaseType( null );
       }
 
-      public LinksValue possibleforms()
+      public LabelableContext labels()
       {
-         TypedCase.Data typedCase = roleMap.get( TypedCase.Data.class );
-
-         CaseType caseType = typedCase.caseType().get();
-
-         if (caseType != null)
-         {
-            SelectedForms.Data forms = (SelectedForms.Data) caseType;
-            return new LinksBuilder( module.valueBuilderFactory() ).addDescribables( forms.selectedForms() ).newLinks();
-         } else
-         {
-            return new LinksBuilder( module.valueBuilderFactory() ).newLinks();
-         }
-      }
-
-      public LinksValue possiblelabels()
-      {
-         CaseLabelsQueries labels = roleMap.get( CaseLabelsQueries.class );
-
-         LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() ).command( "addlabel" );
-         for (Map.Entry<Label, SelectedLabels> labelSelectedLabelsEntry : labels.possibleLabels().entrySet())
-         {
-            builder.addDescribable( labelSelectedLabelsEntry.getKey(), (Describable) labelSelectedLabelsEntry.getValue() );
-         }
-         return builder.newLinks();
-      }
-
-      public void addlabel( EntityReferenceDTO reference )
-      {
-         UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
-         Labelable labelable = roleMap.get( Labelable.class );
-         Label label = uow.get( Label.class, reference.entity().get().identity() );
-
-         labelable.addLabel( label );
-      }
-
-      public LabeledContext context( String id )
-      {
-         roleMap.set( module.unitOfWorkFactory().currentUnitOfWork().get( Label.class, id ) );
-         return subContext( LabeledContext.class );
+         return subContext( LabelableContext.class );
       }
    }
 }

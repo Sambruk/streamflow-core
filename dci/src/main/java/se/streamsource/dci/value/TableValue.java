@@ -1,5 +1,4 @@
-/**
- *
+/*
  * Copyright 2009-2010 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,7 +14,7 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.resource.overview;
+package se.streamsource.dci.value;
 
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.property.Property;
@@ -23,9 +22,12 @@ import org.qi4j.api.value.ValueComposite;
 
 import java.util.List;
 
-public interface ProjectSummaryListDTO
+/**
+ * A table of strings. The outer list is for the rows, and then each list is one row in the table.
+ */
+public interface TableValue
       extends ValueComposite
 {
    @UseDefaults
-   Property<List<ProjectSummaryDTO>> projectOverviews();
+   Property<List<List<String>>> table();
 }

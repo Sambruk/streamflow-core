@@ -42,7 +42,7 @@ public abstract class UpdateCaseCountDraftsConcern
    @Structure
    UnitOfWorkFactory uowf;
 
-   public void createdraft()
+   public void createcase()
    {
       RoleMap roleMap = uowf.currentUnitOfWork().metaInfo().get( RoleMap.class );
       Drafts drafts = roleMap.get( Drafts.class );
@@ -50,6 +50,6 @@ public abstract class UpdateCaseCountDraftsConcern
       // Update drafts for user
       new Caching(caching, Caches.CASECOUNTS).addToCache( drafts.toString(), 1 );
 
-      next.createdraft();
+      next.createcase();
    }
 }

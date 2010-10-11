@@ -27,7 +27,7 @@ import java.net.URLEncoder;
 /**
  * Builder for making it easier to create LinksValue/LinkValue
  */
-public class LinksBuilder
+public class LinksBuilder<T extends LinksBuilder>
 {
    protected ValueBuilder<? extends LinksValue> linksBuilder;
    protected ValueBuilder<LinkValue> linkBuilder;
@@ -45,7 +45,7 @@ public class LinksBuilder
       linkBuilder = vbf.newValueBuilder( LinkValue.class );
    }
 
-   public LinksBuilder path(String subPath)
+   public T path(String subPath)
    {
       try
       {
@@ -55,35 +55,35 @@ public class LinksBuilder
          e.printStackTrace();
       }
 
-      return this;
+      return (T) this;
    }
 
-   public LinksBuilder rel(String rel)
+   public T rel(String rel)
    {
       this.rel = rel;
 
-      return this;
+      return (T) this;
    }
 
-   public LinksBuilder command( String commandName )
+   public T command( String commandName )
    {
       this.command = commandName;
       this.rel = commandName;
-      return this;
+      return (T) this;
    }
 
-   public LinksBuilder addLink( LinkValue linkValue )
+   public T addLink( LinkValue linkValue )
    {
       linksBuilder.prototype().links().get().add( linkValue  );
-      return this;
+      return (T) this;
    }
 
-   public LinksBuilder addLink( String description, EntityReference ref )
+   public T addLink( String description, EntityReference ref )
    {
-      return addLink(description, ref.identity());
+      return (T) addLink(description, ref.identity());
    }
 
-   public LinksBuilder addLink( String description, String id )
+   public T addLink( String description, String id )
    {
       try
       {
@@ -97,15 +97,15 @@ public class LinksBuilder
 
          addLink(linkBuilder.newInstance());
 
-         return this;
+         return (T) this;
       } catch (UnsupportedEncodingException e)
       {
          e.printStackTrace();
-         return this;
+         return (T) this;
       }
    }
 
-   public LinksBuilder addLink( String description, String id, String rel, String href, String classes )
+   public T addLink( String description, String id, String rel, String href, String classes )
    {
       linkBuilder.prototype().text().set( description );
       linkBuilder.prototype().id().set( id );
@@ -115,10 +115,10 @@ public class LinksBuilder
 
       addLink(linkBuilder.newInstance());
 
-      return this;
+      return (T) this;
    }
 
-   public LinksBuilder addLink( String description, EntityReference ref, String title, String classes )
+   public T addLink( String description, EntityReference ref, String title, String classes )
    {
       if (titledLinkBuilder == null)
          titledLinkBuilder = vbf.newValueBuilder( TitledLinkValue.class );
@@ -138,7 +138,7 @@ public class LinksBuilder
 
       linksBuilder.prototype().links().get().add( titledLinkBuilder.newInstance() );
 
-      return this;
+      return (T) this;
    }
 
    public LinksValue newLinks()

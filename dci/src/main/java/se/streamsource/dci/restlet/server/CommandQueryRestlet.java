@@ -59,6 +59,7 @@ import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.api.value.ValueComposite;
 import org.qi4j.spi.Qi4jSPI;
+import org.qi4j.spi.entity.EntityState;
 import org.qi4j.spi.property.PropertyType;
 import org.qi4j.spi.structure.ModuleSPI;
 import org.qi4j.spi.util.Annotations;
@@ -75,6 +76,7 @@ import org.restlet.data.Parameter;
 import org.restlet.data.Preference;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
+import org.restlet.data.Tag;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.Variant;
@@ -382,6 +384,7 @@ public class CommandQueryRestlet
             responseWriter = responseWriterFactory.createWriter( segments, result == null ? null : result.getClass(), roleMap, variant );
          } catch (Exception e)
          {
+            logger.error( "Could not write response", e );
             response.setStatus( Status.SERVER_ERROR_INTERNAL, e.getMessage() );
             return;
          }
@@ -392,8 +395,10 @@ public class CommandQueryRestlet
             EntityComposite entity = roleMap.get( EntityComposite.class );
             UnitOfWork lastModifiedUoW = uowf.newUnitOfWork();
             entity = lastModifiedUoW.get( entity );
-            Date lastModified = new Date(spi.getEntityState( entity ).lastModified());
+            EntityState state = spi.getEntityState( entity );
+            Date lastModified = new Date( state.lastModified() );
             response.getEntity().setModificationDate( lastModified );
+            response.getEntity().setTag( new Tag(state.identity().identity()+"/"+state.version()) );
             lastModifiedUoW.discard();
          } catch (IllegalArgumentException e)
          {

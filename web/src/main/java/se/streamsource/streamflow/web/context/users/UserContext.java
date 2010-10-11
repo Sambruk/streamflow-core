@@ -61,7 +61,7 @@ public interface UserContext extends Context, IndexContext<LinksValue>
 
    public void changemessagedeliverytype(StringValue command);
 
-   public StringValue getmessagedeliverytype();
+   public StringValue messagedeliverytype();
 
    abstract class Mixin extends ContextMixin implements UserContext
    {
@@ -115,7 +115,7 @@ public interface UserContext extends Context, IndexContext<LinksValue>
          }
       }
 
-      public StringValue getmessagedeliverytype()
+      public StringValue messagedeliverytype()
       {
          MessageRecipient.Data recipientData = roleMap
                .get(MessageRecipient.Data.class);

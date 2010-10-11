@@ -38,23 +38,31 @@ import org.restlet.data.Method;
 import org.restlet.data.Preference;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
+import org.restlet.data.Tag;
 import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.ObjectRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ResourceException;
+import se.streamsource.dci.value.ContextValue;
 import se.streamsource.dci.value.LinkValue;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Base class for client-side Command/Query resources
  */
 public class CommandQueryClient
 {
+   private static final Set<Tag> validTags = new HashSet<Tag>( );
+
    @Structure
    private ValueBuilderFactory vbf;
 
@@ -74,6 +82,7 @@ public class CommandQueryClient
    private Reference reference;
 
    private Date lastModified; // Keep track of last-modified on queries, and send it on commands
+   private Tag tag; // Keep track of E-Tag, to detect when someone else has issued a command to the same resource
 
    public Reference getReference()
    {
@@ -91,7 +100,7 @@ public class CommandQueryClient
 
       if (response.getStatus().isSuccess())
       {
-         lastModified = response.getEntity().getModificationDate();
+         saveTagTimeStamp(response);
 
          String jsonValue = response.getEntityAsText();
 
@@ -102,6 +111,27 @@ public class CommandQueryClient
          // This will throw an exception
          handleError( response );
          return null;
+      }
+   }
+
+   private void checkTag()
+   {
+      // Check if we need to refresh first
+      if (!validTags.contains( tag ))
+      {
+         // This will update the lastModified timestamp + tag before issuing the command
+         query( "", ContextValue.class );
+      }
+   }
+
+   private void saveTagTimeStamp( Response response )
+   {
+      Tag tag = response.getEntity().getTag();
+      if (tag != null)
+      {
+         lastModified = response.getEntity().getModificationDate();
+         this.tag = tag;
+         validTags.add( tag );
       }
    }
 
@@ -170,6 +200,8 @@ public class CommandQueryClient
    public void postCommand( String operation, Representation commandRepresentation, ResponseHandler responseHandler )
          throws ResourceException
    {
+      checkTag();
+
       Reference ref = new Reference( reference.toUri().toString() + operation );
       Request request = new Request( Method.POST, ref, commandRepresentation );
       ClientInfo info = new ClientInfo();
@@ -185,7 +217,10 @@ public class CommandQueryClient
       {
          if (response.getStatus().isSuccess())
          {
-            lastModified = response.getEntity().getModificationDate();
+            if (tag != null)
+               validTags.remove( tag );
+
+            saveTagTimeStamp( response );
             responseHandler.handleResponse( response );
          } else
          {
@@ -262,6 +297,8 @@ public class CommandQueryClient
 
    public void putCommand( String operation, ValueComposite command ) throws ResourceException
    {
+      checkTag();
+
       Representation commandRepresentation;
       if (command != null)
          commandRepresentation = new StringRepresentation( command.toJSON(), MediaType.APPLICATION_JSON, null, CharacterSet.UTF_8 );
@@ -293,8 +330,11 @@ public class CommandQueryClient
             {
                if (response.getStatus().isSuccess())
                {
+                  if (tag != null)
+                     validTags.remove( tag );
+
                   // Reset modification date
-                  lastModified = response.getEntity().getModificationDate();
+                  saveTagTimeStamp( response );
 
                   responseHandler.handleResponse( response );
                } else
@@ -330,6 +370,7 @@ public class CommandQueryClient
 
    public void delete() throws ResourceException
    {
+      checkTag();
 
       Request request = new Request( Method.DELETE, new Reference( reference.toUri() ).toString() );
       ClientInfo info = new ClientInfo();
@@ -349,7 +390,12 @@ public class CommandQueryClient
             } else
             {
                // Reset modification date
-               lastModified = null;
+               if (tag != null)
+               {
+                  lastModified = null;
+                  validTags.remove( tag );
+                  tag = null;
+               }
 
                responseHandler.handleResponse( response );
             }

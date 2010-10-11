@@ -46,8 +46,6 @@ public interface FormContext
 {
    FormValue form();
 
-   LinksValue possiblemoveto();
-
    void move( EntityValue to);
 
    public void changeformid( StringValue stringValue );
@@ -74,14 +72,6 @@ public interface FormContext
          builder.prototype().id().set( form.formId().get() );
 
          return builder.newInstance();
-      }
-
-      public LinksValue possiblemoveto()
-      {
-         LinksBuilder builder = new LinksBuilder(module.valueBuilderFactory());
-         builder.command( "move" );
-         roleMap.get( PossibleFormMoveToQueries.class).possibleMoveFormTo( builder );
-         return builder.newLinks();
       }
 
       public void move(EntityValue to)

@@ -24,6 +24,7 @@ import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.ContextMixin;
+import se.streamsource.dci.api.IndexContext;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
@@ -50,10 +51,8 @@ import static org.qi4j.api.query.QueryExpressions.templateFor;
  */
 @Mixins(AdministratorsContext.Mixin.class)
 public interface AdministratorsContext
-   extends SubContexts<AdministratorContext>, Context
+   extends SubContexts<AdministratorContext>, IndexContext<LinksValue>, Context
 {
-   public LinksValue administrators();
-
    public void addadministrator( EntityReferenceDTO participantId );
    public LinksValue possibleusers();
    public LinksValue possiblegroups();
@@ -65,7 +64,7 @@ public interface AdministratorsContext
       @Structure
       Module module;
 
-      public LinksValue administrators()
+      public LinksValue index()
       {
          RolePolicy policy = roleMap.get(RolePolicy.class );
 

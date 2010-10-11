@@ -26,6 +26,8 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.SubContexts;
+import se.streamsource.dci.value.LinksValue;
+import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.resource.caze.EffectiveFieldsDTO;
 import se.streamsource.streamflow.resource.caze.SubmittedFormDTO;
 import se.streamsource.streamflow.resource.caze.SubmittedFormsListDTO;
@@ -34,9 +36,12 @@ import se.streamsource.streamflow.resource.roles.IntegerDTO;
 import se.streamsource.streamflow.web.domain.entity.form.FormSubmissionEntity;
 import se.streamsource.streamflow.web.domain.entity.form.FormSubmissionsQueries;
 import se.streamsource.streamflow.web.domain.entity.form.SubmittedFormsQueries;
+import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
+import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
 import se.streamsource.streamflow.web.domain.structure.form.FormSubmission;
 import se.streamsource.streamflow.web.domain.structure.form.FormSubmissions;
+import se.streamsource.streamflow.web.domain.structure.form.SelectedForms;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedForms;
 import se.streamsource.streamflow.web.domain.structure.form.Submitter;
 
@@ -47,19 +52,21 @@ import se.streamsource.streamflow.web.domain.structure.form.Submitter;
 public interface CaseFormsContext
       extends SubContexts<CaseFormContext>, Context
 {
-   public SubmittedFormsListDTO listsubmittedforms();
+   SubmittedFormsListDTO listsubmittedforms();
 
-   public EffectiveFieldsDTO effectivefields();
+   EffectiveFieldsDTO effectivefields();
 
-   public SubmittedFormDTO submittedform( IntegerDTO index );
+   SubmittedFormDTO submittedform( IntegerDTO index );
 
-   public void createformsubmission( EntityReferenceDTO formDTO );
+   void createformsubmission( EntityReferenceDTO formDTO );
 
-   public void discard( EntityReferenceDTO formDTO );
+   void discard( EntityReferenceDTO formDTO );
 
-   public EntityReferenceDTO formsubmission( EntityReferenceDTO formDTO );
+   EntityReferenceDTO formsubmission( EntityReferenceDTO formDTO );
 
-   public void submit( EntityReferenceDTO formDTO ) throws ResourceException;
+   void submit( EntityReferenceDTO formDTO ) throws ResourceException;
+
+   LinksValue possibleforms();
 
    abstract class Mixin
          extends ContextMixin
@@ -135,6 +142,22 @@ public interface CaseFormsContext
 
          // discard since the form is already submitted.
          discard( formDTO );
+      }
+
+      public LinksValue possibleforms()
+      {
+         TypedCase.Data typedCase = roleMap.get( TypedCase.Data.class );
+
+         CaseType caseType = typedCase.caseType().get();
+
+         if (caseType != null)
+         {
+            SelectedForms.Data forms = (SelectedForms.Data) caseType;
+            return new LinksBuilder( module.valueBuilderFactory() ).addDescribables( forms.selectedForms() ).newLinks();
+         } else
+         {
+            return new LinksBuilder( module.valueBuilderFactory() ).newLinks();
+         }
       }
 
       public CaseFormContext context( String id )

@@ -27,67 +27,11 @@ import se.streamsource.streamflow.domain.structure.Describable;
  * Builder for making it easier to create LinksValue/LinkValue in a Streamflow roleMap
  */
 public class LinksBuilder
-   extends se.streamsource.dci.value.LinksBuilder
+   extends se.streamsource.dci.value.LinksBuilder<LinksBuilder>
 {
    public LinksBuilder( ValueBuilderFactory vbf )
    {
       super(vbf);
-   }
-
-   @Override
-   public LinksBuilder path( String subPath )
-   {
-      super.path( subPath );
-      return this;
-   }
-
-   @Override
-   public LinksBuilder rel( String rel )
-   {
-      super.rel( rel );
-      return this;
-   }
-
-   @Override
-   public LinksBuilder command( String commandName )
-   {
-      super.command( commandName );
-      return this;
-   }
-
-   @Override
-   public LinksBuilder addLink( LinkValue linkValue )
-   {
-      super.addLink( linkValue );
-      return this;
-   }
-
-   @Override
-   public LinksBuilder addLink( String description, EntityReference ref )
-   {
-      super.addLink( description, ref );
-      return this;
-   }
-
-   @Override
-   public LinksBuilder addLink( String description, String id )
-   {
-      super.addLink( description, id );
-      return this;
-   }
-
-   @Override
-   public LinksBuilder addLink( String description, String id, String rel, String href, String classes )
-   {
-      super.addLink( description, id, rel, href, classes );
-      return this;
-   }
-
-   @Override
-   public LinksBuilder addLink( String description, EntityReference ref, String title, String classes )
-   {
-      super.addLink( description, ref, title, classes );
-      return this;
    }
 
    public LinksBuilder addDescribables( Iterable<? extends Describable> items )

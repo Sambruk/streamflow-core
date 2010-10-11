@@ -27,5 +27,6 @@ public enum ErrorResources
    unauthorized_access,
    concurrent_change,
    error,
-   user_already_exists
+   user_already_exists,
+   description_cannot_be_more_than_50
 }

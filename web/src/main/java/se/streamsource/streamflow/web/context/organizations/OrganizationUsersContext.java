@@ -22,6 +22,7 @@ import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.IndexContext;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
@@ -41,10 +42,8 @@ import static org.qi4j.api.query.QueryExpressions.templateFor;
  */
 @Mixins(OrganizationUsersContext.Mixin.class)
 public interface OrganizationUsersContext
-   extends SubContexts<OrganizationUserContext>, Context
+   extends SubContexts<OrganizationUserContext>, IndexContext<LinksValue>, Context
 {
-   public LinksValue users();
-
    public LinksValue possibleusers();
 
    public void join( EntityReferenceDTO userDTO );
@@ -53,7 +52,7 @@ public interface OrganizationUsersContext
       extends ContextMixin
       implements OrganizationUsersContext
    {
-      public LinksValue users()
+      public LinksValue index()
       {
          OrganizationParticipationsQueries participants = roleMap.get(OrganizationParticipationsQueries.class);
 

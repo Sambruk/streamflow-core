@@ -21,15 +21,11 @@ import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
 
-public interface ProjectSummaryDTO
+import java.util.List;
+
+public interface ProjectSummaryValuex
       extends ValueComposite
 {
    @UseDefaults
-   Property<String> project();
-
-   @UseDefaults
-   Property<Long> inboxCount();
-
-   @UseDefaults
-   Property<Long> assignedCount();
+   Property<List<ProjectSummaryValue>> projectOverviews();
 }

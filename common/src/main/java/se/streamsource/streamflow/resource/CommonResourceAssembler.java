@@ -48,8 +48,8 @@ import se.streamsource.streamflow.resource.caze.SubmittedFormListDTO;
 import se.streamsource.streamflow.resource.caze.SubmittedFormsListDTO;
 import se.streamsource.streamflow.resource.conversation.ConversationDTO;
 import se.streamsource.streamflow.resource.conversation.MessageDTO;
-import se.streamsource.streamflow.resource.overview.ProjectSummaryDTO;
-import se.streamsource.streamflow.resource.overview.ProjectSummaryListDTO;
+import se.streamsource.streamflow.resource.overview.ProjectSummaryValue;
+import se.streamsource.streamflow.resource.overview.ProjectSummaryValuex;
 import se.streamsource.streamflow.resource.roles.BooleanDTO;
 import se.streamsource.streamflow.resource.roles.DateDTO;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
@@ -111,8 +111,8 @@ public class CommonResourceAssembler
             MessageDTO.class,
             TreeValue.class,
             TreeNodeValue.class,
-            ProjectSummaryDTO.class,
-            ProjectSummaryListDTO.class,
+            ProjectSummaryValue.class,
+            ProjectSummaryValuex.class,
             FieldDTO.class,
             EffectiveFieldsDTO.class,
             EffectiveFieldDTO.class,

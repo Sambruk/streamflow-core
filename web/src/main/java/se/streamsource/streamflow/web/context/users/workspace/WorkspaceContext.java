@@ -86,7 +86,7 @@ public interface WorkspaceContext
             caseCount = new Element(drafts.toString(), Long.toString(drafts.drafts().newQuery( uow ).count()));
             caching.put( caseCount );
          }
-         builder.addLink( (String) caseCount.getObjectValue(), "drafts" );
+         builder.addLink( (String) caseCount.getObjectValue(), "user/drafts" );
 
          for (Project project : roleMap.get( ProjectQueries.class ).allProjects())
          {

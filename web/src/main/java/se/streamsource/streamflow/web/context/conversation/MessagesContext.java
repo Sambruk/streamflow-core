@@ -44,7 +44,7 @@ import se.streamsource.streamflow.web.domain.structure.conversation.Messages;
 public interface MessagesContext
       extends SubContexts<MessageContext>, IndexContext<LinksValue>, Context
 {
-   public void addmessage( StringValue message ) throws ResourceException;
+   public void createmessage( StringValue message ) throws ResourceException;
 
    abstract class Mixin
          extends ContextMixin
@@ -73,7 +73,7 @@ public interface MessagesContext
          return links.newLinks();
       }
 
-      public void addmessage( StringValue message ) throws ResourceException
+      public void createmessage( StringValue message ) throws ResourceException
       {
          try
          {

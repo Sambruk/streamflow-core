@@ -44,7 +44,7 @@ public interface DraftsContext
 {
    LinksValue cases();
 
-   void createdraft();
+   void createcase();
 
    abstract class Mixin
       extends ContextMixin
@@ -60,7 +60,7 @@ public interface DraftsContext
          return CasesContext.Mixin.buildCaseList(query, module, roleMap.get( Reference.class).getBaseRef().getPath());
       }
 
-      public void createdraft()
+      public void createcase()
       {
          Drafts drafts = roleMap.get( Drafts.class );
          drafts.createDraft();
