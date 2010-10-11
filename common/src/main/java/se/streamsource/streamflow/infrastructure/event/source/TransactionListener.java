@@ -1,5 +1,4 @@
-/**
- *
+/*
  * Copyright 2009-2010 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,12 +14,14 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.domain;
+package se.streamsource.streamflow.infrastructure.event.source;
+
+import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 
 /**
- * Generic Specification interface
+ * JAVADOC
  */
-public interface Specification<T>
+public interface TransactionListener
 {
-   boolean valid(T instance);
+   void notifyTransactions(Iterable<TransactionEvents> transactions);
 }

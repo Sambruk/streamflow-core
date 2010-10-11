@@ -62,71 +62,38 @@ public class SavedSearchesModel
 
    public void remove( LinkValue link )
    {
-      try
+      if (link != null)
       {
-         if (link != null)
-         {
-            client.getClient( link ).delete();
-            eventList.remove( link );
-         }
-
-      } catch (ResourceException e)
-      {
-         e.printStackTrace();
+         client.getClient( link ).delete();
+         eventList.remove( link );
       }
    }
 
    public void refresh()
    {
-      try
-      {
-         List<LinkValue> links = client.query( "index", TitledLinksValue.class ).links().get();
-         EventListSynch.synchronize( links, eventList );
-      } catch (ResourceException e)
-      {
-         throw new OperationException( AdministrationResources.could_not_refresh, e );
-      }
+      List<LinkValue> links = client.query( "index", TitledLinksValue.class ).links().get();
+      EventListSynch.synchronize( links, eventList );
    }
 
    public void updateSearch( LinkValue link, SearchValue searchValue )
    {
-      try
-      {
-         client.getClient( link ).postCommand( "update", searchValue );
-         refresh();
-      } catch (ResourceException e)
-      {
-         throw new OperationException( WorkspaceResources.could_not_perform_operation, e );
-      }
+      client.getClient( link ).postCommand( "update", searchValue );
+      refresh();
    }
 
    public void changeDescription( LinkValue link, String name )
    {
-
-      try
-      {
-         ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
-         builder.prototype().string().set( name );
-         client.getClient( link ).postCommand( "changedescription", builder.newInstance() );
-         refresh();
-      } catch (ResourceException e)
-      {
-         throw new OperationException( WorkspaceResources.could_not_perform_operation, e );
-      }
+      ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
+      builder.prototype().string().set( name );
+      client.getClient( link ).postCommand( "changedescription", builder.newInstance() );
+      refresh();
    }
 
    public void changeQuery( LinkValue link, String query )
    {
-
-      try
-      {
-         ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
-         builder.prototype().string().set( query );
-         client.getClient( link ).postCommand( "changequery", builder.newInstance() );
-         refresh();
-      } catch (ResourceException e)
-      {
-         throw new OperationException( WorkspaceResources.could_not_perform_operation, e );
-      }
+      ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
+      builder.prototype().string().set( query );
+      client.getClient( link ).postCommand( "changequery", builder.newInstance() );
+      refresh();
    }
 }

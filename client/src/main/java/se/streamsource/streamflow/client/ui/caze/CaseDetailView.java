@@ -22,9 +22,8 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
-import org.restlet.Component;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.Icons;
-import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.caze.attachments.AttachmentsView;
 import se.streamsource.streamflow.client.ui.caze.conversations.ConversationsView;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
@@ -32,11 +31,13 @@ import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
+import javax.swing.JTable;
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
+
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 
 /**
  * JAVADOC
@@ -46,44 +47,22 @@ public class CaseDetailView
 {
    private JTabbedPane tabs = new JTabbedPane( JTabbedPane.BOTTOM );
 
-   private ConversationsView conversationsView;
-   private CaseGeneralView generalView;
-   private ContactsAdminView contactsView;
-   private FormsAdminView formsView;
-   private CaseModel model;
-   private CaseInfoView2 infoView;
-   private AttachmentsView attachmentsView;
-   private CaseActionsView actionsView;
-
    public CaseDetailView( @Service ApplicationContext appContext,
-                          @Uses CaseInfoView2 infoView,
-                          @Uses CaseGeneralView generalView,
-                          @Uses ConversationsView conversationsView,
-                          @Uses ContactsAdminView contactsView,
-                          @Uses FormsAdminView formsAdminView,
-                          @Uses AttachmentsView attachmentsView,
-                          @Uses CaseActionsView actionsView,
+                          @Uses CommandQueryClient client,
                           @Structure ObjectBuilderFactory obf )
    {
       super( new BorderLayout() );
-      this.infoView = infoView;
-      this.infoView.setPreferredSize( new Dimension( 800, 50 ) );
-
-      this.actionsView = actionsView;
-      tabs.setFocusable( true );
       this.setBorder( BorderFactory.createEtchedBorder() );
+      tabs.setFocusable( true );
 
-      this.conversationsView = conversationsView;
-      this.generalView = generalView;
-      this.contactsView = contactsView;
-      this.formsView = formsAdminView;
-      this.attachmentsView = attachmentsView;
+      add( obf.newObjectBuilder( CaseInfoView.class ).use( client ).newInstance(), BorderLayout.NORTH );
+      add( obf.newObjectBuilder( CaseActionsView.class ).use( client ).newInstance(), BorderLayout.EAST );
 
-      tabs.addTab( i18n.text( WorkspaceResources.general_tab ), i18n.icon( Icons.general ), generalView, i18n.text( WorkspaceResources.general_tab ) );
-      tabs.addTab( i18n.text( WorkspaceResources.contacts_tab ), i18n.icon( Icons.projects ), contactsView, i18n.text( WorkspaceResources.contacts_tab ) );
-      tabs.addTab( i18n.text( WorkspaceResources.conversations_tab ), i18n.icon( Icons.comments ), conversationsView, i18n.text( WorkspaceResources.conversations_tab ) );
-      tabs.addTab( i18n.text( WorkspaceResources.metadata_tab ), i18n.icon( Icons.metadata ), formsAdminView, i18n.text( WorkspaceResources.metadata_tab ) );
-      tabs.addTab( i18n.text( WorkspaceResources.attachments_tab ), i18n.icon( Icons.attachments ), attachmentsView, i18n.text( WorkspaceResources.attachments_tab ) );
+      tabs.addTab( text( WorkspaceResources.general_tab ), icon( Icons.general ), obf.newObjectBuilder( CaseGeneralView.class ).use( client.getSubClient("general" )).newInstance(), text( WorkspaceResources.general_tab ) );
+      tabs.addTab( text( WorkspaceResources.contacts_tab ), icon( Icons.projects ), obf.newObjectBuilder( ContactsAdminView.class ).use( client.getSubClient("contacts" )).newInstance(), text( WorkspaceResources.contacts_tab ) );
+      tabs.addTab( text( WorkspaceResources.conversations_tab ), icon( Icons.conversations ), obf.newObjectBuilder( ConversationsView.class ).use( client.getSubClient("conversations" )).newInstance(), text( WorkspaceResources.conversations_tab ) );
+      tabs.addTab( text( WorkspaceResources.forms_tab ), icon( Icons.forms ), obf.newObjectBuilder( FormsAdminView.class ).use( client.getSubClient("forms" )).newInstance(), text( WorkspaceResources.forms_tab ) );
+      tabs.addTab( text( WorkspaceResources.attachments_tab ), icon( Icons.attachments ), obf.newObjectBuilder( AttachmentsView.class ).use( client.getSubClient("attachments" )).newInstance(), text( WorkspaceResources.attachments_tab ) );
 
       tabs.setMnemonicAt( 0, KeyEvent.VK_1 );
       tabs.setMnemonicAt( 1, KeyEvent.VK_2 );
@@ -106,36 +85,7 @@ public class CaseDetailView
          }
       } );
 
-      add( infoView, BorderLayout.NORTH );
-
       add( tabs, BorderLayout.CENTER );
-
-      add( actionsView, BorderLayout.EAST );
-   }
-
-   public void setCaseModel( CaseModel model )
-   {
-      if (model != null && model != this.model)
-      {
-         this.model = model;
-         model.info().refresh();
-         infoView.setModel( model.info() );
-         generalView.setModel( model.general() );
-         conversationsView.setModel( model.conversations() );
-         contactsView.setModel( model.contacts() );
-         formsView.setModel( model.forms() );
-         attachmentsView.setModel( model.attachments() );
-
-         actionsView.setModel( model.actions() );
-         actionsView.refresh();
-
-         validateTree();
-      }
-   }
-
-   public CaseModel getCaseModel()
-   {
-      return model;
    }
 
    public void setSelectedTab( int index )
@@ -143,13 +93,8 @@ public class CaseDetailView
       tabs.setSelectedIndex( index );
    }
 
-   public void refresh()
+   public int getSelectedTab()
    {
-      if (model != null)
-      {
-         CaseModel refreshModel = model;
-         setCaseModel( null );
-         setCaseModel( refreshModel );
-      }
+      return tabs.getSelectedIndex();
    }
 }

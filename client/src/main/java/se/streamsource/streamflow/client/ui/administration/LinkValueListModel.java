@@ -18,65 +18,78 @@
 package se.streamsource.streamflow.client.ui.administration;
 
 import ca.odell.glazedlists.BasicEventList;
-import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.value.ValueBuilderFactory;
+import org.restlet.data.Status;
+import org.restlet.resource.ResourceException;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.LinkValue;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
-import se.streamsource.streamflow.infrastructure.event.source.helper.EventParameters;
-import se.streamsource.streamflow.infrastructure.event.source.helper.EventVisitorFilter;
+import se.streamsource.dci.value.LinksValue;
+import se.streamsource.streamflow.application.error.ErrorResources;
+import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
+import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
+import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
+
+import static se.streamsource.streamflow.infrastructure.event.source.helper.Events.*;
+import static se.streamsource.streamflow.util.Specifications.*;
 
 /**
  * A general super class for models that use LinkValue lists shown in a JList.
- * This class simplifies the list update for changedDescription events.
  */
 public class LinkValueListModel
-      implements EventVisitor
+   implements Refreshable, TransactionListener
 {
+   @Uses
+   protected CommandQueryClient client;
 
-   protected EventVisitorFilter eventFilter = new EventVisitorFilter( this, "changedDescription" );
+   @Structure
+   protected ValueBuilderFactory vbf;
+
    protected BasicEventList<LinkValue> linkValues = new BasicEventList<LinkValue>();
 
-   public boolean visit( DomainEvent event )
-   {
-      boolean success = false;
-      LinkValue updated = getLinkValue( event );
-      if (updated != null)
-      {
-         int idx = linkValues.indexOf( updated );
-         ValueBuilder<LinkValue> valueBuilder = updated.buildWith();
-         updated = valueBuilder.prototype();
+   private final String refresh;
 
-         String eventName = event.name().get();
-         if (eventName.equals( "changedDescription" ))
-         {
-            try
-            {
-               String newDesc = EventParameters.getParameter( event, "param1" );
-               updated.text().set( newDesc );
-               linkValues.set( idx, valueBuilder.newInstance() );
-               success = true;
-            } catch (Exception e)
-            {
-               e.printStackTrace();
-            }
-         }
-      }
-      return success;
+   public LinkValueListModel()
+   {
+      this("index");
    }
 
-   private LinkValue getLinkValue( DomainEvent event )
+   public LinkValueListModel(String refresh)
    {
-      if (linkValues == null)
-         return null;
+      this.refresh = refresh;
+   }
 
-      for (LinkValue link : linkValues)
+   public void refresh()
+   {
+      EventListSynch.synchronize( client.query( refresh, LinksValue.class ).links().get(), linkValues );
+   }
+
+   public BasicEventList<LinkValue> getList()
+   {
+      return linkValues;
+   }
+
+   public void remove( LinkValue link)
+   {
+      client.getClient( link ).delete();
+   }
+
+   public void notifyTransactions( Iterable<TransactionEvents> transactions )
+   {
+      // Refresh if either the owner of the list has changed, or if any of the entities in the list has changed
+      if (matches( transactions, or( onEntities( client.getReference().getLastSegment() ), onEntities( linkValues ))))
+         refresh();
+   }
+
+   protected void handleException( ResourceException e)
+   {
+      if (Status.CLIENT_ERROR_CONFLICT.equals( e.getStatus() ))
       {
-         if (link.id().get().equals( event.entity().get() ))
-         {
-            return link;
-         }
-
-      }
-      return null;
+         throw new OperationException( ErrorResources.valueOf( e.getStatus().getDescription() ), e);
+      } else
+         throw e;
    }
 }

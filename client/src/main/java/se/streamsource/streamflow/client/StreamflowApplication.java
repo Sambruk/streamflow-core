@@ -51,16 +51,16 @@ import se.streamsource.streamflow.client.ui.AccountSelector;
 import se.streamsource.streamflow.client.ui.DebugWindow;
 import se.streamsource.streamflow.client.ui.administration.AccountResources;
 import se.streamsource.streamflow.client.ui.administration.AdministrationWindow;
-import se.streamsource.streamflow.client.ui.administration.ProfileDialog;
+import se.streamsource.streamflow.client.ui.administration.ProfileView;
 import se.streamsource.streamflow.client.ui.menu.AccountsDialog;
 import se.streamsource.streamflow.client.ui.menu.AccountsModel;
 import se.streamsource.streamflow.client.ui.overview.OverviewWindow;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceWindow;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
-import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
-import se.streamsource.streamflow.infrastructure.event.source.helper.AllEventsSpecification;
-import se.streamsource.streamflow.infrastructure.event.source.helper.ForEvents;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
 
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -70,6 +70,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.util.Arrays;
 import java.util.Collections;
@@ -85,6 +86,7 @@ import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
       "find", "selectTree", "selectTable", "selectDetails"})
 public class StreamflowApplication
       extends SingleFrameApplication
+   implements TransactionListener
 {
    public static ValueType DOMAIN_EVENT_TYPE;
 
@@ -107,6 +109,9 @@ public class StreamflowApplication
    DialogService dialogs;
 
    @Service
+   EventSource source;
+
+   @Service
    IndividualRepository individualRepo;
 
    @Service
@@ -126,7 +131,7 @@ public class StreamflowApplication
    AdministrationWindow administrationWindow;
 
    // do not remove subscriber - holds a weak reference for event handling system
-   private ForEvents subscriber;
+   private TransactionVisitor subscriber;
 
    public ApplicationSPI app;
 
@@ -144,6 +149,8 @@ public class StreamflowApplication
    ) throws IllegalAccessException, UnsupportedLookAndFeelException, InstantiationException, ClassNotFoundException
    {
       DOMAIN_EVENT_TYPE = module.valueDescriptor( DomainEvent.class.getName() ).valueType();
+
+      this.source = source;
 
 //      NotificationGlassPane.install();
 
@@ -189,15 +196,19 @@ public class StreamflowApplication
 
       this.accountsModel = accountsModel;
 
-      subscriber = new ForEvents( AllEventsSpecification.INSTANCE, new EventVisitor()
+      subscriber = new TransactionVisitor()
       {
-         public boolean visit( DomainEvent event )
+         public boolean visit( TransactionEvents transaction )
          {
-            accountsModel.notifyEvent( event );
+            for (DomainEvent domainEvent : transaction.events().get())
+            {
+//               accountsModel.notifyEvent( domainEvent );
+            }
 
             return true;
          }
-      } );
+      };
+
       source.registerListener( subscriber );
 
       showWorkspaceWindow();
@@ -287,12 +298,12 @@ public class StreamflowApplication
    }
 
    @Uses
-   private ObjectBuilder<ProfileDialog> profileDialogs;
+   private ObjectBuilder<ProfileView> profixleDialogs;
 
    @Action
    public void myProfile()
    {
-      ProfileDialog profile = profileDialogs.use( accountSelector.getSelectedAccount() ).newInstance();
+      ProfileView profile = obf.newObjectBuilder( ProfileView.class ).use( accountSelector.getSelectedAccount().userResource()).newInstance();
       dialogs.showOkDialog( getMainFrame(), profile, text( AccountResources.profile_title ) );
    }
 
@@ -306,9 +317,39 @@ public class StreamflowApplication
       return accountSelector.isSelectionEmpty() ? null : accountSelector.getSelectedAccount().settings().userName().get();
    }
 
+   public EventSource getSource()
+   {
+      return source;
+   }
+
    public AccountSelector getAccountSelector()
    {
       return accountSelector;
+   }
+
+   public void notifyTransactions( Iterable<TransactionEvents> transactions )
+   {
+      dispatchTransactions( workspaceWindow.getFrame(), transactions );
+      dispatchTransactions( administrationWindow.getFrame(), transactions );
+      dispatchTransactions( overviewWindow.getFrame(), transactions );
+      dispatchTransactions( debugWindow.getFrame(), transactions );
+   }
+
+   private void dispatchTransactions( Component component, Iterable<TransactionEvents> transactionEventsIterable )
+   {
+      if (component instanceof TransactionListener)
+         ((TransactionListener) component).notifyTransactions( transactionEventsIterable );
+
+      if (component instanceof Container)
+      {
+         Container container = (Container) component;
+         for (Component childComponent : container.getComponents())
+         {
+            // Only dispatch to visible components - they will refresh once visible anyway
+            if (childComponent.isVisible())
+               dispatchTransactions( childComponent, transactionEventsIterable );
+         }
+      }
    }
 
    // Controller actions -------------------------------------------

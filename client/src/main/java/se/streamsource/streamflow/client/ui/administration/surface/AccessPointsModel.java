@@ -17,7 +17,6 @@
 
 package se.streamsource.streamflow.client.ui.administration.surface;
 
-import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
@@ -37,19 +36,11 @@ import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.administration.LinkValueListModel;
 import se.streamsource.streamflow.client.ui.caze.CaseLabelsModel;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.EventListener;
-import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
-import se.streamsource.streamflow.infrastructure.event.source.helper.EventParameters;
-import se.streamsource.streamflow.infrastructure.event.source.helper.EventVisitorFilter;
-import se.streamsource.streamflow.resource.caze.CaseValue;
-
-import java.util.Observable;
 
 
 public class AccessPointsModel
    extends LinkValueListModel
-      implements EventListener, Refreshable
+      implements Refreshable
 {
    @Structure
    ValueBuilderFactory vbf;
@@ -60,6 +51,7 @@ public class AccessPointsModel
    @Uses
    CommandQueryClient client;
 
+/*
    WeakModelMap<String, AccessPointModel> accessPointModels = new WeakModelMap<String, AccessPointModel>()
    {
       protected AccessPointModel newModel( String key )
@@ -72,32 +64,15 @@ public class AccessPointsModel
       }
    };
 
-   public void refresh() throws OperationException
-   {
-      try
-      {
-         // Get AccessPoints list
-         LinksValue accessPointsList = client.query( "index", LinksValue.class );
-         EventListSynch.synchronize( accessPointsList.links().get(), linkValues );
-      } catch (ResourceException e)
-      {
-         throw new OperationException( AdministrationResources.could_not_refresh, e );
-      }
-   }
+*/
 
-   public EventList<LinkValue> getAccessPointsList()
-   {
-      return linkValues;
-   }
-
-   public void newAccessPoint( String accessPointName )
+   public void createAccessPoint( String accessPointName )
    {
       try
       {
          ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
          builder.prototype().string().set( accessPointName );
          client.postCommand( "createaccesspoint", builder.newInstance() );
-         refresh();
       } catch (ResourceException e)
       {
          if (Status.CLIENT_ERROR_CONFLICT.equals( e.getStatus() ))
@@ -108,16 +83,9 @@ public class AccessPointsModel
       }
    }
 
-   public void removeAccessPoint( String id )
+   public void removeAccessPoint( LinkValue id )
    {
-      try
-      {
-         client.getSubClient( id ).delete();
-         refresh();
-      } catch (ResourceException e)
-      {
-         throw new OperationException( AdministrationResources.could_not_remove_accesspoint, e );
-      }
+      client.getClient( id ).delete();
    }
 
    public void changeDescription( LinkValue link, String newName )
@@ -134,23 +102,6 @@ public class AccessPointsModel
          {
             throw new OperationException( AdministrationResources.could_not_rename_accesspoint_name_already_exists, e );
          }
-         throw new OperationException( AdministrationResources.could_not_rename_accesspoint, e );
       }
-      refresh();
-
-   }
-
-   public void notifyEvent( DomainEvent event )
-   {
-      eventFilter.visit( event );
-      for( AccessPointModel accessPointModel : accessPointModels )
-      {
-         accessPointModel.notifyEvent( event );
-      }
-   }
-
-   public AccessPointModel getAccessPointModel( String id )
-   {
-      return accessPointModels.get( id );
    }
 }

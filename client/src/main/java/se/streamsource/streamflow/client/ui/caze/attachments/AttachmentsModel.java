@@ -46,24 +46,23 @@ import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.domain.attachment.AttachmentValue;
 import se.streamsource.streamflow.domain.attachment.UpdateAttachmentValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
-import se.streamsource.streamflow.infrastructure.event.source.helper.EventQuery;
 
-import javax.swing.*;
 import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
+
+import static se.streamsource.streamflow.infrastructure.event.source.helper.Events.*;
+import static se.streamsource.streamflow.util.Iterables.*;
 
 /**
  * JAVADOC
  */
 public class AttachmentsModel
-   implements Refreshable, EventListener
+   implements Refreshable
 {
    @Service
    TransactionVisitor transactionVisitor;
@@ -110,25 +109,21 @@ public class AttachmentsModel
 
                      final TransactionEvents transactionEvents = vbf.newValueFromJSON( TransactionEvents.class, source );
                      transactionVisitor.visit( transactionEvents );
-                     EventQuery query = new EventQuery().withNames( "createdAttachment" );
-                     for (DomainEvent domainEvent : transactionEvents.events().get())
+                     for (DomainEvent domainEvent : filter( transactionEvents.events().get(), withNames("createdAttachment" ) ))
                      {
-                        if (query.accept( domainEvent ))
-                        {
-                           String parameterJson = domainEvent.parameters().get();
+                        String parameterJson = domainEvent.parameters().get();
 
-                           ValueBuilder<UpdateAttachmentValue> builder = vbf.newValueBuilder( UpdateAttachmentValue.class );
-                           builder.prototype().name().set( file.getName() );
-                           builder.prototype().size().set( file.length() );
+                        ValueBuilder<UpdateAttachmentValue> builder = vbf.newValueBuilder( UpdateAttachmentValue.class );
+                        builder.prototype().name().set( file.getName() );
+                        builder.prototype().size().set( file.length() );
 
-                           MimeUtil.registerMimeDetector("eu.medsea.mimeutil.detector.MagicMimeMimeDetector");
-                           MimeType mimeType = MimeUtil.getMostSpecificMimeType( MimeUtil.getMimeTypes( file ));
+                        MimeUtil.registerMimeDetector("eu.medsea.mimeutil.detector.MagicMimeMimeDetector");
+                        MimeType mimeType = MimeUtil.getMostSpecificMimeType( MimeUtil.getMimeTypes( file ));
 
-                           builder.prototype().mimeType().set( mimeType.toString() );
+                        builder.prototype().mimeType().set( mimeType.toString() );
 
-                           String attachmentId = new JSONObject(parameterJson).getString( "param1" );
-                           client.getClient( attachmentId+"/" ).postCommand( "update", builder.newInstance() );
-                        }
+                        String attachmentId = new JSONObject(parameterJson).getString( "param1" );
+                        client.getClient( attachmentId+"/" ).postCommand( "update", builder.newInstance() );
                      }
                   }
                } catch (Exception e)
@@ -155,10 +150,6 @@ public class AttachmentsModel
       {
          throw new OperationException( WorkspaceResources.could_not_perform_operation, e );
       }
-   }
-
-   public void notifyEvent( DomainEvent event )
-   {
    }
 
    public void removeAttachment( AttachmentValue attachment )

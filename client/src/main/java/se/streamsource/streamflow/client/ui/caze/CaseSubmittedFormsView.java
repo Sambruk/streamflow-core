@@ -22,50 +22,48 @@ import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.JXList;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 
 import com.jgoodies.forms.factories.Borders;
 
+import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.StreamflowApplication;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
+import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
+import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
+import se.streamsource.streamflow.infrastructure.event.source.helper.Events;
 import se.streamsource.streamflow.resource.caze.SubmittedFormListDTO;
 
 import javax.swing.*;
 import java.awt.*;
 import java.text.DateFormat;
 
+import static se.streamsource.streamflow.infrastructure.event.source.helper.Events.*;
+
 /**
  * JAVADOC
  */
 public class CaseSubmittedFormsView
       extends JPanel
+   implements TransactionListener
 {
    private CaseSubmittedFormsModel model;
    private JXList submittedForms;
 
-   @Service
-   DialogService dialogs;
-
-   @Structure
-   ObjectBuilderFactory obf;
-
-   private
-   @Service
-   StreamflowApplication main;
-
-
-   public EventListModel eventListModel;
-
-   public CaseSubmittedFormsView( @Service ApplicationContext context )
+   public CaseSubmittedFormsView( @Service ApplicationContext context, @Uses CommandQueryClient client, @Structure ObjectBuilderFactory obf )
    {
       super( new BorderLayout() );
+
+      model = obf.newObjectBuilder( CaseSubmittedFormsModel.class ).use( client ).newInstance();
 
       ActionMap am = context.getActionMap( this );
       setActionMap( am );
       setMinimumSize( new Dimension( 150, 0 ) );
       this.setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
 
-      submittedForms = new JXList();
+      submittedForms = new JXList(new EventListModel<SubmittedFormListDTO>( model.getSubmittedForms()));
       submittedForms.setPreferredSize( new Dimension( 150, 1000 ) );
       submittedForms.setCellRenderer( new DefaultListCellRenderer()
       {
@@ -84,15 +82,8 @@ public class CaseSubmittedFormsView
       submittedFormsScollPane.setViewportView( submittedForms );
 
       add( submittedFormsScollPane, BorderLayout.CENTER );
-   }
 
-   public void setModel( CaseSubmittedFormsModel model )
-   {
-      this.model = model;
-      if (eventListModel != null)
-         eventListModel.dispose();
-      eventListModel = new EventListModel( model.getSubmittedForms());
-      submittedForms.setModel( eventListModel );
+      new RefreshWhenVisible(this, model);
    }
 
    public JList getSubmittedFormsList()
@@ -100,16 +91,11 @@ public class CaseSubmittedFormsView
       return submittedForms;
    }
 
-   @Override
-   public void setVisible( boolean b )
+   public void notifyTransactions( Iterable<TransactionEvents> transactions )
    {
-      super.setVisible( b );
-      if (b)
+      if (matches( transactions, withNames("submittedForm" )))
       {
-         if (model != null)
-         {
-            model.refresh();
-         }
+         model.refresh();
       }
    }
 }

@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.client.infrastructure.events;
 
+import org.jdesktop.application.Application;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
@@ -43,12 +44,6 @@ public interface ClientEventSourceService
    class Mixin
          implements EventSource, TransactionVisitor, Activatable
    {
-      Date after = new Date();
-
-      public Reader reader;
-      public Iterable<TransactionEvents> events;
-      public TransactionCollector transactionCollector;
-
       public void activate() throws Exception
       {
       }
@@ -85,15 +80,12 @@ public interface ClientEventSourceService
 
       public boolean visit( TransactionEvents transaction )
       {
-         Iterator<Reference<TransactionVisitor>> referenceIterator = listeners.iterator();
+         Iterator<Reference<TransactionVisitor>> referenceIterator = new ArrayList<Reference<TransactionVisitor>>(listeners).iterator();
          while (referenceIterator.hasNext())
          {
             Reference<TransactionVisitor> eventSourceListenerReference = referenceIterator.next();
             TransactionVisitor lstnr = eventSourceListenerReference.get();
-            if (lstnr == null)
-            {
-               referenceIterator.remove();
-            } else
+            if (lstnr != null)
             {
                lstnr.visit( transaction );
             }

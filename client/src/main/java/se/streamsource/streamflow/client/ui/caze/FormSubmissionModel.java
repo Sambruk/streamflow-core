@@ -31,11 +31,6 @@ import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.domain.form.FieldValueDTO;
 import se.streamsource.streamflow.domain.form.FormSubmissionValue;
 import se.streamsource.streamflow.domain.form.PageSubmissionValue;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.EventListener;
-import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
-import se.streamsource.streamflow.infrastructure.event.source.helper.EventParameters;
-import se.streamsource.streamflow.infrastructure.event.source.helper.EventVisitorFilter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,14 +39,11 @@ import java.util.List;
  * Model for handling a form submission and subsequently submitting it
  */
 public class FormSubmissionModel
-      implements EventListener, EventVisitor
 {
    private ValueBuilderFactory vbf;
    private CommandQueryClient client;
    private FormSubmissionValue formSubmission;
    private List<FormSubmissionWizardPage> pages;
-
-   EventVisitorFilter eventFilter = new EventVisitorFilter( this, "changedFormSubmission" );
 
    public FormSubmissionModel( @Uses CommandQueryClient client,
                                @Structure ObjectBuilderFactory obf,
@@ -108,29 +100,21 @@ public class FormSubmissionModel
       client.putCommand( "nextpage" );
    }
 
-   public boolean visit( DomainEvent event )
-   {
-
-      if ("changedFormSubmission".equals( event.name().get() ))
-      {
-         FormSubmissionValue value = vbf.newValueFromJSON( FormSubmissionValue.class, EventParameters.getParameter( event, "param1" ) );
-
-         if (value.form().get().identity().equals( formSubmission.form().get().identity() ))
-         {
-            for (int i = 0; i < value.pages().get().size(); i++)
-            {
-               PageSubmissionValue pageSubmissionValue = value.pages().get().get( i );
-               FormSubmissionWizardPage submissionWizardPage = pages.get( i );
-
-               submissionWizardPage.updatePage( pageSubmissionValue );
-            }
-         }
-      }
-      return false;
-   }
-
+/* TODO This is all wrong. Why is a model holding the view!???
    public void notifyEvent( DomainEvent event )
    {
-      eventFilter.visit( event );
+      FormSubmissionValue value = vbf.newValueFromJSON( FormSubmissionValue.class, EventParameters.getParameter( event, "param1" ) );
+
+      if (value.form().get().identity().equals( formSubmission.form().get().identity() ))
+      {
+         for (int i = 0; i < value.pages().get().size(); i++)
+         {
+            PageSubmissionValue pageSubmissionValue = value.pages().get().get( i );
+            FormSubmissionWizardPage submissionWizardPage = pages.get( i );
+
+            submissionWizardPage.updatePage( pageSubmissionValue );
+         }
+      }
    }
+*/
 }

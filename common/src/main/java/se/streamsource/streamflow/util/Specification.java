@@ -15,21 +15,12 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.infrastructure.event.source.helper;
-
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.source.EventSpecification;
+package se.streamsource.streamflow.util;
 
 /**
- * Accept all events
+ * Generic Specification interface
  */
-public class AllEventsSpecification
-      implements EventSpecification
+public interface Specification<T>
 {
-   public static final EventSpecification INSTANCE = new AllEventsSpecification();
-
-   public boolean accept( DomainEvent event )
-   {
-      return true;
-   }
+   boolean valid(T instance);
 }

@@ -29,23 +29,21 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.usecase.Usecase;
 import org.qi4j.api.usecase.UsecaseBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
-import se.streamsource.streamflow.infrastructure.event.source.EventSpecification;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
 import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
-import se.streamsource.streamflow.infrastructure.event.source.helper.EventQuery;
 import se.streamsource.streamflow.infrastructure.event.source.helper.EventVisitorFilter;
-import se.streamsource.streamflow.infrastructure.event.source.helper.TransactionEventAdapter;
+import se.streamsource.streamflow.infrastructure.event.source.helper.Events;
 import se.streamsource.streamflow.infrastructure.event.source.helper.TransactionTracker;
+import se.streamsource.streamflow.util.Specification;
 import se.streamsource.streamflow.web.application.mail.MailService;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.interaction.profile.MessageRecipient;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Send and receive notifications. This service
@@ -78,7 +76,7 @@ public interface NotificationService
       @This
       Configuration<NotificationConfiguration> config;
 
-      private EventSpecification userNotificationFilter;
+      private Specification userNotificationFilter;
 
       private Usecase usecase = UsecaseBuilder.newUsecase( "Notify" );
       public TransactionVisitor subscriber;
@@ -89,7 +87,7 @@ public interface NotificationService
       {
          logger.info( "Starting ..." );
 
-         userNotificationFilter = new EventQuery().withNames( "receivedMessage" );
+         userNotificationFilter = Events.withNames( "receivedMessage" );
 
          tracker = new TransactionTracker( eventStore, config, this );
          tracker.start();
@@ -104,7 +102,7 @@ public interface NotificationService
 
       public boolean visit( TransactionEvents transaction )
       {
-         return new TransactionEventAdapter(
+         return Events.adapter( 
                new EventVisitorFilter( userNotificationFilter, new EventVisitor()
                {
                   public boolean visit( DomainEvent event )

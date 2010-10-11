@@ -36,10 +36,8 @@ import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
 import se.streamsource.streamflow.infrastructure.event.source.helper.EventParameters;
-import se.streamsource.streamflow.infrastructure.event.source.helper.EventVisitorFilter;
 import se.streamsource.streamflow.resource.caze.CaseValue;
 
 import java.util.Iterator;
@@ -49,7 +47,7 @@ import java.util.List;
  * Base class for all models that list cases
  */
 public class CasesTableModel
-      implements EventListener, EventVisitor, Refreshable
+      implements EventVisitor, Refreshable
 {
    @Uses
    protected CommandQueryClient client;
@@ -60,20 +58,6 @@ public class CasesTableModel
    protected LinksValue cases;
 
    protected BasicEventList<CaseValue> eventList = new BasicEventList<CaseValue>();
-
-   private EventVisitorFilter eventFilter;
-
-   public CasesTableModel()
-   {
-      eventFilter = new EventVisitorFilter( this, "addedLabel", "removedLabel", "changedDescription", "changedCaseType", "changedStatus",
-            "changedOwner", "assignedTo", "unassigned", "deletedEntity", "updatedContact", "addedContact", "deletedContact",
-            "createdConversation", "submittedForm", "createdAttachment", "removedAttachment" );
-   }
-
-   public void notifyEvent( DomainEvent event )
-   {
-      eventFilter.visit( event );
-   }
 
    public boolean visit( final DomainEvent event )
    {
@@ -225,18 +209,12 @@ public class CasesTableModel
 
    public void refresh()
    {
-      try
+      final LinksValue newRoot = client.query( "cases", LinksValue.class );
+      boolean same = newRoot.equals( cases );
+      if (!same)
       {
-         final LinksValue newRoot = client.query( "cases", LinksValue.class );
-         boolean same = newRoot.equals( cases );
-         if (!same)
-         {
-            EventListSynch.synchronize( newRoot.links().get(), eventList );
-            cases = newRoot;
-         }
-      } catch (ResourceException e)
-      {
-         throw new OperationException( WorkspaceResources.could_not_perform_operation, e );
+         EventListSynch.synchronize( newRoot.links().get(), eventList );
+         cases = newRoot;
       }
    }
 

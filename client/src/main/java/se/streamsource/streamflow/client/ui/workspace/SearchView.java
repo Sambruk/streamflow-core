@@ -21,6 +21,7 @@ import ca.odell.glazedlists.swing.EventComboBoxModel;
 import com.jgoodies.forms.factories.Borders;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Task;
 import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
@@ -32,6 +33,7 @@ import se.streamsource.dci.value.TitledLinkValue;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.infrastructure.ui.SavedSearchListCellRenderer;
+import se.streamsource.streamflow.client.ui.CommandTask;
 import se.streamsource.streamflow.client.ui.OptionsAction;
 
 import javax.swing.ActionMap;
@@ -105,16 +107,25 @@ public class SearchView
    }
 
    @Action
-   public void add()
+   public Task add()
    {
-      SaveSearchDialog dialog = saveSearchDialogs.iterator().next();
+      final SaveSearchDialog dialog = saveSearchDialogs.iterator().next();
       dialog.presetQuery( searches.getEditor().getItem().toString() );
       dialogs.showOkCancelHelpDialog( WindowUtils.findWindow( this ), dialog, text( WorkspaceResources.save_search ) );
 
       if (dialog.search() != null)
       {
-         model.saveSearch( dialog.search() );
-      }
+         return new CommandTask()
+         {
+            @Override
+            public void command()
+               throws Exception
+            {
+               model.saveSearch( dialog.search() );
+            }
+         };
+      } else
+         return null;
    }
 
    @Action

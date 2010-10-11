@@ -22,6 +22,7 @@ import ca.odell.glazedlists.event.ListEventListener;
 import ca.odell.glazedlists.swing.EventListModel;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Task;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
@@ -30,13 +31,20 @@ import org.restlet.resource.ResourceException;
 
 import com.jgoodies.forms.factories.Borders;
 
+import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
+import se.streamsource.streamflow.client.ui.CommandTask;
 import se.streamsource.streamflow.client.ui.NameDialog;
 import se.streamsource.streamflow.client.ui.caze.CaseResources;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
+import se.streamsource.streamflow.infrastructure.event.source.helper.Events;
 import se.streamsource.streamflow.resource.conversation.ConversationDTO;
+import se.streamsource.streamflow.util.Iterables;
 import se.streamsource.streamflow.util.Strings;
 
 import javax.swing.JButton;
@@ -56,10 +64,12 @@ import java.awt.FlowLayout;
 import java.io.IOException;
 
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
+import static se.streamsource.streamflow.infrastructure.event.source.helper.Events.*;
+import static se.streamsource.streamflow.util.Iterables.filter;
 
 public class ConversationsView
       extends JSplitPane
-      implements ListEventListener
+      implements TransactionListener
 {
    @Uses
    Iterable<NameDialog> topicDialogs;
@@ -68,16 +78,15 @@ public class ConversationsView
    DialogService dialogs;
 
    private ConversationsModel model;
-   private RefreshWhenVisible refresher;
 
    private JList list;
 
-   public ConversationsView( @Service final ApplicationContext context, @Structure ObjectBuilderFactory obf )
+   public ConversationsView( @Service final ApplicationContext context, @Structure final ObjectBuilderFactory obf, @Uses final CommandQueryClient client )
    {
+      model = obf.newObjectBuilder(ConversationsModel.class ).use( client ).newInstance();
 
       setActionMap(context.getActionMap( this ));
       MacOsUIWrapper.convertAccelerators( getActionMap() );
-      ApplicationContext context1 = context;
       this.setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
 
       JPanel left = new JPanel( new BorderLayout() );
@@ -92,12 +101,12 @@ public class ConversationsView
       cards.show( right, "EMPTY" );
 
       list = new JList();
+      list.setModel( new EventListModel<ConversationDTO>( model.conversations() ) );
       list.setCellRenderer( new ConversationsListCellRenderer() );
       list.setFixedCellHeight( -1 );
       list.getSelectionModel().setSelectionMode(
             ListSelectionModel.SINGLE_SELECTION );
 
-      final ConversationView conversationView = obf.newObjectBuilder( ConversationView.class ).use( context, obf ).newInstance();
       list.addListSelectionListener( new ListSelectionListener()
       {
 
@@ -105,7 +114,7 @@ public class ConversationsView
          {
             if (list.getSelectedIndex() != -1 && !e.getValueIsAdjusting())
             {
-               conversationView.setModel( model.conversationModels.get( ((LinkValue) list.getSelectedValue()).href().get() ) );
+               final ConversationView conversationView = obf.newObjectBuilder( ConversationView.class ).use( client.getClient( (LinkValue) list.getSelectedValue() )).newInstance();
                setRightComponent( conversationView );
             } else
             {
@@ -131,45 +140,35 @@ public class ConversationsView
       setLeftComponent( left );
       this.setDividerLocation( -1 );
 
-      refresher = new RefreshWhenVisible( this );
-      addAncestorListener( refresher );
+      new RefreshWhenVisible( this, model );
    }
 
    @Action
-   public void addConversation() throws ResourceException, IOException
+   public Task addConversation() throws ResourceException, IOException
    {
-      NameDialog dialog = topicDialogs.iterator().next();
+      final NameDialog dialog = topicDialogs.iterator().next();
       dialogs.showOkCancelHelpDialog( this, dialog, text( CaseResources.new_conversation_topic ) );
 
       if ( Strings.notEmpty( dialog.name() ) )
       {
-         model.createConversation( dialog.name() );
+         return new CommandTask()
+         {
+            @Override
+            public void command()
+               throws Exception
+            {
+               model.createConversation( dialog.name() );
+            }
+         };
+      } else
+         return null;
+   }
+
+   public void notifyTransactions( Iterable<TransactionEvents> transactions )
+   {
+      model.notifyTransactions( transactions );
+
+      if (Events.matches( transactions, Events.withNames("createdConversation" )))
          list.setSelectedIndex( model.conversations().size() - 1 );
-      }
-   }
-
-   public void setModel( ConversationsModel conversationsModel )
-   {
-      if (model != null)
-         model.conversations().removeListEventListener( this );
-
-      model = conversationsModel;
-//      model.refresh();
-      refresher.setRefreshable( model );
-
-      if (model != null)
-      {
-         model.conversations().addListEventListener( this );
-         listChanged( null );
-      }
-
-   }
-
-   public void listChanged( ListEvent listEvent )
-   {
-      int prevSelected = list.getSelectedIndex();
-      list.setModel( new EventListModel<ConversationDTO>( model.conversations() ) );
-      list.repaint();
-      list.setSelectedIndex( prevSelected );
    }
 }

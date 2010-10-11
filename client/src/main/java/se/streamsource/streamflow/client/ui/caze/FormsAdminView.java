@@ -17,7 +17,10 @@
 
 package se.streamsource.streamflow.client.ui.caze;
 
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
@@ -31,46 +34,11 @@ import java.awt.BorderLayout;
  * JAVADOC
  */
 public class FormsAdminView
-      extends JPanel
+      extends JTabbedPane
 {
-
-   private SubmittedFormsAdminView submittedFormsView;
-   private CaseEffectiveFieldsValueView effectiveFieldsValueView;
-   public RefreshWhenVisible refresher;
-   public JTabbedPane tabs;
-
-   public FormsAdminView( @Uses CaseEffectiveFieldsValueView effectiveFieldsValueView,
-                              @Uses SubmittedFormsAdminView submittedFormsView )
+   public FormsAdminView( @Uses CommandQueryClient client, @Structure ObjectBuilderFactory obf)
    {
-      setLayout( new BorderLayout() );
-
-      tabs = new JTabbedPane();
-      add( tabs, BorderLayout.CENTER );
-
-      this.submittedFormsView = submittedFormsView;
-      this.effectiveFieldsValueView = effectiveFieldsValueView;
-      tabs.addTab( i18n.text( WorkspaceResources.effective_fields_tab ), effectiveFieldsValueView );
-      tabs.addTab( i18n.text( WorkspaceResources.submitted_forms_tab ), submittedFormsView );
-
-      refresher = new RefreshWhenVisible( this );
-      addAncestorListener( refresher );
-   }
-
-   public SubmittedFormsAdminView getSubmittedFormsView()
-   {
-      return submittedFormsView;
-   }
-
-   public CaseEffectiveFieldsValueView getEffectiveFieldsValueView()
-   {
-      return effectiveFieldsValueView;
-   }
-
-   public void setModel( CaseFormsModel model )
-   {
-      refresher.setRefreshable( model );
-
-      submittedFormsView.setModel( model.submittedForms() );
-      effectiveFieldsValueView.setModel( model.effectiveValues() );
+      addTab( i18n.text( WorkspaceResources.effective_fields_tab ), obf.newObjectBuilder( CaseEffectiveFieldsValueView.class).use( client ).newInstance() );
+      addTab( i18n.text( WorkspaceResources.submitted_forms_tab ), obf.newObjectBuilder( SubmittedFormsAdminView.class).use( client ).newInstance() );
    }
 }

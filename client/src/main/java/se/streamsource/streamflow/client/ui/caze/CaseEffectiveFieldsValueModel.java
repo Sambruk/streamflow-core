@@ -27,10 +27,6 @@ import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.domain.form.DateFieldValue;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.EventListener;
-import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
-import se.streamsource.streamflow.infrastructure.event.source.helper.EventVisitorFilter;
 import se.streamsource.streamflow.resource.caze.EffectiveFieldDTO;
 import se.streamsource.streamflow.resource.caze.EffectiveFieldsDTO;
 
@@ -46,8 +42,7 @@ import org.slf4j.LoggerFactory;
  */
 public class CaseEffectiveFieldsValueModel
       extends AbstractTableModel
-      implements Refreshable, EventListener, EventVisitor
-
+      implements Refreshable
 {
 
    String[] columnNames = {
@@ -57,7 +52,6 @@ public class CaseEffectiveFieldsValueModel
          i18n.text( WorkspaceResources.field_date )
    };
 
-   final Logger logger = LoggerFactory.getLogger( "workspace" );
    private SimpleDateFormat formatter = new SimpleDateFormat( i18n.text( WorkspaceResources.date_time_format ) );
 
    @Structure
@@ -68,18 +62,10 @@ public class CaseEffectiveFieldsValueModel
 
    List<EffectiveFieldDTO> effectiveFields = Collections.emptyList();
 
-   EventVisitorFilter eventFilter = new EventVisitorFilter( this, "submittedForm" );
-
    public void refresh()
    {
-      try
-      {
-         effectiveFields = client.query( "effectivefields", EffectiveFieldsDTO.class ).effectiveFields().get();
-         fireTableStructureChanged();
-      } catch (Exception e)
-      {
-         throw new OperationException( CaseResources.could_not_refresh, e );
-      }
+      effectiveFields = client.query( "effectivefields", EffectiveFieldsDTO.class ).effectiveFields().get();
+      fireTableStructureChanged();
    }
 
    public int getRowCount()
@@ -127,21 +113,5 @@ public class CaseEffectiveFieldsValueModel
    public String getColumnName( int i )
    {
       return columnNames[i];
-   }
-
-   public void notifyEvent( DomainEvent event )
-   {
-      eventFilter.visit( event );
-   }
-
-   public boolean visit( DomainEvent event )
-   {
-      if (client.getReference().getParentRef().getLastSegment().equals( event.entity().get() ))
-      {
-         logger.info( "Refresh effective field" );
-         refresh();
-      }
-
-      return false;
    }
 }

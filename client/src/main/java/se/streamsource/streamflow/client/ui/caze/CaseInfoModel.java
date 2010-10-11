@@ -21,9 +21,6 @@ import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.EventListener;
-import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
 import se.streamsource.streamflow.infrastructure.event.source.helper.EventVisitorFilter;
 import se.streamsource.streamflow.resource.caze.CaseValue;
 
@@ -32,12 +29,9 @@ import java.util.Observable;
 /**
  * Model for the quick info about a case.
  */
-public class CaseInfoModel extends Observable implements Refreshable,
-      EventListener, EventVisitor
-
+public class CaseInfoModel
+      implements Refreshable
 {
-   EventVisitorFilter eventFilter;
-
    private CommandQueryClient client;
 
    CaseValue caseValue;
@@ -45,44 +39,15 @@ public class CaseInfoModel extends Observable implements Refreshable,
    public CaseInfoModel( @Uses CommandQueryClient client )
    {
       this.client = client;
-      eventFilter = new EventVisitorFilter( client.getReference().getLastSegment(), this, "changedOwner", "changedCaseType", "changedDescription", "assignedTo", "unassigned", "changedStatus" );
    }
 
    public CaseValue getInfo()
    {
-      if (caseValue == null)
-         refresh();
-
       return caseValue;
    }
 
    public void refresh()
    {
-      try
-      {
-         caseValue = client.query( "info", CaseValue.class );
-
-         setChanged();
-         notifyObservers();
-
-      } catch (Exception e)
-      {
-         throw new OperationException( CaseResources.could_not_refresh, e );
-      }
+      caseValue = client.query( "info", CaseValue.class );
    }
-
-   public void notifyEvent( DomainEvent event )
-   {
-      eventFilter.visit( event );
-   }
-
-   public boolean visit( DomainEvent event )
-   {
-      if (!event.usecase().get().equals( "createcase" ))
-      {
-         refresh();
-      }
-      return true;
-   }
-
 }

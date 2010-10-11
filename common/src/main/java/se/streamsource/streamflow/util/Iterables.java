@@ -25,9 +25,18 @@ import java.util.Iterator;
  */
 public class Iterables
 {
-   public static <X> Iterable<X> filter( Predicate<X> predicate, Iterable<X> i )
+   public static <X> X first(Iterable<X> i)
    {
-      return new FilterIterable<X>( i, predicate );
+      Iterator<X> iter = i.iterator();
+      if (iter.hasNext())
+         return iter.next();
+      else
+         return null;
+   }
+
+   public static <X> Iterable<X> filter( Iterable<X> i, Specification<X> specification )
+   {
+      return new FilterIterable<X>( i, specification );
    }
 
    public static <X> Iterable<X> flatten( Iterable<X>... multiIterator )
@@ -35,41 +44,36 @@ public class Iterables
       return new FlattenIterable<X>( Arrays.asList( multiIterator) );
    }
 
-   public interface Predicate<T>
-   {
-      boolean eval(T object);
-   }
-
    private static class FilterIterable<T> implements Iterable<T>
    {
       private Iterable<T> iterable;
 
-      private Predicate<T> predicate;
+      private Specification<T> specification;
 
-      public FilterIterable( Iterable<T> iterable, Predicate<T> predicate)
+      public FilterIterable( Iterable<T> iterable, Specification<T> specification )
       {
          this.iterable = iterable;
-         this.predicate = predicate;
+         this.specification = specification;
       }
 
       public Iterator<T> iterator()
       {
-         return new FilterIterator<T>( iterable.iterator(), predicate );
+         return new FilterIterator<T>( iterable.iterator(), specification );
       }
 
       static class FilterIterator<T> implements Iterator<T>
       {
          private Iterator<T> iterator;
 
-         private Predicate<T> predicate;
+         private Specification<T> specification;
 
          private T currentValue;
          boolean finished = false;
          boolean nextConsumed = true;
 
-         public FilterIterator( Iterator<T> iterator, Predicate<T> predicate )
+         public FilterIterator( Iterator<T> iterator, Specification<T> specification )
          {
-            this.predicate = predicate;
+            this.specification = specification;
             this.iterator = iterator;
          }
 
@@ -79,7 +83,7 @@ public class Iterables
             while (!found && iterator.hasNext())
             {
                T currentValue = iterator.next();
-               if (predicate.eval( currentValue ))
+               if (specification.valid( currentValue ))
                {
                   found = true;
                   this.currentValue = currentValue;

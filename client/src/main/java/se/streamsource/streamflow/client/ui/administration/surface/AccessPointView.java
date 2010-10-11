@@ -31,6 +31,7 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilder;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
@@ -43,6 +44,9 @@ import se.streamsource.streamflow.client.ui.caze.CaseLabelsView;
 import se.streamsource.streamflow.client.ui.workspace.FilterListDialog;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.infrastructure.application.AccessPointValue;
+import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
+import se.streamsource.streamflow.infrastructure.event.source.helper.Events;
 
 import javax.swing.ActionMap;
 import javax.swing.JButton;
@@ -61,16 +65,13 @@ import java.util.Observer;
 
 public class AccessPointView
       extends JPanel
-      implements Observer
+      implements Observer, TransactionListener
 {
    @Structure
    ValueBuilderFactory vbf;
 
    @Service
    DialogService dialogs;
-
-   @Service
-   UncaughtExceptionHandler exception;
 
    @Uses
    protected ObjectBuilder<FilterListDialog> projectDialog;
@@ -85,7 +86,6 @@ public class AccessPointView
    protected ObjectBuilder<CaseLabelsDialog> labelSelectionDialog;
 
    public CaseLabelsView labels;
-   public RefreshWhenVisible refresher;
    public JLabel selectedCaseType = new JLabel();
    public JButton caseTypeButton;
    public JButton labelButton;
@@ -99,11 +99,11 @@ public class AccessPointView
    private StateBinder accessPointBinder;
 
    public AccessPointView( @Service ApplicationContext appContext,
-                           @Structure ObjectBuilderFactory obf,
-                           @Uses CaseLabelsView labels,
-                           @Uses AccessPointModel model )
+                           @Uses CommandQueryClient client,
+                           @Structure ObjectBuilderFactory obf)
    {
-      this.model = model;
+      this.model = obf.newObjectBuilder( AccessPointModel.class ).use( client ).newInstance();
+      this.labels = obf.newObjectBuilder( CaseLabelsView.class ).use( client ).newInstance();
       model.addObserver( this );
 
       setLayout( new BorderLayout() );
@@ -215,10 +215,8 @@ public class AccessPointView
 
       accessPointBinder.updateWith( model.getAccessPointValue() );
 
-      refresher = new RefreshWhenVisible( this );
-      addAncestorListener( refresher );
-      refresher.setRefreshable( model );
-      labels.setLabelsModel( model.labelsModel() );
+      new RefreshWhenVisible( this, model );
+// TODO      labels.setLabelsModel( model.labelsModel() );
    }
 
    @Action
@@ -305,5 +303,15 @@ public class AccessPointView
          formButton.setEnabled( true );
       }
 
+   }
+
+   public void notifyTransactions( Iterable<TransactionEvents> transactions )
+   {
+      if (Events.matches( transactions, Events.withNames("addedLabel",
+            "removedLabel", "addedCaseType", "addedProject",
+            "addedSelectedForm", "changedProject", "changedCaseType" )))
+      {
+         model.refresh();
+      }
    }
 }

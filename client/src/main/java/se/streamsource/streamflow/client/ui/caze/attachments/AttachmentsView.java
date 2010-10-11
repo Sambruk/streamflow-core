@@ -26,7 +26,6 @@ import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
 import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.decorator.HighlighterFactory;
-import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.engine.io.BioUtils;
@@ -35,27 +34,43 @@ import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.ui.CommandTask;
 import se.streamsource.streamflow.client.ui.ConfirmationDialog;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.domain.attachment.AttachmentValue;
+import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
+import se.streamsource.streamflow.infrastructure.event.source.helper.Events;
 
-import javax.swing.*;
-import javax.swing.table.TableCellRenderer;
+import javax.swing.ActionMap;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.KeyStroke;
+import javax.swing.ListSelectionModel;
 import javax.swing.table.TableColumn;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Desktop;
+import java.awt.KeyboardFocusManager;
 import java.awt.event.ActionEvent;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * JAVADOC
  */
 public class AttachmentsView
       extends JPanel
+      implements TransactionListener
 {
    @Service
    DialogService dialogs;
@@ -71,6 +86,7 @@ public class AttachmentsView
    public RefreshWhenVisible refresher;
 
    //public void init( @Service ApplicationContext context )
+
    public AttachmentsView( @Service ApplicationContext context )
    {
       setLayout( new BorderLayout() );
@@ -117,10 +133,10 @@ public class AttachmentsView
       toolbar.add( new JButton( am.get( "open" ) ) );
       attachments.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "remove" ), am.get( "open" ) ) );
 
-      attachments.getInputMap( ).put( KeyStroke.getKeyStroke( KeyEvent.VK_ENTER, 0 ), "open" );
-      attachments.getInputMap(  ).put( KeyStroke.getKeyStroke( KeyEvent.VK_DELETE, 0 ), "remove" );
+      attachments.getInputMap().put( KeyStroke.getKeyStroke( KeyEvent.VK_ENTER, 0 ), "open" );
+      attachments.getInputMap().put( KeyStroke.getKeyStroke( KeyEvent.VK_DELETE, 0 ), "remove" );
       attachments.setActionMap( am );
-      
+
       attachments.addMouseListener( new MouseAdapter()
       {
          public void mouseClicked( MouseEvent me )
@@ -129,21 +145,20 @@ public class AttachmentsView
             if (obj == -1) return;
             if (me.getClickCount() == 2)
             {
-               am.get("open").actionPerformed( new ActionEvent( this,
+               am.get( "open" ).actionPerformed( new ActionEvent( this,
                      ActionEvent.ACTION_PERFORMED,
                      "open" ) );
                me.consume();
             }
          }
       } );
-      
+
       JScrollPane attachmentsScrollPane = new JScrollPane( attachments );
 
       add( attachmentsScrollPane, BorderLayout.CENTER );
       add( toolbar, BorderLayout.SOUTH );
-      
+
       refresher = new RefreshWhenVisible( this );
-      addAncestorListener( refresher );
    }
 
    @Action(block = Task.BlockingScope.APPLICATION)
@@ -155,13 +170,25 @@ public class AttachmentsView
       {
          final File selectedFile = fileChooser.getSelectedFile();
 
-         return new AddAttachmentTask( selectedFile );
+         return new CommandTask()
+         {
+            @Override
+            public void command()
+               throws Exception
+            {
+               setMessage( getResourceMap().getString( "description" ) );
+
+               FileInputStream fin = new FileInputStream( selectedFile );
+
+               attachmentsModel.createAttachment( selectedFile, fin );
+            }
+         };
       } else
          return null;
    }
 
    @Action
-   public void remove()
+   public Task remove()
    {
       ConfirmationDialog dialog = confirmationDialog.iterator().next();
       dialog.setRemovalMessage( i18n.text( attachments.getSelectedRows().length > 1
@@ -171,13 +198,21 @@ public class AttachmentsView
 
       if (dialog.isConfirmed())
       {
-         for (int i : attachments.getSelectedRows())
+         return new CommandTask()
          {
-            AttachmentValue attachment = attachmentsModel.getEventList().get( attachments.convertRowIndexToModel( i ) );
-            attachmentsModel.removeAttachment( attachment );
-         }
-         attachmentsModel.refresh();
-      }
+            @Override
+            public void command()
+                  throws Exception
+            {
+               for (int i : attachments.getSelectedRows())
+               {
+                  AttachmentValue attachment = attachmentsModel.getEventList().get( attachments.convertRowIndexToModel( i ) );
+                  attachmentsModel.removeAttachment( attachment );
+               }
+            }
+         };
+      } else
+         return null;
    }
 
    @Action
@@ -187,7 +222,7 @@ public class AttachmentsView
       {
          AttachmentValue attachment = attachmentsModel.getEventList().get( attachments.convertRowIndexToModel( i ) );
 
-         return new OpenAttachmentTask(attachment);
+         return new OpenAttachmentTask( attachment );
       }
 
       return null;
@@ -201,37 +236,13 @@ public class AttachmentsView
       refresher.setRefreshable( attachmentsModel );
    }
 
-   private class AddAttachmentTask extends Task<Void,Void>
+   public void notifyTransactions( Iterable<TransactionEvents> transactions )
    {
-      private final File selectedFile;
-
-      public AddAttachmentTask( File selectedFile )
-      {
-         super( Application.getInstance() );
-         this.selectedFile = selectedFile;
-
-         setUserCanCancel( false );
-      }
-
-      @Override
-      protected Void doInBackground() throws Exception
-      {
-         setMessage( getResourceMap().getString( "description" ));
-
-         FileInputStream fin = new FileInputStream(selectedFile);
-
-         attachmentsModel.createAttachment( selectedFile, fin );
-         return null;
-      }
-
-      @Override
-      protected void finished()
-      {
+      if (Events.matches( transactions, Events.withNames("addedAttachment", "removedAttachment" )))
          attachmentsModel.refresh();
-      }
    }
 
-   private class OpenAttachmentTask extends Task<File,Void>
+   private class OpenAttachmentTask extends Task<File, Void>
    {
       private final AttachmentValue attachment;
 
@@ -246,7 +257,7 @@ public class AttachmentsView
       @Override
       protected File doInBackground() throws Exception
       {
-         setMessage( getResourceMap().getString( "description" ));
+         setMessage( getResourceMap().getString( "description" ) );
 
          String fileName = attachment.text().get();
          String[] fileNameParts = fileName.split( "\\." );
@@ -256,7 +267,7 @@ public class AttachmentsView
          InputStream in = attachmentsModel.download( attachment );
          try
          {
-            BioUtils.copy( new BufferedInputStream(in, 1024), new BufferedOutputStream(out, 4096) );
+            BioUtils.copy( new BufferedInputStream( in, 1024 ), new BufferedOutputStream( out, 4096 ) );
          } catch (IOException e)
          {
             in.close();
@@ -291,7 +302,7 @@ public class AttachmentsView
                desktop.open( file );
             } catch (IOException e1)
             {
-               dialogs.showMessageDialog( AttachmentsView.this, i18n.text( WorkspaceResources.could_not_open_attachment), "" );
+               dialogs.showMessageDialog( AttachmentsView.this, i18n.text( WorkspaceResources.could_not_open_attachment ), "" );
             }
          }
       }

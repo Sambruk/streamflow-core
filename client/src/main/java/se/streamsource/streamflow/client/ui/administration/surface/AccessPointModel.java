@@ -33,16 +33,12 @@ import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.ui.caze.CaseLabelsModel;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.infrastructure.application.AccessPointValue;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.EventListener;
-import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
-import se.streamsource.streamflow.infrastructure.event.source.helper.EventVisitorFilter;
 
 import java.util.Observable;
 
 
 public class AccessPointModel extends Observable
-      implements Refreshable, EventListener, EventVisitor
+      implements Refreshable
 {
    @Structure
    ValueBuilderFactory vbf;
@@ -54,20 +50,15 @@ public class AccessPointModel extends Observable
 
    private AccessPointValue accessPoint;
 
-   EventVisitorFilter eventFilter;
-
    public AccessPointModel( @Uses CommandQueryClient client )
    {
       this.client = client;
-      eventFilter = new EventVisitorFilter( client.getReference()
-            .getLastSegment(), this, "addedLabel",
-            "removedLabel", "addedCaseType", "addedProject", "addedSelectedForm", "changedProject", "changedCaseType" );
    }
 
    public void refresh() throws OperationException
    {
       accessPoint = client.query( "index", AccessPointValue.class );
-      caseLabelsModel.setLabels( accessPoint.labels().get() );
+// TODO      caseLabelsModel.setLabels( accessPoint.labels().get() );
 
       setChanged();
       notifyObservers();
@@ -151,20 +142,8 @@ public class AccessPointModel extends Observable
 
    public CaseLabelsModel labelsModel()
    {
-      caseLabelsModel.setLabels( accessPoint.labels().get() );
+//      caseLabelsModel.setLabels( accessPoint.labels().get() );
       return caseLabelsModel;
-   }
-
-   public void notifyEvent( DomainEvent event )
-   {
-      eventFilter.visit( event );
-      caseLabelsModel.notifyEvent( event );
-   }
-
-   public boolean visit( DomainEvent event )
-   {
-      refresh();
-      return true;
    }
 
    public EventList<LinkValue> getPossibleForms()

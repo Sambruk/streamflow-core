@@ -36,10 +36,6 @@ import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.domain.interaction.gtd.Actions;
 import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.EventListener;
-import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
-import se.streamsource.streamflow.infrastructure.event.source.helper.EventVisitorFilter;
 import se.streamsource.streamflow.resource.caze.CaseGeneralDTO;
 import se.streamsource.streamflow.resource.roles.DateDTO;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
@@ -50,9 +46,7 @@ import java.util.Observable;
 /**
  * Model for the general info about a case.
  */
-public class CaseGeneralModel extends Observable implements Refreshable,
-      EventListener, EventVisitor
-
+public class CaseGeneralModel extends Observable implements Refreshable
 {
    @Structure
    ValueBuilderFactory vbf;
@@ -60,31 +54,21 @@ public class CaseGeneralModel extends Observable implements Refreshable,
    @Structure
    ObjectBuilderFactory obf;
 
-   EventVisitorFilter eventFilter;
-
    private CommandQueryClient client;
 
    CaseGeneralDTO general;
 
-   @Uses
-   CaseLabelsModel caseLabelsModel;
-
-   @Uses
-   PossibleFormsModel possibleFormsModel;
    private ContextValue contextValue;
 
    public CaseGeneralModel( @Uses CommandQueryClient client )
    {
       this.client = client;
-      eventFilter = new EventVisitorFilter( client.getReference()
-            .getParentRef().getLastSegment(), this, "addedLabel",
-            "removedLabel", "changedOwner", "changedCaseType", "changedStatus" );
    }
 
    public CaseGeneralDTO getGeneral()
    {
       if (general == null)
-         refresh();
+         vbf.newValue( CaseGeneralDTO.class );
 
       return general;
    }
@@ -132,16 +116,6 @@ public class CaseGeneralModel extends Observable implements Refreshable,
       }
    }
 
-   public CaseLabelsModel labelsModel()
-   {
-      return caseLabelsModel;
-   }
-
-   public PossibleFormsModel formsModel()
-   {
-      return possibleFormsModel;
-   }
-
    public EventList<LinkValue> getPossibleCaseTypes()
    {
       try
@@ -160,42 +134,6 @@ public class CaseGeneralModel extends Observable implements Refreshable,
       }
    }
 
-   public EventList<LinkValue> getPossibleLabels()
-   {
-      try
-      {
-         BasicEventList<LinkValue> list = new BasicEventList<LinkValue>();
-
-         LinksValue listValue = client.query( "possiblelabels",
-               LinksValue.class );
-         list.addAll( listValue.links().get() );
-
-         return list;
-      } catch (ResourceException e)
-      {
-         throw new OperationException( WorkspaceResources.could_not_refresh,
-               e );
-      }
-   }
-
-   public EventList<LinkValue> getPossibleForms()
-   {
-      try
-      {
-         BasicEventList<LinkValue> list = new BasicEventList<LinkValue>();
-
-         LinksValue listValue = client
-               .query( "possibleforms", LinksValue.class );
-         list.addAll( listValue.links().get() );
-
-         return list;
-      } catch (ResourceException e)
-      {
-         throw new OperationException( WorkspaceResources.could_not_refresh,
-               e );
-      }
-   }
-
    public void refresh()
    {
       try
@@ -204,10 +142,6 @@ public class CaseGeneralModel extends Observable implements Refreshable,
 
          general = (CaseGeneralDTO) contextValue.index().get().buildWith().prototype();
 
-         caseLabelsModel.setLabels( general.labels().get() );
-
-         possibleFormsModel.setForms( getPossibleForms() );
-
          setChanged();
          notifyObservers();
 
@@ -215,24 +149,6 @@ public class CaseGeneralModel extends Observable implements Refreshable,
       {
          throw new OperationException( CaseResources.could_not_refresh, e );
       }
-   }
-
-   public void notifyEvent( DomainEvent event )
-   {
-      eventFilter.visit( event );
-
-      caseLabelsModel.notifyEvent( event );
-
-      possibleFormsModel.notifyEvent( event );
-   }
-
-   public boolean visit( DomainEvent event )
-   {
-      if (!event.usecase().get().equals( "createcase" ))
-      {
-         refresh();
-      }
-      return true;
    }
 
    public void caseType( EntityReference selected )
@@ -250,7 +166,7 @@ public class CaseGeneralModel extends Observable implements Refreshable,
       }
    }
 
-   public void changeCaseType( LinkValue selected, String labelQuery )
+   public void changeCaseType( LinkValue selected )
    {
       try
       {
@@ -259,29 +175,11 @@ public class CaseGeneralModel extends Observable implements Refreshable,
          builder.prototype().entity().set( EntityReference.parseEntityReference( selected.id().get() ) );
          client.postCommand( "casetype", builder.newInstance() );
 
-         // if the query string has any match inside label descriptions
-         // we do a search for that labels and add them to the case automatically
-         if (!"".equals( labelQuery ) && selected.classes().get().toLowerCase().indexOf( labelQuery.toLowerCase() ) != -1)
-         {
-            EventList<LinkValue> possibleLabels = getPossibleLabels();
-            for (LinkValue link : possibleLabels)
-            {
-               if (link.text().get().toLowerCase().contains( labelQuery.toLowerCase() ))
-               {
-                  addLabel( EntityReference.parseEntityReference( link.id().get() ) );
-               }
-            }
-         }
       } catch (ResourceException e)
       {
          throw new OperationException(
                WorkspaceResources.could_not_perform_operation, e );
       }
-   }
-
-   public void addLabel( EntityReference entityReference )
-   {
-      caseLabelsModel.addLabel( entityReference );
    }
 
    public Actions actions()

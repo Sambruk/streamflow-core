@@ -23,18 +23,27 @@ import com.jgoodies.forms.factories.Borders;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.LinkComparator;
 import se.streamsource.streamflow.client.infrastructure.ui.LinkListCellRenderer;
+import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.ConfirmationDialog;
+import se.streamsource.streamflow.client.ui.ListDetailView;
 import se.streamsource.streamflow.client.ui.NameDialog;
 import se.streamsource.streamflow.client.ui.OptionsAction;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.ui.administration.TabbedResourceView;
+import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypesModel;
+import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
 import se.streamsource.streamflow.util.Strings;
 
 import javax.swing.ActionMap;
@@ -44,95 +53,92 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import java.awt.BorderLayout;
+import java.awt.Component;
 
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 
 
 public class AccessPointsView
-   extends JPanel
+      extends ListDetailView
 {
    AccessPointsModel model;
 
-      @Uses
-      Iterable<NameDialog> nameDialogs;
+   @Uses
+   Iterable<NameDialog> nameDialogs;
 
-      @Service
-      DialogService dialogs;
+   @Service
+   DialogService dialogs;
 
-      @Uses
-      Iterable<ConfirmationDialog> confirmationDialog;
+   @Uses
+   Iterable<ConfirmationDialog> confirmationDialog;
 
-      public JList accessPointList;
+   public JList accessPointList;
 
-      public AccessPointsView( @Service ApplicationContext context, @Uses AccessPointsModel model )
+   public AccessPointsView( @Service ApplicationContext context, @Uses final CommandQueryClient client, @Structure final ObjectBuilderFactory obf )
+   {
+      this.model = obf.newObjectBuilder( AccessPointsModel.class ).use( client ).newInstance();
+
+      ActionMap am = context.getActionMap( this );
+      setActionMap( am );
+
+      initMaster( new EventListModel<LinkValue>( model.getList()), am.get("add"), new javax.swing.Action[]{am.get( "rename" ), am.get( "remove" )}, new DetailFactory()
       {
-         super( new BorderLayout() );
-         this.model = model;
-
-         setBorder( Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
-
-         ActionMap am = context.getActionMap( this );
-         setActionMap( am );
-
-         JPopupMenu options = new JPopupMenu();
-         options.add( am.get( "rename" ) );
-         options.add( am.get( "remove" ) );
-
-         JScrollPane scrollPane = new JScrollPane();
-         accessPointList = new JList( new EventListModel<LinkValue>( new SortedList<LinkValue>(model.getAccessPointsList(), new LinkComparator()) ) );
-         accessPointList.setCellRenderer( new LinkListCellRenderer() );
-         scrollPane.setViewportView( accessPointList );
-         add( scrollPane, BorderLayout.CENTER );
-
-         JPanel toolbar = new JPanel();
-         toolbar.add( new JButton( am.get( "add" ) ) );
-         toolbar.add( new JButton( new OptionsAction(options) ));
-         add( toolbar, BorderLayout.SOUTH );
-
-         accessPointList.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "remove" ), am.get( "rename" ) ) );
-      }
-
-      @Action
-      public void add()
-      {
-         NameDialog dialog = nameDialogs.iterator().next();
-
-         dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.add_accesspoint_title ) );
-
-         if ( Strings.notEmpty( dialog.name() ) )
+         public Component createDetail( LinkValue detailLink )
          {
-            model.newAccessPoint( dialog.name() );
+            CommandQueryClient caseTypeClient = client.getClient( detailLink );
+            return obf.newObjectBuilder( AccessPointView.class ).use( caseTypeClient).newInstance();
          }
-      }
+      });
 
-      @Action
-      public void remove()
+      new RefreshWhenVisible(this, model);
+   }
+
+   @Action
+   public void add()
+   {
+      NameDialog dialog = nameDialogs.iterator().next();
+
+      dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.add_accesspoint_title ) );
+
+      if (Strings.notEmpty( dialog.name() ))
       {
-         LinkValue selected = (LinkValue) accessPointList.getSelectedValue();
-
-         ConfirmationDialog dialog = confirmationDialog.iterator().next();
-         dialog.setRemovalMessage( selected.text().get() );
-         dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation ) );
-         if (dialog.isConfirmed())
-         {
-            model.removeAccessPoint( selected.id().get() );
-         }
+         model.createAccessPoint( dialog.name() );
       }
+   }
 
-      @Action
-      public void rename()
+   @Action
+   public void remove()
+   {
+      LinkValue selected = (LinkValue) accessPointList.getSelectedValue();
+
+      ConfirmationDialog dialog = confirmationDialog.iterator().next();
+      dialog.setRemovalMessage( selected.text().get() );
+      dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation ) );
+      if (dialog.isConfirmed())
       {
-         NameDialog dialog = nameDialogs.iterator().next();
-         dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.change_accesspoint_title ) );
-
-         if ( Strings.notEmpty( dialog.name() ) )
-         {
-            model.changeDescription( (LinkValue) accessPointList.getSelectedValue(), dialog.name() );
-         }
+         model.removeAccessPoint( selected );
       }
+   }
+
+   @Action
+   public void rename()
+   {
+      NameDialog dialog = nameDialogs.iterator().next();
+      dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.change_accesspoint_title ) );
+
+      if (Strings.notEmpty( dialog.name() ))
+      {
+         model.changeDescription( (LinkValue) accessPointList.getSelectedValue(), dialog.name() );
+      }
+   }
 
    public JList getAccessPointsList()
    {
       return accessPointList;
+   }
+
+   public void notifyTransactions( Iterable<TransactionEvents> transactions )
+   {
+      model.notifyTransactions( transactions );
    }
 }

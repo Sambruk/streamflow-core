@@ -18,25 +18,34 @@
 package se.streamsource.streamflow.client.ui.caze;
 
 import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.event.ListEvent;
+import ca.odell.glazedlists.event.ListEventListener;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Task;
 import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilder;
 import org.qi4j.api.object.ObjectBuilderFactory;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.TitledLinkValue;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
 import se.streamsource.streamflow.client.StreamflowApplication;
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
+import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.ui.CommandTask;
 import se.streamsource.streamflow.client.ui.ConfirmationDialog;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.workspace.SelectLinkDialog;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.domain.interaction.gtd.Actions;
+import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
+import se.streamsource.streamflow.infrastructure.event.source.helper.Events;
 
 import javax.swing.ActionMap;
 import javax.swing.JButton;
@@ -49,10 +58,13 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.GridLayout;
 
+import static se.streamsource.streamflow.infrastructure.event.source.helper.Events.*;
+
 /**
  * JAVADOC
  */
 public class CaseActionsView extends JPanel
+   implements TransactionListener, ListEventListener<String>
 {
    @Uses
    protected ObjectBuilder<SelectLinkDialog> projectSelectionDialog;
@@ -73,8 +85,12 @@ public class CaseActionsView extends JPanel
 
    private JPanel actionsPanel = new JPanel();
 
-   public CaseActionsView( @Service ApplicationContext context )
+   public CaseActionsView( @Service ApplicationContext context, @Uses CommandQueryClient client, @Structure ObjectBuilderFactory obf )
    {
+      model = obf.newObjectBuilder( CaseActionsModel.class ).use(client).newInstance();
+
+      model.getActionList().addListEventListener( this );
+
       setLayout( new BorderLayout() );
       setBorder( new EmptyBorder( 5, 5, 5, 5 ) );
       actionsPanel.setLayout( new GridLayout( 0, 1, 5, 5 ) );
@@ -82,17 +98,17 @@ public class CaseActionsView extends JPanel
       setActionMap( context.getActionMap( this ) );
       MacOsUIWrapper.convertAccelerators( context.getActionMap(
             CaseActionsView.class, this ) );
+
+      new RefreshWhenVisible(this, model);
    }
 
    public void refresh()
    {
-      Actions actions = model.actions();
-
       actionsPanel.removeAll();
 
       ActionMap am = getActionMap();
 
-      for (String action : actions.actions().get())
+      for (String action : model.getActionList())
       {
          javax.swing.Action action1 = am.get( action );
          if (action1 != null)
@@ -114,21 +130,35 @@ public class CaseActionsView extends JPanel
    // Case actions
 
    @Action
-   public void open()
+   public Task open()
    {
-      model.open();
-      refresh();
+      return new CommandTask()
+      {
+         @Override
+         public void command()
+            throws Exception
+         {
+            model.open();
+         }
+      };
    }
 
    @Action
-   public void assign()
+   public Task assign()
    {
-      model.assignToMe();
-      refresh();
+      return new CommandTask()
+      {
+         @Override
+         public void command()
+            throws Exception
+         {
+            model.assignToMe();
+         }
+      };
    }
 
    @Action
-   public void close()
+   public Task close()
    {
       // TODO very odd hack - how to solve state binder update issue during use of accelerator keys.
       Component focusOwner = WindowUtils.findWindow( this ).getFocusOwner();
@@ -137,11 +167,18 @@ public class CaseActionsView extends JPanel
       EventList<TitledLinkValue> resolutions = model.getPossibleResolutions();
       if (resolutions.isEmpty())
       {
-         model.close();
-         refresh();
+         return new CommandTask()
+         {
+            @Override
+            public void command()
+               throws Exception
+            {
+               model.close();
+            }
+         };
       } else
       {
-         SelectLinkDialog dialog = obf.newObjectBuilder( SelectLinkDialog.class )
+         final SelectLinkDialog dialog = obf.newObjectBuilder( SelectLinkDialog.class )
                .use( resolutions ).newInstance();
          dialogs.showOkCancelHelpDialog(
                WindowUtils.findWindow( this ),
@@ -150,68 +187,129 @@ public class CaseActionsView extends JPanel
 
          if (dialog.getSelected() != null)
          {
-            model.resolve( dialog.getSelected() );
-            refresh();
-         }
+            return new CommandTask()
+            {
+               @Override
+               public void command()
+                  throws Exception
+               {
+                  model.resolve( dialog.getSelected() );
+               }
+            };
+         } else
+            return null;
       }
    }
 
    @Action
-   public void delete()
+   public Task delete()
    {
       ConfirmationDialog dialog = confirmationDialog.newInstance();
       dialog.setRemovalMessage( i18n.text( WorkspaceResources.caze ) );
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation ) );
       if (dialog.isConfirmed())
       {
-         model.delete();
-      }
+         return new CommandTask()
+         {
+            @Override
+            public void command()
+               throws Exception
+            {
+               model.delete();
+            }
+         };
+      } else
+         return null;
    }
 
    @Action
-   public void sendto()
+   public Task sendto()
    {
-      SelectLinkDialog dialog = projectSelectionDialog.use(
+      final SelectLinkDialog dialog = projectSelectionDialog.use(
             model.getPossibleProjects() ).newInstance();
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( WorkspaceResources.choose_owner_title ) );
 
       if (dialog.getSelected() != null)
       {
-         model.sendTo( dialog.getSelected() );
-         refresh();
+         return new CommandTask()
+         {
+            @Override
+            public void command()
+               throws Exception
+            {
+               model.sendTo( dialog.getSelected() );
+            }
+         };
+      } else
+         return null;
+   }
+
+   @Action
+   public Task onhold()
+   {
+      return new CommandTask()
+      {
+         @Override
+         public void command()
+            throws Exception
+         {
+            model.onHold();
+         }
+      };
+   }
+
+   @Action
+   public Task reopen()
+   {
+      return new CommandTask()
+      {
+         @Override
+         public void command()
+            throws Exception
+         {
+            model.reopen();
+         }
+      };
+   }
+
+   @Action
+   public Task resume()
+   {
+      return new CommandTask()
+      {
+         @Override
+         public void command()
+            throws Exception
+         {
+            model.resume();
+         }
+      };
+   }
+
+   @Action
+   public Task unassign()
+   {
+      return new CommandTask()
+      {
+         @Override
+         public void command()
+            throws Exception
+         {
+            model.unassign();
+         }
+      };
+   }
+
+   public void notifyTransactions( Iterable<TransactionEvents> transactions )
+   {
+      if (matches( transactions, withUsecases("open", "assign", "close", "delete", "onhold", "reopen", "resume", "unassign") ))
+      {
+         model.refresh();
       }
    }
 
-   @Action
-   public void onhold()
+   public void listChanged( ListEvent<String> stringListEvent )
    {
-      model.onHold();
       refresh();
-   }
-
-   @Action
-   public void reopen()
-   {
-      model.reopen();
-      refresh();
-   }
-
-   @Action
-   public void resume()
-   {
-      model.resume();
-      refresh();
-   }
-
-   @Action
-   public void unassign()
-   {
-      model.unassign();
-      refresh();
-   }
-
-   public void setModel( CaseActionsModel caseActionsModel )
-   {
-      this.model = caseActionsModel;
    }
 }

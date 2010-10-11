@@ -27,34 +27,46 @@ import javax.swing.JScrollPane;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.JXTable;
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilder;
 
+import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
+import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.infrastructure.ui.ToolTipTableCellRenderer;
 import se.streamsource.streamflow.domain.contact.ContactValue;
 
 import com.jgoodies.forms.factories.Borders;
+import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
+import se.streamsource.streamflow.infrastructure.event.source.helper.Events;
 
 /**
  * JAVADOC
  */
 public class CaseEffectiveFieldsValueView
       extends JPanel
+   implements TransactionListener
 {
    public ValueBuilder<ContactValue> valueBuilder;
    private JXTable effectiveValueTable;
    public RefreshWhenVisible refresher;
+   private CaseEffectiveFieldsValueModel model;
 
-   public CaseEffectiveFieldsValueView( @Service ApplicationContext context )
+   public CaseEffectiveFieldsValueView( @Service ApplicationContext context, @Uses CommandQueryClient client, @Structure ObjectBuilderFactory obf )
    {
       super( new BorderLayout() );
+
+      model = obf.newObjectBuilder( CaseEffectiveFieldsValueModel.class ).use( client ).newInstance();
 
       ActionMap am = context.getActionMap( this );
       setActionMap( am );
       setMinimumSize( new Dimension( 150, 0 ) );
       this.setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
 
-      effectiveValueTable = new JXTable();
+      effectiveValueTable = new JXTable( model );
       effectiveValueTable.setDefaultRenderer( Object.class, new ToolTipTableCellRenderer() );
 
       JScrollPane effectiveFields = new JScrollPane();
@@ -63,15 +75,14 @@ public class CaseEffectiveFieldsValueView
 
       add( effectiveFields, BorderLayout.CENTER );
 
-      refresher = new RefreshWhenVisible( this );
-      addAncestorListener( refresher );
+      refresher = new RefreshWhenVisible( this, model );
    }
 
-
-   public void setModel( CaseEffectiveFieldsValueModel model )
+   public void notifyTransactions( Iterable<TransactionEvents> transactions )
    {
-      effectiveValueTable.setModel( model );
-
-      refresher.setRefreshable( model );
+      if (Events.matches(transactions, Events.withNames( "submittedForm" )))
+      {
+         model.refresh();
+      }
    }
 }

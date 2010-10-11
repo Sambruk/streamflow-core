@@ -32,12 +32,17 @@ import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
+import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import se.streamsource.streamflow.client.infrastructure.ui.UncaughtExceptionHandler;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.ui.CommandTask;
 import se.streamsource.streamflow.client.ui.ConfirmationDialog;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.domain.contact.ContactValue;
+import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
+import se.streamsource.streamflow.infrastructure.event.source.helper.Events;
 
 import javax.swing.*;
 import java.awt.*;
@@ -52,6 +57,7 @@ import static org.jdesktop.application.Task.BlockingScope.COMPONENT;
  */
 public class ContactsView
       extends JPanel
+   implements TransactionListener, Refreshable
 {
    @Service
    UncaughtExceptionHandler exception;
@@ -62,27 +68,25 @@ public class ContactsView
    @Uses
    Iterable<ConfirmationDialog> confirmationDialog;
 
-   ContactsModel model;
+   private ContactsModel model;
 
-   public JList contacts;
-   private ContactView contactView;
-   public EventListModel eventListModel;
-   private RefreshWhenVisible refresher;
+   private JList contacts;
 
    public ContactsView( @Service ApplicationContext context,
+                        @Uses CommandQueryClient client,
                         @Structure ObjectBuilderFactory obf )
    {
       super( new BorderLayout() );
 
+      model = obf.newObjectBuilder( ContactsModel.class ).use(client).newInstance();
+
       ActionMap am = context.getActionMap( this );
       setActionMap( am );
-      setMinimumSize( new Dimension( 200, 0 ) );
-      setMaximumSize( new Dimension( 200, 1000 ) );
+      setPreferredSize( new Dimension( 200, 0 ) );
 
-      contactView = obf.newObject( ContactView.class );
       this.setBorder( Borders.createEmptyBorder( "2dlu, 2dlu, 2dlu, 2dlu" ) );
 
-      contacts = new JList();
+      contacts = new JList(new EventListModel<ContactValue>( model.getEventList() ));
       contacts.setPreferredSize( new Dimension( 200, 1000 ) );
       contacts.setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
       JScrollPane contactsScrollPane = new JScrollPane();
@@ -115,6 +119,7 @@ public class ContactsView
 
       contacts.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "remove" ) ) );
 
+/*
       setFocusTraversalPolicy( new LayoutFocusTraversalPolicy() );
       setFocusCycleRoot( true );
       setFocusable( true );
@@ -133,30 +138,44 @@ public class ContactsView
          {
          }
       } );
+*/
 
-      refresher = new RefreshWhenVisible( this );
-      addAncestorListener( refresher );
-
+      new RefreshWhenVisible( this, this );
    }
 
    @org.jdesktop.application.Action(block = COMPONENT)
-   public void add() throws IOException, ResourceException
+   public Task add() throws IOException, ResourceException
    {
-      model.createContact();
-      contacts.setSelectedIndex( model.getEventList().size() - 1 );
+      return new CommandTask()
+      {
+         @Override
+         public void command()
+            throws Exception
+         {
+            model.createContact();
+         }
+      };
    }
 
    @org.jdesktop.application.Action(block = COMPONENT)
-   public void remove() throws IOException, ResourceException
+   public Task remove() throws IOException, ResourceException
    {
       ConfirmationDialog dialog = confirmationDialog.iterator().next();
       dialog.setRemovalMessage( ((ContactValue) contacts.getSelectedValue()).name().get() );
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation ) );
       if (dialog.isConfirmed())
       {
-         model.removeElement( getContactsList().getSelectedIndex() );
-         contacts.clearSelection();
-      }
+         return new CommandTask()
+         {
+            @Override
+            public void command()
+               throws Exception
+            {
+               model.removeElement( getContactsList().getSelectedIndex() );
+            }
+         };
+      } else
+         return null;
    }
 
    public JList getContactsList()
@@ -164,50 +183,25 @@ public class ContactsView
       return contacts;
    }
 
-   @Override
-   public void setVisible( boolean aFlag )
+   public void refresh()
    {
-      super.setVisible( aFlag );
+      model.refresh();
 
-      if (aFlag)
-         try
-         {
-            model.refresh();
-            if (model.getEventList().size() > 0 && contacts.getSelectedIndex() == -1)
-            {
-               contacts.setSelectedIndex( 0 );
-            }
-         } catch (Exception e)
-         {
-            exception.uncaughtException( e );
-         }
-   }
-
-   public void setModel( ContactsModel model )
-   {
-      this.model = model;
-      if (eventListModel != null)
-         eventListModel.dispose();
-      eventListModel = new EventListModel( model.getEventList() );
-      contacts.setModel( eventListModel );
-      if (model.getEventList().size() > 0 && isVisible())
+      if (model.getEventList().size() > 0 && contacts.getSelectedIndex() == -1)
       {
          contacts.setSelectedIndex( 0 );
       }
-      if (isVisible())
+   }
+
+   public void notifyTransactions( Iterable<TransactionEvents> transactions )
+   {
+      if (Events.matches( transactions, Events.withNames("addedContact", "deletedContact", "updatedContact" )))
       {
-         setVisible( true );
+         model.refresh();
+
+         if (Events.matches( transactions, Events.withNames("addedContact" )))
+            contacts.setSelectedIndex( contacts.getModel().getSize()-1 );
       }
-      refresher.setRefreshable( model );
-   }
 
-   public ContactView getContactView()
-   {
-      return contactView;
-   }
-
-   public CommandQueryClient getContactsResource()
-   {
-      return model.getContactsClientResource();
    }
 }

@@ -21,14 +21,16 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
+import org.restlet.data.Reference;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
-import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
-import se.streamsource.streamflow.infrastructure.event.source.helper.EventQuery;
-import se.streamsource.streamflow.infrastructure.event.source.helper.ForEvents;
+import se.streamsource.streamflow.infrastructure.event.source.helper.Events;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -36,65 +38,69 @@ import javax.swing.JPanel;
 import java.awt.CardLayout;
 import java.awt.Dimension;
 
+import static se.streamsource.streamflow.infrastructure.event.source.helper.Events.*;
+import static se.streamsource.streamflow.util.Iterables.filter;
+
 /**
  * JAVADOC
  */
 public class CasesDetailView2
       extends JPanel
+   implements TransactionListener
 {
    private CaseDetailView current = null;
 
    @Structure
    ObjectBuilderFactory obf;
 
-   // do not remove subscriber - holds a weak reference for event handling system
-   private TransactionVisitor subscriber;
-
    private CardLayout layout = new CardLayout();
 
-   public CasesDetailView2( @Uses CaseDetailView current, @Service EventSource events )
+   private Reference currentCase;
+
+   public CasesDetailView2( )
    {
       setLayout( layout );
       setBorder( BorderFactory.createEmptyBorder() );
 
       add( new JLabel( i18n.text( WorkspaceResources.choose_case ), JLabel.CENTER ), "blank" );
-      add( current, "detail" );
 
       layout.show( this, "blank" );
 
       setPreferredSize( new Dimension( getWidth(), 500 ) );
-
-      this.current = current;
-
-      subscriber = new ForEvents( new EventQuery().withNames( "deletedEntity" ), new EventVisitor()
-      {
-         public boolean visit( DomainEvent event )
-         {
-            layout.show( CasesDetailView2.this, "blank" );
-
-            return false;
-         }
-      } );
-
-      events.registerListener( subscriber );
    }
 
-   public void show( final CaseModel aCase )
+   public void show( CommandQueryClient client)
    {
-      if (aCase == null)
+      if (currentCase == null || !currentCase.equals( client.getReference() ))
       {
-         layout.show( this, "blank" );
-      } else
-      {
-         current.setCaseModel( aCase );
-         layout.show( this, "detail" );
+         if (current != null)
+         {
+            int tab = current.getSelectedTab();
+            currentCase = client.getReference();
+            add(current = obf.newObjectBuilder( CaseDetailView.class ).use( client ).newInstance(), "detail");
+            current.setSelectedTab( tab );
+
+            layout.show( this, "detail" );
+         } else
+         {
+            currentCase = client.getReference();
+            add(current = obf.newObjectBuilder( CaseDetailView.class ).use( client ).newInstance(), "detail");
+            layout.show( this, "detail" );
+
+         }
       }
+   }
+
+   public void clear()
+   {
+      layout.show( this, "blank" );
+      current = null;
    }
 
    @Override
    public boolean requestFocusInWindow()
    {
-      return current.requestFocusInWindow();
+      return current == null ? false : current.requestFocusInWindow();
    }
 
    public CaseDetailView getCurrentCaseView()
@@ -104,7 +110,16 @@ public class CasesDetailView2
 
    public void refresh()
    {
-      layout.show( this, "blank" );
-      layout.show( this, "detail" );
+      if (current != null)
+      {
+         layout.show( this, "blank" );
+         layout.show( this, "detail" );
+      }
+   }
+
+   public void notifyTransactions( Iterable<TransactionEvents> transactions )
+   {
+      if (Events.matches( transactions, Events.withNames("deletedEntity" )))
+         layout.show( this, "blank" );
    }
 }

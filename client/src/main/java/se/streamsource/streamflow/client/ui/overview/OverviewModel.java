@@ -17,40 +17,55 @@
 
 package se.streamsource.streamflow.client.ui.overview;
 
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
 import org.qi4j.api.injection.scope.Uses;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.EventListener;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.dci.value.LinkValue;
+import se.streamsource.dci.value.LinksValue;
+import se.streamsource.streamflow.client.Icons;
+import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
+import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.ui.ContextItem;
+import se.streamsource.streamflow.resource.overview.ProjectSummaryValue;
+import se.streamsource.streamflow.resource.overview.ProjectSummaryValuex;
 
-import javax.swing.tree.DefaultTreeModel;
+import java.util.ArrayList;
+import java.util.List;
+
+import static se.streamsource.streamflow.client.Icons.*;
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
+import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
 
 /**
  * JAVADOC
  */
+
 public class OverviewModel
-      extends DefaultTreeModel
-      implements EventListener
+      implements Refreshable
 {
+   EventList<ContextItem> items = new BasicEventList<ContextItem>();
+
    @Uses
-   OverviewSummaryModel summary;
+   CommandQueryClient client;
 
-   public OverviewModel( @Uses OverviewNode node )
+   public EventList<ContextItem> getItems()
    {
-      super( node );
+      return items;
    }
 
-   @Override
-   public OverviewNode getRoot()
+   public void refresh()
    {
-      return (OverviewNode) super.getRoot();
-   }
+      List<ContextItem> list = new ArrayList<ContextItem>( );
 
-   public OverviewSummaryModel summary()
-   {
-      return summary;
-   }
+      LinksValue projects = client.query("index", LinksValue.class );
+      for (LinkValue link : projects.links().get())
+      {
+         ProjectSummaryValue project = (ProjectSummaryValue) link;
+         list.add( new ContextItem(project.text().get(), text( assignments_node), Icons.assign.name(), project.assignedCount().get(), client.getClient( project.href().get() ).getSubClient("assignments" )));
+      }
 
-   public void notifyEvent( DomainEvent event )
-   {
-      getRoot().notifyEvent( event );
+      EventListSynch.synchronize( list, items );
    }
 }

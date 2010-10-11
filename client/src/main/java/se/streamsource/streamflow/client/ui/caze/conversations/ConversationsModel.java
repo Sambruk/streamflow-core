@@ -35,130 +35,50 @@ import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
 import se.streamsource.streamflow.client.ui.caze.CaseResources;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.EventListener;
+import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
-import se.streamsource.streamflow.infrastructure.event.source.helper.EventVisitorFilter;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
 import se.streamsource.streamflow.resource.conversation.ConversationDTO;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static se.streamsource.streamflow.infrastructure.event.source.helper.Events.*;
+import static se.streamsource.streamflow.util.Specifications.or;
+
 public class ConversationsModel
-   implements EventListener, Refreshable, EventVisitor
+   implements Refreshable, TransactionListener
 {
    @Uses
    CommandQueryClient client;
 
-   @Uses
-   private ConversationModel conversationDetail;
-
    @Structure
    ValueBuilderFactory vbf;
 
-   @Structure
-   ObjectBuilderFactory obf;
-
-   WeakModelMap<String, ConversationModel> conversationModels = new WeakModelMap<String, ConversationModel>(){
-
-      @Override
-      protected ConversationModel newModel( String key )
-      {
-         return obf.newObjectBuilder( ConversationModel.class ).use(
-               client.getSubClient( key ),
-               obf.newObjectBuilder( ConversationParticipantsModel.class ).
-                     use(client.getSubClient( key ).getSubClient( "participants" )).newInstance(),
-               obf.newObjectBuilder( MessagesModel.class ).
-                     use( client.getSubClient(key).getSubClient( "messages" )).newInstance()).newInstance();
-      }
-   };
-
    TransactionList<ConversationDTO> conversations = new TransactionList<ConversationDTO>(new BasicEventList<ConversationDTO>( ));
-
-   EventVisitorFilter eventFilter = new EventVisitorFilter( this, "addedParticipant", "removedParticipant", "createdMessage" );
 
    public void refresh()
    {
-      try
-      {
-         LinksValue newConversations = client.query( "index", LinksValue.class );
-         List<ConversationDTO> mutable = new ArrayList<ConversationDTO>();
-         for( LinkValue link : newConversations.links().get())
-         {
-            mutable.add( link.<ConversationDTO>buildWith().prototype() );
-         }
-         EventListSynch.synchronize( mutable, conversations );
-      } catch (Exception e)
-      {
-         throw new OperationException( CaseResources.could_not_refresh, e );
-      }
+      LinksValue newConversations = client.query( "index", LinksValue.class );
+      EventListSynch.synchronize( newConversations.links().get(), conversations );
    }
 
    public EventList<ConversationDTO> conversations()
    {
-      return  conversations;
+      return conversations;
    }
 
    public void createConversation( String topic )
    {
-      try
-      {
-         ValueBuilder<StringValue> newTopic = vbf.newValue( StringValue.class ).buildWith();
-         newTopic.prototype().string().set( topic );
-         client.postCommand( "create", newTopic.newInstance() );
+      ValueBuilder<StringValue> newTopic = vbf.newValue( StringValue.class ).buildWith();
+      newTopic.prototype().string().set( topic );
+      client.postCommand( "create", newTopic.newInstance() );
+   }
+
+   public void notifyTransactions( Iterable<TransactionEvents> transactions )
+   {
+      // Refresh if either the owner of the list has changed, or if any of the entities in the list has changed
+      if (matches( transactions, or( onEntities( client.getReference().getParentRef().getLastSegment() ), onEntities( conversations ))))
          refresh();
-         
-      } catch (ResourceException e)
-      {
-         throw new OperationException( CaseResources.could_not_create_conversation, e );
-      }
-   }
-
-    public void notifyEvent( DomainEvent event )
-   {
-      eventFilter.visit( event );
-      for(ConversationModel conversationModel : conversationModels)
-      {
-         conversationModel.notifyEvent( event );
-      }
-   }
-
-   public boolean visit( DomainEvent event )
-   {
-      if( event.name().get().equals("createdMessage"))
-      {
-         for (int idx = 0; idx < conversations.size(); idx++)
-         {
-            ConversationDTO conversation = conversations.get( idx );
-            if(conversation.id().get().equals( event.entity().get() ))
-            {
-               conversation.messages().set( conversation.messages().get() + 1 );
-               conversations.set( idx, conversation );
-            }
-         }
-      } else if( event.name().get().equals("addedParticipant") )
-      {
-         for (int idx = 0; idx < conversations.size(); idx++)
-         {
-            ConversationDTO conversation = conversations.get( idx );
-            if(conversation.id().get().equals( event.entity().get() ) )
-            {
-               conversation.participants().set( conversation.participants().get() + 1 );
-               conversations.set( idx, conversation );
-            }
-         }
-      }  else if( event.name().get().equals("removedParticipant") )
-      {
-         for (int idx = 0; idx < conversations.size(); idx++)
-         {
-            ConversationDTO conversation = conversations.get( idx );
-            if(conversation.id().get().equals( event.entity().get() ))
-            {
-               conversation.participants().set( conversation.participants().get() - 1 );
-               conversations.set( idx, conversation );
-            }
-         }
-      }
-
-      return false;
    }
 }

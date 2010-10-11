@@ -17,132 +17,45 @@
 
 package se.streamsource.streamflow.client.ui.administration.surface;
 
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import org.restlet.data.MediaType;
-import org.restlet.representation.FileRepresentation;
-import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.application.error.ErrorResources;
 import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.EventListener;
-import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
-import se.streamsource.streamflow.infrastructure.event.source.helper.EventVisitorFilter;
+import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
+import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
+import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
 import se.streamsource.streamflow.resource.user.NewProxyUserCommand;
 import se.streamsource.streamflow.resource.user.ProxyUserDTO;
 import se.streamsource.streamflow.resource.user.ProxyUserListDTO;
-import se.streamsource.streamflow.resource.user.UserEntityDTO;
-
-import javax.swing.table.AbstractTableModel;
-import java.io.File;
-import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 
 public class ProxyUsersModel
-      extends AbstractTableModel
-      implements EventListener, EventVisitor
+      implements Refreshable, TransactionListener
 {
-   final Logger logger = LoggerFactory.getLogger( "administration" );
-
    @Structure
    ValueBuilderFactory vbf;
 
-   private List<ProxyUserDTO> proxyUsers;
+   private EventList<ProxyUserDTO> eventList = new BasicEventList<ProxyUserDTO>();
 
-   private String[] columnNames;
-   private Class[] columnClasses;
-   private boolean[] columnEditable;
-
-   private EventVisitorFilter eventFilter = new EventVisitorFilter( this, "createdProxyUser", "changedEnabled" );
-
+   @Uses
    private CommandQueryClient client;
 
-   public ProxyUsersModel( @Uses CommandQueryClient client ) throws ResourceException
+   public EventList<ProxyUserDTO> getEventList()
    {
-      this.client = client;
-      columnNames = new String[]{
-            text( AdministrationResources.user_enabled_label ),
-            text( AdministrationResources.username_label ),
-            text(AdministrationResources.description_label)
-      };
-      columnClasses = new Class[]{Boolean.class, String.class, String.class};
-      columnEditable = new boolean[]{true, false, false};
-      refresh();
+      return eventList;
    }
 
-   private void refresh()
+   public void refresh()
    {
-      try
-      {
-         proxyUsers = client.query("index", ProxyUserListDTO.class).users().get();
-         fireTableDataChanged();
-       } catch (ResourceException e)
-      {
-         throw new OperationException( AdministrationResources.could_not_refresh, e );
-      }
-   }
-
-   public int getRowCount()
-   {
-      return proxyUsers == null ? 0 : proxyUsers.size();
-   }
-
-   public int getColumnCount()
-   {
-      return 3;
-   }
-
-   public Object getValueAt( int row, int column )
-   {
-      switch (column)
-      {
-         case 0:
-            return proxyUsers != null && !proxyUsers.get( row ).disabled().get();
-         case 1:
-            return proxyUsers == null ? "" : proxyUsers.get( row ).username().get();
-         default:
-            return proxyUsers == null ? "" : proxyUsers.get( row ).description().get();
-      }
-   }
-
-   @Override
-   public void setValueAt( Object aValue, int rowIndex, int column )
-   {
-
-      switch (column)
-      {
-         case 0:
-            ProxyUserDTO user = proxyUsers.get( rowIndex );
-            changeEnabled( user );
-      }
-   }
-
-   @Override
-   public boolean isCellEditable( int rowIndex, int columnIndex )
-   {
-      return columnEditable[columnIndex];
-   }
-
-   @Override
-   public Class<?> getColumnClass( int column )
-   {
-      return columnClasses[column];
-   }
-
-   @Override
-   public String getColumnName( int column )
-   {
-      return columnNames[column];
+      final ProxyUserListDTO proxyUsers = client.query( "index", ProxyUserListDTO.class );
+      EventListSynch.synchronize( proxyUsers.users().get(), eventList );
    }
 
    public void createProxyUser( NewProxyUserCommand proxyUserCommand )
@@ -152,65 +65,31 @@ public class ProxyUsersModel
          client.postCommand( "createproxyuser", proxyUserCommand );
       } catch (ResourceException e)
       {
-         try
-         {
-            ErrorResources resources = ErrorResources.valueOf( e.getMessage() );
-            throw new OperationException( resources, e );
-         } catch (Throwable t)
-         {
-            throw new RuntimeException( e.getMessage(), e );
-         }
+         ErrorResources resources = ErrorResources.valueOf( e.getMessage() );
+         throw new OperationException( resources, e );
       }
    }
-
 
    public void changeEnabled( ProxyUserDTO proxyUser )
    {
-      try
-      {
-         client.getSubClient( proxyUser.username().get() ).postCommand( "changeenabled" );
-      } catch (ResourceException e)
-      {
-         throw new OperationException( AdministrationResources.could_not_change_user_disabled, e );
-      }
+      client.getSubClient( proxyUser.username().get() ).postCommand( "changeenabled" );
    }
 
-   public void notifyEvent( DomainEvent event )
+   public void resetPassword( ProxyUserDTO proxyUser, String password )
    {
-      eventFilter.visit( event );
+      ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
+      builder.prototype().string().set( password );
+
+      client.getSubClient( proxyUser.username().get() ).postCommand( "resetpassword", builder.newInstance() );
    }
 
-   public boolean visit( DomainEvent event )
+   public void remove( ProxyUserDTO proxyUser )
    {
-      logger.info( "Refresh proxy users" );
-      refresh();
-
-      return false;
+      client.getSubClient( proxyUser.username().get() ).delete();
    }
 
-   public void resetPassword( int index, String password )
+   public void notifyTransactions( Iterable<TransactionEvents> transactions )
    {
-      try
-      {
-         ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
-         builder.prototype().string().set( password );
-
-         client.getSubClient( proxyUsers.get( index ).username().get()).postCommand( "resetpassword", builder.newInstance() );
-      } catch (ResourceException e)
-      {
-         throw new OperationException( AdministrationResources.reset_password_failed, e );
-      }
-   }
-
-      public void remove( int index )
-   {
-      try
-      {
-         client.getSubClient( proxyUsers.get( index ).username().get() ).delete();
-      } catch (ResourceException e)
-      {
-         throw new OperationException( AdministrationResources.could_not_remove_proxyuser, e );
-      }
       refresh();
    }
 }

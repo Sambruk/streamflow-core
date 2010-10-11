@@ -24,8 +24,16 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.Sizes;
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
+import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
 import se.streamsource.streamflow.resource.caze.CaseValue;
 
 import javax.swing.BorderFactory;
@@ -36,17 +44,18 @@ import javax.swing.JTable;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Insets;
-import java.text.SimpleDateFormat;
 import java.util.Observable;
 import java.util.Observer;
+
+import static se.streamsource.streamflow.infrastructure.event.source.helper.Events.*;
 
 /**
  * JAVADOC
  */
-public class CaseInfoView2 extends JPanel implements Observer
+public class CaseInfoView extends JPanel 
+      implements Refreshable,
+      TransactionListener
 {
-   SimpleDateFormat format = new SimpleDateFormat();
-
    CaseInfoModel model;
 
    private JLabel title = new JLabel();
@@ -59,10 +68,13 @@ public class CaseInfoView2 extends JPanel implements Observer
    private JTable fakeTable;
    private JPanel statusPanel = new JPanel();
 
-   public CaseInfoView2( @Service ApplicationContext appContext )
+   public CaseInfoView( @Service ApplicationContext appContext, @Uses CommandQueryClient client, @Structure ObjectBuilderFactory obf )
    {
+      model = obf.newObjectBuilder( CaseInfoModel.class ).use( client ).newInstance();
+
       this.setFocusable( false );
       setFont( getFont().deriveFont( getFont().getSize() - 2 ) );
+      setPreferredSize( new Dimension( 800, 50 ) );
 
       FormLayout layout = new FormLayout( "25dlu,170dlu,60dlu,60dlu,90dlu,90dlu", "10dlu,15dlu" );
       DefaultFormBuilder builder = new DefaultFormBuilder( layout, this );
@@ -97,8 +109,6 @@ public class CaseInfoView2 extends JPanel implements Observer
       fakeTable = new JTable();
       statusRenderer = new CaseStatusTableCellRenderer();
 
-      CellConstraints cc = new CellConstraints();
-
       builder.add( statusHeader, new CellConstraints( 1, 1, 1, 1, CellConstraints.LEFT, CellConstraints.BOTTOM, new Insets( 0, 5, 0, 0 ) ) );
       builder.add( titleHeader, "2,1,left,bottom" );
       builder.add( typeHeader, "3,1,left,bottom" );
@@ -113,24 +123,21 @@ public class CaseInfoView2 extends JPanel implements Observer
       builder.add( createdBy, "5,2,left,center" );
       builder.add( assignedTo, "6,2,left,center" );
 
+      new RefreshWhenVisible(this, this);
    }
 
-   public void setModel( CaseInfoModel caseInfoModel )
+   public void notifyTransactions( Iterable<TransactionEvents> transactions )
    {
-      if (model != null)
-         model.deleteObserver( this );
-
-      model = caseInfoModel;
-
-      caseInfoModel.addObserver( this );
-
-      update( null, null );
-
-
+      if (matches( transactions, withNames( "changedOwner", "changedCaseType", "changedDescription", "assignedTo", "unassigned", "changedStatus" ) ))
+      {
+         refresh();
+      }
    }
 
-   public void update( Observable o, Object arg )
+   public void refresh()
    {
+      model.refresh();
+
       CaseValue aCase = model.getInfo();
 
       statusPanel.removeAll();

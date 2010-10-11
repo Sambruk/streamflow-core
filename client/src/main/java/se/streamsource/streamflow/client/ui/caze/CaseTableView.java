@@ -29,14 +29,23 @@ import org.jdesktop.swingx.painter.PinstripePainter;
 import org.jdesktop.swingx.renderer.DefaultTableRenderer;
 import org.jdesktop.swingx.renderer.StringValue;
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.StreamflowApplication;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
+import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
+import se.streamsource.streamflow.infrastructure.event.source.helper.EventVisitorFilter;
+import se.streamsource.streamflow.infrastructure.event.source.helper.Events;
 import se.streamsource.streamflow.resource.caze.CaseValue;
 
 import javax.swing.ActionMap;
@@ -60,31 +69,26 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+import static se.streamsource.streamflow.infrastructure.event.source.helper.Events.*;
+import static se.streamsource.streamflow.util.Iterables.filter;
+
 /**
  * Base class for all views of case lists.
  */
 public class CaseTableView
       extends JPanel
+   implements TransactionListener
 {
-   @Service
-   protected DialogService dialogs;
-
-   @Service
-   protected StreamflowApplication application;
-
    protected JXTable caseTable;
    protected CasesTableModel model;
-   private CasesDetailView2 detailsView;
 
    public void init( @Service ApplicationContext context,
-                     @Uses final CasesModel casesModel,
-                     @Uses final CasesTableModel model,
-                     @Uses final CasesDetailView2 detailsView,
+                     @Uses CommandQueryClient client,
+                     @Structure ObjectBuilderFactory obf,
                      @Uses TableFormat tableFormat )
    {
       setLayout( new BorderLayout() );
-      this.model = model;
-      this.detailsView = detailsView;
+      this.model = obf.newObjectBuilder( CasesTableModel.class ).use( client ).newInstance();
       setLayout( new BorderLayout() );
 
       ActionMap am = context.getActionMap( CaseTableView.class, this );
@@ -174,45 +178,6 @@ public class CaseTableView
          }
       }, p ) );
 
-      caseTable.getSelectionModel().addListSelectionListener( new ListSelectionListener()
-      {
-         CaseValue selectedCase;
-
-         public void valueChanged( ListSelectionEvent e )
-         {
-            if (!e.getValueIsAdjusting())
-            {
-               try
-               {
-                  if (!caseTable.getSelectionModel().isSelectionEmpty())
-                  {
-                     CaseValue value;
-                     try
-                     {
-                        value = getSelectedCase();
-                     } catch (Exception e1)
-                     {
-                        // Ignore
-                        return;
-                     }
-
-                     if (value == selectedCase)
-                        return;
-
-                     selectedCase = value;
-
-                     CaseModel caseModel = casesModel.caze( value.id().get() );
-
-                     detailsView.show( caseModel );
-                  }
-               } catch (Exception e1)
-               {
-                  throw new OperationException( CaseResources.could_not_view_details, e1 );
-               }
-            }
-         }
-      } );
-
       addFocusListener( new FocusAdapter()
       {
          public void focusGained( FocusEvent e )
@@ -220,16 +185,13 @@ public class CaseTableView
             caseTable.requestFocusInWindow();
          }
       } );
+
+      new RefreshWhenVisible(this, model);
    }
 
    public JXTable getCaseTable()
    {
       return caseTable;
-   }
-
-   public CasesDetailView2 getCaseDetails()
-   {
-      return detailsView;
    }
 
    public CasesTableModel getModel()
@@ -244,5 +206,24 @@ public class CaseTableView
          return null;
       else
          return model.getEventList().get( getCaseTable().convertRowIndexToModel( selectedRow ) );
+   }
+
+   public void notifyTransactions( Iterable<TransactionEvents> transactions )
+   {
+      if (Events.matches( transactions, withNames("addedLabel", "removedLabel",
+            "changedDescription", "changedCaseType", "changedStatus",
+            "changedOwner", "assignedTo", "unassigned", "deletedEntity",
+            "updatedContact", "addedContact", "deletedContact",
+            "createdConversation", "submittedForm", "createdAttachment",
+            "removedAttachment" ) ))
+      {
+         model.refresh();
+      }
+
+      if (Events.matches( transactions, withNames("createdCase" )))
+      {
+         caseTable.getSelectionModel().setSelectionInterval( caseTable.getRowCount()-1, caseTable.getRowCount()-1 );
+         caseTable.scrollRowToVisible( caseTable.getRowCount()-1 );
+      }
    }
 }

@@ -17,21 +17,33 @@
 
 package se.streamsource.streamflow.client.ui.administration.surface;
 
+import ca.odell.glazedlists.gui.TableFormat;
+import ca.odell.glazedlists.gui.WritableTableFormat;
+import ca.odell.glazedlists.swing.EventJXTableModel;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationActionMap;
 import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Task;
 import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.renderer.CheckBoxProvider;
 import org.jdesktop.swingx.renderer.DefaultTableRenderer;
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
+import se.streamsource.streamflow.client.ui.CommandTask;
 import se.streamsource.streamflow.client.ui.ConfirmationDialog;
 import se.streamsource.streamflow.client.ui.CreateProxyUserDialog;
 import se.streamsource.streamflow.client.ui.OptionsAction;
 import se.streamsource.streamflow.client.ui.ResetPasswordDialog;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
+import se.streamsource.streamflow.infrastructure.event.source.helper.Events;
+import se.streamsource.streamflow.resource.user.ProxyUserDTO;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -40,9 +52,11 @@ import javax.swing.JScrollPane;
 import java.awt.BorderLayout;
 
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
+import static se.streamsource.streamflow.infrastructure.event.source.helper.Events.*;
 
 public class ProxyUsersView
       extends JPanel
+   implements TransactionListener
 {
    private ProxyUsersModel model;
 
@@ -59,14 +73,19 @@ public class ProxyUsersView
    DialogService dialogs;
 
    JXTable proxyUsersTable;
+   private EventJXTableModel<ProxyUserDTO> tableModel;
 
-   public ProxyUsersView( @Service ApplicationContext context, @Uses ProxyUsersModel model )
+   public ProxyUsersView( @Service ApplicationContext context, @Uses CommandQueryClient client, @Structure ObjectBuilderFactory obf)
    {
       ApplicationActionMap am = context.getActionMap( this );
       setActionMap( am );
 
-      this.model = model;
-      proxyUsersTable = new JXTable( model );
+      this.model = obf.newObjectBuilder( ProxyUsersModel.class ).use( client ).newInstance();
+      TableFormat<ProxyUserDTO> tableFormat = new ProxyUsersTableFormat();
+
+      tableModel = new EventJXTableModel<ProxyUserDTO>( model.getEventList(), tableFormat );
+
+      proxyUsersTable = new JXTable( tableModel );
       proxyUsersTable.getColumn( 0 ).setCellRenderer( new DefaultTableRenderer( new CheckBoxProvider() ) );
       proxyUsersTable.getColumn( 0 ).setMaxWidth( 30 );
       proxyUsersTable.getColumn( 0 ).setResizable( false );
@@ -92,40 +111,120 @@ public class ProxyUsersView
 
 
    @org.jdesktop.application.Action
-   public void add()
+   public Task add()
    {
-      CreateProxyUserDialog dialog = userDialogs.iterator().next();
+      final CreateProxyUserDialog dialog = userDialogs.iterator().next();
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.create_user_title ) );
 
       if ( dialog.userCommand() != null )
       {
-         model.createProxyUser( dialog.userCommand() );
-      }
+         return new CommandTask()
+         {
+            @Override
+            public void command()
+               throws Exception
+            {
+               model.createProxyUser( dialog.userCommand() );
+            }
+         };
+      } else
+         return null;
    }
 
    @org.jdesktop.application.Action
-   public void resetPassword()
+   public Task resetPassword()
    {
-      ResetPasswordDialog dialog = resetPwdDialogs.iterator().next();
-      dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.reset_password_title ) + ": " + model.getValueAt( proxyUsersTable.getSelectedRow(), 1 ) );
+      final ResetPasswordDialog dialog = resetPwdDialogs.iterator().next();
+
+      final ProxyUserDTO proxyUser = tableModel.getElementAt( proxyUsersTable.getSelectedRow() );
+
+      dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.reset_password_title ) + ": " + proxyUser.description().get() );
 
       if (dialog.password() != null)
       {
-         model.resetPassword( proxyUsersTable.getSelectedRow(), dialog.password() );
-      }
+         return new CommandTask()
+         {
+            @Override
+            public void command()
+               throws Exception
+            {
+               model.resetPassword( proxyUser, dialog.password() );
+            }
+         };
+      } else
+         return null;
    }
 
       @Action
-   public void remove()
+   public Task remove()
    {
       ConfirmationDialog dialog = confirmationDialog.iterator().next();
-      dialog.setRemovalMessage( model.getValueAt( proxyUsersTable.getSelectedRow(), 1 ).toString() );
+      final ProxyUserDTO proxyUser = tableModel.getElementAt( proxyUsersTable.getSelectedRow() );
+      dialog.setRemovalMessage( proxyUser.description().get() );
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.remove_proxyuser_title ) );
 
       if (dialog.isConfirmed())
       {
-         model.remove( proxyUsersTable.getSelectedRow() );
+         return new CommandTask()
+         {
+            @Override
+            public void command()
+               throws Exception
+            {
+               model.remove( proxyUser );
+            }
+         };
+      } else
+         return null;
+   }
+
+   public void notifyTransactions( Iterable<TransactionEvents> transactions )
+   {
+      if (matches( transactions, withNames("createdProxyUser", "changedEnabled" )))
+      {
+         model.refresh();
       }
    }
 
+   private class ProxyUsersTableFormat
+      implements WritableTableFormat<ProxyUserDTO>
+   {
+      public boolean isEditable( ProxyUserDTO proxyUserDTO, int i )
+      {
+         return i == 0;
+      }
+
+      public ProxyUserDTO setColumnValue( ProxyUserDTO proxyUserDTO, Object o, int i )
+      {
+         model.changeEnabled( proxyUserDTO );
+         return null;
+      }
+
+      public int getColumnCount()
+      {
+         return 3;
+      }
+
+      public String getColumnName( int i )
+      {
+         return new String[]{
+         text( AdministrationResources.user_enabled_label ),
+         text( AdministrationResources.username_label ),
+         text(AdministrationResources.description_label)}[i];
+      }
+
+      public Object getColumnValue( ProxyUserDTO proxyUserDTO, int i )
+      {
+         switch (i)
+         {
+            case 0:
+               return proxyUserDTO.disabled().get();
+            case 1:
+               return proxyUserDTO.username().get();
+            case 2:
+               return proxyUserDTO.description().get();
+         }
+         return null;
+      }
+   }
 }

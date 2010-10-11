@@ -18,9 +18,9 @@
 package se.streamsource.streamflow.infrastructure.event.source.helper;
 
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.source.EventSpecification;
 import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
-import se.streamsource.streamflow.infrastructure.event.source.helper.EventQuery;
+import se.streamsource.streamflow.util.Specification;
+import se.streamsource.streamflow.util.Specifications;
 
 /**
  * Takes a list of DomainEvents and filters them according to a given event specification.
@@ -29,27 +29,27 @@ public class EventVisitorFilter
       implements EventVisitor
 {
    private EventVisitor visitor;
-   private EventSpecification eventSpecification;
+   private Specification specification;
 
    public EventVisitorFilter( EventVisitor visitor, String... name )
    {
-      this( new EventQuery().withNames( name ), visitor );
+      this( Events.withNames( name ), visitor );
    }
 
    public EventVisitorFilter( String entityId, EventVisitor visitor, String... name )
    {
-      this( new EventQuery().onEntities( entityId ).withNames( name ), visitor );
+      this( Specifications.and( Events.onEntities( entityId ), Events.withNames( name )), visitor );
    }
 
-   public EventVisitorFilter( EventSpecification eventSpecification, EventVisitor visitor )
+   public EventVisitorFilter( Specification specification, EventVisitor visitor )
    {
       this.visitor = visitor;
-      this.eventSpecification = eventSpecification;
+      this.specification = specification;
    }
 
    public boolean visit( DomainEvent event )
    {
-      if (eventSpecification.accept( event ))
+      if (specification.valid( event ))
          return visitor.visit( event );
       else
          return true;

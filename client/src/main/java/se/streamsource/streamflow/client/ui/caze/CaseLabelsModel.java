@@ -30,15 +30,18 @@ import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.EventListener;
+import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
+import se.streamsource.streamflow.infrastructure.event.source.helper.Events;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 
 /**
  * Model for the list of currently selected labels of a case
  */
 public class CaseLabelsModel
-      implements EventListener
+   implements Refreshable, TransactionListener
 {
    @Uses
    CommandQueryClient client;
@@ -53,38 +56,40 @@ public class CaseLabelsModel
       return labels;
    }
 
-   public void setLabels( LinksValue labels )
+   public void refresh()
    {
-      EventListSynch.synchronize( labels.links().get(), this.labels );
+      LinksValue linkList = client.query( "index", LinksValue.class );
+      EventListSynch.synchronize( linkList.links().get(), labels );
+   }
+
+   public EventList<LinkValue> getPossibleLabels()
+   {
+      BasicEventList<LinkValue> list = new BasicEventList<LinkValue>();
+
+      LinksValue listValue = client.query( "possiblelabels",
+            LinksValue.class );
+      list.addAll( listValue.links().get() );
+
+      return list;
    }
 
    public void addLabel( EntityReference addLabel )
    {
-      try
-      {
-         ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
-         builder.prototype().entity().set( addLabel );
-         client.postCommand( "addlabel", builder.newInstance() );
-      } catch (ResourceException e)
-      {
-         throw new OperationException( CaseResources.could_not_add_label, e );
-      }
+      ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
+      builder.prototype().entity().set( addLabel );
+      client.postCommand( "addlabel", builder.newInstance() );
    }
 
    public void removeLabel( EntityReference removeLabel )
    {
-      try
-      {
-         ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
-         builder.prototype().entity().set( removeLabel );
-         client.getSubClient( removeLabel.identity() ).delete();
-      } catch (ResourceException e)
-      {
-         throw new OperationException( CaseResources.could_not_remove_label, e );
-      }
+      ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
+      builder.prototype().entity().set( removeLabel );
+      client.getSubClient( removeLabel.identity() ).delete();
    }
 
-   public void notifyEvent( DomainEvent event )
+   public void notifyTransactions( Iterable<TransactionEvents> transactions )
    {
+      if (Events.matches( transactions, Events.withNames("addedLabel", "removedLabel" )))
+         refresh();
    }
 }

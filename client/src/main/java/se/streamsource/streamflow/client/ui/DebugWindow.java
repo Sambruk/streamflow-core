@@ -25,10 +25,10 @@ import org.jdesktop.swingx.JXTable;
 import org.qi4j.api.injection.scope.Service;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
-import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
-import se.streamsource.streamflow.infrastructure.event.source.helper.TransactionEventAdapter;
+import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
+import se.streamsource.streamflow.infrastructure.event.source.helper.Events;
 
 import javax.swing.ActionMap;
 import javax.swing.JScrollPane;
@@ -71,7 +71,7 @@ public class DebugWindow
 
       frame.setSize( 400, 400 );
 
-      visitor = new TransactionEventAdapter( this );
+      visitor = Events.adapter( this );
    }
 
    public boolean visit( TransactionEvents transaction )

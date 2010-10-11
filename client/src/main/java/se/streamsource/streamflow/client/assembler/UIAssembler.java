@@ -39,30 +39,21 @@ import se.streamsource.streamflow.client.ui.DummyDataService;
 import se.streamsource.streamflow.client.ui.NameDialog;
 import se.streamsource.streamflow.client.ui.ResetPasswordDialog;
 import se.streamsource.streamflow.client.ui.SelectUsersAndGroupsDialog;
-import se.streamsource.streamflow.client.ui.administration.AccountAdministrationNode;
 import se.streamsource.streamflow.client.ui.administration.AccountModel;
 import se.streamsource.streamflow.client.ui.administration.AccountView;
 import se.streamsource.streamflow.client.ui.administration.AdministrationModel;
-import se.streamsource.streamflow.client.ui.administration.AdministrationNode;
-import se.streamsource.streamflow.client.ui.administration.AdministrationOutlineView;
+import se.streamsource.streamflow.client.ui.administration.AdministrationTreeView;
 import se.streamsource.streamflow.client.ui.administration.AdministrationView;
 import se.streamsource.streamflow.client.ui.administration.AdministrationWindow;
 import se.streamsource.streamflow.client.ui.administration.ChangePasswordDialog;
-import se.streamsource.streamflow.client.ui.administration.LinksQueryListModel;
-import se.streamsource.streamflow.client.ui.administration.OrganizationAdministrationModel;
-import se.streamsource.streamflow.client.ui.administration.OrganizationAdministrationNode;
-import se.streamsource.streamflow.client.ui.administration.OrganizationAdministrationView;
 import se.streamsource.streamflow.client.ui.administration.OrganizationalUnitAdministrationModel;
-import se.streamsource.streamflow.client.ui.administration.OrganizationalUnitAdministrationNode;
-import se.streamsource.streamflow.client.ui.administration.OrganizationalUnitAdministrationView;
-import se.streamsource.streamflow.client.ui.administration.ProfileDialog;
+import se.streamsource.streamflow.client.ui.administration.ProfileModel;
+import se.streamsource.streamflow.client.ui.administration.ProfileView;
 import se.streamsource.streamflow.client.ui.administration.SelectLinksDialog;
 import se.streamsource.streamflow.client.ui.administration.SelectOrganizationOrOrganizationalUnitDialog;
 import se.streamsource.streamflow.client.ui.administration.SelectOrganizationalUnitDialog;
+import se.streamsource.streamflow.client.ui.administration.TabbedResourceView;
 import se.streamsource.streamflow.client.ui.administration.UsersAndGroupsModel;
-import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypeModel;
-import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypeView;
-import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypesAdminView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypesModel;
 import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypesView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.SelectCaseTypesDialog;
@@ -94,7 +85,6 @@ import se.streamsource.streamflow.client.ui.administration.casetypes.forms.Selec
 import se.streamsource.streamflow.client.ui.administration.casetypes.forms.SelectionElementsView;
 import se.streamsource.streamflow.client.ui.administration.form.SelectedFormsModel;
 import se.streamsource.streamflow.client.ui.administration.form.SelectedFormsView;
-import se.streamsource.streamflow.client.ui.administration.groups.GroupAdminView;
 import se.streamsource.streamflow.client.ui.administration.groups.GroupsModel;
 import se.streamsource.streamflow.client.ui.administration.groups.GroupsView;
 import se.streamsource.streamflow.client.ui.administration.groups.ParticipantsModel;
@@ -106,18 +96,14 @@ import se.streamsource.streamflow.client.ui.administration.label.SelectedLabelsM
 import se.streamsource.streamflow.client.ui.administration.label.SelectedLabelsView;
 import se.streamsource.streamflow.client.ui.administration.label.SelectionDialog;
 import se.streamsource.streamflow.client.ui.administration.organization.LinksListModel;
+import se.streamsource.streamflow.client.ui.administration.organization.OrganizationUsersModel;
 import se.streamsource.streamflow.client.ui.administration.organization.OrganizationUsersView;
-import se.streamsource.streamflow.client.ui.administration.organization.OrganizationsAdminView;
 import se.streamsource.streamflow.client.ui.administration.organization.OrganizationsModel;
-import se.streamsource.streamflow.client.ui.administration.organization.OrganizationsTabbedView;
 import se.streamsource.streamflow.client.ui.administration.organization.OrganizationsView;
 import se.streamsource.streamflow.client.ui.administration.policy.AdministratorsModel;
 import se.streamsource.streamflow.client.ui.administration.policy.AdministratorsView;
-import se.streamsource.streamflow.client.ui.administration.projects.ProjectAdminView;
-import se.streamsource.streamflow.client.ui.administration.projects.ProjectMembersModel;
-import se.streamsource.streamflow.client.ui.administration.projects.ProjectMembersView;
-import se.streamsource.streamflow.client.ui.administration.projects.ProjectModel;
-import se.streamsource.streamflow.client.ui.administration.projects.ProjectView;
+import se.streamsource.streamflow.client.ui.administration.projects.MembersModel;
+import se.streamsource.streamflow.client.ui.administration.projects.MembersView;
 import se.streamsource.streamflow.client.ui.administration.projects.ProjectsModel;
 import se.streamsource.streamflow.client.ui.administration.projects.ProjectsView;
 import se.streamsource.streamflow.client.ui.administration.resolutions.ResolutionsModel;
@@ -128,12 +114,10 @@ import se.streamsource.streamflow.client.ui.administration.roles.RolesModel;
 import se.streamsource.streamflow.client.ui.administration.roles.RolesView;
 import se.streamsource.streamflow.client.ui.administration.surface.AccessPointModel;
 import se.streamsource.streamflow.client.ui.administration.surface.AccessPointView;
-import se.streamsource.streamflow.client.ui.administration.surface.AccessPointsAdminView;
 import se.streamsource.streamflow.client.ui.administration.surface.AccessPointsModel;
 import se.streamsource.streamflow.client.ui.administration.surface.AccessPointsView;
 import se.streamsource.streamflow.client.ui.administration.surface.ProxyUsersModel;
 import se.streamsource.streamflow.client.ui.administration.surface.ProxyUsersView;
-import se.streamsource.streamflow.client.ui.administration.surface.SurfaceAdministrationView;
 import se.streamsource.streamflow.client.ui.administration.users.UsersAdministrationModel;
 import se.streamsource.streamflow.client.ui.administration.users.UsersAdministrationView;
 import se.streamsource.streamflow.client.ui.caze.CaseActionsModel;
@@ -141,15 +125,13 @@ import se.streamsource.streamflow.client.ui.caze.CaseActionsView;
 import se.streamsource.streamflow.client.ui.caze.CaseDetailView;
 import se.streamsource.streamflow.client.ui.caze.CaseEffectiveFieldsValueModel;
 import se.streamsource.streamflow.client.ui.caze.CaseEffectiveFieldsValueView;
-import se.streamsource.streamflow.client.ui.caze.CaseFormsModel;
 import se.streamsource.streamflow.client.ui.caze.CaseGeneralModel;
 import se.streamsource.streamflow.client.ui.caze.CaseGeneralView;
 import se.streamsource.streamflow.client.ui.caze.CaseInfoModel;
-import se.streamsource.streamflow.client.ui.caze.CaseInfoView2;
+import se.streamsource.streamflow.client.ui.caze.CaseInfoView;
 import se.streamsource.streamflow.client.ui.caze.CaseLabelsDialog;
 import se.streamsource.streamflow.client.ui.caze.CaseLabelsModel;
 import se.streamsource.streamflow.client.ui.caze.CaseLabelsView;
-import se.streamsource.streamflow.client.ui.caze.CaseModel;
 import se.streamsource.streamflow.client.ui.caze.CaseSubmittedFormModel;
 import se.streamsource.streamflow.client.ui.caze.CaseSubmittedFormView;
 import se.streamsource.streamflow.client.ui.caze.CaseSubmittedFormsModel;
@@ -180,13 +162,11 @@ import se.streamsource.streamflow.client.ui.caze.OptionButtonsPanel;
 import se.streamsource.streamflow.client.ui.caze.PossibleCaseTypesModel;
 import se.streamsource.streamflow.client.ui.caze.PossibleFormsModel;
 import se.streamsource.streamflow.client.ui.caze.PossibleFormsView;
-import se.streamsource.streamflow.client.ui.caze.PossibleFormsView2;
 import se.streamsource.streamflow.client.ui.caze.SubmittedFormsAdminView;
 import se.streamsource.streamflow.client.ui.caze.TextAreaFieldPanel;
 import se.streamsource.streamflow.client.ui.caze.TextFieldPanel;
 import se.streamsource.streamflow.client.ui.caze.attachments.AttachmentsModel;
 import se.streamsource.streamflow.client.ui.caze.attachments.AttachmentsView;
-import se.streamsource.streamflow.client.ui.caze.conversations.ConversationModel;
 import se.streamsource.streamflow.client.ui.caze.conversations.ConversationParticipantsModel;
 import se.streamsource.streamflow.client.ui.caze.conversations.ConversationParticipantsView;
 import se.streamsource.streamflow.client.ui.caze.conversations.ConversationView;
@@ -207,10 +187,6 @@ import se.streamsource.streamflow.client.ui.menu.ViewMenu;
 import se.streamsource.streamflow.client.ui.menu.WindowMenu;
 import se.streamsource.streamflow.client.ui.menu.WorkspaceMenuBar;
 import se.streamsource.streamflow.client.ui.overview.OverviewModel;
-import se.streamsource.streamflow.client.ui.overview.OverviewNode;
-import se.streamsource.streamflow.client.ui.overview.OverviewProjectAssignmentsNode;
-import se.streamsource.streamflow.client.ui.overview.OverviewProjectNode;
-import se.streamsource.streamflow.client.ui.overview.OverviewProjectsNode;
 import se.streamsource.streamflow.client.ui.overview.OverviewSummaryModel;
 import se.streamsource.streamflow.client.ui.overview.OverviewSummaryView;
 import se.streamsource.streamflow.client.ui.overview.OverviewView;
@@ -220,20 +196,13 @@ import se.streamsource.streamflow.client.ui.workspace.AccountSelectionView;
 import se.streamsource.streamflow.client.ui.workspace.FilterListDialog;
 import se.streamsource.streamflow.client.ui.workspace.GroupedFilterListDialog;
 import se.streamsource.streamflow.client.ui.workspace.HandleSearchesDialog;
-import se.streamsource.streamflow.client.ui.workspace.RefreshCaseCountTask;
 import se.streamsource.streamflow.client.ui.workspace.SaveSearchDialog;
 import se.streamsource.streamflow.client.ui.workspace.SavedSearchesModel;
 import se.streamsource.streamflow.client.ui.workspace.SearchView;
 import se.streamsource.streamflow.client.ui.workspace.SelectLinkDialog;
 import se.streamsource.streamflow.client.ui.workspace.TestConnectionTask;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceModel;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceNode;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceProjectAssignmentsNode;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceProjectInboxNode;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceProjectNode;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceProjectsNode;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceUserDraftsNode;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceUserNode;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceContextModel2;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceContextView2;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceView;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceWindow;
 
@@ -272,9 +241,6 @@ public class UIAssembler
 
    private void surfaceAdministration( ModuleAssembly module ) throws AssemblyException
    {
-      addViews( module, SurfaceAdministrationView.class,
-            AccessPointsAdminView.class );
-
       addMV( module,
             AccessPointsModel.class,
             AccessPointsView.class );
@@ -313,8 +279,6 @@ public class UIAssembler
 
    private void caseTypeAdministration( ModuleAssembly module ) throws AssemblyException
    {
-      addViews( module, CaseTypesAdminView.class );
-
       addDialogs( module, SelectCaseTypesDialog.class );
 
       addMV( module, SelectedCaseTypesModel.class, SelectedCaseTypesView.class );
@@ -326,24 +290,19 @@ public class UIAssembler
       addMV( module, CaseTypesModel.class,
             CaseTypesView.class );
 
-      addMV( module, CaseTypeModel.class, CaseTypeView.class );
-
    }
 
    private void projectAdministration( ModuleAssembly module ) throws AssemblyException
    {
-      addViews( module, ProjectAdminView.class );
-
-
       addMV( module, ProjectsModel.class,
             ProjectsView.class );
 
-      addModels( module, ProjectModel.class, FieldValueEditModel.class );
+      addModels( module, FieldValueEditModel.class );
 
-      addViews( module, ProjectView.class, se.streamsource.streamflow.client.ui.administration.casetypes.forms.FormsAdminView.class, FormEditAdminView.class );
+      addViews( module, FormEditAdminView.class );
 
-      addMV( module, ProjectMembersModel.class,
-            ProjectMembersView.class );
+      addMV( module, MembersModel.class,
+            MembersView.class );
 
       addMV( module,
             FieldsModel.class, FieldsView.class );
@@ -374,8 +333,6 @@ public class UIAssembler
 
    private void groupAdministration( ModuleAssembly module ) throws AssemblyException
    {
-      addViews( module, GroupAdminView.class );
-
       addMV( module, GroupsModel.class,
             GroupsView.class );
 
@@ -386,12 +343,9 @@ public class UIAssembler
 
    private void organizationAdministration( ModuleAssembly module ) throws AssemblyException
    {
-      addViews( module, OrganizationsTabbedView.class,
-            OrganizationsAdminView.class );
-
       addMV( module, OrganizationsModel.class,
             OrganizationsView.class );
-      addMV( module, LinksListModel.class,
+      addMV( module, OrganizationUsersModel.class,
             OrganizationUsersView.class );
    }
 
@@ -434,7 +388,7 @@ public class UIAssembler
             ConfirmationDialog.class,
             ResetPasswordDialog.class );
 
-      addModels( module,
+      addModels( module, LinksListModel.class,
             UsersAndGroupsModel.class );
 
       module.addObjects( DebugWindow.class );
@@ -458,12 +412,6 @@ public class UIAssembler
    {
       module.addObjects( OverviewWindow.class ).visibleIn( layer );
 
-      module.addObjects(
-            OverviewNode.class,
-            OverviewProjectsNode.class,
-            OverviewProjectNode.class,
-            OverviewProjectAssignmentsNode.class ).visibleIn( layer );
-
       addMV( module,
             OverviewModel.class,
             OverviewView.class );
@@ -485,12 +433,11 @@ public class UIAssembler
 
       addMV( module, CasesTableModel.class, CaseTableView.class );
 
-      addMV( module, CaseInfoModel.class, CaseInfoView2.class );
+      addMV( module, CaseInfoModel.class, CaseInfoView.class );
 
-      addModels( module, CasesModel.class, CaseFormsModel.class );
+      addModels( module, CasesModel.class);
 
-      addMV( module,
-            CaseModel.class,
+      addViews( module,
             CaseDetailView.class );
 
       addMV( module,
@@ -542,8 +489,7 @@ public class UIAssembler
             MessagesModel.class,
             MessagesView.class );
 
-      addMV( module,
-            ConversationModel.class,
+      addViews( module,
             ConversationView.class );
 
       addMV( module,
@@ -565,19 +511,12 @@ public class UIAssembler
       addViews( module, AccountSelectionView.class );
       module.addObjects( WorkspaceWindow.class ).visibleIn( layer );
 
-      module.addObjects(
-            WorkspaceNode.class,
-            WorkspaceUserNode.class,
-            WorkspaceUserDraftsNode.class,
-            WorkspaceProjectsNode.class,
-            WorkspaceProjectNode.class,
-            WorkspaceProjectInboxNode.class,
-            WorkspaceProjectAssignmentsNode.class,
-            RefreshCaseCountTask.class ).visibleIn( layer );
+      addViews( module,
+            WorkspaceView.class );
 
       addMV( module,
-            WorkspaceModel.class,
-            WorkspaceView.class );
+            WorkspaceContextModel2.class,
+            WorkspaceContextView2.class );
 
       addMV( module, SavedSearchesModel.class, SearchView.class );
 
@@ -612,37 +551,28 @@ public class UIAssembler
    {
       module.addObjects( AdministrationWindow.class ).visibleIn( layer );
 
-      module.addObjects( AdministrationNode.class,
-            AccountAdministrationNode.class,
-            OrganizationAdministrationNode.class,
-            OrganizationalUnitAdministrationNode.class,
-            OrganizationAdministrationModel.class );
-
       addViews( module,
             AdministrationView.class );
       addMV( module,
             OrganizationalUnitAdministrationModel.class,
-            OrganizationalUnitAdministrationView.class );
-      addMV( module,
-            OrganizationAdministrationModel.class,
-            OrganizationAdministrationView.class );
+            TabbedResourceView.class );
+
       addMV( module,
             AdministrationModel.class,
-            AdministrationOutlineView.class );
+            AdministrationTreeView.class );
 
-      addViews( module, ProfileDialog.class );
+      addMV( module, ProfileModel.class, ProfileView.class );
 
       addMV( module,
             AccountModel.class,
             AccountView.class );
+
       addDialogs( module,
             ChangePasswordDialog.class,
             SelectOrganizationalUnitDialog.class,
             SelectOrganizationOrOrganizationalUnitDialog.class,
             SelectLinksDialog.class );
       addTasks( module, TestConnectionTask.class );
-
-      addModels( module, LinksQueryListModel.class );
 
       addViews( module, GroupedSelectionDialog.class, SelectionDialog.class );
    }

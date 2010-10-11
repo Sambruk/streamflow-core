@@ -19,50 +19,94 @@ package se.streamsource.streamflow.client.ui.caze.conversations;
 
 import ca.odell.glazedlists.event.ListEvent;
 import ca.odell.glazedlists.event.ListEventListener;
+import org.jdesktop.application.Action;
+import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Task;
+import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilder;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.LinkValue;
+import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
+import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.ui.CommandTask;
+import se.streamsource.streamflow.client.ui.caze.CaseResources;
 import se.streamsource.streamflow.client.ui.caze.RemovableLabel;
+import se.streamsource.streamflow.client.ui.workspace.GroupedFilterListDialog;
+import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
+import se.streamsource.streamflow.infrastructure.event.source.helper.Events;
 
 import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.KeyStroke;
+import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class ConversationParticipantsView extends JPanel implements ListEventListener, ActionListener
+import static se.streamsource.streamflow.infrastructure.event.source.helper.Events.*;
+
+public class ConversationParticipantsView
+      extends JPanel
+      implements ListEventListener, TransactionListener
 {
+   @Service
+   DialogService dialogs;
+
+   @Uses
+   ObjectBuilder<GroupedFilterListDialog> participantsDialog;
 
    ConversationParticipantsModel model;
+   private JPanel participants;
 
-   public ConversationParticipantsView()
+   public ConversationParticipantsView(@Service ApplicationContext context, @Uses CommandQueryClient client, @Structure ObjectBuilderFactory obf)
    {
-      setLayout( new FlowLayout( FlowLayout.LEFT ) );
-      setBorder( BorderFactory.createEmptyBorder( 0, 0, 0, 0 ) );
+      super(new BorderLayout());
 
-   }
+      setActionMap( context.getActionMap(this ));
 
-   public void setModel( ConversationParticipantsModel model )
-   {
-      this.model = model;
-      this.model.refresh();
+      model = obf.newObjectBuilder( ConversationParticipantsModel.class ).use( client ).newInstance();
       model.participants().addListEventListener( this );
-      initComponents();
+
+      participants = new JPanel(new FlowLayout( FlowLayout.LEFT ));
+      participants.setBorder( BorderFactory.createEmptyBorder( 0, 0, 0, 0 ) );
+      add( participants, BorderLayout.CENTER);
+
+      javax.swing.Action addParticipantsAction = getActionMap().get(
+            "addParticipants" );
+      JButton addParticipants = new JButton( addParticipantsAction );
+      addParticipants.registerKeyboardAction( addParticipantsAction,
+            (KeyStroke) addParticipantsAction
+                  .getValue( javax.swing.Action.ACCELERATOR_KEY ),
+            JComponent.WHEN_IN_FOCUSED_WINDOW );
+
+      add(addParticipants, BorderLayout.EAST);
+
+      new RefreshWhenVisible(this, model);
    }
 
    private void initComponents()
    {
-      removeAll();
+      participants.removeAll();
 
       for (int i = 0; i < model.participants().size(); i++)
       {
          LinkValue link = model.participants().get( i );
          RemovableLabel label = new RemovableLabel( link, new FlowLayout( FlowLayout.LEFT, 2, 1 ), RemovableLabel.LEFT );
-         label.addActionListener( this );
-         add( label );
+         label.addActionListener( getActionMap().get("removeParticipant" ));
+         participants.add( label );
       }
 
-      revalidate();
-      repaint();
+      participants.revalidate();
+      participants.repaint();
 
    }
 
@@ -71,10 +115,51 @@ public class ConversationParticipantsView extends JPanel implements ListEventLis
       initComponents();
    }
 
-   public void actionPerformed( ActionEvent e )
+   @Action
+   public Task addParticipants()
    {
-      Component component = ((Component) e.getSource());
-      RemovableLabel label = (RemovableLabel) component.getParent();
-      model.removeParticipant( label.link() );
+      final GroupedFilterListDialog dialog = participantsDialog.use(
+            i18n.text( CaseResources.choose_participant ),
+            model.possibleParticipants() ).newInstance();
+      dialogs.showOkCancelHelpDialog( this, dialog );
+
+      return new CommandTask()
+      {
+         @Override
+         public void command()
+            throws Exception
+         {
+            for (EntityReference entityReference : dialog.getSelectedReferences())
+            {
+               model.addParticipant( entityReference );
+            }
+         }
+      };
    }
+
+
+   @Action
+   public Task removeParticipant(final ActionEvent e)
+   {
+      return new CommandTask()
+      {
+         @Override
+         public void command()
+            throws Exception
+         {
+            Component component = ((Component) e.getSource());
+            RemovableLabel label = (RemovableLabel) component.getParent();
+            model.removeParticipant( label.link() );
+         }
+      };
+   }
+
+   public void notifyTransactions( Iterable<TransactionEvents> transactions )
+   {
+      if (matches(transactions, withNames("addedParticipant", "removedParticipant"  )))
+      {
+         model.refresh();
+      }
+   }
+
 }

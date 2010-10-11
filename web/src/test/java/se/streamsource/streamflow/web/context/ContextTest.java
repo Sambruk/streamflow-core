@@ -47,7 +47,7 @@ import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.helper.EventCollector;
-import se.streamsource.streamflow.infrastructure.event.source.helper.TransactionEventAdapter;
+import se.streamsource.streamflow.infrastructure.event.source.helper.Events;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.test.StreamflowWebContextTestAssembler;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Actor;
@@ -169,7 +169,7 @@ public abstract class ContextTest
    protected static ApplicationModelSPI newApplication() throws AssemblyException
    {
 
-      ApplicationAssembler assembler = new StreamflowWebContextTestAssembler( new TransactionEventAdapter( eventCollector ) );
+      ApplicationAssembler assembler = new StreamflowWebContextTestAssembler( Events.adapter( eventCollector ) );
 
       try
       {

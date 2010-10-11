@@ -46,10 +46,8 @@ import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
 import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
-import se.streamsource.streamflow.infrastructure.event.source.helper.EventParameters;
-import se.streamsource.streamflow.infrastructure.event.source.helper.EventQuery;
 import se.streamsource.streamflow.infrastructure.event.source.helper.EventRouter;
-import se.streamsource.streamflow.infrastructure.event.source.helper.TransactionEventAdapter;
+import se.streamsource.streamflow.infrastructure.event.source.helper.Events;
 import se.streamsource.streamflow.infrastructure.event.source.helper.TransactionTracker;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
 import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity;
@@ -87,6 +85,9 @@ import se.streamsource.streamflow.web.domain.structure.user.User;
 
 import java.util.Date;
 
+import static se.streamsource.streamflow.infrastructure.event.source.helper.Events.*;
+import static se.streamsource.streamflow.util.Specifications.*;
+
 /**
  * Consumes domain events and creates application events for statistics.
  */
@@ -116,20 +117,14 @@ public interface CaseStatisticsService
       EventRouter router;
 
       Logger log;
-      public TransactionEventAdapter transactionAdapter;
+      public TransactionVisitor transactionAdapter;
 
       public void activate() throws Exception
       {
          log = LoggerFactory.getLogger( CaseStatisticsService.class );
 
-         router = new EventRouter().route( new EventQuery()
-         {
-            @Override
-            public boolean accept( DomainEvent event )
-            {
-               return super.accept( event ) && EventParameters.getParameter( event, "param1" ).equals( CaseStates.CLOSED.name() );
-            }
-         }.withNames( "changedStatus" ), new EventVisitor()
+         router = new EventRouter().route( and( withNames( "changedStatus" ), paramIs( "param1", CaseStates.CLOSED.name()  )),
+               new EventVisitor()
          {
             public boolean visit( DomainEvent event )
             {
@@ -162,7 +157,7 @@ public interface CaseStatisticsService
                   uow.discard();
                }
             }
-         } ).route( new EventQuery().withNames( "changedDescription", "changedFieldId", "changedFormId" ).onEntityTypes(
+         } ).route( and( withNames( "changedDescription", "changedFieldId", "changedFormId" ), onEntityTypes(
                LabelEntity.class.getName(),
                UserEntity.class.getName(),
                GroupEntity.class.getName(),
@@ -173,7 +168,7 @@ public interface CaseStatisticsService
                FormEntity.class.getName(),
                FieldEntity.class.getName(),
                CaseTypeEntity.class.getName()
-         ),
+         )),
                new EventVisitor()
                {
                   public boolean visit( DomainEvent event )
@@ -226,7 +221,7 @@ public interface CaseStatisticsService
                         uow.discard();
                      }
                   }
-               } ).route( new EventQuery().withNames( "deletedEntity" ).onEntityTypes( CaseEntity.class.getName() ),
+               } ).route( and( withNames( "deletedEntity" ), onEntityTypes( CaseEntity.class.getName() )),
                new EventVisitor()
                {
                   public boolean visit( DomainEvent event )
@@ -243,7 +238,7 @@ public interface CaseStatisticsService
                   }
                } );
 
-         transactionAdapter = new TransactionEventAdapter( router );
+         transactionAdapter = Events.adapter( router );
          tracker = new TransactionTracker( eventStore, config, this );
          tracker.start();
       }

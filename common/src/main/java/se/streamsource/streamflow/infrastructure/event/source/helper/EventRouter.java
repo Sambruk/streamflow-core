@@ -18,8 +18,8 @@
 package se.streamsource.streamflow.infrastructure.event.source.helper;
 
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.source.EventSpecification;
 import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
+import se.streamsource.streamflow.util.Specification;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -33,9 +33,9 @@ import java.util.Map;
 public class EventRouter
    implements EventVisitor
 {
-   Map<EventSpecification, EventVisitor> routes = new HashMap<EventSpecification, EventVisitor>( );
+   Map<Specification, EventVisitor> routes = new HashMap<Specification, EventVisitor>( );
 
-   public EventRouter route(EventSpecification specification, EventVisitor visitor)
+   public EventRouter route( Specification specification, EventVisitor visitor)
    {
       routes.put( specification, visitor );
 
@@ -52,11 +52,11 @@ public class EventRouter
     */
    public boolean visit( DomainEvent event )
    {
-      for (EventSpecification eventSpecification : routes.keySet())
+      for (Specification specification : routes.keySet())
       {
-         if (eventSpecification.accept( event ))
+         if (specification.valid( event ))
          {
-            EventVisitor eventVisitor = routes.get( eventSpecification );
+            EventVisitor eventVisitor = routes.get( specification );
             return eventVisitor.visit( event );
          }
       }

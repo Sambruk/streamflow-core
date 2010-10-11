@@ -29,17 +29,13 @@ import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.domain.contact.ContactValue;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.EventListener;
-import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
-import se.streamsource.streamflow.infrastructure.event.source.helper.EventVisitorFilter;
 import se.streamsource.streamflow.resource.caze.ContactsDTO;
 
 /**
  * List of contacts for a case
  */
 public class ContactsModel
-      implements Refreshable, EventListener, EventVisitor
+      implements Refreshable
 {
    @Structure
    ValueBuilderFactory vbf;
@@ -49,22 +45,10 @@ public class ContactsModel
 
    TransactionList<ContactValue> eventList = new TransactionList<ContactValue>(new BasicEventList<ContactValue>( ));
 
-   EventVisitorFilter eventFilter = new EventVisitorFilter( this, "addedContact", "deletedContact", "updatedContact" );
-
-   public ContactsModel()
-   {
-   }
-
    public void refresh()
    {
-      try
-      {
-         ContactsDTO contactsDTO = (ContactsDTO) client.query( "contacts", ContactsDTO.class ).buildWith().prototype();
-         EventListSynch.synchronize( contactsDTO.contacts().get(), eventList );
-      } catch (Exception e)
-      {
-         throw new OperationException( CaseResources.could_not_refresh, e );
-      }
+      ContactsDTO contactsDTO = (ContactsDTO) client.query( "contacts", ContactsDTO.class ).buildWith().prototype();
+      EventListSynch.synchronize( contactsDTO.contacts().get(), eventList );
    }
 
    public EventList<ContactValue> getEventList()
@@ -72,45 +56,13 @@ public class ContactsModel
       return eventList;
    }
 
-   public CommandQueryClient getContactsClientResource()
-   {
-      return client;
-   }
-
    public void createContact()
    {
-      try
-      {
-         client.postCommand( "add", vbf.newValue( ContactValue.class ) );
-      } catch (ResourceException e)
-      {
-         throw new OperationException( CaseResources.could_not_create_contact, e );
-      }
+      client.postCommand( "add", vbf.newValue( ContactValue.class ) );
    }
 
    public void removeElement( int selectedIndex )
    {
-      try
-      {
-         client.getSubClient( selectedIndex+"" ).delete();
-      } catch (ResourceException e)
-      {
-         throw new OperationException( CaseResources.could_not_remove_contact, e );
-      }
-   }
-
-   public void notifyEvent( DomainEvent event )
-   {
-      eventFilter.visit( event );
-   }
-
-   public boolean visit( DomainEvent event )
-   {
-      if (client.getReference().getParentRef().getLastSegment().equals( event.entity().get() ))
-      {
-         refresh();
-      }
-
-      return false;
+      client.getSubClient( selectedIndex+"" ).delete();
    }
 }

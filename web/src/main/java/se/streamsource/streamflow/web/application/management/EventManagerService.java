@@ -23,12 +23,9 @@ import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
-import se.streamsource.streamflow.infrastructure.event.source.helper.AllEventsSpecification;
-import se.streamsource.streamflow.infrastructure.event.source.EventFilter;
-import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
-import se.streamsource.streamflow.infrastructure.event.source.helper.TransactionEventAdapter;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
+import se.streamsource.streamflow.infrastructure.event.source.helper.Events;
 
 import javax.management.MBeanException;
 import javax.management.MBeanServer;
@@ -63,7 +60,6 @@ public interface EventManagerService
       long seq = 0;
       public RequiredModelMBean mbean;
       ExecutorService executor;
-      public EventFilter filter;
 
       public void activate() throws Exception
       {
@@ -80,8 +76,6 @@ public interface EventManagerService
          source.registerListener( this );
 
          executor = Executors.newSingleThreadExecutor();
-
-         filter = new EventFilter( AllEventsSpecification.INSTANCE );
       }
 
       public void passivate() throws Exception
@@ -94,29 +88,26 @@ public interface EventManagerService
 
       public final synchronized boolean visit( TransactionEvents transaction )
       {
-         new TransactionEventAdapter( new EventVisitor()
+         for (DomainEvent domainEvent : Events.events( transaction ))
          {
-            public boolean visit( DomainEvent event )
-            {
-               final Notification notification = new Notification( "domainevent", objectName, seq++, event.on().get().getTime(), event.name().get() );
-               notification.setUserData( event.toJSON() );
+            final Notification notification = new Notification( "domainevent", objectName, seq++, domainEvent.on().get().getTime(), domainEvent.name().get() );
+            notification.setUserData( domainEvent.toJSON() );
 
-               executor.submit( new Runnable()
+            executor.submit( new Runnable()
+            {
+               public void run()
                {
-                  public void run()
+                  try
                   {
-                     try
-                     {
-                        mbean.sendNotification( notification );
-                     } catch (MBeanException e)
-                     {
-                        e.printStackTrace();
-                     }
+                     mbean.sendNotification( notification );
+                  } catch (MBeanException e)
+                  {
+                     e.printStackTrace();
                   }
-               } );
-               return true;
-            }
-         } ).visit( transaction );
+               }
+            } );
+
+         }
 
          return true;
       }

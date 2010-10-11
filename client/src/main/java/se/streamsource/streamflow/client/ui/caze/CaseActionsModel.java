@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.client.ui.caze;
 
+import ca.odell.glazedlists.TransactionList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilderFactory;
@@ -25,10 +26,12 @@ import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
+import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.domain.contact.ContactValue;
 import se.streamsource.streamflow.domain.interaction.gtd.Actions;
 import se.streamsource.dci.value.TitledLinkValue;
-import se.streamsource.streamflow.infrastructure.event.source.helper.EventVisitorFilter;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.BasicEventList;
 
@@ -38,6 +41,7 @@ import java.util.Collection;
  * JAVADOC
  */
 public class CaseActionsModel
+   implements Refreshable
 {
    @Structure
    ValueBuilderFactory vbf;
@@ -45,17 +49,18 @@ public class CaseActionsModel
    @Uses
    private CommandQueryClient client;
 
-   EventVisitorFilter eventFilter;
+   private TransactionList<String> actionList = new TransactionList<String>(new BasicEventList<String>( ));
 
-   public Actions actions()
+   public void refresh()
    {
-      try
-      {
-         return client.query( "actions", Actions.class );
-      } catch (ResourceException e)
-      {
-         throw new OperationException( WorkspaceResources.could_not_perform_operation, e);
-      }
+      // Get action list
+      Actions actions = client.query( "actions", Actions.class );
+      EventListSynch.synchronize( actions.actions().get(), actionList );
+   }
+
+   public EventList<String> getActionList()
+   {
+      return actionList;
    }
 
    public EventList<TitledLinkValue> getPossibleProjects()

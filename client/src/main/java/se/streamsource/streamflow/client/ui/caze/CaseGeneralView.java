@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.client.ui.caze;
 
+import ca.odell.glazedlists.EventList;
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.factories.Borders;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -24,6 +25,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.Sizes;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Task;
 import org.jdesktop.swingx.JXDatePicker;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
@@ -33,6 +35,7 @@ import org.qi4j.api.object.ObjectBuilder;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueBuilder;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
 import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
@@ -41,8 +44,12 @@ import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
 import se.streamsource.streamflow.client.infrastructure.ui.UncaughtExceptionHandler;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.ui.CommandTask;
 import se.streamsource.streamflow.client.ui.workspace.GroupedFilterListDialog;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
+import se.streamsource.streamflow.infrastructure.event.source.EventSource;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
 import se.streamsource.streamflow.resource.caze.CaseGeneralDTO;
 
 import javax.swing.ActionMap;
@@ -73,12 +80,16 @@ import java.util.Observer;
 
 import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.*;
 import static se.streamsource.streamflow.domain.interaction.gtd.CaseStates.*;
+import static se.streamsource.streamflow.infrastructure.event.source.helper.Events.*;
 
 /**
  * JAVADOC
  */
-public class CaseGeneralView extends JScrollPane implements Observer
+public class CaseGeneralView extends JScrollPane implements Observer, TransactionListener
 {
+   @Service
+   EventSource eventSource;
+
    @Service
    DialogService dialogs;
 
@@ -87,9 +98,6 @@ public class CaseGeneralView extends JScrollPane implements Observer
 
    @Uses
    protected ObjectBuilder<GroupedFilterListDialog> caseTypeDialog;
-
-   @Uses
-   protected ObjectBuilder<CaseLabelsDialog> labelSelectionDialog;
 
    private StateBinder caseBinder;
 
@@ -103,20 +111,21 @@ public class CaseGeneralView extends JScrollPane implements Observer
    public JPanel leftForm;
    public CaseLabelsView labels;
    public PossibleFormsView forms;
-   public RefreshWhenVisible refresher;
    public RemovableLabel selectedCaseType = new RemovableLabel();
    public JButton caseTypeButton;
    public JButton labelButton;
 
    public CaseGeneralView( @Service ApplicationContext appContext,
-                           @Uses CaseLabelsView labels, @Uses PossibleFormsView forms,
+                           @Uses CommandQueryClient client,
                            @Structure ObjectBuilderFactory obf )
    {
-      this.labels = labels;
-      this.forms = forms;
+      this.model = obf.newObjectBuilder( CaseGeneralModel.class ).use( client ).newInstance();
+      model.addObserver( this );
+
+      this.labels = obf.newObjectBuilder( CaseLabelsView.class ).use( client.getSubClient("labels" )).newInstance();
+      this.forms = obf.newObjectBuilder( PossibleFormsView.class ).use( client.getClient( "../forms/" ) ).newInstance();
       this.setBorder( BorderFactory.createEmptyBorder() );
       getVerticalScrollBar().setUnitIncrement( 30 );
-      this.dialogs = dialogs;
 
       setActionMap( appContext.getActionMap( this ) );
       MacOsUIWrapper.convertAccelerators( appContext.getActionMap(
@@ -185,7 +194,7 @@ public class CaseGeneralView extends JScrollPane implements Observer
       rightBuilder.nextLine();
 
       // Select labels
-      javax.swing.Action labelAction = am.get( "label" );
+      javax.swing.Action labelAction = labels.getActionMap().get( "addLabel" );
       labelButton = new JButton( labelAction );
 //		NotificationGlassPane.registerButton(labelButton);
       labelButton.registerKeyboardAction( labelAction, (KeyStroke) labelAction
@@ -285,10 +294,10 @@ public class CaseGeneralView extends JScrollPane implements Observer
       notePane.getViewport().getView().setFocusTraversalKeys( KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, null );
       notePane.getViewport().getView().setFocusTraversalKeys( KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, null );
 
-      refresher = new RefreshWhenVisible( this );
-      addAncestorListener( refresher );
+      new RefreshWhenVisible( this, model );
    }
 
+/*
    public void setModel( CaseGeneralModel caseGeneralModel )
    {
       if (model != null)
@@ -316,6 +325,7 @@ public class CaseGeneralView extends JScrollPane implements Observer
 
       updateEnabled();
    }
+*/
 
    private void updateEnabled()
    {
@@ -335,20 +345,51 @@ public class CaseGeneralView extends JScrollPane implements Observer
    {
       if (o == caseBinder)
       {
-         Property property = (Property) arg;
+         final Property property = (Property) arg;
          if (property.qualifiedName().name().equals( "description" ))
          {
-            model.changeDescription( (String) property.get() );
+            new CommandTask()
+            {
+               @Override
+               public void command()
+                  throws Exception
+               {
+                  model.changeDescription( (String) property.get() );
+               }
+            }.execute();
          } else if (property.qualifiedName().name().equals( "note" ))
          {
-            model.changeNote( (String) property.get() );
+            new CommandTask()
+            {
+               @Override
+               public void command()
+                  throws Exception
+               {
+                  model.changeNote( (String) property.get() );
+               }
+            }.execute();
          } else if (property.qualifiedName().name().equals( "dueOn" ))
          {
-            model.changeDueOn( (Date) property.get() );
+            new CommandTask()
+            {
+               @Override
+               public void command()
+                  throws Exception
+               {
+                  model.changeDueOn( (Date) property.get() );
+               }
+            }.execute();
          } else if (property.qualifiedName().name().equals( "caseType" ))
          {
-            model.caseType( null );
-            selectedCaseType.setVisible( false );
+            new CommandTask()
+            {
+               @Override
+               protected void command() throws Exception
+               {
+                  model.caseType( null );
+                  selectedCaseType.setVisible( false );
+               }
+            }.execute();
          }
       } else
       {
@@ -356,40 +397,56 @@ public class CaseGeneralView extends JScrollPane implements Observer
          valueBuilder = general.buildWith();
          caseBinder.updateWith( general );
 
-         forms.setFormsModel( model.formsModel() );
+// TODO         forms.setFormsModel( model.formsModel() );
       }
 
       updateEnabled();
    }
 
    @Action
-   public void casetype()
+   public Task casetype()
    {
-      GroupedFilterListDialog dialog = caseTypeDialog.use(
+      final GroupedFilterListDialog dialog = caseTypeDialog.use(
             i18n.text( WorkspaceResources.chose_casetype ),
             model.getPossibleCaseTypes() ).newInstance();
       dialogs.showOkCancelHelpDialog( caseTypeButton, dialog );
 
       if (dialog.getSelectedReference() != null)
       {
-         model.changeCaseType( dialog.getSelectedItem(), dialog.itemList.getTextField().getText() );
-         // refresh();
-      }
+         return new CommandTask()
+         {
+            @Override
+            protected void command() throws Exception
+            {
+               LinkValue selected = dialog.getSelectedItem();
+               model.changeCaseType( selected );
+
+               String labelQuery = dialog.itemList.getTextField().getText();
+               // if the query string has any match inside label descriptions
+               // we do a search for that labels and add them to the case automatically
+               if (!"".equals( labelQuery ) && selected.classes().get().toLowerCase().indexOf( labelQuery.toLowerCase() ) != -1)
+               {
+                  EventList<LinkValue> possibleLabels = labels.getModel().getPossibleLabels();
+                  for (LinkValue link : possibleLabels)
+                  {
+                     if (link.text().get().toLowerCase().contains( labelQuery.toLowerCase() ))
+                     {
+                        labels.getModel().addLabel( EntityReference.parseEntityReference( link.id().get() ) );
+                     }
+                  }
+               }
+
+            }
+         };
+      } else
+         return null;
    }
 
-   @Action
-   public void label()
+   public void notifyTransactions( Iterable<TransactionEvents> transactions )
    {
-      CaseLabelsDialog dialog = labelSelectionDialog.use(
-            model.getPossibleLabels() ).newInstance();
-      dialogs.showOkCancelHelpDialog( labelButton, dialog );
-
-      if (dialog.getSelectedLabels() != null)
+      if (matches( transactions, withNames("addedLabel","removedLabel", "changedOwner", "changedCaseType", "changedStatus" ) ))
       {
-         for (LinkValue listItemValue : dialog.getSelectedLabels())
-         {
-            model.addLabel( EntityReference.parseEntityReference( listItemValue.id().get() ) );
-         }
+         model.refresh();
       }
    }
 }

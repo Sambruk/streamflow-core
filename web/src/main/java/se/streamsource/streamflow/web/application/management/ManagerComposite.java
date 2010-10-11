@@ -43,14 +43,14 @@ import org.qi4j.spi.structure.ModuleSPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
-import se.streamsource.streamflow.infrastructure.event.factory.DomainEventFactory;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
+import se.streamsource.streamflow.infrastructure.event.factory.DomainEventFactory;
 import se.streamsource.streamflow.infrastructure.event.replay.DomainEventPlayer;
 import se.streamsource.streamflow.infrastructure.event.replay.EventReplayException;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
-import se.streamsource.streamflow.infrastructure.event.source.helper.OnEvents;
 import se.streamsource.streamflow.web.application.statistics.CaseStatistics;
 import se.streamsource.streamflow.web.application.statistics.StatisticsStoreException;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
@@ -77,6 +77,9 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
+
+import static se.streamsource.streamflow.infrastructure.event.source.helper.Events.*;
+import static se.streamsource.streamflow.util.Iterables.*;
 
 /**
  * Implementation of Manager interface. All general JMX management methods
@@ -177,13 +180,18 @@ public interface ManagerComposite
          if (!backup.exists() && !backup.mkdirs())
             throw new IllegalStateException( "Could not create directory for backups" );
 
-         failedLoginListener = new OnEvents( "failedLogin" )
+         failedLoginListener = new TransactionVisitor()
          {
-            public void run()
+            public boolean visit( TransactionEvents transaction )
             {
-               failedLogins++;
+               for (DomainEvent domainEvent : filter( transaction.events().get(), withNames("failedLogin" ) ))
+               {
+                  failedLogins++;
+               }
+               return false;
             }
          };
+
          source.registerListener( failedLoginListener );
       }
 
