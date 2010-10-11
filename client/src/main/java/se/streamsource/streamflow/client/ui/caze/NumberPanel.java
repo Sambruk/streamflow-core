@@ -1,13 +1,8 @@
-/**
- *
- * Copyright 2009-2010 Streamsource AB
- *
+/*
+ * Copyright (c) 2010, Mads Enevoldsen. All Rights Reserved.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,21 +25,23 @@ import javax.swing.JComponent;
 import javax.swing.JTextField;
 import java.awt.BorderLayout;
 
-public class IntegerPanel
-      extends AbstractFieldPanel
+public class NumberPanel
+       extends AbstractFieldPanel
 {
    private JTextField textField;
 
    @Service
    DialogService dialogs;
+   private Boolean isInteger;
 
-   public IntegerPanel( @Uses FieldSubmissionValue field, @Uses NumberFieldValue fieldValue )
+   public NumberPanel( @Uses FieldSubmissionValue field, @Uses NumberFieldValue fieldValue )
    {
       super( field );
       setLayout( new BorderLayout( ) );
 
       textField = new JTextField();
       textField.setColumns( 20 );
+      this.isInteger = fieldValue.integer().get();
       add( textField, BorderLayout.WEST );
    }
 
@@ -69,23 +66,37 @@ public class IntegerPanel
    @Override
    public void setBinding( final StateBinder.Binding binding )
    {
-      final IntegerPanel panel = this;
+      final NumberPanel panel = this;
       textField.setInputVerifier( new InputVerifier()
       {
+
          @Override
          public boolean verify( JComponent input )
          {
-            JTextField field = (JTextField)input;
+            JTextField field = (JTextField) input;
             try
             {
-               binding.updateProperty( Integer.parseInt( field.getText() ) );
+               String value = field.getText();
+               if ( isInteger)
+               {
+                  binding.updateProperty( Integer.parseInt( value ) );
+               } else
+               {
+                  binding.updateProperty( Double.parseDouble( value.replace( ',', '.' ) ) );
+               }
             }  catch ( NumberFormatException e)
             {
-               dialogs.showMessageDialog( panel , i18n.text( CaseResources.invalidinteger ), ""  );
+               if ( isInteger )
+               {
+                  dialogs.showMessageDialog( panel , i18n.text( CaseResources.invalidinteger ), ""  );
+               } else
+               {
+                  dialogs.showMessageDialog( panel, i18n.text( CaseResources.invalidfloat ), "");
+               }
                return false;
             }
             return true;
          }
       });
-}
+   }
 }

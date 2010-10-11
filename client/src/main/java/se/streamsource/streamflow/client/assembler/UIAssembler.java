@@ -152,12 +152,11 @@ import se.streamsource.streamflow.client.ui.caze.ContactsAdminView;
 import se.streamsource.streamflow.client.ui.caze.ContactsModel;
 import se.streamsource.streamflow.client.ui.caze.ContactsView;
 import se.streamsource.streamflow.client.ui.caze.DatePanel;
-import se.streamsource.streamflow.client.ui.caze.DoublePanel;
-import se.streamsource.streamflow.client.ui.caze.FormSubmissionModel;
-import se.streamsource.streamflow.client.ui.caze.FormSubmissionWizardPage;
+import se.streamsource.streamflow.client.ui.caze.FormSubmissionWizardPageModel;
+import se.streamsource.streamflow.client.ui.caze.FormSubmissionWizardPageView;
 import se.streamsource.streamflow.client.ui.caze.FormsAdminView;
-import se.streamsource.streamflow.client.ui.caze.IntegerPanel;
 import se.streamsource.streamflow.client.ui.caze.ListBoxPanel;
+import se.streamsource.streamflow.client.ui.caze.NumberPanel;
 import se.streamsource.streamflow.client.ui.caze.OpenSelectionPanel;
 import se.streamsource.streamflow.client.ui.caze.OptionButtonsPanel;
 import se.streamsource.streamflow.client.ui.caze.PossibleCaseTypesModel;
@@ -428,7 +427,7 @@ public class UIAssembler
       addViews( module, CasesView.class, CasesDetailView2.class, ContactsAdminView.class,
             FormsAdminView.class, SubmittedFormsAdminView.class, CheckboxesPanel.class,
             ComboBoxPanel.class, OptionButtonsPanel.class, OpenSelectionPanel.class, ListBoxPanel.class, DatePanel.class,
-            IntegerPanel.class, DoublePanel.class, TextAreaFieldPanel.class, TextFieldPanel.class
+            NumberPanel.class, TextAreaFieldPanel.class, TextFieldPanel.class
       );
 
       addDialogs( module, CaseLabelsDialog.class, ContactLookupResultDialog.class );
@@ -475,8 +474,8 @@ public class UIAssembler
             CaseSubmittedFormView.class );
 
       addMV( module,
-            FormSubmissionModel.class,
-            FormSubmissionWizardPage.class );
+            FormSubmissionWizardPageModel.class,
+            FormSubmissionWizardPageView.class );
 
       addMV( module,
             PossibleFormsModel.class,

@@ -38,10 +38,21 @@ import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.util.DateFunctions;
 import org.restlet.resource.ResourceException;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FieldEditorCheckboxesFieldValueView;
+import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FieldEditorComboBoxFieldValueView;
+import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FieldEditorCommentFieldValueView;
+import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FieldEditorDateFieldValueView;
+import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FieldEditorListBoxFieldValueView;
+import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FieldEditorNumberFieldValueView;
+import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FieldEditorOpenSelectionFieldValueView;
+import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FieldEditorOptionButtonsFieldValueView;
+import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FieldEditorTextAreaFieldValueView;
+import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FieldEditorTextFieldValueView;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.domain.form.CheckboxesFieldValue;
 import se.streamsource.streamflow.domain.form.ComboBoxFieldValue;
@@ -81,23 +92,39 @@ import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBui
 /**
  * JAVADOC
  */
-public class FormSubmissionWizardPage
+public class FormSubmissionWizardPageView
       extends WizardPage
       implements Observer
 {
    private java.util.Map<String, AbstractFieldPanel> componentFieldMap;
    private java.util.Map<StateBinder, EntityReference> fieldBinders;
    private ValidationResultModel validationResultModel;
-   private FormSubmissionModel model;
+   private FormSubmissionWizardPageModel model;
    private ObjectBuilderFactory obf;
+   private static final Map<Class<? extends FieldValue>, Class<? extends AbstractFieldPanel>> fields = new HashMap<Class<? extends FieldValue>, Class<? extends AbstractFieldPanel>>( );
+
+   static
+   {
+      // Remember to add editors here when creating new types
+      fields.put(CheckboxesFieldValue.class, CheckboxesPanel.class);
+      fields.put(ComboBoxFieldValue.class, ComboBoxPanel.class);
+      fields.put(DateFieldValue.class, DatePanel.class);
+      fields.put(ListBoxFieldValue.class, ListBoxPanel.class);
+      fields.put(NumberFieldValue.class, NumberPanel.class);
+      fields.put(OptionButtonsFieldValue.class, OptionButtonsPanel.class);
+      fields.put(OpenSelectionFieldValue.class, OpenSelectionPanel.class);
+      fields.put(TextAreaFieldValue.class, TextAreaFieldPanel.class);
+      fields.put(TextFieldValue.class, TextFieldPanel.class);
+   }
 
 
-   public FormSubmissionWizardPage( @Structure ObjectBuilderFactory obf,
-                                    @Uses PageSubmissionValue page,
-                                    @Uses FormSubmissionModel model)
+
+   public FormSubmissionWizardPageView( @Structure ObjectBuilderFactory obf,
+                                        @Uses PageSubmissionValue page,
+                                        @Uses CommandQueryClient client )
    {
       super( page.title().get() );
-      this.model = model;
+      this.model = obf.newObjectBuilder( FormSubmissionWizardPageModel.class ).use( client).newInstance();
       this.obf = obf;
       componentFieldMap = new HashMap<String, AbstractFieldPanel>();
       validationResultModel = new DefaultValidationResultModel();
@@ -244,50 +271,8 @@ public class FormSubmissionWizardPage
    private AbstractFieldPanel getComponent(FieldSubmissionValue field )
    {
       FieldValue fieldValue = field.field().get().fieldValue().get();
-      if ( fieldValue instanceof CheckboxesFieldValue)
-      {
-         CheckboxesFieldValue checkboxes = (CheckboxesFieldValue) fieldValue;
-         return obf.newObjectBuilder( CheckboxesPanel.class ).use( field, checkboxes ).newInstance();
-      } else if ( fieldValue instanceof ComboBoxFieldValue)
-      {
-         ComboBoxFieldValue comboBox = (ComboBoxFieldValue) fieldValue;
-         return obf.newObjectBuilder( ComboBoxPanel.class ).use( field, comboBox ).newInstance();
-      } else if ( fieldValue instanceof OptionButtonsFieldValue)
-      {
-         OptionButtonsFieldValue optionButtons = (OptionButtonsFieldValue) fieldValue;
-         return obf.newObjectBuilder( OptionButtonsPanel.class ).use( field, optionButtons  ).newInstance();
-      } else if ( fieldValue instanceof OpenSelectionFieldValue )
-      {
-         OpenSelectionFieldValue openSelection = (OpenSelectionFieldValue) fieldValue;
-         return obf.newObjectBuilder( OpenSelectionPanel.class ).use( field, openSelection  ).newInstance();
-      } else if ( fieldValue instanceof ListBoxFieldValue)
-      {
-         ListBoxFieldValue listBox = (ListBoxFieldValue) fieldValue;
-         return obf.newObjectBuilder( ListBoxPanel.class ).use( field, listBox ).newInstance();
-      } else if ( fieldValue instanceof DateFieldValue)
-      {
-         return obf.newObjectBuilder(DatePanel.class).use( field ).newInstance();
-      } else if ( fieldValue instanceof NumberFieldValue)
-      {
-         NumberFieldValue number = (NumberFieldValue) fieldValue;
-         if ( number.integer().get() )
-         {
-            return obf.newObjectBuilder(IntegerPanel.class ).use( field, number ).newInstance();
-         } else
-         {
-            return obf.newObjectBuilder( DoublePanel.class ).use( field, number ).newInstance();
-         }
-      } else if ( fieldValue instanceof TextAreaFieldValue )
-      {
-         TextAreaFieldValue textAreaFieldValue = (TextAreaFieldValue) fieldValue;
-         return obf.newObjectBuilder( TextAreaFieldPanel.class ).use( field, textAreaFieldValue ).newInstance();
-      } else if ( fieldValue instanceof TextFieldValue)
-      {
-         TextFieldValue textFieldValue = (TextFieldValue) fieldValue;
-         return obf.newObjectBuilder( TextFieldPanel.class ).use( field, textFieldValue ).newInstance();
-      }
-
-      throw new IllegalArgumentException( "Could not create component from type: "+ field );
+      Class<? extends FieldValue> fieldValueType = (Class<FieldValue>) fieldValue.getClass().getInterfaces()[0];
+      return obf.newObjectBuilder( fields.get( fieldValueType )).use( field, fieldValue ).newInstance();
    }
 
 }

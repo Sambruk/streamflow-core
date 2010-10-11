@@ -35,9 +35,8 @@ import se.streamsource.streamflow.client.ui.caze.AbstractFieldPanel;
 import se.streamsource.streamflow.client.ui.caze.CheckboxesPanel;
 import se.streamsource.streamflow.client.ui.caze.ComboBoxPanel;
 import se.streamsource.streamflow.client.ui.caze.DatePanel;
-import se.streamsource.streamflow.client.ui.caze.DoublePanel;
-import se.streamsource.streamflow.client.ui.caze.IntegerPanel;
 import se.streamsource.streamflow.client.ui.caze.ListBoxPanel;
+import se.streamsource.streamflow.client.ui.caze.NumberPanel;
 import se.streamsource.streamflow.client.ui.caze.OpenSelectionPanel;
 import se.streamsource.streamflow.client.ui.caze.OptionButtonsPanel;
 import se.streamsource.streamflow.client.ui.caze.RemovableLabel;
@@ -107,8 +106,7 @@ public class StateBinder
             AbstractFieldPanel.class,
             TextFieldPanel.class,
             TextAreaFieldPanel.class,
-            IntegerPanel.class,
-            DoublePanel.class,
+            NumberPanel.class,
             CheckboxesPanel.class,
             OptionButtonsPanel.class,
             OpenSelectionPanel.class,

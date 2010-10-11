@@ -17,6 +17,7 @@
 
 package se.streamsource.dci.value;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
@@ -45,7 +46,7 @@ public class LinksBuilder<T extends LinksBuilder>
       linkBuilder = vbf.newValueBuilder( LinkValue.class );
    }
 
-   public T path(String subPath)
+   public T path(@Optional String subPath)
    {
       try
       {

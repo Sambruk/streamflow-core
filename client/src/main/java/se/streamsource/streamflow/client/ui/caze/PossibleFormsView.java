@@ -22,7 +22,6 @@ import org.netbeans.api.wizard.WizardDisplayer;
 import org.netbeans.spi.wizard.Wizard;
 import org.netbeans.spi.wizard.WizardException;
 import org.netbeans.spi.wizard.WizardPage;
-import org.qi4j.api.common.ConstructionException;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
@@ -33,12 +32,12 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.LinkValue;
+import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.StreamflowApplication;
 import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
-import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
+import se.streamsource.streamflow.domain.form.FormSubmissionValue;
+import se.streamsource.streamflow.domain.form.PageSubmissionValue;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 
 import javax.swing.BorderFactory;
@@ -51,9 +50,6 @@ import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Map;
-
-import static se.streamsource.streamflow.infrastructure.event.source.helper.Events.*;
-import static se.streamsource.streamflow.util.Iterables.*;
 
 public class PossibleFormsView extends JPanel
       implements ActionListener, Refreshable
@@ -128,21 +124,33 @@ public class PossibleFormsView extends JPanel
          ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
          builder.prototype().entity().set( EntityReference.parseEntityReference( form.form().id().get() ) );
 
-         EntityReferenceDTO formSubmission = null;
+         EntityReferenceDTO formSubmissionRef;
          try
          {
-            formSubmission = client.query( "formsubmission", builder.newInstance(), EntityReferenceDTO.class );
+            formSubmissionRef = client.query( "formsubmission", builder.newInstance(), EntityReferenceDTO.class );
          } catch (ResourceException e1)
          {
             // Create it
             client.postCommand( "createformsubmission", builder.newInstance() );
-            formSubmission = client.query( "formsubmission", builder.newInstance(), EntityReferenceDTO.class );
+            formSubmissionRef = client.query( "formsubmission", builder.newInstance(), EntityReferenceDTO.class );
          }
 
-         FormSubmissionModel model = obf.newObjectBuilder( FormSubmissionModel.class )
-               .use( client.getSubClient( formSubmission.entity().get().identity() ) ).newInstance();
+         // get the form submission value;
+         CommandQueryClient formSubmissionClient = client.getSubClient( formSubmissionRef.entity().get().identity() );
+         FormSubmissionValue formSubmission = (FormSubmissionValue) formSubmissionClient.query( "formsubmission", FormSubmissionValue.class )
+               .buildWith().prototype();
 
-         wizard = WizardPage.createWizard( model.getTitle(), model.getPages(), new WizardPage.WizardResultProducer()
+         WizardPage[] wizardPages = new WizardPage[ formSubmission.pages().get().size() ];
+         for (int i = 0; i < formSubmission.pages().get().size(); i++)
+         {
+            PageSubmissionValue page = formSubmission.pages().get().get( i );
+            if ( page.fields().get() != null && page.fields().get().size() >0 )
+            {
+               wizardPages[i] = obf.newObjectBuilder( FormSubmissionWizardPageView.class ).
+                     use( formSubmissionClient, page ).newInstance();
+            }
+         }
+         wizard = WizardPage.createWizard( formSubmission.description().get(), wizardPages, new WizardPage.WizardResultProducer()
          {
 
             public Object finish( Map map ) throws WizardException
