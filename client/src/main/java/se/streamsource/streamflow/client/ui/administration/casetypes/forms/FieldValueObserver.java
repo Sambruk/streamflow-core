@@ -21,6 +21,7 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.property.Property;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.ui.CommandTask;
 import se.streamsource.streamflow.client.ui.caze.CaseResources;
 
 import java.util.Observable;
@@ -34,126 +35,151 @@ public class FieldValueObserver
 
    public void update( Observable observable, Object arg )
    {
-      Property property = (Property) arg;
+      final Property property = (Property) arg;
       if (property.qualifiedName().name().equals( "mandatory" ))
       {
-         try
+         new CommandTask()
          {
-            model.changeMandatory( (Boolean) property.get() );
-         } catch (ResourceException e)
-         {
-            throw new OperationException( CaseResources.could_not_change_mandatory, e );
-         }
+            @Override
+            public void command()
+               throws Exception
+            {
+               model.changeMandatory( (Boolean) property.get() );
+            }
+         }.execute();
       } else if (property.qualifiedName().name().equals( "description" ))
       {
-         try
+         new CommandTask()
          {
-            model.changeDescription( (String) property.get() );
-         } catch (ResourceException e)
-         {
-            throw new OperationException( CaseResources.could_not_change_name, e );
-         }
+            @Override
+            public void command()
+               throws Exception
+            {
+               model.changeDescription( (String) property.get() );
+            }
+         }.execute();
       } else if (property.qualifiedName().name().equals( "note" ))
       {
-         try
+         new CommandTask()
          {
-            model.changeNote( (String) property.get() );
-         } catch (ResourceException e)
-         {
-            throw new OperationException( CaseResources.could_not_change_note, e );
-         }
+            @Override
+            public void command()
+               throws Exception
+            {
+               model.changeNote( (String) property.get() );
+            }
+         }.execute();
       } else if (property.qualifiedName().name().equals( "fieldId" ))
       {
-         try
+         new CommandTask()
          {
-            model.changeFieldId( (String) property.get() );
-         } catch (ResourceException e)
-         {
-            throw new OperationException( CaseResources.could_not_update_field, e );
-         }
+            @Override
+            public void command()
+               throws Exception
+            {
+               model.changeFieldId( (String) property.get() );
+            }
+         }.execute();
       } else if (property.qualifiedName().name().equals( "width" ))
       {
-         try
+         new CommandTask()
          {
-            model.changeWidth( Integer.parseInt( (String) property.get() ) );
-         } catch (ResourceException e)
-         {
-            throw new OperationException( CaseResources.could_not_change_width, e );
-         }
+            @Override
+            public void command()
+               throws Exception
+            {
+               model.changeWidth( Integer.parseInt( (String) property.get() ) );
+            }
+         }.execute();
       } else if (property.qualifiedName().name().equals( "rows" ))
       {
-         try
+         new CommandTask()
          {
-            model.changeRows( Integer.parseInt( (String) property.get() ) );
-         } catch (ResourceException e)
-         {
-            throw new OperationException( CaseResources.could_not_change_rows, e );
-         }
+            @Override
+            public void command()
+               throws Exception
+            {
+               model.changeRows( Integer.parseInt( (String) property.get() ) );
+            }
+         }.execute();
       } else if (property.qualifiedName().name().equals( "cols" ))
       {
-         try
+         new CommandTask()
          {
-            model.changeCols( Integer.parseInt( (String) property.get() ) );
-         } catch (ResourceException e)
-         {
-            throw new OperationException( CaseResources.could_not_change_rows, e );
-         }
+            @Override
+            public void command()
+               throws Exception
+            {
+               model.changeCols( Integer.parseInt( (String) property.get() ) );
+            }
+         }.execute();
       } else if (property.qualifiedName().name().equals( "multiple" ))
       {
-         try
+         new CommandTask()
          {
-            model.changeMultiple( (Boolean) property.get() );
-         } catch (ResourceException e)
-         {
-            throw new OperationException( CaseResources.could_not_change_multiple, e );
-         }
+            @Override
+            public void command()
+               throws Exception
+            {
+               model.changeMultiple( (Boolean) property.get() );
+            }
+         }.execute();
       } else if (property.qualifiedName().name().equals( "comment" ))
       {
-         try
+         new CommandTask()
          {
-            model.changeComment( (String) property.get() );
-         } catch (ResourceException e)
-         {
-            throw new OperationException( CaseResources.could_not_change_comment, e );
-         }
+            @Override
+            public void command()
+               throws Exception
+            {
+               model.changeComment( (String) property.get() );
+            }
+         }.execute();
       } else if (property.qualifiedName().name().equals( "integer" ))
       {
-         try
+         new CommandTask()
          {
-            model.changeInteger( (Boolean) property.get() );
-         } catch (ResourceException e)
-         {
-            throw new OperationException( CaseResources.could_not_change_comment, e );
-         }
+            @Override
+            public void command()
+               throws Exception
+            {
+               model.changeInteger( (Boolean) property.get() );
+            }
+         }.execute();
       } else if (property.qualifiedName().name().equals( "hint" ))
       {
-         try
+         new CommandTask()
          {
-            model.changeHint( (String) property.get() );
-         } catch (ResourceException e)
-         {
-            throw new OperationException( CaseResources.could_not_change_hint, e );
-         }
+            @Override
+            public void command()
+               throws Exception
+            {
+               model.changeHint( (String) property.get() );
+            }
+         }.execute();
       } else if (property.qualifiedName().name().equals( "regularExpression" ))
       {
-         try
+         new CommandTask()
          {
-            model.changeRegularExpression( (String) property.get() );
-         } catch (ResourceException e)
-         {
-            throw new OperationException( CaseResources.could_not_change_regularexpression, e );
-         }
+            @Override
+            public void command()
+               throws Exception
+            {
+               model.changeRegularExpression( (String) property.get() );
+            }
+         }.execute();
       } else if (property.qualifiedName().name().equals( "openSelectionName" ))
       {
-         try
+         new CommandTask()
          {
-            model.changeOpenSelectionName( (String) property.get() );
-         } catch (ResourceException e)
-         {
-            throw new OperationException( CaseResources.could_not_change_regularexpression, e );
-         }
+            @Override
+            public void command()
+               throws Exception
+            {
+               model.changeOpenSelectionName( (String) property.get() );
+            }
+         }.execute();
       }
-
    }
 
 }

@@ -20,19 +20,29 @@ package se.streamsource.streamflow.client.ui.administration.casetypes.forms;
 import ca.odell.glazedlists.EventList;
 import com.jgoodies.forms.factories.Borders;
 import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Task;
 import org.jdesktop.swingx.JXList;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
-import se.streamsource.streamflow.client.infrastructure.ui.GroupedList;
+import se.streamsource.streamflow.client.infrastructure.ui.FormElementsList;
+import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.ui.CommandTask;
 import se.streamsource.streamflow.client.ui.ConfirmationDialog;
 import se.streamsource.streamflow.client.ui.NameDialog;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.ui.administration.form.FormElementItem;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.PageListItemValue;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
+import se.streamsource.streamflow.infrastructure.event.source.helper.EventParameters;
+import se.streamsource.streamflow.infrastructure.event.source.helper.Events;
+import se.streamsource.streamflow.util.Iterables;
 import se.streamsource.streamflow.util.Strings;
 
 import javax.swing.Action;
@@ -46,14 +56,17 @@ import java.awt.BorderLayout;
 import java.util.Observable;
 import java.util.Observer;
 
+import static se.streamsource.streamflow.infrastructure.event.source.helper.Events.*;
+import static se.streamsource.streamflow.util.Iterables.*;
+
 /**
  * JAVADOC
  */
-public class FieldsView
+public class FormElementsView
       extends JPanel
-      implements Observer
+      implements Observer, TransactionListener
 {
-   private GroupedList fieldList;
+   private FormElementsList fieldList;
 
    @Service
    DialogService dialogs;
@@ -67,10 +80,10 @@ public class FieldsView
    @Uses
    Iterable<ConfirmationDialog> confirmationDialog;
 
-   private FieldsModel model;
+   private FormElementsModel model;
 
-   public FieldsView( @Service ApplicationContext context,
-                      @Uses FieldsModel model )
+   public FormElementsView( @Service ApplicationContext context,
+                      @Uses FormElementsModel model )
    {
       super( new BorderLayout() );
       this.model = model;
@@ -87,11 +100,10 @@ public class FieldsView
       toolbar.add( new JButton( am.get( "up" ) ) );
       toolbar.add( new JButton( am.get( "down" ) ) );
 
-      model.refresh();
-      EventList<ListItemValue> pagesAndFields = model.getPagesAndFieldsList();
+      EventList<FormElementItem> formElementsList = model.getFormElementsList();
 
-      fieldList = new GroupedList();
-      fieldList.setEventList( pagesAndFields );
+      fieldList = new FormElementsList();
+      fieldList.setEventList( formElementsList );
 
       JPanel titlePanel = new JPanel( new BorderLayout() );
       titlePanel.add( new JSeparator(), BorderLayout.NORTH );
@@ -115,30 +127,30 @@ public class FieldsView
                   {
                      JXList list = fieldList.getList();
                      int selectedIndex = list.getSelectedIndex();
-                     Object selected = list.getModel().getElementAt( list.convertIndexToModel( selectedIndex ) );
-
+                     FormElementItem formElementItem = (FormElementItem) list.getSelectedValue();
 
                      if (action.equals( am.get( "up" ) ))
                      {
-                        if (selected instanceof PageListItemValue)
+                        if (formElementItem.getRelation().equals("page"))
                         {
                            if (selectedIndex == 0)
                               result = false;
-                        } else
+                        } else if (formElementItem.getRelation().equals("field"))
                         {
-                           if (list.getModel().getElementAt( selectedIndex - 1 ) instanceof PageListItemValue)
+                           FormElementItem previousItem = (FormElementItem) list.getModel().getElementAt( selectedIndex - 1 );
+                           if (previousItem.getRelation().equals("page"))
                               result = false;
                         }
-                     } else
+                     } else if (action.equals( am.get( "down" ) ))
                      {
-                        if (selected instanceof PageListItemValue)
+                        if (formElementItem.getRelation().equals("page"))
                         {
                            if (selectedIndex == lastPageIndex())
                               result = false;
                         } else
                         {
                            if (selectedIndex == list.getModel().getSize() - 1 ||
-                                 list.getModel().getElementAt( selectedIndex + 1 ) instanceof PageListItemValue)
+                                 ((FormElementItem)list.getModel().getElementAt( selectedIndex + 1 )).getRelation().equals("page"))
                               result = false;
                         }
                      }
@@ -166,39 +178,51 @@ public class FieldsView
                }
             } );
 
+      new RefreshWhenVisible(this, model);
+
    }
 
    @org.jdesktop.application.Action
-   public void addField()
+   public Task addField()
    {
-      FieldCreationDialog dialog = fieldCreationDialog.iterator().next();
+      final FieldCreationDialog dialog = fieldCreationDialog.iterator().next();
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( AdministrationResources.add_field_to_form ) );
 
       if (dialog.name() != null && !"".equals( dialog.name() ))
       {
-         PageListItemValue page = findSelectedPage( fieldList.getList().getSelectedValue() );
+         final FormElementItem page = findSelectedPage( (FormElementItem) fieldList.getList().getSelectedValue() );
          if (page != null)
          {
             fieldList.getList().clearSelection();
-            model.addField( page.entity().get(), dialog.name(), dialog.getFieldType() );
+            return new CommandTask()
+            {
+               @Override
+               public void command()
+                  throws Exception
+               {
+                  model.addField( page, dialog.name(), dialog.getFieldType() );
+               }
+            };
          }
       }
+
+      return null;
    }
 
-   private PageListItemValue findSelectedPage( Object selected )
+   private FormElementItem findSelectedPage( FormElementItem selected )
    {
       ListModel model = fieldList.getList().getModel();
-      if (selected instanceof PageListItemValue)
+      if (selected.getRelation().equals("page"))
       {
-         return (PageListItemValue) selected;
+         return selected;
       } else
       {
          int index = fieldList.getList().getSelectedIndex();
          for (int i = index; i >= 0; i--)
          {
-            if (model.getElementAt( i ) instanceof PageListItemValue)
+            if (((FormElementItem)model.getElementAt( i )).getRelation().equals("page"))
             {
-               return (PageListItemValue) model.getElementAt( i );
+               return (FormElementItem) model.getElementAt( i );
             }
          }
       }
@@ -206,63 +230,90 @@ public class FieldsView
    }
 
    @org.jdesktop.application.Action
-   public void addPage()
+   public Task addPage()
    {
-      NameDialog dialog = pageCreationDialog.iterator().next();
+      final NameDialog dialog = pageCreationDialog.iterator().next();
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( AdministrationResources.add_page_title ) );
 
       if (Strings.notEmpty( dialog.name() ))
       {
          fieldList.getList().clearSelection();
-         model.addPage( dialog.name() );
-      }
+         return new CommandTask()
+         {
+            @Override
+            public void command()
+               throws Exception
+            {
+               model.addPage( dialog.name() );
+            }
+         };
+      } else
+         return null;
    }
 
 
    @org.jdesktop.application.Action
-   public void remove()
+   public Task remove()
    {
-      int index = fieldList.getList().getSelectedIndex();
-      if (index != -1)
+      final FormElementItem selected = (FormElementItem) fieldList.getList().getSelectedValue();
+      if (selected != null)
       {
-         ListItemValue selected = (ListItemValue) fieldList.getList().getSelectedValue();
-
          ConfirmationDialog dialog = confirmationDialog.iterator().next();
-         dialog.setRemovalMessage( selected.description().get() );
+         dialog.setRemovalMessage( selected.getName());
          dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation ) );
          if (dialog.isConfirmed())
          {
-            if (selected instanceof PageListItemValue)
+            return new CommandTask()
             {
-               model.removePage( selected.entity().get() );
-            } else
-            {
-               model.removeField( selected.entity().get() );
-            }
+               @Override
+               public void command()
+                  throws Exception
+               {
+                  model.removeFormElement(selected );
+               }
+            };
          }
       }
+
+      return null;
    }
 
    @org.jdesktop.application.Action
-   public void up()
+   public Task up()
    {
-      ListItemValue selected = (ListItemValue) fieldList.getList().getSelectedValue();
-      if (selected instanceof PageListItemValue)
+      final ListItemValue selected = (ListItemValue) fieldList.getList().getSelectedValue();
+      return new CommandTask()
       {
-         model.movePage( selected.entity().get(), "up" );
-      } else
-      {
-         model.moveField( selected.entity().get(), "up" );
-      }
+         @Override
+         public void command()
+            throws Exception
+         {
+/*
+            if (selected instanceof PageListItemValue)
+            {
+               model.movePage( selected.entity().get(), "up" );
+            } else
+            {
+               model.moveField( selected.entity().get(), "up" );
+            }
+*/
+         }
+      };
    }
 
    @org.jdesktop.application.Action
-   public void down()
+   public Task down()
    {
-      int index = fieldList.getList().getSelectedIndex();
-      if (index != -1)
+      FormElementItem selected = (FormElementItem) fieldList.getList().getSelectedValue();
+      if (selected != null)
       {
-         ListItemValue selected = (ListItemValue) fieldList.getList().getSelectedValue();
+         return new CommandTask()
+         {
+            @Override
+            public void command()
+               throws Exception
+            {
+/*
          if (selected instanceof PageListItemValue)
          {
             model.movePage( selected.entity().get(), "down" );
@@ -270,15 +321,19 @@ public class FieldsView
          {
             model.moveField( selected.entity().get(), "down" );
          }
-      }
+*/
+            }
+         };
+      } else
+         return null;
    }
 
-   public GroupedList getFieldList()
+   public FormElementsList getFieldList()
    {
       return fieldList;
    }
 
-   public FieldsModel getModel()
+   public FormElementsModel getModel()
    {
       return model;
    }
@@ -287,5 +342,25 @@ public class FieldsView
    {
       fieldList.getList().clearSelection();
       fieldList.getList().setSelectedValue( arg, true );
+   }
+
+   public void notifyTransactions( Iterable<TransactionEvents> transactions )
+   {
+      if (Events.matches( transactions, withNames("changedDescription" )))
+         model.refresh();
+
+      DomainEvent event = first( filter( events(transactions ), withNames("createdField", "createdPage")));
+      if (event != null)
+      {
+         String id = EventParameters.getParameter( event, 1 );
+         for (FormElementItem formElementItem : model.getFormElementsList())
+         {
+            if (formElementItem.getClient().getReference().getPath().endsWith(id+"/"))
+            {
+               fieldList.getList().setSelectedValue( formElementItem, true );
+               break;
+            }
+         }
+      }
    }
 }

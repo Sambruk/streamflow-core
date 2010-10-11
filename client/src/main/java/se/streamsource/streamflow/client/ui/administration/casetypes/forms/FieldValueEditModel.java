@@ -40,21 +40,16 @@ import se.streamsource.streamflow.resource.roles.IntegerDTO;
  * JAVADOC
  */
 public class FieldValueEditModel
-      implements Refreshable, EventVisitor
+      implements Refreshable
 {
-   final Logger logger = LoggerFactory.getLogger( "administration" );
    private FieldDefinitionValue value;
    private CommandQueryClient client;
    private ValueBuilderFactory vbf;
-
-   private EventVisitorFilter eventFilter;
 
    public FieldValueEditModel( @Uses CommandQueryClient client, @Structure ValueBuilderFactory vbf )
    {
       this.client = client;
       this.vbf = vbf;
-      refresh();
-      eventFilter = new EventVisitorFilter( this, "changedNote" );
    }
 
    public FieldDefinitionValue getFieldDefinition()
@@ -161,31 +156,11 @@ public class FieldValueEditModel
       client.postCommand( "changeopenselectionname", builder.newInstance() );
    }
 
-   public void refresh() throws OperationException
+   public void refresh()
    {
-      try
-      {
-         value = (FieldDefinitionValue) client.query( "field", FieldDefinitionValue.class ).buildWith().prototype();
-      } catch (ResourceException e)
-      {
-         throw new OperationException( AdministrationResources.could_not_get_field, e );
-      }
+      value = (FieldDefinitionValue) client.query( "field", FieldDefinitionValue.class ).buildWith().prototype();
    }
 
-   public boolean visit( DomainEvent event )
-   {
-      if (value.field().get().identity().equals( event.entity().get() ))
-      {
-         logger.info( "Refresh the field values" );
-         refresh();
-      }
-      return false;
-   }
-
-   public CommandQueryClient getClient()
-   {
-      return client;
-   }
    public void remove() throws ResourceException
    {
       client.delete();

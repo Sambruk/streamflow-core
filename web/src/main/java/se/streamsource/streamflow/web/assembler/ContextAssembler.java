@@ -70,7 +70,6 @@ import se.streamsource.streamflow.web.context.organizations.SelectedCaseTypeCont
 import se.streamsource.streamflow.web.context.organizations.SelectedCaseTypesContext;
 import se.streamsource.streamflow.web.context.organizations.forms.FormContext;
 import se.streamsource.streamflow.web.context.organizations.forms.FormFieldContext;
-import se.streamsource.streamflow.web.context.organizations.forms.FormFieldsContext;
 import se.streamsource.streamflow.web.context.organizations.forms.FormPageContext;
 import se.streamsource.streamflow.web.context.organizations.forms.FormPagesContext;
 import se.streamsource.streamflow.web.context.organizations.forms.FormsContext;
@@ -151,7 +150,6 @@ public class ContextAssembler
       module.addTransients(
             FormContext.class,
             FormFieldContext.class,
-            FormFieldsContext.class,
             FormPageContext.class,
             FormPagesContext.class,
             FormsContext.class,

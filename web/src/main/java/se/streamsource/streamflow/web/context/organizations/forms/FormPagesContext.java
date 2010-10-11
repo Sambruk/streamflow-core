@@ -40,34 +40,15 @@ import se.streamsource.streamflow.web.domain.structure.form.Pages;
 public interface FormPagesContext
       extends SubContexts<FormPageContext>, Context
 {
-   public LinksValue pages();
-
-   public ListValue pagessummary();
-
    public void add( @MaxLength(50) StringValue name );
 
    abstract class Mixin
          extends ContextMixin
          implements FormPagesContext
    {
-      public LinksValue pages()
-      {
-         Pages.Data pages = roleMap.get( Pages.Data.class );
-
-         return new LinksBuilder( module.valueBuilderFactory() ).rel( "page" ).addDescribables( pages.pages() ).newLinks();
-      }
-
-      public ListValue pagessummary()
-      {
-         PageQueries pageQueries = roleMap.get( PageQueries.class );
-
-         return pageQueries.getPagesSummary();
-      }
-
       public void add( StringValue name )
       {
          Pages pages = roleMap.get( Pages.class );
-         ;
 
          pages.createPage( name.string().get() );
       }

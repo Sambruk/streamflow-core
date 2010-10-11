@@ -26,6 +26,7 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
 
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.SwingXUtilities;
@@ -35,6 +36,7 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 
 import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.ui.administration.AdministrationView;
 
 import com.jgoodies.forms.factories.Borders;
@@ -51,45 +53,37 @@ public class FormView
    @Structure
    ObjectBuilderFactory obf;
    private JTextArea textArea;
+   private final CommandQueryClient client;
 
    public FormView( @Service ApplicationContext context,
                     @Uses CommandQueryClient client, @Structure ObjectBuilderFactory obf )
    {
       super( new BorderLayout() );
+      this.client = client;
       this.model = obf.newObjectBuilder( FormModel.class ).use(client).newInstance();
       setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
       
-      model.refresh();
       ActionMap am = context.getActionMap( this );
 
       model.addObserver( this );
-      textArea = new JTextArea( model.getNote() );
+      textArea = new JTextArea();
       textArea.setLineWrap( true );
       textArea.setWrapStyleWord( true );
       textArea.setEditable( false );
       add( new JScrollPane(textArea), BorderLayout.CENTER );
       add( new JButton( am.get( "edit" ) ), BorderLayout.SOUTH );
 
+      new RefreshWhenVisible(this, model);
    }
 
    @org.jdesktop.application.Action
    public void edit()
    {
-/* TODO The form+fields+field model has to be cleaned up for this to work
-      FieldsModel fieldsModel = model.getFieldsModel();
+      FormEditView formEditView = obf.newObjectBuilder( FormEditView.class ).use( client ).newInstance();
 
-      FormEditAdminView formEditAdminView = obf.newObjectBuilder( FormEditAdminView.class ).
-            use( model, fieldsModel ).newInstance();
+      AdministrationView adminView = (AdministrationView) SwingUtilities.getAncestorOfClass( AdministrationView.class, this );
 
-      AdministrationView adminView = SwingXUtilities.getAncestor( AdministrationView.class, this );
-
-      adminView.show( formEditAdminView );
-*/
-   }
-
-   public FormModel getModel()
-   {
-      return model;
+      adminView.show( formEditView );
    }
 
    public void update( Observable observable, Object o )

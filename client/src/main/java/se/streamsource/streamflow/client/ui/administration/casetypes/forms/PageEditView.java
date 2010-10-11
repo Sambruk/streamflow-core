@@ -31,6 +31,7 @@ import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.ui.CommandTask;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.caze.CaseResources;
 import se.streamsource.streamflow.domain.form.PageDefinitionValue;
@@ -85,6 +86,7 @@ public class PageEditView
 //      bb.appendLine( AdministrationResources.name_label, TEXTFIELD, definitionValue.description() );
 
       nameBinder.addObserver( this );
+      model.refresh();
       nameBinder.updateWith( model.getPageDefinition() );
 
       panel.add( fieldPanel, BorderLayout.CENTER );
@@ -94,16 +96,18 @@ public class PageEditView
 
    public void update( Observable observable, Object arg )
    {
-      Property property = (Property) arg;
+      final Property property = (Property) arg;
       if (property.qualifiedName().name().equals( "description" ))
       {
-         try
+         new CommandTask()
          {
-            model.changeDescription( (String) property.get() );
-         } catch (ResourceException e)
-         {
-            throw new OperationException( CaseResources.could_not_change_description, e );
-         }
+            @Override
+            public void command()
+               throws Exception
+            {
+               model.changeDescription( (String) property.get() );
+            }
+         }.execute();
       }
    }
 }

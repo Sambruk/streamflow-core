@@ -20,6 +20,7 @@ package se.streamsource.streamflow.client.infrastructure.ui;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.swing.EventListModel;
 import org.jdesktop.swingx.JXList;
+import se.streamsource.streamflow.client.ui.administration.form.FormElementItem;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.JPanel;
@@ -29,18 +30,18 @@ import java.awt.BorderLayout;
 /**
  * JAVADOC
  */
-public class GroupedList
+public class FormElementsList
       extends JPanel
 {
    private JXList list;
    public JScrollPane pane = new JScrollPane();
 
-   public GroupedList()
+   public FormElementsList()
    {
       setLayout( new BorderLayout() );
 
       list = new JXList();
-      list.setCellRenderer( new PageItemListCellRenderer() );
+      list.setCellRenderer( new FormElementItemListCellRenderer() );
 
       pane.setViewportView( list );
 
@@ -52,13 +53,8 @@ public class GroupedList
       return list;
    }
 
-   public JScrollPane getPane()
+   public void setEventList( EventList<FormElementItem> eventList )
    {
-      return pane;
-   }
-
-   public void setEventList( EventList<ListItemValue> eventList )
-   {
-      list.setModel( new EventListModel<ListItemValue>( eventList ) );
+      list.setModel( new EventListModel<FormElementItem>( eventList ) );
    }
 }

@@ -60,6 +60,7 @@ import se.streamsource.streamflow.client.ui.administration.casetypes.SelectCaseT
 import se.streamsource.streamflow.client.ui.administration.casetypes.SelectedCaseTypesModel;
 import se.streamsource.streamflow.client.ui.administration.casetypes.SelectedCaseTypesView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FieldCreationDialog;
+import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FieldEditView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FieldEditorCheckboxesFieldValueView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FieldEditorComboBoxFieldValueView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FieldEditorCommentFieldValueView;
@@ -72,9 +73,9 @@ import se.streamsource.streamflow.client.ui.administration.casetypes.forms.Field
 import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FieldEditorTextFieldValueView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FieldValueEditModel;
 import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FieldValueObserver;
-import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FieldsModel;
-import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FieldsView;
-import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FormEditAdminView;
+import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FormEditView;
+import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FormElementsModel;
+import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FormElementsView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FormModel;
 import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FormView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FormsModel;
@@ -297,21 +298,22 @@ public class UIAssembler
       addMV( module, ProjectsModel.class,
             ProjectsView.class );
 
-      addModels( module, FieldValueEditModel.class );
-
-      addViews( module, FormEditAdminView.class );
+      addViews( module, FormEditView.class );
 
       addMV( module, MembersModel.class,
             MembersView.class );
 
       addMV( module,
-            FieldsModel.class, FieldsView.class );
+            FormElementsModel.class, FormElementsView.class );
 
       addMV( module,
             SelectionElementsModel.class, SelectionElementsView.class );
 
       addMV( module,
             PageEditModel.class, PageEditView.class );
+
+      addMV( module,
+            FieldValueEditModel.class, FieldEditView.class );
 
       addViews( module,
             FieldEditorCheckboxesFieldValueView.class,

@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.client.infrastructure.ui;
 
+import se.streamsource.streamflow.client.ui.administration.form.FormElementItem;
 import se.streamsource.streamflow.infrastructure.application.PageListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
@@ -28,18 +29,19 @@ import java.awt.Font;
 /**
  * JAVADOC
  */
-public class PageItemListCellRenderer
+public class FormElementItemListCellRenderer
    extends DefaultListCellRenderer
 {
    public Component getListCellRendererComponent( JList list, Object value, int index, boolean isSelected, boolean cellHasFocus )
    {
-      if (value instanceof ListItemValue)
+      if (value instanceof FormElementItem)
       {
-         String val = ((ListItemValue)value).description().get();
+         FormElementItem formElementItem = (FormElementItem) value;
+         String val = formElementItem.getName();
 
-         if (value instanceof PageListItemValue)
+         if (formElementItem.getRelation().equals("page"))
          {
-            Component component = super.getListCellRendererComponent( list, ((ListItemValue)value).description().get(), index, isSelected, cellHasFocus );
+            Component component = super.getListCellRendererComponent( list, val, index, isSelected, cellHasFocus );
             setFont( getFont().deriveFont( Font.ITALIC ));
             return component;
          } else

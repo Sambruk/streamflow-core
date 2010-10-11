@@ -93,10 +93,9 @@ public class FormsView
       {
          public Component createDetail( LinkValue detailLink )
          {
-            CommandQueryClient caseTypeClient = client.getClient( detailLink );
+            CommandQueryClient formClient = client.getClient( detailLink );
 
-            TabbedResourceView view = obf.newObjectBuilder( TabbedResourceView.class ).use( caseTypeClient).newInstance();
-            return view;
+            return obf.newObjectBuilder( FormView.class ).use( formClient).newInstance();
          }
       });
 

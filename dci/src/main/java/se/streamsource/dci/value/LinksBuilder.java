@@ -49,7 +49,7 @@ public class LinksBuilder<T extends LinksBuilder>
    {
       try
       {
-         path = URLEncoder.encode( subPath, "UTF-8");
+         path = subPath == null ? null : URLEncoder.encode( subPath, "UTF-8");
       } catch (UnsupportedEncodingException e)
       {
          e.printStackTrace();

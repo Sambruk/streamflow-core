@@ -27,8 +27,10 @@ import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.library.constraints.annotation.MaxLength;
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.ContextMixin;
+import se.streamsource.dci.api.ContextNotFoundException;
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.RequiresRoles;
+import se.streamsource.dci.api.SubContexts;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.StringValueMaxLength;
 import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
@@ -55,7 +57,7 @@ import se.streamsource.streamflow.web.domain.structure.form.Mandatory;
 @Mixins(FormFieldContext.Mixin.class)
 @Constraints(StringValueMaxLength.class)
 public interface FormFieldContext
-      extends DeleteContext, NotableContext, Context
+      extends DeleteContext, NotableContext, SubContexts<FormFieldContext>, Context
 {
    public FieldDefinitionValue field();
 
@@ -296,6 +298,12 @@ public interface FormFieldContext
          Fields fields = roleMap.get( Fields.class );
 
          fields.removeField( field );
+      }
+
+      public FormFieldContext context( String id ) throws ContextNotFoundException
+      {
+         // TODO Fieldsets
+         return null;
       }
    }
 }

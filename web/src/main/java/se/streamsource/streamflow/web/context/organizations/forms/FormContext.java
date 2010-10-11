@@ -25,33 +25,39 @@ import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.ContextMixin;
+import se.streamsource.dci.api.SubContexts;
 import se.streamsource.dci.value.*;
 import se.streamsource.streamflow.domain.form.FormValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.web.domain.entity.form.FormEntity;
 import se.streamsource.streamflow.web.domain.entity.form.PossibleFormMoveToQueries;
+import se.streamsource.streamflow.web.domain.structure.form.Field;
+import se.streamsource.streamflow.web.domain.structure.form.Fields;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
 import se.streamsource.streamflow.web.domain.structure.form.FormId;
 import se.streamsource.streamflow.web.domain.structure.form.Forms;
 import se.streamsource.dci.api.SubContext;
 import se.streamsource.streamflow.web.context.structure.DescribableContext;
 import se.streamsource.streamflow.web.context.structure.NotableContext;
+import se.streamsource.streamflow.web.domain.structure.form.Page;
+import se.streamsource.streamflow.web.domain.structure.form.Pages;
 
 /**
  * JAVADOC
  */
 @Mixins(FormContext.Mixin.class)
 public interface FormContext
-   extends DeleteContext, DescribableContext, NotableContext, Context
+   extends DeleteContext, DescribableContext, NotableContext, SubContexts<FormPageContext>, Context
 {
    FormValue form();
 
    void move( EntityValue to);
 
-   public void changeformid( StringValue stringValue );
+   void changeformid( StringValue stringValue );
 
-   @SubContext
-   FormPagesContext pages();
+   LinksValue formelements();
+
+   void create( StringValue name );
 
    abstract class Mixin
       extends ContextMixin
@@ -81,6 +87,28 @@ public interface FormContext
          roleMap.get( Forms.class ).moveForm(form, toForms);
       }
 
+      public LinksValue formelements()
+      {
+         LinksBuilder linksBuilder = new LinksBuilder(module.valueBuilderFactory());
+
+         Pages.Data pages = roleMap.get( Pages.Data.class );
+         for (Page page : pages.pages())
+         {
+            linksBuilder.path( null );
+            linksBuilder.rel( "page" );
+            linksBuilder.addDescribable( page );
+            Fields.Data fields = (Fields.Data) page;
+            linksBuilder.path( page.toString());
+            linksBuilder.rel( "field" );
+            for (Field field : fields.fields())
+            {
+               linksBuilder.addDescribable( field );
+            }
+         }
+
+         return linksBuilder.newLinks();
+      }
+
       public void changeformid( StringValue stringValue )
       {
          FormId form = roleMap.get( FormId.class );
@@ -94,9 +122,22 @@ public interface FormContext
          forms.removeForm( form );
       }
 
-      public FormPagesContext pages()
+      public void create( StringValue name )
       {
-         return subContext( FormPagesContext.class );
+         Pages pages = roleMap.get( Pages.class );
+
+         pages.createPage( name.string().get() );
+      }
+
+      public FormPageContext context( String id )
+      {
+         Page page = module.unitOfWorkFactory().currentUnitOfWork().get( Page.class, id );
+
+         if (!roleMap.get( Pages.Data.class ).pages().contains( page ))
+            throw new IllegalArgumentException( "Page is not a member of this form" );
+
+         roleMap.set( page );
+         return subContext( FormPageContext.class );
       }
    }
 }
