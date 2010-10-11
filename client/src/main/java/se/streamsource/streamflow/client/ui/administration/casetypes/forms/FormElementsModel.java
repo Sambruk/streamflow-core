@@ -1,13 +1,8 @@
-/**
- *
- * Copyright 2009-2010 Streamsource AB
- *
+/*
+ * Copyright (c) 2010, Mads Enevoldsen. All Rights Reserved.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -116,56 +111,13 @@ public class FormElementsModel extends Observable
       item.getClient().delete();
    }
 
-/*
-   public void moveField( EntityReference field, String direction )
+   public void move( FormElementItem item, String direction )
    {
-      FieldValueEditModel model = getFieldModel( field.identity() );
-      try
-      {
-         model.move( direction );
-         ListItemValue origin = getListItemValueById( field.identity() );
-         ListItemValue target = null;
+      ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
+      builder.prototype().string().set( direction );
 
-         int index = formElements.indexOf( origin );
-
-         if ("up".equals( direction ))
-         {
-            target = formElements.get( index - 1 );
-            if (!(target instanceof PageListItemValue))
-            {
-               formElements.set( index - 1, origin );
-               formElements.set( index, target );
-            }
-         } else
-         {
-            if (index < formElements.size() - 1)
-            {
-               target = formElements.get( index + 1 );
-               if (!(target instanceof PageListItemValue))
-               {
-                  formElements.set( index + 1, origin );
-                  formElements.set( index, target );
-               }
-            }
-         }
-      } catch (ResourceException e)
-      {
-         throw new OperationException( AdministrationResources.could_not_move_field, e );
-      }
+      item.getClient().putCommand( "move",  builder.newInstance() );
    }
-
-   public void movePage( EntityReference page, String direction )
-   {
-      PageEditModel model = getPageModel( page.identity() );
-      try
-      {
-         model.move( direction );
-      } catch (ResourceException e)
-      {
-         throw new OperationException( AdministrationResources.could_not_move_page, e );
-      }
-   }
-*/
 
    public void notifyTransactions( Iterable<TransactionEvents> transactions )
    {

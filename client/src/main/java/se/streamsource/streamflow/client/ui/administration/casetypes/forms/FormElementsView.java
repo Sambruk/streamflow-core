@@ -1,13 +1,8 @@
-/**
- *
- * Copyright 2009-2010 Streamsource AB
- *
+/*
+ * Copyright (c) 2010, Mads Enevoldsen. All Rights Reserved.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -281,22 +276,14 @@ public class FormElementsView
    @org.jdesktop.application.Action
    public Task up()
    {
-      final ListItemValue selected = (ListItemValue) fieldList.getList().getSelectedValue();
+      final FormElementItem selected = (FormElementItem) fieldList.getList().getSelectedValue();
       return new CommandTask()
       {
          @Override
          public void command()
             throws Exception
          {
-/*
-            if (selected instanceof PageListItemValue)
-            {
-               model.movePage( selected.entity().get(), "up" );
-            } else
-            {
-               model.moveField( selected.entity().get(), "up" );
-            }
-*/
+            model.move( selected, "up" );
          }
       };
    }
@@ -304,7 +291,7 @@ public class FormElementsView
    @org.jdesktop.application.Action
    public Task down()
    {
-      FormElementItem selected = (FormElementItem) fieldList.getList().getSelectedValue();
+      final FormElementItem selected = (FormElementItem) fieldList.getList().getSelectedValue();
       if (selected != null)
       {
          return new CommandTask()
@@ -313,15 +300,7 @@ public class FormElementsView
             public void command()
                throws Exception
             {
-/*
-         if (selected instanceof PageListItemValue)
-         {
-            model.movePage( selected.entity().get(), "down" );
-         } else
-         {
-            model.moveField( selected.entity().get(), "down" );
-         }
-*/
+               model.move( selected, "down" );
             }
          };
       } else
@@ -346,10 +325,10 @@ public class FormElementsView
 
    public void notifyTransactions( Iterable<TransactionEvents> transactions )
    {
-      if (Events.matches( transactions, withNames("changedDescription" )))
+      if (Events.matches( transactions, withNames("changedDescription", "removedField", "movedField" )))
          model.refresh();
 
-      DomainEvent event = first( filter( events(transactions ), withNames("createdField", "createdPage")));
+      DomainEvent event = first( filter( events(transactions ), withNames("createdField", "createdPage", "movedField")));
       if (event != null)
       {
          String id = EventParameters.getParameter( event, 1 );
