@@ -39,6 +39,7 @@ public enum Icons
 
    details,
    inbox,
+   draft,
 
    calendar,
 

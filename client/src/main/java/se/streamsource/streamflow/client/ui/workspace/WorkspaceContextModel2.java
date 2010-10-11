@@ -27,13 +27,11 @@ import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
-import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.ContextItem;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static se.streamsource.streamflow.client.Icons.*;
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
 
@@ -45,7 +43,8 @@ public class WorkspaceContextModel2
 {
    EventList<ContextItem> items = new BasicEventList<ContextItem>();
 
-   @Uses CommandQueryClient client;
+   @Uses
+   CommandQueryClient client;
 
    LinksValue caseCounts;
 
@@ -57,7 +56,7 @@ public class WorkspaceContextModel2
    public void refresh()
    {
       // Refresh case counts in the background
-      new Task<LinksValue, Object>( Application.getInstance())
+      new Task<LinksValue, Object>( Application.getInstance() )
       {
          @Override
          protected LinksValue doInBackground() throws Exception
@@ -73,15 +72,15 @@ public class WorkspaceContextModel2
          }
       }.execute();
 
-      List<ContextItem> list = new ArrayList<ContextItem>( );
-      list.add( new ContextItem("", "Drafts", "inbox", -1, client.getSubClient("user" ).getSubClient( "drafts" )));
+      List<ContextItem> list = new ArrayList<ContextItem>();
+      list.add( new ContextItem( "", text( drafts_node ), "draft", -1, client.getSubClient( "user" ).getSubClient( "drafts" ) ) );
 
       CommandQueryClient projectClient = client.getSubClient( "projects" );
-      LinksValue projects = projectClient.query("index", LinksValue.class );
+      LinksValue projects = projectClient.query( "index", LinksValue.class );
       for (LinkValue project : projects.links().get())
       {
-         list.add( new ContextItem(project.text().get(), text( inboxes_node ), "inbox", -1, projectClient.getClient( project ).getSubClient("inbox" )));
-         list.add( new ContextItem(project.text().get(), text( assignments_node), "assign", -1, projectClient.getClient( project ).getSubClient("assignments" )));
+         list.add( new ContextItem( project.text().get(), text( inboxes_node ), "inbox", -1, projectClient.getClient( project ).getSubClient( "inbox" ) ) );
+         list.add( new ContextItem( project.text().get(), text( assignments_node ), "assign", -1, projectClient.getClient( project ).getSubClient( "assignments" ) ) );
       }
 
       EventListSynch.synchronize( list, items );
@@ -100,13 +99,13 @@ public class WorkspaceContextModel2
                ContextItem item = items.get( i );
                Reference reference = item.getClient().getReference();
                String ref = reference.getPath();
-               if (ref.endsWith("user/drafts/")) // This is a hack. Not sure why user and project references are different...
+               if (ref.endsWith( "user/drafts/" )) // This is a hack. Not sure why user and project references are different...
                   ref = "user/drafts";
                else
-                  ref = ref.substring( 0, ref.length()-1 );
-               if (ref.equals(linkValue.id().get()))
+                  ref = ref.substring( 0, ref.length() - 1 );
+               if (ref.equals( linkValue.id().get() ))
                {
-                  item.setCount(Long.valueOf( linkValue.text().get()));
+                  item.setCount( Long.valueOf( linkValue.text().get() ) );
                   items.set( i, item );
                   break;
                }
