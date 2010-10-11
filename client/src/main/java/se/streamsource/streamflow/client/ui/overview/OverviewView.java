@@ -17,46 +17,48 @@
 
 package se.streamsource.streamflow.client.ui.overview;
 
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.FilterList;
+import ca.odell.glazedlists.SeparatorList;
+import ca.odell.glazedlists.SortedList;
+import ca.odell.glazedlists.TextFilterator;
+import ca.odell.glazedlists.gui.TableFormat;
+import ca.odell.glazedlists.swing.EventListModel;
+import ca.odell.glazedlists.swing.TextComponentMatcherEditor;
 import org.jdesktop.application.ApplicationContext;
-import org.jdesktop.application.Task;
-import org.jdesktop.swingx.JXTree;
-import org.jdesktop.swingx.renderer.DefaultTreeRenderer;
-import org.jdesktop.swingx.renderer.IconValue;
-import org.jdesktop.swingx.renderer.StringValue;
-import org.jdesktop.swingx.renderer.WrappingIconPanel;
-import org.jdesktop.swingx.renderer.WrappingProvider;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.Icons;
-import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
+import se.streamsource.streamflow.client.infrastructure.ui.SeparatorContextItemListCellRenderer;
+import se.streamsource.streamflow.client.infrastructure.ui.SeparatorListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import se.streamsource.streamflow.client.ui.caze.CasesTableModel;
-import se.streamsource.streamflow.client.ui.caze.OverviewAssignmentsCaseTableFormatter;
+import se.streamsource.streamflow.client.ui.ContextItem;
+import se.streamsource.streamflow.client.ui.ContextItemGroupComparator;
+import se.streamsource.streamflow.client.ui.ContextItemListRenderer;
 import se.streamsource.streamflow.client.ui.caze.CaseTableView;
+import se.streamsource.streamflow.client.ui.caze.InboxCaseTableFormatter;
+import se.streamsource.streamflow.client.ui.caze.OverviewAssignmentsCaseTableFormatter;
 
 import javax.swing.AbstractAction;
-import javax.swing.Icon;
-import javax.swing.JComponent;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
-import javax.swing.JTree;
+import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
-import javax.swing.event.TreeExpansionEvent;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
-import javax.swing.event.TreeWillExpandListener;
-import javax.swing.tree.ExpandVetoException;
-import javax.swing.tree.TreeNode;
-import javax.swing.tree.TreePath;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * JAVADOC
@@ -64,23 +66,43 @@ import java.awt.event.KeyEvent;
 public class OverviewView
       extends JPanel
 {
-   private JXTree overviewTree;
+   private JList overviewList;
    private JSplitPane pane;
    private OverviewModel model;
 
    public OverviewView( final @Service ApplicationContext context,
+                        final @Uses CommandQueryClient client,
                         final @Structure ObjectBuilderFactory obf )
    {
       super( new BorderLayout() );
 
-      overviewTree = new JXTree();
-      overviewTree.expandAll();
-      overviewTree.setRootVisible( false );
-      overviewTree.setShowsRootHandles( false );
-      overviewTree.getSelectionModel().setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
+      overviewList = new JList();
 
-      overviewTree.getInputMap().put( KeyStroke.getKeyStroke( KeyEvent.VK_ENTER, 0 ), "select" );
-      overviewTree.getActionMap().put( "select", new AbstractAction()
+      model = obf.newObjectBuilder( OverviewModel.class ).use( client ).newInstance();
+
+      JTextField filterField = new JTextField();
+      SortedList<ContextItem> sortedIssues = new SortedList<ContextItem>( model.getItems(), new Comparator<ContextItem>()
+      {
+         public int compare( ContextItem o1, ContextItem o2 )
+         {
+            return o1.getGroup().compareTo( o2.getGroup() );
+         }
+      });
+      final FilterList<ContextItem> textFilteredIssues = new FilterList<ContextItem>( sortedIssues, new TextComponentMatcherEditor<ContextItem>( filterField, new TextFilterator<ContextItem>()
+      {
+         public void getFilterStrings( List<String> strings, ContextItem contextItem )
+         {
+            strings.add(contextItem.getGroup());
+         }
+      }) );
+
+      Comparator<ContextItem> comparator = new ContextItemGroupComparator();
+      EventList<ContextItem> separatorList = new SeparatorList<ContextItem>( textFilteredIssues, comparator, 1, 10000 );
+      overviewList.setModel( new EventListModel<ContextItem>( separatorList ) );
+      overviewList.getSelectionModel().setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
+
+      overviewList.getInputMap().put( KeyStroke.getKeyStroke( KeyEvent.VK_ENTER, 0 ), "select" );
+      overviewList.getActionMap().put( "select", new AbstractAction()
       {
          public void actionPerformed( ActionEvent e )
          {
@@ -88,57 +110,9 @@ public class OverviewView
          }
       } );
 
-      overviewTree.setCellRenderer( new DefaultTreeRenderer( new WrappingProvider(
-            new IconValue()
-            {
-               public Icon getIcon( Object o )
-               {
-                  if (o instanceof OverviewProjectNode)
-                     return i18n.icon( Icons.project, i18n.ICON_16 );
-                  else if (o instanceof OverviewProjectsNode)
-                     return i18n.icon( Icons.projects, i18n.ICON_16 );
-                  else if (o instanceof OverviewProjectAssignmentsNode)
-                     return i18n.icon( Icons.assign, i18n.ICON_16 );
-                  else
-                     return NULL_ICON;
-               }
-            },
-            new StringValue()
-            {
-               public String getString( Object o )
-               {
-                  if (o instanceof OverviewProjectNode)
-                     return ((OverviewProjectNode) o).projectName();
-                  else if (o instanceof OverviewProjectsNode)
-                     return i18n.text( OverviewResources.projects_node );
-                  else if (o instanceof OverviewProjectAssignmentsNode)
-                     return o.toString();
-                  else
-                     return "";
-               }
-            },
-            false
-      ) )
-      {
-         @Override
-         public Component getTreeCellRendererComponent( JTree jTree, Object o, boolean b, boolean b1, boolean b2, int i, boolean b3 )
-         {
-            WrappingIconPanel component = (WrappingIconPanel) super.getTreeCellRendererComponent( jTree, o, b, b1, b2, i, b3 );
+      overviewList.setCellRenderer( new SeparatorContextItemListCellRenderer( new ContextItemListRenderer()));
 
-            if (o instanceof OverviewProjectsNode)
-            {
-               component.setFont( getFont().deriveFont( Font.BOLD ) );
-            } else
-            {
-               component.setFont( getFont().deriveFont( Font.PLAIN ) );
-            }
-
-
-            return component;
-         }
-      } );
-
-      JScrollPane workspaceScroll = new JScrollPane( overviewTree, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED );
+      JScrollPane workspaceScroll = new JScrollPane( overviewList, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED );
 
       pane = new JSplitPane( JSplitPane.HORIZONTAL_SPLIT );
       pane.setDividerLocation( 200 );
@@ -153,19 +127,37 @@ public class OverviewView
 
       add( pane, BorderLayout.CENTER );
 
-      overviewTree.addTreeSelectionListener( new TreeSelectionListener()
+      overviewList.addListSelectionListener( new ListSelectionListener()
       {
-         public void valueChanged( TreeSelectionEvent e )
+         public void valueChanged( ListSelectionEvent e )
          {
-            final TreePath path = e.getNewLeadSelectionPath();
-            if (path != null)
+            if (!e.getValueIsAdjusting())
             {
-               Object node = path.getLastPathComponent();
+               JList list = (JList) e.getSource();
 
-               JComponent view = new JPanel();
+               if (list.getSelectedValue() == null)
+                  return;
 
-               if (node instanceof OverviewProjectsNode)
+               if (list.getSelectedValue() instanceof ContextItem)
                {
+                  ContextItem contextItem = (ContextItem) list.getSelectedValue();
+                  TableFormat tableFormat;
+                  if (contextItem.getRelation().equals(Icons.assign.name()))
+                  {
+                     tableFormat = new OverviewAssignmentsCaseTableFormatter();
+                  } else
+                  {
+                     tableFormat = new InboxCaseTableFormatter();
+                  }
+                  CaseTableView caseTable = obf.newObjectBuilder( CaseTableView.class ).use( contextItem.getClient(), tableFormat ).newInstance();
+
+//                  caseTable.getCaseTable().getSelectionModel().addListSelectionListener( new CaseSelectionListener() );
+
+                  pane.setRightComponent( caseTable );
+               } else
+               {
+                  // TODO Overview of all projects
+/*
                   final OverviewSummaryModel overviewSummaryModel = model.summary();
 
                   view = obf.newObjectBuilder( OverviewSummaryView.class ).use( overviewSummaryModel ).newInstance();
@@ -177,89 +169,12 @@ public class OverviewView
                         return null;
                      }
                   } );
-
-               } else if (node instanceof OverviewProjectAssignmentsNode)
-               {
-                  OverviewProjectAssignmentsNode projectAssignmentsNode = (OverviewProjectAssignmentsNode) node;
-                  final CasesTableModel assignmentsModel = projectAssignmentsNode.caseTableModel();
-                  view = obf.newObjectBuilder( CaseTableView.class ).use( assignmentsModel,
-                        projectAssignmentsNode.getParent().getParent().getParent().getUserObject().cases(),
-                        projectAssignmentsNode.getParent(),
-                        new OverviewAssignmentsCaseTableFormatter()).newInstance();
-
-                  context.getTaskService().execute( new Task( context.getApplication() )
-                  {
-                     protected Object doInBackground() throws Exception
-                     {
-                        assignmentsModel.refresh();
-
-                        return null;
-                     }
-                  } );
+*/
                }
-               
-               pane.setRightComponent( view );
-            } else
-            {
-               pane.setRightComponent( new JPanel() );
             }
          }
       } );
 
-      overviewTree.addTreeWillExpandListener( new TreeWillExpandListener()
-      {
-         public void treeWillExpand( TreeExpansionEvent event ) throws ExpandVetoException
-         {
-            Object node = event.getPath().getLastPathComponent();
-            if (node instanceof OverviewProjectsNode)
-            {
-               try
-               {
-                  ((OverviewProjectsNode) node).refresh();
-                  OverviewView.this.model.reload( (TreeNode) node );
-               } catch (Exception e)
-               {
-                  e.printStackTrace();
-               }
-            }
-         }
-
-         public void treeWillCollapse( TreeExpansionEvent event ) throws ExpandVetoException
-         {
-         }
-      } );
-
+      new RefreshWhenVisible(this, model);
    }
-
-   public void setModel( OverviewModel model )
-   {
-      this.model = model;
-      overviewTree.setModel( model );
-      refreshTree();
-   }
-
-   public String getSelectedUser()
-   {
-      return model.getRoot().getUserObject().settings().userName().get();
-   }
-
-   public JSplitPane getPane()
-   {
-      return pane;
-   }
-
-   public void refreshTree()
-   {
-      try
-      {
-         model.getRoot().getProjectsNode().refresh();
-         model.reload( model.getRoot().getProjectsNode() );
-         overviewTree.clearSelection();
-         overviewTree.expandAll();
-      } catch (Exception e)
-      {
-         throw new OperationException( OverviewResources.could_not_refresh_projects, e );
-      }
-   }
-
 }

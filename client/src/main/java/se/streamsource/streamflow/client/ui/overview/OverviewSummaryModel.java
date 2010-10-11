@@ -21,41 +21,35 @@ import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
-import se.streamsource.streamflow.resource.overview.ProjectSummaryDTO;
-import se.streamsource.streamflow.resource.overview.ProjectSummaryListDTO;
+import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
+import se.streamsource.streamflow.resource.overview.ProjectSummaryValue;
+import se.streamsource.streamflow.resource.overview.ProjectSummaryValuex;
 
 import java.io.IOException;
 import java.io.InputStream;
 
 public class OverviewSummaryModel
+   implements Refreshable
 {
    @Uses
    CommandQueryClient client;
 
-   private BasicEventList<ProjectSummaryDTO> projectOverviews = new BasicEventList<ProjectSummaryDTO>( );
+   private BasicEventList<ProjectSummaryValue> projectOverviews = new BasicEventList<ProjectSummaryValue>( );
 
    public InputStream generateExcelProjectSummary() throws IOException, ResourceException
    {
       return client.queryStream( "generateexcelprojectsummary", null );
    }
 
-   public EventList<ProjectSummaryDTO> getProjectOverviews()
+   public EventList<ProjectSummaryValue> getProjectOverviews()
    {
       return projectOverviews;
    }
 
    public void refresh()
    {
-      try
-      {
-         ProjectSummaryListDTO newResource = client.query( "projectsummary", ProjectSummaryListDTO.class );
-         EventListSynch.synchronize( newResource.projectOverviews().get(), projectOverviews );
-      } catch (Exception e)
-      {
-         throw new OperationException( OverviewResources.could_not_refresh, e );
-      }
+      EventListSynch.synchronize( client.query( "projectsummary", ProjectSummaryValuex.class ).projectOverviews().get(), projectOverviews );
    }
 }

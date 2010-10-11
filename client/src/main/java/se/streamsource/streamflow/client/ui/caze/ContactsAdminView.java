@@ -41,20 +41,17 @@ public class ContactsAdminView
       extends JPanel
 {
    @Structure
-   ObjectBuilderFactory obf;
-
-   @Structure
    ValueBuilderFactory vbf;
 
-   private ContactsView contactsView;
-
-   public ContactsAdminView( @Uses final ContactsView contactsView )
+   public ContactsAdminView( @Uses final CommandQueryClient client, @Structure final ObjectBuilderFactory obf)
    {
       super( new BorderLayout() );
 
-      this.contactsView = contactsView;
+      final ContactsView contactsView = obf.newObjectBuilder( ContactsView.class ).use( client ).newInstance();
+      final ContactView contactView = obf.newObject( ContactView.class );
+
       add( contactsView, BorderLayout.WEST );
-      add( contactsView.getContactView(), BorderLayout.CENTER );
+      add( contactView, BorderLayout.CENTER );
 
       final JList list = contactsView.getContactsList();
       list.addListSelectionListener( new ListSelectionListener()
@@ -89,30 +86,15 @@ public class ContactsAdminView
 
                   }
 
-                  CommandQueryClient caseContactsClient = contactsView.getContactsResource();
-                  ContactModel contactModel = obf.newObjectBuilder( ContactModel.class ).use( contactValue, caseContactsClient.getSubClient( ""+idx ) ).newInstance();
-                  contactsView.getContactView().setModel( contactModel );
+                  ContactModel contactModel = obf.newObjectBuilder( ContactModel.class ).use( contactValue, client.getSubClient( ""+idx ) ).newInstance();
+                  contactView.setModel( contactModel );
                } else
                {
-                  contactsView.getContactView().setModel( null );
+                  contactView.setModel( null );
                }
             }
          }
       } );
 
    }
-
-   @Override
-   public void setVisible( boolean aFlag )
-   {
-      super.setVisible( aFlag );
-      contactsView.setVisible( aFlag );
-   }
-
-   public void setModel( ContactsModel contactsModel )
-   {
-      contactsView.setModel( contactsModel );
-   }
-
-
 }

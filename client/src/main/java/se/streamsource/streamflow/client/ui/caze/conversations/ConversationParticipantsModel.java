@@ -84,26 +84,12 @@ public class ConversationParticipantsModel
 
    public void removeParticipant( LinkValue link )
    {
-      try
-      {
-         client.getSubClient( link.id().get() ).delete();
-         refresh();
-      } catch (ResourceException e)
-      {
-         throw new OperationException( CaseResources.could_not_remove_conversation_participant, e );
-      }
+      client.getSubClient( link.id().get() ).delete();
    }
 
    public void refresh() throws OperationException
    {
-     try
-      {
-         LinksValue participants = client.query( "index", LinksValue.class );
-         EventListSynch.synchronize( participants.links().get(), this.participants );
-
-      } catch (Exception e)
-      {
-         throw new OperationException( CaseResources.could_not_refresh, e );
-      }
+      LinksValue participants = client.query( "index", LinksValue.class );
+      EventListSynch.synchronize( participants.links().get(), this.participants );
    }
 }

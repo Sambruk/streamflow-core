@@ -17,99 +17,16 @@
 
 package se.streamsource.streamflow.client.ui.administration.resolutions;
 
-import ca.odell.glazedlists.BasicEventList;
-import ca.odell.glazedlists.EventList;
-import org.qi4j.api.entity.EntityReference;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
-import org.restlet.resource.ResourceException;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.dci.value.LinkValue;
-import se.streamsource.dci.value.LinksValue;
-import se.streamsource.dci.value.StringValue;
-import se.streamsource.dci.value.TitledLinkValue;
-import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
-import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
-import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.EventListener;
-import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
+import se.streamsource.streamflow.client.ui.administration.SelectionListModel;
 
 /**
  * Management of selected resolutions of a casetype
  */
 public class SelectedResolutionsModel
-      implements EventListener, Refreshable
+   extends SelectionListModel
 {
-   @Uses
-   CommandQueryClient client;
-
-   BasicEventList<LinkValue> eventList = new BasicEventList<LinkValue>();
-
-   @Structure
-   ValueBuilderFactory vbf;
-
-   public EventList<LinkValue> getEventList()
+   public SelectedResolutionsModel( )
    {
-      return eventList;
-   }
-
-   public void refresh()
-   {
-      try
-      {
-         // Get list
-         LinksValue newList = client.query( "index", LinksValue.class );
-         EventListSynch.synchronize( newList.links().get(), eventList );
-
-      } catch (ResourceException e)
-      {
-         throw new OperationException( AdministrationResources.could_not_refresh, e );
-      }
-   }
-
-   public EventList<TitledLinkValue> getPossibleResolutions()
-   {
-      try
-      {
-         BasicEventList<TitledLinkValue> possibleResolutions = new BasicEventList<TitledLinkValue>();
-         for (LinkValue link : client.query( "possibleresolutions", LinksValue.class ).links().get())
-         {
-            possibleResolutions.add( (TitledLinkValue) link);
-         }
-         return possibleResolutions;
-      } catch (ResourceException e)
-      {
-         throw new OperationException( AdministrationResources.could_not_refresh, e );
-      }
-   }
-
-   public void add( LinkValue link )
-   {
-      try
-      {
-         client.postLink( link );
-      } catch (ResourceException e)
-      {
-         throw new OperationException( AdministrationResources.could_not_add, e );
-      }
-   }
-
-   public void remove( LinkValue identity )
-   {
-      try
-      {
-         client.getClient( identity ).delete();
-      } catch (ResourceException e)
-      {
-         throw new OperationException( AdministrationResources.could_not_remove, e );
-      }
-   }
-
-   public void notifyEvent( DomainEvent event )
-   {
+      super( "possibleresolutions");
    }
 }

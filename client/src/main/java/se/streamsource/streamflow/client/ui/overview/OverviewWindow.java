@@ -72,11 +72,9 @@ public class OverviewWindow
                   frame.getContentPane().removeAll();
 
                   AccountModel selectedAccount = accountSelector.getSelectedAccount();
-                  OverviewView overviewView = obf.newObjectBuilder( OverviewView.class ).newInstance();
-                  overviewView.setModel( selectedAccount.overview() );
+                  OverviewView overviewView = obf.newObjectBuilder( OverviewView.class ).use( selectedAccount.overview() ).newInstance();
 
                   frame.getContentPane().add( overviewView );
-                  overviewView.refreshTree();
                }
             }
          }

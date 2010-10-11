@@ -31,9 +31,13 @@ import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.ui.caze.CaseResources;
+import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
+import se.streamsource.streamflow.infrastructure.event.source.helper.Events;
+import se.streamsource.streamflow.resource.conversation.MessageDTO;
 
 public class MessagesModel
-   implements Refreshable
+   implements Refreshable, TransactionListener
 {
    @Uses
    CommandQueryClient client;
@@ -41,37 +45,29 @@ public class MessagesModel
    @Structure
    ValueBuilderFactory vbf;
 
-   BasicEventList<LinkValue> messages = new BasicEventList<LinkValue>();
+   BasicEventList<MessageDTO> messages = new BasicEventList<MessageDTO>();
 
    public void refresh()
    {
-      try
-      {
-         LinksValue messagesLinks = client.query( "index", LinksValue.class );
-         EventListSynch.synchronize( messagesLinks.links().get(), messages );
-
-      } catch (Exception e)
-      {
-         throw new OperationException( CaseResources.could_not_refresh, e );
-      }
+      LinksValue messagesLinks = client.query( "index", LinksValue.class );
+      EventListSynch.synchronize( messagesLinks.links().get(), messages );
    }
 
-   public EventList messages()
+   public EventList<MessageDTO> messages()
    {
       return messages;
    }
 
-   public void addMessage( String message )
+   public void createMessage( String message )
    {
-      try
-      {
-         ValueBuilder<StringValue> stringBuilder = vbf.newValueBuilder( StringValue.class );
-         stringBuilder.prototype().string().set( message );
-         client.postCommand( "addmessage", stringBuilder.newInstance() );
+      ValueBuilder<StringValue> stringBuilder = vbf.newValueBuilder( StringValue.class );
+      stringBuilder.prototype().string().set( message );
+      client.postCommand( "createmessage", stringBuilder.newInstance() );
+   }
+
+   public void notifyTransactions( Iterable<TransactionEvents> transactions )
+   {
+      if (Events.matches( transactions, Events.onEntities( client.getReference().getParentRef().getLastSegment() )))
          refresh();
-      } catch (ResourceException e)
-      {
-         throw new OperationException( CaseResources.could_not_add_message, e );
-      }
    }
 }

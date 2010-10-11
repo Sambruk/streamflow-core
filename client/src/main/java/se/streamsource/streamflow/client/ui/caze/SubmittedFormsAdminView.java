@@ -20,7 +20,11 @@ package se.streamsource.streamflow.client.ui.caze;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
+import se.streamsource.streamflow.resource.roles.IntegerDTO;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -32,23 +36,14 @@ import java.awt.*;
  * JAVADOC
  */
 public class SubmittedFormsAdminView
-      extends JPanel
+      extends JSplitPane
 {
-   @Structure
-   ObjectBuilderFactory obf;
-
-   private CaseSubmittedFormsView formsView;
-   public RefreshWhenVisible refresher;
-   private CaseSubmittedFormsModel model;
-
-   public SubmittedFormsAdminView( @Uses final CaseSubmittedFormsView submittedFormsView,
-                                       @Uses final CaseSubmittedFormView submittedFormView )
+   public SubmittedFormsAdminView( @Uses final CommandQueryClient client, @Structure final ObjectBuilderFactory obf, @Structure final ValueBuilderFactory vbf)
    {
-      super( new BorderLayout() );
-      add( submittedFormsView, BorderLayout.WEST );
-      add( submittedFormView, BorderLayout.CENTER );
+      CaseSubmittedFormsView submittedFormsView = obf.newObjectBuilder( CaseSubmittedFormsView.class ).use( client ).newInstance();
+      setLeftComponent( submittedFormsView );
+      setRightComponent( new JPanel() );
 
-      this.formsView = submittedFormsView;
       final JList submittedForms = submittedFormsView.getSubmittedFormsList();
       submittedForms.addListSelectionListener( new ListSelectionListener()
       {
@@ -59,27 +54,17 @@ public class SubmittedFormsAdminView
                int idx = submittedForms.getSelectedIndex();
                if (idx != -1 && idx < submittedForms.getModel().getSize())
                {
-                  CaseSubmittedFormModel submittedFormModel = model.getSubmittedFormModel( idx );
-                  submittedFormView.setModel( submittedFormModel );
+
+                  ValueBuilder<IntegerDTO> builder = vbf.newValueBuilder( IntegerDTO.class );
+                  builder.prototype().integer().set( idx );
+                  CaseSubmittedFormView submittedFormView = obf.newObjectBuilder( CaseSubmittedFormView.class ).use( client, builder.newInstance() ).newInstance();
+                  setRightComponent( submittedFormView );
                } else
                {
-                  submittedFormView.setModel( null );
+                  setRightComponent( new JPanel() );
                }
             }
          }
       } );
-   }
-
-   public void setModel( CaseSubmittedFormsModel model )
-   {
-      this.model = model;
-      formsView.setModel( model );
-   }
-
-   @Override
-   public void setVisible( boolean b )
-   {
-      super.setVisible( b );
-      formsView.setVisible( b );
    }
 }

@@ -31,7 +31,6 @@ import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
 import se.streamsource.streamflow.infrastructure.event.source.helper.EventVisitorFilter;
 import se.streamsource.streamflow.resource.roles.BooleanDTO;
@@ -41,7 +40,7 @@ import se.streamsource.streamflow.resource.roles.IntegerDTO;
  * JAVADOC
  */
 public class FieldValueEditModel
-      implements Refreshable, EventListener, EventVisitor
+      implements Refreshable, EventVisitor
 {
    final Logger logger = LoggerFactory.getLogger( "administration" );
    private FieldDefinitionValue value;
@@ -171,11 +170,6 @@ public class FieldValueEditModel
       {
          throw new OperationException( AdministrationResources.could_not_get_field, e );
       }
-   }
-
-   public void notifyEvent( DomainEvent event )
-   {
-      eventFilter.visit( event );
    }
 
    public boolean visit( DomainEvent event )

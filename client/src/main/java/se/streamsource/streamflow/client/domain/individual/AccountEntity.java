@@ -119,10 +119,9 @@ public interface AccountEntity
          Reference serverRef = new Reference( settings.server().get() );
          serverRef.setPath( "/streamflow/" );
 
-         AuthenticationFilter filter = new AuthenticationFilter( uowf, account );
-         filter.setNext( (Restlet) client );
+         AuthenticationFilter filter = new AuthenticationFilter( uowf, account, client );
 
-         return obf.newObjectBuilder( SwingCommandQueryClient.class ).use( filter, serverRef, handler ).newInstance();
+         return obf.newObjectBuilder( CommandQueryClient.class ).use( filter, serverRef, handler ).newInstance();
       }
 
       public CommandQueryClient user( Uniform client )
@@ -144,19 +143,21 @@ public interface AccountEntity
       }
    }
 
-   class AuthenticationFilter extends Filter
+   class AuthenticationFilter
+      implements Uniform
    {
       private UnitOfWorkFactory uowf;
       private AccountSettings account;
+      private final Uniform next;
 
-      public AuthenticationFilter( UnitOfWorkFactory uowf, AccountSettings account )
+      public AuthenticationFilter( UnitOfWorkFactory uowf, AccountSettings account, Uniform next )
       {
          this.uowf = uowf;
          this.account = account;
+         this.next = next;
       }
 
-      @Override
-      protected int beforeHandle( Request request, Response response )
+      public void handle( Request request, Response response )
       {
          UnitOfWork uow = uowf.currentUnitOfWork();
          AccountSettingsValue settings;
@@ -172,7 +173,7 @@ public interface AccountEntity
 
          request.setChallengeResponse( new ChallengeResponse( ChallengeScheme.HTTP_BASIC, settings.userName().get(), settings.password().get() ) );
 
-         return super.beforeHandle( request, response );
+         next.handle( request, response );
       }
    }
 }

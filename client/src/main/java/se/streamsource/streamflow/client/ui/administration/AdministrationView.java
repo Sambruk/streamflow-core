@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.client.ui.administration;
 
+import com.jgoodies.forms.factories.Borders;
 import org.jdesktop.application.ApplicationActionMap;
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
@@ -24,13 +25,8 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.restlet.data.Status;
-import org.restlet.resource.ResourceException;
-
-import com.jgoodies.forms.factories.Borders;
-
-import se.streamsource.streamflow.client.ui.administration.organization.OrganizationsTabbedView;
-import se.streamsource.streamflow.resource.user.UserEntityListDTO;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.streamflow.client.ui.ContextItem;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -39,6 +35,7 @@ import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
@@ -61,14 +58,14 @@ public class AdministrationView
 
    CardLayout viewSwitch = new CardLayout();
    private ApplicationActionMap am;
-   private AdministrationOutlineView adminOutlineView;
+   private AdministrationTreeView adminTreeView;
 
    public AdministrationView( @Service ApplicationContext context,
-                              @Uses AdministrationOutlineView adminOutlineView )
+                              @Uses CommandQueryClient client, @Structure final ObjectBuilderFactory obf )
    {
       am = context.getActionMap( this );
       setActionMap( am );
-      this.adminOutlineView = adminOutlineView;
+      this.adminTreeView = obf.newObjectBuilder( AdministrationTreeView.class ).use( client ).newInstance();
 
       setLayout( viewSwitch );
       setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
@@ -86,13 +83,13 @@ public class AdministrationView
       mainView.setBorder(BorderFactory.createEmptyBorder());
       mainView.setOneTouchExpandable( true );
 
-      mainView.setLeftComponent( adminOutlineView );
-      adminOutlineView.setMinimumSize( new Dimension( 200, 400 ) );
+      mainView.setLeftComponent( adminTreeView );
+      adminTreeView.setMinimumSize( new Dimension( 200, 400 ) );
       mainView.setRightComponent( new JPanel() );
 
       mainView.setDividerLocation( 200 );
       mainView.setResizeWeight( 0 );
-      adminOutlineView.getTree().addTreeSelectionListener( new TreeSelectionListener()
+      adminTreeView.getTree().addTreeSelectionListener( new TreeSelectionListener()
       {
          public void valueChanged( TreeSelectionEvent e )
          {
@@ -101,62 +98,14 @@ public class AdministrationView
             {
                Object node = path.getLastPathComponent();
 
-               JComponent view = new JPanel();
+               DefaultMutableTreeNode mutableNode = (DefaultMutableTreeNode) node;
 
-               if (node instanceof AccountAdministrationNode)
-               {
-                  AccountAdministrationNode accountAdminNode = (AccountAdministrationNode) node;
-                  boolean load = true;
+               ContextItem clientInfo = (ContextItem) mutableNode.getUserObject();
 
-                  try
-                  {
-                     // check if permissions are sufficient
-                     accountAdminNode.accountModel().serverResource().getSubClient( "users" ).query( "users", UserEntityListDTO.class);
-                  } catch (ResourceException re)
-                  {
-                     if (Status.CLIENT_ERROR_FORBIDDEN.equals( re.getStatus() ))
-                        load = false;
-                  }
-
-                  if (load)
-                  {
-                     view = obf.newObjectBuilder( OrganizationsTabbedView.class ).use(
-                           accountAdminNode.organizationsModel(), accountAdminNode.usersModel() )
-                           .newInstance();
-                  }
-
-
-               } else if (node instanceof OrganizationAdministrationNode)
-               {
-                  OrganizationAdministrationNode orgNode = (OrganizationAdministrationNode) node;
-                  OrganizationAdministrationModel organizationAdministrationModel = orgNode.model();
-                  view = obf.newObjectBuilder( OrganizationAdministrationView.class ).use( organizationAdministrationModel,
-                        organizationAdministrationModel.administratorsModel(),
-                        organizationAdministrationModel.rolesModel(),
-                        organizationAdministrationModel.caseTypesModel(),
-                        organizationAdministrationModel.labelsModel(),
-                        organizationAdministrationModel.formsModel(),
-                        organizationAdministrationModel.selectedLabelsModel(),
-                        organizationAdministrationModel.accessPointsModel(),
-                        organizationAdministrationModel.proxyUsersModel(),
-                        AdministrationView.this ).newInstance();
-               } else if (node instanceof OrganizationalUnitAdministrationNode)
-               {
-                  OrganizationalUnitAdministrationNode ouNode = (OrganizationalUnitAdministrationNode) node;
-                  OrganizationalUnitAdministrationModel ouAdminModel = ouNode.model();
-                  view = obf.newObjectBuilder( OrganizationalUnitAdministrationView.class ).use( ouAdminModel,
-                        ouAdminModel.groupsModel(),
-                        ouAdminModel.projectsModel(),
-                        ouAdminModel.formsModel(),
-                        ouAdminModel.caseTypesModel(),
-                        ouAdminModel.labelsModel(),
-                        ouAdminModel.selectedLabelsModel(),
-                        ouAdminModel.administratorsModel(),
-                        AdministrationView.this ).newInstance();
-               }
+               JComponent view = obf.newObjectBuilder( TabbedResourceView.class ).use( clientInfo.getClient() ).newInstance();
 
                mainView.setRightComponent( view );
-            }
+            } 
          }
       } );
    }
@@ -174,8 +123,6 @@ public class AdministrationView
    @org.jdesktop.application.Action
    public void done()
    {
-      adminOutlineView.removeRefreshWhenVisible();
       viewSwitch.show( this, "main" );
-      adminOutlineView.addRefreshWhenVisible();
    }
 }

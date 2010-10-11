@@ -21,22 +21,28 @@ import ca.odell.glazedlists.SortedList;
 import ca.odell.glazedlists.swing.EventListModel;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Task;
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilder;
 
 import com.jgoodies.forms.factories.Borders;
 
+import org.qi4j.api.object.ObjectBuilderFactory;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.LinkComparator;
 import se.streamsource.streamflow.client.infrastructure.ui.LinkListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
+import se.streamsource.streamflow.client.ui.CommandTask;
 import se.streamsource.streamflow.client.ui.NameDialog;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.administration.label.GroupedSelectionDialog;
-import se.streamsource.streamflow.client.ui.administration.label.SelectionDialog;
+import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
 
 import javax.swing.ActionMap;
 import javax.swing.JButton;
@@ -52,6 +58,7 @@ import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
  */
 public class SelectedFormsView
       extends JPanel
+   implements TransactionListener
 {
    @Service
    DialogService dialogs;
@@ -64,18 +71,20 @@ public class SelectedFormsView
 
    public JList labelList;
 
-   private SelectedFormsModel modelSelected;
+   private SelectedFormsModel model;
 
-   public SelectedFormsView( @Service ApplicationContext context, @Uses SelectedFormsModel modelSelected )
+   public SelectedFormsView( @Service ApplicationContext context,
+                              @Uses final CommandQueryClient client,
+                              @Structure ObjectBuilderFactory obf)
    {
       super( new BorderLayout() );
-      this.modelSelected = modelSelected;
+      this.model = obf.newObjectBuilder( SelectedFormsModel.class ).use( client ).newInstance();
       setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
 
       ActionMap am = context.getActionMap( this );
       setActionMap( am );
 
-      labelList = new JList( new EventListModel<LinkValue>( new SortedList<LinkValue>( modelSelected.getEventList(), new LinkComparator() ) ) );
+      labelList = new JList( new EventListModel<LinkValue>( new SortedList<LinkValue>( model.getList(), new LinkComparator() ) ) );
 
       labelList.setCellRenderer( new LinkListCellRenderer() );
 
@@ -87,32 +96,49 @@ public class SelectedFormsView
       add( toolbar, BorderLayout.SOUTH );
       labelList.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "remove" ) ) );
 
-      addAncestorListener( new RefreshWhenVisible( modelSelected, this ) );
+      new RefreshWhenVisible( this, model );
    }
 
    @Action
-   public void add()
+   public Task add()
    {
-      GroupedSelectionDialog dialog = selectDialogs.use( modelSelected.getPossible() ).newInstance();
+      final GroupedSelectionDialog dialog = selectDialogs.use( model.getPossible() ).newInstance();
 
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.choose_form_title ) );
 
       if (dialog.getSelectedLinks() != null)
       {
-         for (LinkValue linkValue : dialog.getSelectedLinks())
+         return new CommandTask()
          {
-            modelSelected.add( linkValue);
-         }
-         modelSelected.refresh();
-      }
+            @Override
+            public void command()
+               throws Exception
+            {
+               model.add( dialog.getSelectedLinks());
+            }
+         };
+      } else
+         return null;
 
    }
 
    @Action
-   public void remove()
+   public Task remove()
    {
-      LinkValue selected = (LinkValue) labelList.getSelectedValue();
-      modelSelected.remove( selected );
-      modelSelected.refresh();
+      final LinkValue selected = (LinkValue) labelList.getSelectedValue();
+      return new CommandTask()
+      {
+         @Override
+         public void command()
+            throws Exception
+         {
+            model.remove( selected );
+         }
+      };
+   }
+
+   public void notifyTransactions( Iterable<TransactionEvents> transactions )
+   {
+      model.notifyTransactions(transactions);
    }
 }

@@ -20,22 +20,23 @@ package se.streamsource.streamflow.client.ui.overview;
 import ca.odell.glazedlists.gui.TableFormat;
 import ca.odell.glazedlists.swing.EventJXTableModel;
 import org.jdesktop.application.ApplicationContext;
-import org.jdesktop.swingx.JXFrame;
 import org.jdesktop.swingx.JXTable;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.StreamflowApplication;
 import se.streamsource.streamflow.client.StreamflowResources;
 import static se.streamsource.streamflow.client.ui.overview.OverviewResources.*;
 
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.FileNameExtensionFilter;
+import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
-import se.streamsource.streamflow.resource.overview.ProjectSummaryDTO;
+import se.streamsource.streamflow.resource.overview.ProjectSummaryValue;
 
 import javax.swing.Action;
 import javax.swing.ActionMap;
@@ -45,15 +46,10 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.SwingUtilities;
-import javax.swing.event.AncestorEvent;
-import javax.swing.event.AncestorListener;
 import java.awt.BorderLayout;
 import java.awt.KeyboardFocusManager;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -67,21 +63,22 @@ public class OverviewSummaryView extends JPanel
    protected StreamflowApplication application;
 
    protected JXTable overviewSummaryTable;
+
    protected OverviewSummaryModel model;
 
    public void init( @Service ApplicationContext context,
-                     @Uses final OverviewSummaryModel model,
+                     @Uses final CommandQueryClient client,
                      @Structure final ObjectBuilderFactory obf,
                      @Structure ValueBuilderFactory vbf )
    {
-      this.model = model;
+      this.model = obf.newObjectBuilder( OverviewSummaryModel.class ).use( client ).newInstance();
       setLayout( new BorderLayout() );
 
       ActionMap am = context.getActionMap( OverviewSummaryView.class, this );
       setActionMap( am );
 
       // Table
-      overviewSummaryTable = new JXTable( new EventJXTableModel<ProjectSummaryDTO>(model.getProjectOverviews(), new TableFormat<ProjectSummaryDTO>()
+      overviewSummaryTable = new JXTable( new EventJXTableModel<ProjectSummaryValue>(model.getProjectOverviews(), new TableFormat<ProjectSummaryValue>()
       {
          String[] columnNames = new String[]{text( project_column_header ), text( inbox_column_header ),
                text( assigned_column_header ), text( total_column_header )};
@@ -97,12 +94,12 @@ public class OverviewSummaryView extends JPanel
             return columnNames[i];
          }
 
-         public Object getColumnValue( ProjectSummaryDTO o, int i )
+         public Object getColumnValue( ProjectSummaryValue o, int i )
          {
             switch (i)
             {
                case 0:
-                  return o.project().get();
+                  return o.text().get();
                case 1:
                   return o.inboxCount().get();
                case 2:
@@ -145,40 +142,8 @@ public class OverviewSummaryView extends JPanel
          }
       } );
 
-      addAncestorListener( new OverviewSummaryAncestorListener() );
+      new RefreshWhenVisible(this, model);
    }
-
-   class OverviewSummaryAncestorListener
-         implements AncestorListener
-   {
-
-      public void ancestorAdded( AncestorEvent e )
-      {
-         if (e.getAncestor() instanceof JXFrame)
-         {
-            SwingUtilities.getWindowAncestor( OverviewSummaryView.this ).addWindowListener( new WindowAdapter()
-            {
-               @Override
-               public void windowActivated( WindowEvent e )
-               {
-                  super.windowActivated( e );
-                  OverviewSummaryView.this.model.refresh();
-               }
-            } );
-         }
-      }
-
-      public void ancestorRemoved( AncestorEvent e )
-      {
-
-      }
-
-      public void ancestorMoved( AncestorEvent e )
-      {
-
-      }
-   }
-
    protected Action addToolbarButton( JPanel toolbar, String name )
    {
       ActionMap am = getActionMap();

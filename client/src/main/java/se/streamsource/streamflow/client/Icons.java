@@ -44,17 +44,16 @@ public enum Icons
 
    // Tabs
    general,
-   metadata,
-   comments,
+   conversations,
+   forms,
    attachments,
 
    // Admin
    account,
    organization,
-   organizationalUnit,
+   organizationalunit,
 
    // Conversations
-   conversations,
    participants,
 
    // Forms

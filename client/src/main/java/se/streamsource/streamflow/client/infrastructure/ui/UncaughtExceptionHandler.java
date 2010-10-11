@@ -137,18 +137,21 @@ public class UncaughtExceptionHandler implements Thread.UncaughtExceptionHandler
 
    private Throwable unwrap( Throwable e )
    {
-      if (e instanceof Error)
+      if (e.getCause() != null)
       {
-         return unwrap( e.getCause() );
-      } else if (e instanceof InvocationTargetException)
-      {
-         return unwrap( e.getCause() );
-      } else if (e instanceof ConstructionException)
-      {
-         return unwrap( e.getCause() );
-      } else
-      {
-         return e;
+         if (e instanceof Error)
+         {
+            return unwrap( e.getCause() );
+         } else if (e instanceof InvocationTargetException)
+         {
+            return unwrap( e.getCause() );
+         } else if (e instanceof ConstructionException)
+         {
+            return e;
+         } else
+            return unwrap( e.getCause() );
       }
+
+      return e;
    }
 }

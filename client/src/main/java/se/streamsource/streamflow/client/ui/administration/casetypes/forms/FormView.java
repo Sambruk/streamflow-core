@@ -28,11 +28,13 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.swingx.SwingXUtilities;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 
+import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.administration.AdministrationView;
 
 import com.jgoodies.forms.factories.Borders;
@@ -44,7 +46,6 @@ public class FormView
       extends JPanel
       implements Observer
 {
-   private AdministrationView adminView;
    private FormModel model;
 
    @Structure
@@ -52,18 +53,14 @@ public class FormView
    private JTextArea textArea;
 
    public FormView( @Service ApplicationContext context,
-                    @Uses FormModel model,
-                    @Uses AdministrationView adminView )
+                    @Uses CommandQueryClient client, @Structure ObjectBuilderFactory obf )
    {
       super( new BorderLayout() );
-      this.model = model;
+      this.model = obf.newObjectBuilder( FormModel.class ).use(client).newInstance();
       setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
       
       model.refresh();
       ActionMap am = context.getActionMap( this );
-
-      this.adminView = adminView;
-
 
       model.addObserver( this );
       textArea = new JTextArea( model.getNote() );
@@ -78,12 +75,16 @@ public class FormView
    @org.jdesktop.application.Action
    public void edit()
    {
+/* TODO The form+fields+field model has to be cleaned up for this to work
       FieldsModel fieldsModel = model.getFieldsModel();
 
       FormEditAdminView formEditAdminView = obf.newObjectBuilder( FormEditAdminView.class ).
             use( model, fieldsModel ).newInstance();
 
+      AdministrationView adminView = SwingXUtilities.getAncestor( AdministrationView.class, this );
+
       adminView.show( formEditAdminView );
+*/
    }
 
    public FormModel getModel()

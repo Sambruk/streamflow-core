@@ -21,6 +21,7 @@ import org.qi4j.api.common.Visibility;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.restlet.client.SwingCommandQueryClient;
 import se.streamsource.dci.value.ContextValue;
 import se.streamsource.streamflow.client.domain.individual.AccountEntity;
@@ -56,7 +57,7 @@ public class DomainAssembler
       new CommonResourceAssembler().assemble( module );
 
       // /users
-      module.addObjects( SwingCommandQueryClient.class
+      module.addObjects( CommandQueryClient.class
       ).visibleIn( Visibility.application );
 
       module.addValues( ContextValue.class );

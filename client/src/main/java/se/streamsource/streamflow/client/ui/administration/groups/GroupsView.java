@@ -22,21 +22,29 @@ import ca.odell.glazedlists.swing.EventListModel;
 import com.jgoodies.forms.factories.Borders;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Task;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.LinkComparator;
 import se.streamsource.streamflow.client.infrastructure.ui.LinkListCellRenderer;
+import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.ui.CommandTask;
 import se.streamsource.streamflow.client.ui.ConfirmationDialog;
+import se.streamsource.streamflow.client.ui.ListDetailView;
 import se.streamsource.streamflow.client.ui.NameDialog;
 import se.streamsource.streamflow.client.ui.OptionsAction;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.ui.administration.surface.AccessPointView;
+import se.streamsource.streamflow.client.ui.administration.surface.AccessPointsModel;
+import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.util.Strings;
 
 import javax.swing.ActionMap;
@@ -46,6 +54,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import java.awt.BorderLayout;
+import java.awt.Component;
 
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 
@@ -53,92 +62,105 @@ import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
  * JAVADOC
  */
 public class GroupsView
-      extends JPanel
+      extends ListDetailView
 {
    @Uses
-   Iterable<NameDialog> nameDialogs;
+   private Iterable<NameDialog> nameDialogs;
 
    @Uses
-   Iterable<ConfirmationDialog> confirmationDialog;
+   private Iterable<ConfirmationDialog> confirmationDialog;
 
-   GroupsModel model;
-
-   @Structure
-   ObjectBuilderFactory obf;
+   private GroupsModel model;
 
    @Service
-   DialogService dialogs;
+   private DialogService dialogs;
 
-   public JList groupList;
-
-   public GroupsView( @Service ApplicationContext context, @Uses final GroupsModel model )
+   public GroupsView( @Service ApplicationContext context, @Uses final CommandQueryClient client, @Structure final ObjectBuilderFactory obf)
    {
-      super( new BorderLayout() );
-      this.model = model;
-      setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
+      this.model = obf.newObjectBuilder( GroupsModel.class ).use( client ).newInstance();
 
       ActionMap am = context.getActionMap( this );
       setActionMap( am );
 
-      JPopupMenu popup = new JPopupMenu();
-      popup.add( am.get( "rename" ) );
-      popup.add( am.get( "remove" ) );
+      initMaster( new EventListModel<LinkValue>( model.getList()), am.get("add"), new javax.swing.Action[]{am.get( "rename" ), am.get( "remove" )}, new DetailFactory()
+      {
+         public Component createDetail( LinkValue detailLink )
+         {
+            CommandQueryClient caseTypeClient = client.getClient( detailLink );
+            return obf.newObjectBuilder( AccessPointView.class ).use( caseTypeClient).newInstance();
+         }
+      });
 
-      groupList = new JList( new EventListModel<LinkValue>(new SortedList<LinkValue>(model.getGroups(), new LinkComparator())));
-
-      groupList.setCellRenderer( new LinkListCellRenderer() );
-
-      add( new JScrollPane(groupList), BorderLayout.CENTER );
-
-      JPanel toolbar = new JPanel();
-      toolbar.add( new JButton( am.get( "add" ) ) );
-      toolbar.add( new JButton( new OptionsAction(popup) ) );
-      add( toolbar, BorderLayout.SOUTH );
-
-      groupList.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "remove" ), am.get( "rename" ) ) );
+      new RefreshWhenVisible(this, model);
    }
 
    @Action
-   public void add()
+   public Task add()
    {
       NameDialog dialog = nameDialogs.iterator().next();
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.add_group_title ) );
-      String name = dialog.name();
+      final String name = dialog.name();
       if (Strings.notEmpty( name ))
       {
-         model.createGroup( name );
-      }
+         return new CommandTask()
+         {
+            @Override
+            public void command()
+               throws Exception
+            {
+               model.create( name );
+            }
+         };
+      } else
+         return null;
    }
 
    @Action
-   public void remove()
+   public Task remove()
    {
-      LinkValue selected = (LinkValue) groupList.getSelectedValue();
+      final LinkValue selected = (LinkValue) list.getSelectedValue();
 
       ConfirmationDialog dialog = confirmationDialog.iterator().next();
       dialog.setRemovalMessage( selected.text().get() );
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation ) );
       if (dialog.isConfirmed())
       {
-         model.removeGroup( selected.id().get() );
-      }
+         return new CommandTask()
+         {
+            @Override
+            public void command()
+               throws Exception
+            {
+               model.remove( selected );
+            }
+         };
+      } else
+         return null;
    }
 
    @Action
-   public void rename()
+   public Task rename()
    {
-      NameDialog dialog = nameDialogs.iterator().next();
+      final NameDialog dialog = nameDialogs.iterator().next();
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.rename_group_title ) );
 
       if (Strings.notEmpty( dialog.name() ) )
       {
-         model.changeDescription( (LinkValue)groupList.getSelectedValue(), dialog.name() );
-      }
+         return new CommandTask()
+         {
+            @Override
+            public void command()
+               throws Exception
+            {
+               model.changeDescription( (LinkValue)list.getSelectedValue(), dialog.name() );
+            }
+         };
+      } else
+         return null;
    }
 
-   public JList getGroupList()
+   public void notifyTransactions( Iterable<TransactionEvents> transactions )
    {
-      return groupList;
+      model.notifyTransactions( transactions );
    }
-
 }

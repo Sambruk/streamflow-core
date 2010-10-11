@@ -17,6 +17,8 @@
 
 package se.streamsource.streamflow.client.infrastructure.ui;
 
+import javax.swing.JComponent;
+import javax.swing.SwingUtilities;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
 import java.awt.*;
@@ -28,17 +30,19 @@ public class RefreshWhenVisible
       implements AncestorListener
 {
    private Refreshable refreshable;
-   private Component component;
+   private JComponent component;
 
-   public RefreshWhenVisible( Component component )
+   public RefreshWhenVisible( JComponent component )
    {
       this.component = component;
    }
 
-   public RefreshWhenVisible( Refreshable refreshable, Component component )
+   public RefreshWhenVisible( JComponent component, Refreshable refreshable )
    {
       this.refreshable = refreshable;
       this.component = component;
+
+      component.addAncestorListener( this );
    }
 
    public void setRefreshable( Refreshable refreshable )
@@ -50,14 +54,14 @@ public class RefreshWhenVisible
          if (!isVisible())
             return;
       }
-      refreshable.refresh();
+      refresh();
    }
 
    public void ancestorAdded( AncestorEvent event )
    {
       if (refreshable != null && isVisible())
       {
-         refreshable.refresh();
+         refresh();
       }
    }
 
@@ -82,5 +86,16 @@ public class RefreshWhenVisible
       } while (current != null);
 
       return true;
+   }
+
+   private void refresh()
+   {
+      SwingUtilities.invokeLater( new Runnable()
+      {
+         public void run()
+         {
+            refreshable.refresh();
+         }
+      });
    }
 }

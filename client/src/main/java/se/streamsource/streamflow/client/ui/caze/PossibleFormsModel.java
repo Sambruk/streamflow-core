@@ -28,18 +28,18 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.LinkValue;
+import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
+import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 
 import java.util.List;
 
 public class PossibleFormsModel
-      implements EventListener
+   implements Refreshable
 {
    @Uses
    CommandQueryClient client;
@@ -52,30 +52,9 @@ public class PossibleFormsModel
 
    BasicEventList<LinkValue> forms = new BasicEventList<LinkValue>();
 
-   WeakModelMap<String, FormSubmissionModel> formSubmitModels = new WeakModelMap<String, FormSubmissionModel>()
+   public void refresh()
    {
-      @Override
-      protected FormSubmissionModel newModel( String key )
-      {
-         try
-         {
-            ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
-            builder.prototype().entity().set( EntityReference.parseEntityReference( key ) );
-
-            client.postCommand( "createformsubmission", builder.newInstance() );
-            EntityReferenceDTO formSubmission = client.query( "formsubmission", builder.newInstance(), EntityReferenceDTO.class );
-            return obf.newObjectBuilder( FormSubmissionModel.class )
-                  .use( client.getSubClient( formSubmission.entity().get().identity() ) ).newInstance();
-         } catch (ResourceException e)
-         {
-            throw new OperationException( WorkspaceResources.could_not_get_form, e );
-         }
-      }
-   };
-
-   public void setForms( List<LinkValue> forms )
-   {
-      EventListSynch.synchronize( forms, this.forms );
+      EventListSynch.synchronize( client.query( "possibleforms", LinksValue.class ).links().get(), this.forms );
    }
 
    public EventList<LinkValue> getForms()
@@ -83,44 +62,17 @@ public class PossibleFormsModel
       return forms;
    }
 
-   public FormSubmissionModel getFormSubmitModel( String key )
-   {
-      return formSubmitModels.get( key );
-   }
-
    public void submit( EntityReference form )
    {
       ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
       builder.prototype().entity().set( form );
-      try
-      {
-         client.postCommand( "submit", builder.newInstance() );
-         formSubmitModels.remove( form.identity() );
-      } catch (ResourceException e)
-      {
-         throw new OperationException( WorkspaceResources.could_not_submit_form, e );
-      }
+      client.postCommand( "submit", builder.newInstance() );
    }
 
    public void discard( EntityReference form )
    {
       ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
       builder.prototype().entity().set( form );
-      try
-      {
-         client.postCommand( "discard", builder.newInstance() );
-         formSubmitModels.remove( form.identity() );
-      } catch (ResourceException e)
-      {
-         throw new OperationException( WorkspaceResources.could_not_discard_form_submission, e );
-      }
-   }
-
-   public void notifyEvent( DomainEvent event )
-   {
-      for (FormSubmissionModel formSubmitModel : formSubmitModels)
-      {
-         formSubmitModel.notifyEvent( event );
-      }
+      client.postCommand( "discard", builder.newInstance() );
    }
 }

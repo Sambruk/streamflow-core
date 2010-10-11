@@ -17,48 +17,76 @@
 
 package se.streamsource.streamflow.client.ui.caze;
 
+import ca.odell.glazedlists.gui.TableFormat;
+import ca.odell.glazedlists.swing.EventJXTableModel;
 import org.jdesktop.swingx.JXTable;
-
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import java.awt.CardLayout;
-
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.util.DateFunctions;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.infrastructure.ui.ToolTipTableCellRenderer;
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.domain.form.DateFieldValue;
+import se.streamsource.streamflow.resource.caze.FieldDTO;
+import se.streamsource.streamflow.resource.roles.IntegerDTO;
+import se.streamsource.streamflow.util.Strings;
+
+import javax.swing.JScrollPane;
+import java.text.SimpleDateFormat;
 
 /**
  * JAVADOC
  */
 public class CaseSubmittedFormView
-      extends JPanel
+      extends JScrollPane
 {
-   private JXTable fieldValues;
-   private CardLayout layout = new CardLayout();
+   private EventJXTableModel<FieldDTO> tableModel;
 
-   public CaseSubmittedFormView()
+
+   public CaseSubmittedFormView(@Uses CommandQueryClient client, @Uses IntegerDTO index, @Structure ObjectBuilderFactory obf)
    {
-      setLayout( layout );
+      CaseSubmittedFormModel model = obf.newObjectBuilder( CaseSubmittedFormModel.class ).use(client, index).newInstance();
 
-      JScrollPane scroll = new JScrollPane();
+      TableFormat<FieldDTO> fieldDTOTableFormat = new TableFormat<FieldDTO>()
+      {
+         public int getColumnCount()
+         {
+            return 2;
+         }
 
-      fieldValues = new JXTable();
+         public String getColumnName( int i )
+         {
+            return new String[]{i18n.text( WorkspaceResources.field_name ), i18n.text( WorkspaceResources.field_value )}[i];
+         }
+
+         public Object getColumnValue( FieldDTO field, int column )
+         {
+            switch (column)
+            {
+               case 0:
+                  return field.field().get();
+               default:
+                  if (DateFieldValue.class.getName().equals( field.fieldType().get() ) &&
+                        Strings.notEmpty( field.value().get() ))
+                  {
+                     return new SimpleDateFormat( i18n.text( WorkspaceResources.date_time_format ) ).format( DateFunctions.fromString( field.value().get() ) );
+                  } else
+                  {
+                     return field.value().get();
+                  }
+            }
+         }
+      };
+
+      tableModel = new EventJXTableModel<FieldDTO>( model.getEventList(), fieldDTOTableFormat );
+
+      JXTable fieldValues = new JXTable(tableModel);
       fieldValues.setDefaultRenderer( Object.class, new ToolTipTableCellRenderer() );
-      scroll.setViewportView( fieldValues );
+      setViewportView( fieldValues );
 
-      add( new JPanel(), "EMPTY" );
-      add( scroll, "FORM" );
+      new RefreshWhenVisible(this, model);
    }
-
-   public void setModel( CaseSubmittedFormModel model )
-   {
-      if (model != null)
-      {
-         fieldValues.setModel( model );
-
-         layout.show( this, "FORM" );
-      } else
-      {
-         layout.show( this, "EMPTY" );
-      }
-   }
-
 }

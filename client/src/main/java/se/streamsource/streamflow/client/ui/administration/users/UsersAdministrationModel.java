@@ -17,6 +17,8 @@
 
 package se.streamsource.streamflow.client.ui.administration.users;
 
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilder;
@@ -29,11 +31,15 @@ import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.application.error.ErrorResources;
 import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
+import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.EventListener;
+import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.source.helper.EventVisitorFilter;
+import se.streamsource.streamflow.infrastructure.event.source.helper.Events;
 import se.streamsource.streamflow.resource.user.NewUserCommand;
 import se.streamsource.streamflow.resource.user.UserEntityDTO;
 import se.streamsource.streamflow.resource.user.UserEntityListDTO;
@@ -47,98 +53,28 @@ import org.slf4j.LoggerFactory;
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 
 public class UsersAdministrationModel
-      extends AbstractTableModel
-      implements EventListener, EventVisitor
+      implements Refreshable, TransactionListener
 {
-   final Logger logger = LoggerFactory.getLogger( "administration" );
    @Structure
    ValueBuilderFactory vbf;
 
-   private List<UserEntityDTO> users;
-
-   private String[] columnNames;
-   private Class[] columnClasses;
-   private boolean[] columnEditable;
-
-   private EventVisitorFilter eventFilter = new EventVisitorFilter( this, "createdUser", "changedEnabled" );
+   private EventList<UserEntityDTO> eventList = new BasicEventList<UserEntityDTO>();
 
    private CommandQueryClient client;
 
    public UsersAdministrationModel( @Uses CommandQueryClient client ) throws ResourceException
    {
       this.client = client;
-      columnNames = new String[]{text( AdministrationResources.user_enabled_label ), text( AdministrationResources.username_label )};
-      //columnNames = new String[]{text( AdministrationResources.username_label )};
-      columnClasses = new Class[]{Boolean.class, String.class};
-      //columnClasses = new Class[]{String.class};
-      columnEditable = new boolean[]{true, false};
-      //columnEditable = new boolean[]{false};
-      refresh();
    }
 
-   private void refresh()
+   public EventList<UserEntityDTO> getEventList()
    {
-      try
-      {
-         users = client.query("users", UserEntityListDTO.class).users().get();
-         fireTableDataChanged();
-       } catch (ResourceException e)
-      {
-         throw new OperationException( AdministrationResources.could_not_refresh_list_of_organizations, e );
-      }
+      return eventList;
    }
 
-   public int getRowCount()
+   public void refresh()
    {
-      return users == null ? 0 : users.size();
-   }
-
-   public int getColumnCount()
-   {
-      return 2;
-      //return 1;
-   }
-
-   public Object getValueAt( int row, int column )
-   {
-      //return users == null ? "" : users.get( row ).username().get();
-      switch (column)
-      {
-         case 0:
-            return users != null && !users.get( row ).disabled().get();
-         default:
-            return users == null ? "" : users.get( row ).username().get();
-      }
-   }
-
-   @Override
-   public void setValueAt( Object aValue, int rowIndex, int column )
-   {
-
-      switch (column)
-      {
-         case 0:
-            UserEntityDTO user = users.get( rowIndex );
-            changeDisabled( user );
-      }
-   }
-
-   @Override
-   public boolean isCellEditable( int rowIndex, int columnIndex )
-   {
-      return columnEditable[columnIndex];
-   }
-
-   @Override
-   public Class<?> getColumnClass( int column )
-   {
-      return columnClasses[column];
-   }
-
-   @Override
-   public String getColumnName( int column )
-   {
-      return columnNames[column];
+      EventListSynch.synchronize( client.query("users", UserEntityListDTO.class).users().get(), eventList );
    }
 
    public void createUser( NewUserCommand userCommand )
@@ -148,72 +84,38 @@ public class UsersAdministrationModel
          client.postCommand( "createuser", userCommand );
       } catch (ResourceException e)
       {
-         try
-         {
-            ErrorResources resources = ErrorResources.valueOf( e.getMessage() );
-            throw new OperationException( resources, e );
-         } catch (Throwable t)
-         {
-            throw new RuntimeException( e.getMessage(), e );
-         }
+         ErrorResources resources = ErrorResources.valueOf( e.getMessage() );
+         throw new OperationException( resources, e );
       }
    }
 
-
    public void changeDisabled( UserEntityDTO user )
    {
-      try
-      {
-         client.getSubClient(user.entity().get().identity()).postCommand( "changedisabled" );
-      } catch (ResourceException e)
-      {
-         throw new OperationException( AdministrationResources.could_not_change_user_disabled, e );
-      }
+      client.getSubClient(user.entity().get().identity()).postCommand( "changedisabled" );
    }
 
    public void importUsers( File f )
    {
-      try
-      {
-         MediaType type = f.getName().endsWith( ".xls" )
-               ? MediaType.APPLICATION_EXCEL
-               : MediaType.TEXT_CSV;
+      MediaType type = f.getName().endsWith( ".xls" )
+            ? MediaType.APPLICATION_EXCEL
+            : MediaType.TEXT_CSV;
 
-         Representation representation = new FileRepresentation( f, type );
+      Representation representation = new FileRepresentation( f, type );
 
-         client.postCommand( "importusers", representation );
-
-      } catch (ResourceException e)
-      {
-         throw new RuntimeException( e.getMessage(), e );
-
-      }
+      client.postCommand( "importusers", representation );
    }
 
-   public void notifyEvent( DomainEvent event )
+   public void resetPassword( UserEntityDTO user, String password )
    {
-      eventFilter.visit( event );
+      ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
+      builder.prototype().string().set( password );
+
+      client.getSubClient( user.entity().get().identity() ).putCommand( "resetpassword", builder.newInstance() );
    }
 
-   public boolean visit( DomainEvent event )
+   public void notifyTransactions( Iterable<TransactionEvents> transactions )
    {
-      logger.info( "Refresh organizations users" );
-      refresh();
-
-      return false;
-   }
-
-   public void resetPassword( int index, String password )
-   {
-      try
-      {
-         ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
-         builder.prototype().string().set( password );
-
-         client.getSubClient( users.get( index ).entity().get().identity() ).putCommand( "resetpassword", builder.newInstance() );
-      } catch (ResourceException e)
-      {
-         throw new OperationException( AdministrationResources.reset_password_failed, e );
-      }
+      if (Events.matches( transactions, Events.withNames("createdUser", "changedEnabled" )))
+         refresh();
    }
 }

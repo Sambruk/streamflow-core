@@ -21,6 +21,7 @@ import ca.odell.glazedlists.SortedList;
 import ca.odell.glazedlists.swing.EventListModel;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Task;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.dci.value.LinkValue;
@@ -30,10 +31,12 @@ import se.streamsource.streamflow.client.infrastructure.ui.LinkComparator;
 import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
+import se.streamsource.streamflow.client.ui.CommandTask;
 import se.streamsource.streamflow.client.ui.ConfirmationDialog;
 import se.streamsource.streamflow.client.ui.NameDialog;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
 import se.streamsource.streamflow.util.Strings;
 
 import javax.swing.JButton;
@@ -41,11 +44,14 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
 
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
+
 /**
  * JAVADOC
  */
 public class RolesView
       extends JPanel
+   implements TransactionListener
 {
    RolesModel model;
 
@@ -67,7 +73,7 @@ public class RolesView
 
       setActionMap( context.getActionMap( this ) );
 
-      roleList = new JList( new EventListModel<LinkValue>(new SortedList<LinkValue>(model.getRoles(), new LinkComparator())) );
+      roleList = new JList( new EventListModel<LinkValue>(new SortedList<LinkValue>(model.getList(), new LinkComparator())) );
 
       roleList.setCellRenderer( new ListItemListCellRenderer() );
       add( roleList, BorderLayout.CENTER );
@@ -77,35 +83,55 @@ public class RolesView
       toolbar.add( new JButton( getActionMap().get( "remove" ) ) );
       add( toolbar, BorderLayout.SOUTH );
 
-      addAncestorListener( new RefreshWhenVisible( model, this ) );
+      new RefreshWhenVisible( this, model );
    }
 
    @Action
-   public void add()
+   public Task add()
    {
       NameDialog dialog = nameDialogs.iterator().next();
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.add_role_title ) );
-      String name = dialog.name();
+      final String name = dialog.name();
       if ( Strings.notEmpty( name ) )
       {
-         model.createRole( name );
-         model.refresh();
-      }
+         return new CommandTask()
+         {
+            @Override
+            public void command()
+               throws Exception
+            {
+               model.create( name );
+            }
+         };
+      } else
+         return null;
    }
 
    @Action
-   public void remove()
+   public Task remove()
    {
-      LinkValue selected = (LinkValue) roleList.getSelectedValue();
+      final LinkValue selected = (LinkValue) roleList.getSelectedValue();
 
       ConfirmationDialog dialog = confirmationDialog.iterator().next();
       dialog.setRemovalMessage( selected.text().get() );
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation ) );
       if (dialog.isConfirmed())
       {
-         model.removeRole( selected.id().get() );
-         model.refresh();
-      }
+         return new CommandTask()
+         {
+            @Override
+            public void command()
+               throws Exception
+            {
+               model.remove(selected);
+            }
+         };
+      } else
+         return null;
    }
 
+   public void notifyTransactions( Iterable<TransactionEvents> transactions )
+   {
+      model.notifyTransactions( transactions);
+   }
 }

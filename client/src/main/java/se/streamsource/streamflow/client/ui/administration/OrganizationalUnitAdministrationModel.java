@@ -35,15 +35,12 @@ import se.streamsource.streamflow.client.ui.administration.label.SelectedLabelsM
 import se.streamsource.streamflow.client.ui.administration.policy.AdministratorsModel;
 import se.streamsource.streamflow.client.ui.administration.projects.ProjectsModel;
 import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FormsModel;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 
 /**
  * JAVADOC
  */
 public class OrganizationalUnitAdministrationModel
-      implements EventListener
 {
 
    @Structure
@@ -199,16 +196,5 @@ public class OrganizationalUnitAdministrationModel
          }
       }
 
-   }
-
-   public void notifyEvent( DomainEvent event )
-   {
-      groupsModel.notifyEvent( event );
-      projectsModel.notifyEvent( event );
-      formsModel.notifyEvent( event );
-      caseTypesModel.notifyEvent( event );
-      labelsModel.notifyEvent( event );
-      selectedLabelsModel.notifyEvent( event );
-      administratorsModel.notifyEvent( event );
    }
 }

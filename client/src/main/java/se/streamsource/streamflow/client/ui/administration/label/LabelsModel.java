@@ -32,97 +32,17 @@ import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.ui.administration.DefinitionListModel;
 import se.streamsource.streamflow.client.ui.administration.LinkValueListModel;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.EventListener;
 
 /**
- * Management of labels on an organizational or user level
+ * Management of labels
  */
 public class LabelsModel
-   extends LinkValueListModel
-      implements EventListener, Refreshable
+   extends DefinitionListModel
 {
-   @Uses
-   CommandQueryClient client;
-
-   @Structure
-   ValueBuilderFactory vbf;
-
-   public EventList<LinkValue> getLabelList()
+   public LabelsModel( )
    {
-      return linkValues;
-   }
-
-   public void refresh()
-   {
-      try
-      {
-         // Get label list
-         LinksValue newList = client.query( "index", LinksValue.class );
-
-         EventListSynch.synchronize( newList.links().get(), linkValues );
-
-      } catch (ResourceException e)
-      {
-         throw new OperationException( AdministrationResources.could_not_refresh_list_of_labels, e );
-      }
-   }
-
-   public void createLabel( String description )
-   {
-      try
-      {
-         ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
-         builder.prototype().string().set( description );
-         client.postCommand( "createlabel", builder.newInstance() );
-      } catch (ResourceException e)
-      {
-         throw new OperationException( AdministrationResources.could_not_create_label, e );
-      }
-   }
-
-   public void removeLabel( LinkValue label)
-   {
-      try
-      {
-         client.getClient( label ).delete();
-      } catch (ResourceException e)
-      {
-         throw new OperationException( AdministrationResources.could_not_remove_label, e );
-      }
-   }
-
-   public void changeDescription( LinkValue label, String name )
-   {
-      try
-      {
-         ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
-         builder.prototype().string().set( name );
-         client.getClient( label ).putCommand( "changedescription", builder.newInstance() );
-      } catch (ResourceException e)
-      {
-         throw new OperationException( AdministrationResources.could_not_change_description, e );
-      }
-   }
-
-   public EventList<LinkValue> usages(LinkValue label)
-   {
-      try
-      {
-         LinksValue usages = client.getClient(label).query( "usages", LinksValue.class );
-         EventList<LinkValue> eventList = new BasicEventList<LinkValue>();
-         EventListSynch.synchronize( usages.links().get(), eventList );
-
-         return eventList;
-      } catch (ResourceException e)
-      {
-         throw new OperationException(AdministrationResources.could_not_perform_query, e);
-      }
-   }
-
-   public void notifyEvent( DomainEvent event )
-   {
-      eventFilter.visit( event );
+      super( "createlabel" );
    }
 }

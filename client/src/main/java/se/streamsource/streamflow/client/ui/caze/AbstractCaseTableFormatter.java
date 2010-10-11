@@ -91,7 +91,7 @@ public abstract class AbstractCaseTableFormatter
 
             icons.add( caseValue.hasContacts().get() ? Icons.projects.toString() : "empty" );
             icons.add( caseValue.hasConversations().get() ? Icons.conversations.toString() : "empty" );
-            icons.add( caseValue.hasSubmittedForms().get() ? Icons.metadata.toString() : "empty" );
+            icons.add( caseValue.hasSubmittedForms().get() ? Icons.forms.toString() : "empty" );
             icons.add( caseValue.hasAttachments().get() ? Icons.attachments.toString() : "empty" );
 
             return icons;
@@ -103,6 +103,8 @@ public abstract class AbstractCaseTableFormatter
 
          case 4:
             return caseValue.status().get();
+         case 5:
+            return caseValue.id().get();
       }
 
       return null;

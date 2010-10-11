@@ -47,7 +47,7 @@ public enum WorkspaceResources
    assignments_node,
 
    general_tab,
-   metadata_tab,
+   forms_tab,
    conversations_tab,
    contacts_tab,
 

@@ -28,13 +28,11 @@ import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.EventListener;
 
 import java.util.List;
 
 public class LinksListModel
-      implements Refreshable, EventListener
+      implements Refreshable
 {
    protected CommandQueryClient client;
    private String query;
@@ -62,11 +60,6 @@ public class LinksListModel
    public CommandQueryClient getClient()
    {
       return client;
-   }
-
-   public void notifyEvent( DomainEvent event )
-   {
-      //Do nothing
    }
 
    public EventList<LinkValue> getEventList()

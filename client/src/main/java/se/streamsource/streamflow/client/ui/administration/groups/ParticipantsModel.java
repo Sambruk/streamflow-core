@@ -30,9 +30,9 @@ import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
+import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.EventListener;
+import se.streamsource.streamflow.client.ui.administration.SelectionListModel;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 
 import java.util.Set;
@@ -41,62 +41,10 @@ import java.util.Set;
  * JAVADOC
  */
 public class ParticipantsModel
-      implements EventListener
+   extends SelectionListModel
 {
-   @Structure
-   ValueBuilderFactory vbf;
-
-   @Uses
-   CommandQueryClient client;
-
-   private BasicEventList<LinkValue> participants = new BasicEventList<LinkValue>();
-
-   public EventList<LinkValue> getParticipants()
+   public ParticipantsModel()
    {
-      return participants;
-   }
-
-   public void addParticipants( Set<LinkValue> participants )
-   {
-      try
-      {
-         for (LinkValue value : participants)
-         {
-            ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
-            builder.prototype().entity().set( EntityReference.parseEntityReference( value.id().get() ) );
-            client.postCommand( "addparticipant", builder.newInstance() );
-         }
-      } catch (ResourceException e)
-      {
-         throw new OperationException( AdministrationResources.could_not_add_participants, e );
-      }
-   }
-
-   public void removeParticipant( String participant )
-   {
-      try
-      {
-         client.getSubClient( participant ).delete();
-      } catch (ResourceException e)
-      {
-         throw new OperationException( AdministrationResources.could_not_remove_participant, e );
-      }
-
-   }
-
-   public void refresh() throws ResourceException
-   {
-      LinksValue list = client.query( "index", LinksValue.class );
-      EventListSynch.synchronize( list.links().get(), participants );
-   }
-
-   public void notifyEvent( DomainEvent event )
-   {
-
-   }
-
-   public CommandQueryClient getClient()
-   {
-      return client;
+      super( "" );
    }
 }

@@ -24,6 +24,7 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
+import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.LinkValue;
@@ -34,9 +35,12 @@ import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.ui.administration.DefinitionListModel;
+import se.streamsource.streamflow.client.ui.administration.LinkValueListModel;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.EventListener;
+import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.source.helper.EventVisitorFilter;
 
 import java.util.List;
@@ -47,96 +51,28 @@ import org.slf4j.LoggerFactory;
  * JAVADOC
  */
 public class FormsModel
-      implements Refreshable, EventListener, EventVisitor
-
+   extends DefinitionListModel
 {
-   final Logger logger = LoggerFactory.getLogger( "administration" );
-   @Uses
-   CommandQueryClient client;
-
-   @Structure
-   ObjectBuilderFactory obf;
-
-   @Structure
-   ValueBuilderFactory vbf;
-
-   private BasicEventList<LinkValue> forms = new BasicEventList<LinkValue>();
-
-   private EventVisitorFilter eventFilter;
-
-   public FormsModel(@Uses CommandQueryClient client)
+   public FormsModel( )
    {
-      eventFilter = new EventVisitorFilter( client.getReference().getParentRef().getLastSegment(), this, "createdForm", "removedForm", "changedDescription" );
+      super( "createform" );
    }
 
-   WeakModelMap<String, FormModel> formModels = new WeakModelMap<String, FormModel>()
-   {
-      protected FormModel newModel( String key )
-      {
-         return obf.newObjectBuilder( FormModel.class )
-               .use( client.getSubClient( key ) ).newInstance();
-      }
-   };
-
-   public EventList<LinkValue> getForms()
-   {
-      return forms;
-   }
-
-   public void refresh()
+   public EventList<LinkValue> getPossibleMoveTo()
    {
       try
       {
-         List<LinkValue> formsList = client.query( "index", LinksValue.class ).links().get();
-         EventListSynch.synchronize( formsList, forms );
+         BasicEventList<LinkValue> possibleLinks = new BasicEventList<LinkValue>();
+         possibleLinks.addAll( client.query( "possiblemoveto", LinksValue.class ).links().get() );
+         return possibleLinks;
       } catch (ResourceException e)
       {
-         throw new OperationException( AdministrationResources.could_not_refresh_list_of_members, e );
+         throw new OperationException( AdministrationResources.could_not_refresh, e );
       }
    }
 
-   public void createForm( String formName )
+   public void moveForm( LinkValue selected, LinkValue selectedLink )
    {
-      ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
-      builder.prototype().string().set( formName );
-      try
-      {
-         client.postCommand( "createform", builder.newInstance() );
-      } catch (ResourceException e)
-      {
-         throw new OperationException( AdministrationResources.description_cannot_be_more_than_50, e );
-      }
-   }
-
-   public void removeForm( LinkValue form )
-   {
-      try
-      {
-         client.getClient( form ).delete();
-      } catch (ResourceException e)
-      {
-         throw new OperationException( AdministrationResources.could_not_remove, e );
-      }
-   }
-
-   public void notifyEvent( DomainEvent event )
-   {
-      eventFilter.visit( event );
-      for (FormModel model : formModels)
-      {
-         model.notifyEvent( event );
-      }
-   }
-
-   public boolean visit( DomainEvent event )
-   {
-      logger.info( "Refresh project form definitions" );
-      refresh();
-      return false;
-   }
-
-   public FormModel getFormModel( String identity )
-   {
-      return formModels.get( identity );
+      client.getClient( selected ).postLink( selectedLink );
    }
 }

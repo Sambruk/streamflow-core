@@ -68,6 +68,7 @@ public class SelectOrganizationalUnitDialog
             {
                public Icon getIcon( Object o )
                {
+/* TODO
                   if (o instanceof AccountAdministrationNode)
                      return i18n.icon( Icons.account, i18n.ICON_24 );
                   else if (o instanceof OrganizationAdministrationNode)
@@ -75,6 +76,7 @@ public class SelectOrganizationalUnitDialog
                   else if (o instanceof OrganizationalUnitAdministrationNode)
                      return i18n.icon( Icons.organization, i18n.ICON_24 );
                   else
+*/
                      return NULL_ICON;
                }
             },
@@ -82,11 +84,13 @@ public class SelectOrganizationalUnitDialog
             {
                public String getString( Object o )
                {
+/* TODO
                   if (o instanceof AdministrationNode)
                      return "                            ";
                   else if (o instanceof AccountAdministrationNode)
                      return ((AccountAdministrationNode) o).accountModel().settings().name().get();
-                  else return o.toString();
+*/
+                  return o.toString();
                }
             },
             false
@@ -104,6 +108,7 @@ public class SelectOrganizationalUnitDialog
    @Action
    public void execute()
    {
+/* TODO
       Object selected = tree.getSelectionPath().getLastPathComponent();
       if (!(selected instanceof OrganizationalUnitAdministrationNode))
       {
@@ -114,6 +119,7 @@ public class SelectOrganizationalUnitDialog
       }
 
       target = ((OrganizationalUnitAdministrationNode)selected).ou().entity().get();
+*/
       WindowUtils.findWindow( this ).dispose();
    }
 

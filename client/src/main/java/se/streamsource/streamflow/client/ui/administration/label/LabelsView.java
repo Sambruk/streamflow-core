@@ -22,11 +22,15 @@ import ca.odell.glazedlists.SortedList;
 import ca.odell.glazedlists.swing.EventListModel;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Task;
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 
 import com.jgoodies.forms.factories.Borders;
 
+import org.qi4j.api.object.ObjectBuilderFactory;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
@@ -35,10 +39,13 @@ import se.streamsource.streamflow.client.infrastructure.ui.LinkListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.ui.CommandTask;
 import se.streamsource.streamflow.client.ui.ConfirmationDialog;
 import se.streamsource.streamflow.client.ui.NameDialog;
 import se.streamsource.streamflow.client.ui.OptionsAction;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
 import se.streamsource.streamflow.util.Strings;
 
 import javax.swing.ActionMap;
@@ -56,6 +63,7 @@ import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
  */
 public class LabelsView
       extends JPanel
+   implements TransactionListener
 {
    LabelsModel model;
 
@@ -70,10 +78,12 @@ public class LabelsView
 
    public JList labelList;
 
-   public LabelsView( @Service ApplicationContext context, @Uses LabelsModel model )
+   public LabelsView( @Service ApplicationContext context,
+                              @Uses final CommandQueryClient client,
+                              @Structure ObjectBuilderFactory obf)
    {
       super( new BorderLayout() );
-      this.model = model;
+      this.model = obf.newObjectBuilder( LabelsModel.class ).use( client ).newInstance();
       setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
 
       ActionMap am = context.getActionMap( this );
@@ -85,7 +95,7 @@ public class LabelsView
       options.add( am.get( "remove" ) );
 
       JScrollPane scrollPane = new JScrollPane();
-      EventList<LinkValue> itemValueEventList = new SortedList<LinkValue>( model.getLabelList(), new LinkComparator() );
+      EventList<LinkValue> itemValueEventList = new SortedList<LinkValue>( model.getList(), new LinkComparator() );
       labelList = new JList( new EventListModel<LinkValue>( itemValueEventList ) );
       labelList.setCellRenderer( new LinkListCellRenderer() );
       scrollPane.setViewportView( labelList );
@@ -98,37 +108,52 @@ public class LabelsView
 
       labelList.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "remove" ), am.get( "rename" ), am.get( "showUsages" ) ) );
 
-      addAncestorListener( new RefreshWhenVisible( model, this ) );
+      new RefreshWhenVisible( this, model );
    }
 
    @Action
-   public void add()
+   public Task add()
    {
-      NameDialog dialog = nameDialogs.iterator().next();
+      final NameDialog dialog = nameDialogs.iterator().next();
 
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.add_label_title ) );
 
       if (Strings.notEmpty( dialog.name() ) )
       {
-         labelList.clearSelection();
-         model.createLabel( dialog.name() );
-         model.refresh();
-      }
+         return new CommandTask()
+         {
+            @Override
+            public void command()
+               throws Exception
+            {
+               model.create( dialog.name() );
+            }
+         };
+      } else
+         return null;
    }
 
    @Action
-   public void remove()
+   public Task remove()
    {
-      LinkValue selected = (LinkValue) labelList.getSelectedValue();
+      final LinkValue selected = (LinkValue) labelList.getSelectedValue();
 
       ConfirmationDialog dialog = confirmationDialog.iterator().next();
       dialog.setRemovalMessage( selected.text().get() );
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation ) );
       if (dialog.isConfirmed())
       {
-         model.removeLabel( selected );
-         model.refresh();
-      }
+         return new CommandTask()
+         {
+            @Override
+            public void command()
+               throws Exception
+            {
+               model.remove( selected );
+            }
+         };
+      } else
+         return null;
    }
 
    @Action
@@ -147,15 +172,28 @@ public class LabelsView
    }
 
    @Action
-   public void rename()
+   public Task rename()
    {
-      NameDialog dialog = nameDialogs.iterator().next();
+      final NameDialog dialog = nameDialogs.iterator().next();
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.rename_label_title ) );
 
       if (Strings.notEmpty( dialog.name() ) )
       {
-         model.changeDescription( (LinkValue)labelList.getSelectedValue(), dialog.name() );
-         model.refresh();
-      }
+         return new CommandTask()
+         {
+            @Override
+            public void command()
+               throws Exception
+            {
+               model.changeDescription( (LinkValue)labelList.getSelectedValue(), dialog.name() );
+            }
+         };
+      } else
+         return null;
+   }
+
+   public void notifyTransactions( Iterable<TransactionEvents> transactions )
+   {
+      model.notifyTransactions( transactions );
    }
 }

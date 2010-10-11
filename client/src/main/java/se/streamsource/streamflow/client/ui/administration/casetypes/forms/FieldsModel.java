@@ -41,10 +41,12 @@ import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.PageListItemValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.EventListener;
+import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.source.helper.EventParameters;
 import se.streamsource.streamflow.infrastructure.event.source.helper.EventVisitorFilter;
+import se.streamsource.streamflow.infrastructure.event.source.helper.Events;
 
 import java.util.List;
 import java.util.Observable;
@@ -53,7 +55,7 @@ import java.util.Observable;
  * JAVADOC
  */
 public class FieldsModel extends Observable
-      implements Refreshable, EventListener, EventVisitor
+      implements Refreshable, TransactionListener
 {
    final Logger logger = LoggerFactory.getLogger( "administration" );
 
@@ -101,20 +103,16 @@ public class FieldsModel extends Observable
    };
 
 
+/*
    EventVisitorFilter eventFilter = new EventVisitorFilter( this, "changedDescription", "movedField", "movedPage", "removedField", "createdField", "removedPage", "createdPage" );
+*/
 
    private BasicEventList<ListItemValue> fieldsList = new BasicEventList<ListItemValue>();
 
    public void refresh()
    {
-      try
-      {
-         List<ListItemValue> list = ((ListValue) client.query( "pagessummary", ListValue.class ).buildWith().prototype()).items().get();
-         EventListSynch.synchronize( list, fieldsList );
-      } catch (ResourceException e)
-      {
-         throw new OperationException( AdministrationResources.could_not_refresh_list_of_form_pages_and_fields, e );
-      }
+      List<ListItemValue> list = ((ListValue) client.query( "pagessummary", ListValue.class ).buildWith().prototype()).items().get();
+      EventListSynch.synchronize( list, fieldsList );
    }
 
    public EventList<ListItemValue> getPagesAndFieldsList()
@@ -225,19 +223,6 @@ public class FieldsModel extends Observable
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_move_page, e );
-      }
-   }
-
-   public void notifyEvent( DomainEvent event )
-   {
-      eventFilter.visit( event );
-      for (PageEditModel pageModel : pageModels)
-      {
-         pageModel.notifyEvent( event );
-      }
-      for (FieldValueEditModel fieldModel : fieldModels)
-      {
-         fieldModel.notifyEvent( event );
       }
    }
 
@@ -357,4 +342,11 @@ public class FieldsModel extends Observable
       return pageModels.get( id );
    }
 
+   public void notifyTransactions( Iterable<TransactionEvents> transactions )
+   {
+      if (Events.matches(transactions, Events.onEntities( client.getReference().getLastSegment() )))
+      {
+         refresh();
+      }
+   }
 }

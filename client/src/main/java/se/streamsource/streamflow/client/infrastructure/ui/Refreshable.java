@@ -17,15 +17,10 @@
 
 package se.streamsource.streamflow.client.infrastructure.ui;
 
-import se.streamsource.streamflow.client.OperationException;
-
 /**
- * Implemented by models that want to be refreshable. If an
- * exception occurs during refresh the method should throw
- * an OperationException.
+ * Implemented by models that want to be refreshable.
  */
 public interface Refreshable
 {
-   public void refresh()
-         throws OperationException;
+   public void refresh();
 }

@@ -17,7 +17,6 @@
 
 package se.streamsource.streamflow.client.ui.administration.groups;
 
-import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
@@ -34,116 +33,17 @@ import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.ui.administration.DefinitionListModel;
 import se.streamsource.streamflow.client.ui.administration.LinkValueListModel;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.EventListener;
-import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
-import se.streamsource.streamflow.infrastructure.event.source.helper.EventParameters;
 
 /**
  * JAVADOC
  */
 public class GroupsModel
-   extends LinkValueListModel
-      implements Refreshable, EventListener
+   extends DefinitionListModel
 {
-   @Uses
-   CommandQueryClient client;
-
-   @Structure
-   ObjectBuilderFactory obf;
-
-   @Structure
-   ValueBuilderFactory vbf;
-
-   WeakModelMap<String, ParticipantsModel> groupModels = new WeakModelMap<String, ParticipantsModel>()
+   public GroupsModel( )
    {
-      @Override
-      protected ParticipantsModel newModel( String key )
-      {
-         return obf.newObjectBuilder( ParticipantsModel.class ).use( client.getSubClient( key ).getSubClient("participants" )).newInstance();
-      }
-   };
-
-   public EventList<LinkValue> getGroups()
-   {
-      return linkValues;
+      super( "creategroup" );
    }
-
-   public void createGroup( String description )
-   {
-      try
-      {
-         ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
-         builder.prototype().string().set( description );
-         client.postCommand( "creategroup",  builder.newInstance() );
-         refresh();
-      } catch (ResourceException e)
-      {
-         if (Status.CLIENT_ERROR_CONFLICT.equals( e.getStatus() ))
-         {
-            throw new OperationException( AdministrationResources.could_not_create_group_name_already_exists, e );
-         }
-         throw new OperationException( AdministrationResources.could_not_create_group, e );
-      }
-   }
-
-   public void removeGroup( String id )
-   {
-      try
-      {
-         client.getSubClient( id ).delete();
-         refresh();
-      } catch (ResourceException e)
-      {
-         throw new OperationException( AdministrationResources.could_not_remove_group, e );
-      }
-   }
-
-   public void refresh()
-   {
-      try
-      {
-         LinksValue groupsList = client.query( "index", LinksValue.class );
-         EventListSynch.synchronize( groupsList.links().get(), linkValues );
-      } catch (ResourceException e)
-      {
-         throw new OperationException( AdministrationResources.could_not_refresh, e );
-      }
-   }
-
-
-   public ParticipantsModel getGroupModel( String id )
-   {
-      return groupModels.get( id );
-   }
-
-   public void changeDescription( LinkValue link, String newName )
-   {
-      ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
-      builder.prototype().string().set( newName );
-
-      try
-      {
-         client.getSubClient( link.id().get() ).putCommand( "changedescription",  builder.newInstance() );
-      } catch (ResourceException e)
-      {
-         if (Status.CLIENT_ERROR_CONFLICT.equals( e.getStatus() ))
-         {
-            throw new OperationException( AdministrationResources.could_not_rename_group_name_already_exist, e );
-         }
-         throw new OperationException( AdministrationResources.could_not_rename_group, e );
-      }
-      refresh();
-   }
-
-   public void notifyEvent( DomainEvent event )
-   {
-      eventFilter.visit( event );
-      for (ParticipantsModel participantsModel : groupModels)
-      {
-         participantsModel.notifyEvent( event );
-      }
-   }
-
 }

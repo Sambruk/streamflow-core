@@ -20,13 +20,15 @@ package se.streamsource.streamflow.client.ui.administration.resolutions;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.SortedList;
 import ca.odell.glazedlists.swing.EventListModel;
+import com.jgoodies.forms.factories.Borders;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Task;
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-
-import com.jgoodies.forms.factories.Borders;
-
+import org.qi4j.api.object.ObjectBuilderFactory;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
@@ -35,10 +37,13 @@ import se.streamsource.streamflow.client.infrastructure.ui.LinkListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.ui.CommandTask;
 import se.streamsource.streamflow.client.ui.ConfirmationDialog;
 import se.streamsource.streamflow.client.ui.NameDialog;
 import se.streamsource.streamflow.client.ui.OptionsAction;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
 import se.streamsource.streamflow.util.Strings;
 
 import javax.swing.ActionMap;
@@ -47,15 +52,16 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
-import java.awt.*;
+import java.awt.BorderLayout;
 
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 
 /**
  * Admin of resolutions.
  */
 public class ResolutionsView
       extends JPanel
+      implements TransactionListener
 {
    ResolutionsModel model;
 
@@ -70,11 +76,13 @@ public class ResolutionsView
 
    public JList list;
 
-   public ResolutionsView( @Service ApplicationContext context, @Uses ResolutionsModel model )
+   public ResolutionsView( @Service ApplicationContext context,
+                           @Uses final CommandQueryClient client,
+                           @Structure ObjectBuilderFactory obf )
    {
       super( new BorderLayout() );
-      this.model = model;
-      setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
+      this.model = obf.newObjectBuilder( ResolutionsModel.class ).use( client ).newInstance();
+      setBorder( Borders.createEmptyBorder( "2dlu, 2dlu, 2dlu, 2dlu" ) );
 
       ActionMap am = context.getActionMap( this );
       setActionMap( am );
@@ -85,7 +93,7 @@ public class ResolutionsView
       options.add( am.get( "remove" ) );
 
       JScrollPane scrollPane = new JScrollPane();
-      EventList<LinkValue> itemValueEventList = new SortedList<LinkValue>( model.getEventList(), new LinkComparator() );
+      EventList<LinkValue> itemValueEventList = new SortedList<LinkValue>( model.getList(), new LinkComparator() );
       list = new JList( new EventListModel<LinkValue>( itemValueEventList ) );
       list.setCellRenderer( new LinkListCellRenderer() );
       scrollPane.setViewportView( list );
@@ -93,42 +101,57 @@ public class ResolutionsView
 
       JPanel toolbar = new JPanel();
       toolbar.add( new JButton( am.get( "add" ) ) );
-      toolbar.add( new JButton( new OptionsAction(options) ) );
+      toolbar.add( new JButton( new OptionsAction( options ) ) );
       add( toolbar, BorderLayout.SOUTH );
 
       list.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "remove" ), am.get( "rename" ), am.get( "showUsages" ) ) );
 
-      addAncestorListener( new RefreshWhenVisible( model, this ) );
+      new RefreshWhenVisible( this, model );
    }
 
    @Action
-   public void add()
+   public Task add()
    {
-      NameDialog dialog = nameDialogs.iterator().next();
+      final NameDialog dialog = nameDialogs.iterator().next();
 
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.add_resolution_title ) );
 
-      if ( Strings.notEmpty( dialog.name() ) )
+      if (Strings.notEmpty( dialog.name() ))
       {
-         list.clearSelection();
-         model.create( dialog.name() );
-         model.refresh();
-      }
+         return new CommandTask()
+         {
+            @Override
+            public void command()
+                  throws Exception
+            {
+               model.create( dialog.name() );
+            }
+         };
+      } else
+         return null;
    }
 
    @Action
-   public void remove()
+   public Task remove()
    {
-      LinkValue selected = (LinkValue) list.getSelectedValue();
+      final LinkValue selected = (LinkValue) list.getSelectedValue();
 
       ConfirmationDialog dialog = confirmationDialog.iterator().next();
       dialog.setRemovalMessage( selected.text().get() );
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation ) );
       if (dialog.isConfirmed())
       {
-         model.remove( selected );
-         model.refresh();
-      }
+         return new CommandTask()
+         {
+            @Override
+            public void command()
+                  throws Exception
+            {
+               model.remove( selected );
+            }
+         };
+      } else
+         return null;
    }
 
    @Action
@@ -139,7 +162,7 @@ public class ResolutionsView
 
       JList list = new JList();
       list.setCellRenderer( new LinkListCellRenderer() );
-      list.setModel( new EventListModel<LinkValue>(usageList) );
+      list.setModel( new EventListModel<LinkValue>( usageList ) );
 
       dialogs.showOkDialog( this, list );
 
@@ -147,15 +170,28 @@ public class ResolutionsView
    }
 
    @Action
-   public void rename()
+   public Task rename()
    {
-      NameDialog dialog = nameDialogs.iterator().next();
+      final NameDialog dialog = nameDialogs.iterator().next();
       dialogs.showOkCancelHelpDialog( this, dialog );
 
-      if ( Strings.notEmpty( dialog.name() ) )
+      if (Strings.notEmpty( dialog.name() ))
       {
-         model.changeDescription( (LinkValue) list.getSelectedValue(), dialog.name() );
-         model.refresh();
-      }
+         return new CommandTask()
+         {
+            @Override
+            public void command()
+                  throws Exception
+            {
+               model.changeDescription( (LinkValue) list.getSelectedValue(), dialog.name() );
+            }
+         };
+      } else
+         return null;
+   }
+
+   public void notifyTransactions( Iterable<TransactionEvents> transactions )
+   {
+      model.notifyTransactions( transactions );
    }
 }

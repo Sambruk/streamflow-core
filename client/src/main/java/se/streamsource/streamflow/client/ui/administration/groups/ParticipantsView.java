@@ -28,6 +28,7 @@ import javax.swing.JScrollPane;
 
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Task;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
@@ -42,6 +43,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.LinkComparator;
 import se.streamsource.streamflow.client.infrastructure.ui.LinkListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.ui.CommandTask;
 import se.streamsource.streamflow.client.ui.ConfirmationDialog;
 import se.streamsource.streamflow.client.ui.SelectUsersAndGroupsDialog;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
@@ -50,12 +52,15 @@ import ca.odell.glazedlists.SortedList;
 import ca.odell.glazedlists.swing.EventListModel;
 
 import com.jgoodies.forms.factories.Borders;
+import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
 
 /**
  * JAVADOC
  */
 public class ParticipantsView
       extends JPanel
+   implements TransactionListener
 {
    @Service
    DialogService dialogs;
@@ -72,19 +77,21 @@ public class ParticipantsView
    public JList participantList;
 
    private ParticipantsModel model;
+   private final CommandQueryClient client;
 
    public ParticipantsView( @Service ApplicationContext context,
-                            @Uses ParticipantsModel model,
+                            @Uses CommandQueryClient client,
                             @Structure ObjectBuilderFactory obf)
    {
       super( new BorderLayout() );
-      this.model = model;
+      this.client = client;
+      this.model = obf.newObjectBuilder( ParticipantsModel.class ).use(client).newInstance();
       setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
 
       ActionMap am = context.getActionMap( this );
       setActionMap( am );
 
-      participantList = new JList( new EventListModel<LinkValue>(new SortedList<LinkValue>(model.getParticipants(), new LinkComparator())) );
+      participantList = new JList( new EventListModel<LinkValue>(new SortedList<LinkValue>(model.getPossible(), new LinkComparator())) );
 
       participantList.setCellRenderer( new LinkListCellRenderer() );
 
@@ -97,37 +104,49 @@ public class ParticipantsView
    }
 
    @Action
-   public void add() throws ResourceException
+   public Task add() throws ResourceException
    {
-      UsersAndGroupsModel dialogModel = usersAndGroupsModel.use( model.getClient() ).newInstance();
+      UsersAndGroupsModel dialogModel = usersAndGroupsModel.use( client ).newInstance();
       SelectUsersAndGroupsDialog dialog = selectUsersAndGroups.use( dialogModel ).newInstance();
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text(AdministrationResources.add_user_or_group_title) );
 
-      Set<LinkValue> linkValueSet = dialog.getSelectedEntities();
-      if ( !linkValueSet.isEmpty() )
+      final Set<LinkValue> linkValueSet = dialog.getSelectedEntities();
+      return new CommandTask()
       {
-         model.addParticipants( linkValueSet );
-         model.refresh();
-      }
+         @Override
+         public void command()
+            throws Exception
+         {
+            model.add( linkValueSet );
+         }
+      };
    }
 
    @Action
-   public void remove() throws ResourceException
+   public Task remove() throws ResourceException
    {
-      LinkValue value = (LinkValue) participantList.getSelectedValue();
+      final LinkValue value = (LinkValue) participantList.getSelectedValue();
       
       ConfirmationDialog dialog = confirmationDialog.iterator().next();
       dialog.setRemovalMessage( value.text().get() );
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation ) );
       if (dialog.isConfirmed())
       {
-         model.removeParticipant( value.id().get() );
-         model.refresh();
-      }
+         return new CommandTask()
+         {
+            @Override
+            public void command()
+               throws Exception
+            {
+               model.remove( value );
+            }
+         };
+      } else
+         return null;
    }
 
-   public JList getParticipantList()
+   public void notifyTransactions( Iterable<TransactionEvents> transactions )
    {
-      return participantList;
+      model.notifyTransactions( transactions );
    }
 }

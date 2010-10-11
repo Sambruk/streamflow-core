@@ -1,5 +1,4 @@
-/**
- *
+/*
  * Copyright 2009-2010 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,92 +16,16 @@
 
 package se.streamsource.streamflow.client.ui.administration.roles;
 
-import ca.odell.glazedlists.BasicEventList;
-import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.SortedList;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
-import org.restlet.data.Status;
-import org.restlet.resource.ResourceException;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.dci.value.LinkValue;
-import se.streamsource.dci.value.LinksValue;
-import se.streamsource.dci.value.StringValue;
-import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
-import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
-import se.streamsource.streamflow.client.infrastructure.ui.ListItemComparator;
-import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
-import se.streamsource.streamflow.infrastructure.application.ListValue;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.EventListener;
+import se.streamsource.streamflow.client.ui.administration.DefinitionListModel;
 
 /**
  * JAVADOC
  */
 public class RolesModel
-      implements EventListener, Refreshable
+   extends DefinitionListModel
 {
-   @Structure
-   ValueBuilderFactory vbf;
-
-   @Uses
-   CommandQueryClient client;
-
-   private EventList<LinkValue> roles = new BasicEventList<LinkValue>( );
-
-   public EventList<LinkValue> getRoles()
+   public RolesModel()
    {
-      return roles;
-   }
-
-   public void createRole( String description )
-   {
-      try
-      {
-         ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
-         builder.prototype().string().set( description );
-         client.postCommand( "createRole", builder.newInstance() );
-
-      } catch (ResourceException e)
-      {
-         if (Status.CLIENT_ERROR_CONFLICT.equals( e.getStatus() ))
-         {
-            throw new OperationException( AdministrationResources.could_not_create_role_name_already_exists, e );
-         }
-         throw new OperationException( AdministrationResources.could_not_create_role, e );
-      }
-
-   }
-
-   public void removeRole( String id )
-   {
-      try
-      {
-         client.getSubClient( id ).delete();
-      } catch (ResourceException e)
-      {
-         throw new OperationException( AdministrationResources.could_not_remove_role, e );
-      }
-   }
-
-   public void refresh()
-   {
-      try
-      {
-         LinksValue rolesList = client.query( "index", LinksValue.class);
-         EventListSynch.synchronize( rolesList.links().get(), roles );
-      } catch (ResourceException e)
-      {
-         throw new OperationException( AdministrationResources.could_not_refresh, e );
-      }
-   }
-
-   public void notifyEvent( DomainEvent event )
-   {
-
+      super( "createrole" );
    }
 }

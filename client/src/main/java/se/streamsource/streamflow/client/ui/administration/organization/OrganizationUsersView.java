@@ -21,13 +21,14 @@ import ca.odell.glazedlists.SortedList;
 import ca.odell.glazedlists.swing.EventListModel;
 import com.jgoodies.forms.factories.Borders;
 import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Task;
 import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
-import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
@@ -36,9 +37,9 @@ import se.streamsource.streamflow.client.infrastructure.ui.LinkListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.ui.CommandTask;
 import se.streamsource.streamflow.client.ui.ConfirmationDialog;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
-import se.streamsource.streamflow.client.ui.administration.LinksQueryListModel;
 import se.streamsource.streamflow.client.ui.administration.SelectLinksDialog;
 
 import javax.swing.ActionMap;
@@ -46,6 +47,7 @@ import javax.swing.JButton;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.ListSelectionModel;
 import java.awt.BorderLayout;
 
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
@@ -58,31 +60,27 @@ public class OrganizationUsersView
 
    @Structure
    ObjectBuilderFactory obf;
-
-   @Structure
-   ValueBuilderFactory vbf;
-
    @Service
    DialogService dialogs;
 
    public JList participantList;
 
-   private LinksListModel model;
+   private OrganizationUsersModel model;
    public SortedList<LinkValue> linkValues;
 
-   public OrganizationUsersView( @Service ApplicationContext context, @Uses LinksListModel model )
+   public OrganizationUsersView( @Service ApplicationContext context, @Uses CommandQueryClient client, @Structure ObjectBuilderFactory obf )
    {
       super( new BorderLayout() );
-      this.model = model;
-      model.refresh();
-      
+      this.model = obf.newObjectBuilder( OrganizationUsersModel.class ).use( client ).newInstance();
+
       setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
 
       ActionMap am = context.getActionMap( this );
       setActionMap( am );
 
-      linkValues = new SortedList<LinkValue>(model.getEventList(), new LinkComparator());
+      linkValues = new SortedList<LinkValue>(model.getList(), new LinkComparator());
       participantList = new JList( new EventListModel<LinkValue>( linkValues ) );
+      participantList.setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
 
       participantList.setCellRenderer( new LinkListCellRenderer() );
 
@@ -96,17 +94,14 @@ public class OrganizationUsersView
 
       participantList.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "remove" ) ) );
 
-      new RefreshWhenVisible( model, this );
+      new RefreshWhenVisible( this, model );
    }
 
    @org.jdesktop.application.Action
-   public void add() throws ResourceException
+   public Task add() throws ResourceException
    {
-      LinksQueryListModel dialogModel = obf.newObjectBuilder( LinksQueryListModel.class )
-            .use( model.getClient(), "possibleusers" ).newInstance();
-      dialogModel.refresh();
-      SelectLinksDialog dialog = obf.newObjectBuilder( SelectLinksDialog.class )
-            .use( dialogModel.getEventList() ).newInstance();
+      final SelectLinksDialog dialog = obf.newObjectBuilder( SelectLinksDialog.class )
+            .use( model.getPossible() ).newInstance();
       dialogs.showOkCancelHelpDialog(
             WindowUtils.findWindow( this ),
             dialog,
@@ -114,31 +109,38 @@ public class OrganizationUsersView
 
       if (dialog.getSelectedLinks() != null)
       {
-         for (LinkValue linkValue : dialog.getSelectedLinks().links().get())
+         return new CommandTask()
          {
-            model.getClient().postLink( linkValue);
-         }
-         model.refresh();
-      }
+            @Override
+            public void command()
+               throws Exception
+            {
+               model.add( dialog.getSelectedLinks().links().get() );
+            }
+         };
+      } else
+         return null;
    }
 
    @org.jdesktop.application.Action
-   public void remove() throws ResourceException
+   public Task remove() throws ResourceException
    {
       ConfirmationDialog dialog = confirmationDialog.iterator().next();
       dialog.setRemovalMessage( i18n.text( AdministrationResources.users_tab) );
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation ) );
       if (dialog.isConfirmed())
       {
-         for (int index : participantList.getSelectedIndices())
+         final LinkValue selected = (LinkValue) participantList.getSelectedValue();
+         return new CommandTask()
          {
-            LinkValue user = linkValues.get( index );
-            model.getClient().getClient( user.href().get() ).delete();
-         }
-
-         model.refresh();
-
-         participantList.clearSelection();
-      }
+            @Override
+            public void command()
+               throws Exception
+            {
+               model.remove( selected );
+            }
+         };
+      } else
+         return null;
    }
 }

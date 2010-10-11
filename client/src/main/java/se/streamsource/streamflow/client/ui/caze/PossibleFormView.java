@@ -34,14 +34,13 @@ public class PossibleFormView extends JButton
       implements FocusListener, KeyListener
 {
    LinkValue itemValue;
-   JButton button;
 
    public PossibleFormView( LinkValue itemValue )
    {
       super(itemValue.text().get(), i18n.icon( Icons.formSubmit, 16 ) ) ;
       this.setHorizontalAlignment( SwingConstants.LEFT );
       this.setToolTipText( itemValue.text().get() );
-      this.setBorder( BorderFactory.createEmptyBorder(2,2,2,2 ));
+//      this.setBorder( BorderFactory.createEmptyBorder(2,2,2,2 ));
       this.setFont( this.getFont().deriveFont( (float)this.getFont().getSize()  ));
 
       this.itemValue = itemValue;

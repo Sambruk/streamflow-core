@@ -23,50 +23,39 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
-
-import com.jgoodies.forms.factories.Borders;
-
+import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.LinkValue;
-import se.streamsource.streamflow.client.infrastructure.ui.LinkListCellRenderer;
-import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
+import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
+import se.streamsource.streamflow.client.ui.ListDetailView;
+import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 
-import javax.swing.JList;
+import javax.swing.Action;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
+import java.awt.Component;
 
 public class OrganizationsView
-      extends JPanel
+      extends ListDetailView
 {
    private OrganizationsModel model;
 
-   JList organizationsList;
-   @Structure
-   ObjectBuilderFactory obf;
-
-   public OrganizationsView( @Service ApplicationContext context, @Uses OrganizationsModel model )
+   public OrganizationsView( @Service ApplicationContext context, @Uses final CommandQueryClient client, @Structure final ObjectBuilderFactory obf )
    {
-      super( new BorderLayout() );
-      this.model = model;
-      setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
+      model = obf.newObjectBuilder( OrganizationsModel.class ).use( client ).newInstance();
 
-      organizationsList = new JList( new EventListModel<LinkValue>(model.getEventList()) );
+      initMaster( new EventListModel<LinkValue>( model.getList()), null, new Action[0], new DetailFactory()
+      {
+         public Component createDetail( LinkValue detailLink )
+         {
+            OrganizationUsersView organizationView = obf.newObjectBuilder( OrganizationUsersView.class ).use( client.getClient( detailLink ).getSubClient( "users" ) ).newInstance();
+            return organizationView;
+         }
+      });
 
-      organizationsList.setCellRenderer( new LinkListCellRenderer() );
-
-      JScrollPane scrollPane = new JScrollPane( organizationsList );
-      add( scrollPane, BorderLayout.CENTER );
-      setPreferredSize( new Dimension( 250, 600 ) );
+      new RefreshWhenVisible(this, model );
    }
 
-   public JList getOrganizationsList()
+   public void notifyTransactions( Iterable<TransactionEvents> transactions )
    {
-      return organizationsList;
-   }
-
-   public OrganizationsModel getModel()
-   {
-      return model;
+      model.notifyTransactions( transactions );
    }
 }

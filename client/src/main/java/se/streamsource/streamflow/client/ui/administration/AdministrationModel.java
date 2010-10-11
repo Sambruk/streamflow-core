@@ -21,15 +21,33 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
+import org.restlet.data.Status;
+import org.restlet.resource.ResourceException;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.dci.value.*;
+import se.streamsource.streamflow.client.Icons;
+import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.domain.individual.Account;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.ui.ContextItem;
+import se.streamsource.streamflow.infrastructure.application.TreeNodeValue;
+import se.streamsource.streamflow.infrastructure.application.TreeValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.EventListener;
+import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.source.helper.EventVisitorFilter;
 
+import javax.swing.Icon;
+import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.MutableTreeNode;
+import javax.swing.tree.TreeNode;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,80 +56,96 @@ import org.slf4j.LoggerFactory;
  */
 public class AdministrationModel
       extends DefaultTreeModel
-      implements Refreshable, EventListener, EventVisitor
+      implements Refreshable, TransactionListener
 {
-   final Logger logger = LoggerFactory.getLogger( "administration" );
+   @Structure
+   ValueBuilderFactory vbf;
 
    @Structure
    ObjectBuilderFactory obf;
 
-   WeakModelMap<Account, AccountAdministrationNode> nodes = new WeakModelMap<Account, AccountAdministrationNode>()
-   {
-      @Override
-      protected AccountAdministrationNode newModel( Account key )
-      {
-         return obf.newObjectBuilder( AccountAdministrationNode.class ).use( getRoot(), key ).newInstance();
-      }
-   };
+   private final CommandQueryClient client;
 
-   private EventVisitorFilter eventFilter = new EventVisitorFilter( this, "removedOrganizationalUnit", "addedOrganizationalUnit" );
-
-   public AdministrationModel( @Uses AdministrationNode root )
+   public AdministrationModel( @Uses CommandQueryClient client)
    {
-      super( root );
-   }
-
-   @Override
-   public AdministrationNode getRoot()
-   {
-      return (AdministrationNode) super.getRoot();
+      super( new DefaultMutableTreeNode() );
+      ((MutableTreeNode)getRoot()).setUserObject( new ContextItem("", "Server", Icons.account.name(), -1, client.getClient( "../../../" )));
+      this.client = client;
    }
 
    public void refresh()
    {
-      getRoot().refresh();
-      reload( getRoot() );
+      TreeValue organizations = client.query( "organizations", TreeValue.class );
+
+      DefaultMutableTreeNode root = (DefaultMutableTreeNode) getRoot();
+      sync(root,client.getClient(  "../../../organizations" ), organizations.roots().get() );
+      reload( (TreeNode) getRoot() );
+   }
+
+   private void sync(DefaultMutableTreeNode node, CommandQueryClient parentClient, Iterable<TreeNodeValue> treeNodevalues)
+   {
+      node.removeAllChildren();
+      for (TreeNodeValue treeNodeValue : treeNodevalues)
+      {
+         CommandQueryClient childClient = parentClient.getSubClient( treeNodeValue.entity().get().identity() );
+         ContextItem clientInfo = new ContextItem( "", treeNodeValue.description().get(), treeNodeValue.nodeType().get(), -1, childClient);
+         DefaultMutableTreeNode child = new DefaultMutableTreeNode(clientInfo);
+         node.add( child );
+
+         sync(child, childClient.getSubClient( "organizationalunits" ), treeNodeValue.children().get());
+      }
+   }
+
+   public void changeDescription( Object node, String newDescription )
+   {
+      DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) node;
+      ContextItem client = (ContextItem) treeNode.getUserObject();
+
+      ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
+      builder.prototype().string().set( newDescription );
+      client.getClient().postCommand( "changedescription", builder.newInstance() );
    }
 
    public void createOrganizationalUnit( Object node, String name )
    {
-      if (node instanceof OrganizationalUnitAdministrationNode)
+      DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) node;
+      ContextItem client = (ContextItem) treeNode.getUserObject();
+
+      try
       {
-         OrganizationalUnitAdministrationNode orgNode = (OrganizationalUnitAdministrationNode) node;
-         orgNode.model().createOrganizationalUnit( name );
-      } else if (node instanceof OrganizationAdministrationNode)
+         ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
+         builder.prototype().string().set( name );
+         client.getClient().getSubClient("organizationalunits" ).postCommand( "createorganizationalunit", builder.newInstance() );
+      } catch (ResourceException e)
       {
-         OrganizationAdministrationNode orgNode = (OrganizationAdministrationNode) node;
-         orgNode.model().createOrganizationalUnit( name );
+         throw new OperationException( AdministrationResources.could_not_create_new_organization, e );
       }
    }
 
    public void removeOrganizationalUnit( Object parentNode, EntityReference ou)
    {
-      if (parentNode instanceof OrganizationalUnitAdministrationNode)
+      DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) parentNode;
+      ContextItem client = (ContextItem) treeNode.getUserObject();
+
+      try
       {
-         OrganizationalUnitAdministrationNode orgNode = (OrganizationalUnitAdministrationNode) parentNode;
-         orgNode.model().removeOrganizationalUnit( ou );
-      } else if (parentNode instanceof OrganizationAdministrationNode)
+         client.getClient().getSubClient("organizationalunits").getSubClient( ou.identity() ).delete();
+      } catch (ResourceException e)
       {
-         OrganizationAdministrationNode orgNode = (OrganizationAdministrationNode) parentNode;
-         orgNode.model().removeOrganizationalUnit( ou );
+         if (Status.CLIENT_ERROR_CONFLICT.equals( e.getStatus() ))
+         {
+            throw new OperationException( AdministrationResources.could_not_remove_organisation_with_open_projects, e );
+
+         } else
+         {
+            throw new OperationException( AdministrationResources.could_not_remove_organization, e );
+         }
+
       }
    }
 
-   public void notifyEvent( DomainEvent event )
+   public void notifyTransactions( Iterable<TransactionEvents> transactions )
    {
-      getRoot().notifyEvent( event );
-
-      eventFilter.visit( event );
-   }
-
-   public boolean visit( DomainEvent event )
-   {
-      logger.info( "Refresh organizational overview" );
-      getRoot().refresh();
-      reload( getRoot() );
-
-      return false;
+      refresh();
    }
 }

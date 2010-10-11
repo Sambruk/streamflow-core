@@ -19,50 +19,55 @@ package se.streamsource.streamflow.client.ui.caze;
 
 import ca.odell.glazedlists.event.ListEvent;
 import ca.odell.glazedlists.event.ListEventListener;
+import org.jdesktop.application.Action;
+import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Task;
 import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilder;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.LinkValue;
+import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
+import se.streamsource.streamflow.client.ui.CommandTask;
+import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
 
 import javax.swing.JPanel;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
-public class CaseLabelsView extends JPanel implements ListEventListener, ActionListener
+public class CaseLabelsView
+      extends JPanel
+      implements ListEventListener, TransactionListener
 {
-   private CaseLabelsModel modelCase;
+   @Service
+   private DialogService dialogs;
+
+   @Uses
+   private ObjectBuilder<CaseLabelsDialog> labelSelectionDialog;
+
+   private CaseLabelsModel model;
 
    private boolean useBorders;
 
-   public CaseLabelsView()
+   public CaseLabelsView(@Service ApplicationContext context, @Uses CommandQueryClient client, @Structure ObjectBuilderFactory obf)
    {
+      setActionMap( context.getActionMap(this ));
+
+      model = obf.newObjectBuilder( CaseLabelsModel.class ).use( client ).newInstance();
+      model.getLabels().addListEventListener( this );
+
       setLayout( new FlowLayout( FlowLayout.LEFT ) );
       //setBorder( BorderFactory.createLineBorder( Color.BLUE, 1));
    }
 
-   public void setLabelsModel( CaseLabelsModel modelCase )
+   public CaseLabelsModel getModel()
    {
-      this.modelCase = modelCase;
-      modelCase.getLabels().addListEventListener( this );
-      initComponents();
-   }
-
-   private void initComponents()
-   {
-      removeAll();
-
-      for (int i = 0; i < modelCase.getLabels().size(); i++)
-      {
-         LinkValue linkValue = modelCase.getLabels().get( i );
-         RemovableLabel label = new RemovableLabel( linkValue, useBorders );
-         label.addActionListener( this );
-
-         add( label );
-      }
-
-      revalidate();
-      repaint();
-
+      return model;
    }
 
    public void setEnabled( boolean enabled )
@@ -75,18 +80,69 @@ public class CaseLabelsView extends JPanel implements ListEventListener, ActionL
 
    public void listChanged( ListEvent listEvent )
    {
-      initComponents();
+      removeAll();
+
+      for (int i = 0; i < model.getLabels().size(); i++)
+      {
+         LinkValue linkValue = model.getLabels().get( i );
+         RemovableLabel label = new RemovableLabel( linkValue, useBorders );
+         label.addActionListener( getActionMap().get("remove" ));
+
+         add( label );
+      }
+
+      revalidate();
+      repaint();
    }
 
-   public void actionPerformed( ActionEvent e )
+   @Action
+   public Task addLabel()
    {
-      Component component = ((Component) e.getSource());
-      RemovableLabel label = (RemovableLabel) component.getParent();
-      modelCase.removeLabel( EntityReference.parseEntityReference( label.link().id().get() ) );
+      final CaseLabelsDialog dialog = labelSelectionDialog.use(
+            model.getPossibleLabels() ).newInstance();
+      dialogs.showOkCancelHelpDialog( this, dialog );
+
+      if (dialog.getSelectedLabels() != null)
+      {
+         return new CommandTask()
+         {
+            @Override
+            protected void command() throws Exception
+            {
+               for (LinkValue listItemValue : dialog.getSelectedLabels())
+               {
+                  model.addLabel( EntityReference.parseEntityReference( listItemValue.id().get() ) );
+               }
+            }
+         };
+      } else
+         return null;
+   }
+
+
+   @Action
+   public Task remove( final ActionEvent e )
+   {
+      return new CommandTask()
+      {
+         @Override
+         public void command()
+            throws Exception
+         {
+            Component component = ((Component) e.getSource());
+            RemovableLabel label = (RemovableLabel) component.getParent();
+            model.removeLabel( EntityReference.parseEntityReference( label.link().id().get() ) );
+         }
+      };
    }
 
    public void useBorders( boolean useBorders )
    {
       this.useBorders = useBorders;
+   }
+
+   public void notifyTransactions( Iterable<TransactionEvents> transactions )
+   {
+      model.notifyTransactions(transactions);
    }
 }

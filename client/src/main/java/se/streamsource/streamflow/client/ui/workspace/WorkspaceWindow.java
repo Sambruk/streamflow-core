@@ -30,6 +30,8 @@ import se.streamsource.streamflow.client.ui.AccountSelector;
 import se.streamsource.streamflow.client.ui.administration.AccountModel;
 import se.streamsource.streamflow.client.ui.menu.WorkspaceMenuBar;
 
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.CardLayout;
@@ -46,7 +48,6 @@ public class WorkspaceWindow
    public WorkspaceWindow( @Service Application application,
                            @Service JavaHelp javaHelp,
                            @Uses WorkspaceMenuBar menu,
-                           @Uses final WorkspaceView workspaceView,
                            @Uses AccountSelectionView view,
                            @Uses final AccountSelector accountSelector,
                            @Structure final ObjectBuilderFactory obf )
@@ -59,7 +60,7 @@ public class WorkspaceWindow
       cardLayout = new CardLayout();
       frame.getContentPane().setLayout( cardLayout );
       frame.getContentPane().add( view, "selector" );
-      frame.getContentPane().add( workspaceView, "workspace" );
+      frame.getContentPane().add( new JPanel(), "workspace" );
       frame.getRootPane().setOpaque( true );
       setFrame( frame );
       setMenuBar( menu );
@@ -81,11 +82,16 @@ public class WorkspaceWindow
                   cardLayout.show( frame.getContentPane(), "selector" );
                } else
                {
-                  AccountModel accountModel = accountSelector.getSelectedAccount();
+                  final AccountModel accountModel = accountSelector.getSelectedAccount();
 
-                  workspaceView.setModel( accountModel );
-
-                  cardLayout.show( frame.getContentPane(), "workspace" );
+                  SwingUtilities.invokeLater(new Runnable()
+                  {
+                     public void run()
+                     {
+                        frame.getContentPane().add( obf.newObjectBuilder( WorkspaceView.class ).use( accountModel ).newInstance(), "workspace");
+                        cardLayout.show( frame.getContentPane(), "workspace" );
+                     }
+                  });
                }
             }
          }

@@ -39,8 +39,9 @@ import java.util.List;
 public class SelectionDialog
       extends JPanel
 {
-   public FilteredList filteredList = new FilteredList();
-   public List<LinkValue> selected;
+   private FilteredList filteredList = new FilteredList();
+   private List<LinkValue> selectedLinks;
+   private LinkValue selectedLink;
 
    public SelectionDialog( @Service ApplicationContext context, @Uses EventList<LinkValue> list )
    {
@@ -53,17 +54,24 @@ public class SelectionDialog
 
    public Iterable<LinkValue> getSelectedLinks()
    {
-      return selected;
+      return selectedLinks;
+   }
+
+   public LinkValue getSelectedLink()
+   {
+      return selectedLink;
    }
 
    @Action
    public void execute()
    {
-      selected = new ArrayList<LinkValue>();
+      selectedLinks = new ArrayList<LinkValue>();
       for (Object item : filteredList.getList().getSelectedValues())
       {
-         selected.add( (LinkValue) item );
+         selectedLinks.add( (LinkValue) item );
       }
+
+      selectedLink = (LinkValue) filteredList.getList().getSelectedValue();
 
       WindowUtils.findWindow( this ).dispose();
    }

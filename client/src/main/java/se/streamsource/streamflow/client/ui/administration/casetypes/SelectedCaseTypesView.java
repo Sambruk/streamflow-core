@@ -19,37 +19,42 @@ package se.streamsource.streamflow.client.ui.administration.casetypes;
 
 import ca.odell.glazedlists.SortedList;
 import ca.odell.glazedlists.swing.EventListModel;
+import com.jgoodies.forms.factories.Borders;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
-import org.qi4j.api.entity.EntityReference;
+import org.jdesktop.application.Task;
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilder;
-
-import com.jgoodies.forms.factories.Borders;
-
+import org.qi4j.api.object.ObjectBuilderFactory;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.LinkComparator;
 import se.streamsource.streamflow.client.infrastructure.ui.LinkListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
+import se.streamsource.streamflow.client.ui.CommandTask;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
 
 import javax.swing.ActionMap;
 import javax.swing.JButton;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import java.awt.*;
+import java.awt.BorderLayout;
 
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 
 /**
  * JAVADOC
  */
 public class SelectedCaseTypesView
       extends JPanel
+      implements TransactionListener
 {
    @Service
    DialogService dialogs;
@@ -59,18 +64,20 @@ public class SelectedCaseTypesView
 
    public JList caseTypeList;
 
-   private SelectedCaseTypesModel modelSelected;
+   private SelectedCaseTypesModel model;
 
-   public SelectedCaseTypesView( @Service ApplicationContext context, @Uses SelectedCaseTypesModel modelSelected )
+   public SelectedCaseTypesView( @Service ApplicationContext context,
+                                 @Uses final CommandQueryClient client,
+                                 @Structure ObjectBuilderFactory obf )
    {
       super( new BorderLayout() );
-      this.modelSelected = modelSelected;
-      setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
+      this.model = obf.newObjectBuilder( SelectedCaseTypesModel.class ).use( client ).newInstance();
+      setBorder( Borders.createEmptyBorder( "2dlu, 2dlu, 2dlu, 2dlu" ) );
 
       ActionMap am = context.getActionMap( this );
       setActionMap( am );
 
-      caseTypeList = new JList( new EventListModel<LinkValue>( new SortedList<LinkValue>( modelSelected.getCaseTypeList(), new LinkComparator() ) ) );
+      caseTypeList = new JList( new EventListModel<LinkValue>( new SortedList<LinkValue>( model.getList(), new LinkComparator() ) ) );
 
       caseTypeList.setCellRenderer( new LinkListCellRenderer() );
 
@@ -82,32 +89,48 @@ public class SelectedCaseTypesView
       add( toolbar, BorderLayout.SOUTH );
       caseTypeList.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "remove" ) ) );
 
-      addAncestorListener( new RefreshWhenVisible( modelSelected, this ) );
+      new RefreshWhenVisible( this, model );
    }
 
    @Action
-   public void add()
+   public Task add()
    {
-      SelectCaseTypesDialog dialog = caseTypesDialogs.use( modelSelected.getPossibleCaseTypes() ).newInstance();
+      final SelectCaseTypesDialog dialog = caseTypesDialogs.use( model.getPossible() ).newInstance();
 
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.choose_casetypes_title ) );
 
       if (dialog.getSelectedCaseTypes() != null)
       {
-         for (LinkValue linkValue : dialog.getSelectedCaseTypes())
+         return new CommandTask()
          {
-            modelSelected.addCaseType( linkValue );
-         }
-         modelSelected.refresh();
-      }
-
+            @Override
+            public void command()
+               throws Exception
+            {
+               model.add( dialog.getSelectedCaseTypes() );
+            }
+         };
+      } else
+         return null;
    }
 
    @Action
-   public void remove()
+   public Task remove()
    {
-      LinkValue selected = (LinkValue) caseTypeList.getSelectedValue();
-      modelSelected.removeCaseType( EntityReference.parseEntityReference( selected.id().get()) );
-      modelSelected.refresh();
+      final LinkValue selected = (LinkValue) caseTypeList.getSelectedValue();
+      return new CommandTask()
+      {
+         @Override
+         public void command()
+            throws Exception
+         {
+            model.remove(selected);
+         }
+      };
+   }
+
+   public void notifyTransactions( Iterable<TransactionEvents> transactions )
+   {
+      model.notifyTransactions( transactions );
    }
 }

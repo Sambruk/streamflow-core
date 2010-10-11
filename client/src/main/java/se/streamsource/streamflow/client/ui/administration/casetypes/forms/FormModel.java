@@ -33,33 +33,35 @@ import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.domain.form.FormValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.EventListener;
+import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.source.helper.EventVisitorFilter;
 
 import java.util.Observable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static se.streamsource.streamflow.infrastructure.event.source.helper.Events.*;
+import static se.streamsource.streamflow.util.Specifications.or;
+
 /**
  * JAVADOC
  */
 public class FormModel
       extends Observable
-      implements Refreshable, EventListener, EventVisitor
+      implements Refreshable, TransactionListener
 
 {
-   final Logger logger = LoggerFactory.getLogger( "administration" );
    @Structure
    ObjectBuilderFactory obf;
-
-   private EventVisitorFilter eventFilter = new EventVisitorFilter( this, "changedNote", "movedField", "changedDescription" );
 
    @Uses
    CommandQueryClient client;
 
    private FormValue formValue;
 
+/*
    WeakModelMap<String, FieldsModel> fieldsModels = new WeakModelMap<String, FieldsModel>()
    {
 
@@ -70,67 +72,13 @@ public class FormModel
       }
    };
 
-
-   public EventList<LinkValue> getPossibleMoveTo()
-   {
-      try
-      {
-         BasicEventList<LinkValue> possibleLinks = new BasicEventList<LinkValue>();
-         possibleLinks.addAll( client.query( "possiblemoveto", LinksValue.class ).links().get() );
-         return possibleLinks;
-      } catch (ResourceException e)
-      {
-         throw new OperationException( AdministrationResources.could_not_refresh, e );
-      }
-   }
-
-   public void moveForm( LinkValue to)
-   {
-      try
-      {
-         client.postLink( to );
-      } catch (ResourceException e)
-      {
-         throw new OperationException(AdministrationResources.could_not_move, e);
-      }
-   }   
+*/
 
    public void refresh() throws OperationException
    {
-      try
-      {
-         formValue = client.query( "form", FormValue.class );
-         setChanged();
-         notifyObservers( this );
-      } catch (ResourceException e)
-      {
-         throw new OperationException( AdministrationResources.could_not_get_form, e);
-      }
-
-   }
-
-   public void notifyEvent( DomainEvent event )
-   {
-      eventFilter.visit( event );
-      for (FieldsModel fieldsModel : fieldsModels)
-      {
-         fieldsModel.notifyEvent( event );
-      }
-
-   }
-
-   public boolean visit( DomainEvent event )
-   {
-      if (formValue.form().get().identity().equals( event.entity().get() ))
-      {
-         if (event.name().get().equals( "movedField" ))
-         {
-            getFieldsModel().refresh();
-         }
-         logger.info( "Refresh the note" );
-         refresh();
-      }
-      return false;
+      formValue = client.query( "form", FormValue.class );
+      setChanged();
+      notifyObservers( this );
    }
 
    public String getNote()
@@ -158,8 +106,10 @@ public class FormModel
       client.putCommand( "changeformid", id );
    }
 
-   public FieldsModel getFieldsModel()
+   public void notifyTransactions( Iterable<TransactionEvents> transactions )
    {
-      return fieldsModels.get( formValue.form().get().identity() );
+      // Refresh if either the owner of the list has changed, or if any of the entities in the list has changed
+      if (matches( transactions, onEntities( client.getReference().getLastSegment() )))
+         refresh();
    }
 }

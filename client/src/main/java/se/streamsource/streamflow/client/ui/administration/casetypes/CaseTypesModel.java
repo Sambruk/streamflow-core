@@ -18,6 +18,7 @@
 package se.streamsource.streamflow.client.ui.administration.casetypes;
 
 import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
@@ -34,102 +35,22 @@ import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.ui.administration.DefinitionListModel;
 import se.streamsource.streamflow.client.ui.administration.LinkValueListModel;
 import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FormsModel;
 import se.streamsource.streamflow.client.ui.administration.form.SelectedFormsModel;
 import se.streamsource.streamflow.client.ui.administration.label.SelectedLabelsModel;
 import se.streamsource.streamflow.client.ui.administration.resolutions.ResolutionsModel;
 import se.streamsource.streamflow.client.ui.administration.resolutions.SelectedResolutionsModel;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.EventListener;
 
 /**
  * List of casetypes in an Organization
  */
 public class CaseTypesModel
-   extends LinkValueListModel
-      implements Refreshable, EventListener
+   extends DefinitionListModel
 {
-   @Structure
-   ObjectBuilderFactory obf;
-
-   @Structure
-   ValueBuilderFactory vbf;
-
-   @Uses
-   CommandQueryClient client;
-
-   WeakModelMap<String, CaseTypeModel> caseTypeModels = new WeakModelMap<String, CaseTypeModel>()
+   public CaseTypesModel()
    {
-      protected CaseTypeModel newModel( String key )
-      {
-         CommandQueryClient caseTypeClient = client.getSubClient( key );
-         SelectedLabelsModel selectedLabelsModel = obf.newObjectBuilder( SelectedLabelsModel.class ).use( caseTypeClient.getSubClient( "selectedlabels" ) ).newInstance();
-         ResolutionsModel resolutionsModel = obf.newObjectBuilder( ResolutionsModel.class ).use( caseTypeClient.getSubClient( "resolutions" ) ).newInstance();
-         SelectedResolutionsModel selectedResolutionsModel = obf.newObjectBuilder( SelectedResolutionsModel.class ).use( caseTypeClient.getSubClient( "selectedresolutions" ) ).newInstance();
-         FormsModel formsModel = obf.newObjectBuilder( FormsModel.class ).use( caseTypeClient.getSubClient( "forms" ) ).newInstance();
-         SelectedFormsModel selectedFormsModel = obf.newObjectBuilder( SelectedFormsModel.class ).use( caseTypeClient.getSubClient( "selectedforms" ) ).newInstance();
-
-         return obf.newObjectBuilder( CaseTypeModel.class ).use(
-               selectedLabelsModel,
-               formsModel,
-               selectedFormsModel,
-               resolutionsModel,
-               selectedResolutionsModel, 
-               caseTypeClient ).newInstance();
-      }
-   };
-
-   public BasicEventList<LinkValue> getCaseTypeList()
-   {
-      return linkValues;
-   }
-
-   public void refresh()
-   {
-      try
-      {
-         // Get CaseType list
-         EventListSynch.synchronize( client.query( "index", LinksValue.class ).links().get(), linkValues );
-      } catch (ResourceException e)
-      {
-         throw new OperationException( AdministrationResources.could_not_refresh, e );
-      }
-   }
-
-   public void removeCaseType( String id )
-   {
-      getCaseTypeModel( id ).remove();
-   }
-
-   public void newCaseType( String caseTypeName )
-   {
-      try
-      {
-         ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
-         builder.prototype().string().set( caseTypeName );
-         client.postCommand( "createcasetype", builder.newInstance() );
-      } catch (ResourceException e)
-      {
-         if (Status.CLIENT_ERROR_CONFLICT.equals( e.getStatus() ))
-         {
-            throw new OperationException( AdministrationResources.description_cannot_be_more_than_50, e );
-         }
-         throw new OperationException( AdministrationResources.could_not_create_project, e );
-      }
-   }
-
-   public void notifyEvent( DomainEvent event )
-   {
-      eventFilter.visit( event );
-      for (CaseTypeModel caseTypeModel : caseTypeModels)
-      {
-         caseTypeModel.notifyEvent( event );
-      }
-   }
-
-   public CaseTypeModel getCaseTypeModel( String id )
-   {
-      return caseTypeModels.get( id );
+      super( "createcasetype" );
    }
 }

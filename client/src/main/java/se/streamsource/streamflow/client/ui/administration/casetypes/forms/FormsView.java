@@ -20,6 +20,7 @@ package se.streamsource.streamflow.client.ui.administration.casetypes.forms;
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 
 import javax.swing.ActionMap;
 import javax.swing.JButton;
@@ -30,12 +31,14 @@ import javax.swing.JScrollPane;
 
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Task;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilder;
 import org.qi4j.api.object.ObjectBuilderFactory;
 
+import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
@@ -43,23 +46,28 @@ import se.streamsource.streamflow.client.infrastructure.ui.LinkListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.ui.CommandTask;
 import se.streamsource.streamflow.client.ui.ConfirmationDialog;
+import se.streamsource.streamflow.client.ui.ListDetailView;
 import se.streamsource.streamflow.client.ui.NameDialog;
 import se.streamsource.streamflow.client.ui.OptionsAction;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.ui.administration.TabbedResourceView;
+import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypesModel;
 import se.streamsource.streamflow.client.ui.administration.label.SelectionDialog;
 import ca.odell.glazedlists.swing.EventListModel;
 
 import com.jgoodies.forms.factories.Borders;
+import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
 import se.streamsource.streamflow.util.Strings;
 
 /**
  * JAVADOC
  */
 public class FormsView
-      extends JPanel
+      extends ListDetailView
 {
-   public JList formList;
    private FormsModel model;
 
    @Uses
@@ -74,58 +82,54 @@ public class FormsView
    @Uses
    ObjectBuilder<SelectionDialog> possibleMoveToDialogs;
 
-   @Structure
-   ObjectBuilderFactory obf;
-
-   public FormsView( @Service ApplicationContext context,
-                     @Uses FormsModel model )
+   public FormsView( @Service ApplicationContext context, @Uses final CommandQueryClient client, @Structure final ObjectBuilderFactory obf)
    {
-      super( new BorderLayout() );
-      this.model = model;
-      model.refresh();
-      setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
+      this.model = obf.newObjectBuilder( FormsModel.class ).use( client ).newInstance();
 
       ActionMap am = context.getActionMap( this );
       setActionMap( am );
-      formList = new JList( new EventListModel<LinkValue>(model.getForms()) );
 
-      formList.setCellRenderer( new LinkListCellRenderer() );
+      initMaster( new EventListModel<LinkValue>( model.getList()), am.get("add"), new javax.swing.Action[]{am.get( "move" ), am.get("remove")}, new DetailFactory()
+      {
+         public Component createDetail( LinkValue detailLink )
+         {
+            CommandQueryClient caseTypeClient = client.getClient( detailLink );
 
-      add( new JScrollPane(formList), BorderLayout.CENTER );
+            TabbedResourceView view = obf.newObjectBuilder( TabbedResourceView.class ).use( caseTypeClient).newInstance();
+            return view;
+         }
+      });
 
-      JPopupMenu optionsPopup = new JPopupMenu();
-      optionsPopup.add( am.get( "move" ) );
-      optionsPopup.add( am.get( "remove" ) );
-
-      JPanel toolbar = new JPanel();
-      toolbar.add( new JButton( am.get( "add" ) ) );
-      toolbar.add( new JButton( new OptionsAction(optionsPopup) ));
-      add( toolbar, BorderLayout.SOUTH );
-      formList.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "remove" ), am.get( "move" ) ) );
-
-      addAncestorListener( new RefreshWhenVisible( model, this ) );
-
+      new RefreshWhenVisible(this, model);
    }
 
    @Action
-   public void add()
+   public Task add()
    {
       NameDialog formDialog = nameDialogs.iterator().next();
 
       dialogs.showOkCancelHelpDialog( this, formDialog, i18n.text( AdministrationResources.create_new_form ) );
 
-      String name = formDialog.name();
+      final String name = formDialog.name();
       if (Strings.notEmpty( name ) )
       {
-         model.createForm( name );
-         model.refresh();
-      }
+         return new CommandTask()
+         {
+            @Override
+            public void command()
+               throws Exception
+            {
+               model.create( name );
+            }
+         };
+      } else
+         return null;
    }
 
    @Action
-   public void remove()
+   public Task remove()
    {
-      LinkValue selected = (LinkValue) formList.getSelectedValue();
+      final LinkValue selected = (LinkValue) list.getSelectedValue();
 
       ConfirmationDialog dialog = confirmationDialog.iterator().next();
       dialog.setRemovalMessage( selected.text().get() );
@@ -134,39 +138,46 @@ public class FormsView
       {
          if (selected != null)
          {
-            model.removeForm( selected );
-            model.formModels.remove( selected.id().get() );
-            formList.clearSelection();
+            return new CommandTask()
+            {
+               @Override
+               public void command()
+                  throws Exception
+               {
+                  model.remove( selected );
+               }
+            };
          }
       }
+
+      return null;
    }
 
    @Action
-   public void move()
+   public Task move()
    {
-      LinkValue selected = (LinkValue) formList.getSelectedValue();
-      FormModel formModel = model.getFormModel( selected.id().get() );
-      SelectionDialog dialog = possibleMoveToDialogs.use(formModel.getPossibleMoveTo()).newInstance();
+      final LinkValue selected = (LinkValue) list.getSelectedValue();
+      final SelectionDialog dialog = possibleMoveToDialogs.use(model.getPossibleMoveTo()).newInstance();
 
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.choose_move_to ) );
 
       if (dialog.getSelectedLinks() != null)
       {
-         for (LinkValue linkValue : dialog.getSelectedLinks())
+         return new CommandTask()
          {
-            formModel.moveForm( linkValue );
-            model.refresh();
-         }
-      }
+            @Override
+            public void command()
+               throws Exception
+            {
+               model.moveForm(selected, dialog.getSelectedLink());
+            }
+         };
+      } else
+         return null;
    }
 
-   public JList getFormList()
+   public void notifyTransactions( Iterable<TransactionEvents> transactions )
    {
-      return formList;
-   }
-
-   public FormsModel getModel()
-   {
-      return model;
+      model.notifyTransactions( transactions );
    }
 }

@@ -29,7 +29,6 @@ import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.domain.form.PageDefinitionValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.EventListener;
 import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
 import se.streamsource.streamflow.infrastructure.event.source.helper.EventVisitorFilter;
 
@@ -40,7 +39,7 @@ import org.slf4j.LoggerFactory;
  * JAVADOC
  */
 public class PageEditModel
-      implements Refreshable, EventListener, EventVisitor
+      implements Refreshable, EventVisitor
 {
    final Logger logger = LoggerFactory.getLogger( "administration" );
    @Uses
@@ -75,11 +74,6 @@ public class PageEditModel
    public PageDefinitionValue getPageDefinition()
    {
       return page;
-   }
-
-   public void notifyEvent( DomainEvent event )
-   {
-      eventFilter.visit( event );
    }
 
    public boolean visit( DomainEvent event )

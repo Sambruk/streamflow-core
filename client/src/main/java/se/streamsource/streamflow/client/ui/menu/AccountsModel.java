@@ -119,14 +119,6 @@ public class AccountsModel
       accounts.remove( index );
    }
 
-   public void notifyEvent( DomainEvent event )
-   {
-      for (AccountModel model : models)
-      {
-         model.notifyEvent( event );
-      }
-   }
-
    private void refresh()
    {
       UnitOfWork uow = uowf.newUnitOfWork();

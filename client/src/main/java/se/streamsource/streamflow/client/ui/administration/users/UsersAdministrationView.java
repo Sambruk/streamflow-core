@@ -17,19 +17,31 @@
 
 package se.streamsource.streamflow.client.ui.administration.users;
 
+import ca.odell.glazedlists.gui.TableFormat;
+import ca.odell.glazedlists.gui.WritableTableFormat;
+import ca.odell.glazedlists.swing.EventJXTableModel;
 import org.jdesktop.application.ApplicationActionMap;
 import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Task;
 import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.renderer.CheckBoxProvider;
 import org.jdesktop.swingx.renderer.DefaultTableRenderer;
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.FileNameExtensionFilter;
+import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
+import se.streamsource.streamflow.client.ui.CommandTask;
 import se.streamsource.streamflow.client.ui.CreateUserDialog;
 import se.streamsource.streamflow.client.ui.ResetPasswordDialog;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
+import se.streamsource.streamflow.resource.user.UserEntityDTO;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -41,6 +53,7 @@ import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 
 public class UsersAdministrationView
       extends JPanel
+   implements TransactionListener
 {
    private UsersAdministrationModel model;
 
@@ -54,14 +67,56 @@ public class UsersAdministrationView
    DialogService dialogs;
 
    JXTable usersTable;
+   private EventJXTableModel<UserEntityDTO> tableModel;
 
-   public UsersAdministrationView( @Service ApplicationContext context, @Uses UsersAdministrationModel model )
+   public UsersAdministrationView( @Service ApplicationContext context, @Uses CommandQueryClient client, @Structure ObjectBuilderFactory obf)
    {
       ApplicationActionMap am = context.getActionMap( this );
       setActionMap( am );
 
-      this.model = model;
-      usersTable = new JXTable( model );
+      this.model = obf.newObjectBuilder( UsersAdministrationModel.class ).use( client ).newInstance();
+
+      TableFormat<UserEntityDTO> userAdminTableFormat = new WritableTableFormat<UserEntityDTO>()
+      {
+         public boolean isEditable( UserEntityDTO userEntityDTO, int i )
+         {
+            return i == 0;
+         }
+
+         public UserEntityDTO setColumnValue( UserEntityDTO userEntityDTO, Object o, int i )
+         {
+            if (i == 0)
+               model.changeDisabled( userEntityDTO );
+
+            return userEntityDTO;
+         }
+
+         public int getColumnCount()
+         {
+            return 2;
+         }
+
+         public String getColumnName( int i )
+         {
+            return new String[]{text( AdministrationResources.user_enabled_label ), text( AdministrationResources.username_label )}[i];
+         }
+
+         public Object getColumnValue( UserEntityDTO userEntityDTO, int i )
+         {
+            switch (i)
+            {
+               case 0:
+                  return userEntityDTO.disabled().get();
+               case 1:
+                  return userEntityDTO.username().get();
+            }
+            return null;
+         }
+      };
+
+      tableModel = new EventJXTableModel<UserEntityDTO>( model.getEventList(), userAdminTableFormat );
+
+      usersTable = new JXTable( tableModel );
       usersTable.getColumn( 0 ).setCellRenderer( new DefaultTableRenderer( new CheckBoxProvider() ) );
       usersTable.getColumn( 0 ).setMaxWidth( 30 );
       usersTable.getColumn( 0 ).setResizable( false );
@@ -78,32 +133,41 @@ public class UsersAdministrationView
       toolbar.add( new JButton( am.get( "resetPassword" ) ) );
       toolbar.add( new JButton( am.get( "importUserList" ) ) );
       super.add( toolbar, BorderLayout.SOUTH );
+
+      new RefreshWhenVisible(this, model);
    }
 
 
    @org.jdesktop.application.Action
-   public void createUser()
+   public Task createUser()
    {
-      CreateUserDialog dialog = userDialogs.iterator().next();
+      final CreateUserDialog dialog = userDialogs.iterator().next();
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.create_user_title ) );
 
       if ( dialog.userCommand() != null )
       {
-         model.createUser( dialog.userCommand() );
-      }
-      /*if (dialog.username() != null && dialog.password() != null)
+         return new CommandTask()
+         {
+            @Override
+            public void command()
+               throws Exception
+            {
+               model.createUser( dialog.userCommand() );
+            }
+         };
+      } else
       {
-         model.createUser( dialog.username(), dialog.password() );
-      } */
+         return null;
+      }
    }
 
    @org.jdesktop.application.Action
-   public void importUserList()
+   public Task importUserList()
    {
 
       // Ask the user for a file to import user/pwd pairs from
       // Can be either Excels or CVS format
-      JFileChooser fileChooser = new JFileChooser();
+      final JFileChooser fileChooser = new JFileChooser();
       fileChooser.setFileSelectionMode( JFileChooser.FILES_AND_DIRECTORIES );
       fileChooser.setMultiSelectionEnabled( false );
       fileChooser.addChoosableFileFilter( new FileNameExtensionFilter(
@@ -112,23 +176,43 @@ public class UsersAdministrationView
       int returnVal = fileChooser.showOpenDialog( (UsersAdministrationView.this) );
       if (returnVal != JFileChooser.APPROVE_OPTION)
       {
-         return;
+         return null;
       }
 
-      model.importUsers( fileChooser.getSelectedFile().getAbsoluteFile() );
-
+      return new CommandTask()
+      {
+         @Override
+         public void command()
+            throws Exception
+         {
+            model.importUsers( fileChooser.getSelectedFile().getAbsoluteFile() );
+         }
+      };
    }
 
    @org.jdesktop.application.Action
-   public void resetPassword()
+   public Task resetPassword()
    {
-      ResetPasswordDialog dialog = resetPwdDialogs.iterator().next();
-      dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.reset_password_title ) + ": " + model.getValueAt( usersTable.getSelectedRow(), 1 ) );
+      final ResetPasswordDialog dialog = resetPwdDialogs.iterator().next();
+      dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.reset_password_title ) + ": " + tableModel.getElementAt( usersTable.getSelectedRow()).username().get() );
 
       if (dialog.password() != null)
       {
-         model.resetPassword( usersTable.getSelectedRow(), dialog.password() );
-      }
+         return new CommandTask()
+         {
+            @Override
+            public void command()
+               throws Exception
+            {
+               model.resetPassword( tableModel.getElementAt( usersTable.getSelectedRow()), dialog.password() );
+            }
+         };
+      } else
+         return null;
    }
 
+   public void notifyTransactions( Iterable<TransactionEvents> transactions )
+   {
+      model.refresh();
+   }
 }

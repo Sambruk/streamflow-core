@@ -37,6 +37,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.ui.CommandTask;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.domain.contact.ContactAddressValue;
 import se.streamsource.streamflow.domain.contact.ContactEmailValue;
@@ -91,7 +92,6 @@ public class ContactView
    private JTextField companyField = (JTextField) TEXTFIELD.newField();
 
    private ApplicationContext context;
-   private RefreshWhenVisible refresher;
 
    public ContactView( @Service ApplicationContext appContext, @Structure ObjectBuilderFactory obf )
    {
@@ -165,7 +165,7 @@ public class ContactView
       addressBinder.addObserver( this );
       emailBinder.addObserver( this );
 
-      add( new JPanel(), "EMPTY" );
+      add( new JLabel("FOO"), "EMPTY" );
       add( scrollPane, "CONTACT" );
    }
 
@@ -190,71 +190,38 @@ public class ContactView
 
    public void update( Observable observable, Object arg )
    {
-      Property property = (Property) arg;
-      if (property.qualifiedName().name().equals( "name" ))
+      final Property property = (Property) arg;
+      new CommandTask()
       {
-         try
+         @Override
+         public void command()
+            throws Exception
          {
-            model.changeName( (String) property.get() );
-         } catch (ResourceException e)
-         {
-            throw new OperationException( CaseResources.could_not_change_name, e );
+            String propertyName = property.qualifiedName().name();
+            if (propertyName.equals( "name" ))
+            {
+               model.changeName( (String) property.get() );
+            } else if (propertyName.equals( "note" ))
+            {
+               model.changeNote( (String) property.get() );
+            } else if (propertyName.equals( "company" ))
+            {
+               model.changeCompany( (String) property.get() );
+            } else if (propertyName.equals( "phoneNumber" ))
+            {
+               model.changePhoneNumber( (String) property.get() );
+            } else if (propertyName.equals( "address" ))
+            {
+               model.changeAddress( (String) property.get() );
+            } else if (propertyName.equals( "emailAddress" ))
+            {
+               model.changeEmailAddress( (String) property.get() );
+            } else if (propertyName.equals( "contactId" ))
+            {
+               model.changeContactId( (String) property.get() );
+            }
          }
-      } else if (property.qualifiedName().name().equals( "note" ))
-      {
-         try
-         {
-            model.changeNote( (String) property.get() );
-         } catch (ResourceException e)
-         {
-            throw new OperationException( CaseResources.could_not_change_note, e );
-         }
-      } else if (property.qualifiedName().name().equals( "company" ))
-      {
-         try
-         {
-            model.changeCompany( (String) property.get() );
-         } catch (ResourceException e)
-         {
-            throw new OperationException( CaseResources.could_not_change_company, e );
-         }
-      } else if (property.qualifiedName().name().equals( "phoneNumber" ))
-      {
-         try
-         {
-            model.changePhoneNumber( (String) property.get() );
-         } catch (ResourceException e)
-         {
-            throw new OperationException( CaseResources.could_not_change_phone_number, e );
-         }
-      } else if (property.qualifiedName().name().equals( "address" ))
-      {
-         try
-         {
-            model.changeAddress( (String) property.get() );
-         } catch (ResourceException e)
-         {
-            throw new OperationException( CaseResources.could_not_change_address, e );
-         }
-      } else if (property.qualifiedName().name().equals( "emailAddress" ))
-      {
-         try
-         {
-            model.changeEmailAddress( (String) property.get() );
-         } catch (ResourceException e)
-         {
-            throw new OperationException( CaseResources.could_not_change_email_address, e );
-         }
-      } else if (property.qualifiedName().name().equals( "contactId" ))
-      {
-         try
-         {
-            model.changeContactId( (String) property.get() );
-         } catch (ResourceException e)
-         {
-            throw new OperationException( CaseResources.could_not_change_contact_id, e );
-         }
-      }
+      }.execute();
    }
 
    @Action

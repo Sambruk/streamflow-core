@@ -32,31 +32,38 @@ public class EventListSynch
 {
    public static <T, P extends T> void synchronize( Collection<T> list, EventList<P> eventList )
    {
-      if (list.size() == eventList.size())
+      eventList.getReadWriteLock().writeLock().lock();
+      try
       {
-         // Replace items
-         if (eventList instanceof TransactionList)
-            ((TransactionList) eventList).beginEvent();
-
-         int idx = 0;
-         for (Object item : list)
+         if (list.size() == eventList.size())
          {
-            eventList.set( idx++, (P) item );
+            // Replace items
+            if (eventList instanceof TransactionList)
+               ((TransactionList) eventList).beginEvent();
+
+            int idx = 0;
+            for (Object item : list)
+            {
+               eventList.set( idx++, (P) item );
+            }
+
+            if (eventList instanceof TransactionList)
+               ((TransactionList) eventList).commitEvent();
+         } else
+         {
+            // Replace items
+            if (eventList instanceof TransactionList)
+               ((TransactionList) eventList).beginEvent();
+
+            eventList.clear();
+            eventList.addAll( (Collection<? extends P>) list );
+
+            if (eventList instanceof TransactionList)
+               ((TransactionList) eventList).commitEvent();
          }
-
-         if (eventList instanceof TransactionList)
-            ((TransactionList) eventList).commitEvent();
-      } else
+      } catch (Exception e)
       {
-         // Replace items
-         if (eventList instanceof TransactionList)
-            ((TransactionList) eventList).beginEvent();
-
-         eventList.clear();
-         eventList.addAll( (Collection<? extends P>) list );
-
-         if (eventList instanceof TransactionList)
-            ((TransactionList) eventList).commitEvent();
+         eventList.getReadWriteLock().writeLock().unlock();
       }
    }
 }

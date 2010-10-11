@@ -17,116 +17,16 @@
 
 package se.streamsource.streamflow.client.ui.administration.label;
 
-import ca.odell.glazedlists.BasicEventList;
-import ca.odell.glazedlists.EventList;
-import org.qi4j.api.entity.EntityReference;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
-import org.restlet.resource.ResourceException;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.dci.value.LinkValue;
-import se.streamsource.dci.value.LinksValue;
-import se.streamsource.dci.value.StringValue;
-import se.streamsource.dci.value.TitledLinkValue;
-import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
-import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
-import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.EventListener;
-import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
-
-import java.util.Collection;
+import se.streamsource.streamflow.client.ui.administration.SelectionListModel;
 
 /**
  * Management of selected labels on a casetype, project or OU level
  */
 public class SelectedLabelsModel
-      implements EventListener, Refreshable
+   extends SelectionListModel
 {
-   @Uses
-   CommandQueryClient client;
-
-   BasicEventList<LinkValue> labels = new BasicEventList<LinkValue>();
-
-   @Structure
-   ValueBuilderFactory vbf;
-
-   public EventList<LinkValue> getLabelList()
+   public SelectedLabelsModel()
    {
-      return labels;
-   }
-
-   public void refresh()
-   {
-      try
-      {
-         // Get label list
-         LinksValue newList = client.query( "index", LinksValue.class );
-         EventListSynch.synchronize( newList.links().get(), labels );
-
-      } catch (ResourceException e)
-      {
-         throw new OperationException( AdministrationResources.could_not_refresh_list_of_labels, e );
-      }
-   }
-
-   public EventList<TitledLinkValue> getPossibleLabels()
-   {
-      try
-      {
-         BasicEventList<TitledLinkValue> possibleLabels = new BasicEventList<TitledLinkValue>();
-         for (LinkValue link : client.query( "possiblelabels", LinksValue.class ).links().get())
-         {
-            possibleLabels.add( (TitledLinkValue) link);
-         }
-         return possibleLabels;
-      } catch (ResourceException e)
-      {
-         throw new OperationException( AdministrationResources.could_not_refresh, e );
-      }
-   }
-
-   public void createLabel( String description )
-   {
-      try
-      {
-         ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
-         builder.prototype().string().set( description );
-         client.postCommand( "createlabel", builder.newInstance() );
-      } catch (ResourceException e)
-      {
-         throw new OperationException( AdministrationResources.could_not_create_label, e );
-      }
-   }
-
-   public void addLabel( EntityReference identity )
-   {
-      try
-      {
-         ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
-         builder.prototype().entity().set( identity );
-         client.postCommand( "addlabel", builder.newInstance() );
-      } catch (ResourceException e)
-      {
-         throw new OperationException( AdministrationResources.could_not_add_label, e );
-      }
-   }
-
-   public void removeLabel( LinkValue identity )
-   {
-      try
-      {
-         client.getClient( identity ).delete();
-      } catch (ResourceException e)
-      {
-         throw new OperationException( AdministrationResources.could_not_remove_label, e );
-      }
-   }
-
-   public void notifyEvent( DomainEvent event )
-   {
+      super( "possiblelabels" );
    }
 }
