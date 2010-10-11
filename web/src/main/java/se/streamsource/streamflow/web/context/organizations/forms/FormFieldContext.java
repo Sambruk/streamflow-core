@@ -302,8 +302,13 @@ public interface FormFieldContext
 
       public FormFieldContext context( String id ) throws ContextNotFoundException
       {
-         // TODO Fieldsets
-         return null;
+         FieldEntity field = module.unitOfWorkFactory().currentUnitOfWork().get( FieldEntity.class, id );
+
+         // TODO Verify that this field is part of the fieldset
+
+         roleMap.set( field );
+         roleMap.set( field.fieldValue().get() );
+         return subContext( FormFieldContext.class );
       }
    }
 }
