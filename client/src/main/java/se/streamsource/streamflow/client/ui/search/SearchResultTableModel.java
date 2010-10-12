@@ -17,9 +17,12 @@
 
 package se.streamsource.streamflow.client.ui.search;
 
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
-import se.streamsource.dci.value.LinksValue;
+import se.streamsource.dci.value.*;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
 import se.streamsource.streamflow.client.ui.caze.CasesModel;
@@ -34,6 +37,9 @@ import javax.swing.*;
 public class SearchResultTableModel
       extends CasesTableModel
 {
+   @Structure
+   ValueBuilderFactory vbf;
+
    @Uses
    CasesModel casesModel;
 
@@ -49,24 +55,21 @@ public class SearchResultTableModel
    @Override
    public void refresh()
    {
-      try
+      if (searchString != null)
       {
-         final LinksValue newRoot = casesModel.search( searchString );
-         boolean same = newRoot.equals( cases );
-         if (!same)
-         {
-            SwingUtilities.invokeLater( new Runnable()
-            {
-               public void run()
-               {
-                  EventListSynch.synchronize( newRoot.links().get(), eventList );
-                  cases = newRoot;
-               }
-            });
-         }
-      } catch (ResourceException e)
-      {
-         throw new OperationException( WorkspaceResources.could_not_perform_operation, e );
+         final LinksValue newRoot = performSearch();
+         EventListSynch.synchronize( newRoot.links().get(), eventList );
       }
    }
+
+   private LinksValue performSearch()
+   {
+      String translatedQuery = SearchTerms.translate( searchString );
+
+      ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
+      builder.prototype().string().set( translatedQuery );
+
+      return client.query( "search", builder.newInstance(), LinksValue.class );
+   }
+
 }

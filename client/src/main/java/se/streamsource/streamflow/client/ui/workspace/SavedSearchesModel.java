@@ -29,6 +29,7 @@ import se.streamsource.dci.value.TitledLinksValue;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.ui.administration.LinkValueListModel;
 import se.streamsource.streamflow.client.ui.administration.organization.LinksListModel;
 import se.streamsource.streamflow.resource.user.profile.SearchValue;
 
@@ -38,26 +39,14 @@ import java.util.List;
  * JAVADOC
  */
 public class SavedSearchesModel
-      extends LinksListModel
+      extends LinkValueListModel
 {
    @Structure
    ValueBuilderFactory vbf;
 
-   public SavedSearchesModel( @Uses CommandQueryClient client )
-   {
-      super( client, "index" );
-   }
-
    public void saveSearch( SearchValue saveSearch )
    {
-      try
-      {
-         client.postCommand( "addsearch", saveSearch );
-         refresh();
-      } catch (ResourceException e)
-      {
-         throw new OperationException( WorkspaceResources.could_not_perform_operation, e );
-      }
+      client.postCommand( "createsearch", saveSearch );
    }
 
    public void remove( LinkValue link )
@@ -65,20 +54,18 @@ public class SavedSearchesModel
       if (link != null)
       {
          client.getClient( link ).delete();
-         eventList.remove( link );
       }
    }
 
    public void refresh()
    {
       List<LinkValue> links = client.query( "index", TitledLinksValue.class ).links().get();
-      EventListSynch.synchronize( links, eventList );
+      EventListSynch.synchronize( links, linkValues );
    }
 
    public void updateSearch( LinkValue link, SearchValue searchValue )
    {
       client.getClient( link ).postCommand( "update", searchValue );
-      refresh();
    }
 
    public void changeDescription( LinkValue link, String name )
@@ -86,7 +73,6 @@ public class SavedSearchesModel
       ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
       builder.prototype().string().set( name );
       client.getClient( link ).postCommand( "changedescription", builder.newInstance() );
-      refresh();
    }
 
    public void changeQuery( LinkValue link, String query )
@@ -94,6 +80,5 @@ public class SavedSearchesModel
       ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
       builder.prototype().string().set( query );
       client.getClient( link ).postCommand( "changequery", builder.newInstance() );
-      refresh();
    }
 }

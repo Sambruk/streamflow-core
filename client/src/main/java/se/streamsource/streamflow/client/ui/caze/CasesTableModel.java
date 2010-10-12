@@ -47,160 +47,12 @@ import java.util.List;
  * Base class for all models that list cases
  */
 public class CasesTableModel
-      implements EventVisitor, Refreshable
+      implements Refreshable
 {
    @Uses
    protected CommandQueryClient client;
 
-   @Structure
-   protected ValueBuilderFactory vbf;
-
-   protected LinksValue cases;
-
-   protected BasicEventList<CaseValue> eventList = new BasicEventList<CaseValue>();
-
-   public boolean visit( final DomainEvent event )
-   {
-      CaseValue updatedCase = getCase( event );
-
-      if (updatedCase != null)
-      {
-         int idx = eventList.indexOf( updatedCase );
-         ValueBuilder<CaseValue> valueBuilder = updatedCase.buildWith();
-         updatedCase = valueBuilder.prototype();
-
-         String eventName = event.name().get();
-         if (eventName.equals( "changedDescription" ))
-         {
-            try
-            {
-               String newDesc = EventParameters.getParameter( event, "param1" );
-               updatedCase.text().set( newDesc );
-               eventList.set( idx, valueBuilder.newInstance() );
-            } catch (Exception e)
-            {
-               e.printStackTrace();
-            }
-         } else if (eventName.equals( "removedLabel" ))
-         {
-            String id = EventParameters.getParameter( event, "param1" );
-            List<LinkValue> labels = updatedCase.labels().get().links().get();
-            for (LinkValue label : labels)
-            {
-               if (label.id().get().equals( id ))
-               {
-                  labels.remove( label );
-                  break;
-               }
-            }
-            eventList.set( idx, valueBuilder.newInstance() );
-         } else if ("addedLabel,changedCaseType,changedOwner,assignedTo,unassigned,deletedEntity".indexOf( eventName ) != -1)
-         {
-            if (!event.usecase().get().equals( "createcase" ))
-            {
-               refresh();
-            }
-         } else if (eventName.equals( "changedStatus" ))
-         {
-            CaseStates newStatus = CaseStates.valueOf( EventParameters.getParameter( event, "param1" ) );
-            updatedCase.status().set( newStatus );
-            eventList.set( idx, valueBuilder.newInstance() );
-            // update in case the case has moved to another project
-            if (CaseStates.OPEN.equals( newStatus ) && !event.usecase().get().equals( "createcase" ))
-            {
-               refresh();
-            }
-         } else if ("addedContact".equals( eventName ))
-         {
-            if (!updatedCase.hasContacts().get())
-            {
-               String param1 = EventParameters.getParameter( event, "param1" );
-
-               if (!isContactTemplate( param1 ))
-               {
-                  updatedCase.hasContacts().set( true );
-                  eventList.set( idx, valueBuilder.newInstance() );
-               }
-            }
-         } else if ("updatedContact".equals( eventName ))
-         {
-            if (!updatedCase.hasContacts().get())
-            {
-               String param2 = EventParameters.getParameter( event, "param2" );
-
-               if (!isContactTemplate( param2 ))
-               {
-                  updatedCase.hasContacts().set( true );
-                  eventList.set( idx, valueBuilder.newInstance() );
-               }
-            }
-         } else if (eventName.equals( "deletedContact" ))
-         {
-            refresh();
-            // force list repaint
-            EventListSynch.synchronize( cases.links().get(), eventList );
-         } else if (eventName.equals( "createdConversation" ))
-         {
-            if (!updatedCase.hasConversations().get())
-            {
-               updatedCase.hasConversations().set( true );
-               eventList.set( idx, valueBuilder.newInstance() );
-            }
-         } else if (eventName.equals( "submittedForm" ))
-         {
-            if (!updatedCase.hasSubmittedForms().get())
-            {
-               updatedCase.hasSubmittedForms().set( true );
-               eventList.set( idx, valueBuilder.newInstance() );
-            }
-         } else if (eventName.equals( "createdAttachment" ))
-         {
-            if (!updatedCase.hasAttachments().get())
-            {
-               updatedCase.hasAttachments().set( true );
-               eventList.set( idx, valueBuilder.newInstance() );
-            }
-         } else if (eventName.equals( "removedAttachment" ))
-         {
-            refresh();
-            // force list repaint
-            EventListSynch.synchronize( cases.links().get(), eventList );
-         }
-      }
-      return true;
-   }
-
-   private boolean isContactTemplate( String eventParam )
-   {
-      boolean result = true;
-      try
-      {
-         JSONObject contact = new JSONObject( eventParam );
-         Iterator<String> iterator = contact.keys();
-         while (iterator.hasNext())
-         {
-            String key = iterator.next();
-            if (("name".equals( key ) && !"".equals( contact.getString( key ) ))
-                  || ("company".equals( key ) && !"".equals( contact.getString( key ) ))
-                  || ("contactId".equals( key ) && !"".equals( contact.getString( key ) ))
-                  || ("note".equals( key ) && !"".equals( contact.getString( key ) ))
-                  || ("picture".equals( key ) && !"".equals( contact.getString( key ) )))
-            {
-               result = false;
-            } else if ("addresses".equals( key ) || "emailAddresses".equals( key ) || "phoneNumbers".equals( key ))
-            {
-               JSONArray list = contact.getJSONArray( key );
-               if (list.length() != 0)
-                  result = false;
-            }
-
-         }
-      } catch (JSONException e)
-      {
-         result = false;
-      }
-      return result;
-   }
+   protected EventList<CaseValue> eventList = new BasicEventList<CaseValue>();
 
    public EventList<CaseValue> getEventList()
    {
@@ -209,28 +61,6 @@ public class CasesTableModel
 
    public void refresh()
    {
-      final LinksValue newRoot = client.query( "cases", LinksValue.class );
-      boolean same = newRoot.equals( cases );
-      if (!same)
-      {
-         EventListSynch.synchronize( newRoot.links().get(), eventList );
-         cases = newRoot;
-      }
-   }
-
-   private CaseValue getCase( DomainEvent event )
-   {
-      if (cases == null)
-         return null;
-
-      for (CaseValue caseValue : eventList)
-      {
-         if (caseValue.id().get().equals( event.entity().get() ))
-         {
-            return caseValue;
-         }
-      }
-
-      return null;
+      EventListSynch.synchronize( client.query( "cases", LinksValue.class ).links().get(), eventList );
    }
 }

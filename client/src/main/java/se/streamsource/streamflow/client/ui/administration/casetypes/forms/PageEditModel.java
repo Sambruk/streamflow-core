@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
  * JAVADOC
  */
 public class PageEditModel
-      implements Refreshable, EventVisitor
+      implements Refreshable
 {
    final Logger logger = LoggerFactory.getLogger( "administration" );
    @Uses
@@ -47,8 +47,6 @@ public class PageEditModel
 
    @Structure
    private ValueBuilderFactory vbf;
-
-   EventVisitorFilter eventFilter = new EventVisitorFilter( this, "changedDescription" );
 
    private PageDefinitionValue page;
 
@@ -74,17 +72,6 @@ public class PageEditModel
    public PageDefinitionValue getPageDefinition()
    {
       return page;
-   }
-
-   public boolean visit( DomainEvent event )
-   {
-      if (event.entity().get().equals( page.page().get().identity() ))
-      {
-         logger.info( "Refresh page name" );
-         refresh();
-      }
-
-      return false;
    }
 
    public void move( String direction ) throws ResourceException

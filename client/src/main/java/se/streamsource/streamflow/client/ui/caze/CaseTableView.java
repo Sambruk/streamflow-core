@@ -83,12 +83,12 @@ public class CaseTableView
    protected CasesTableModel model;
 
    public void init( @Service ApplicationContext context,
-                     @Uses CommandQueryClient client,
+                     @Uses CasesTableModel casesTableModel,
                      @Structure ObjectBuilderFactory obf,
                      @Uses TableFormat tableFormat )
    {
       setLayout( new BorderLayout() );
-      this.model = obf.newObjectBuilder( CasesTableModel.class ).use( client ).newInstance();
+      this.model = casesTableModel;
       setLayout( new BorderLayout() );
 
       ActionMap am = context.getActionMap( CaseTableView.class, this );

@@ -22,6 +22,7 @@ import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Task;
 import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
@@ -39,6 +40,9 @@ import se.streamsource.streamflow.client.infrastructure.ui.LinkListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.ui.CommandTask;
+import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
 import se.streamsource.streamflow.resource.user.profile.SearchValue;
 
 import javax.swing.ActionMap;
@@ -78,8 +82,6 @@ public class HandleSearchesDialog
    private JList searches;
    private JButton remove;
 
-   private RefreshWhenVisible refresher;
-
    public HandleSearchesDialog( @Service ApplicationContext context, @Structure ValueBuilderFactory vbf, @Structure ObjectBuilderFactory obf, @Uses SavedSearchesModel model )
    {
       super( new BorderLayout() );
@@ -96,7 +98,7 @@ public class HandleSearchesDialog
       searches = new JList();
       searches.setCellRenderer( new LinkListCellRenderer() );
       searches.addListSelectionListener( this );
-      searches.setModel( new EventListModel<LinkValue>( model.getEventList() ) );
+      searches.setModel( new EventListModel<LinkValue>( model.getList() ) );
       JScrollPane scroll = new JScrollPane( searches );
 
       left.add( scroll, BorderLayout.CENTER );
@@ -143,29 +145,42 @@ public class HandleSearchesDialog
 
    public void valueChanged( ListSelectionEvent e )
    {
-      if (!searches.isSelectionEmpty())
+      if (!e.getValueIsAdjusting())
       {
-         TitledLinkValue search = (TitledLinkValue) searches.getSelectedValue();
-         ValueBuilder<SearchValue> builder = vbf.newValueBuilder( SearchValue.class );
-         builder.prototype().name().set( search.text().get() );
-         builder.prototype().query().set( search.title().get() );
+         if (!searches.isSelectionEmpty())
+         {
+            TitledLinkValue search = (TitledLinkValue) searches.getSelectedValue();
+            ValueBuilder<SearchValue> builder = vbf.newValueBuilder( SearchValue.class );
+            builder.prototype().name().set( search.text().get() );
+            builder.prototype().query().set( search.title().get() );
 
-         searchBinder.updateWith( builder.prototype() );
+            searchBinder.updateWith( builder.prototype() );
 
-         remove.setEnabled( true );
-      } else
-      {
-         remove.setEnabled( false );
+            remove.setEnabled( true );
+         } else
+         {
+            remove.setEnabled( false );
+         }
       }
    }
 
    @Action
-   public void remove()
+   public Task remove()
    {
       if (!searches.isSelectionEmpty())
       {
-         model.remove( (LinkValue) searches.getSelectedValue() );
-      }
+         final LinkValue value = (LinkValue) searches.getSelectedValue();
+         return new CommandTask()
+         {
+            @Override
+            public void command()
+               throws Exception
+            {
+               model.remove( value );
+            }
+         };
+      } else
+         return null;
    }
 
    @Action
@@ -174,30 +189,26 @@ public class HandleSearchesDialog
       WindowUtils.findWindow( this ).dispose();
    }
 
-   public void update( Observable o, Object arg )
+   public void update( Observable o, final Object arg )
    {
       if (!searches.isSelectionEmpty())
       {
-         Property property = (Property) arg;
-         if (property.qualifiedName().name().equals( "name" ))
+         new CommandTask()
          {
-            try
+            @Override
+            public void command()
+               throws Exception
             {
-               model.changeDescription( (LinkValue) searches.getSelectedValue(), (String) property.get() );
-            } catch (ResourceException e)
-            {
-               throw new OperationException( WorkspaceResources.could_not_change_description, e );
+               Property property = (Property) arg;
+               if (property.qualifiedName().name().equals( "name" ))
+               {
+                  model.changeDescription( (LinkValue) searches.getSelectedValue(), (String) property.get() );
+               } else if (property.qualifiedName().name().equals( "query" ))
+               {
+                  model.changeQuery( (LinkValue) searches.getSelectedValue(), (String) property.get() );
+               }
             }
-         } else if (property.qualifiedName().name().equals( "query" ))
-         {
-            try
-            {
-               model.changeQuery( (LinkValue) searches.getSelectedValue(), (String) property.get() );
-            } catch (ResourceException e)
-            {
-               throw new OperationException( WorkspaceResources.could_not_change_query, e );
-            }
-         }
+         }.execute();
       }
    }
 }

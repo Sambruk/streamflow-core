@@ -38,7 +38,7 @@ import se.streamsource.streamflow.web.domain.structure.user.profile.SavedSearch;
 public interface SavedSearchesContext
       extends SubContexts<SavedSearchContext>, IndexContext<LinksValue>, Context
 {
-   public void addsearch( SearchValue search );
+   public void createsearch( SearchValue search );
 
    abstract class Mixin
          extends ContextMixin
@@ -60,7 +60,7 @@ public interface SavedSearchesContext
          return builder.newLinks();
       }
 
-      public void addsearch( SearchValue search )
+      public void createsearch( SearchValue search )
       {
          SavedSearches searches = roleMap.get( SavedSearches.class );
          searches.createSavedSearch( search );

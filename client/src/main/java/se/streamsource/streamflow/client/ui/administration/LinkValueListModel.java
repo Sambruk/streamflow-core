@@ -18,6 +18,7 @@
 package se.streamsource.streamflow.client.ui.administration;
 
 import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilderFactory;
@@ -48,7 +49,7 @@ public class LinkValueListModel
    @Structure
    protected ValueBuilderFactory vbf;
 
-   protected BasicEventList<LinkValue> linkValues = new BasicEventList<LinkValue>();
+   protected EventList<LinkValue> linkValues = new BasicEventList<LinkValue>();
 
    private final String refresh;
 
@@ -67,7 +68,7 @@ public class LinkValueListModel
       EventListSynch.synchronize( client.query( refresh, LinksValue.class ).links().get(), linkValues );
    }
 
-   public BasicEventList<LinkValue> getList()
+   public EventList<LinkValue> getList()
    {
       return linkValues;
    }

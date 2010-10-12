@@ -31,6 +31,7 @@ import se.streamsource.streamflow.client.MacOsUIWrapper;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.RoundedBorder;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.CommandTask;
 import se.streamsource.streamflow.client.ui.ContextItem;
 import se.streamsource.streamflow.client.ui.administration.AccountModel;
@@ -82,7 +83,7 @@ public class WorkspaceView
    @Service
    DialogService dialogs;
 
-   SearchResultTableModel searchResultTxableModel;
+   SearchResultTableModel searchResultTableModel;
 
    private WorkspaceContextView2 contextView;
    private JLabel selectedContext;
@@ -98,6 +99,7 @@ public class WorkspaceView
    private CardLayout topLayout = new CardLayout();
 
    private CasesView casesView;
+   private final ObjectBuilderFactory obf;
    private final AccountModel accountModel;
 
 
@@ -105,6 +107,7 @@ public class WorkspaceView
                          final @Structure ObjectBuilderFactory obf,
                          final @Uses AccountModel accountModel )
    {
+      this.obf = obf;
       this.accountModel = accountModel;
       setLayout( new BorderLayout() );
       this.setBorder( Borders.createEmptyBorder( "2dlu, 2dlu, 2dlu, 2dlu" ) );
@@ -170,7 +173,9 @@ public class WorkspaceView
       searchButtons.add( new JButton( getActionMap().get( "hideSearch" ) ) );
       searchPanel.add( searchButtons, BorderLayout.EAST );
 
-      searchView = obf.newObjectBuilder( SearchView.class ).use().newInstance();
+      searchResultTableModel = obf.newObjectBuilder( SearchResultTableModel.class ).use( accountModel.cases() ).newInstance();
+
+      searchView = obf.newObjectBuilder( SearchView.class ).use(accountModel.userResource().getSubClient( "workspace" ).getSubClient( "savedsearches" )).newInstance();
       searchField = searchView.getTextField();
       searchField.setAction( getActionMap().get( "search" ) );
       searchPanel.add( searchView, BorderLayout.CENTER );
@@ -289,55 +294,45 @@ public class WorkspaceView
    @Action
    public void showSearch()
    {
-/*
       topLayout.show( topPanel, "search" );
       searchField.requestFocusInWindow();
 
-      CaseTableView view = obf.newObjectBuilder( CaseTableView.class ).
-            use( searchResultTableModel,
-                  detailView,
-                  casesModel,
-                  new InboxCaseTableFormatter() ).newInstance();
+      CaseTableView caseTable = obf.newObjectBuilder( CaseTableView.class ).
+            use( searchResultTableModel, new InboxCaseTableFormatter()).newInstance();
+      caseTable.getCaseTable().getSelectionModel().addListSelectionListener( new CaseSelectionListener() );
 
-      CasesView casesView = obf.newObjectBuilder( CasesView.class ).use( view, detailView ).newInstance();
-
-      remove( currentSelection );
-      currentSelection = casesView;
-      add( currentSelection, BorderLayout.CENTER );
-
-
-      add( currentSelection, BorderLayout.CENTER );
-*/
+      casesView.showTable( caseTable );
    }
 
    @Action
    public void hideSearch()
    {
-/*
       topLayout.show( topPanel, "context" );
 
-      TreePath[] selection = workspaceTree.getSelectionPaths();
-      workspaceTree.clearSelection();
-      workspaceTree.setSelectionPaths( selection );
+      int selectedContext = contextView.getWorkspaceContextList().getSelectedIndex();
+      if (selectedContext != -1)
+      {
+         contextView.getWorkspaceContextList().setSelectedIndex( -1 );
+         contextView.getWorkspaceContextList().setSelectedIndex( selectedContext );
+      }
+
       // request focus to enable accelerator keys for workspace buttons again
-      this.requestFocus();
-*/
+//      this.requestFocus();
    }
 
    @Action
    public void search()
    {
-/*
+
       String searchString = searchField.getText();
 
       if (searchString.length() > 500)
       {
-         dialogs.showMessageDialog( this, text( WorkspaceResources.too_long_query), "" );
+         dialogs.showMessageDialog( this, i18n.text( WorkspaceResources.too_long_query), "" );
       } else
       {
          searchResultTableModel.search( searchString );
       }
-*/
    }
 
    @Action

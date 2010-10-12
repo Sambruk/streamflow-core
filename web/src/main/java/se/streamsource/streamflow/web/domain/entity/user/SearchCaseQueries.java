@@ -81,7 +81,7 @@ public interface
                if (search.hasName( "label" ))
                {
                   StringBuilder labelQueryBuilder = new StringBuilder( "type:se.streamsource.streamflow.web.domain.entity.label.LabelEntity" );
-                  labelQueryBuilder.append( " description:" ).append( search.getValue() );
+                  labelQueryBuilder.append( " description:" ).append( search.getQuotedValue() );
 
                   Query<LabelEntity> labels = module.queryBuilderFactory()
                         .newNamedQuery( LabelEntity.class, uow, "solrquery" ).setVariable( "query", labelQueryBuilder.toString() );
@@ -111,7 +111,7 @@ public interface
                } else if (search.hasName( "caseType" ))
                {
                   StringBuilder caseTypeQueryBuilder = new StringBuilder( "type:se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity" );
-                  caseTypeQueryBuilder.append( " description:" ).append( search.getValue() );
+                  caseTypeQueryBuilder.append( " description:" ).append( search.getQuotedValue() );
 
                   Query<CaseTypeEntity> caseTypes = module.queryBuilderFactory()
                         .newNamedQuery( CaseTypeEntity.class, uow, "solrquery" ).setVariable( "query", caseTypeQueryBuilder.toString() );
@@ -142,7 +142,7 @@ public interface
                } else if (search.hasName( "project" ))
                {
                   StringBuilder projectQueryBuilder = new StringBuilder( "type:se.streamsource.streamflow.web.domain.entity.project.ProjectEntity" );
-                  projectQueryBuilder.append( " description:" ).append( search.getValue() );
+                  projectQueryBuilder.append( " description:" ).append( search.getQuotedValue() );
 
                   Query<ProjectEntity> projects = module.queryBuilderFactory()
                         .newNamedQuery( ProjectEntity.class, uow, "solrquery" ).setVariable( "query", projectQueryBuilder.toString() );
@@ -173,7 +173,7 @@ public interface
                {
                   StringBuilder creatorQueryBuilder = new StringBuilder( "type:se.streamsource.streamflow.web.domain.entity.user.UserEntity" );
                   String userName = user.userName().get();
-                  creatorQueryBuilder.append( " description:" ).append( getUserInSearch( search.getValue(), userName ) );
+                  creatorQueryBuilder.append( " description:" ).append( getUserInSearch( search, userName ) );
 
                   Query<UserEntity> users = module.queryBuilderFactory()
                         .newNamedQuery( UserEntity.class, uow, "solrquery" ).setVariable( "query", creatorQueryBuilder.toString() );
@@ -203,7 +203,7 @@ public interface
 
                } else if (search.hasName( "description", "note", "name", "contactId", "phoneNumber", "emailAddress" ))
                {
-                  queryBuilder.append( " " ).append( search.getName() ).append( ":" ).append( search.getValue() );
+                  queryBuilder.append( " " ).append( search.getName() ).append( ":" ).append( search.getQuotedValue() );
 
                } else if (search.hasName( "createdOn" ))
                {
@@ -211,10 +211,12 @@ public interface
                } else if (search.hasName( "assignedTo" ))
                {
                   String userName = user.userName().get();
-                  queryBuilder.append( " " ).append( search.getName() ).append( ":" ).append( getUserInSearch( search.getValue(), userName ) );
+                  queryBuilder.append( " " ).append( search.getName() ).append( ":" ).append( getUserInSearch( search, userName ) );
                } else
                {
-                  queryBuilder.append( " " ).append( search.getValue() );
+                  if (queryBuilder.length() > 0)
+                     queryBuilder.append( " " );
+                  queryBuilder.append( search.getValue() );
                }
             }
 
@@ -293,14 +295,14 @@ public interface
        * @param search
        * @return
        */
-      protected String getUserInSearch( String search, String user )
+      protected String getUserInSearch( SubQuery search, String user )
       {
-         if (UserSearchKeyword.ME.toString().equalsIgnoreCase( search ))
+         if (UserSearchKeyword.ME.toString().equalsIgnoreCase( search.getValue() ))
          {
             return user;
          } else
          {
-            return search;
+            return search.getQuotedValue();
          }
       }
 
@@ -455,7 +457,7 @@ public interface
          public SubQuery( String name, String value )
          {
             this.name = name;
-            this.value = '\"'+value+'\"';
+            this.value = value;
          }
 
          public String getName()
@@ -466,6 +468,11 @@ public interface
          public String getValue()
          {
             return value;
+         }
+
+         public String getQuotedValue()
+         {
+            return "\""+value+"\"";
          }
 
          public boolean hasName( String... names )

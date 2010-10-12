@@ -44,7 +44,9 @@ public class EventListSynch
             int idx = 0;
             for (Object item : list)
             {
-               eventList.set( idx++, (P) item );
+               if (!item.equals( eventList.get(idx )))
+                  eventList.set( idx++, (P) item );
+               idx++;
             }
 
             if (eventList instanceof TransactionList)
