@@ -79,8 +79,6 @@ public class CasesDetailView2
             currentCase = client.getReference();
             add(current = obf.newObjectBuilder( CaseDetailView.class ).use( client ).newInstance(), "detail");
             current.setSelectedTab( tab );
-
-            layout.show( this, "detail" );
          } else
          {
             currentCase = client.getReference();
