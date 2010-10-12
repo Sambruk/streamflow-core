@@ -19,6 +19,7 @@ package se.streamsource.streamflow.web.domain.entity.attachment;
 
 import org.qi4j.api.concern.ConcernOf;
 import org.qi4j.api.concern.Concerns;
+import org.qi4j.api.entity.association.Association;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.query.Query;
@@ -32,6 +33,8 @@ import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
 import se.streamsource.streamflow.web.domain.structure.attachment.SelectedTemplate;
 
+import static org.qi4j.api.query.QueryExpressions.*;
+
 /**
  * Attachment
  */
@@ -41,7 +44,8 @@ public interface AttachmentEntity
       Attachment,
 
       Describable.Data,
-      AttachedFile.Data
+      AttachedFile.Data,
+      Removable.Data
 {
 
    abstract class RemovableConcern
@@ -65,10 +69,10 @@ public interface AttachmentEntity
          if (removed)
          {
             {
-               // TODO remove all usage of this attachement
-               SelectedTemplate.Data selectedTemplate = QueryExpressions.templateFor( SelectedTemplate.Data.class );
+               // Remove all usage of this attachement
+               Association<Attachment> selectedTemplate = templateFor( SelectedTemplate.Data.class ).selectedTemplate();
                Query<SelectedTemplate> templateUsages = qbf.newQueryBuilder( SelectedTemplate.class ).
-                     where( QueryExpressions.eq( selectedTemplate.selectedTemplate(), attachment ) ).
+                     where( QueryExpressions.eq( selectedTemplate, attachment ) ).
                      newQuery( uowf.currentUnitOfWork() );
 
                for (SelectedTemplate selectedTemplateUsage : templateUsages)

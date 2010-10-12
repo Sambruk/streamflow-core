@@ -241,68 +241,102 @@ public class AccessPointView
    }
 
    @Action
-   public void project()
+   public Task project()
    {
-
-      FilterListDialog dialog = projectDialog.use(
-            i18n.text( WorkspaceResources.choose_project ),
-            model.getPossibleProjects() ).newInstance();
-      dialogs.showOkCancelHelpDialog( projectButton, dialog );
-
-      if (dialog.getSelected() != null)
+      return new CommandTask()
       {
-         model.setProject( dialog.getSelected().identity() );
-      }
-   }
-
-   @Action
-   public void casetype()
-   {
-      FilterListDialog dialog = caseTypeDialog.use(
-            i18n.text( WorkspaceResources.chose_casetype ),
-            model.getPossibleCaseTypes() ).newInstance();
-      dialogs.showOkCancelHelpDialog( caseTypeButton, dialog );
-
-      if (dialog.getSelected() != null)
-      {
-         model.setCaseType( dialog.getSelected().identity() );
-      }
-   }
-
-   @Action
-   public void label()
-   {
-      CaseLabelsDialog dialog = labelSelectionDialog.use(
-            model.getPossibleLabels() ).newInstance();
-      dialogs.showOkCancelHelpDialog( labelButton, dialog );
-
-      if (dialog.getSelectedLabels() != null)
-      {
-         for (LinkValue listItemValue : dialog.getSelectedLabels())
+         @Override
+         public void command()
+               throws Exception
          {
-            model.labelsModel().addLabel( EntityReference.parseEntityReference( listItemValue.id().get() ) );
+            FilterListDialog dialog = projectDialog.use(
+                  i18n.text( WorkspaceResources.choose_project ),
+                  model.getPossibleProjects() ).newInstance();
+            dialogs.showOkCancelHelpDialog( projectButton, dialog );
+
+            if (dialog.getSelected() != null)
+            {
+               model.setProject( dialog.getSelected().identity() );
+            }
          }
-      }
+      };
+
    }
 
    @Action
-   public void form()
+   public Task casetype()
    {
-      FilterListDialog dialog = formDialog.use(
-            i18n.text( WorkspaceResources.choose_form ),
-            model.getPossibleForms() ).newInstance();
-      dialogs.showOkCancelHelpDialog( formButton, dialog );
-
-      if (dialog.getSelected() != null)
+      return new CommandTask()
       {
-         model.setForm( dialog.getSelected().identity() );
-      }
+         @Override
+         public void command()
+               throws Exception
+         {
+            FilterListDialog dialog = caseTypeDialog.use(
+                  i18n.text( WorkspaceResources.chose_casetype ),
+                  model.getPossibleCaseTypes() ).newInstance();
+            dialogs.showOkCancelHelpDialog( caseTypeButton, dialog );
+
+            if (dialog.getSelected() != null)
+            {
+               model.setCaseType( dialog.getSelected().identity() );
+            }
+         }
+      };
+
+   }
+
+   @Action
+   public Task label()
+   {
+      return new CommandTask()
+      {
+         @Override
+         public void command()
+               throws Exception
+         {
+            CaseLabelsDialog dialog = labelSelectionDialog.use(
+                  model.getPossibleLabels() ).newInstance();
+            dialogs.showOkCancelHelpDialog( labelButton, dialog );
+
+            if (dialog.getSelectedLabels() != null)
+            {
+               for (LinkValue listItemValue : dialog.getSelectedLabels())
+               {
+                  model.labelsModel().addLabel( EntityReference.parseEntityReference( listItemValue.id().get() ) );
+               }
+            }
+         }
+      };
+
+   }
+
+   @Action
+   public Task form()
+   {
+      return new CommandTask()
+      {
+         @Override
+         public void command()
+               throws Exception
+         {
+            FilterListDialog dialog = formDialog.use(
+                  i18n.text( WorkspaceResources.choose_form ),
+                  model.getPossibleForms() ).newInstance();
+            dialogs.showOkCancelHelpDialog( formButton, dialog );
+
+            if (dialog.getSelected() != null)
+            {
+               model.setForm( dialog.getSelected().identity() );
+            }
+         }
+      };
+
    }
 
    @Action
    public Task template()
    {
-
       return new CommandTask()
       {
          @Override

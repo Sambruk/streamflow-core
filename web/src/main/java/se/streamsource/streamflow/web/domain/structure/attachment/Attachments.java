@@ -27,7 +27,6 @@ import org.qi4j.api.injection.scope.State;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.restlet.resource.ClientResource;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 import java.net.URI;
@@ -39,8 +38,10 @@ import java.net.URISyntaxException;
 @Mixins(Attachments.Mixin.class)
 public interface Attachments
 {
-   Attachment createAttachment( String uri) throws URISyntaxException;
-   void deleteAttachment(Attachment attachment);
+   Attachment createAttachment( String uri ) throws URISyntaxException;
+
+   void deleteAttachment( Attachment attachment );
+
    boolean hasAttachments();
 
    interface Data
@@ -49,13 +50,15 @@ public interface Attachments
       @Queryable(false)
       ManyAssociation<Attachment> attachments();
 
-      Attachment createdAttachment( DomainEvent event, String id);
-      void addedAttachment(DomainEvent event, Attachment attachment);
-      void removedAttachment(DomainEvent event, Attachment attachment);
+      Attachment createdAttachment( DomainEvent event, String id );
+
+      void addedAttachment( DomainEvent event, Attachment attachment );
+
+      void removedAttachment( DomainEvent event, Attachment attachment );
    }
 
    abstract class Mixin
-      implements Attachments, Data
+         implements Attachments, Data
    {
       @State
       ManyAssociation<Attachment> attachments;
@@ -66,12 +69,12 @@ public interface Attachments
       @Structure
       UnitOfWorkFactory uowf;
 
-      public Attachment createAttachment( String uri) throws URISyntaxException
+      public Attachment createAttachment( String uri ) throws URISyntaxException
       {
          // Check if URI is valid
-         new URI(uri);
-         
-         Attachment attachment = createdAttachment( DomainEvent.CREATE, idGen.generate( Identity.class ));
+         new URI( uri );
+
+         Attachment attachment = createdAttachment( DomainEvent.CREATE, idGen.generate( Identity.class ) );
          attachment.changeUri( uri );
          attachment.changeName( "New attachment" );
 
@@ -82,13 +85,14 @@ public interface Attachments
 
       public void deleteAttachment( Attachment attachment )
       {
-         String uriString = ((AttachedFile.Data)attachment).uri().get();
+         String uriString = ((AttachedFile.Data) attachment).uri().get();
 
          // Delete the attachment entity
          removedAttachment( DomainEvent.CREATE, attachment );
 
-         uowf.currentUnitOfWork().remove( attachment );
+         attachment.removeEntity();
       }
+
 
       public boolean hasAttachments()
       {
