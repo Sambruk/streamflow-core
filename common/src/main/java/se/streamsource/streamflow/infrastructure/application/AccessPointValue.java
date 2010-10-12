@@ -42,4 +42,7 @@ public interface AccessPointValue
 
    @Optional
    Property<LinkValue> form();
+
+   @Optional
+   Property<LinkValue> template();
 }

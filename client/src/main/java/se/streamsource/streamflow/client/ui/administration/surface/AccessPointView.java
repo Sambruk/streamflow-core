@@ -24,6 +24,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.Sizes;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Task;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
@@ -37,8 +38,8 @@ import se.streamsource.streamflow.client.MacOsUIWrapper;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
-import se.streamsource.streamflow.client.infrastructure.ui.UncaughtExceptionHandler;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.ui.CommandTask;
 import se.streamsource.streamflow.client.ui.caze.CaseLabelsDialog;
 import se.streamsource.streamflow.client.ui.caze.CaseLabelsView;
 import se.streamsource.streamflow.client.ui.workspace.FilterListDialog;
@@ -83,6 +84,9 @@ public class AccessPointView
    protected ObjectBuilder<FilterListDialog> formDialog;
 
    @Uses
+   protected ObjectBuilder<FilterListDialog> templateDialog;
+
+   @Uses
    protected ObjectBuilder<CaseLabelsDialog> labelSelectionDialog;
 
    public CaseLabelsView labels;
@@ -94,13 +98,16 @@ public class AccessPointView
    public JButton formButton;
    public JLabel selectedForm = new JLabel();
 
+   JButton templateButton;
+   JLabel selectedTemplate = new JLabel();
+
    private AccessPointModel model;
 
    private StateBinder accessPointBinder;
 
    public AccessPointView( @Service ApplicationContext appContext,
                            @Uses CommandQueryClient client,
-                           @Structure ObjectBuilderFactory obf)
+                           @Structure ObjectBuilderFactory obf )
    {
       this.model = obf.newObjectBuilder( AccessPointModel.class ).use( client ).newInstance();
       this.labels = obf.newObjectBuilder( CaseLabelsView.class ).use( client ).newInstance();
@@ -129,7 +136,7 @@ public class AccessPointView
       AccessPointValue template = accessPointBinder
             .bindingTemplate( AccessPointValue.class );
 
-      FormLayout layout = new FormLayout( "50dlu, 5dlu, 150:grow", "pref, 2dlu, pref, 2dlu, pref, 2dlu, default:grow" );
+      FormLayout layout = new FormLayout( "50dlu, 5dlu, 150:grow", "pref, 2dlu, pref, 2dlu, pref, 2dlu, pref, 2dlu, default:grow" );
 
       JPanel panel = new JPanel( layout );
       DefaultFormBuilder builder = new DefaultFormBuilder( layout,
@@ -211,6 +218,20 @@ public class AccessPointView
 
       builder.add( accessPointBinder.bind( selectedForm, template.form() ),
             new CellConstraints( 3, 7, 1, 1, CellConstraints.LEFT, CellConstraints.TOP, new Insets( 5, 0, 0, 0 ) ) );
+
+      // Select template
+      javax.swing.Action templateAction = am.get( "template" );
+      templateButton = new JButton( templateAction );
+
+      templateButton.registerKeyboardAction( templateAction, (KeyStroke) templateAction
+            .getValue( javax.swing.Action.ACCELERATOR_KEY ),
+            JComponent.WHEN_IN_FOCUSED_WINDOW );
+
+      builder.add( templateButton, cc.xy( 1, 9, CellConstraints.FILL, CellConstraints.TOP ) );
+
+      builder.add( accessPointBinder.bind( selectedTemplate, template.template() ),
+            new CellConstraints( 3, 9, 1, 1, CellConstraints.LEFT, CellConstraints.TOP, new Insets( 5, 0, 0, 0 ) ) );
+
       add( panel, BorderLayout.CENTER );
 
       accessPointBinder.updateWith( model.getAccessPointValue() );
@@ -278,6 +299,34 @@ public class AccessPointView
       }
    }
 
+   @Action
+   public Task template()
+   {
+
+      return new CommandTask()
+      {
+         @Override
+         public void command()
+               throws Exception
+         {
+            FilterListDialog dialog = templateDialog.use(
+                  i18n.text( WorkspaceResources.choose_template ),
+                  model.getPossibleTemplates() ).newInstance();
+
+            dialogs.showOkCancelHelpDialog( templateButton, dialog );
+
+            if (dialog.getSelected() != null)
+            {
+               model.setTemplate( dialog.getSelected().identity() );
+            } else
+            {
+               model.removeTemplate();
+            }
+         }
+      };
+
+   }
+
    public void update( Observable o, Object arg )
    {
       accessPointBinder.updateWith( model.getAccessPointValue() );
@@ -307,9 +356,10 @@ public class AccessPointView
 
    public void notifyTransactions( Iterable<TransactionEvents> transactions )
    {
-      if (Events.matches( transactions, Events.withNames("addedLabel",
+      if (Events.matches( transactions, Events.withNames( "addedLabel",
             "removedLabel", "addedCaseType", "addedProject",
-            "addedSelectedForm", "changedProject", "changedCaseType" )))
+            "addedSelectedForm", "changedProject", "changedCaseType",
+            "selectedTemplateAdded", "selectedTemplateRemoved" ) ))
       {
          model.refresh();
       }

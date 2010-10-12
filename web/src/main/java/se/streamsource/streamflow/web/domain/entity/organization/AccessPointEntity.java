@@ -24,8 +24,8 @@ import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.domain.structure.Removable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.IdGenerator;
+import se.streamsource.streamflow.web.domain.structure.attachment.SelectedTemplate;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
-import se.streamsource.streamflow.web.domain.structure.form.EndUserCases;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
 import se.streamsource.streamflow.web.domain.structure.form.SelectedForms;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
@@ -40,8 +40,8 @@ import java.util.List;
  * an Access Point
  */
 @Concerns({AccessPointEntity.AddProjectConcern.class,
-           AccessPointEntity.AddCaseTypeConcern.class,
-           AccessPointEntity.RemoveCaseTypeConcern.class})
+      AccessPointEntity.AddCaseTypeConcern.class,
+      AccessPointEntity.RemoveCaseTypeConcern.class})
 public interface AccessPointEntity
       extends DomainEntity,
       AccessPoint,
@@ -55,11 +55,12 @@ public interface AccessPointEntity
       AccessPointSettings.Data,
       Labelable.Data,
       SelectedForms.Data,
+      SelectedTemplate.Data,
       Removable.Data
 {
    abstract class AddProjectConcern
-      extends ConcernOf<AccessPoint>
-      implements AccessPoint
+         extends ConcernOf<AccessPoint>
+         implements AccessPoint
    {
 
       @This
@@ -68,8 +69,8 @@ public interface AccessPointEntity
       public void setProject( Project project )
       {
          next.setProject( project );
-         removeCaseType( );
-         for(Form form : forms.selectedForms().toList())
+         removeCaseType();
+         for (Form form : forms.selectedForms().toList())
          {
             removeSelectedForm( form );
          }
@@ -77,8 +78,8 @@ public interface AccessPointEntity
    }
 
    abstract class AddCaseTypeConcern
-      extends ConcernOf<AccessPoint>
-      implements AccessPoint
+         extends ConcernOf<AccessPoint>
+         implements AccessPoint
    {
       @This
       Labelable.Data labels;
@@ -90,12 +91,12 @@ public interface AccessPointEntity
       {
          next.setCaseType( caseType );
          List<Label> labelList = labels.labels().toList();
-         for( Label label : labelList )
+         for (Label label : labelList)
          {
             removeLabel( label );
          }
 
-         for(Form form : forms.selectedForms().toList())
+         for (Form form : forms.selectedForms().toList())
          {
             removeSelectedForm( form );
          }
@@ -103,8 +104,8 @@ public interface AccessPointEntity
    }
 
    abstract class RemoveCaseTypeConcern
-      extends ConcernOf<AccessPoint>
-      implements AccessPoint
+         extends ConcernOf<AccessPoint>
+         implements AccessPoint
    {
       @This
       Labelable.Data labels;
@@ -112,16 +113,16 @@ public interface AccessPointEntity
       @This
       SelectedForms.Data forms;
 
-      public void removeCaseType( )
+      public void removeCaseType()
       {
-         next.removeCaseType( );
+         next.removeCaseType();
          List<Label> labelList = labels.labels().toList();
-         for( Label label : labelList )
+         for (Label label : labelList)
          {
             removeLabel( label );
          }
 
-         for(Form form : forms.selectedForms().toList())
+         for (Form form : forms.selectedForms().toList())
          {
             removeSelectedForm( form );
          }

@@ -75,6 +75,7 @@ import se.streamsource.streamflow.web.context.organizations.forms.FormPagesConte
 import se.streamsource.streamflow.web.context.organizations.forms.FormsContext;
 import se.streamsource.streamflow.web.context.organizations.forms.SelectedFormContext;
 import se.streamsource.streamflow.web.context.organizations.forms.SelectedFormsContext;
+import se.streamsource.streamflow.web.context.structure.SelectedTemplateContext;
 import se.streamsource.streamflow.web.context.structure.labels.LabelContext;
 import se.streamsource.streamflow.web.context.structure.labels.LabelableContext;
 import se.streamsource.streamflow.web.context.structure.labels.LabeledContext;
@@ -229,6 +230,7 @@ public class ContextAssembler
             AttachmentContext.class,
             SavedSearchesContext.class,
             SavedSearchContext.class,
+            SelectedTemplateContext.class,
 
             // Services
             ServicesContext.class,

@@ -35,10 +35,14 @@ import se.streamsource.dci.value.StringValueMaxLength;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.application.AccessPointValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
+import se.streamsource.streamflow.web.context.structure.SelectedTemplateContext;
 import se.streamsource.streamflow.web.context.structure.labels.LabelableContext;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationQueries;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationVisitor;
 import se.streamsource.streamflow.web.domain.entity.project.ProjectLabelsQueries;
+import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
+import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
+import se.streamsource.streamflow.web.domain.structure.attachment.SelectedTemplate;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.SelectedCaseTypes;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
@@ -84,6 +88,9 @@ public interface AccessPointContext
 
    LinksValue possibleforms();
 
+   @SubContext
+   SelectedTemplateContext template();
+
    abstract class Mixin
          extends ContextMixin
          implements AccessPointContext
@@ -96,6 +103,7 @@ public interface AccessPointContext
          AccessPointSettings.Data accessPointData = roleMap.get( AccessPointSettings.Data.class );
          SelectedForms.Data forms = roleMap.get( SelectedForms.Data.class );
          Labelable.Data labelsData = roleMap.get( Labelable.Data.class );
+         SelectedTemplate.Data template = roleMap.get( SelectedTemplate.Data.class );
 
          builder.prototype().accessPoint().set( createLinkValue( accessPoint ) );
          if (accessPointData.project().get() != null)
@@ -110,6 +118,17 @@ public interface AccessPointContext
 
          if (forms.selectedForms().toList().size() > 0)
             builder.prototype().form().set( createLinkValue( forms.selectedForms().toList().get( 0 ) ) );
+
+         if (template.selectedTemplate().get() != null)
+         {
+            Attachment attachment = template.selectedTemplate().get();
+            ValueBuilder<LinkValue> linkBuilder = module.valueBuilderFactory().newValueBuilder( LinkValue.class );
+            EntityReference ref = EntityReference.getEntityReference( attachment );
+            linkBuilder.prototype().text().set( ((AttachedFile.Data) attachment).name().get() );
+            linkBuilder.prototype().id().set( ref.identity() );
+            linkBuilder.prototype().href().set( ref.identity() );
+            builder.prototype().template().set( linkBuilder.newInstance() );
+         }
 
          return builder.newInstance();
       }
@@ -277,6 +296,11 @@ public interface AccessPointContext
       public LabelableContext labels()
       {
          return subContext( LabelableContext.class );
+      }
+
+      public SelectedTemplateContext template()
+      {
+         return subContext( SelectedTemplateContext.class );
       }
    }
 }

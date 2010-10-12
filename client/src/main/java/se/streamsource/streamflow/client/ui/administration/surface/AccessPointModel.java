@@ -168,4 +168,32 @@ public class AccessPointModel extends Observable
    {
       client.postCommand( "setform", getStringValue( id ) );
    }
+
+   public EventList<LinkValue> getPossibleTemplates()
+   {
+      try
+      {
+         BasicEventList<LinkValue> list = new BasicEventList<LinkValue>();
+
+         LinksValue listValue = client.getSubClient( "template" ).query( "possibletemplates",
+               getStringValue( "pdf" ), LinksValue.class );
+         list.addAll( listValue.links().get() );
+
+         return list;
+      } catch (ResourceException e)
+      {
+         throw new OperationException( WorkspaceResources.could_not_refresh,
+               e );
+      }
+   }
+
+   public void setTemplate( String id )
+   {
+      client.getSubClient( "template" ).postCommand( "settemplate", getStringValue( id ) );
+   }
+
+   public void removeTemplate()
+   {
+      client.getSubClient( "template" ).delete();
+   }
 }
