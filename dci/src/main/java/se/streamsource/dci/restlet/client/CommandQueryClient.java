@@ -434,7 +434,15 @@ public class CommandQueryClient
 
    public CommandQueryClient getClient( String relativePath )
    {
-      Reference reference = new Reference( this.reference, relativePath );
+      Reference reference = this.reference.clone();
+      if (relativePath.startsWith( "/" ))
+         reference.setPath( relativePath );
+      else
+      {
+         reference.setPath( reference.getPath()+relativePath );
+         reference = reference.normalize();
+      }
+
       return obf.newObjectBuilder( getClass() ).use( client, new Context(), reference, responseHandler ).newInstance();
    }
 

@@ -33,6 +33,8 @@ import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
+import se.streamsource.streamflow.infrastructure.event.source.helper.Events;
+import se.streamsource.streamflow.util.Specifications;
 
 import static se.streamsource.streamflow.infrastructure.event.source.helper.Events.*;
 import static se.streamsource.streamflow.util.Specifications.*;
@@ -81,7 +83,8 @@ public class LinkValueListModel
    public void notifyTransactions( Iterable<TransactionEvents> transactions )
    {
       // Refresh if either the owner of the list has changed, or if any of the entities in the list has changed
-      if (matches( transactions, or( onEntities( client.getReference().getParentRef().getLastSegment() ), onEntities( client.getReference().getLastSegment() ), onEntities( linkValues ))))
+      if (matches( transactions, or( onEntities( client.getReference().getParentRef().getLastSegment() ), onEntities( client.getReference().getLastSegment() ), 
+            Specifications.and( Events.withNames( "changedDescription" ), onEntities( linkValues )))))
          refresh();
    }
 

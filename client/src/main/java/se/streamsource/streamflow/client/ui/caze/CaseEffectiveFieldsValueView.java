@@ -17,72 +17,139 @@
 
 package se.streamsource.streamflow.client.ui.caze;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-
-import javax.swing.ActionMap;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.FilterList;
+import ca.odell.glazedlists.event.ListEvent;
+import ca.odell.glazedlists.event.ListEventListener;
+import ca.odell.glazedlists.gui.TableFormat;
+import ca.odell.glazedlists.matchers.Matcher;
+import ca.odell.glazedlists.swing.EventJXTableModel;
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.factories.Borders;
+import com.jgoodies.forms.layout.FormLayout;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.JXTable;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
-import org.qi4j.api.value.ValueBuilder;
-
+import org.qi4j.api.util.DateFunctions;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
-import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.infrastructure.ui.ToolTipTableCellRenderer;
-import se.streamsource.streamflow.domain.contact.ContactValue;
-
-import com.jgoodies.forms.factories.Borders;
+import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.domain.form.DateFieldValue;
+import se.streamsource.streamflow.domain.form.TextAreaFieldValue;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.source.helper.Events;
+import se.streamsource.streamflow.resource.caze.EffectiveFieldDTO;
+
+import javax.swing.ActionMap;
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.SwingConstants;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.text.SimpleDateFormat;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * JAVADOC
  */
 public class CaseEffectiveFieldsValueView
-      extends JPanel
-   implements TransactionListener
+      extends JScrollPane
+      implements TransactionListener, ListEventListener<EffectiveFieldDTO>
 {
-   public ValueBuilder<ContactValue> valueBuilder;
-   private JXTable effectiveValueTable;
-   public RefreshWhenVisible refresher;
    private CaseEffectiveFieldsValueModel model;
+
+   private SimpleDateFormat formatter = new SimpleDateFormat( i18n.text( WorkspaceResources.date_time_format ) );
+
+   private JPanel forms = new JPanel();
 
    public CaseEffectiveFieldsValueView( @Service ApplicationContext context, @Uses CommandQueryClient client, @Structure ObjectBuilderFactory obf )
    {
-      super( new BorderLayout() );
+      forms.setLayout( new BoxLayout( forms, BoxLayout.Y_AXIS ) );
 
       model = obf.newObjectBuilder( CaseEffectiveFieldsValueModel.class ).use( client ).newInstance();
 
       ActionMap am = context.getActionMap( this );
       setActionMap( am );
       setMinimumSize( new Dimension( 150, 0 ) );
-      this.setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
 
-      effectiveValueTable = new JXTable( model );
-      effectiveValueTable.setDefaultRenderer( Object.class, new ToolTipTableCellRenderer() );
+      model.getEventList().addListEventListener( this );
 
-      JScrollPane effectiveFields = new JScrollPane();
+      setViewportView( forms );
 
-      effectiveFields.setViewportView( effectiveValueTable );
-
-      add( effectiveFields, BorderLayout.CENTER );
-
-      refresher = new RefreshWhenVisible( this, model );
+      new RefreshWhenVisible( this, model );
    }
 
    public void notifyTransactions( Iterable<TransactionEvents> transactions )
    {
-      if (Events.matches(transactions, Events.withNames( "submittedForm" )))
+      if (Events.matches( transactions, Events.withNames( "submittedForm" ) ))
       {
          model.refresh();
+      }
+   }
+
+   public void listChanged( ListEvent<EffectiveFieldDTO> listEvent )
+   {
+      EventList<EffectiveFieldDTO> eventList = model.getEventList();
+      eventList.getReadWriteLock().readLock().lock();
+      try
+      {
+         forms.removeAll();
+         Set<String> formNames = new LinkedHashSet<String>();
+         for (EffectiveFieldDTO effectiveFieldDTO : eventList)
+         {
+            formNames.add( effectiveFieldDTO.formName().get() );
+         }
+
+         for (final String formName : formNames)
+         {
+            JPanel formPanel = new JPanel();
+            FormLayout formLayout = new FormLayout("70dlu, 5dlu, 150dlu:grow","");
+            DefaultFormBuilder builder = new DefaultFormBuilder( formLayout, formPanel );
+
+            for (EffectiveFieldDTO effectiveFieldDTO : eventList)
+            {
+               if (effectiveFieldDTO.formName().get().equals(formName))
+               {
+                  String value = effectiveFieldDTO.fieldValue().get();
+                  if (effectiveFieldDTO.fieldType().get().equals( DateFieldValue.class.getName() ))
+                  {
+                     value = formatter.format( DateFunctions.fromString( value ) );
+                  } else if (effectiveFieldDTO.fieldType().get().equals( TextAreaFieldValue.class.getName() ))
+                  {
+                     value = "<html>"+value.replace( "\n", "<br/>" )+"</html>";
+                  }
+                  builder.append( new JLabel(effectiveFieldDTO.fieldName().get()+":", SwingConstants.RIGHT), 1 );
+                  JLabel jLabel = new JLabel( value );
+                  jLabel.setToolTipText( effectiveFieldDTO.submitter().get()+", "+formatter.format( effectiveFieldDTO.submissionDate().get() ) );
+                  jLabel.setBorder( BorderFactory.createEtchedBorder());
+                  builder.append( jLabel );
+                  builder.nextLine();
+               }
+            }
+
+            formPanel.setBorder( BorderFactory.createTitledBorder(formName ));
+            
+            forms.add( formPanel );
+         }
+         revalidate();
+         repaint(  );
+      } catch (Exception ex)
+      {
+         ex.printStackTrace();
+      }finally
+      {
+         eventList.getReadWriteLock().readLock().unlock();
       }
    }
 }

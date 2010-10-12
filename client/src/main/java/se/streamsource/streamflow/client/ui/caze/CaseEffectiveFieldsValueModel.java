@@ -17,11 +17,14 @@
 
 package se.streamsource.streamflow.client.ui.caze;
 
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.util.DateFunctions;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
@@ -41,77 +44,20 @@ import org.slf4j.LoggerFactory;
  * List of contacts for a case
  */
 public class CaseEffectiveFieldsValueModel
-      extends AbstractTableModel
       implements Refreshable
 {
-
-   String[] columnNames = {
-         i18n.text( WorkspaceResources.field_name ),
-         i18n.text( WorkspaceResources.field_value ),
-         i18n.text( WorkspaceResources.field_submitter ),
-         i18n.text( WorkspaceResources.field_date )
-   };
-
-   private SimpleDateFormat formatter = new SimpleDateFormat( i18n.text( WorkspaceResources.date_time_format ) );
-
-   @Structure
-   ValueBuilderFactory vbf;
-
    @Uses
    CommandQueryClient client;
 
-   List<EffectiveFieldDTO> effectiveFields = Collections.emptyList();
+   EventList<EffectiveFieldDTO> eventList = new BasicEventList<EffectiveFieldDTO>( );
 
    public void refresh()
    {
-      effectiveFields = client.query( "effectivefields", EffectiveFieldsDTO.class ).effectiveFields().get();
-      fireTableStructureChanged();
+      EventListSynch.synchronize( client.query( "effectivefields", EffectiveFieldsDTO.class ).effectiveFields().get(), eventList );
    }
 
-   public int getRowCount()
+   public EventList<EffectiveFieldDTO> getEventList()
    {
-      return effectiveFields == null ? 0 : effectiveFields.size();
-   }
-
-   public int getColumnCount()
-   {
-      return columnNames.length;
-   }
-
-   public Object getValueAt( int row, int col )
-   {
-      EffectiveFieldDTO value = effectiveFields.get( row );
-
-      switch (col)
-      {
-         case 0:
-            return value.fieldName().get();
-         case 1:
-            if( DateFieldValue.class.getName().equals( value.fieldType().get() ) )
-            {
-               return formatter.format( DateFunctions.fromString( value.fieldValue().get() ) );
-            }
-            else
-            {
-               return value.fieldValue().get();
-            }
-         case 2:
-            return value.submitter().get();
-         case 3:
-            return formatter.format( value.submissionDate().get() );
-      }
-      return null;
-   }
-
-   @Override
-   public boolean isCellEditable( int rowIndex, int columnIndex )
-   {
-      return false;
-   }
-
-   @Override
-   public String getColumnName( int i )
-   {
-      return columnNames[i];
+      return eventList;
    }
 }

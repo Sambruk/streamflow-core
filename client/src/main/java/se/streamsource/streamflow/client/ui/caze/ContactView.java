@@ -165,7 +165,7 @@ public class ContactView
       addressBinder.addObserver( this );
       emailBinder.addObserver( this );
 
-      add( new JLabel("FOO"), "EMPTY" );
+      add( new JLabel(), "EMPTY" );
       add( scrollPane, "CONTACT" );
    }
 

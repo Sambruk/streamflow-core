@@ -151,6 +151,7 @@ public interface SubmittedForms
          effectiveFieldValues().set( effectiveFieldsValue );
          List<SubmittedFormValue> forms = submittedForms().get();
          forms.add( form );
+         submittedForms().set( forms );
       }
 
       public boolean hasSubmittedForms()

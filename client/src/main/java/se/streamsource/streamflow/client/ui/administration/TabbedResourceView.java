@@ -41,6 +41,7 @@ import se.streamsource.streamflow.client.ui.administration.users.UsersAdministra
 
 import javax.swing.JComponent;
 import javax.swing.JTabbedPane;
+import java.awt.event.KeyEvent;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -96,6 +97,7 @@ public class TabbedResourceView
    {
       ContextValue context = client.query( "", ContextValue.class );
       List<String> contexts = context.contexts().get();
+      int index = 0;
       for (Map.Entry<String, Class<? extends JComponent>> stringClassEntry : views.entrySet())
       {
          if (contexts.contains( stringClassEntry.getKey() ))
@@ -103,6 +105,8 @@ public class TabbedResourceView
             String tabNameText = text( tabNames.get( stringClassEntry.getKey() ) );
             Class<? extends JComponent> tabClass = stringClassEntry.getValue();
             addTab( tabNameText, obf.newObjectBuilder( tabClass ).use( client.getSubClient( stringClassEntry.getKey() ) ).newInstance() );
+            setMnemonicAt( index, KeyEvent.VK_1+index );
+            index++;
          }
       }
    }
