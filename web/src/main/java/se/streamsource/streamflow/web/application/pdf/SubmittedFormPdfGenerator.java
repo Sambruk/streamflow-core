@@ -19,6 +19,7 @@ package se.streamsource.streamflow.web.application.pdf;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.ServiceComposite;
@@ -28,11 +29,16 @@ import se.streamsource.streamflow.domain.form.SubmittedFieldValue;
 import se.streamsource.streamflow.domain.form.SubmittedFormValue;
 import se.streamsource.streamflow.web.domain.entity.form.FieldEntity;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
+import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
@@ -40,18 +46,19 @@ import java.util.Locale;
 @Mixins(SubmittedFormPdfGenerator.Mixin.class)
 public interface SubmittedFormPdfGenerator extends ServiceComposite
 {
-   PDDocument generatepdf( SubmittedFormValue value ) throws IOException;
+   PDDocument generatepdf( SubmittedFormValue value, String templateFileName, Locale locale ) throws IOException, URISyntaxException;
 
    abstract class Mixin
          implements SubmittedFormPdfGenerator
    {
 
-      // http://localhost:8082/streamflow/surface/accesspoints/3215d8df-6e8a-44b6-bea5-8b901433479d-19b/endusers/63d441ab-b9fb-4188-92a6-701fb430f855-0/63d441ab-b9fb-4188-92a6-701fb430f855-4/submittedforms/3215d8df-6e8a-44b6-bea5-8b901433479d-146/
-
       @Structure
       UnitOfWorkFactory uowFactory;
 
-      public PDDocument generatepdf( SubmittedFormValue value ) throws IOException
+      @Service
+      AttachmentStore store;
+
+      public PDDocument generatepdf( SubmittedFormValue value, String templateUri, Locale locale ) throws IOException, URISyntaxException
       {
 
          PdfDocument document = new PdfDocument();
@@ -65,7 +72,7 @@ public interface SubmittedFormPdfGenerator extends ServiceComposite
          Form form = uowFactory.currentUnitOfWork().get( Form.class, value.form().get().identity() );
 
          document.println( form.getDescription(), h1Font );
-         document.println( DateFormat.getDateInstance( DateFormat.MEDIUM, Locale.getDefault() ).format( value.submissionDate().get() ), descFont );
+         document.println( DateFormat.getDateInstance( DateFormat.MEDIUM, locale ).format( value.submissionDate().get() ), descFont );
 
          document.line();
 
@@ -94,7 +101,22 @@ public interface SubmittedFormPdfGenerator extends ServiceComposite
             document.println( "", valueFont );
          }
 
-         return document.closeAndReturn();
+         PDDocument submittedFormPdf = document.closeAndReturn();
+         submittedFormPdf.getDocumentInformation().setCreator( "Streamflow" );
+         Calendar calendar = Calendar.getInstance();
+         calendar.setTime( value.submissionDate().get() );
+         submittedFormPdf.getDocumentInformation().setCreationDate( calendar );
+         submittedFormPdf.getDocumentInformation().setTitle( form.getDescription() );
+
+         if (templateUri != null)
+         {
+
+            String id = new URI( templateUri ).getSchemeSpecificPart();
+            InputStream templateStream = store.getAttachment( id );
+            Underlay underlay = new Underlay();
+            submittedFormPdf = underlay.underlay( submittedFormPdf, templateStream );
+         }
+         return submittedFormPdf;
       }
 
 

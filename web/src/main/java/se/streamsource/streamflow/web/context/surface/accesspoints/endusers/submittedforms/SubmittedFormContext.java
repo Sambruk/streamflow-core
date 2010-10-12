@@ -31,10 +31,14 @@ import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.streamflow.domain.form.SubmittedFormValue;
 import se.streamsource.streamflow.web.application.pdf.SubmittedFormPdfGenerator;
+import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
+import se.streamsource.streamflow.web.domain.structure.attachment.SelectedTemplate;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URISyntaxException;
+import java.util.Locale;
 
 /**
  * JAVADOC
@@ -44,7 +48,7 @@ public interface SubmittedFormContext
       extends Context
 {
 
-   OutputRepresentation generateformaspdf() throws IOException;
+   OutputRepresentation generateformaspdf() throws IOException, URISyntaxException;
 
 
    abstract class Mixin
@@ -59,14 +63,18 @@ public interface SubmittedFormContext
       @Structure
       UnitOfWorkFactory uowFactory;
 
-      public OutputRepresentation generateformaspdf() throws IOException
+      public OutputRepresentation generateformaspdf() throws IOException, URISyntaxException
       {
          SubmittedFormValue submittedFormValue = roleMap.get( SubmittedFormValue.class );
 
+         Locale locale = roleMap.get( Locale.class );
+
+         SelectedTemplate.Data selectedTemplate = roleMap.get( SelectedTemplate.Data.class );
+
+
          Form form = uowFactory.currentUnitOfWork().get( Form.class, submittedFormValue.form().get().identity() );
 
-         final PDDocument pdf = pdfGenerator.generatepdf( submittedFormValue );
-
+         final PDDocument pdf = pdfGenerator.generatepdf( submittedFormValue, ((AttachedFile.Data) selectedTemplate.selectedTemplate().get()).uri().get(), locale );
 
          OutputRepresentation representation = new OutputRepresentation( MediaType.APPLICATION_PDF )
          {

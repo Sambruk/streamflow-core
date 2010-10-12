@@ -95,7 +95,7 @@ public class PdfDocument
       List<String> lines = createLinesFromText( text, font );
       for (String line : lines)
       {
-         if (y < margin)
+         if (y - font.height < margin)
          {
             PDPage newPage = new PDPage();
             newPage.setMediaBox( pageSize );
