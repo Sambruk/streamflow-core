@@ -256,7 +256,7 @@ public class WorkspaceView
 
          selectedContext.setText( "  " + text + " " );
          FontMetrics fm = selectedContext.getFontMetrics( selectedContext.getFont() );
-         int width = fm.stringWidth( selectedContext.getText() )+selectedContext.getHeight();
+         int width = fm.stringWidth( selectedContext.getText() )+selectedContext.getHeight()*2;
          selectedContext.setPreferredSize( new Dimension( width, 22 ) );
       } else
       {

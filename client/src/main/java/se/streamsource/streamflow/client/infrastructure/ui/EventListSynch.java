@@ -45,7 +45,7 @@ public class EventListSynch
             for (Object item : list)
             {
                if (!item.equals( eventList.get(idx )))
-                  eventList.set( idx++, (P) item );
+                  eventList.set( idx, (P) item );
                idx++;
             }
 

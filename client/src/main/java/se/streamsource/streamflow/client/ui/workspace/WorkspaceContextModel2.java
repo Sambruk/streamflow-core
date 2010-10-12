@@ -94,21 +94,28 @@ public class WorkspaceContextModel2
       {
          for (LinkValue linkValue : caseCounts.links().get())
          {
-            for (int i = 0; i < items.size(); i++)
+            items.getReadWriteLock().writeLock().lock();
+            try
             {
-               ContextItem item = items.get( i );
-               Reference reference = item.getClient().getReference();
-               String ref = reference.getPath();
-               if (ref.endsWith( "user/drafts/" )) // This is a hack. Not sure why user and project references are different...
-                  ref = "user/drafts";
-               else
-                  ref = ref.substring( 0, ref.length() - 1 );
-               if (ref.equals( linkValue.id().get() ))
+               for (int i = 0; i < items.size(); i++)
                {
-                  item.setCount( Long.valueOf( linkValue.text().get() ) );
-                  items.set( i, item );
-                  break;
+                  ContextItem item = items.get( i );
+                  Reference reference = item.getClient().getReference();
+                  String ref = reference.getPath();
+                  if (ref.endsWith( "user/drafts/" )) // This is a hack. Not sure why user and project references are different...
+                     ref = "user/drafts";
+                  else
+                     ref = ref.substring( 0, ref.length() - 1 );
+                  if (ref.equals( linkValue.id().get() ))
+                  {
+                     item.setCount( Long.valueOf( linkValue.text().get() ) );
+                     items.set( i, item );
+                     break;
+                  }
                }
+            } finally
+            {
+               items.getReadWriteLock().writeLock().unlock();
             }
          }
       }

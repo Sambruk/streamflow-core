@@ -17,6 +17,7 @@
 package se.streamsource.streamflow.client;
 
 import javax.swing.border.Border;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Insets;
@@ -26,9 +27,21 @@ import java.awt.Insets;
  */
 public class RoundedBorder implements Border
 {
+   int radius;
+
+   public RoundedBorder()
+   {
+      this(5);
+   }
+
+   public RoundedBorder( int radius )
+   {
+      this.radius = radius;
+   }
+
    public Insets getBorderInsets( Component c )
    {
-      return new Insets( 0, c.getHeight()/2 , 0 , c.getHeight()/2 );
+      return new Insets( 0, radius , 0 , radius );
    }
 
    public boolean isBorderOpaque()
@@ -38,14 +51,20 @@ public class RoundedBorder implements Border
 
    public void paintBorder( Component c, Graphics g, int x, int y, int width, int height )
    {
-      int radius = height/2;
-
+      // Fill background color
       g.setColor( c.getParent().getBackground() );
       g.fillRect( x, y, radius, height );
       g.fillRect( x+width-radius, y, radius, height );
 
       g.setColor( c.getBackground() );
-      g.fillArc( x, y, height, height, 90, 180 );
-      g.fillArc( x+width-radius*2, y, height, height, 270, 180 );
+      // Left side
+      g.fillArc( x, y, radius*2, radius*2, 90, 90 );
+      g.fillArc( x, y+height-(radius*2)-1, radius*2, radius*2, 180, 90 );
+      g.fillRect( x, y+radius, radius, height-2*radius );
+
+      // Right side
+      g.fillArc( x+width-(radius*2), y, radius*2, radius*2, 0, 90 );
+      g.fillArc( x+width-(radius*2), y+height-(radius*2)-1, radius*2, radius*2, 270, 90 );
+      g.fillRect( x+width-radius, y+radius, radius, height-2*radius );
    }
 }
