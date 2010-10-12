@@ -97,7 +97,7 @@ public class CaseInfoView extends JPanel
       ownerHeader.setFocusable( false );
       ownerHeader.setForeground( Color.GRAY );
 
-      JLabel createdHeader = new JLabel( i18n.text( WorkspaceResources.created_column_header ) );
+      JLabel createdHeader = new JLabel( i18n.text( WorkspaceResources.created_by ) );
       createdHeader.setFocusable( false );
       createdHeader.setForeground( Color.GRAY );
 

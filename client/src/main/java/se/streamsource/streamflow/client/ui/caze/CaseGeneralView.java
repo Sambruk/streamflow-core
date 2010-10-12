@@ -41,6 +41,7 @@ import se.streamsource.streamflow.client.MacOsUIWrapper;
 import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
+import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
 import se.streamsource.streamflow.client.infrastructure.ui.UncaughtExceptionHandler;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
@@ -85,11 +86,8 @@ import static se.streamsource.streamflow.infrastructure.event.source.helper.Even
 /**
  * JAVADOC
  */
-public class CaseGeneralView extends JScrollPane implements Observer, TransactionListener
+public class CaseGeneralView extends JScrollPane implements Observer, TransactionListener, Refreshable
 {
-   @Service
-   EventSource eventSource;
-
    @Service
    DialogService dialogs;
 
@@ -294,41 +292,13 @@ public class CaseGeneralView extends JScrollPane implements Observer, Transactio
       notePane.getViewport().getView().setFocusTraversalKeys( KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, null );
       notePane.getViewport().getView().setFocusTraversalKeys( KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, null );
 
-      new RefreshWhenVisible( this, model );
+      new RefreshWhenVisible( this, this );
    }
 
-/*
-   public void setModel( CaseGeneralModel caseGeneralModel )
+   public void refresh()
    {
-      if (model != null)
-         model.deleteObserver( this );
+      model.refresh();
 
-      model = caseGeneralModel;
-
-      refresher.setRefreshable( model );
-
-      CaseGeneralDTO general = model.getGeneral();
-      valueBuilder = general.buildWith();
-      caseBinder.updateWith( general );
-
-      labels.setLabelsModel( model.labelsModel() );
-      forms.setFormsModel( model.formsModel() );
-
-      LinkValue value = general.caseType().get();
-      selectedCaseType
-            .setLinkValue( value );
-
-      selectedCaseType.setVisible( value != null );
-
-
-      caseGeneralModel.addObserver( this );
-
-      updateEnabled();
-   }
-*/
-
-   private void updateEnabled()
-   {
       dueOnField.setEnabled( model.getCommandEnabled( "changedueon" ) );
       descriptionField.setEnabled( model.getCommandEnabled( "changedescription" ) );
       notePane.getViewport().getView().setEnabled( model.getCommandEnabled( "changenote" ) );
@@ -399,8 +369,6 @@ public class CaseGeneralView extends JScrollPane implements Observer, Transactio
 
 // TODO         forms.setFormsModel( model.formsModel() );
       }
-
-      updateEnabled();
    }
 
    @Action
@@ -446,7 +414,7 @@ public class CaseGeneralView extends JScrollPane implements Observer, Transactio
    {
       if (matches( transactions, withNames("addedLabel","removedLabel", "changedOwner", "changedCaseType", "changedStatus" ) ))
       {
-         model.refresh();
+         refresh();
       }
    }
 }

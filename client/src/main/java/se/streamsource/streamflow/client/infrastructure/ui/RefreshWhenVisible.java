@@ -31,11 +31,7 @@ public class RefreshWhenVisible
 {
    private Refreshable refreshable;
    private JComponent component;
-
-   public RefreshWhenVisible( JComponent component )
-   {
-      this.component = component;
-   }
+   private boolean refreshed = false;
 
    public RefreshWhenVisible( JComponent component, Refreshable refreshable )
    {
@@ -45,21 +41,9 @@ public class RefreshWhenVisible
       component.addAncestorListener( this );
    }
 
-   public void setRefreshable( Refreshable refreshable )
-   {
-      this.refreshable = refreshable;
-
-      if (refreshable != null)
-      {
-         if (!isVisible())
-            return;
-      }
-      refresh();
-   }
-
    public void ancestorAdded( AncestorEvent event )
    {
-      if (refreshable != null && isVisible())
+      if (refreshable != null && component.isDisplayable() && !refreshed)
       {
          refresh();
       }
@@ -67,29 +51,16 @@ public class RefreshWhenVisible
 
    public void ancestorRemoved( AncestorEvent event )
    {
+      refreshed = false;
    }
 
    public void ancestorMoved( AncestorEvent event )
    {
    }
 
-   private boolean isVisible()
-   {
-      // All components in the hierarchy have to be visible
-      Component current = component;
-      do
-      {
-         if (!current.isVisible())
-            return false;
-
-         current = current.getParent();
-      } while (current != null);
-
-      return true;
-   }
-
    private void refresh()
    {
+      refreshed = true;
       SwingUtilities.invokeLater( new Runnable()
       {
          public void run()

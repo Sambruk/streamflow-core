@@ -90,7 +90,8 @@ public class CaseDetailView
 
    public void setSelectedTab( int index )
    {
-      tabs.setSelectedIndex( index );
+      if (tabs.getSelectedIndex() != index)
+         tabs.setSelectedIndex( index );
    }
 
    public int getSelectedTab()

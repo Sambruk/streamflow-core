@@ -35,6 +35,7 @@ import se.streamsource.streamflow.infrastructure.event.source.helper.Events;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Dimension;
 
@@ -54,6 +55,7 @@ public class CasesDetailView2
    ObjectBuilderFactory obf;
 
    private CardLayout layout = new CardLayout();
+   private JPanel casePanel = new JPanel(new BorderLayout());
 
    private Reference currentCase;
 
@@ -63,6 +65,7 @@ public class CasesDetailView2
       setBorder( BorderFactory.createEmptyBorder() );
 
       add( new JLabel( i18n.text( WorkspaceResources.choose_case ), JLabel.CENTER ), "blank" );
+      add( casePanel, "detail" );
 
       layout.show( this, "blank" );
 
@@ -77,12 +80,15 @@ public class CasesDetailView2
          {
             int tab = current.getSelectedTab();
             currentCase = client.getReference();
-            add(current = obf.newObjectBuilder( CaseDetailView.class ).use( client ).newInstance(), "detail");
+            casePanel.removeAll();
+            current = obf.newObjectBuilder( CaseDetailView.class ).use( client ).newInstance();
             current.setSelectedTab( tab );
+            casePanel.add( current );
+            casePanel.revalidate();
          } else
          {
             currentCase = client.getReference();
-            add(current = obf.newObjectBuilder( CaseDetailView.class ).use( client ).newInstance(), "detail");
+            casePanel.add(current = obf.newObjectBuilder( CaseDetailView.class ).use( client ).newInstance());
             layout.show( this, "detail" );
 
          }

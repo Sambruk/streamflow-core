@@ -27,8 +27,11 @@ import org.jdesktop.application.Task;
 import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.decorator.HighlighterFactory;
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
 import org.restlet.engine.io.BioUtils;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
@@ -78,24 +81,23 @@ public class AttachmentsView
    @Uses
    Iterable<ConfirmationDialog> confirmationDialog;
 
-   private JXTable attachments = new JXTable();
+   private JXTable attachments;
 
    private EventJXTableModel<AttachmentValue> tableModel;
 
    private AttachmentsModel attachmentsModel;
-   public RefreshWhenVisible refresher;
 
-   //public void init( @Service ApplicationContext context )
-
-   public AttachmentsView( @Service ApplicationContext context )
+   public AttachmentsView( @Service ApplicationContext context, @Uses CommandQueryClient client, @Structure ObjectBuilderFactory obf )
    {
       setLayout( new BorderLayout() );
 
       final ActionMap am = context.getActionMap( this );
 
+      this.attachmentsModel = obf.newObjectBuilder( AttachmentsModel.class ).use( client ).newInstance();
       TableFormat tableFormat = new AttachmentsTableFormatter();
+      tableModel = new EventJXTableModel<AttachmentValue>( attachmentsModel.getEventList(), tableFormat );
 
-      tableModel = new EventJXTableModel<AttachmentValue>( new BasicEventList<AttachmentValue>(), tableFormat );
+      attachments = new JXTable(tableModel);
 
       attachments.setFocusTraversalKeys( KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS,
             KeyboardFocusManager.getCurrentKeyboardFocusManager()
@@ -158,17 +160,18 @@ public class AttachmentsView
       add( attachmentsScrollPane, BorderLayout.CENTER );
       add( toolbar, BorderLayout.SOUTH );
 
-      refresher = new RefreshWhenVisible( this );
+      new RefreshWhenVisible( this, attachmentsModel );
    }
 
    @Action(block = Task.BlockingScope.APPLICATION)
    public Task add() throws IOException
    {
       JFileChooser fileChooser = new JFileChooser();
+      fileChooser.setMultiSelectionEnabled( true );
 
       if (fileChooser.showDialog( this, i18n.text( WorkspaceResources.create_attachment ) ) == JFileChooser.APPROVE_OPTION)
       {
-         final File selectedFile = fileChooser.getSelectedFile();
+         final File[] selectedFiles = fileChooser.getSelectedFiles();
 
          return new CommandTask()
          {
@@ -178,9 +181,11 @@ public class AttachmentsView
             {
                setMessage( getResourceMap().getString( "description" ) );
 
-               FileInputStream fin = new FileInputStream( selectedFile );
-
-               attachmentsModel.createAttachment( selectedFile, fin );
+               for (File file : selectedFiles)
+               {
+                  FileInputStream fin = new FileInputStream( file );
+                  attachmentsModel.createAttachment( file, fin );
+               }
             }
          };
       } else
@@ -226,14 +231,6 @@ public class AttachmentsView
       }
 
       return null;
-   }
-
-   public void setModel( AttachmentsModel attachmentsModel )
-   {
-      this.attachmentsModel = attachmentsModel;
-      tableModel = new EventJXTableModel<AttachmentValue>( attachmentsModel.getEventList(), new AttachmentsTableFormatter() );
-      attachments.setModel( tableModel );
-      refresher.setRefreshable( attachmentsModel );
    }
 
    public void notifyTransactions( Iterable<TransactionEvents> transactions )
