@@ -69,6 +69,7 @@ import se.streamsource.streamflow.client.ui.administration.casetypes.forms.Field
 import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FieldEditorNumberFieldValueView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FieldEditorOpenSelectionFieldValueView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FieldEditorOptionButtonsFieldValueView;
+import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FieldEditorSignatureFieldValueView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FieldEditorTextAreaFieldValueView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FieldEditorTextFieldValueView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FieldValueEditModel;
@@ -324,7 +325,8 @@ public class UIAssembler
             FieldEditorOptionButtonsFieldValueView.class,
             FieldEditorOpenSelectionFieldValueView.class, 
             FieldEditorTextAreaFieldValueView.class,
-            FieldEditorTextFieldValueView.class );
+            FieldEditorTextFieldValueView.class,
+            FieldEditorSignatureFieldValueView.class);
 
       addDialogs( module, FieldCreationDialog.class );
 

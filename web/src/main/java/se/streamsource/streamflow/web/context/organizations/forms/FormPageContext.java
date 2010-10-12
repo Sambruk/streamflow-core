@@ -39,6 +39,7 @@ import se.streamsource.streamflow.domain.form.NumberFieldValue;
 import se.streamsource.streamflow.domain.form.OpenSelectionFieldValue;
 import se.streamsource.streamflow.domain.form.OptionButtonsFieldValue;
 import se.streamsource.streamflow.domain.form.PageDefinitionValue;
+import se.streamsource.streamflow.domain.form.SignatureFieldValue;
 import se.streamsource.streamflow.domain.form.TextAreaFieldValue;
 import se.streamsource.streamflow.domain.form.TextFieldValue;
 import se.streamsource.streamflow.domain.structure.Describable;
@@ -47,7 +48,6 @@ import se.streamsource.streamflow.web.domain.structure.form.Fields;
 import se.streamsource.streamflow.web.domain.structure.form.Page;
 import se.streamsource.streamflow.web.domain.structure.form.Pages;
 import se.streamsource.dci.api.Context;
-import se.streamsource.dci.api.SubContext;
 import se.streamsource.streamflow.web.context.structure.DescribableContext;
 import se.streamsource.streamflow.web.context.structure.NotableContext;
 
@@ -156,6 +156,9 @@ public interface FormPageContext
                ValueBuilder<TextFieldValue> textBuilder = vbf.newValueBuilder( TextFieldValue.class );
                textBuilder.prototype().width().set( 30 );
                value = textBuilder.newInstance();
+               break;
+            case signature:
+               value = vbf.newValue( SignatureFieldValue.class );
                break;
          }
          return value;

@@ -71,7 +71,6 @@ import se.streamsource.streamflow.web.context.organizations.SelectedCaseTypesCon
 import se.streamsource.streamflow.web.context.organizations.forms.FormContext;
 import se.streamsource.streamflow.web.context.organizations.forms.FormFieldContext;
 import se.streamsource.streamflow.web.context.organizations.forms.FormPageContext;
-import se.streamsource.streamflow.web.context.organizations.forms.FormPagesContext;
 import se.streamsource.streamflow.web.context.organizations.forms.FormsContext;
 import se.streamsource.streamflow.web.context.organizations.forms.SelectedFormContext;
 import se.streamsource.streamflow.web.context.organizations.forms.SelectedFormsContext;
@@ -152,7 +151,6 @@ public class ContextAssembler
             FormContext.class,
             FormFieldContext.class,
             FormPageContext.class,
-            FormPagesContext.class,
             FormsContext.class,
             SelectedFormsContext.class,
             SelectedFormContext.class,

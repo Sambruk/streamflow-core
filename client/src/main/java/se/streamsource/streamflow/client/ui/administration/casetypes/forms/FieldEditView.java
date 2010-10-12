@@ -33,6 +33,7 @@ import se.streamsource.streamflow.domain.form.ListBoxFieldValue;
 import se.streamsource.streamflow.domain.form.NumberFieldValue;
 import se.streamsource.streamflow.domain.form.OpenSelectionFieldValue;
 import se.streamsource.streamflow.domain.form.OptionButtonsFieldValue;
+import se.streamsource.streamflow.domain.form.SignatureFieldValue;
 import se.streamsource.streamflow.domain.form.TextAreaFieldValue;
 import se.streamsource.streamflow.domain.form.TextFieldValue;
 
@@ -65,6 +66,7 @@ public class FieldEditView
       editors.put(OpenSelectionFieldValue.class, FieldEditorOpenSelectionFieldValueView.class);
       editors.put(TextAreaFieldValue.class, FieldEditorTextAreaFieldValueView.class);
       editors.put(TextFieldValue.class, FieldEditorTextFieldValueView.class);
+      editors.put( SignatureFieldValue.class, FieldEditorSignatureFieldValueView.class);
    }
 
    private FieldValueEditModel model;

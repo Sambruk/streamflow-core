@@ -68,7 +68,9 @@ public class FieldCreationDialog
             FieldTypes.openselection,
             FieldTypes.date,
             FieldTypes.number,
-            FieldTypes.comment} );
+            FieldTypes.comment,
+            FieldTypes.signature
+      } );
 
       box.setRenderer( new DefaultListCellRenderer() {
 

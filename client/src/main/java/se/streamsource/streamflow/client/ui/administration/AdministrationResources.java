@@ -164,6 +164,7 @@ public enum AdministrationResources
    listbox,
    optionbuttons,
    openselection,
+   signature,
    textarea,
    text,
    number,
