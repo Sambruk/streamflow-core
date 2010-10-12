@@ -213,11 +213,12 @@ public enum AdministrationResources
    could_not_reset_password,
    remove_proxyuser_title,
    could_not_remove_proxyuser,
-   form_id_label, 
-   hint_label, 
+   form_id_label,
+   hint_label,
    regularexpression_label,
    field_id_label,
    open_selection_name,
-   cols_label
+   templates_tab, cols_label;
+
 
 }
