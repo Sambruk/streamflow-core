@@ -23,6 +23,7 @@ import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.SubContext;
+import se.streamsource.streamflow.web.context.caze.AttachmentsContext;
 import se.streamsource.streamflow.web.context.organizations.forms.FormsContext;
 import se.streamsource.streamflow.web.context.structure.DescribableContext;
 import se.streamsource.streamflow.web.context.structure.labels.LabelsContext;
@@ -36,7 +37,7 @@ import se.streamsource.streamflow.web.context.surface.administration.organizatio
  */
 @Mixins(OrganizationContext.Mixin.class)
 public interface OrganizationContext
-   extends DescribableContext, Context
+      extends DescribableContext, Context
 {
    @SubContext
    AdministratorsContext administrators();
@@ -68,9 +69,12 @@ public interface OrganizationContext
    @SubContext
    ProxyUsersContext proxyusers();
 
+   @SubContext
+   AttachmentsContext attachments();
+
    abstract class Mixin
-      extends ContextMixin
-      implements OrganizationContext
+         extends ContextMixin
+         implements OrganizationContext
    {
       @Structure
       UnitOfWorkFactory uowf;
@@ -87,7 +91,7 @@ public interface OrganizationContext
 
       public LabelsContext labels()
       {
-         return subContext(LabelsContext.class);
+         return subContext( LabelsContext.class );
       }
 
       public OrganizationalUnitsContext organizationalunits()
@@ -126,7 +130,7 @@ public interface OrganizationContext
          return subContext( CaseTypesContext.class );
       }
 
-            public AccessPointsContext accesspoints()
+      public AccessPointsContext accesspoints()
       {
          return subContext( AccessPointsContext.class );
       }
@@ -134,6 +138,11 @@ public interface OrganizationContext
       public ProxyUsersContext proxyusers()
       {
          return subContext( ProxyUsersContext.class );
+      }
+
+      public AttachmentsContext attachments()
+      {
+         return subContext( AttachmentsContext.class );
       }
    }
 }
