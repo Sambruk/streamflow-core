@@ -19,6 +19,7 @@ package se.streamsource.streamflow.web.application.pdf;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
@@ -46,7 +47,7 @@ import java.util.Locale;
 @Mixins(SubmittedFormPdfGenerator.Mixin.class)
 public interface SubmittedFormPdfGenerator extends ServiceComposite
 {
-   PDDocument generatepdf( SubmittedFormValue value, String templateFileName, Locale locale ) throws IOException, URISyntaxException;
+   PDDocument generatepdf( SubmittedFormValue value, @Optional String templateFileName, Locale locale ) throws IOException, URISyntaxException;
 
    abstract class Mixin
          implements SubmittedFormPdfGenerator

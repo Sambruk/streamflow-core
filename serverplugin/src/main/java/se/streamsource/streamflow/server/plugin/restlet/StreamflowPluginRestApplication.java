@@ -24,7 +24,6 @@ import org.restlet.Application;
 import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.data.MediaType;
-import org.restlet.data.Protocol;
 import org.restlet.routing.Router;
 import org.restlet.routing.Template;
 import org.slf4j.Logger;
@@ -54,18 +53,14 @@ public class StreamflowPluginRestApplication
 
    /**
     * Creates a root Restlet that will receive all incoming calls.
-    */   
+    */
    @Override
    public Restlet createInboundRoot()
    {
-/*
-      getContext().setDefaultVerifier( verifier );
-      getContext().setDefaultEnroler( enroler );
-*/
-
       Router pluginRouter = new Router( getContext() );
 
-      pluginRouter.attach( "/contacts", (Restlet) app.findModule("Web", "REST").objectBuilderFactory().newObject(ContactLookupRestlet.class ), Template.MODE_STARTS_WITH);
+      pluginRouter.attach( "/contacts", (Restlet) app.findModule( "Web", "REST" ).objectBuilderFactory().newObject( ContactLookupRestlet.class ), Template.MODE_STARTS_WITH );
+      pluginRouter.attach( "/authentication", (Restlet) app.findModule( "Web", "REST" ).objectBuilderFactory().newObject( AuthenticationRestlet.class ), Template.MODE_STARTS_WITH );
 
       return pluginRouter;
    }
@@ -79,7 +74,7 @@ public class StreamflowPluginRestApplication
          {
             // Start Qi4j
             Energy4Java is = new Energy4Java();
-            app = is.newApplication( new PluginApplicationAssembler(assembler) );
+            app = is.newApplication( new PluginApplicationAssembler( assembler ) );
 
             app.activate();
 

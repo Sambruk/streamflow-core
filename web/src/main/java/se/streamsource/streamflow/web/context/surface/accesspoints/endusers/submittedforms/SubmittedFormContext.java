@@ -70,11 +70,15 @@ public interface SubmittedFormContext
          Locale locale = roleMap.get( Locale.class );
 
          SelectedTemplate.Data selectedTemplate = roleMap.get( SelectedTemplate.Data.class );
-
-
+         AttachedFile.Data template = (AttachedFile.Data) selectedTemplate.selectedTemplate().get();
+         String uri = null;
+         if (template != null)
+         {
+            uri = template.uri().get();
+         }
          Form form = uowFactory.currentUnitOfWork().get( Form.class, submittedFormValue.form().get().identity() );
 
-         final PDDocument pdf = pdfGenerator.generatepdf( submittedFormValue, ((AttachedFile.Data) selectedTemplate.selectedTemplate().get()).uri().get(), locale );
+         final PDDocument pdf = pdfGenerator.generatepdf( submittedFormValue, uri, locale );
 
          OutputRepresentation representation = new OutputRepresentation( MediaType.APPLICATION_PDF )
          {
