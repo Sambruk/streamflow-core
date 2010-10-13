@@ -1,13 +1,8 @@
-/**
- *
- * Copyright 2009-2010 Streamsource AB
- *
+/*
+ * Copyright (c) 2010, Mads Enevoldsen. All Rights Reserved.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -31,21 +26,20 @@ import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
-import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.ui.administration.LinkValueListModel;
 import se.streamsource.streamflow.domain.form.CreateFieldDTO;
 import se.streamsource.streamflow.domain.form.FieldTypes;
+import se.streamsource.streamflow.domain.form.FormSignatureValue;
+import se.streamsource.streamflow.domain.form.RequiredSignatureValue;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
-import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.source.helper.Events;
-
-import java.util.Observable;
 
 /**
  * JAVADOC
  */
-public class FormElementsModel
-      implements Refreshable, TransactionListener
+public class FormSignaturesModel
+      extends LinkValueListModel
 {
    @Uses
    CommandQueryClient client;
@@ -56,37 +50,22 @@ public class FormElementsModel
    @Structure
    ObjectBuilderFactory obf;
 
-   private EventList<LinkValue> formElements = new BasicEventList<LinkValue>();
+   private EventList<LinkValue> formSignatures = new BasicEventList<LinkValue>();
 
    public void refresh()
    {
-      EventListSynch.synchronize( client.query( "formelements", LinksValue.class ).links().get(), formElements );
+      EventListSynch.synchronize( client.query( "index", LinksValue.class ).links().get(), formSignatures );
    }
 
-   public EventList<LinkValue> getFormElementsList()
+   public EventList<LinkValue> getFormSignatures()
    {
-      return formElements;
+      return formSignatures;
    }
 
-   public void addField( LinkValue pageItem, String name, FieldTypes fieldType )
+   public void create( String name )
    {
-      ValueBuilder<CreateFieldDTO> builder = vbf.newValueBuilder( CreateFieldDTO.class );
+      ValueBuilder<RequiredSignatureValue> builder = vbf.newValueBuilder( RequiredSignatureValue.class );
       builder.prototype().name().set( name );
-      builder.prototype().fieldType().set( fieldType );
-
-      try
-      {
-         client.getClient( pageItem ).postCommand( "create", builder.newInstance() );
-      } catch (ResourceException e)
-      {
-         throw new OperationException( AdministrationResources.description_cannot_be_more_than_50, e );
-      }
-   }
-
-   public void addPage( String pageName )
-   {
-      ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
-      builder.prototype().string().set( pageName );
 
       try
       {
@@ -97,17 +76,9 @@ public class FormElementsModel
       }
    }
 
-   public void removeFormElement( LinkValue item )
+   public void removeFormSignature( LinkValue item )
    {
       client.getClient( item ).delete();
-   }
-
-   public void move( LinkValue item, String direction )
-   {
-      ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
-      builder.prototype().string().set( direction );
-
-      client.getClient( item ).putCommand( "move",  builder.newInstance() );
    }
 
    public void notifyTransactions( Iterable<TransactionEvents> transactions )

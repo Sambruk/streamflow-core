@@ -1,13 +1,8 @@
-/**
- *
- * Copyright 2009-2010 Streamsource AB
- *
+/*
+ * Copyright (c) 2010, Mads Enevoldsen. All Rights Reserved.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -46,6 +41,8 @@ public interface FormPagesContext
 {
    public void create( @MaxLength(50) StringValue name );
 
+   LinksValue formelements();
+
    abstract class Mixin
          extends ContextMixin
          implements FormPagesContext
@@ -78,6 +75,28 @@ public interface FormPagesContext
          Pages pages = roleMap.get( Pages.class );
 
          pages.createPage( name.string().get() );
+      }
+
+      public LinksValue formelements()
+      {
+         LinksBuilder linksBuilder = new LinksBuilder(module.valueBuilderFactory());
+
+         Pages.Data pages = roleMap.get( Pages.Data.class );
+         for (Page page : pages.pages())
+         {
+            linksBuilder.path( null );
+            linksBuilder.rel( "page" );
+            linksBuilder.addDescribable( page );
+            Fields.Data fields = (Fields.Data) page;
+            linksBuilder.path( page.toString());
+            linksBuilder.rel( "field" );
+            for (Field field : fields.fields())
+            {
+               linksBuilder.addDescribable( field );
+            }
+         }
+
+         return linksBuilder.newLinks();
       }
 
       public FormPageContext context( String id )

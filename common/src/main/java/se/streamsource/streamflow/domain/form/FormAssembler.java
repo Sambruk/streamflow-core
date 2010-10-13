@@ -47,7 +47,6 @@ public class FormAssembler
             OptionButtonsFieldValue.class,
             OpenSelectionFieldValue.class,
             SelectionFieldValue.class,
-            SignatureFieldValue.class,
             TextAreaFieldValue.class,
             TextFieldValue.class,
             FieldDefinitionValue.class,

@@ -26,6 +26,7 @@ import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.CreateContext;
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.ContextMixin;
+import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.SubContexts;
 import se.streamsource.dci.value.*;
 import se.streamsource.streamflow.domain.form.FormValue;
@@ -48,12 +49,12 @@ import se.streamsource.streamflow.web.domain.structure.form.Pages;
  */
 @Mixins(FormContext.Mixin.class)
 public interface FormContext
-   extends DeleteContext, Context
+   extends DeleteContext, Context, IndexContext<FormValue>
 {
    void move( EntityValue to);
 
    @SubContext
-   FormInfoContext info();
+   FormInfoContext forminfo();
 
    @SubContext
    FormPagesContext pages();
@@ -65,6 +66,20 @@ public interface FormContext
       extends ContextMixin
       implements FormContext
    {
+      public FormValue index()
+      {
+         FormEntity form = roleMap.get(FormEntity.class);
+
+         ValueBuilder<FormValue> builder = module.valueBuilderFactory().newValueBuilder( FormValue.class );
+
+         builder.prototype().note().set( form.note().get() );
+         builder.prototype().description().set( form.description().get() );
+         builder.prototype().form().set( EntityReference.parseEntityReference( form.identity().get() ) );
+         builder.prototype().id().set( form.formId().get() );
+
+         return builder.newInstance();
+      }
+
       public void move(EntityValue to)
       {
          Forms toForms = module.unitOfWorkFactory().currentUnitOfWork().get( Forms.class, to.entity().get() );
@@ -79,7 +94,7 @@ public interface FormContext
          forms.removeForm( form );
       }
 
-      public FormInfoContext info()
+      public FormInfoContext forminfo()
       {
          return subContext( FormInfoContext.class );
       }

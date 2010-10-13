@@ -27,6 +27,7 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.property.Property;
 import org.restlet.resource.ResourceException;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
@@ -56,10 +57,10 @@ public class PageEditView
    private PageEditModel model;
 
    public PageEditView( @Service ApplicationContext context,
-                        @Structure ObjectBuilderFactory obf,
-                        @Uses PageEditModel model)
+                        @Uses CommandQueryClient client,
+                        @Structure ObjectBuilderFactory obf)
    {
-      this.model = model;
+      this.model = obf.newObjectBuilder( PageEditModel.class ).use( client ).newInstance();
       JPanel panel = new JPanel( new BorderLayout() );
 
       JPanel fieldPanel = new JPanel();

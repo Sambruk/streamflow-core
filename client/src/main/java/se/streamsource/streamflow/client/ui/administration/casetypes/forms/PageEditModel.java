@@ -41,7 +41,6 @@ import org.slf4j.LoggerFactory;
 public class PageEditModel
       implements Refreshable
 {
-   final Logger logger = LoggerFactory.getLogger( "administration" );
    @Uses
    private CommandQueryClient client;
 
@@ -54,7 +53,7 @@ public class PageEditModel
    {
       try
       {
-         page = (PageDefinitionValue) client.query( "page", PageDefinitionValue.class ).buildWith().prototype();
+         page = (PageDefinitionValue) client.query( "index", PageDefinitionValue.class ).buildWith().prototype();
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_refresh_list_of_form_pages_and_fields, e );

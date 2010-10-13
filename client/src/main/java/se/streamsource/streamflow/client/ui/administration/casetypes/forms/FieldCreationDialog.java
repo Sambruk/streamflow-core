@@ -68,8 +68,7 @@ public class FieldCreationDialog
             FieldTypes.openselection,
             FieldTypes.date,
             FieldTypes.number,
-            FieldTypes.comment,
-            FieldTypes.signature
+            FieldTypes.comment
       } );
 
       box.setRenderer( new DefaultListCellRenderer() {

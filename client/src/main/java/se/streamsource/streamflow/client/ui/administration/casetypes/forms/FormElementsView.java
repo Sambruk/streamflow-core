@@ -17,44 +17,37 @@
 
 package se.streamsource.streamflow.client.ui.administration.casetypes.forms;
 
-import ca.odell.glazedlists.EventList;
-import com.jgoodies.forms.factories.Borders;
+import ca.odell.glazedlists.swing.EventListModel;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
-import org.jdesktop.swingx.JXList;
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
-import se.streamsource.streamflow.client.infrastructure.ui.FormElementsList;
+import se.streamsource.streamflow.client.infrastructure.ui.FormElementItemListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.CommandTask;
 import se.streamsource.streamflow.client.ui.ConfirmationDialog;
+import se.streamsource.streamflow.client.ui.ListDetailView;
 import se.streamsource.streamflow.client.ui.NameDialog;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
-import se.streamsource.streamflow.client.ui.administration.form.FormElementItem;
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
-import se.streamsource.streamflow.infrastructure.application.PageListItemValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
-import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.source.helper.EventParameters;
 import se.streamsource.streamflow.infrastructure.event.source.helper.Events;
-import se.streamsource.streamflow.util.Iterables;
 import se.streamsource.streamflow.util.Strings;
 
 import javax.swing.Action;
 import javax.swing.ActionMap;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JSeparator;
 import javax.swing.ListModel;
-import java.awt.BorderLayout;
+import java.awt.Component;
 import java.util.Observable;
-import java.util.Observer;
 
 import static se.streamsource.streamflow.infrastructure.event.source.helper.Events.*;
 import static se.streamsource.streamflow.util.Iterables.*;
@@ -63,11 +56,8 @@ import static se.streamsource.streamflow.util.Iterables.*;
  * JAVADOC
  */
 public class FormElementsView
-      extends JPanel
-      implements Observer, TransactionListener
+      extends ListDetailView
 {
-   private FormElementsList fieldList;
-
    @Service
    DialogService dialogs;
 
@@ -83,39 +73,30 @@ public class FormElementsView
    private FormElementsModel model;
 
    public FormElementsView( @Service ApplicationContext context,
-                      @Uses FormElementsModel model )
+                            @Uses final CommandQueryClient client,
+                            @Structure final ObjectBuilderFactory obf)
    {
-      super( new BorderLayout() );
-      this.model = model;
-      model.addObserver( this );
-
-      setBorder( Borders.createEmptyBorder( "2dlu, 2dlu, 2dlu, 2dlu" ) );
+      this.model = obf.newObjectBuilder( FormElementsModel.class ).use( client).newInstance();
 
       final ActionMap am = context.getActionMap( this );
 
-      JPanel toolbar = new JPanel();
-      toolbar.add( new JButton( am.get( "addPage" ) ) );
-      toolbar.add( new JButton( am.get( "addField" ) ) );
-      toolbar.add( new JButton( am.get( "remove" ) ) );
-      toolbar.add( new JButton( am.get( "up" ) ) );
-      toolbar.add( new JButton( am.get( "down" ) ) );
+      initMaster( new EventListModel<LinkValue>( model.getFormElementsList()), am.get( "addPage" ),
+            new Action[]{ am.get( "addField" ), am.get( "remove" ), am.get( "up" ), am.get( "down" ) },
+            new DetailFactory() {
+               public Component createDetail( LinkValue detailLink )
+               {
+                  LinkValue link = getSelectedValue();
+                  if (link.rel().get().equals("page"))
+                  {
+                     return obf.newObjectBuilder( PageEditView.class ).use( client.getClient( link ) ).newInstance();
+                  } else
+                     return obf.newObjectBuilder( FieldEditView.class ).use( client.getClient( link )).newInstance();
+                  }
+            });
 
-      EventList<FormElementItem> formElementsList = model.getFormElementsList();
 
-      fieldList = new FormElementsList();
-      fieldList.setEventList( formElementsList );
-
-      JPanel titlePanel = new JPanel( new BorderLayout() );
-      titlePanel.add( new JSeparator(), BorderLayout.NORTH );
-      titlePanel.add( new JLabel( i18n.text( AdministrationResources.fields_label ) ), BorderLayout.CENTER );
-
-      add( titlePanel, BorderLayout.NORTH );
-      add( fieldList, BorderLayout.CENTER );
-      add( toolbar, BorderLayout.SOUTH );
-
-      fieldList.getList().getSelectionModel().addListSelectionListener(
-            new SelectionActionEnabler( am.get( "addField" ), am.get( "remove" ) ) );
-      fieldList.getList().getSelectionModel().addListSelectionListener(
+      list.setCellRenderer( new FormElementItemListCellRenderer() );
+      list.getSelectionModel().addListSelectionListener(
             new SelectionActionEnabler( am.get( "up" ), am.get( "down" ) )
             {
 
@@ -125,32 +106,31 @@ public class FormElementsView
                   boolean result = true;
                   try
                   {
-                     JXList list = fieldList.getList();
                      int selectedIndex = list.getSelectedIndex();
-                     FormElementItem formElementItem = (FormElementItem) list.getSelectedValue();
+                     LinkValue link = (LinkValue) list.getSelectedValue();
 
                      if (action.equals( am.get( "up" ) ))
                      {
-                        if (formElementItem.getRelation().equals("page"))
+                        if (link.rel().get().equals("page"))
                         {
                            if (selectedIndex == 0)
                               result = false;
-                        } else if (formElementItem.getRelation().equals("field"))
+                        } else if (link.rel().get().equals("field"))
                         {
-                           FormElementItem previousItem = (FormElementItem) list.getModel().getElementAt( selectedIndex - 1 );
-                           if (previousItem.getRelation().equals("page"))
+                           LinkValue previous = (LinkValue) list.getModel().getElementAt( selectedIndex - 1 );
+                           if (previous.rel().get().equals("page"))
                               result = false;
                         }
                      } else if (action.equals( am.get( "down" ) ))
                      {
-                        if (formElementItem.getRelation().equals("page"))
+                        if (link.rel().get().equals("page"))
                         {
                            if (selectedIndex == lastPageIndex())
                               result = false;
                         } else
                         {
                            if (selectedIndex == list.getModel().getSize() - 1 ||
-                                 ((FormElementItem)list.getModel().getElementAt( selectedIndex + 1 )).getRelation().equals("page"))
+                                 ((LinkValue)list.getModel().getElementAt( selectedIndex + 1 )).rel().get().equals("page"))
                               result = false;
                         }
                      }
@@ -168,10 +148,11 @@ public class FormElementsView
                private int lastPageIndex()
                {
                   int lastIndex = -1;
-                  ListModel listModel = fieldList.getList().getModel();
+                  ListModel listModel = list.getModel();
                   for (int i = 0; i < listModel.getSize(); i++)
                   {
-                     if (listModel.getElementAt( i ) instanceof PageListItemValue)
+                     LinkValue link = (LinkValue) listModel.getElementAt( i );
+                     if ( link.rel().get().equals( "page" ) )
                         lastIndex = i;
                   }
                   return lastIndex;
@@ -190,10 +171,10 @@ public class FormElementsView
 
       if (dialog.name() != null && !"".equals( dialog.name() ))
       {
-         final FormElementItem page = findSelectedPage( (FormElementItem) fieldList.getList().getSelectedValue() );
+         final LinkValue page = findSelectedPage( (LinkValue) list.getSelectedValue() );
          if (page != null)
          {
-            fieldList.getList().clearSelection();
+            list.clearSelection();
             return new CommandTask()
             {
                @Override
@@ -209,20 +190,20 @@ public class FormElementsView
       return null;
    }
 
-   private FormElementItem findSelectedPage( FormElementItem selected )
+   private LinkValue findSelectedPage( LinkValue selected )
    {
-      ListModel model = fieldList.getList().getModel();
-      if (selected.getRelation().equals("page"))
+      ListModel model = list.getModel();
+      if (selected.rel().get().equals("page"))
       {
          return selected;
       } else
       {
-         int index = fieldList.getList().getSelectedIndex();
+         int index = list.getSelectedIndex();
          for (int i = index; i >= 0; i--)
          {
-            if (((FormElementItem)model.getElementAt( i )).getRelation().equals("page"))
+            if (((LinkValue)model.getElementAt( i )).rel().get().equals("page"))
             {
-               return (FormElementItem) model.getElementAt( i );
+               return (LinkValue) model.getElementAt( i );
             }
          }
       }
@@ -237,7 +218,7 @@ public class FormElementsView
 
       if (Strings.notEmpty( dialog.name() ))
       {
-         fieldList.getList().clearSelection();
+         list.clearSelection();
          return new CommandTask()
          {
             @Override
@@ -255,11 +236,11 @@ public class FormElementsView
    @org.jdesktop.application.Action
    public Task remove()
    {
-      final FormElementItem selected = (FormElementItem) fieldList.getList().getSelectedValue();
+      final LinkValue selected = getSelectedValue();
       if (selected != null)
       {
          ConfirmationDialog dialog = confirmationDialog.iterator().next();
-         dialog.setRemovalMessage( selected.getName());
+         dialog.setRemovalMessage( selected.text().get() );
          dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation ) );
          if (dialog.isConfirmed())
          {
@@ -269,7 +250,7 @@ public class FormElementsView
                public void command()
                   throws Exception
                {
-                  model.removeFormElement(selected );
+                  model.removeFormElement( selected );
                }
             };
          }
@@ -281,7 +262,7 @@ public class FormElementsView
    @org.jdesktop.application.Action
    public Task up()
    {
-      final FormElementItem selected = (FormElementItem) fieldList.getList().getSelectedValue();
+      final LinkValue selected = getSelectedValue();
       return new CommandTask()
       {
          @Override
@@ -296,7 +277,7 @@ public class FormElementsView
    @org.jdesktop.application.Action
    public Task down()
    {
-      final FormElementItem selected = (FormElementItem) fieldList.getList().getSelectedValue();
+      final LinkValue selected = getSelectedValue();
       if (selected != null)
       {
          return new CommandTask()
@@ -312,20 +293,10 @@ public class FormElementsView
          return null;
    }
 
-   public FormElementsList getFieldList()
-   {
-      return fieldList;
-   }
-
-   public FormElementsModel getModel()
-   {
-      return model;
-   }
-
    public void update( Observable o, Object arg )
    {
-      fieldList.getList().clearSelection();
-      fieldList.getList().setSelectedValue( arg, true );
+      list.clearSelection();
+      list.setSelectedValue( arg, true );
    }
 
    public void notifyTransactions( Iterable<TransactionEvents> transactions )
@@ -337,11 +308,11 @@ public class FormElementsView
       if (event != null)
       {
          String id = EventParameters.getParameter( event, 1 );
-         for (FormElementItem formElementItem : model.getFormElementsList())
+         for (LinkValue link : model.getFormElementsList())
          {
-            if (formElementItem.getClient().getReference().getPath().endsWith(id+"/"))
+            if (link.href().get().endsWith( id+"/" ))
             {
-               fieldList.getList().setSelectedValue( formElementItem, true );
+               list.setSelectedValue( link, true );
                break;
             }
          }

@@ -1,13 +1,8 @@
-/**
- *
- * Copyright 2009-2010 Streamsource AB
- *
+/*
+ * Copyright (c) 2010, Mads Enevoldsen. All Rights Reserved.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,12 +15,15 @@ package se.streamsource.streamflow.client.ui.administration.casetypes.forms;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.domain.form.FormValue;
+import se.streamsource.streamflow.domain.form.RequiredSignatureValue;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
 
@@ -36,7 +34,7 @@ import static se.streamsource.streamflow.infrastructure.event.source.helper.Even
 /**
  * JAVADOC
  */
-public class FormModel
+public class FormSignatureModel
       extends Observable
       implements Refreshable, TransactionListener
 
@@ -44,42 +42,48 @@ public class FormModel
    @Structure
    ObjectBuilderFactory obf;
 
+   @Structure
+   ValueBuilderFactory vbf;
+
    @Uses
    CommandQueryClient client;
 
-   private FormValue formValue;
+   private RequiredSignatureValue formSignature;
 
    public void refresh() throws OperationException
    {
-      formValue = client.query( "index", FormValue.class );
+      formSignature = client.query( "index", RequiredSignatureValue.class );
       setChanged();
       notifyObservers( this );
    }
 
-   public String getNote()
+   public String getName()
    {
-      return formValue.note().get();
+      return formSignature.name().get();
    }
 
-   public FormValue getFormValue()
+   public RequiredSignatureValue getFormSignature()
    {
-      return formValue;
+      return formSignature;
    }
 
-   public void changeDescription( StringValue description ) throws ResourceException
+   public void changeDescription( String description ) throws ResourceException
    {
-      client.putCommand( "changedescription", description );
+      ValueBuilder<RequiredSignatureValue> builder = vbf.newValueBuilder( RequiredSignatureValue.class ).withPrototype( formSignature );
+      builder.prototype().description().set( description );
+
+      client.putCommand( "update", builder.newInstance() );
+
    }
 
-   public void changeNote( StringValue note ) throws ResourceException
+   public void changeName( String name ) throws ResourceException
    {
-      client.putCommand( "changenote", note );
+      ValueBuilder<RequiredSignatureValue> builder = vbf.newValueBuilder( RequiredSignatureValue.class ).withPrototype( formSignature );
+      builder.prototype().name().set( name );
+
+      client.putCommand( "update", builder.newInstance() );
    }
 
-   public void changeFormId( StringValue id )
-   {
-      client.putCommand( "changeformid", id );
-   }
 
    public void notifyTransactions( Iterable<TransactionEvents> transactions )
    {

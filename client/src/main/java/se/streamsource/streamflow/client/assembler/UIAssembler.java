@@ -69,7 +69,6 @@ import se.streamsource.streamflow.client.ui.administration.casetypes.forms.Field
 import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FieldEditorNumberFieldValueView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FieldEditorOpenSelectionFieldValueView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FieldEditorOptionButtonsFieldValueView;
-import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FieldEditorSignatureFieldValueView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FieldEditorTextAreaFieldValueView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FieldEditorTextFieldValueView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FieldValueEditModel;
@@ -78,6 +77,10 @@ import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FormE
 import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FormElementsModel;
 import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FormElementsView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FormModel;
+import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FormSignatureModel;
+import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FormSignatureView;
+import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FormSignaturesModel;
+import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FormSignaturesView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FormView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FormsModel;
 import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FormsView;
@@ -306,6 +309,10 @@ public class UIAssembler
       addMV( module,
             FormElementsModel.class, FormElementsView.class );
 
+      addMV( module, FormSignaturesModel.class, FormSignaturesView.class );
+
+      addMV( module, FormSignatureModel.class, FormSignatureView.class );
+
       addMV( module,
             SelectionElementsModel.class, SelectionElementsView.class );
 
@@ -325,8 +332,7 @@ public class UIAssembler
             FieldEditorOptionButtonsFieldValueView.class,
             FieldEditorOpenSelectionFieldValueView.class, 
             FieldEditorTextAreaFieldValueView.class,
-            FieldEditorTextFieldValueView.class,
-            FieldEditorSignatureFieldValueView.class);
+            FieldEditorTextFieldValueView.class);
 
       addDialogs( module, FieldCreationDialog.class );
 

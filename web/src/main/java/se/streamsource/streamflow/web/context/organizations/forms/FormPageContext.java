@@ -41,7 +41,6 @@ import se.streamsource.streamflow.domain.form.NumberFieldValue;
 import se.streamsource.streamflow.domain.form.OpenSelectionFieldValue;
 import se.streamsource.streamflow.domain.form.OptionButtonsFieldValue;
 import se.streamsource.streamflow.domain.form.PageDefinitionValue;
-import se.streamsource.streamflow.domain.form.SignatureFieldValue;
 import se.streamsource.streamflow.domain.form.TextAreaFieldValue;
 import se.streamsource.streamflow.domain.form.TextFieldValue;
 import se.streamsource.streamflow.domain.structure.Describable;
@@ -58,9 +57,11 @@ import se.streamsource.streamflow.web.context.structure.NotableContext;
  */
 @Mixins(FormPageContext.Mixin.class)
 public interface FormPageContext
-   extends IndexContext<PageDefinitionValue>, CreateContext<CreateFieldDTO>, DescribableContext, NotableContext, DeleteContext, SubContexts<FormFieldContext>, Context
+   extends IndexContext<PageDefinitionValue>, DescribableContext, NotableContext, DeleteContext, SubContexts<FormFieldContext>, Context
 {
    void move( StringValue direction );
+
+   public void create( CreateFieldDTO createFieldDTO );
 
    abstract class Mixin
       extends ContextMixin
@@ -155,9 +156,6 @@ public interface FormPageContext
                ValueBuilder<TextFieldValue> textBuilder = vbf.newValueBuilder( TextFieldValue.class );
                textBuilder.prototype().width().set( 30 );
                value = textBuilder.newInstance();
-               break;
-            case signature:
-               value = vbf.newValue( SignatureFieldValue.class );
                break;
          }
          return value;

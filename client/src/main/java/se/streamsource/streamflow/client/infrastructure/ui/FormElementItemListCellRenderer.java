@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.client.infrastructure.ui;
 
+import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.client.ui.administration.form.FormElementItem;
 import se.streamsource.streamflow.infrastructure.application.PageListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
@@ -34,12 +35,12 @@ public class FormElementItemListCellRenderer
 {
    public Component getListCellRendererComponent( JList list, Object value, int index, boolean isSelected, boolean cellHasFocus )
    {
-      if (value instanceof FormElementItem)
+      if ( value instanceof LinkValue )
       {
-         FormElementItem formElementItem = (FormElementItem) value;
-         String val = formElementItem.getName();
+         LinkValue link = (LinkValue) value;
+         String val = link.text().get();
 
-         if (formElementItem.getRelation().equals("page"))
+         if (link.rel().get().equals("page"))
          {
             Component component = super.getListCellRendererComponent( list, val, index, isSelected, cellHasFocus );
             setFont( getFont().deriveFont( Font.ITALIC ));

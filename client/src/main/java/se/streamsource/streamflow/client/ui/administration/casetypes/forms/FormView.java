@@ -40,6 +40,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.ui.administration.AdministrationView;
 
 import com.jgoodies.forms.factories.Borders;
+import se.streamsource.streamflow.client.ui.administration.TabbedResourceView;
 
 /**
  * JAVADOC
@@ -79,11 +80,12 @@ public class FormView
    @org.jdesktop.application.Action
    public void edit()
    {
-      FormEditView formEditView = obf.newObjectBuilder( FormEditView.class ).use( client ).newInstance();
+      //FormEditView formEditView = obf.newObjectBuilder( FormEditView.class ).use( client ).newInstance();
+      TabbedResourceView resourceView = obf.newObjectBuilder( TabbedResourceView.class ).use( client ).newInstance();
 
       AdministrationView adminView = (AdministrationView) SwingUtilities.getAncestorOfClass( AdministrationView.class, this );
 
-      adminView.show( formEditView );
+      adminView.show( resourceView );
    }
 
    public void update( Observable observable, Object o )

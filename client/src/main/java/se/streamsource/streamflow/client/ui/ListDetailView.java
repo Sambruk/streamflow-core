@@ -143,4 +143,9 @@ public abstract class ListDetailView
    {
       Component createDetail(LinkValue detailLink);
    }
+
+   protected LinkValue getSelectedValue()
+   {
+      return (LinkValue) list.getSelectedValue();
+   }
 }

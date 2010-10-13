@@ -1,12 +1,8 @@
 /*
- * Copyright 2009-2010 Streamsource AB
- *
+ * Copyright (c) 2010, Mads Enevoldsen. All Rights Reserved.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,10 +17,15 @@ import org.qi4j.api.mixin.Mixins;
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.CreateContext;
+import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.SubContexts;
+import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.StringValueMaxLength;
 import se.streamsource.streamflow.domain.form.RequiredSignatureValue;
+import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.web.domain.structure.form.RequiredSignatures;
+
+import java.util.List;
 
 /**
  * JAVADOC
@@ -32,7 +33,7 @@ import se.streamsource.streamflow.web.domain.structure.form.RequiredSignatures;
 @Mixins(FormSignaturesContext.Mixin.class)
 @Constraints(StringValueMaxLength.class)
 public interface FormSignaturesContext
-      extends SubContexts<FormSignatureContext>, CreateContext<RequiredSignatureValue>, Context
+      extends SubContexts<FormSignatureContext>, CreateContext<RequiredSignatureValue>, Context, IndexContext<LinksValue>
 {
    abstract class Mixin
          extends ContextMixin
@@ -54,6 +55,19 @@ public interface FormSignaturesContext
          roleMap.set(signature, RequiredSignatureValue.class);
 
          return subContext( FormSignatureContext.class );
+      }
+
+      public LinksValue index()
+      {
+         List<RequiredSignatureValue> signatureValues = roleMap.get( RequiredSignatures.Data.class ).requiredSignatures().get();
+         int index = 0;
+         LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() );
+         for (RequiredSignatureValue signatureValue : signatureValues)
+         {
+            builder.addLink( signatureValue.name().get(), ""+index );
+         }
+
+         return builder.newLinks();
       }
    }
 }

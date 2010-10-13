@@ -24,6 +24,9 @@ import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.ContextValue;
 import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypesView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.SelectedCaseTypesView;
+import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FormEditView;
+import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FormElementsView;
+import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FormSignaturesView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FormsView;
 import se.streamsource.streamflow.client.ui.administration.form.SelectedFormsView;
 import se.streamsource.streamflow.client.ui.administration.groups.GroupsView;
@@ -86,6 +89,10 @@ public class TabbedResourceView
       addTab( "accesspoints", AdministrationResources.accesspoints_tab, AccessPointsView.class );
       addTab( "proxyusers", AdministrationResources.proxyusers_tab, ProxyUsersView.class );
       addTab( "attachments", AdministrationResources.templates_tab, AttachmentsView.class );
+
+      addTab( "forminfo", AdministrationResources.forminfo_tab, FormEditView.class );
+      addTab( "pages", AdministrationResources.formpages_tab, FormElementsView.class );
+      addTab( "signatures", AdministrationResources.formsignatures_tab, FormSignaturesView.class );
 
    }
 

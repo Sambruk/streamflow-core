@@ -58,7 +58,7 @@ import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBui
  * JAVADOC
  */
 public class FormEditView
-      extends JSplitPane
+      extends JPanel
       implements Observer, Refreshable
 {
    StateBinder formValueBinder;
@@ -66,26 +66,25 @@ public class FormEditView
    private FormModel model;
 
    public FormEditView( @Service ApplicationContext context,
-                             @Uses final CommandQueryClient client,
-                             @Structure final ObjectBuilderFactory obf,
-                             @Structure ValueBuilderFactory vbf )
+                        @Uses final CommandQueryClient client,
+                        @Structure final ObjectBuilderFactory obf,
+                        @Structure ValueBuilderFactory vbf )
    {
       super();
 
       this.model = obf.newObjectBuilder( FormModel.class ).use( client ).newInstance();
       setBorder(BorderFactory.createEmptyBorder());
 
-      JPanel formAttributePanel = new JPanel( new BorderLayout() );
+      /*JPanel formAttributePanel = new JPanel( new BorderLayout() );
       JPanel leftPanel = new JPanel( new BorderLayout() );
       leftPanel.add( formAttributePanel, BorderLayout.NORTH);
-      final FormElementsView formElementsView = obf.newObjectBuilder( FormElementsView.class ).use( client ).newInstance();
       leftPanel.add( formElementsView, BorderLayout.CENTER );
-
+*/
       this.vbf = vbf;
       FormLayout formLayout = new FormLayout(
             "200dlu", "" );
 
-      DefaultFormBuilder formBuilder = new DefaultFormBuilder( formLayout, formAttributePanel );
+      DefaultFormBuilder formBuilder = new DefaultFormBuilder( formLayout, this );
 //      formBuilder.setDefaultDialogBorder();
       formBuilder.setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
 
@@ -100,7 +99,7 @@ public class FormEditView
          appendLine( AdministrationResources.form_id_label, TEXTFIELD, formValueTemplate.id() );
 
       formValueBinder.addObserver( this );
-
+/*
       setLeftComponent( leftPanel );
       setRightComponent( new JPanel() );
 
@@ -132,7 +131,7 @@ public class FormEditView
             }
 
          }
-      } );
+      } );*/
 
       new RefreshWhenVisible(this, this);
    }

@@ -164,7 +164,6 @@ public enum AdministrationResources
    listbox,
    optionbuttons,
    openselection,
-   signature,
    textarea,
    text,
    number,
@@ -219,7 +218,9 @@ public enum AdministrationResources
    regularexpression_label,
    field_id_label,
    open_selection_name,
-   templates_tab, cols_label;
-
-
+   templates_tab,
+   cols_label,
+   forminfo_tab,
+   formpages_tab,
+   add_signature_title, formsignatures_tab
 }

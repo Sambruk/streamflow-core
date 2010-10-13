@@ -21,7 +21,6 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.domain.form.CheckboxesFieldValue;
 import se.streamsource.streamflow.domain.form.ComboBoxFieldValue;
@@ -33,12 +32,10 @@ import se.streamsource.streamflow.domain.form.ListBoxFieldValue;
 import se.streamsource.streamflow.domain.form.NumberFieldValue;
 import se.streamsource.streamflow.domain.form.OpenSelectionFieldValue;
 import se.streamsource.streamflow.domain.form.OptionButtonsFieldValue;
-import se.streamsource.streamflow.domain.form.SignatureFieldValue;
 import se.streamsource.streamflow.domain.form.TextAreaFieldValue;
 import se.streamsource.streamflow.domain.form.TextFieldValue;
 
 import javax.swing.JComponent;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import java.util.HashMap;
@@ -66,7 +63,6 @@ public class FieldEditView
       editors.put(OpenSelectionFieldValue.class, FieldEditorOpenSelectionFieldValueView.class);
       editors.put(TextAreaFieldValue.class, FieldEditorTextAreaFieldValueView.class);
       editors.put(TextFieldValue.class, FieldEditorTextFieldValueView.class);
-      editors.put( SignatureFieldValue.class, FieldEditorSignatureFieldValueView.class);
    }
 
    private FieldValueEditModel model;
