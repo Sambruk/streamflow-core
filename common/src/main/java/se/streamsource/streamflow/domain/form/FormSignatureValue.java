@@ -22,7 +22,7 @@ import org.qi4j.api.value.ValueComposite;
 /**
  * Signature for a form
  */
-public interface FormSignature
+public interface FormSignatureValue
    extends ValueComposite
 {
    /**

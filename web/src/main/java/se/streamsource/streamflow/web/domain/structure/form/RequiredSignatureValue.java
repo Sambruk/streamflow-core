@@ -24,7 +24,7 @@ import org.qi4j.api.value.ValueComposite;
  * A required signature in a form definition. The description is optional,
  * but name is mandatory to provide.
  */
-public interface RequiredSignature
+public interface RequiredSignatureValue
    extends ValueComposite
 {
    Property<String> name();

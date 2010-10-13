@@ -17,6 +17,7 @@
 package se.streamsource.streamflow.web.domain.structure.form;
 
 import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
@@ -25,18 +26,19 @@ import java.util.List;
 /**
  * List of required signatures of a form
  */
+@Mixins(RequiredSignatures.Data.class)
 public interface RequiredSignatures
 {
-   void createRequiredSignature(RequiredSignature requiredSignature);
-   void updateRequiredSignature( int index, RequiredSignature requiredSignature );
+   void createRequiredSignature( RequiredSignatureValue requiredSignatureValue );
+   void updateRequiredSignature( int index, RequiredSignatureValue requiredSignatureValue );
    void removeRequiredSignature(int index);
 
    interface Data
    {
-      Property<List<RequiredSignature>> requiredSignatures();
+      Property<List<RequiredSignatureValue>> requiredSignatures();
 
-      void createdRequiredSignature( DomainEvent event, RequiredSignature requiredSignature);
-      void updatedRequiredSignature( DomainEvent event, int index, RequiredSignature requiredSignature);
+      void createdRequiredSignature( DomainEvent event, RequiredSignatureValue requiredSignatureValue );
+      void updatedRequiredSignature( DomainEvent event, int index, RequiredSignatureValue requiredSignatureValue );
       void removedRequiredSignature( DomainEvent event, int index);
    }
 
@@ -46,14 +48,14 @@ public interface RequiredSignatures
       @This
       Data data;
 
-      public void createRequiredSignature( RequiredSignature requiredSignature )
+      public void createRequiredSignature( RequiredSignatureValue requiredSignatureValue )
       {
-         data.createdRequiredSignature( DomainEvent.CREATE, requiredSignature );
+         data.createdRequiredSignature( DomainEvent.CREATE, requiredSignatureValue );
       }
 
-      public void updateRequiredSignature( int index, RequiredSignature requiredSignature )
+      public void updateRequiredSignature( int index, RequiredSignatureValue requiredSignatureValue )
       {
-         data.updatedRequiredSignature( DomainEvent.CREATE, index, requiredSignature );
+         data.updatedRequiredSignature( DomainEvent.CREATE, index, requiredSignatureValue );
       }
 
       public void removeRequiredSignature( int index )

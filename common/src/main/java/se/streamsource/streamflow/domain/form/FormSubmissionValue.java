@@ -40,5 +40,5 @@ public interface FormSubmissionValue
    Property<List<PageSubmissionValue>> pages();
 
    @UseDefaults
-   Property<List<FormSignature>> signatures();
+   Property<List<FormSignatureValue>> signatures();
 }
