@@ -136,7 +136,7 @@ public class AccessPointView
       AccessPointValue template = accessPointBinder
             .bindingTemplate( AccessPointValue.class );
 
-      FormLayout layout = new FormLayout( "80dlu, 5dlu, 150:grow", "pref, 2dlu, pref, 2dlu, pref, 2dlu, pref, 2dlu, default:grow" );
+      FormLayout layout = new FormLayout( "60dlu, 5dlu, 150:grow", "pref, 2dlu, pref, 2dlu, pref, 2dlu, pref, 2dlu, pref, 2dlu, default:grow" );
 
       JPanel panel = new JPanel( layout );
       DefaultFormBuilder builder = new DefaultFormBuilder( layout,
@@ -156,6 +156,9 @@ public class AccessPointView
             Font.BOLD ) );
 
       selectedForm.setFont( selectedForm.getFont().deriveFont(
+            Font.BOLD ) );
+
+      selectedTemplate.setFont( selectedTemplate.getFont().deriveFont(
             Font.BOLD ) );
 
       ActionMap am = getActionMap();
@@ -226,6 +229,8 @@ public class AccessPointView
       templateButton.registerKeyboardAction( templateAction, (KeyStroke) templateAction
             .getValue( javax.swing.Action.ACCELERATOR_KEY ),
             JComponent.WHEN_IN_FOCUSED_WINDOW );
+
+      templateButton.setHorizontalAlignment( SwingConstants.LEFT );
 
       builder.add( templateButton, cc.xy( 1, 9, CellConstraints.FILL, CellConstraints.TOP ) );
 
