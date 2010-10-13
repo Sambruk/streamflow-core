@@ -136,7 +136,7 @@ public class AccessPointView
       AccessPointValue template = accessPointBinder
             .bindingTemplate( AccessPointValue.class );
 
-      FormLayout layout = new FormLayout( "50dlu, 5dlu, 150:grow", "pref, 2dlu, pref, 2dlu, pref, 2dlu, pref, 2dlu, default:grow" );
+      FormLayout layout = new FormLayout( "80dlu, 5dlu, 150:grow", "pref, 2dlu, pref, 2dlu, pref, 2dlu, pref, 2dlu, default:grow" );
 
       JPanel panel = new JPanel( layout );
       DefaultFormBuilder builder = new DefaultFormBuilder( layout,

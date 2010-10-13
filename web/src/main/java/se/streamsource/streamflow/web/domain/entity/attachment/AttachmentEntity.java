@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.web.domain.entity.attachment;
 
+import org.qi4j.api.Qi4j;
 import org.qi4j.api.concern.ConcernOf;
 import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.entity.association.Association;
@@ -53,6 +54,9 @@ public interface AttachmentEntity
          implements Removable
    {
       @Structure
+      Qi4j api;
+
+      @Structure
       QueryBuilderFactory qbf;
 
       @Structure
@@ -72,7 +76,7 @@ public interface AttachmentEntity
                // Remove all usage of this attachement
                Association<Attachment> selectedTemplate = templateFor( SelectedTemplate.Data.class ).selectedTemplate();
                Query<SelectedTemplate> templateUsages = qbf.newQueryBuilder( SelectedTemplate.class ).
-                     where( QueryExpressions.eq( selectedTemplate, attachment ) ).
+                     where( QueryExpressions.eq( selectedTemplate, api.dereference( attachment ) ) ).
                      newQuery( uowf.currentUnitOfWork() );
 
                for (SelectedTemplate selectedTemplateUsage : templateUsages)
