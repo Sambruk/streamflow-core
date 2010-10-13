@@ -1,5 +1,4 @@
-/**
- *
+/*
  * Copyright 2009-2010 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,30 +14,14 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.domain.form;
+package se.streamsource.streamflow.server.plugin.eid;
 
-import org.qi4j.api.common.UseDefaults;
-import org.qi4j.api.entity.EntityReference;
-import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
-
-import java.util.List;
 
 /**
  * JAVADOC
  */
-public interface FormSubmissionValue
-      extends ValueComposite
+public interface EncodeTBSResponseValue
+   extends ValueComposite
 {
-   Property<EntityReference> form();
-
-   Property<String> description();
-
-   @UseDefaults
-   Property<Integer> currentPage();
-
-   Property<List<PageSubmissionValue>> pages();
-
-   @UseDefaults
-   Property<List<FormSignature>> signatures();
 }

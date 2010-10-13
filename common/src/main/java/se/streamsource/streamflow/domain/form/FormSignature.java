@@ -1,5 +1,4 @@
-/**
- *
+/*
  * Copyright 2009-2010 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,28 +16,45 @@
 
 package se.streamsource.streamflow.domain.form;
 
-import org.qi4j.api.common.UseDefaults;
-import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
 
-import java.util.List;
-
 /**
- * JAVADOC
+ * Signature for a form
  */
-public interface FormSubmissionValue
-      extends ValueComposite
+public interface FormSignature
+   extends ValueComposite
 {
-   Property<EntityReference> form();
+   /**
+    * This is the TBS-variant of the form which is shown to the user
+    * 
+    *
+    * @return
+    */
+   Property<String> form();
 
-   Property<String> description();
+   /**
+    * This is the TBS (To-Be-Signed text) in an encoded
+    * form, typically a hash.
+    *
+    * @return
+    */
+   Property<String> encodedForm();
 
-   @UseDefaults
-   Property<Integer> currentPage();
+   Property<String> signerId();
 
-   Property<List<PageSubmissionValue>> pages();
+   /**
+    * This is the signature string after the user
+    * has signed the form
+    * @return
+    */
+   Property<String> signature();
 
-   @UseDefaults
-   Property<List<FormSignature>> signatures();
+   /**
+    * This is the id of the provider client used
+    * to perform the signing. TODO List clients
+    *
+    * @return
+    */
+   Property<String> provider();
 }
