@@ -14,21 +14,17 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.domain.structure.form;
+package se.streamsource.dci.api;
 
-import org.qi4j.api.common.UseDefaults;
-import org.qi4j.api.property.Property;
-import org.qi4j.api.value.ValueComposite;
+import org.qi4j.api.value.Value;
+import org.restlet.resource.ResourceException;
+
+import java.io.IOException;
 
 /**
- * A required signature in a form definition. The description is optional,
- * but name is mandatory to provide.
+ * Standard interface for creation of new resources.
  */
-public interface RequiredSignatureValue
-   extends ValueComposite
+public interface CreateContext<T extends Value>
 {
-   Property<String> name();
-
-   @UseDefaults
-   Property<String> description();
+   void create(T value);
 }

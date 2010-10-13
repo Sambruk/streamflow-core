@@ -25,6 +25,7 @@ import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
 import se.streamsource.streamflow.web.domain.structure.form.FormId;
 import se.streamsource.streamflow.web.domain.structure.form.Pages;
+import se.streamsource.streamflow.web.domain.structure.form.RequiredSignatures;
 
 /**
  * JAVADOC
@@ -40,6 +41,7 @@ public interface FormEntity
       Pages.Data,
       Ownable.Data,
       Removable.Data,
+      RequiredSignatures.Data,
 
       // Queries
       PageQueries

@@ -1,5 +1,4 @@
-/**
- *
+/*
  * Copyright 2009-2010 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,20 +17,18 @@
 package se.streamsource.streamflow.domain.form;
 
 import org.qi4j.api.common.UseDefaults;
-import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
 
-import java.util.List;
-
 /**
- * JAVADOC
+ * A required signature in a form definition. The description is optional,
+ * but name is mandatory to provide.
  */
-public interface SubmitFormDTO
-      extends ValueComposite
+public interface RequiredSignatureValue
+   extends ValueComposite
 {
-   Property<EntityReference> form();
+   Property<String> name();
 
    @UseDefaults
-   Property<List<SubmittedFieldValue>> values();
+   Property<String> description();
 }

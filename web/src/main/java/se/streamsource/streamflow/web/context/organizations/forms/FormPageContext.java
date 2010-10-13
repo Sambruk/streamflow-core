@@ -24,7 +24,9 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.dci.api.ContextMixin;
+import se.streamsource.dci.api.CreateContext;
 import se.streamsource.dci.api.DeleteContext;
+import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.SubContexts;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.domain.form.CheckboxesFieldValue;
@@ -56,18 +58,15 @@ import se.streamsource.streamflow.web.context.structure.NotableContext;
  */
 @Mixins(FormPageContext.Mixin.class)
 public interface FormPageContext
-   extends DescribableContext, NotableContext, DeleteContext, SubContexts<FormFieldContext>, Context
+   extends IndexContext<PageDefinitionValue>, CreateContext<CreateFieldDTO>, DescribableContext, NotableContext, DeleteContext, SubContexts<FormFieldContext>, Context
 {
-   PageDefinitionValue page();
    void move( StringValue direction );
-
-   void create( CreateFieldDTO createFieldDTO );
 
    abstract class Mixin
       extends ContextMixin
       implements FormPageContext
    {
-      public PageDefinitionValue page()
+      public PageDefinitionValue index()
       {
          Describable describable = roleMap.get(Describable.class);
          Identity identity = roleMap.get(Identity.class);

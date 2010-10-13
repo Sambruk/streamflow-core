@@ -23,6 +23,7 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.CreateContext;
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.SubContexts;
@@ -47,72 +48,28 @@ import se.streamsource.streamflow.web.domain.structure.form.Pages;
  */
 @Mixins(FormContext.Mixin.class)
 public interface FormContext
-   extends DeleteContext, DescribableContext, NotableContext, SubContexts<FormPageContext>, Context
+   extends DeleteContext, Context
 {
-   FormValue form();
-
    void move( EntityValue to);
 
-   void changeformid( StringValue stringValue );
+   @SubContext
+   FormInfoContext info();
 
-   LinksValue formelements();
+   @SubContext
+   FormPagesContext pages();
 
-   void create( StringValue name );
+   @SubContext
+   FormSignaturesContext signatures();
 
    abstract class Mixin
       extends ContextMixin
       implements FormContext
    {
-      @Structure
-      Module module;
-
-      public FormValue form()
-      {
-         FormEntity form = roleMap.get(FormEntity.class);
-
-         ValueBuilder<FormValue> builder = module.valueBuilderFactory().newValueBuilder( FormValue.class );
-
-         builder.prototype().note().set( form.note().get() );
-         builder.prototype().description().set( form.description().get() );
-         builder.prototype().form().set( EntityReference.parseEntityReference( form.identity().get() ) );
-         builder.prototype().id().set( form.formId().get() );
-
-         return builder.newInstance();
-      }
-
       public void move(EntityValue to)
       {
          Forms toForms = module.unitOfWorkFactory().currentUnitOfWork().get( Forms.class, to.entity().get() );
          Form form = roleMap.get(Form.class);
          roleMap.get( Forms.class ).moveForm(form, toForms);
-      }
-
-      public LinksValue formelements()
-      {
-         LinksBuilder linksBuilder = new LinksBuilder(module.valueBuilderFactory());
-
-         Pages.Data pages = roleMap.get( Pages.Data.class );
-         for (Page page : pages.pages())
-         {
-            linksBuilder.path( null );
-            linksBuilder.rel( "page" );
-            linksBuilder.addDescribable( page );
-            Fields.Data fields = (Fields.Data) page;
-            linksBuilder.path( page.toString());
-            linksBuilder.rel( "field" );
-            for (Field field : fields.fields())
-            {
-               linksBuilder.addDescribable( field );
-            }
-         }
-
-         return linksBuilder.newLinks();
-      }
-
-      public void changeformid( StringValue stringValue )
-      {
-         FormId form = roleMap.get( FormId.class );
-         form.changeFormId( stringValue.string().get() );
       }
 
       public void delete()
@@ -122,22 +79,19 @@ public interface FormContext
          forms.removeForm( form );
       }
 
-      public void create( StringValue name )
+      public FormInfoContext info()
       {
-         Pages pages = roleMap.get( Pages.class );
-
-         pages.createPage( name.string().get() );
+         return subContext( FormInfoContext.class );
       }
 
-      public FormPageContext context( String id )
+      public FormPagesContext pages()
       {
-         Page page = module.unitOfWorkFactory().currentUnitOfWork().get( Page.class, id );
+         return subContext( FormPagesContext.class );
+      }
 
-         if (!roleMap.get( Pages.Data.class ).pages().contains( page ))
-            throw new IllegalArgumentException( "Page is not a member of this form" );
-
-         roleMap.set( page );
-         return subContext( FormPageContext.class );
+      public FormSignaturesContext signatures()
+      {
+         return subContext( FormSignaturesContext.class );
       }
    }
 }

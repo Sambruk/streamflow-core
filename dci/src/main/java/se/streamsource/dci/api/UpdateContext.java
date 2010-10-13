@@ -1,5 +1,4 @@
-/**
- *
+/*
  * Copyright 2009-2010 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,23 +14,17 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.domain.structure.form;
+package se.streamsource.dci.api;
 
-import se.streamsource.streamflow.domain.structure.Describable;
-import se.streamsource.streamflow.domain.structure.Notable;
-import se.streamsource.streamflow.domain.structure.Removable;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
+import org.qi4j.api.value.Value;
+import org.restlet.resource.ResourceException;
+
+import java.io.IOException;
 
 /**
- * JAVADOC
+ * Standard context for update of existing resoruces.
  */
-public interface Form
- extends Describable,
-      FormId,
-      Notable,
-      Pages,
-      Ownable,
-      Removable,
-      RequiredSignatures
+public interface UpdateContext<T extends Value>
 {
+   void update(T value);
 }
