@@ -34,6 +34,7 @@ import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
 import se.streamsource.streamflow.domain.form.FieldValue;
 import se.streamsource.streamflow.domain.form.FormSubmissionValue;
 import se.streamsource.streamflow.domain.form.PageSubmissionValue;
+import se.streamsource.streamflow.domain.form.RequiredSignatureValue;
 import se.streamsource.streamflow.domain.form.SubmittedFieldValue;
 import se.streamsource.streamflow.domain.form.SubmittedFormValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
@@ -41,6 +42,7 @@ import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * JAVADOC
@@ -162,6 +164,20 @@ public interface FormSubmissions
          builder.prototype().pages().get().remove( pages-1 );
          builder.prototype().pages().get().add( pageBuilder.newInstance() );
 
+         /*// insert form signatures
+         List<RequiredSignatureValue> signatures = new ArrayList<RequiredSignatureValue>();
+         ValueBuilder<RequiredSignatureValue> signatureBuilder = vbf.newValueBuilder( RequiredSignatureValue.class );
+         RequiredSignatures.Data signaturesEntities = (RequiredSignatures.Data) form;
+         for (RequiredSignatureValue signatureValue : signaturesEntities.requiredSignatures().get())
+         {
+            signatureBuilder.prototype().description().set( signatureValue.description().get() );
+            signatureBuilder.prototype().name().set( signatureValue.name().get() );
+
+            signatures.add( signatureBuilder.newInstance() );
+         }
+
+         builder.prototype().signatures().set(  );
+*/
          submissionEntityBuilder.instance().changeFormSubmission( builder.newInstance() );
 
          FormSubmission formSubmission = submissionEntityBuilder.newInstance();

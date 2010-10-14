@@ -23,12 +23,16 @@ import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.ContextMixin;
+import se.streamsource.streamflow.domain.form.FormSignatureValue;
 import se.streamsource.streamflow.domain.form.FormSubmissionValue;
+import se.streamsource.streamflow.domain.form.RequiredSignatureValue;
+import se.streamsource.streamflow.domain.form.RequiredSignaturesValue;
 import se.streamsource.streamflow.resource.roles.IntegerDTO;
 import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.UpdateCaseCountCaseConcern;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.form.EndUserCases;
 import se.streamsource.streamflow.web.domain.structure.form.FormSubmission;
+import se.streamsource.streamflow.web.domain.structure.form.RequiredSignatures;
 import se.streamsource.streamflow.web.domain.structure.user.AnonymousEndUser;
 
 /**
@@ -45,6 +49,8 @@ public interface SummaryContext
    void submitandsend();
 
    void gotopage( IntegerDTO page );
+
+   RequiredSignaturesValue signatures();
 
    abstract class Mixin
       extends ContextMixin
@@ -85,6 +91,26 @@ public interface SummaryContext
          FormSubmissionValue newFormValue = valueBuilder.newInstance();
          FormSubmission formSubmission = roleMap.get( FormSubmission.class );
          formSubmission.changeFormSubmission( newFormValue );
+      }
+
+      public RequiredSignaturesValue signatures()
+      {
+         FormSubmissionValue form = roleMap.get( FormSubmissionValue.class );
+
+         RequiredSignatures.Data data = module.unitOfWorkFactory().currentUnitOfWork().get( RequiredSignatures.Data.class, form.form().get().identity() );
+
+         ValueBuilder<RequiredSignaturesValue> valueBuilder = module.valueBuilderFactory().newValueBuilder( RequiredSignaturesValue.class );
+         valueBuilder.prototype().signatures().get();
+         ValueBuilder<RequiredSignatureValue> builder = module.valueBuilderFactory().newValueBuilder( RequiredSignatureValue.class );
+
+         for (RequiredSignatureValue signature :  data.requiredSignatures().get())
+         {
+            builder.prototype().name().set( signature.name().get() );
+            builder.prototype().description().set( signature.description().get() );
+
+            valueBuilder.prototype().signatures().get().add( builder.newInstance() );
+         }
+         return valueBuilder.newInstance();
       }
    }
 }
