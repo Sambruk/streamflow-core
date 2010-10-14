@@ -30,7 +30,6 @@ import org.qi4j.index.reindexer.ReindexerConfiguration;
 import org.qi4j.library.rdf.repository.NativeConfiguration;
 import org.qi4j.migration.MigrationConfiguration;
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
-import se.streamsource.streamflow.web.application.eid.OSIFConfiguration;
 import se.streamsource.streamflow.web.application.mail.MailConfiguration;
 import se.streamsource.streamflow.web.application.management.jmxconnector.JmxConnectorConfiguration;
 import se.streamsource.streamflow.web.application.migration.StartupMigrationConfiguration;
@@ -72,7 +71,6 @@ public class ConfigurationAssembler
       module.addEntities( JmxConnectorConfiguration.class ).visibleIn( Visibility.application );
       module.addEntities( MigrationConfiguration.class ).visibleIn( Visibility.application );
       module.addEntities( MailConfiguration.class ).visibleIn( Visibility.application );
-      module.addEntities( OSIFConfiguration.class ).visibleIn( Visibility.application );
 
       // Plugin configurations
       module.addEntities( PluginConfiguration.class ).visibleIn( Visibility.application );

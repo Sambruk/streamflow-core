@@ -64,7 +64,6 @@ public class StreamflowRestApplication
    public StreamflowRestApplication( @Uses Context parentContext ) throws Exception
    {
       super( parentContext );
-
       getMetadataService().addExtension( "srj", APPLICATION_SPARQL_JSON );
 
    }

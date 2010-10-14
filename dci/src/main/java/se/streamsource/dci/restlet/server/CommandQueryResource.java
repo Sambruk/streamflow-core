@@ -270,7 +270,7 @@ public class CommandQueryResource
 
          try
          {
-            ResponseWriter writer = responseWriterFactory.createWriter( getSegments( request ), ResourceValue.class, roleMap, getVariant( request ) );
+            ResponseWriter writer = responseWriterFactory.createWriter( request.getResourceRef().getRelativeRef().getSegments(), ResourceValue.class, roleMap, getVariant( request ) );
             writer.write( builder.newInstance(), request, response );
          } catch (Throwable e)
          {
@@ -311,7 +311,7 @@ public class CommandQueryResource
       } else
       {
 
-         ResponseWriter writer = responseWriterFactory.createWriter( (List<String>) request.getAttributes().get( "segments" ), resultValue.getClass(), getRoleMap( request ), new Variant( MediaType.APPLICATION_JSON, Language.ENGLISH ) );
+         ResponseWriter writer = responseWriterFactory.createWriter( request.getResourceRef().getRelativeRef().getSegments(), resultValue.getClass(), getRoleMap( request ), getVariant( request ));
          writer.write( resultValue, request, response );
       }
    }
@@ -399,7 +399,7 @@ public class CommandQueryResource
 
    private void invokeCommandQuery( String segment, Request request, Response response )
    {
-      if (segment.equals( "" ))
+      if (segment.equals( "" ) || segment.equals("."))
       {
          // Index for this resource
          resource( request, response );

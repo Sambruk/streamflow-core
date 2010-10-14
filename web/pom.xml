@@ -283,13 +283,6 @@
             </exclusions>
         </dependency>
 
-        <!-- eID -->
-        <dependency>
-            <groupId>se.nexus.multiid</groupId>
-            <artifactId>osif</artifactId>
-            <version>2.1</version>
-        </dependency>
-
         <!-- Testing -->
         <dependency>
             <groupId>junit</groupId>

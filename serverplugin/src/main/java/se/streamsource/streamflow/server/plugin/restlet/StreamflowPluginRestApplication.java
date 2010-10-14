@@ -31,7 +31,7 @@ import org.restlet.security.ChallengeAuthenticator;
 import org.restlet.security.Verifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import se.streamsource.streamflow.server.plugin.authentication.LdapAuthenticationVerifier;
+import se.streamsource.streamflow.server.plugin.authentication.AuthenticationVerifier;
 
 /**
  * Application for Streamflow SPI Plugin implementations.
@@ -63,10 +63,10 @@ public class StreamflowPluginRestApplication
    {
       Router pluginRouter = new Router( getContext() );
 
-      pluginRouter.attach( "/contacts", (Restlet) app.findModule( "Web", "REST" ).objectBuilderFactory().newObject( ContactLookupRestlet.class ), Template.MODE_STARTS_WITH );
+      pluginRouter.attach( "/contacts", app.findModule( "Web", "REST" ).objectBuilderFactory().newObject( ContactLookupRestlet.class ), Template.MODE_STARTS_WITH );
 
       ChallengeAuthenticator ldapGuard = new ChallengeAuthenticator( getContext(), ChallengeScheme.HTTP_BASIC, "Ldap" );
-      ldapGuard.setVerifier( (Verifier) app.findModule( "Web", "REST" ).objectBuilderFactory().newObject( LdapAuthenticationVerifier.class ) );
+      ldapGuard.setVerifier( (Verifier) app.findModule( "Web", "REST" ).objectBuilderFactory().newObject( AuthenticationVerifier.class ) );
       ldapGuard.setNext( (Restlet) app.findModule( "Web", "REST" ).objectBuilderFactory().newObject( AuthenticationRestlet.class ) );
       pluginRouter.attach( "/authentication", ldapGuard, Template.MODE_STARTS_WITH );
 
