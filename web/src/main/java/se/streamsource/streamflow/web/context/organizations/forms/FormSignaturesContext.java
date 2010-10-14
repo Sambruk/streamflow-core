@@ -16,6 +16,7 @@ import org.qi4j.api.constraint.Constraints;
 import org.qi4j.api.mixin.Mixins;
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.ContextMixin;
+import se.streamsource.dci.api.ContextNotFoundException;
 import se.streamsource.dci.api.CreateContext;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.SubContexts;
@@ -51,10 +52,16 @@ public interface FormSignaturesContext
          Integer index = Integer.decode( id );
          roleMap.set( index, Integer.class);
 
-         RequiredSignatureValue signature = roleMap.get( RequiredSignatures.Data.class ).requiredSignatures().get().get( index );
-         roleMap.set(signature, RequiredSignatureValue.class);
+         List<RequiredSignatureValue> signatureValues = roleMap.get( RequiredSignatures.Data.class ).requiredSignatures().get();
+         if ( index < signatureValues.size() ) {
+            RequiredSignatureValue signature = signatureValues.get( index );
+            roleMap.set(signature, RequiredSignatureValue.class);
 
-         return subContext( FormSignatureContext.class );
+            return subContext( FormSignatureContext.class );
+         } else
+         {
+            throw new ContextNotFoundException();
+         }
       }
 
       public LinksValue index()
@@ -65,6 +72,7 @@ public interface FormSignaturesContext
          for (RequiredSignatureValue signatureValue : signatureValues)
          {
             builder.addLink( signatureValue.name().get(), ""+index );
+            index++;
          }
 
          return builder.newLinks();

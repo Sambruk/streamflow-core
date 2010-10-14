@@ -36,18 +36,10 @@ import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
 import se.streamsource.streamflow.client.ui.CommandTask;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
-import se.streamsource.streamflow.client.ui.administration.form.FormElementItem;
 import se.streamsource.streamflow.domain.form.FormValue;
 
 import javax.swing.BorderFactory;
-import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTextArea;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import java.awt.BorderLayout;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -75,17 +67,11 @@ public class FormEditView
       this.model = obf.newObjectBuilder( FormModel.class ).use( client ).newInstance();
       setBorder(BorderFactory.createEmptyBorder());
 
-      /*JPanel formAttributePanel = new JPanel( new BorderLayout() );
-      JPanel leftPanel = new JPanel( new BorderLayout() );
-      leftPanel.add( formAttributePanel, BorderLayout.NORTH);
-      leftPanel.add( formElementsView, BorderLayout.CENTER );
-*/
       this.vbf = vbf;
       FormLayout formLayout = new FormLayout(
             "200dlu", "" );
 
       DefaultFormBuilder formBuilder = new DefaultFormBuilder( formLayout, this );
-//      formBuilder.setDefaultDialogBorder();
       formBuilder.setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
 
       formValueBinder = obf.newObject( StateBinder.class );
@@ -99,39 +85,6 @@ public class FormEditView
          appendLine( AdministrationResources.form_id_label, TEXTFIELD, formValueTemplate.id() );
 
       formValueBinder.addObserver( this );
-/*
-      setLeftComponent( leftPanel );
-      setRightComponent( new JPanel() );
-
-      setDividerLocation( 400 );
-
-      final JList list = formElementsView.getFieldList().getList();
-
-      list.addListSelectionListener( new ListSelectionListener()
-      {
-
-         public void valueChanged( ListSelectionEvent e )
-         {
-            if (!e.getValueIsAdjusting())
-            {
-               FormElementItem formElementItem = (FormElementItem) list.getSelectedValue();
-               if (formElementItem != null)
-               {
-                  if (formElementItem.getRelation().equals("page"))
-                  {
-                     setRightComponent( obf.newObjectBuilder( PageEditView.class ).use( formElementItem.getClient() ).newInstance() );
-                  } else if (formElementItem.getRelation().equals("field"))
-                  {
-                     setRightComponent( obf.newObjectBuilder( FieldEditView.class ).use( formElementItem.getClient() ).newInstance() );
-                  }
-               } else
-               {
-                  setRightComponent( new JPanel() );
-               }
-            }
-
-         }
-      } );*/
 
       new RefreshWhenVisible(this, this);
    }

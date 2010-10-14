@@ -12,17 +12,10 @@
 
 package se.streamsource.streamflow.client.ui.administration.casetypes.forms;
 
-import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
-import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
-import se.streamsource.streamflow.domain.form.FormValue;
 import se.streamsource.streamflow.domain.form.RequiredSignatureValue;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
@@ -39,12 +32,6 @@ public class FormSignatureModel
       implements Refreshable, TransactionListener
 
 {
-   @Structure
-   ObjectBuilderFactory obf;
-
-   @Structure
-   ValueBuilderFactory vbf;
-
    @Uses
    CommandQueryClient client;
 
@@ -57,38 +44,20 @@ public class FormSignatureModel
       notifyObservers( this );
    }
 
-   public String getName()
-   {
-      return formSignature.name().get();
-   }
-
    public RequiredSignatureValue getFormSignature()
    {
       return formSignature;
    }
 
-   public void changeDescription( String description ) throws ResourceException
+   public void update( RequiredSignatureValue signature )
    {
-      ValueBuilder<RequiredSignatureValue> builder = vbf.newValueBuilder( RequiredSignatureValue.class ).withPrototype( formSignature );
-      builder.prototype().description().set( description );
-
-      client.putCommand( "update", builder.newInstance() );
-
+      client.putCommand( "update", signature );
    }
-
-   public void changeName( String name ) throws ResourceException
-   {
-      ValueBuilder<RequiredSignatureValue> builder = vbf.newValueBuilder( RequiredSignatureValue.class ).withPrototype( formSignature );
-      builder.prototype().name().set( name );
-
-      client.putCommand( "update", builder.newInstance() );
-   }
-
 
    public void notifyTransactions( Iterable<TransactionEvents> transactions )
    {
-      // Refresh if either the owner of the list has changed, or if any of the entities in the list has changed
-      if (matches( transactions, onEntities( client.getReference().getLastSegment() )))
+      // Refresh if the owner of the list has changed
+      if (matches( transactions, onEntities( client.getReference().getParentRef().getParentRef().getLastSegment() )))
          refresh();
    }
 }

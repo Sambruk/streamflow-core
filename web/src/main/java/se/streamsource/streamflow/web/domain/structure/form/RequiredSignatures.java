@@ -75,7 +75,8 @@ public interface RequiredSignatures
       public void updatedRequiredSignature( DomainEvent event, int index, RequiredSignatureValue requiredSignatureValue )
       {
          List<RequiredSignatureValue> signatureValues = requiredSignatures().get();
-         signatureValues.add( requiredSignatureValue );
+         signatureValues.remove( index );
+         signatureValues.add( index, requiredSignatureValue );
          requiredSignatures().set( signatureValues );
       }
 

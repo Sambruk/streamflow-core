@@ -20,6 +20,8 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.client.StreamflowResources;
@@ -31,11 +33,17 @@ import se.streamsource.streamflow.client.ui.ConfirmationDialog;
 import se.streamsource.streamflow.client.ui.ListDetailView;
 import se.streamsource.streamflow.client.ui.NameDialog;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.domain.form.RequiredSignatureValue;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
+import se.streamsource.streamflow.infrastructure.event.source.helper.EventParameters;
 import se.streamsource.streamflow.util.Strings;
 
 import javax.swing.ActionMap;
 import java.awt.Component;
+
+import static se.streamsource.streamflow.infrastructure.event.source.helper.Events.*;
+import static se.streamsource.streamflow.util.Iterables.*;
 
 
 /**
@@ -46,6 +54,9 @@ public class FormSignaturesView
 {
    @Service
    DialogService dialogs;
+
+   @Structure
+   ValueBuilderFactory vbf;
 
    @Uses
    Iterable<NameDialog> nameDialog;
@@ -62,7 +73,7 @@ public class FormSignaturesView
       this.model = obf.newObjectBuilder( FormSignaturesModel.class ).use( client).newInstance();
       ActionMap am = context.getActionMap( this );
 
-      initMaster( new EventListModel<LinkValue>( model.getFormSignatures()), am.get("create"), new javax.swing.Action[] { am.get("remove") },
+      initMaster( new EventListModel<LinkValue>( model.getList()), am.get("create"), new javax.swing.Action[] { am.get("remove") },
             new DetailFactory()
             {
                public Component createDetail( LinkValue detailLink )
@@ -82,6 +93,9 @@ public class FormSignaturesView
 
       if (Strings.notEmpty( dialog.name() ))
       {
+         list.clearSelection();
+         final ValueBuilder<RequiredSignatureValue> builder = vbf.newValueBuilder( RequiredSignatureValue.class );
+         builder.prototype().name().set( dialog.name() );
 
          return new CommandTask()
          {
@@ -89,7 +103,7 @@ public class FormSignaturesView
             public void command()
                   throws Exception
             {
-               model.create( dialog.name() );
+               model.create( builder.newInstance() );
             }
          };
       }
@@ -107,13 +121,14 @@ public class FormSignaturesView
          dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation ) );
          if (dialog.isConfirmed())
          {
+            list.clearSelection();
             return new CommandTask()
             {
                @Override
                public void command()
                      throws Exception
                {
-                  model.removeFormSignature( selected );
+                  model.remove( selected );
                }
             };
          }
@@ -124,6 +139,13 @@ public class FormSignaturesView
 
    public void notifyTransactions( Iterable<TransactionEvents> transactions )
    {
-      //To change body of implemented methods use File | Settings | File Templates.
+      model.notifyTransactions( transactions );
+
+      DomainEvent event = first( filter( events(transactions ), withNames("createdRequiredSignature")));
+      if (event != null)
+      {
+         list.setSelectedIndex( list.getModel().getSize() - 1 );
+      }
+
    }
 }
