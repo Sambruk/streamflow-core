@@ -281,13 +281,13 @@ public class CommandQueryRestlet
                throw new ResourceException( Status.CLIENT_ERROR_NOT_FOUND, "Interaction not available" );
 
             // Check whether it's a command or query
-            if (isCommandMethod( method ))
+            if (isCommandMethod( method, context ))
             {
                // The method is shown in the form, so let's change it to POST
                request.setMethod( org.restlet.data.Method.POST );
                ResponseWriter responseWriter = responseWriterFactory.createWriter( segments, ValueDescriptor.class, roleMap, getVariant( request ) );
 
-               Class<? extends ValueComposite> valueType = (Class<? extends ValueComposite>) method.getParameterTypes()[0];
+               Class<? extends ValueComposite> valueType = (Class<? extends ValueComposite>) getType( method.getGenericParameterTypes()[0], method.getDeclaringClass(), context.getClass());
                ValueDescriptor valueDescriptor = module.valueDescriptor( valueType.getName() );
 
                responseWriter.write( valueDescriptor, request, response );
@@ -343,14 +343,14 @@ public class CommandQueryRestlet
             invoke( request, context, method, null );
          } else
          {
-            Class valueType = method.getParameterTypes()[0];
+            Class valueType = getType(method.getGenericParameterTypes()[0], method.getDeclaringClass(), context.getClass());
             // Invoke command with parameters
             if (request.getEntity().getAvailableSize() == 0 && valueType != Response.class )
             {
                if (request.getResourceRef().hasQuery())
                {
                   // Get POST parameters from the URL query parameters
-                  Object[] args = getQueryArguments( request, response, method );
+                  Object[] args = getQueryArguments( request, response, method, context );
                   invoke(request, context, method, args);
                } else
                {
@@ -366,7 +366,7 @@ public class CommandQueryRestlet
                }
             } else
             {
-               Object[] args = getCommandArguments( request, response, method );
+               Object[] args = getCommandArguments( request, response, method, context );
                invoke( request, context, method, args );
             }
          }
@@ -414,6 +414,18 @@ public class CommandQueryRestlet
       {
          handleException( response, e );
       }
+   }
+
+   private Class getType( Type type, Class<?> declaringClass, Class<?> contextClass )
+   {
+      if (type instanceof TypeVariable)
+      {
+         return (Class) Classes.resolveTypeVariable((TypeVariable) type, declaringClass, contextClass);
+      } else
+      {
+         return (Class) type;
+      }
+
    }
 
    private void delete( Request request, Response response, Object context, RoleMap roleMap, List<String> segments  )
@@ -633,13 +645,13 @@ public class CommandQueryRestlet
       return methods;
    }
 
-   private boolean isCommandMethod( Method method )
+   private boolean isCommandMethod( Method method, Object context )
    {
       if (!method.getReturnType().equals( Void.TYPE ))
          return false;
 
       if (method.getParameterTypes().length == 0 ||
-          (method.getParameterTypes().length == 1 && (Value.class.isAssignableFrom( method.getParameterTypes()[0] ) || Response.class.isAssignableFrom( method.getParameterTypes()[0] ))))
+          (method.getParameterTypes().length == 1 && (Value.class.isAssignableFrom( getType( method.getParameterTypes()[0], method.getDeclaringClass(), context.getClass() ) ) || Response.class.isAssignableFrom( method.getParameterTypes()[0] ))))
          return true;
 
       return false;
@@ -693,7 +705,7 @@ public class CommandQueryRestlet
       } else
       {
          Form form = request.getResourceRef().getQueryAsForm();
-         Class valueType = queryMethod.getParameterTypes()[0];
+         Class valueType = getType(queryMethod.getGenericParameterTypes()[0], queryMethod.getDeclaringClass(), resource.getClass());
          if (form.size() == 0 && valueType != Response.class )
          {
             // Show form
@@ -714,7 +726,7 @@ public class CommandQueryRestlet
          } else
          {
             // Invoke form with parameters
-            Object[] args = getQueryArguments( request, response, queryMethod );
+            Object[] args = getQueryArguments( request, response, queryMethod, resource );
             Object queryResult = invoke( request, resource, queryMethod, args );
             responseWriter.write( queryResult, request, response );
          }
@@ -769,7 +781,7 @@ public class CommandQueryRestlet
       }
    }
 
-   private Object[] getQueryArguments( Request request, Response response, Method method )
+   private Object[] getQueryArguments( Request request, Response response, Method method, Object context )
          throws ResourceException
    {
       Object[] args = new Object[method.getParameterTypes().length];
@@ -778,7 +790,7 @@ public class CommandQueryRestlet
       Representation representation = request.getEntity();
       if (representation != null && MediaType.APPLICATION_JSON.equals( representation.getMediaType() ))
       {
-         Class<?> valueType = method.getParameterTypes()[0];
+         Class<?> valueType = getType(method.getGenericParameterTypes()[0], method.getDeclaringClass(), context.getClass());
 
          String json = request.getEntityAsText();
          if (json == null)
@@ -791,15 +803,14 @@ public class CommandQueryRestlet
          Form asForm = request.getResourceRef().getQueryAsForm();
          if (args.length == 1)
          {
-            if (ValueComposite.class.isAssignableFrom( method.getParameterTypes()[0] ))
+            Class<?> valueType = getType(method.getGenericParameterTypes()[0], method.getDeclaringClass(), context.getClass());
+            if (ValueComposite.class.isAssignableFrom( valueType))
             {
-               Class<?> valueType = method.getParameterTypes()[0];
-
                args[0] = getValueFromForm( (Class<ValueComposite>) valueType, asForm );
-            } else if (Form.class.equals( method.getParameterTypes()[0] ))
+            } else if (Form.class.equals( valueType ))
             {
                args[0] = asForm;
-            } else if (Response.class.equals( method.getParameterTypes()[0] ))
+            } else if (Response.class.equals( valueType ))
             {
                args[0] = response;
             }
@@ -811,7 +822,8 @@ public class CommandQueryRestlet
                Object arg = asForm.getFirstValue( name.value() );
 
                // Parameter conversion
-               if (method.getParameterTypes()[idx].equals( EntityReference.class ))
+               Class<?> valueType = getType(method.getGenericParameterTypes()[idx], method.getDeclaringClass(), context.getClass());
+               if (valueType.equals( EntityReference.class ))
                {
                   arg = EntityReference.parseEntityReference( arg.toString() );
                }
@@ -866,31 +878,31 @@ public class CommandQueryRestlet
       return builder.newInstance();
    }
 
-   private Object[] getCommandArguments( Request request, Response response, Method method ) throws ResourceException
+   private Object[] getCommandArguments( Request request, Response response, Method method, Object context ) throws ResourceException
    {
       if (method.getParameterTypes().length > 0)
       {
          Object[] args = new Object[method.getParameterTypes().length];
 
-         Class<? extends ValueComposite> commandType = (Class<? extends ValueComposite>) method.getParameterTypes()[0];
-
          if (method.getParameterTypes()[0].equals( Response.class ))
          {
             return new Object[]{response};
          }
+         Class<?> commandType = getType(method.getGenericParameterTypes()[0], method.getDeclaringClass(), context.getClass() );
+
          MediaType type = request.getEntity().getMediaType();
          if (type == null)
          {
             Form form = request.getResourceRef().getQueryAsForm( CharacterSet.UTF_8 );
-            args[0] = getValueFromForm( commandType, form );
+            args[0] = getValueFromForm( (Class<ValueComposite>) commandType, form );
             return args;
          } else
          {
-            if (method.getParameterTypes()[0].equals( Representation.class ))
+            if (commandType.equals( Representation.class ))
             {
                // Command method takes Representation as input
                return new Object[]{request.getEntity()};
-            } else if (method.getParameterTypes()[0].equals( Form.class ))
+            } else if (commandType.equals( Form.class ))
             {
                // Command method takes Form as input
                return new Object[]{new Form(request.getEntity())};
@@ -916,8 +928,7 @@ public class CommandQueryRestlet
                } else if (type.equals( (MediaType.APPLICATION_WWW_FORM) ))
                {
                   Form asForm = new Form(request.getEntity());
-                  Class<?> valueType = method.getParameterTypes()[0];
-                  args[0] = getValueFromForm( (Class<ValueComposite>) valueType, asForm );
+                  args[0] = getValueFromForm( (Class<ValueComposite>) commandType, asForm );
                   return args;
                } else
                   throw new ResourceException( Status.CLIENT_ERROR_BAD_REQUEST, "Command has to be in JSON format" );
