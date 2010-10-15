@@ -351,15 +351,25 @@ public class CommandQueryResource
          Object[] arguments;
          if (method.getParameterTypes().length > 0)
          {
-            arguments = getQueryArguments( request, response, method );
-
-            if (arguments == null)
+            try
             {
-               // Show form
+               arguments = getQueryArguments( request, response, method );
+
+               if (arguments == null)
+               {
+                  // Show form
+                  Class valueType = method.getParameterTypes()[0];
+                  ValueDescriptor valueDescriptor = module.valueDescriptor( valueType.getName() );
+                  return valueDescriptor;
+               }
+            } catch (IllegalArgumentException e)
+            {
+               // Still missing some values - show form
                Class valueType = method.getParameterTypes()[0];
                ValueDescriptor valueDescriptor = module.valueDescriptor( valueType.getName() );
                return valueDescriptor;
             }
+
          } else
          {
             // No arguments to this query
