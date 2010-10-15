@@ -28,9 +28,7 @@ import org.qi4j.rest.MBeanServerImporter;
 import org.qi4j.spi.query.NamedEntityFinder;
 import org.qi4j.spi.query.NamedQueries;
 import org.qi4j.spi.query.NamedQueryDescriptor;
-import org.qi4j.spi.service.importer.NewObjectImporter;
 import org.qi4j.spi.service.importer.ServiceSelectorImporter;
-import org.restlet.security.Verifier;
 import se.streamsource.streamflow.infrastructure.event.replay.DomainEventPlayerService;
 import se.streamsource.streamflow.web.application.console.ConsoleResultValue;
 import se.streamsource.streamflow.web.application.console.ConsoleScriptValue;
@@ -50,7 +48,8 @@ import se.streamsource.streamflow.web.application.migration.StartupMigrationServ
 import se.streamsource.streamflow.web.application.notification.NotificationService;
 import se.streamsource.streamflow.web.application.organization.BootstrapAssembler;
 import se.streamsource.streamflow.web.application.pdf.SubmittedFormPdfGenerator;
-import se.streamsource.streamflow.web.application.security.PasswordVerifierService;
+import se.streamsource.streamflow.web.application.security.AuthenticationFilter;
+import se.streamsource.streamflow.web.application.security.AuthenticationFilterFactoryService;
 import se.streamsource.streamflow.web.application.statistics.CaseStatisticsService;
 import se.streamsource.streamflow.web.application.statistics.CaseStatisticsValue;
 import se.streamsource.streamflow.web.application.statistics.FormFieldStatisticsValue;
@@ -147,8 +146,11 @@ public class AppAssembler
 
    private void security( ModuleAssembly module ) throws AssemblyException
    {
-      module.addObjects( PasswordVerifierService.class );
-      module.importServices( Verifier.class ).importedBy( NewObjectImporter.class ).visibleIn( application );
+      module.addObjects( AuthenticationFilter.class );
+      module.addServices( AuthenticationFilterFactoryService.class )
+            .identifiedBy( "authentication" )
+            .instantiateOnStartup()
+            .visibleIn( application );
    }
 
    private void management( ModuleAssembly module ) throws AssemblyException

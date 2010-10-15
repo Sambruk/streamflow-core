@@ -1,8 +1,13 @@
-/*
- * Copyright (c) 2010, Mads Enevoldsen. All Rights Reserved.
+/**
+ *
+ * Copyright 2009-2010 Streamsource AB
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -50,12 +55,13 @@ public interface FormSignaturesContext
       public FormSignatureContext context( String id )
       {
          Integer index = Integer.decode( id );
-         roleMap.set( index, Integer.class);
+         roleMap.set( index, Integer.class );
 
          List<RequiredSignatureValue> signatureValues = roleMap.get( RequiredSignatures.Data.class ).requiredSignatures().get();
-         if ( index < signatureValues.size() ) {
+         if (index < signatureValues.size())
+         {
             RequiredSignatureValue signature = signatureValues.get( index );
-            roleMap.set(signature, RequiredSignatureValue.class);
+            roleMap.set( signature, RequiredSignatureValue.class );
 
             return subContext( FormSignatureContext.class );
          } else
@@ -71,7 +77,7 @@ public interface FormSignaturesContext
          LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() );
          for (RequiredSignatureValue signatureValue : signatureValues)
          {
-            builder.addLink( signatureValue.name().get(), ""+index );
+            builder.addLink( signatureValue.name().get(), "" + index );
             index++;
          }
 

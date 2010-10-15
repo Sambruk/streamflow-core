@@ -17,11 +17,21 @@
 
 package se.streamsource.streamflow.server.plugin.restlet;
 
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
+import org.restlet.data.ChallengeRequest;
+import org.restlet.data.ChallengeScheme;
+import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
+import org.restlet.resource.ResourceException;
+import se.streamsource.streamflow.server.plugin.authentication.Authenticator;
+import se.streamsource.streamflow.server.plugin.authentication.UserIdentityValue;
 
 /**
  * Empty restlet...
@@ -29,6 +39,11 @@ import org.restlet.data.Status;
 public class AuthenticationRestlet
       extends Restlet
 {
+   @Structure
+   ValueBuilderFactory vbf;
+
+   @Service
+   Authenticator authenticator;
 
    @Override
    public void handle( Request request, Response response )
@@ -39,7 +54,27 @@ public class AuthenticationRestlet
       {
          if (request.getMethod().equals( Method.GET ))
          {
-            response.setStatus( Status.SUCCESS_NO_CONTENT );
+            if (request.getChallengeResponse() == null)
+            {
+               response.setStatus( Status.CLIENT_ERROR_UNAUTHORIZED );
+               response.getChallengeRequests().add( new ChallengeRequest( ChallengeScheme.HTTP_BASIC, "Streamflow" ) );
+            } else
+            {
+               ValueBuilder<UserIdentityValue> builder = vbf.newValueBuilder( UserIdentityValue.class );
+               builder.prototype().username().set( request.getChallengeResponse().getIdentifier() );
+               builder.prototype().password().set( new String( request.getChallengeResponse().getSecret() ) );
+
+               try
+               {
+                  authenticator.authenticate( builder.newInstance() );
+                  response.setStatus( Status.SUCCESS_NO_CONTENT );
+               } catch (ResourceException e)
+               {
+                  response.setStatus( e.getStatus() );
+                  response.setEntity( e.getStatus().getDescription(), MediaType.TEXT_PLAIN );
+               }
+
+            }
          } else
          {
             response.setStatus( Status.CLIENT_ERROR_METHOD_NOT_ALLOWED );

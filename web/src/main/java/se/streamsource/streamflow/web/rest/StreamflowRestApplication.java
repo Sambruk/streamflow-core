@@ -17,12 +17,9 @@
 
 package se.streamsource.streamflow.web.rest;
 
-import org.qi4j.api.common.Optional;
-import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.bootstrap.Energy4Java;
 import org.qi4j.spi.structure.ApplicationSPI;
 import org.restlet.Application;
@@ -31,13 +28,11 @@ import org.restlet.Restlet;
 import org.restlet.data.MediaType;
 import org.restlet.routing.Router;
 import org.restlet.security.Enroler;
-import org.restlet.security.Verifier;
-import se.streamsource.streamflow.web.assembler.StreamflowWebAssembler;
-import se.streamsource.streamflow.web.application.security.DefaultEnroler;
-import se.streamsource.streamflow.web.resource.APIRouter;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import se.streamsource.streamflow.web.application.security.DefaultEnroler;
+import se.streamsource.streamflow.web.assembler.StreamflowWebAssembler;
+import se.streamsource.streamflow.web.resource.APIRouter;
 
 /**
  * JAVADOC
@@ -51,10 +46,6 @@ public class StreamflowRestApplication
 
    @Structure
    ObjectBuilderFactory factory;
-
-   @Optional
-   @Service
-   Verifier verifier;
 
    Enroler enroler = new DefaultEnroler();
 
@@ -70,11 +61,10 @@ public class StreamflowRestApplication
 
    /**
     * Creates a root Restlet that will receive all incoming calls.
-    */   
+    */
    @Override
    public Restlet createInboundRoot()
    {
-      getContext().setDefaultVerifier( verifier );
       getContext().setDefaultEnroler( enroler );
 
       Router versions = new Router( getContext() );

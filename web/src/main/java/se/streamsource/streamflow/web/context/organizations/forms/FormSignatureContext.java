@@ -1,8 +1,13 @@
-/*
- * Copyright (c) 2010, Mads Enevoldsen. All Rights Reserved.
+/**
+ *
+ * Copyright 2009-2010 Streamsource AB
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,25 +34,25 @@ import java.io.IOException;
  */
 @Mixins(FormSignatureContext.Mixin.class)
 public interface FormSignatureContext
-   extends DeleteContext, UpdateContext<RequiredSignatureValue>, Context, IndexContext<RequiredSignatureValue>
+      extends DeleteContext, UpdateContext<RequiredSignatureValue>, Context, IndexContext<RequiredSignatureValue>
 {
    abstract class Mixin
          extends ContextMixin
-      implements FormSignatureContext
+         implements FormSignatureContext
    {
       public RequiredSignatureValue index()
       {
-         return roleMap.get( RequiredSignatures.Data.class ).requiredSignatures().get().get(  roleMap.get(Integer.class) );
+         return roleMap.get( RequiredSignatures.Data.class ).requiredSignatures().get().get( roleMap.get( Integer.class ) );
       }
 
-      public void update( RequiredSignatureValue newValue)
+      public void update( RequiredSignatureValue newValue )
       {
-         roleMap.get( RequiredSignatures.class ).updateRequiredSignature( roleMap.get(Integer.class), newValue );
+         roleMap.get( RequiredSignatures.class ).updateRequiredSignature( roleMap.get( Integer.class ), newValue );
       }
 
       public void delete() throws ResourceException, IOException
       {
-         roleMap.get( RequiredSignatures.class ).removeRequiredSignature( roleMap.get(Integer.class) );
+         roleMap.get( RequiredSignatures.class ).removeRequiredSignature( roleMap.get( Integer.class ) );
       }
    }
 }

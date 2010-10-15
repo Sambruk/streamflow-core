@@ -1,8 +1,13 @@
-/*
- * Copyright (c) 2010, Mads Enevoldsen. All Rights Reserved.
+/**
+ *
+ * Copyright 2009-2010 Streamsource AB
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -36,7 +41,6 @@ import se.streamsource.streamflow.client.ui.administration.AdministrationResourc
 import se.streamsource.streamflow.domain.form.RequiredSignatureValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
-import se.streamsource.streamflow.infrastructure.event.source.helper.EventParameters;
 import se.streamsource.streamflow.util.Strings;
 
 import javax.swing.ActionMap;
@@ -68,21 +72,21 @@ public class FormSignaturesView
 
    public FormSignaturesView( @Service ApplicationContext context,
                               @Uses final CommandQueryClient client,
-                              @Structure final ObjectBuilderFactory obf)
+                              @Structure final ObjectBuilderFactory obf )
    {
-      this.model = obf.newObjectBuilder( FormSignaturesModel.class ).use( client).newInstance();
+      this.model = obf.newObjectBuilder( FormSignaturesModel.class ).use( client ).newInstance();
       ActionMap am = context.getActionMap( this );
 
-      initMaster( new EventListModel<LinkValue>( model.getList()), am.get("create"), new javax.swing.Action[] { am.get("remove") },
+      initMaster( new EventListModel<LinkValue>( model.getList() ), am.get( "create" ), new javax.swing.Action[]{am.get( "remove" )},
             new DetailFactory()
             {
                public Component createDetail( LinkValue detailLink )
                {
                   return obf.newObjectBuilder( FormSignatureView.class ).use( client.getClient( detailLink ) ).newInstance();
                }
-            });
+            } );
 
-      new RefreshWhenVisible(this, model );
+      new RefreshWhenVisible( this, model );
    }
 
    @Action
@@ -141,7 +145,7 @@ public class FormSignaturesView
    {
       model.notifyTransactions( transactions );
 
-      DomainEvent event = first( filter( events(transactions ), withNames("createdRequiredSignature")));
+      DomainEvent event = first( filter( events( transactions ), withNames( "createdRequiredSignature" ) ) );
       if (event != null)
       {
          list.setSelectedIndex( list.getModel().getSize() - 1 );

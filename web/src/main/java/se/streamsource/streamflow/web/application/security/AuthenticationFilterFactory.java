@@ -15,14 +15,17 @@
  * limitations under the License.
  */
 
-package se.streamsource.dci.api;
+package se.streamsource.streamflow.web.application.security;
 
-import org.qi4j.api.value.Value;
+import org.restlet.Context;
+import org.restlet.Restlet;
+import org.restlet.routing.Filter;
+
 
 /**
- * Standard interface for creation of new resources.
+ *
  */
-public interface CreateContext<T extends Value>
+public interface AuthenticationFilterFactory
 {
-   void create( T value );
+   Filter createFilter( Context context, Restlet next );
 }

@@ -428,7 +428,7 @@
             </dependency>
             <dependency>
                 <groupId>se.streamsource.streamflow</groupId>
-                <artifactId>streamflow-server-plugin-api</artifactId>
+                <artifactId>streamflow-server-plugin-spi</artifactId>
                 <version>${project.version}</version>
             </dependency>
 

@@ -23,15 +23,11 @@ import org.qi4j.spi.structure.ApplicationSPI;
 import org.restlet.Application;
 import org.restlet.Context;
 import org.restlet.Restlet;
-import org.restlet.data.ChallengeScheme;
 import org.restlet.data.MediaType;
 import org.restlet.routing.Router;
 import org.restlet.routing.Template;
-import org.restlet.security.ChallengeAuthenticator;
-import org.restlet.security.Verifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import se.streamsource.streamflow.server.plugin.authentication.LdapAuthenticationVerifier;
 
 /**
  * Application for Streamflow SPI Plugin implementations.
@@ -64,11 +60,7 @@ public class StreamflowPluginRestApplication
       Router pluginRouter = new Router( getContext() );
 
       pluginRouter.attach( "/contacts", app.findModule( "Web", "REST" ).objectBuilderFactory().newObject( ContactLookupRestlet.class ), Template.MODE_STARTS_WITH );
-
-      ChallengeAuthenticator ldapGuard = new ChallengeAuthenticator( getContext(), ChallengeScheme.HTTP_BASIC, "Ldap" );
-      ldapGuard.setVerifier( (Verifier) app.findModule( "Web", "REST" ).objectBuilderFactory().newObject( LdapAuthenticationVerifier.class ) );
-      ldapGuard.setNext( (Restlet) app.findModule( "Web", "REST" ).objectBuilderFactory().newObject( AuthenticationRestlet.class ) );
-      pluginRouter.attach( "/authentication", ldapGuard, Template.MODE_STARTS_WITH );
+      pluginRouter.attach( "/authentication", (Restlet) app.findModule( "Web", "REST" ).objectBuilderFactory().newObject( AuthenticationRestlet.class ), Template.MODE_STARTS_WITH );
 
       return pluginRouter;
    }

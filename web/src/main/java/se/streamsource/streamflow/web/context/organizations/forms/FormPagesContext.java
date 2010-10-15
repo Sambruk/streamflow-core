@@ -1,8 +1,13 @@
-/*
- * Copyright (c) 2010, Mads Enevoldsen. All Rights Reserved.
+/**
+ *
+ * Copyright 2009-2010 Streamsource AB
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,15 +22,12 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.library.constraints.annotation.MaxLength;
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.ContextMixin;
-import se.streamsource.dci.api.CreateContext;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.SubContexts;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.StringValueMaxLength;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.infrastructure.application.ListValue;
-import se.streamsource.streamflow.web.domain.entity.form.PageQueries;
 import se.streamsource.streamflow.web.domain.structure.form.Field;
 import se.streamsource.streamflow.web.domain.structure.form.Fields;
 import se.streamsource.streamflow.web.domain.structure.form.Page;
@@ -50,7 +52,7 @@ public interface FormPagesContext
 
       public LinksValue index()
       {
-         LinksBuilder linksBuilder = new LinksBuilder(module.valueBuilderFactory());
+         LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
 
          Pages.Data pages = roleMap.get( Pages.Data.class );
          for (Page page : pages.pages())
@@ -59,7 +61,7 @@ public interface FormPagesContext
             linksBuilder.rel( "page" );
             linksBuilder.addDescribable( page );
             Fields.Data fields = (Fields.Data) page;
-            linksBuilder.path( page.toString());
+            linksBuilder.path( page.toString() );
             linksBuilder.rel( "field" );
             for (Field field : fields.fields())
             {
@@ -79,7 +81,7 @@ public interface FormPagesContext
 
       public LinksValue formelements()
       {
-         LinksBuilder linksBuilder = new LinksBuilder(module.valueBuilderFactory());
+         LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
 
          Pages.Data pages = roleMap.get( Pages.Data.class );
          for (Page page : pages.pages())
@@ -88,7 +90,7 @@ public interface FormPagesContext
             linksBuilder.rel( "page" );
             linksBuilder.addDescribable( page );
             Fields.Data fields = (Fields.Data) page;
-            linksBuilder.path( page.toString());
+            linksBuilder.path( page.toString() );
             linksBuilder.rel( "field" );
             for (Field field : fields.fields())
             {

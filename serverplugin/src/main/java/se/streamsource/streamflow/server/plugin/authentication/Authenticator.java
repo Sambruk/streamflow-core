@@ -22,6 +22,14 @@ package se.streamsource.streamflow.server.plugin.authentication;
  */
 public interface Authenticator
 {
+   enum error
+   {
+      authentication_bad_username_password,
+      authentication_username_not_unique,
+      authentication_account_locked
+   }
+
+   ;
 
    void authenticate( UserIdentityValue user );
 

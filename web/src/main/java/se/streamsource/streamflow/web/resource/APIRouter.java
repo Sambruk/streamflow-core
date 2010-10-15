@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.web.resource;
 
+import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
@@ -27,16 +28,14 @@ import org.qi4j.rest.query.IndexResource;
 import org.qi4j.rest.query.SPARQLResource;
 import org.restlet.Context;
 import org.restlet.Restlet;
-import org.restlet.data.ChallengeScheme;
 import org.restlet.resource.Directory;
 import org.restlet.resource.ServerResource;
 import org.restlet.routing.Filter;
 import org.restlet.routing.Router;
 import org.restlet.routing.Template;
-import org.restlet.security.Authenticator;
-import org.restlet.security.ChallengeAuthenticator;
 import se.streamsource.dci.restlet.server.CommandQueryRestlet;
 import se.streamsource.dci.restlet.server.ResourceFinder;
+import se.streamsource.streamflow.web.application.security.AuthenticationFilterFactory;
 import se.streamsource.streamflow.web.resource.admin.ConsoleServerResource;
 import se.streamsource.streamflow.web.resource.admin.SolrSearchServerResource;
 import se.streamsource.streamflow.web.resource.events.DomainEventsServerResource;
@@ -48,20 +47,21 @@ public class APIRouter
       extends Router
 {
    private ObjectBuilderFactory factory;
+   private AuthenticationFilterFactory filterFactory;
 
-   public APIRouter( @Uses Context context, @Structure ObjectBuilderFactory factory ) throws Exception
+   public APIRouter( @Uses Context context, @Structure ObjectBuilderFactory factory, @Service AuthenticationFilterFactory filterFactory ) throws Exception
    {
       super( context );
       this.factory = factory;
+      this.filterFactory = filterFactory;
 
       Restlet cqr = factory.newObjectBuilder( CommandQueryRestlet.class ).use( context ).newInstance();
 
-      Filter performanceLoggingFilter = new PerformanceLoggingFilter( context, cqr );
+      Filter authenticationFilter = this.filterFactory.createFilter( context, cqr );
 
-      Authenticator auth = new ChallengeAuthenticator( getContext(), ChallengeScheme.HTTP_BASIC, "Streamflow" );
-      auth.setNext( performanceLoggingFilter );
+      Filter performanceLoggingFilter = new PerformanceLoggingFilter( context, authenticationFilter );
 
-      attachDefault( new ExtensionMediaTypeFilter( getContext(), auth ) );
+      attachDefault( new ExtensionMediaTypeFilter( getContext(), performanceLoggingFilter ) );
 
       // Events
       attach( "/events/domain", new ExtensionMediaTypeFilter( getContext(), createServerResourceFinder( DomainEventsServerResource.class ) ), Template.MODE_STARTS_WITH );
@@ -84,7 +84,7 @@ public class APIRouter
       // Version info
       Directory directory = new Directory( getContext(), "clap://thread/static/" );
       directory.setListingAllowed( true );
-      attach( "/static", createDirectoryGuard( directory ) );
+      attach( "/static", this.filterFactory.createFilter( getContext(), directory ) );
    }
 
    private Restlet createServerResourceFinder( Class<? extends ServerResource> resource )
@@ -99,18 +99,8 @@ public class APIRouter
 
       if (secure)
       {
-         Authenticator auth = new ChallengeAuthenticator( getContext(), ChallengeScheme.HTTP_BASIC, "Streamflow" );
-         auth.setNext( finder );
-         return auth;
+         return filterFactory.createFilter( getContext(), finder );
       } else
          return finder;
    }
-
-   private Restlet createDirectoryGuard( Directory dir )
-   {
-      Authenticator guard = new ChallengeAuthenticator( getContext(), ChallengeScheme.HTTP_BASIC, "Streamflow" );
-      guard.setNext( dir );
-      return guard;
-   }
-
 }
