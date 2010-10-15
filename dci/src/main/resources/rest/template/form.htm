@@ -20,14 +20,32 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <title>$request.resourceRef.lastSegment</title>
+    <style type="text/css">
+    form label { 
+	   display: block;  /* block float the labels to left column, set a width */
+	   float: left;
+	   width: 150px;
+	   padding: 0;
+	   margin: 5px 0 0; /* set top margin same as form input - textarea etc. elements */
+	   text-align: right;
+
+    }
+    form br {
+	   clear:left;
+    }
+    </style>
 </head>
 
 <body>
-<h1>$request.resourceRef.lastSegment</h1>
 <form action="" method="$request.method.name">
+    <fieldset>
+            <legend>$request.resourceRef.lastSegment</legend>
+
 #foreach ($property in $result.state().properties())
-    ${property.qualifiedName().name()}: <input type="text" name="${property.qualifiedName().name()}" value="$!{request.getResourceRef().getQueryAsForm().getFirstValue( $property.qualifiedName().name() )}"><br/>
+        <label for="${property.qualifiedName().name()}">${property.qualifiedName().name()}:</label>
+        <input type="text" name="${property.qualifiedName().name()}" value="$!{request.getResourceRef().getQueryAsForm().getFirstValue( $property.qualifiedName().name() )}"><br/>
 #end
+    <fieldset>
     <input value="Submit" type="submit"/>
 </form>
 </body>

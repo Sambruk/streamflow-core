@@ -36,7 +36,6 @@ import se.streamsource.streamflow.web.application.console.ConsoleResultValue;
 import se.streamsource.streamflow.web.application.console.ConsoleScriptValue;
 import se.streamsource.streamflow.web.application.console.ConsoleService;
 import se.streamsource.streamflow.web.application.contact.StreamflowContactLookupService;
-import se.streamsource.streamflow.web.application.eid.OSIFService;
 import se.streamsource.streamflow.web.application.mail.MailService;
 import se.streamsource.streamflow.web.application.management.CompositeMBean;
 import se.streamsource.streamflow.web.application.management.ConfigurationManagerService;
@@ -91,13 +90,6 @@ public class AppAssembler
       contactLookup( layer.moduleAssembly( "Contact lookup" ) );
 
       pdf( layer.moduleAssembly( "Pdf" ) );
-
-      eid( layer.moduleAssembly( "eID" ) );
-   }
-
-   private void eid( ModuleAssembly moduleAssembly ) throws AssemblyException
-   {
-      moduleAssembly.addServices( OSIFService.class ).visibleIn( Visibility.application );
    }
 
    private void pdf( ModuleAssembly moduleAssembly ) throws AssemblyException
