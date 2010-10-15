@@ -27,7 +27,7 @@ import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.entitystore.prefs.PreferencesEntityStoreInfo;
 import org.qi4j.entitystore.prefs.PreferencesEntityStoreService;
-import se.streamsource.streamflow.server.plugin.authentication.AuthenticationVerifier;
+import se.streamsource.streamflow.server.plugin.authentication.LdapAuthenticationVerifier;
 import se.streamsource.streamflow.server.plugin.authentication.UserIdentityValue;
 import se.streamsource.streamflow.server.plugin.contact.ContactAddressValue;
 import se.streamsource.streamflow.server.plugin.contact.ContactEmailValue;
@@ -61,7 +61,7 @@ public class PluginApplicationAssembler
       // Plugin wrappers
       rest.addObjects( ContactLookupRestlet.class,
             AuthenticationRestlet.class,
-            AuthenticationVerifier.class );
+            LdapAuthenticationVerifier.class );
 
       // Plugins goes here
       LayerAssembly pluginLayer = app.layerAssembly( "Plugins" );

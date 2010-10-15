@@ -31,7 +31,6 @@ import org.restlet.security.ChallengeAuthenticator;
 import org.restlet.security.Verifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import se.streamsource.streamflow.server.plugin.authentication.AuthenticationVerifier;
 import se.streamsource.streamflow.server.plugin.authentication.LdapAuthenticationVerifier;
 
 /**
