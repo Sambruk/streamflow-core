@@ -34,7 +34,6 @@ import org.qi4j.api.value.ValueComposite;
 import org.qi4j.spi.Qi4jSPI;
 import org.qi4j.spi.property.PropertyType;
 import org.qi4j.spi.structure.ModuleSPI;
-import org.qi4j.spi.util.Annotations;
 import org.qi4j.spi.value.ValueDescriptor;
 import org.restlet.Request;
 import org.restlet.Response;
@@ -311,7 +310,7 @@ public class CommandQueryResource
       } else
       {
 
-         ResponseWriter writer = responseWriterFactory.createWriter( request.getResourceRef().getRelativeRef().getSegments(), resultValue.getClass(), getRoleMap( request ), getVariant( request ));
+         ResponseWriter writer = responseWriterFactory.createWriter( request.getResourceRef().getRelativeRef().getSegments(), resultValue.getClass(), getRoleMap( request ), getVariant( request ) );
          writer.write( resultValue, request, response );
       }
    }
@@ -349,7 +348,23 @@ public class CommandQueryResource
          // Query
 
          // Create argument
-         Object[] arguments = getQueryArguments( request, response, method );
+         Object[] arguments;
+         if (method.getParameterTypes().length > 0)
+         {
+            arguments = getQueryArguments( request, response, method );
+
+            if (arguments == null)
+            {
+               // Show form
+               Class valueType = method.getParameterTypes()[0];
+               ValueDescriptor valueDescriptor = module.valueDescriptor( valueType.getName() );
+               return valueDescriptor;
+            }
+         } else
+         {
+            // No arguments to this query
+            arguments = new Object[0];
+         }
 
          // Invoke method
          try
@@ -399,32 +414,54 @@ public class CommandQueryResource
 
    private void invokeCommandQuery( String segment, Request request, Response response )
    {
-      if (segment.equals( "" ) || segment.equals("."))
+      if (segment.equals( "" ) || segment.equals( "." ))
       {
          // Index for this resource
          resource( request, response );
       } else
       {
-         try
+         Method contextMethod = getInteractionMethod( segment );
+
+         // Check if this is a request to show the form for this interaction
+         if ((request.getMethod().isSafe() && contextMethod.getParameterTypes().length != 0 && request.getResourceRef().getQuery() == null) ||
+               (!request.getMethod().isSafe() && contextMethod.getParameterTypes().length != 0 && request.getEntity() == null))
          {
-            Method method = getClass().getMethod( segment, Request.class, Response.class );
-
-            Method contextMethod = getInteractionMethod( segment );
-
-            if (contextMethod.getReturnType().equals( Void.TYPE ))
+            // Show form
+            try
             {
-               // Command
-               if (request.getMethod().equals( org.restlet.data.Method.GET ))
+               Class valueType = contextMethod.getParameterTypes()[0];
+               ValueDescriptor valueDescriptor = module.valueDescriptor( valueType.getName() );
+
+               result( valueDescriptor );
+            } catch (Throwable ex)
+            {
+               handleException( response, ex );
+            }
+         } else
+         {
+
+            // We have input data - do either command or query
+            try
+            {
+               Method method = getClass().getMethod( segment, Request.class, Response.class );
+
+               if (contextMethod.getReturnType().equals( Void.TYPE ))
                {
-                  request.setMethod( org.restlet.data.Method.POST );
+                  // Command
+                  try
+                  {
+                     method.invoke( this, request, response );
+                  } catch (IllegalAccessException e)
+                  {
+                     response.setStatus( Status.CLIENT_ERROR_NOT_FOUND );
 
-                  Class<? extends ValueComposite> valueType = (Class<? extends ValueComposite>) method.getParameterTypes()[0];
-                  ValueDescriptor valueDescriptor = module.valueDescriptor( valueType.getName() );
-
-                  result( valueDescriptor );
+                  } catch (InvocationTargetException e)
+                  {
+                     handleException( response, e );
+                  }
                } else
                {
-                  // Perform command
+                  // Query
                   try
                   {
                      method.invoke( this, request, response );
@@ -437,59 +474,20 @@ public class CommandQueryResource
                      handleException( response, e );
                   }
                }
-            } else
+
+            } catch (NoSuchMethodException e)
             {
-               if (!request.getMethod().isSafe())
+               try
                {
-                  // Only safe methods are allowed
-                  response.setStatus( Status.CLIENT_ERROR_METHOD_NOT_ALLOWED );
-               } else
+                  result( invoke( segment, request, response ) );
+               } catch (Throwable throwable)
                {
-                  // Query
-                  if (contextMethod.getParameterTypes().length != 0 && request.getResourceRef().getQuery() == null)
-                  {
-                     // Show form
-                     try
-                     {
-                        Class valueType = contextMethod.getParameterTypes()[0];
-                        ValueDescriptor valueDescriptor = module.valueDescriptor( valueType.getName() );
-
-                        result( valueDescriptor );
-                     } catch (Throwable e)
-                     {
-                        handleException( response, e );
-                     }
-                  } else
-                  {
-                     // Perform query
-                     try
-                     {
-                        method.invoke( this, request, response );
-                     } catch (IllegalAccessException e)
-                     {
-                        response.setStatus( Status.CLIENT_ERROR_NOT_FOUND );
-
-                     } catch (InvocationTargetException e)
-                     {
-                        handleException( response, e );
-                     }
-
-                  }
+                  handleException( response, throwable );
                }
-            }
-
-         } catch (NoSuchMethodException e)
-         {
-            try
+            } catch (Exception ex)
             {
-               result( invoke( segment, request, response ) );
-            } catch (Throwable throwable)
-            {
-               handleException( response, throwable );
+               handleException( response, ex );
             }
-         } catch (Exception ex)
-         {
-            handleException( response, ex );
          }
       }
    }
@@ -520,7 +518,23 @@ public class CommandQueryResource
       Object[] args = new Object[method.getParameterTypes().length];
       int idx = 0;
 
-      Form asForm = request.getResourceRef().getQueryAsForm();
+      Form asForm;
+      if (request.getMethod().isSafe())
+      {
+         // GET
+         asForm = request.getResourceRef().getQueryAsForm();
+      } else
+      {
+         // POST - allowed for queries if submitted entry is very large
+         asForm = new Form( request.getEntity() );
+      }
+
+      if (asForm.getNames().size() == 0)
+      {
+         // Nothing submitted yet - show form
+         return null;
+      }
+
       if (args.length == 1)
       {
          if (ValueComposite.class.isAssignableFrom( method.getParameterTypes()[0] ))
@@ -539,7 +553,7 @@ public class CommandQueryResource
       {
          for (Annotation[] annotations : method.getParameterAnnotations())
          {
-            Name name = first( isType(Name.class ), annotations);
+            Name name = first( isType( Name.class ), annotations );
             Object arg = asForm.getFirstValue( name.value() );
 
             // Parameter conversion
@@ -634,8 +648,8 @@ public class CommandQueryResource
             return null;
          }
 
-          public <ThrowableType extends Throwable> void visitProperties( StateVisitor<ThrowableType> visitor )
-              throws ThrowableType
+         public <ThrowableType extends Throwable> void visitProperties( StateVisitor<ThrowableType> visitor )
+               throws ThrowableType
          {
             for (PropertyType propertyType : descriptor.valueType().types())
             {

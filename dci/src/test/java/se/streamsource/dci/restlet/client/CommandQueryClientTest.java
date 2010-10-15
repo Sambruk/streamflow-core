@@ -311,6 +311,7 @@ public class CommandQueryClientTest
    public interface TestCommand
          extends ValueComposite
    {
+      @UseDefaults
       Property<String> abc();
    }
 
