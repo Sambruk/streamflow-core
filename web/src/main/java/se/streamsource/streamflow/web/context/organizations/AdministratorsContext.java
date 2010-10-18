@@ -25,8 +25,10 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.IndexContext;
-import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
+import se.streamsource.dci.api.SubContexts;
+import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.LinksValue;
+import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationQueries;
@@ -41,10 +43,8 @@ import se.streamsource.streamflow.web.domain.structure.organization.RolePolicy;
 import se.streamsource.streamflow.web.domain.structure.role.Role;
 import se.streamsource.streamflow.web.domain.structure.role.Roles;
 import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
-import se.streamsource.dci.api.SubContexts;
 
-import static org.qi4j.api.query.QueryExpressions.orderBy;
-import static org.qi4j.api.query.QueryExpressions.templateFor;
+import static org.qi4j.api.query.QueryExpressions.*;
 
 /**
  * JAVADOC
@@ -53,7 +53,7 @@ import static org.qi4j.api.query.QueryExpressions.templateFor;
 public interface AdministratorsContext
    extends SubContexts<AdministratorContext>, IndexContext<LinksValue>, Context
 {
-   public void addadministrator( EntityReferenceDTO participantId );
+   public void addadministrator( EntityValue participantId );
    public LinksValue possibleusers();
    public LinksValue possiblegroups();
 
@@ -75,10 +75,10 @@ public interface AdministratorsContext
          return new LinksBuilder(module.valueBuilderFactory()).rel( "administrator" ).addDescribables( policy.participantsWithRole(adminRole )).newLinks();
       }
 
-      public void addadministrator( EntityReferenceDTO participantId )
+      public void addadministrator( EntityValue participantId )
       {
          UnitOfWork unitOfWork = module.unitOfWorkFactory().currentUnitOfWork();
-         Participant participant = unitOfWork.get( Participant.class, participantId.entity().get().identity() );
+         Participant participant = unitOfWork.get( Participant.class, participantId.entity().get() );
          RolePolicy role = roleMap.get( RolePolicy.class );
 
          OwningOrganization org = ((OwningOrganization)role);

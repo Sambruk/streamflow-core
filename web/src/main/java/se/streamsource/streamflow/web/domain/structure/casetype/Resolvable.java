@@ -19,15 +19,8 @@ package se.streamsource.streamflow.web.domain.structure.casetype;
 
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.association.Association;
-import org.qi4j.api.entity.association.ManyAssociation;
-import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.web.domain.structure.label.Label;
-import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * JAVADOC

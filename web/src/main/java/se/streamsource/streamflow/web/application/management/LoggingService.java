@@ -27,8 +27,6 @@ import org.qi4j.api.service.ServiceComposite;
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
 
 import java.io.File;
-import java.util.logging.Handler;
-import java.util.logging.LogRecord;
 
 /**
  * JAVADOC

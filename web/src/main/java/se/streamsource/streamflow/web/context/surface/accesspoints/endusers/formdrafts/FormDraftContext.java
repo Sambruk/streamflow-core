@@ -20,9 +20,9 @@ package se.streamsource.streamflow.web.context.surface.accesspoints.endusers.for
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.value.ValueBuilder;
+import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.IndexContext;
-import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.SubContext;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.domain.form.FormSubmissionValue;
@@ -36,7 +36,6 @@ import se.streamsource.streamflow.web.domain.structure.form.EndUserCases;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
 import se.streamsource.streamflow.web.domain.structure.form.FormSubmission;
 import se.streamsource.streamflow.web.domain.structure.form.FormSubmissions;
-import se.streamsource.streamflow.web.domain.structure.organization.AccessPoint;
 
 /**
  * JAVADOC
@@ -150,8 +149,7 @@ public interface FormDraftContext
       {
          FormSubmission formSubmission = roleMap.get( FormSubmission.class );
          FormSubmissions data = roleMap.get( FormSubmissions.class );
-         Form form = module.unitOfWorkFactory().currentUnitOfWork().get( Form.class, formSubmission.getFormSubmission().form().get().identity() );
-         data.discardFormSubmission( form );
+         data.discardFormSubmission( formSubmission );
 
          EndUserCases cases = roleMap.get( EndUserCases.class );
          cases.discardCase( roleMap.get( Case.class ) );

@@ -107,6 +107,7 @@ public interface Labels
       public void removedLabel( DomainEvent event, Label label )
       {
          data.labels().remove( label );
+         label.removeEntity();
       }
    }
 }

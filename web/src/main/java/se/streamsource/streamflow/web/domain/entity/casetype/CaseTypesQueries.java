@@ -37,8 +37,8 @@ import se.streamsource.streamflow.web.domain.structure.casetype.SelectedCaseType
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnits;
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganizationalUnit;
-import se.streamsource.streamflow.web.domain.structure.project.Projects;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
+import se.streamsource.streamflow.web.domain.structure.project.Projects;
 
 import static org.qi4j.api.query.QueryExpressions.*;
 

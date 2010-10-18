@@ -19,12 +19,12 @@ package se.streamsource.streamflow.web.context.caze;
 
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.value.ValueBuilder;
-import se.streamsource.streamflow.domain.contact.ContactValue;
-import se.streamsource.streamflow.resource.caze.ContactsDTO;
-import se.streamsource.streamflow.web.domain.structure.caze.Contacts;
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.SubContexts;
+import se.streamsource.streamflow.domain.contact.ContactValue;
+import se.streamsource.streamflow.resource.caze.ContactsDTO;
+import se.streamsource.streamflow.web.domain.structure.caze.Contacts;
 
 import java.util.List;
 

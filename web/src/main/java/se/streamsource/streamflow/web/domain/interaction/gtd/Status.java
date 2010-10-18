@@ -26,8 +26,6 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.web.domain.MethodConstraintsConcern;
 
 import static se.streamsource.streamflow.domain.interaction.gtd.CaseStates.*;
-import static se.streamsource.streamflow.domain.interaction.gtd.CaseStates.OPEN;
-import static se.streamsource.streamflow.domain.interaction.gtd.CaseStates.ON_HOLD;
 
 /**
  * Status for a case. Possible transitions are:

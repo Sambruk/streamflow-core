@@ -17,14 +17,13 @@
 
 package se.streamsource.streamflow.web.domain.interaction.profile;
 
-import static se.streamsource.streamflow.infrastructure.event.DomainEvent.CREATE;
-
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
-
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+
+import static se.streamsource.streamflow.infrastructure.event.DomainEvent.*;
 
 /**
  * JAVADOC

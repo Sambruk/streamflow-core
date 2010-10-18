@@ -22,20 +22,20 @@ import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.IndexContext;
-import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
+import se.streamsource.dci.api.SubContexts;
+import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.LinksValue;
+import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationParticipationsQueries;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationParticipations;
 import se.streamsource.streamflow.web.domain.structure.user.User;
 import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
-import se.streamsource.dci.api.ContextMixin;
-import se.streamsource.dci.api.SubContexts;
 
-import static org.qi4j.api.query.QueryExpressions.orderBy;
-import static org.qi4j.api.query.QueryExpressions.templateFor;
+import static org.qi4j.api.query.QueryExpressions.*;
 
 /**
  * JAVADOC
@@ -46,7 +46,7 @@ public interface OrganizationUsersContext
 {
    public LinksValue possibleusers();
 
-   public void join( EntityReferenceDTO userDTO );
+   public void join( EntityValue userDTO );
 
    abstract class Mixin
       extends ContextMixin
@@ -71,13 +71,13 @@ public interface OrganizationUsersContext
          return new LinksBuilder(module.valueBuilderFactory()).command( "join" ).addDescribables( query ).newLinks();
       }
 
-      public void join( EntityReferenceDTO userDTO )
+      public void join( EntityValue userDTO )
       {
          UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
 
          Organization org = roleMap.get( Organization.class );
 
-         OrganizationParticipations user = uow.get( OrganizationParticipations.class, userDTO.entity().get().identity() );
+         OrganizationParticipations user = uow.get( OrganizationParticipations.class, userDTO.entity().get() );
          user.join( org );
       }
 

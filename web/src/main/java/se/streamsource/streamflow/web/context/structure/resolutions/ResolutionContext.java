@@ -19,9 +19,9 @@ package se.streamsource.streamflow.web.context.structure.resolutions;
 
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
-import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.ContextMixin;
+import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;

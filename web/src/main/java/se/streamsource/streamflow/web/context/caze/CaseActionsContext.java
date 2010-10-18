@@ -23,14 +23,14 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.ContextMixin;
+import se.streamsource.dci.api.DeleteContext;
+import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.domain.interaction.gtd.Actions;
 import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
 import se.streamsource.streamflow.domain.structure.Removable;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseTypeQueries;
 import se.streamsource.streamflow.web.domain.entity.caze.PossibleActions;
@@ -51,9 +51,7 @@ import se.streamsource.streamflow.web.domain.structure.project.Project;
 
 import java.util.List;
 
-import static se.streamsource.streamflow.domain.interaction.gtd.CaseStates.CLOSED;
-import static se.streamsource.streamflow.domain.interaction.gtd.CaseStates.DRAFT;
-import static se.streamsource.streamflow.domain.interaction.gtd.CaseStates.OPEN;
+import static se.streamsource.streamflow.domain.interaction.gtd.CaseStates.*;
 
 /**
  * JAVADOC
@@ -94,7 +92,7 @@ public interface CaseActionsContext
     * Mark the case as resolved and closed
     */
    @RequiresStatus({OPEN})
-   public void resolve(EntityReferenceDTO resolution);
+   public void resolve( EntityValue resolution);
 
    /**
     * Mark the case as on-hold
@@ -102,7 +100,7 @@ public interface CaseActionsContext
    @RequiresStatus({OPEN})
    public void onhold();
 
-   public void sendto( EntityReferenceDTO entity );
+   public void sendto( EntityValue entity );
 
    @RequiresStatus({CLOSED})
    public void reopen();
@@ -202,9 +200,9 @@ public interface CaseActionsContext
          aCase.close();
       }
 
-      public void resolve(EntityReferenceDTO resolutionDTO)
+      public void resolve(EntityValue resolutionDTO)
       {
-         Resolution resolution = uowf.currentUnitOfWork().get( Resolution.class, resolutionDTO.entity().get().identity() );
+         Resolution resolution = uowf.currentUnitOfWork().get( Resolution.class, resolutionDTO.entity().get() );
 
          Assignable assignable = roleMap.get( Assignable.class);
          Resolvable resolvable = roleMap.get( Resolvable.class);
@@ -227,11 +225,11 @@ public interface CaseActionsContext
          roleMap.get(Status.class).onHold();
       }
 
-      public void sendto( EntityReferenceDTO entity )
+      public void sendto( EntityValue entity )
       {
          CaseEntity aCase = roleMap.get( CaseEntity.class);
 
-         Owner toOwner = uowf.currentUnitOfWork().get( Owner.class, entity.entity().get().identity() );
+         Owner toOwner = uowf.currentUnitOfWork().get( Owner.class, entity.entity().get() );
 
          aCase.unassign();
 

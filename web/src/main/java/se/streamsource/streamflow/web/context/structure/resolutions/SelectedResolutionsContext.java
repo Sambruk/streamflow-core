@@ -21,9 +21,10 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
 import se.streamsource.dci.api.Context;
-import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.ContextMixin;
+import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.SubContexts;
+import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.domain.structure.Describable;
@@ -38,8 +39,8 @@ import se.streamsource.streamflow.web.domain.structure.casetype.Resolutions;
 import se.streamsource.streamflow.web.domain.structure.casetype.SelectedResolutions;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnits;
-import se.streamsource.streamflow.web.domain.structure.project.Projects;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
+import se.streamsource.streamflow.web.domain.structure.project.Projects;
 
 /**
  * JAVADOC
@@ -50,7 +51,7 @@ public interface SelectedResolutionsContext
 {
    public LinksValue possibleresolutions();
    public void createresolution( StringValue name );
-   public void addresolution( EntityReferenceDTO resolutionDTO );
+   public void addresolution( EntityValue resolutionDTO );
 
    abstract class Mixin
          extends ContextMixin
@@ -128,10 +129,10 @@ public interface SelectedResolutionsContext
          selectedResolutions.addSelectedResolution( resolution );
       }
 
-      public void addresolution( EntityReferenceDTO resolutionDTO )
+      public void addresolution( EntityValue resolutionDTO )
       {
          SelectedResolutions resolutions = roleMap.get( SelectedResolutions.class);
-         Resolution resolution = module.unitOfWorkFactory().currentUnitOfWork().get( Resolution.class, resolutionDTO.entity().get().identity() );
+         Resolution resolution = module.unitOfWorkFactory().currentUnitOfWork().get( Resolution.class, resolutionDTO.entity().get() );
 
          resolutions.addSelectedResolution( resolution );
       }

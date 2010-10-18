@@ -70,11 +70,10 @@ import se.streamsource.streamflow.web.infrastructure.plugin.contact.ContactLooku
 import se.streamsource.streamflow.web.resource.EventsCommandResult;
 
 import javax.sql.DataSource;
-
 import java.lang.reflect.Method;
 
-import static org.qi4j.api.service.qualifier.ServiceTags.tags;
-import static org.qi4j.bootstrap.ImportedServiceDeclaration.NEW_OBJECT;
+import static org.qi4j.api.service.qualifier.ServiceTags.*;
+import static org.qi4j.bootstrap.ImportedServiceDeclaration.*;
 
 /**
  * JAVADOC

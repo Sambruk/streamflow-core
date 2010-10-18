@@ -33,8 +33,7 @@ import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
 
 import java.util.List;
 
-import static org.qi4j.api.query.QueryExpressions.orderBy;
-import static org.qi4j.api.query.QueryExpressions.templateFor;
+import static org.qi4j.api.query.QueryExpressions.*;
 
 @Mixins(UsersQueries.Mixin.class)
 public interface UsersQueries

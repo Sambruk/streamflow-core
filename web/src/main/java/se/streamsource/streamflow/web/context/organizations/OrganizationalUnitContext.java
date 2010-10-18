@@ -22,21 +22,22 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
+import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.DeleteContext;
+import se.streamsource.dci.api.SubContext;
+import se.streamsource.dci.value.EntityValue;
 import se.streamsource.streamflow.domain.organization.MergeOrganizationalUnitException;
 import se.streamsource.streamflow.domain.organization.MoveOrganizationalUnitException;
 import se.streamsource.streamflow.domain.organization.OpenProjectExistsException;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.web.context.organizations.forms.FormsContext;
+import se.streamsource.streamflow.web.context.structure.DescribableContext;
 import se.streamsource.streamflow.web.context.structure.labels.LabelsContext;
+import se.streamsource.streamflow.web.context.structure.labels.SelectedLabelsContext;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnitRefactoring;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnits;
-import se.streamsource.dci.api.Context;
-import se.streamsource.dci.api.SubContext;
-import se.streamsource.streamflow.web.context.structure.DescribableContext;
-import se.streamsource.streamflow.web.context.structure.labels.SelectedLabelsContext;
 
 /**
  * JAVADOC
@@ -45,8 +46,8 @@ import se.streamsource.streamflow.web.context.structure.labels.SelectedLabelsCon
 public interface OrganizationalUnitContext
    extends DescribableContext, DeleteContext, Context
 {
-   public void move( EntityReferenceDTO moveValue ) throws ResourceException;
-   public void merge( EntityReferenceDTO moveValue ) throws ResourceException;
+   public void move( EntityValue moveValue ) throws ResourceException;
+   public void merge( EntityValue moveValue ) throws ResourceException;
 
    @SubContext
    AdministratorsContext administrators();
@@ -79,10 +80,10 @@ public interface OrganizationalUnitContext
       @Structure
       UnitOfWorkFactory uowf;
 
-      public void move( EntityReferenceDTO moveValue ) throws ResourceException
+      public void move( EntityValue moveValue ) throws ResourceException
       {
          OrganizationalUnitRefactoring ou = roleMap.get(OrganizationalUnitRefactoring.class);
-         OrganizationalUnits toEntity = uowf.currentUnitOfWork().get( OrganizationalUnits.class, moveValue.entity().get().identity() );
+         OrganizationalUnits toEntity = uowf.currentUnitOfWork().get( OrganizationalUnits.class, moveValue.entity().get() );
 
          try
          {
@@ -93,10 +94,10 @@ public interface OrganizationalUnitContext
          }
       }
 
-      public void merge( EntityReferenceDTO moveValue ) throws ResourceException
+      public void merge( EntityValue moveValue ) throws ResourceException
       {
          OrganizationalUnitRefactoring ou = roleMap.get(OrganizationalUnitRefactoring.class);
-         OrganizationalUnit toEntity = uowf.currentUnitOfWork().get( OrganizationalUnit.class, moveValue.entity().get().identity() );
+         OrganizationalUnit toEntity = uowf.currentUnitOfWork().get( OrganizationalUnit.class, moveValue.entity().get() );
 
          try
          {

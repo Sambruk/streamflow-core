@@ -23,7 +23,9 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.IndexContext;
-import se.streamsource.dci.value.*;
+import se.streamsource.dci.api.SubContexts;
+import se.streamsource.dci.value.EntityValue;
+import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
@@ -37,10 +39,8 @@ import se.streamsource.streamflow.web.domain.structure.organization.OwningOrgani
 import se.streamsource.streamflow.web.domain.structure.project.Member;
 import se.streamsource.streamflow.web.domain.structure.project.Members;
 import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
-import se.streamsource.dci.api.SubContexts;
 
-import static org.qi4j.api.query.QueryExpressions.orderBy;
-import static org.qi4j.api.query.QueryExpressions.templateFor;
+import static org.qi4j.api.query.QueryExpressions.*;
 
 /**
  * JAVADOC
@@ -49,7 +49,7 @@ import static org.qi4j.api.query.QueryExpressions.templateFor;
 public interface MembersContext
    extends SubContexts<MemberContext>, IndexContext<LinksValue>, Context
 {
-   public void addmember( EntityReferenceDTO memberId);
+   public void addmember( EntityValue memberId);
 
    public LinksValue possibleusers();
 
@@ -66,10 +66,10 @@ public interface MembersContext
          return new LinksBuilder( module.valueBuilderFactory() ).rel( "member" ).addDescribables( members.members() ).newLinks();
       }
 
-      public void addmember( EntityReferenceDTO memberId)
+      public void addmember( EntityValue memberId)
       {
          UnitOfWork unitOfWork = module.unitOfWorkFactory().currentUnitOfWork();
-         Member member = unitOfWork.get( Member.class, memberId.entity().get().identity() );
+         Member member = unitOfWork.get( Member.class, memberId.entity().get() );
 
          Members members = roleMap.get(Members.class);
 

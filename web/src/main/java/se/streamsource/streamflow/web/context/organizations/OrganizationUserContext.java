@@ -21,9 +21,9 @@ import org.qi4j.api.mixin.Mixins;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.ContextMixin;
+import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationParticipations;
-import se.streamsource.dci.api.DeleteContext;
 
 /**
  * JAVADOC

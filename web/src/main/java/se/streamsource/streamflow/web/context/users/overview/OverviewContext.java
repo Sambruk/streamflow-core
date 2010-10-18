@@ -22,15 +22,13 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.qi4j.api.mixin.Mixins;
 import org.restlet.data.MediaType;
 import org.restlet.representation.OutputRepresentation;
+import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.SubContexts;
 import se.streamsource.dci.value.LinksValue;
-import se.streamsource.streamflow.resource.overview.ProjectSummaryValuex;
 import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
 import se.streamsource.streamflow.web.domain.entity.user.OverviewQueries;
-import se.streamsource.dci.api.Context;
-import se.streamsource.dci.api.SubContext;
 
 import java.io.IOException;
 import java.io.OutputStream;

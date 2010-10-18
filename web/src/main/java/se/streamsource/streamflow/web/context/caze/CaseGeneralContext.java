@@ -30,7 +30,7 @@ import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.SubContext;
-import se.streamsource.dci.api.SubContexts;
+import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.StringValue;
@@ -42,20 +42,12 @@ import se.streamsource.streamflow.resource.caze.CaseGeneralDTO;
 import se.streamsource.streamflow.resource.roles.DateDTO;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.web.context.structure.labels.LabelableContext;
-import se.streamsource.streamflow.web.context.structure.labels.LabeledContext;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
-import se.streamsource.streamflow.web.domain.entity.caze.CaseLabelsQueries;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseTypeQueries;
 import se.streamsource.streamflow.web.domain.interaction.gtd.DueOn;
 import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresStatus;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
-import se.streamsource.streamflow.web.domain.structure.form.SelectedForms;
-import se.streamsource.streamflow.web.domain.structure.label.Label;
-import se.streamsource.streamflow.web.domain.structure.label.Labelable;
-import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
-
-import java.util.Map;
 
 import static se.streamsource.streamflow.domain.interaction.gtd.CaseStates.*;
 
@@ -73,7 +65,7 @@ public interface CaseGeneralContext
    void changedueon( DateDTO dueOnValue );
 
    @RequiresStatus({DRAFT, OPEN})
-   void casetype( EntityReferenceDTO dto );
+   void casetype( EntityValue dto );
 
    @RequiresStatus({DRAFT, OPEN})
    void changedescription( @MaxLength(50) StringValue stringValue );
@@ -148,15 +140,15 @@ public interface CaseGeneralContext
          return builder.newLinks();
       }
 
-      public void casetype( EntityReferenceDTO dto )
+      public void casetype( EntityValue dto )
       {
          UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
          TypedCase aCase = roleMap.get( TypedCase.class );
 
-         EntityReference entityReference = dto.entity().get();
+         String entityReference = dto.entity().get();
          if (entityReference != null)
          {
-            CaseType caseType = uow.get( CaseType.class, entityReference.identity() );
+            CaseType caseType = uow.get( CaseType.class, entityReference );
             aCase.changeCaseType( caseType );
          } else
             aCase.changeCaseType( null );

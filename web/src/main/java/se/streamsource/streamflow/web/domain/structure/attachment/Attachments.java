@@ -85,8 +85,6 @@ public interface Attachments
 
       public void deleteAttachment( Attachment attachment )
       {
-         String uriString = ((AttachedFile.Data) attachment).uri().get();
-
          // Delete the attachment entity
          removedAttachment( DomainEvent.CREATE, attachment );
 

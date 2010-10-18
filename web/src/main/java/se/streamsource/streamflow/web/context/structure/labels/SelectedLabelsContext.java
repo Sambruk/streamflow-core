@@ -22,10 +22,13 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.ContextMixin;
+import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.api.SubContexts;
+import se.streamsource.dci.value.EntityValue;
+import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationQueries;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationVisitor;
@@ -33,13 +36,11 @@ import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.label.Labels;
 import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
-import se.streamsource.dci.api.IndexContext;
-import se.streamsource.dci.api.SubContexts;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnits;
-import se.streamsource.streamflow.web.domain.structure.project.Projects;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
+import se.streamsource.streamflow.web.domain.structure.project.Projects;
 
 /**
  * JAVADOC
@@ -50,7 +51,7 @@ public interface SelectedLabelsContext
 {
    public LinksValue possiblelabels();
    public void createlabel( StringValue name );
-   public void addlabel( EntityReferenceDTO labelDTO );
+   public void addlabel( EntityValue labelDTO );
 
    abstract class Mixin
          extends ContextMixin
@@ -136,10 +137,10 @@ public interface SelectedLabelsContext
          selectedLabels.addSelectedLabel( label );
       }
 
-      public void addlabel( EntityReferenceDTO labelDTO )
+      public void addlabel( EntityValue labelDTO )
       {
          SelectedLabels labels = roleMap.get( SelectedLabels.class);
-         Label label = module.unitOfWorkFactory().currentUnitOfWork().get( Label.class, labelDTO.entity().get().identity() );
+         Label label = module.unitOfWorkFactory().currentUnitOfWork().get( Label.class, labelDTO.entity().get() );
 
          labels.addSelectedLabel( label );
       }

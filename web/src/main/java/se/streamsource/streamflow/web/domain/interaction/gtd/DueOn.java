@@ -20,7 +20,6 @@ package se.streamsource.streamflow.web.domain.interaction.gtd;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Future;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 import java.util.Date;

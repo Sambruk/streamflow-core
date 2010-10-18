@@ -23,6 +23,7 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.dci.api.RoleMap;
+import se.streamsource.dci.value.EntityValue;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
@@ -96,7 +97,7 @@ public abstract class UpdateCaseCountCacheConcern
       next.close();
    }
 
-   public void resolve( EntityReferenceDTO resolution )
+   public void resolve( EntityValue resolution )
    {
       RoleMap roleMap = uowf.currentUnitOfWork().metaInfo().get( RoleMap.class );
       CaseEntity caze = roleMap.get( CaseEntity.class );
@@ -115,7 +116,7 @@ public abstract class UpdateCaseCountCacheConcern
       next.resolve(resolution);
    }
 
-   public void sendto( EntityReferenceDTO entity )
+   public void sendto( EntityValue entity )
    {
       RoleMap roleMap = uowf.currentUnitOfWork().metaInfo().get( RoleMap.class );
       CaseEntity caze = roleMap.get( CaseEntity.class );
@@ -135,7 +136,7 @@ public abstract class UpdateCaseCountCacheConcern
          }
 
          // Update inbox cache on receiving end
-         caching.addToCache( entity.entity().get().identity(), 1 );
+         caching.addToCache( entity.entity().get(), 1 );
       }
 
       next.sendto(entity);

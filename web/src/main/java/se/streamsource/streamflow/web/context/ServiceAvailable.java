@@ -20,9 +20,9 @@ package se.streamsource.streamflow.web.context;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.service.ServiceFinder;
 import org.qi4j.api.service.ServiceReference;
-import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.api.InteractionConstraint;
 import se.streamsource.dci.api.InteractionConstraintDeclaration;
+import se.streamsource.dci.api.RoleMap;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

@@ -25,7 +25,9 @@ import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.IndexContext;
-import se.streamsource.dci.value.*;
+import se.streamsource.dci.api.SubContexts;
+import se.streamsource.dci.value.EntityValue;
+import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.web.domain.entity.organization.GroupEntity;
@@ -40,10 +42,8 @@ import se.streamsource.streamflow.web.domain.structure.group.Participants;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnits;
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganization;
 import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
-import se.streamsource.dci.api.SubContexts;
 
-import static org.qi4j.api.query.QueryExpressions.orderBy;
-import static org.qi4j.api.query.QueryExpressions.templateFor;
+import static org.qi4j.api.query.QueryExpressions.*;
 
 /**
  * JAVADOC
@@ -52,7 +52,7 @@ import static org.qi4j.api.query.QueryExpressions.templateFor;
 public interface ParticipantsContext
    extends SubContexts<ParticipantContext>, IndexContext<LinksValue>, Context
 {
-   public void addparticipant( EntityReferenceDTO participantId);
+   public void addparticipant( EntityValue participantId);
    public LinksValue possibleusers();
    public LinksValue possiblegroups();
 
@@ -68,11 +68,11 @@ public interface ParticipantsContext
          return new LinksBuilder(module.valueBuilderFactory()).rel( "participant" ).addDescribables( roleMap.get( Participants.Data.class ).participants()).newLinks();
       }
 
-      public void addparticipant( EntityReferenceDTO participantId)
+      public void addparticipant( EntityValue participantId)
       {
          UnitOfWork uow = uowf.currentUnitOfWork();
 
-         Participant participant = uow.get( Participant.class, participantId.entity().get().identity() );
+         Participant participant = uow.get( Participant.class, participantId.entity().get() );
 
          Participants participants = roleMap.get(Participants.class);
 

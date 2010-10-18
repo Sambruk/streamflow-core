@@ -23,6 +23,7 @@ import org.qi4j.api.value.ValueBuilder;
 import org.restlet.data.Reference;
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.ContextMixin;
+import se.streamsource.dci.api.SubContext;
 import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
@@ -30,7 +31,6 @@ import se.streamsource.streamflow.resource.caze.CaseValue;
 import se.streamsource.streamflow.web.context.conversation.ConversationsContext;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
-import se.streamsource.dci.api.SubContext;
 
 /**
  * JAVADOC

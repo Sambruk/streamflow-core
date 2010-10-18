@@ -17,10 +17,11 @@
 
 package se.streamsource.streamflow.web.domain.structure.form;
 
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
-import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.label.Labelable;
@@ -56,6 +57,9 @@ public interface EndUserCases
 
       @This
       Labelable.Data labelable;
+
+      @Structure
+      UnitOfWorkFactory uowf;
 
       public CaseEntity createCaseWithForm( AnonymousEndUser endUser )
       {
@@ -99,8 +103,7 @@ public interface EndUserCases
 
       public void discardCase( Case caze )
       {
-         CaseEntity caseEntity = (CaseEntity) caze;
-         caseEntity.removeEntity();
+         uowf.currentUnitOfWork().remove( caze );
       }
    }
 }

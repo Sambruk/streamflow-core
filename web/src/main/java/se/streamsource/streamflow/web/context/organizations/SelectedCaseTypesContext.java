@@ -20,16 +20,17 @@ package se.streamsource.streamflow.web.context.organizations;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import se.streamsource.dci.api.Context;
-import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.ContextMixin;
-import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
+import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.api.SubContexts;
+import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.LinksValue;
+import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.util.Specification;
 import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypesQueries;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.SelectedCaseTypes;
-import se.streamsource.dci.api.SubContexts;
 
 /**
  * JAVADOC
@@ -40,7 +41,7 @@ public interface SelectedCaseTypesContext
 {
    public LinksValue possiblecasetypes();
 
-   public void addcasetype( EntityReferenceDTO caseTypeDTO );
+   public void addcasetype( EntityValue caseTypeDTO );
 
    abstract class Mixin
       extends ContextMixin
@@ -68,12 +69,12 @@ public interface SelectedCaseTypesContext
          return builder.newLinks();
       }
 
-      public void addcasetype( EntityReferenceDTO caseTypeDTO )
+      public void addcasetype( EntityValue caseTypeDTO )
       {
          UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
 
          SelectedCaseTypes caseTypes = roleMap.get( SelectedCaseTypes.class);
-         CaseType caseType = uow.get( CaseType.class, caseTypeDTO.entity().get().identity() );
+         CaseType caseType = uow.get( CaseType.class, caseTypeDTO.entity().get() );
 
          caseTypes.addSelectedCaseType( caseType );
       }

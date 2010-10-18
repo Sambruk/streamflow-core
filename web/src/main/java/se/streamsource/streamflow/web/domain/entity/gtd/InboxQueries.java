@@ -22,7 +22,6 @@ import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.QueryBuilder;
 import org.qi4j.api.query.QueryBuilderFactory;
-import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
@@ -34,7 +33,6 @@ import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 
 import static org.qi4j.api.query.QueryExpressions.*;
-import static org.qi4j.api.query.QueryExpressions.eq;
 
 @Mixins(InboxQueries.Mixin.class)
 public interface InboxQueries

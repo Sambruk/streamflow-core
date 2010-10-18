@@ -32,7 +32,6 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.web.domain.interaction.gtd.ChangesOwner;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganizationalUnit;
-import se.streamsource.streamflow.web.domain.structure.project.Project;
 
 /**
  * JAVADOC

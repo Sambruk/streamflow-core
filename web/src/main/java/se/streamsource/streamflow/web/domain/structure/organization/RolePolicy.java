@@ -37,7 +37,7 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.qi4j.api.entity.EntityReference.getEntityReference;
+import static org.qi4j.api.entity.EntityReference.*;
 
 /**
  * Policy for managging Roles assigned to Participants. Participants

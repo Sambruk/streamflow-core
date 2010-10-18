@@ -20,14 +20,14 @@ package se.streamsource.streamflow.web.context.users.workspace;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
-import se.streamsource.dci.api.IndexContext;
-import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.dci.value.LinksValue;
-import se.streamsource.streamflow.web.domain.entity.user.ProjectQueries;
-import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.ContextMixin;
+import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.SubContexts;
+import se.streamsource.dci.value.LinksValue;
+import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
+import se.streamsource.streamflow.web.domain.entity.user.ProjectQueries;
+import se.streamsource.streamflow.web.domain.structure.project.Project;
 
 /**
  * JAVADOC

@@ -28,13 +28,11 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.domain.form.CommentFieldValue;
 import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
 import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
 import se.streamsource.streamflow.domain.form.FieldValue;
 import se.streamsource.streamflow.domain.form.FormSubmissionValue;
 import se.streamsource.streamflow.domain.form.PageSubmissionValue;
-import se.streamsource.streamflow.domain.form.RequiredSignatureValue;
 import se.streamsource.streamflow.domain.form.SubmittedFieldValue;
 import se.streamsource.streamflow.domain.form.SubmittedFormValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
@@ -42,7 +40,6 @@ import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * JAVADOC
@@ -54,7 +51,7 @@ public interface FormSubmissions
 
    FormSubmission createFormSubmission( Form form );
 
-   void discardFormSubmission( Form form );
+   void discardFormSubmission( FormSubmission form );
 
    interface Data
    {
@@ -214,10 +211,9 @@ public interface FormSubmissions
          return value;
       }
 
-      public void discardFormSubmission( Form form )
+      public void discardFormSubmission( FormSubmission formSubmission )
       {
-         FormSubmission formSubmission = getFormSubmission( form );
-         if ( formSubmission != null )
+         if (formSubmissions().contains( formSubmission ))
          {
             discardedFormSubmission( DomainEvent.CREATE, formSubmission );
          }
@@ -226,6 +222,7 @@ public interface FormSubmissions
       public void discardedFormSubmission( DomainEvent event, FormSubmission formSubmission )
       {
          formSubmissions().remove( formSubmission );
+         uowf.currentUnitOfWork().remove( formSubmission );
       }
    }
 }

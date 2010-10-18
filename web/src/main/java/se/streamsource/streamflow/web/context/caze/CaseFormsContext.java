@@ -19,13 +19,15 @@ package se.streamsource.streamflow.web.context.caze;
 
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.value.ValueBuilder;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.SubContexts;
+import se.streamsource.dci.value.EntityValue;
+import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.resource.caze.EffectiveFieldsDTO;
@@ -33,6 +35,7 @@ import se.streamsource.streamflow.resource.caze.SubmittedFormDTO;
 import se.streamsource.streamflow.resource.caze.SubmittedFormsListDTO;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.resource.roles.IntegerDTO;
+import se.streamsource.streamflow.web.domain.entity.form.FormEntity;
 import se.streamsource.streamflow.web.domain.entity.form.FormSubmissionEntity;
 import se.streamsource.streamflow.web.domain.entity.form.FormSubmissionsQueries;
 import se.streamsource.streamflow.web.domain.entity.form.SubmittedFormsQueries;
@@ -42,8 +45,6 @@ import se.streamsource.streamflow.web.domain.structure.form.Form;
 import se.streamsource.streamflow.web.domain.structure.form.FormSubmission;
 import se.streamsource.streamflow.web.domain.structure.form.FormSubmissions;
 import se.streamsource.streamflow.web.domain.structure.form.SelectedForms;
-import se.streamsource.streamflow.web.domain.structure.form.SubmittedForms;
-import se.streamsource.streamflow.web.domain.structure.form.Submitter;
 
 /**
  * JAVADOC
@@ -60,11 +61,7 @@ public interface CaseFormsContext
 
    void createformsubmission( EntityReferenceDTO formDTO );
 
-   void discard( EntityReferenceDTO formDTO );
-
-   EntityReferenceDTO formsubmission( EntityReferenceDTO formDTO );
-
-   void submit( EntityReferenceDTO formDTO ) throws ResourceException;
+   LinkValue formsubmission( EntityValue formDTO );
 
    LinksValue possibleforms();
 
@@ -104,44 +101,22 @@ public interface CaseFormsContext
          formSubmissions.createFormSubmission( form );
       }
 
-      public void discard( EntityReferenceDTO formDTO )
+      public LinkValue formsubmission( EntityValue formDTO )
       {
-         UnitOfWork uow = uowf.currentUnitOfWork();
+         Form form = uowf.currentUnitOfWork().get( Form.class, formDTO.entity().get() );
 
          FormSubmissions formSubmissions = roleMap.get( FormSubmissions.class );
 
-         Form form = uowf.currentUnitOfWork().get( Form.class, formDTO.entity().get().identity() );
+         FormSubmission formSubmission = formSubmissions.getFormSubmission( form );
+         if (formSubmission == null)
+            throw new ResourceException( Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY);
 
-         formSubmissions.discardFormSubmission( form );
-      }
-
-      public EntityReferenceDTO formsubmission( EntityReferenceDTO formDTO )
-      {
-         FormSubmissionsQueries formSubmissions = roleMap.get( FormSubmissionsQueries.class );
-
-         return formSubmissions.getFormSubmission( formDTO.entity().get() );
-      }
-
-      public void submit( EntityReferenceDTO formDTO ) throws ResourceException
-      {
-         UnitOfWork uow = uowf.currentUnitOfWork();
-
-         EntityReferenceDTO dto = roleMap.get( FormSubmissionsQueries.class ).getFormSubmission( formDTO.entity().get() );
-
-         if (dto == null)
-         {
-            throw new ResourceException( Status.CLIENT_ERROR_CONFLICT );
-         }
-
-         FormSubmission formSubmission =
-               uow.get( FormSubmission.class, dto.entity().get().identity() );
-
-         Submitter submitter = roleMap.get( Submitter.class );
-
-         roleMap.get( SubmittedForms.class ).submitForm( formSubmission, submitter );
-
-         // discard since the form is already submitted.
-         discard( formDTO );
+         ValueBuilder<LinkValue> builder = module.valueBuilderFactory().newValueBuilder( LinkValue.class );
+         builder.prototype().id().set( formSubmission.toString() );
+         builder.prototype().text().set(formSubmission.toString());
+         builder.prototype().rel().set( "formsubmission" );
+         builder.prototype().href().set( formSubmission.toString()+"/" );
+         return builder.newInstance();
       }
 
       public LinksValue possibleforms()

@@ -18,9 +18,9 @@
 package se.streamsource.streamflow.web.context.structure.resolutions;
 
 import org.qi4j.api.mixin.Mixins;
-import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.ContextMixin;
+import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.streamflow.web.domain.structure.casetype.Resolution;
 import se.streamsource.streamflow.web.domain.structure.casetype.SelectedResolutions;
 

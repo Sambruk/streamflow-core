@@ -21,10 +21,11 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.ContextMixin;
+import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.SubContexts;
+import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
@@ -45,7 +46,7 @@ public interface LabelableContext
 {
    LinksValue possiblelabels();
 
-   void addlabel( EntityReferenceDTO reference );
+   void addlabel( EntityValue reference );
 
    abstract class Mixin
          extends ContextMixin
@@ -71,11 +72,11 @@ public interface LabelableContext
          return builder.newLinks();
       }
 
-      public void addlabel( EntityReferenceDTO reference )
+      public void addlabel( EntityValue reference )
       {
          UnitOfWork uow = uowf.currentUnitOfWork();
          Labelable labelable = roleMap.get( Labelable.class );
-         Label label = uow.get( Label.class, reference.entity().get().identity() );
+         Label label = uow.get( Label.class, reference.entity().get() );
 
          labelable.addLabel( label );
       }

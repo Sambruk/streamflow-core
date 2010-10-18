@@ -22,7 +22,6 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.index.reindexer.Reindexer;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

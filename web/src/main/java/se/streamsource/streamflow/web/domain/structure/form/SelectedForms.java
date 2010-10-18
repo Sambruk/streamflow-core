@@ -19,13 +19,9 @@ package se.streamsource.streamflow.web.domain.structure.form;
 
 import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.query.Query;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * JAVADOC

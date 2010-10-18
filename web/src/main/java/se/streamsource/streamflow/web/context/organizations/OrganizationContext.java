@@ -49,7 +49,7 @@ public interface OrganizationContext
    OrganizationalUnitsContext organizationalunits();
 
    @SubContext
-   OrganizationUsersContext users();
+   OrganizationUsersContext organizationusers();
 
    @SubContext
    RolesContext roles();
@@ -100,7 +100,7 @@ public interface OrganizationContext
       }
 
 
-      public OrganizationUsersContext users()
+      public OrganizationUsersContext organizationusers()
       {
          return subContext( OrganizationUsersContext.class );
       }

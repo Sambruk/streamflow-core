@@ -20,9 +20,10 @@ package se.streamsource.streamflow.web.context.organizations.forms;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import se.streamsource.dci.api.Context;
-import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.ContextMixin;
+import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.SubContexts;
+import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
@@ -37,8 +38,8 @@ import se.streamsource.streamflow.web.domain.structure.form.SelectedForms;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnits;
-import se.streamsource.streamflow.web.domain.structure.project.Projects;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
+import se.streamsource.streamflow.web.domain.structure.project.Projects;
 
 /**
  * JAVADOC
@@ -49,7 +50,7 @@ public interface SelectedFormsContext
 {
    public LinksValue possibleforms();
 
-   public void addform( EntityReferenceDTO caseTypeDTO );
+   public void addform( EntityValue caseTypeDTO );
 
    abstract class Mixin
       extends ContextMixin
@@ -128,12 +129,12 @@ public interface SelectedFormsContext
          return builder.newLinks();
       }
 
-      public void addform( EntityReferenceDTO formDTO )
+      public void addform( EntityValue formDTO )
       {
          UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
 
          SelectedForms selectedForms = roleMap.get(SelectedForms.class);
-         Form form = uow.get( Form.class, formDTO.entity().get().identity() );
+         Form form = uow.get( Form.class, formDTO.entity().get() );
 
          selectedForms.addSelectedForm( form );
       }

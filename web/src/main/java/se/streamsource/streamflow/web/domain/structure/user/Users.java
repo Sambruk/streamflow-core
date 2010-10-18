@@ -32,7 +32,7 @@ import se.streamsource.streamflow.domain.user.Password;
 import se.streamsource.streamflow.domain.user.Username;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
-import static se.streamsource.streamflow.infrastructure.event.DomainEvent.CREATE;
+import static se.streamsource.streamflow.infrastructure.event.DomainEvent.*;
 
 /**
  * JAVADOC

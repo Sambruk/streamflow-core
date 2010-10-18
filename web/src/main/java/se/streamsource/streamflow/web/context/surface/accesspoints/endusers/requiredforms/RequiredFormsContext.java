@@ -20,15 +20,16 @@ package se.streamsource.streamflow.web.context.surface.accesspoints.endusers.req
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import se.streamsource.dci.api.Context;
-import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.ContextMixin;
+import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
+import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
+import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
 import se.streamsource.streamflow.web.domain.structure.form.SelectedForms;
-import se.streamsource.streamflow.web.domain.structure.caze.Case;
-import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
 
 /**
  * JAVADOC
@@ -38,7 +39,7 @@ public interface RequiredFormsContext
    extends Context, IndexContext<LinksValue>
 {
    // commands
-   void createformdraft( EntityReferenceDTO form );
+   void createformdraft( EntityValue form );
 
 
    abstract class Mixin
@@ -59,10 +60,10 @@ public interface RequiredFormsContext
          return builder.newLinks();
       }
 
-      public void createformdraft( EntityReferenceDTO formReference )
+      public void createformdraft( EntityValue formReference )
       {
          UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
-         Form form = uow.get( Form.class, formReference.entity().get().identity() );
+         Form form = uow.get( Form.class, formReference.entity().get() );
 
          Case aCase = roleMap.get( Case.class );
          aCase.createFormSubmission( form );

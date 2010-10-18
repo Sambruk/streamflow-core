@@ -23,8 +23,8 @@ import org.qi4j.api.entity.Identity;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
+import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.ContextMixin;
-import se.streamsource.dci.api.CreateContext;
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.SubContexts;
@@ -44,13 +44,12 @@ import se.streamsource.streamflow.domain.form.PageDefinitionValue;
 import se.streamsource.streamflow.domain.form.TextAreaFieldValue;
 import se.streamsource.streamflow.domain.form.TextFieldValue;
 import se.streamsource.streamflow.domain.structure.Describable;
+import se.streamsource.streamflow.web.context.structure.DescribableContext;
+import se.streamsource.streamflow.web.context.structure.NotableContext;
 import se.streamsource.streamflow.web.domain.entity.form.FieldEntity;
 import se.streamsource.streamflow.web.domain.structure.form.Fields;
 import se.streamsource.streamflow.web.domain.structure.form.Page;
 import se.streamsource.streamflow.web.domain.structure.form.Pages;
-import se.streamsource.dci.api.Context;
-import se.streamsource.streamflow.web.context.structure.DescribableContext;
-import se.streamsource.streamflow.web.context.structure.NotableContext;
 
 /**
  * JAVADOC

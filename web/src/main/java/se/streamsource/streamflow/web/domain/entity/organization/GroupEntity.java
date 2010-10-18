@@ -25,7 +25,6 @@ import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.structure.group.Group;
 import se.streamsource.streamflow.web.domain.structure.group.Participants;
 import se.streamsource.streamflow.web.domain.structure.group.Participation;
-import se.streamsource.streamflow.web.domain.structure.project.Member;
 
 /**
  * JAVADOC

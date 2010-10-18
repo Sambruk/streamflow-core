@@ -49,19 +49,17 @@ public class UsersContextTest
       {
          UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
          OrganizationContext org = subContext(root().organizations(), "Organization");
-         org.users().join( entityValue("test" ));
+         org.organizationusers().join( entityValue("test" ));
          uow.complete();
       }
    }
 
    public static void removeUser(String name) throws IOException, UnitOfWorkCompletionException
    {
-      {
-         UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
-         OrganizationContext org = subContext(root().organizations(), "Organization");
-         org.users().context( name ).delete();
-         uow.complete();
-      }
+      UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
+      OrganizationContext org = subContext(root().organizations(), "Organization");
+      org.organizationusers().context( name ).delete();
+      uow.complete();
    }
 
    @Test

@@ -32,9 +32,9 @@ import se.streamsource.streamflow.domain.form.EffectiveFieldValue;
 import se.streamsource.streamflow.domain.form.EffectiveFormFieldsValue;
 import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
 import se.streamsource.streamflow.domain.form.FormSubmissionValue;
+import se.streamsource.streamflow.domain.form.PageSubmissionValue;
 import se.streamsource.streamflow.domain.form.SubmittedFieldValue;
 import se.streamsource.streamflow.domain.form.SubmittedFormValue;
-import se.streamsource.streamflow.domain.form.PageSubmissionValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 import java.util.Date;
@@ -72,6 +72,9 @@ public interface SubmittedForms
 
       @This
       Data state;
+
+      @This
+      FormSubmissions submissions;
 
       public void submitForm( FormSubmission formSubmission, Submitter submitter )
       {
@@ -143,6 +146,9 @@ public interface SubmittedForms
 
             submittedForm( DomainEvent.CREATE, effectiveFormFieldsValue, formBuilder.newInstance() );
          }
+
+         // Now discard it
+         submissions.discardFormSubmission( formSubmission );
       }
 
 

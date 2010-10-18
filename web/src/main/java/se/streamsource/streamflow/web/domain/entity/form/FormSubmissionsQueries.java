@@ -27,7 +27,7 @@ import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.web.domain.structure.form.FormSubmission;
 import se.streamsource.streamflow.web.domain.structure.form.FormSubmissions;
 
-import static org.qi4j.api.entity.EntityReference.parseEntityReference;
+import static org.qi4j.api.entity.EntityReference.*;
 
 /**
  * JAVADOC

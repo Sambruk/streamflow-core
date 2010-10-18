@@ -18,9 +18,9 @@
 package se.streamsource.streamflow.web.context.surface.administration.organizations.projects;
 
 import org.qi4j.api.mixin.Mixins;
-import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.ContextMixin;
+import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.SubContexts;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.StringValue;

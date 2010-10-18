@@ -25,8 +25,9 @@ import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.SubContexts;
-import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
+import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.LinksValue;
+import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.web.domain.entity.conversation.ConversationParticipantsQueries;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
@@ -43,7 +44,7 @@ import java.util.List;
 public interface ConversationParticipantsContext
    extends SubContexts<ConversationParticipantContext>, IndexContext<LinksValue>, Context
 {
-   public void addparticipant( EntityReferenceDTO participantId);
+   public void addparticipant( EntityValue participantId);
    public LinksValue possibleparticipants();
 
    abstract class Mixin
@@ -58,11 +59,11 @@ public interface ConversationParticipantsContext
          return new LinksBuilder(module.valueBuilderFactory()).rel( "participant" ).addDescribables( roleMap.get( ConversationParticipants.Data.class ).participants()).newLinks();
       }
 
-      public void addparticipant( EntityReferenceDTO participantId)
+      public void addparticipant( EntityValue participantId)
       {
          UnitOfWork uow = uowf.currentUnitOfWork();
 
-         ConversationParticipant participant = uow.get( ConversationParticipant.class, participantId.entity().get().identity() );
+         ConversationParticipant participant = uow.get( ConversationParticipant.class, participantId.entity().get() );
 
          ConversationParticipants participants = roleMap.get(ConversationParticipants.class);
 

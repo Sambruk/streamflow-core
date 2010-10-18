@@ -41,6 +41,7 @@ import org.restlet.data.Reference;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.api.SubContexts;
+import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.StringValue;
@@ -205,9 +206,9 @@ public abstract class ContextTest
       return value( StringValue.class, "{'string':'"+value+"'}");
    }
 
-   protected static EntityReferenceDTO entityValue( String value )
+   protected static EntityValue entityValue( String value )
    {
-      return value( EntityReferenceDTO.class, "{'entity':'"+value+"'}");
+      return value( EntityValue.class, "{'entity':'"+value+"'}");
    }
 
    protected static boolean valueContains( ValueComposite value, String jsonFragment)

@@ -28,7 +28,7 @@ import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
-import static se.streamsource.streamflow.infrastructure.event.DomainEvent.CREATE;
+import static se.streamsource.streamflow.infrastructure.event.DomainEvent.*;
 
 /**
  * JAVADOC

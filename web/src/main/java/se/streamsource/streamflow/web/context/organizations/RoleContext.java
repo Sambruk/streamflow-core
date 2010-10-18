@@ -21,9 +21,9 @@ import org.qi4j.api.mixin.Mixins;
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.DeleteContext;
+import se.streamsource.streamflow.web.context.structure.DescribableContext;
 import se.streamsource.streamflow.web.domain.structure.role.Role;
 import se.streamsource.streamflow.web.domain.structure.role.Roles;
-import se.streamsource.streamflow.web.context.structure.DescribableContext;
 
 /**
  * JAVADOC

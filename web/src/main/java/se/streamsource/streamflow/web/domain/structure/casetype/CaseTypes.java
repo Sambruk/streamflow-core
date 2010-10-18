@@ -112,6 +112,7 @@ public interface CaseTypes
          if (data.caseTypes().contains( caseType ))
          {
             removedCaseType( DomainEvent.CREATE, caseType );
+            caseType.removeEntity();
             return true;
          }
 

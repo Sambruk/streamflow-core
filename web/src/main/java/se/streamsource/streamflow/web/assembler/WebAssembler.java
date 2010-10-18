@@ -17,7 +17,6 @@
 
 package se.streamsource.streamflow.web.assembler;
 
-import org.qi4j.api.common.Visibility;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
@@ -38,7 +37,7 @@ import se.streamsource.streamflow.web.resource.admin.SolrSearchServerResource;
 import se.streamsource.streamflow.web.resource.events.DomainEventsServerResource;
 import se.streamsource.streamflow.web.rest.StreamflowRestApplication;
 
-import static org.qi4j.bootstrap.ImportedServiceDeclaration.NEW_OBJECT;
+import static org.qi4j.bootstrap.ImportedServiceDeclaration.*;
 
 /**
  * JAVADOC

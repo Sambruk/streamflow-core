@@ -27,9 +27,9 @@ import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.Representation;
-import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.ContextMixin;
+import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.streamflow.domain.attachment.UpdateAttachmentValue;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
@@ -40,7 +40,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import static se.streamsource.streamflow.util.Strings.notEmpty;
+import static se.streamsource.streamflow.util.Strings.*;
 
 /**
  * JAVADOC
