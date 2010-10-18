@@ -187,7 +187,7 @@ public class FormSubmissionWizardPageView
 
       if ( !validation.hasErrors() )
       {
-         model.nextPage();
+         // last page check needed ???
          return WizardPanelNavResult.PROCEED;
       }
       return WizardPanelNavResult.REMAIN_ON_PAGE;
@@ -196,7 +196,7 @@ public class FormSubmissionWizardPageView
    @Override
    public WizardPanelNavResult allowBack( String stepName, Map settings, Wizard wizard )
    {
-      model.previousPage();
+      // first page check needed ???
       return super.allowBack( stepName, settings, wizard );
    }
 

@@ -487,7 +487,33 @@ public class InfrastructureAssembler
                   {
                      return false;
                   }
-               } ).end();
+               } ).end().
+               toVersion( "1.2.9.2794" ).
+               forEntities( "se.streamsource.streamflow.web.domain.entity.form.FormSubmissionEntity" ).
+               custom( new EntityMigrationOperation()
+               {
+                  public boolean upgrade( JSONObject state, StateStore stateStore, Migrator migrator ) throws JSONException
+                  {
+                     state.put( "_type", "se.streamsource.streamflow.web.domain.entity.form.FormDraftEntity" );
+                     JSONObject formValue = state.getJSONObject( "properties" ).getJSONObject( "formSubmissionValue" );
+                     formValue.put( "_type", "se.streamsource.streamflow.domain.form.FormDraftValue" );
+
+                     formValue.remove( "currentPage" );
+
+                     return true;
+                  }
+
+                  public boolean downgrade( JSONObject state, StateStore stateStore, Migrator migrator ) throws JSONException
+                  {
+                     state.put( "_type", "se.streamsource.streamflow.web.domain.entity.form.FormSubmissionEntity" );
+                     JSONObject formValue = state.getJSONObject( "properties" ).getJSONObject( "formDraftValue" );
+                     formValue.put( "_type", "se.streamsource.streamflow.domain.form.FormSubmissionValue" );
+
+                     formValue.put( "currentPage", 0 );
+
+                     return true;
+                  }
+               }).end();
 
          module.addServices( MigrationService.class ).setMetaInfo( migrationBuilder );
          module.addObjects( MigrationEventLogger.class );

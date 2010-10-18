@@ -27,15 +27,12 @@ import java.util.List;
 /**
  * JAVADOC
  */
-public interface FormSubmissionValue
+public interface FormDraftValue
       extends ValueComposite
 {
    Property<EntityReference> form();
 
    Property<String> description();
-
-   @UseDefaults
-   Property<Integer> currentPage();
 
    Property<List<PageSubmissionValue>> pages();
 

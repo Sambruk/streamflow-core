@@ -31,7 +31,7 @@ import se.streamsource.streamflow.domain.contact.ContactValue;
 import se.streamsource.streamflow.domain.contact.Contactable;
 import se.streamsource.streamflow.domain.form.DateFieldValue;
 import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
-import se.streamsource.streamflow.domain.form.FormSubmissionValue;
+import se.streamsource.streamflow.domain.form.FormDraftValue;
 import se.streamsource.streamflow.domain.form.NumberFieldValue;
 import se.streamsource.streamflow.domain.form.OptionButtonsFieldValue;
 import se.streamsource.streamflow.domain.form.PageSubmissionValue;
@@ -50,7 +50,7 @@ import se.streamsource.streamflow.web.domain.structure.casetype.Resolution;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversation;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
-import se.streamsource.streamflow.web.domain.structure.form.FormSubmission;
+import se.streamsource.streamflow.web.domain.structure.form.FormDraft;
 import se.streamsource.streamflow.web.domain.structure.form.Page;
 import se.streamsource.streamflow.web.domain.structure.form.Submitter;
 import se.streamsource.streamflow.web.domain.structure.group.Group;
@@ -298,7 +298,7 @@ public interface TestDataService
                aCase.changeCaseType( bug );
                aCase.open();
 
-               FormSubmission formSubmission = aCase.createFormSubmission( statusForm );
+               FormDraft formSubmission = aCase.createFormSubmission( statusForm );
                submitStatus( aCase, formSubmission, "Progress is slow", (Submitter) testUser );
                submitStatus( aCase, formSubmission, "Progress is getting better", (Submitter) someUser );
 
@@ -325,9 +325,9 @@ public interface TestDataService
 
       }
 
-      private void submitStatus( Case aCase, FormSubmission formSubmission, String status, Submitter submitter )
+      private void submitStatus( Case aCase, FormDraft formSubmission, String status, Submitter submitter )
       {
-         FormSubmissionValue submissionValue = (FormSubmissionValue) formSubmission.getFormSubmission().buildWith().prototype();
+         FormDraftValue submissionValue = (FormDraftValue) formSubmission.getFormDraft().buildWith().prototype();
          for (PageSubmissionValue pageValue : submissionValue.pages().get())
          {
             for (FieldSubmissionValue value : pageValue.fields().get())

@@ -38,9 +38,9 @@ public interface EndUserCases
 
    CaseEntity createCase( AnonymousEndUser endUser );
 
-   void submitFormAndSendCase( Case caze, FormSubmission formSubmission, Submitter submitter );
+   void submitFormAndSendCase( Case caze, FormDraft formSubmission, Submitter submitter );
 
-   void submitForm( Case caze, FormSubmission formSubmission, Submitter submitter );
+   void submitForm( Case caze, FormDraft formSubmission, Submitter submitter );
 
    void sendToFunction( Case caze );
 
@@ -68,12 +68,12 @@ public interface EndUserCases
          return caseEntity;
       }
 
-      public void submitForm( Case caze, FormSubmission formSubmission, Submitter submitter )
+      public void submitForm( Case caze, FormDraft formSubmission, Submitter submitter )
       {
          caze.submitForm( formSubmission, submitter );
       }
 
-      public void submitFormAndSendCase( Case caze, FormSubmission formSubmission, Submitter submitter )
+      public void submitFormAndSendCase( Case caze, FormDraft formSubmission, Submitter submitter )
       {
          submitForm( caze, formSubmission, submitter );
          sendToFunction( caze );

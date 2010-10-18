@@ -17,62 +17,9 @@
 
 package se.streamsource.streamflow.client.ui.caze;
 
-import ca.odell.glazedlists.BasicEventList;
-import ca.odell.glazedlists.EventList;
-import org.qi4j.api.entity.EntityReference;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
-import org.restlet.resource.ResourceException;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.dci.value.LinkValue;
-import se.streamsource.dci.value.LinksValue;
-import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
-import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
-import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
-import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
-
-import java.util.List;
+import se.streamsource.streamflow.client.ui.administration.LinkValueListModel;
 
 public class PossibleFormsModel
-   implements Refreshable
+   extends LinkValueListModel
 {
-   @Uses
-   CommandQueryClient client;
-
-   @Structure
-   ObjectBuilderFactory obf;
-
-   @Structure
-   ValueBuilderFactory vbf;
-
-   BasicEventList<LinkValue> forms = new BasicEventList<LinkValue>();
-
-   public void refresh()
-   {
-      EventListSynch.synchronize( client.query( "possibleforms", LinksValue.class ).links().get(), this.forms );
-   }
-
-   public EventList<LinkValue> getForms()
-   {
-      return forms;
-   }
-
-   public void submit( EntityReference form )
-   {
-      ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
-      builder.prototype().entity().set( form );
-      client.postCommand( "submit", builder.newInstance() );
-   }
-
-   public void discard( EntityReference form )
-   {
-      ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
-      builder.prototype().entity().set( form );
-      client.postCommand( "discard", builder.newInstance() );
-   }
 }

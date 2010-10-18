@@ -35,7 +35,7 @@ public class FormAssembler
             EffectiveFormFieldsValue.class,
             SubmittedFieldValue.class,
             FormValue.class,
-            FormSubmissionValue.class,
+            FormDraftValue.class,
             FieldValue.class,
             FieldValueDTO.class,
             CheckboxesFieldValue.class,
@@ -53,6 +53,7 @@ public class FormAssembler
             FieldSubmissionValue.class,
             SubmittedFormValue.class,
             PageSubmissionValue.class,
+            FormSignatureValue.class,
             RequiredSignaturesValue.class,
             RequiredSignatureValue.class,
             PageDefinitionValue.class).visibleIn( Visibility.application );

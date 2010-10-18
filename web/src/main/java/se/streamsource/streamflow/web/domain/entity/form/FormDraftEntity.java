@@ -19,15 +19,15 @@ package se.streamsource.streamflow.web.domain.entity.form;
 
 import se.streamsource.streamflow.domain.structure.Removable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
-import se.streamsource.streamflow.web.domain.structure.form.FormSubmission;
+import se.streamsource.streamflow.web.domain.structure.form.FormDraft;
 
 /**
  * JAVADOC
  */
-public interface FormSubmissionEntity
+public interface FormDraftEntity
       extends
-      FormSubmission,
-      FormSubmission.Data,
+      FormDraft,
+      FormDraft.Data,
       Removable,
       Removable.Data,
       DomainEntity

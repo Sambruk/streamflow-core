@@ -24,41 +24,30 @@ import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.SubContext;
-import se.streamsource.dci.value.LinksValue;
-import se.streamsource.streamflow.domain.form.FormSubmissionValue;
-import se.streamsource.streamflow.domain.form.PageSubmissionValue;
-import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
+import se.streamsource.streamflow.domain.form.FormDraftValue;
 import se.streamsource.streamflow.resource.caze.FieldDTO;
-import se.streamsource.streamflow.resource.roles.IntegerDTO;
+import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.formdrafts.signature.SignatureContext;
 import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.formdrafts.summary.SummaryContext;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.form.EndUserCases;
-import se.streamsource.streamflow.web.domain.structure.form.Form;
-import se.streamsource.streamflow.web.domain.structure.form.FormSubmission;
-import se.streamsource.streamflow.web.domain.structure.form.FormSubmissions;
+import se.streamsource.streamflow.web.domain.structure.form.FormDraft;
+import se.streamsource.streamflow.web.domain.structure.form.FormDrafts;
 
 /**
  * JAVADOC
  */
 @Mixins(FormDraftContext.Mixin.class)
 public interface FormDraftContext
-   extends Context, IndexContext<FormSubmissionValue>
+   extends Context, IndexContext<FormDraftValue>
 {
-   // queries
-   LinksValue pages();
-
    // commands
-   @HasNextPage
-   void nextpage( IntegerDTO page );
-
-   @HasPreviousPage
-   void previouspage(IntegerDTO page);
-
    void updatefield( FieldDTO field );
 
    @SubContext
-   @HasNextPage(false)
    SummaryContext summary();
+
+   @SubContext
+   SignatureContext signature();
 
    void discard( );
 
@@ -66,71 +55,23 @@ public interface FormDraftContext
       extends ContextMixin
       implements FormDraftContext
    {
-      public FormSubmissionValue index()
+      public FormDraftValue index()
       {
 
-         return roleMap.get( FormSubmissionValue.class );
-      }
-
-      public LinksValue pages()
-      {
-         FormSubmissionValue value = roleMap.get( FormSubmissionValue.class );
-
-         LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() );
-
-         int pageIndex = 0;
-         for (PageSubmissionValue pageValue : value.pages().get())
-         {
-            builder.path( "../" );
-            builder.command( "gotopage" );
-            builder.addLink( pageValue.title().get(), ""+pageIndex );
-            pageIndex++;
-         }
-
-         return builder.newLinks();
-      }
-
-      public void nextpage( IntegerDTO page )
-      {
-         ValueBuilder<FormSubmissionValue> builder = incrementPage( 1 );
-
-         if ( builder != null )
-            updateFormSubmission( builder );
-      }
-
-      public void previouspage(IntegerDTO page)
-      {
-         ValueBuilder<FormSubmissionValue> builder = incrementPage( -1 );
-
-         if ( builder != null )
-            updateFormSubmission( builder );
-      }
-
-      private ValueBuilder<FormSubmissionValue> incrementPage( int increment )
-      {
-         ValueBuilder<FormSubmissionValue> builder = roleMap.get( FormSubmission.Data.class ).formSubmissionValue().get().buildWith();
-         int page = builder.prototype().currentPage().get() + increment;
-         int pages = builder.prototype().pages().get().size();
-
-         if ( page < pages && page >= 0 )
-         {
-            builder.prototype().currentPage().set( page );
-            return builder;
-         }
-         return null;
+         return roleMap.get( FormDraftValue.class );
       }
 
       public void updatefield( FieldDTO field )
       {
-         FormSubmission formSubmission = roleMap.get( FormSubmission.class );
+         FormDraft formSubmission = roleMap.get( FormDraft.class );
 
          formSubmission.changeFieldValue( EntityReference.parseEntityReference( field.field().get() ), field.value().get() );
       }
 
-      private void updateFormSubmission( ValueBuilder<FormSubmissionValue> builder )
+      private void updateFormSubmission( ValueBuilder<FormDraftValue> builder )
       {
-         FormSubmissionValue newFormValue = builder.newInstance();
-         FormSubmission formSubmission = roleMap.get( FormSubmission.class );
+         FormDraftValue newFormValue = builder.newInstance();
+         FormDraft formSubmission = roleMap.get( FormDraft.class );
          formSubmission.changeFormSubmission( newFormValue );
 
          roleMap.set( newFormValue );
@@ -147,12 +88,17 @@ public interface FormDraftContext
        */
       public void discard( )
       {
-         FormSubmission formSubmission = roleMap.get( FormSubmission.class );
-         FormSubmissions data = roleMap.get( FormSubmissions.class );
-         data.discardFormSubmission( formSubmission );
+         FormDraft formSubmission = roleMap.get( FormDraft.class );
+         FormDrafts data = roleMap.get( FormDrafts.class );
+         data.discardFormDraft( formSubmission );
 
          EndUserCases cases = roleMap.get( EndUserCases.class );
          cases.discardCase( roleMap.get( Case.class ) );
+      }
+
+      public SignatureContext signature()
+      {
+         return subContext( SignatureContext.class );
       }
    }
 }

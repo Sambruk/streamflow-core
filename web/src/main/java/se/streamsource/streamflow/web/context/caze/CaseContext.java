@@ -51,7 +51,13 @@ public interface CaseContext
    ContactsContext contacts();
 
    @SubContext
-   CaseFormsContext forms();
+   CaseSubmittedFormsContext submittedforms();
+
+   @SubContext
+   CaseFormDraftsContext formdrafts();
+
+   @SubContext
+   CasePossibleFormsContext possibleforms();
 
    @SubContext
    AttachmentsContext attachments();
@@ -124,9 +130,19 @@ public interface CaseContext
          return subContext( ContactsContext.class );
       }
 
-      public CaseFormsContext forms()
+      public CaseSubmittedFormsContext submittedforms()
       {
-         return subContext( CaseFormsContext.class );
+         return subContext( CaseSubmittedFormsContext.class );
+      }
+
+      public CaseFormDraftsContext formdrafts()
+      {
+         return subContext( CaseFormDraftsContext.class );
+      }
+
+      public CasePossibleFormsContext possibleforms()
+      {
+         return subContext( CasePossibleFormsContext.class );
       }
 
       public AttachmentsContext attachments()

@@ -38,7 +38,7 @@ import se.streamsource.streamflow.web.domain.structure.caze.Closed;
 import se.streamsource.streamflow.web.domain.structure.caze.Contacts;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversations;
 import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
-import se.streamsource.streamflow.web.domain.structure.form.FormSubmissions;
+import se.streamsource.streamflow.web.domain.structure.form.FormDrafts;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedForms;
 import se.streamsource.streamflow.web.domain.structure.label.Labelable;
 
@@ -75,7 +75,7 @@ public interface CaseEntity
       Labelable.Data,
       Removable.Data,
       Resolvable.Data,
-      FormSubmissions.Data,
+      FormDrafts.Data,
       SubmittedForms.Data,
       TypedCase.Data,
 

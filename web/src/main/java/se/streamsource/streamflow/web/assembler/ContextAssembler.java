@@ -32,8 +32,11 @@ import se.streamsource.streamflow.web.context.ServicesContext;
 import se.streamsource.streamflow.web.context.caze.AttachmentContext;
 import se.streamsource.streamflow.web.context.caze.AttachmentsContext;
 import se.streamsource.streamflow.web.context.caze.CaseContext;
-import se.streamsource.streamflow.web.context.caze.CaseFormContext;
-import se.streamsource.streamflow.web.context.caze.CaseFormsContext;
+import se.streamsource.streamflow.web.context.caze.CaseFormDraftContext;
+import se.streamsource.streamflow.web.context.caze.CaseFormDraftsContext;
+import se.streamsource.streamflow.web.context.caze.CasePossibleFormContext;
+import se.streamsource.streamflow.web.context.caze.CasePossibleFormsContext;
+import se.streamsource.streamflow.web.context.caze.CaseSubmittedFormsContext;
 import se.streamsource.streamflow.web.context.caze.CaseGeneralContext;
 import se.streamsource.streamflow.web.context.caze.CasesContext;
 import se.streamsource.streamflow.web.context.caze.ContactContext;
@@ -220,8 +223,11 @@ public class ContextAssembler
             ContactContext.class,
             ContactsContext.class,
             CaseContext.class,
-            CaseFormsContext.class,
-            CaseFormContext.class,
+            CaseSubmittedFormsContext.class,
+            CaseFormDraftsContext.class,
+            CaseFormDraftContext.class,
+            CasePossibleFormsContext.class,
+            CasePossibleFormContext.class,
             CaseGeneralContext.class,
             CasesContext.class,
 

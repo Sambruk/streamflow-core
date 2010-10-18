@@ -24,8 +24,8 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
-import se.streamsource.streamflow.web.domain.structure.form.FormSubmission;
-import se.streamsource.streamflow.web.domain.structure.form.FormSubmissions;
+import se.streamsource.streamflow.web.domain.structure.form.FormDraft;
+import se.streamsource.streamflow.web.domain.structure.form.FormDrafts;
 
 import static org.qi4j.api.entity.EntityReference.*;
 
@@ -42,7 +42,7 @@ public interface FormSubmissionsQueries
          implements FormSubmissionsQueries
    {
       @This
-      FormSubmissions.Data formSubmissions;
+      FormDrafts.Data formSubmissions;
 
       @Structure
       ValueBuilderFactory vbf;
@@ -50,11 +50,11 @@ public interface FormSubmissionsQueries
       public EntityReferenceDTO getFormSubmission( EntityReference form )
       {
          ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
-         for (FormSubmission submission : formSubmissions.formSubmissions())
+         for (FormDraft submission : formSubmissions.formSubmissions())
          {
-            if ( submission.getFormSubmission().form().get().equals( form ) )
+            if ( submission.getFormDraft().form().get().equals( form ) )
             {
-               FormSubmissionEntity entity = (FormSubmissionEntity) submission;
+               FormDraftEntity entity = (FormDraftEntity) submission;
                builder.prototype().entity().set( parseEntityReference( entity.identity().get() ));
                return builder.newInstance();
             }

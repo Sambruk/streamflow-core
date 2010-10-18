@@ -23,6 +23,7 @@ import org.qi4j.bootstrap.ApplicationAssembly;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
+import se.streamsource.dci.value.EntityValue;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
 import se.streamsource.streamflow.web.application.contact.StreamflowContactLookupService;
 import se.streamsource.streamflow.web.application.organization.BootstrapAssembler;
@@ -60,6 +61,7 @@ public class StreamflowWebContextTestAssembler
             applicationAssembly.layerAssembly( "Domain infrastructure" ),
             applicationAssembly.layerAssembly( "Domain" ) );
       ModuleAssembly moduleAssembly = layer1.moduleAssembly( "Module 1" );
+      moduleAssembly.addValues( EntityValue.class );
       applicationAssembly.layerAssembly( "Domain infrastructure" ).moduleAssembly( "Events" ).importServices( TransactionVisitor.class ).visibleIn( Visibility.application ).setMetaInfo( transactionVisitor );
       applicationAssembly.layerAssembly( "Context" ).moduleAssembly( "Contact Lookup" ).importServices( StreamflowContactLookupService.class ).visibleIn( Visibility.application );
 

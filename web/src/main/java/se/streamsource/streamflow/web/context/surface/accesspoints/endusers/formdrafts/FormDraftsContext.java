@@ -26,8 +26,8 @@ import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.SubContexts;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.web.domain.structure.form.FormSubmission;
-import se.streamsource.streamflow.web.domain.structure.form.FormSubmissions;
+import se.streamsource.streamflow.web.domain.structure.form.FormDraft;
+import se.streamsource.streamflow.web.domain.structure.form.FormDrafts;
 
 /**
  * JAVADOC
@@ -45,27 +45,27 @@ public interface FormDraftsContext
 
       public LinksValue index()
       {
-         FormSubmissions.Data data = roleMap.get( FormSubmissions.Data.class );
+         FormDrafts.Data data = roleMap.get( FormDrafts.Data.class );
 
          LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() );
-         for (FormSubmission form : data.formSubmissions())
+         for (FormDraft form : data.formSubmissions())
          {
-            builder.addLink( form.getFormSubmission().description().get(), EntityReference.getEntityReference( form ));
+            builder.addLink( form.getFormDraft().description().get(), EntityReference.getEntityReference( form ));
          }
          return builder.newLinks();
       }
 
       public FormDraftContext context( String id )
       {
-         FormSubmissions.Data data = roleMap.get( FormSubmissions.Data.class );
+         FormDrafts.Data data = roleMap.get( FormDrafts.Data.class );
 
-         for (FormSubmission formSubmission : data.formSubmissions())
+         for (FormDraft formSubmission : data.formSubmissions())
          {
             EntityReference entityReference = EntityReference.getEntityReference( formSubmission );
             if ( entityReference.identity().equals( id ))
             {
                roleMap.set( formSubmission );
-               roleMap.set( formSubmission.getFormSubmission() );
+               roleMap.set( formSubmission.getFormDraft() );
                return subContext( FormDraftContext.class );
             }
          }

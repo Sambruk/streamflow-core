@@ -21,6 +21,7 @@ import org.qi4j.api.common.Visibility;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
+import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.StringValue;
@@ -83,6 +84,7 @@ public class CommonResourceAssembler
             IntegerDTO.class,
             NamedIndexDTO.class,
             EntityReferenceDTO.class,
+            EntityValue.class,
             NewUserCommand.class,
             NewProxyUserCommand.class,
             ResetPasswordCommand.class ).visibleIn( Visibility.application );

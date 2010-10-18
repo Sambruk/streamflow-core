@@ -33,7 +33,7 @@ import se.streamsource.streamflow.web.domain.entity.gtd.DraftsQueries;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.form.EndUserCases;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
-import se.streamsource.streamflow.web.domain.structure.form.FormSubmission;
+import se.streamsource.streamflow.web.domain.structure.form.FormDraft;
 import se.streamsource.streamflow.web.domain.structure.form.SelectedForms;
 import se.streamsource.streamflow.web.domain.structure.user.AnonymousEndUser;
 
@@ -95,7 +95,7 @@ public interface EndUserContext
          {
             SelectedForms.Data data = roleMap.get( SelectedForms.Data.class );
             Form form = data.selectedForms().get( 0 );
-            FormSubmission formSubmission = aCase.getFormSubmission( form );
+            FormDraft formSubmission = aCase.getFormSubmission( form );
             if ( formSubmission != null )
             {
                builder.prototype().caze().set( EntityReference.getEntityReference( aCase ));

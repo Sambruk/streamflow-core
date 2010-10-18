@@ -30,7 +30,7 @@ import se.streamsource.streamflow.domain.form.CommentFieldValue;
 import se.streamsource.streamflow.domain.form.DateFieldValue;
 import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
 import se.streamsource.streamflow.domain.form.FieldValue;
-import se.streamsource.streamflow.domain.form.FormSubmissionValue;
+import se.streamsource.streamflow.domain.form.FormDraftValue;
 import se.streamsource.streamflow.domain.form.ListBoxFieldValue;
 import se.streamsource.streamflow.domain.form.NumberFieldValue;
 import se.streamsource.streamflow.domain.form.OpenSelectionFieldValue;
@@ -48,41 +48,38 @@ import java.util.regex.Pattern;
 /**
  * JAVADOC
  */
-@Mixins(FormSubmission.Mixin.class)
-public interface FormSubmission
+@Mixins(FormDraft.Mixin.class)
+public interface FormDraft
 {
-   FormSubmissionValue getFormSubmission();
+   FormDraftValue getFormDraft();
 
-   void changeFormSubmission( FormSubmissionValue formSubmission );
+   void changeFormSubmission( FormDraftValue formDraftValue );
 
    void changeFieldValue( EntityReference fieldId, String newValue);
 
    interface Data
    {
-      Property<FormSubmissionValue> formSubmissionValue();
+      Property<FormDraftValue> formDraftValue();
 
-      void changedFormSubmission( DomainEvent event, FormSubmissionValue formSubmission);
+      void changedFormDraft( DomainEvent event, FormDraftValue formDraftValue);
    }
 
    abstract class Mixin
-         implements FormSubmission, Data
+         implements FormDraft, Data
    {
-      @Structure
-      ValueBuilderFactory vbf;
-
-      public FormSubmissionValue getFormSubmission()
+      public FormDraftValue getFormDraft()
       {
-         return formSubmissionValue().get();
+         return formDraftValue().get();
       }
 
-      public void changeFormSubmission( FormSubmissionValue formSubmission )
+      public void changeFormSubmission( FormDraftValue formDraftValue )
       {
-         changedFormSubmission( DomainEvent.CREATE, formSubmission );
+         changedFormDraft( DomainEvent.CREATE, formDraftValue );
       }
 
       public void changeFieldValue( EntityReference fieldId, String newValue )
       {
-         ValueBuilder<FormSubmissionValue> builder = formSubmissionValue().get().buildWith();
+         ValueBuilder<FormDraftValue> builder = formDraftValue().get().buildWith();
 
          for (PageSubmissionValue pageSubmissionValue : builder.prototype().pages().get())
          {
@@ -132,7 +129,7 @@ public interface FormSubmission
                   if ( update )
                   {
                      field.value().set( newValue );
-                     changedFormSubmission( DomainEvent.CREATE, builder.newInstance() );
+                     changedFormDraft( DomainEvent.CREATE, builder.newInstance() );
                      return;
                   }
                }
@@ -235,9 +232,9 @@ public interface FormSubmission
       }
 
 
-      public void changedFormSubmission( DomainEvent event, FormSubmissionValue formSubmission )
+      public void changedFormDraft( DomainEvent event, FormDraftValue formDraftValue )
       {
-         formSubmissionValue().set( formSubmission );
+         formDraftValue().set( formDraftValue );
       }
    }
 

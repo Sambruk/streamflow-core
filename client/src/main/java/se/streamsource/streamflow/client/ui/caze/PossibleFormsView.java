@@ -32,11 +32,11 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.LinkValue;
-import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.StreamflowApplication;
 import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
-import se.streamsource.streamflow.domain.form.FormSubmissionValue;
+import se.streamsource.streamflow.client.ui.administration.LinkValueListModel;
+import se.streamsource.streamflow.domain.form.FormDraftValue;
 import se.streamsource.streamflow.domain.form.PageSubmissionValue;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 
@@ -64,7 +64,7 @@ public class PossibleFormsView extends JPanel
    @Service
    StreamflowApplication main;
 
-   private PossibleFormsModel modelForms;
+   private LinkValueListModel modelForms;
    public Wizard wizard;
    private final CommandQueryClient client;
 
@@ -86,7 +86,7 @@ public class PossibleFormsView extends JPanel
 
       removeAll();
 
-      EventList<LinkValue> formList = modelForms.getForms();
+      EventList<LinkValue> formList = modelForms.getList();
 
       for (LinkValue itemValue : formList)
       {
@@ -121,47 +121,37 @@ public class PossibleFormsView extends JPanel
       {
          final PossibleFormView form = (PossibleFormView) e.getSource();
 
-         ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
-         builder.prototype().entity().set( EntityReference.parseEntityReference( form.form().id().get() ) );
+         CommandQueryClient possibleFormClient = client.getSubClient( form.form().id().get() );
 
-         EntityReferenceDTO formSubmissionRef;
-         try
-         {
-            formSubmissionRef = client.query( "formsubmission", builder.newInstance(), EntityReferenceDTO.class );
-         } catch (ResourceException e1)
-         {
-            // Create it
-            client.postCommand( "createformsubmission", builder.newInstance() );
-            formSubmissionRef = client.query( "formsubmission", builder.newInstance(), EntityReferenceDTO.class );
-         }
+         possibleFormClient.postCommand( "create" );
+         LinkValue formDraftLink = possibleFormClient.query( "formdraft", LinkValue.class );
 
          // get the form submission value;
-         CommandQueryClient formSubmissionClient = client.getSubClient( formSubmissionRef.entity().get().identity() );
-         FormSubmissionValue formSubmission = (FormSubmissionValue) formSubmissionClient.query( "formsubmission", FormSubmissionValue.class )
+         final CommandQueryClient formDraftClient = client.getClient( formDraftLink );
+         FormDraftValue formDraftValue = (FormDraftValue) formDraftClient.query( "index", FormDraftValue.class )
                .buildWith().prototype();
 
-         WizardPage[] wizardPages = new WizardPage[ formSubmission.pages().get().size() ];
-         for (int i = 0; i < formSubmission.pages().get().size(); i++)
+         WizardPage[] wizardPages = new WizardPage[ formDraftValue.pages().get().size() ];
+         for (int i = 0; i < formDraftValue.pages().get().size(); i++)
          {
-            PageSubmissionValue page = formSubmission.pages().get().get( i );
+            PageSubmissionValue page = formDraftValue.pages().get().get( i );
             if ( page.fields().get() != null && page.fields().get().size() >0 )
             {
                wizardPages[i] = obf.newObjectBuilder( FormSubmissionWizardPageView.class ).
-                     use( formSubmissionClient, page ).newInstance();
+                     use( formDraftClient, page ).newInstance();
             }
          }
-         wizard = WizardPage.createWizard( formSubmission.description().get(), wizardPages, new WizardPage.WizardResultProducer()
+         wizard = WizardPage.createWizard( formDraftValue.description().get(), wizardPages, new WizardPage.WizardResultProducer()
          {
-
             public Object finish( Map map ) throws WizardException
             {
-               modelForms.submit( EntityReference.parseEntityReference( form.form().id().get() ) );
+               formDraftClient.putCommand( "submit" );
                return null;
             }
 
             public boolean cancel( Map map )
             {
-               modelForms.discard( EntityReference.parseEntityReference( form.form().id().get() ) );
+               formDraftClient.delete();
                return true;
             }
          } );

@@ -121,7 +121,7 @@ public class CaseGeneralView extends JScrollPane implements Observer, Transactio
       model.addObserver( this );
 
       this.labels = obf.newObjectBuilder( CaseLabelsView.class ).use( client.getSubClient("labels" )).newInstance();
-      this.forms = obf.newObjectBuilder( PossibleFormsView.class ).use( client.getClient( "../forms/" ) ).newInstance();
+      this.forms = obf.newObjectBuilder( PossibleFormsView.class ).use( client.getClient( "../possibleforms/" ) ).newInstance();
       this.setBorder( BorderFactory.createEmptyBorder() );
       getVerticalScrollBar().setUnitIncrement( 30 );
 

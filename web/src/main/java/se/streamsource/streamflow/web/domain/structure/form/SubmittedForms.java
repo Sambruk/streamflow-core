@@ -31,7 +31,7 @@ import se.streamsource.streamflow.domain.form.CommentFieldValue;
 import se.streamsource.streamflow.domain.form.EffectiveFieldValue;
 import se.streamsource.streamflow.domain.form.EffectiveFormFieldsValue;
 import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
-import se.streamsource.streamflow.domain.form.FormSubmissionValue;
+import se.streamsource.streamflow.domain.form.FormDraftValue;
 import se.streamsource.streamflow.domain.form.PageSubmissionValue;
 import se.streamsource.streamflow.domain.form.SubmittedFieldValue;
 import se.streamsource.streamflow.domain.form.SubmittedFormValue;
@@ -47,7 +47,7 @@ import java.util.List;
 @Mixins(SubmittedForms.Mixin.class)
 public interface SubmittedForms
 {
-   void submitForm( FormSubmission formSubmission, Submitter submitter );
+   void submitForm( FormDraft formSubmission, Submitter submitter );
 
    boolean hasSubmittedForms();
 
@@ -74,9 +74,9 @@ public interface SubmittedForms
       Data state;
 
       @This
-      FormSubmissions submissions;
+      FormDrafts submissions;
 
-      public void submitForm( FormSubmission formSubmission, Submitter submitter )
+      public void submitForm( FormDraft formSubmission, Submitter submitter )
       {
          boolean effectiveFieldsChanged = false;
          ValueBuilder<EffectiveFieldValue> eFieldBuilder = vbf.newValueBuilder( EffectiveFieldValue.class );
@@ -90,14 +90,14 @@ public interface SubmittedForms
             }
          }
 
-         FormSubmissionValue value = formSubmission.getFormSubmission();
+         FormDraftValue value = formSubmission.getFormDraft();
          ValueBuilder<SubmittedFormValue> formBuilder = vbf.newValueBuilder( SubmittedFormValue.class );
 
          formBuilder.prototype().submitter().set( EntityReference.getEntityReference( submitter ) );
          formBuilder.prototype().form().set( value.form().get() );
          formBuilder.prototype().submissionDate().set( new Date() );
 
-         eFieldBuilder.prototype().form().set( formSubmission.getFormSubmission().form().get() );
+         eFieldBuilder.prototype().form().set( formSubmission.getFormDraft().form().get() );
          eFieldBuilder.prototype().submissionDate().set( formBuilder.prototype().submissionDate().get() );
          eFieldBuilder.prototype().submitter().set( EntityReference.getEntityReference( submitter ) );
 
@@ -148,7 +148,7 @@ public interface SubmittedForms
          }
 
          // Now discard it
-         submissions.discardFormSubmission( formSubmission );
+         submissions.discardFormDraft( formSubmission );
       }
 
 

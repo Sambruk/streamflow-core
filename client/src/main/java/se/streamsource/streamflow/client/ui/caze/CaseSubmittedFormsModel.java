@@ -48,7 +48,7 @@ public class CaseSubmittedFormsModel
 
    public void refresh()
    {
-      EventListSynch.synchronize( client.query( "listsubmittedforms", SubmittedFormsListDTO.class ).forms().get(), submittedForms );
+      EventListSynch.synchronize( client.query( "index", SubmittedFormsListDTO.class ).forms().get(), submittedForms );
    }
 
    public EventList<SubmittedFormListDTO> getSubmittedForms()

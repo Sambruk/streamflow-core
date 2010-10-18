@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.context.surface.accesspoints.endusers.formdrafts.summary;
+package se.streamsource.streamflow.web.context.surface.accesspoints.endusers.formdrafts.signature;
 
 import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.mixin.Mixins;
@@ -23,10 +23,12 @@ import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.domain.form.FormDraftValue;
 import se.streamsource.streamflow.domain.form.RequiredSignatureValue;
 import se.streamsource.streamflow.domain.form.RequiredSignaturesValue;
 import se.streamsource.streamflow.resource.roles.IntegerDTO;
+import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.formdrafts.summary.UpdateCaseCountFormSummaryConcern;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.form.EndUserCases;
 import se.streamsource.streamflow.web.domain.structure.form.FormDraft;
@@ -37,20 +39,19 @@ import se.streamsource.streamflow.web.domain.structure.user.AnonymousEndUser;
  * JAVADOC
  */
 @Concerns(UpdateCaseCountFormSummaryConcern.class)
-@Mixins(SummaryContext.Mixin.class)
-public interface SummaryContext
+@Mixins(SignatureContext.Mixin.class)
+public interface SignatureContext
    extends Context, IndexContext<FormDraftValue>
 {
-
    void submit();
    
    void submitandsend();
 
-   RequiredSignaturesValue signatures();
+   LinksValue providers();
 
    abstract class Mixin
       extends ContextMixin
-      implements SummaryContext
+      implements SignatureContext
    {
       public FormDraftValue index()
       {
@@ -95,6 +96,12 @@ public interface SummaryContext
             valueBuilder.prototype().signatures().get().add( builder.newInstance() );
          }
          return valueBuilder.newInstance();
+      }
+
+      public LinksValue providers()
+      {
+         //var url = "https://175.145.48.194:8443/eid/sign/";
+         return null;  //To change body of implemented methods use File | Settings | File Templates.
       }
    }
 }

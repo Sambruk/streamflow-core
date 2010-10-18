@@ -31,7 +31,7 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
 import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
 import se.streamsource.streamflow.domain.form.FieldValue;
-import se.streamsource.streamflow.domain.form.FormSubmissionValue;
+import se.streamsource.streamflow.domain.form.FormDraftValue;
 import se.streamsource.streamflow.domain.form.PageSubmissionValue;
 import se.streamsource.streamflow.domain.form.SubmittedFieldValue;
 import se.streamsource.streamflow.domain.form.SubmittedFormValue;
@@ -44,28 +44,28 @@ import java.util.ArrayList;
 /**
  * JAVADOC
  */
-@Mixins(FormSubmissions.Mixin.class)
-public interface FormSubmissions
+@Mixins(FormDrafts.Mixin.class)
+public interface FormDrafts
 {
-   FormSubmission getFormSubmission( Form form );
+   FormDraft getFormSubmission( Form form );
 
-   FormSubmission createFormSubmission( Form form );
+   FormDraft createFormSubmission( Form form );
 
-   void discardFormSubmission( FormSubmission form );
+   void discardFormDraft( FormDraft form );
 
    interface Data
    {
       @Aggregated
       @Queryable(false)
-      ManyAssociation<FormSubmission> formSubmissions();
+      ManyAssociation<FormDraft> formSubmissions();
 
-      FormSubmission createdFormSubmission( DomainEvent event, Form form );
+      FormDraft createdFormDraft( DomainEvent event, Form form );
 
-      void discardedFormSubmission( DomainEvent event, FormSubmission formSubmission );
+      void discardedFormDraft( DomainEvent event, FormDraft formDraft );
    }
 
    abstract class Mixin
-         implements FormSubmissions, Data
+         implements FormDrafts, Data
    {
       @Structure
       ValueBuilderFactory vbf;
@@ -79,12 +79,12 @@ public interface FormSubmissions
       @Structure
       UnitOfWorkFactory uowf;
 
-      public FormSubmission getFormSubmission( Form form )
+      public FormDraft getFormSubmission( Form form )
       {
-         for (FormSubmission formSubmission : formSubmissions().toList())
+         for (FormDraft formSubmission : formSubmissions().toList())
          {
             EntityReference formReference = EntityReference.getEntityReference( form );
-            if ( formSubmission.getFormSubmission().form().get().equals( formReference ))
+            if ( formSubmission.getFormDraft().form().get().equals( formReference ))
             {
                return formSubmission;
             }
@@ -93,7 +93,7 @@ public interface FormSubmissions
          return null;
       }
 
-      public FormSubmission createFormSubmission( Form form )
+      public FormDraft createFormSubmission( Form form )
       {
          if ( getFormSubmission( form ) != null )
          {
@@ -108,19 +108,19 @@ public interface FormSubmissions
 
             if ( forms.selectedForms().contains( form ) )
             {
-               return createdFormSubmission( DomainEvent.CREATE, form );
+               return createdFormDraft( DomainEvent.CREATE, form );
             }
          }
          return null;
       }
 
-      public FormSubmission createdFormSubmission( DomainEvent event, Form form )
+      public FormDraft createdFormDraft( DomainEvent event, Form form )
       {
          SubmittedFormValue submittedFormValue = findLatestSubmittedForm( form );
 
-         EntityBuilder<FormSubmission> submissionEntityBuilder = uowf.currentUnitOfWork().newEntityBuilder( FormSubmission.class );
+         EntityBuilder<FormDraft> submissionEntityBuilder = uowf.currentUnitOfWork().newEntityBuilder( FormDraft.class );
 
-         ValueBuilder<FormSubmissionValue> builder = vbf.newValueBuilder( FormSubmissionValue.class );
+         ValueBuilder<FormDraftValue> builder = vbf.newValueBuilder( FormDraftValue.class );
 
          builder.prototype().description().set( form.getDescription() );
          builder.prototype().form().set( EntityReference.getEntityReference( form ));
@@ -161,23 +161,9 @@ public interface FormSubmissions
          builder.prototype().pages().get().remove( pages-1 );
          builder.prototype().pages().get().add( pageBuilder.newInstance() );
 
-         /*// insert form signatures
-         List<RequiredSignatureValue> signatures = new ArrayList<RequiredSignatureValue>();
-         ValueBuilder<RequiredSignatureValue> signatureBuilder = vbf.newValueBuilder( RequiredSignatureValue.class );
-         RequiredSignatures.Data signaturesEntities = (RequiredSignatures.Data) form;
-         for (RequiredSignatureValue signatureValue : signaturesEntities.requiredSignatures().get())
-         {
-            signatureBuilder.prototype().description().set( signatureValue.description().get() );
-            signatureBuilder.prototype().name().set( signatureValue.name().get() );
-
-            signatures.add( signatureBuilder.newInstance() );
-         }
-
-         builder.prototype().signatures().set(  );
-*/
          submissionEntityBuilder.instance().changeFormSubmission( builder.newInstance() );
 
-         FormSubmission formSubmission = submissionEntityBuilder.newInstance();
+         FormDraft formSubmission = submissionEntityBuilder.newInstance();
          formSubmissions().add( formSubmission );
 
          return formSubmission;
@@ -211,18 +197,18 @@ public interface FormSubmissions
          return value;
       }
 
-      public void discardFormSubmission( FormSubmission formSubmission )
+      public void discardFormDraft( FormDraft formSubmission )
       {
          if (formSubmissions().contains( formSubmission ))
          {
-            discardedFormSubmission( DomainEvent.CREATE, formSubmission );
+            discardedFormDraft( DomainEvent.CREATE, formSubmission );
          }
       }
 
-      public void discardedFormSubmission( DomainEvent event, FormSubmission formSubmission )
+      public void discardedFormDraft( DomainEvent event, FormDraft formDraft )
       {
-         formSubmissions().remove( formSubmission );
-         uowf.currentUnitOfWork().remove( formSubmission );
+         formSubmissions().remove( formDraft );
+         //uowf.currentUnitOfWork().remove( formDraft );
       }
    }
 }
