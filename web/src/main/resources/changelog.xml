@@ -229,7 +229,7 @@
             from cases
         </createView>
     </changeSet>
-    <changeSet id="7" author="arvidhuss">
+    <changeSet id="8" author="arvidhuss">
         <modifyColumn tableName="fields">
             <column name="value" type="varchar(500)"/>
         </modifyColumn>
