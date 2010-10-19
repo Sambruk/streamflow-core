@@ -18,6 +18,7 @@
 package se.streamsource.streamflow.client.infrastructure.ui;
 
 import ca.odell.glazedlists.SeparatorList;
+import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.TitledLinkValue;
 
 import javax.swing.DefaultListCellRenderer;
@@ -44,7 +45,15 @@ public class SeparatorListCellRenderer
       if (value instanceof SeparatorList.Separator)
       {
          SeparatorList.Separator separator = (SeparatorList.Separator) value;
-         Component component = super.getListCellRendererComponent( list, ((TitledLinkValue)separator.first()).title().get(), index, isSelected, cellHasFocus );
+         String text;
+         if ( separator.first() instanceof TitledLinkValue)
+         {
+            text = ((TitledLinkValue) separator.first()).title().get();
+         } else
+         {
+            text = ((LinkValue) separator.first()).text().get();
+         }
+         Component component = super.getListCellRendererComponent( list, text, index, isSelected, cellHasFocus );
          setFont( getFont().deriveFont( Font.BOLD ));
          return component;
       } else
