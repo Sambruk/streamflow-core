@@ -21,7 +21,6 @@ import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
-import java.awt.*;
 
 /**
  * Refresh a Refreshable when a component becomes visible.

@@ -39,8 +39,6 @@ import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.source.helper.Events;
 
-import java.util.Observable;
-
 /**
  * JAVADOC
  */

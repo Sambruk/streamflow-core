@@ -19,7 +19,6 @@ package se.streamsource.streamflow.client.ui.caze;
 
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
-import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
@@ -38,7 +37,6 @@ import se.streamsource.streamflow.domain.interaction.gtd.Actions;
 import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
 import se.streamsource.streamflow.resource.caze.CaseGeneralDTO;
 import se.streamsource.streamflow.resource.roles.DateDTO;
-import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 
 import java.util.Date;
 import java.util.Observable;
@@ -151,29 +149,11 @@ public class CaseGeneralModel extends Observable implements Refreshable
       }
    }
 
-   public void caseType( EntityReference selected )
-   {
-      try
-      {
-         ValueBuilder<EntityReferenceDTO> builder = vbf
-               .newValueBuilder( EntityReferenceDTO.class );
-         builder.prototype().entity().set( selected );
-         client.postCommand( "casetype", builder.newInstance() );
-      } catch (ResourceException e)
-      {
-         throw new OperationException(
-               WorkspaceResources.could_not_perform_operation, e );
-      }
-   }
-
    public void changeCaseType( LinkValue selected )
    {
       try
       {
-         ValueBuilder<EntityReferenceDTO> builder = vbf
-               .newValueBuilder( EntityReferenceDTO.class );
-         builder.prototype().entity().set( EntityReference.parseEntityReference( selected.id().get() ) );
-         client.postCommand( "casetype", builder.newInstance() );
+         client.postLink( selected );
 
       } catch (ResourceException e)
       {

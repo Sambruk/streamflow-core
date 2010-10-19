@@ -106,7 +106,7 @@ public class WorkspaceContextModel2
                      ref = "user/drafts";
                   else
                      ref = ref.substring( 0, ref.length() - 1 );
-                  if (ref.equals( linkValue.id().get() ))
+                  if (ref.endsWith( linkValue.id().get() ))
                   {
                      item.setCount( Long.valueOf( linkValue.text().get() ) );
                      items.set( i, item );

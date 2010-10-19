@@ -21,7 +21,6 @@ import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.swing.EventListModel;
 import org.jdesktop.swingx.JXList;
 import se.streamsource.streamflow.client.ui.administration.form.FormElementItem;
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;

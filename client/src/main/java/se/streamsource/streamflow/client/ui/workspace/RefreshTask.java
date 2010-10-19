@@ -23,8 +23,6 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 
-import java.awt.Component;
-
 
 /**
  * JAVADOC

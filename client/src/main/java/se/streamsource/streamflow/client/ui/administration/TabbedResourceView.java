@@ -83,9 +83,7 @@ public class TabbedResourceView
 
       addTab( "organizations", AdministrationResources.organizations_tab, OrganizationsView.class );
       addTab( "users", AdministrationResources.users_tab, UsersAdministrationView.class );
-      addTab( "administrators", AdministrationResources.administrators_tab, AdministratorsView.class );
 
-      addTab( "surface", AdministrationResources.surface_tab, TabbedResourceView.class );
       addTab( "accesspoints", AdministrationResources.accesspoints_tab, AccessPointsView.class );
       addTab( "proxyusers", AdministrationResources.proxyusers_tab, ProxyUsersView.class );
       addTab( "attachments", AdministrationResources.templates_tab, AttachmentsView.class );
@@ -94,6 +92,7 @@ public class TabbedResourceView
       addTab( "pages", AdministrationResources.formpages_tab, FormElementsView.class );
       addTab( "signatures", AdministrationResources.formsignatures_tab, FormSignaturesView.class );
 
+      addTab( "administrators", AdministrationResources.administrators_tab, AdministratorsView.class );
    }
 
    private static void addTab( String name, Enum tabName, Class<? extends JComponent> viewClass )

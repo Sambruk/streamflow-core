@@ -17,12 +17,11 @@
 
 package se.streamsource.streamflow.client.infrastructure.ui;
 
-import java.awt.Component;
-import java.awt.Frame;
+import org.jdesktop.swingx.util.WindowUtils;
 
 import javax.swing.JFrame;
-
-import org.jdesktop.swingx.util.WindowUtils;
+import java.awt.Component;
+import java.awt.Frame;
 
 public class UIUtils
 {

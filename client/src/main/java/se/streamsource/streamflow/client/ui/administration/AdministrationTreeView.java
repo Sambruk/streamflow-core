@@ -17,24 +17,6 @@
 
 package se.streamsource.streamflow.client.ui.administration;
 
-import static java.util.Arrays.asList;
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
-
-import java.awt.BorderLayout;
-import java.util.ArrayList;
-
-import javax.swing.ActionMap;
-import javax.swing.BorderFactory;
-import javax.swing.Icon;
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
-import javax.swing.JTree;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.MutableTreeNode;
-
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationAction;
 import org.jdesktop.application.ApplicationContext;
@@ -44,16 +26,14 @@ import org.jdesktop.swingx.renderer.DefaultTreeRenderer;
 import org.jdesktop.swingx.renderer.IconValue;
 import org.jdesktop.swingx.renderer.StringValue;
 import org.jdesktop.swingx.renderer.WrappingProvider;
-import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
-
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.dci.value.ContextValue;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
@@ -69,6 +49,23 @@ import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.source.helper.Events;
 import se.streamsource.streamflow.util.Strings;
+
+import javax.swing.ActionMap;
+import javax.swing.BorderFactory;
+import javax.swing.Icon;
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
+import javax.swing.JTree;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.MutableTreeNode;
+import java.awt.BorderLayout;
+import java.util.ArrayList;
+import java.util.List;
+
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 
 /**
  * JAVADOC
@@ -91,6 +88,9 @@ public class AdministrationTreeView
 
    @Structure
    ValueBuilderFactory vbf;
+
+   @Structure
+   ObjectBuilderFactory obf;
 
    public AdministrationTreeView( @Service ApplicationContext context,
                                      @Uses CommandQueryClient client, @Structure ObjectBuilderFactory obf) throws Exception
@@ -134,10 +134,10 @@ public class AdministrationTreeView
 
       JPopupMenu adminPopup = new JPopupMenu();
       adminPopup.add( am.get( "changeDescription" ) );
-      adminPopup.add( am.get( "removeOrganizationalUnit" ) );
+      adminPopup.add( am.get( "delete" ) );
       adminPopup.add( new JSeparator() );
-      adminPopup.add( am.get( "moveOrganizationalUnit" ) );
-      adminPopup.add( am.get( "mergeOrganizationalUnit" ) );
+      adminPopup.add( am.get( "move" ) );
+      adminPopup.add( am.get( "merge" ) );
 
       JPanel actions = new JPanel();
       actions.add(new JButton(am.get( "createOrganizationalUnit" )));
@@ -149,35 +149,30 @@ public class AdministrationTreeView
 
       tree.getSelectionModel().addTreeSelectionListener( new SelectionActionEnabler(
             am.get( "changeDescription" ),
-            am.get( "removeOrganizationalUnit" ),
-            am.get( "moveOrganizationalUnit"),
-            am.get( "mergeOrganizationalUnit"),
+            am.get( "delete" ),
+            am.get( "move"),
+            am.get( "merge"),
             am.get( "createOrganizationalUnit"))
       {
+         private List<String> commands = new ArrayList<String>();
+
+         @Override
+         protected void selectionChanged()
+         {
+            commands.clear();
+            ContextItem contextItem = (ContextItem) ((DefaultMutableTreeNode) (tree.getSelectionPath().getLastPathComponent())).getUserObject();
+            CommandQueryClient client = contextItem.getClient();
+            commands.addAll( client.query( "", ContextValue.class ).commands().get());
+            if (!contextItem.getRelation().equals("account"))
+               commands.addAll( client.getSubClient( "organizationalunits" ).query( "", ContextValue.class ).commands().get());
+         }
+
          @Override
          public boolean isSelectedValueValid( javax.swing.Action action )
          {
-            // TODO This should be done by asking for possible interactions on server instead
-/*
-
-            Object node = tree.getLastSelectedPathComponent();
-
-            String name = ((ApplicationAction) action).getName();
-            if (asList( "moveOrganizationalUnit","mergeOrganizationalUnit","removeOrganizationalUnit").contains( name ))
-            {
-               return node instanceof OrganizationalUnitAdministrationNode;
-            } else if ("changeDescription".equals( name ))
-            {
-               return !(node instanceof AccountAdministrationNode);
-            } else if ("createOrganizationalUnit".equals( name ))
-            {
-               return !(node instanceof AccountAdministrationNode);
-            }
-
-
-*/
-
-            return super.isSelectedValueValid( action );
+            String actionName = ((ApplicationAction) action).getName().toLowerCase();
+            boolean valid = commands.contains( actionName );
+            return valid;
          }
       });
 
@@ -247,47 +242,36 @@ public class AdministrationTreeView
    }
 
    @Action
-   public void removeOrganizationalUnit()
+   public void delete()
    {
       Object node = tree.getSelectionPath().getLastPathComponent();
-/* TODO
-      if (node instanceof OrganizationalUnitAdministrationNode)
+
+      ConfirmationDialog dialog = confirmationDialog.iterator().next();
+      DefaultMutableTreeNode mutableTreeNode = (DefaultMutableTreeNode) node;
+      String name = ((ContextItem)mutableTreeNode.getUserObject()).getName();
+
+      dialog.setRemovalMessage( name );
+      dialogs.showOkCancelHelpDialog( this, dialog, text( StreamflowResources.confirmation ) );
+
+      if (dialog.isConfirmed())
       {
-         OrganizationalUnitAdministrationNode orgNode = (OrganizationalUnitAdministrationNode) node;
-
-         ConfirmationDialog dialog = confirmationDialog.iterator().next();
-         dialog.setRemovalMessage( node.toString() );
-         dialogs.showOkCancelHelpDialog( this, dialog, text( StreamflowResources.confirmation ) );
-         if (dialog.isConfirmed())
-         {
-            ArrayList<Integer> expandedRows = new ArrayList<Integer>();
-            for (int i = 0; i < tree.getRowCount(); i++)
-            {
-               if (tree.isExpanded( i ))
-                  expandedRows.add(  i );
-            }
-
-            model.removeOrganizationalUnit( orgNode.getParent(), orgNode.ou().entity().get() );
-
-            for (Integer expandedRow : expandedRows)
-            {
-               tree.expandRow( expandedRow );
-            }
-         }
+         model.removeOrganizationalUnit( node );
       }
-*/
    }
 
    @Action
-   public void moveOrganizationalUnit()
+   public void move()
    {
 /* TODO
-      OrganizationalUnitAdministrationNode moved =
-            (OrganizationalUnitAdministrationNode) tree.getSelectionPath().getLastPathComponent();
-
       SelectOrganizationOrOrganizationalUnitDialog moveDialog = obf.newObjectBuilder( SelectOrganizationOrOrganizationalUnitDialog.class ).use( model ).newInstance();
 
       dialogs.showOkCancelHelpDialog( WindowUtils.findWindow( this ), moveDialog, i18n.text( AdministrationResources.move_to ) );
+      if (moveDialog.)
+      model.move()
+
+      OrganizationalUnitAdministrationNode moved =
+            (OrganizationalUnitAdministrationNode) tree.getSelectionPath().getLastPathComponent();
+
 
       if ( moveDialog.target() != null )
       {
@@ -298,7 +282,7 @@ public class AdministrationTreeView
    }
 
    @Action
-   public void mergeOrganizationalUnit()
+   public void merge()
    {
 /* TODO
       OrganizationalUnitAdministrationNode moved =

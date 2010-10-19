@@ -46,7 +46,6 @@ import se.streamsource.streamflow.client.ui.administration.AdministrationTreeVie
 import se.streamsource.streamflow.client.ui.administration.AdministrationView;
 import se.streamsource.streamflow.client.ui.administration.AdministrationWindow;
 import se.streamsource.streamflow.client.ui.administration.ChangePasswordDialog;
-import se.streamsource.streamflow.client.ui.administration.OrganizationalUnitAdministrationModel;
 import se.streamsource.streamflow.client.ui.administration.ProfileModel;
 import se.streamsource.streamflow.client.ui.administration.ProfileView;
 import se.streamsource.streamflow.client.ui.administration.SelectLinksDialog;
@@ -142,7 +141,6 @@ import se.streamsource.streamflow.client.ui.caze.CaseSubmittedFormView;
 import se.streamsource.streamflow.client.ui.caze.CaseSubmittedFormsModel;
 import se.streamsource.streamflow.client.ui.caze.CaseSubmittedFormsView;
 import se.streamsource.streamflow.client.ui.caze.CaseTableView;
-import se.streamsource.streamflow.client.ui.caze.CaseTypesDialog;
 import se.streamsource.streamflow.client.ui.caze.CasesDetailView2;
 import se.streamsource.streamflow.client.ui.caze.CasesModel;
 import se.streamsource.streamflow.client.ui.caze.CasesTableModel;
@@ -163,7 +161,6 @@ import se.streamsource.streamflow.client.ui.caze.ListBoxPanel;
 import se.streamsource.streamflow.client.ui.caze.NumberPanel;
 import se.streamsource.streamflow.client.ui.caze.OpenSelectionPanel;
 import se.streamsource.streamflow.client.ui.caze.OptionButtonsPanel;
-import se.streamsource.streamflow.client.ui.caze.PossibleCaseTypesModel;
 import se.streamsource.streamflow.client.ui.caze.PossibleFormsModel;
 import se.streamsource.streamflow.client.ui.caze.PossibleFormsView;
 import se.streamsource.streamflow.client.ui.caze.SubmittedFormsAdminView;
@@ -466,10 +463,6 @@ public class UIAssembler
             CaseLabelsView.class );
 
       addMV( module,
-            PossibleCaseTypesModel.class,
-            CaseTypesDialog.class );
-
-      addMV( module,
             CaseEffectiveFieldsValueModel.class,
             CaseEffectiveFieldsValueView.class );
 
@@ -561,10 +554,7 @@ public class UIAssembler
       module.addObjects( AdministrationWindow.class ).visibleIn( layer );
 
       addViews( module,
-            AdministrationView.class );
-      addMV( module,
-            OrganizationalUnitAdministrationModel.class,
-            TabbedResourceView.class );
+            AdministrationView.class, TabbedResourceView.class );
 
       addMV( module,
             AdministrationModel.class,

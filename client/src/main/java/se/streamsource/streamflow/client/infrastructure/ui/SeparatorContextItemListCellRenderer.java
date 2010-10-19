@@ -17,7 +17,6 @@
 package se.streamsource.streamflow.client.infrastructure.ui;
 
 import ca.odell.glazedlists.SeparatorList;
-import se.streamsource.dci.value.TitledLinkValue;
 import se.streamsource.streamflow.client.ui.ContextItem;
 
 import javax.swing.DefaultListCellRenderer;

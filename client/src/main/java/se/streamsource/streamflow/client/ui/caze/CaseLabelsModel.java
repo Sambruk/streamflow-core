@@ -19,23 +19,17 @@ package se.streamsource.streamflow.client.ui.caze;
 
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
-import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.LinksValue;
-import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.source.helper.Events;
-import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 
 /**
  * Model for the list of currently selected labels of a case
@@ -73,18 +67,14 @@ public class CaseLabelsModel
       return list;
    }
 
-   public void addLabel( EntityReference addLabel )
+   public void addLabel( LinkValue addLabel )
    {
-      ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
-      builder.prototype().entity().set( addLabel );
-      client.postCommand( "addlabel", builder.newInstance() );
+      client.postLink( addLabel );
    }
 
-   public void removeLabel( EntityReference removeLabel )
+   public void removeLabel( LinkValue removeLabel )
    {
-      ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
-      builder.prototype().entity().set( removeLabel );
-      client.getSubClient( removeLabel.identity() ).delete();
+      client.getClient( removeLabel ).delete();
    }
 
    public void notifyTransactions( Iterable<TransactionEvents> transactions )

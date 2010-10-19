@@ -17,23 +17,10 @@
 
 package se.streamsource.streamflow.client.ui.administration.policy;
 
-import ca.odell.glazedlists.BasicEventList;
-import ca.odell.glazedlists.EventList;
-import org.qi4j.api.entity.EntityReference;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
-import org.restlet.resource.ResourceException;
+import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.LinkValue;
-import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
-import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
-import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.client.ui.administration.LinkValueListModel;
-import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 
 /**
  * JAVADOC
@@ -43,8 +30,6 @@ public class AdministratorsModel
 {
    public void addAdministrator( LinkValue link )
    {
-      ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
-      builder.prototype().entity().set( EntityReference.parseEntityReference(link.id().get() ));
-      client.postCommand( "addadministrator", builder.newInstance() );
+      client.postLink( link );
    }
 }

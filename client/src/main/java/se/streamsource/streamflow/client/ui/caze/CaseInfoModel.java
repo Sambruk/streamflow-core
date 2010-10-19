@@ -19,12 +19,8 @@ package se.streamsource.streamflow.client.ui.caze;
 
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
-import se.streamsource.streamflow.infrastructure.event.source.helper.EventVisitorFilter;
 import se.streamsource.streamflow.resource.caze.CaseValue;
-
-import java.util.Observable;
 
 /**
  * Model for the quick info about a case.

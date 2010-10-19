@@ -17,20 +17,16 @@
 
 package se.streamsource.streamflow.client.infrastructure.events;
 
-import org.jdesktop.application.Application;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
-import se.streamsource.streamflow.infrastructure.event.source.helper.TransactionCollector;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
 
-import java.io.Reader;
 import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 

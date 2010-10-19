@@ -20,8 +20,9 @@ package se.streamsource.streamflow.client.infrastructure.ui;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.TitledLinkValue;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JList;
+import java.awt.Component;
 
 /**
  * List renderer for lists that use LinkValue as items.

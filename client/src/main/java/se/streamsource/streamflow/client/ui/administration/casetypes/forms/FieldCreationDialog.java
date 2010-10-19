@@ -31,7 +31,9 @@ import javax.swing.DefaultListCellRenderer;
 import javax.swing.JComboBox;
 import javax.swing.JList;
 import javax.swing.JPanel;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.TextField;
 
 /**
  * A dialog for creating a form field. One must provide a name and a type of the field.

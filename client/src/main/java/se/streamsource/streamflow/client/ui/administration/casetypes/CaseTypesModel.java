@@ -17,31 +17,7 @@
 
 package se.streamsource.streamflow.client.ui.administration.casetypes;
 
-import ca.odell.glazedlists.BasicEventList;
-import ca.odell.glazedlists.EventList;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
-import org.restlet.data.Status;
-import org.restlet.resource.ResourceException;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.dci.value.LinkValue;
-import se.streamsource.dci.value.LinksValue;
-import se.streamsource.dci.value.StringValue;
-import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
-import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
-import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
-import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.administration.DefinitionListModel;
-import se.streamsource.streamflow.client.ui.administration.LinkValueListModel;
-import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FormsModel;
-import se.streamsource.streamflow.client.ui.administration.form.SelectedFormsModel;
-import se.streamsource.streamflow.client.ui.administration.label.SelectedLabelsModel;
-import se.streamsource.streamflow.client.ui.administration.resolutions.ResolutionsModel;
-import se.streamsource.streamflow.client.ui.administration.resolutions.SelectedResolutionsModel;
 
 /**
  * List of casetypes in an Organization

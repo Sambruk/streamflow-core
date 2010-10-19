@@ -42,7 +42,6 @@ import se.streamsource.streamflow.client.ui.ResetPasswordDialog;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
-import se.streamsource.streamflow.infrastructure.event.source.helper.Events;
 import se.streamsource.streamflow.resource.user.ProxyUserDTO;
 
 import javax.swing.JButton;

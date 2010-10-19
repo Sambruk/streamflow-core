@@ -53,7 +53,6 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
-import static se.streamsource.streamflow.infrastructure.event.source.helper.Events.withUsecases;
 
 /**
  * JAVADOC

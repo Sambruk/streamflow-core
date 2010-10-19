@@ -17,13 +17,13 @@
 
 package se.streamsource.streamflow.client;
 
-import javax.swing.Action;
-import javax.swing.ActionMap;
-import javax.swing.KeyStroke;
-
 import com.apple.eawt.Application;
 import com.apple.eawt.ApplicationAdapter;
 import com.apple.eawt.ApplicationEvent;
+
+import javax.swing.Action;
+import javax.swing.ActionMap;
+import javax.swing.KeyStroke;
 
 public class MacOsUIExtension
 {

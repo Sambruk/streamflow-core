@@ -26,9 +26,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.SpringLayout;
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 
 /**

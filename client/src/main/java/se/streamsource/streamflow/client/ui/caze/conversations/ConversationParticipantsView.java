@@ -22,7 +22,6 @@ import ca.odell.glazedlists.event.ListEventListener;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
-import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
@@ -39,7 +38,6 @@ import se.streamsource.streamflow.client.ui.caze.RemovableLabel;
 import se.streamsource.streamflow.client.ui.workspace.GroupedFilterListDialog;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
-import se.streamsource.streamflow.infrastructure.event.source.helper.Events;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -50,7 +48,6 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import static se.streamsource.streamflow.infrastructure.event.source.helper.Events.*;
 
@@ -129,9 +126,9 @@ public class ConversationParticipantsView
          public void command()
             throws Exception
          {
-            for (EntityReference entityReference : dialog.getSelectedReferences())
+            for (LinkValue participant : dialog.getSelectedItems())
             {
-               model.addParticipant( entityReference );
+               model.addParticipant( participant );
             }
          }
       };

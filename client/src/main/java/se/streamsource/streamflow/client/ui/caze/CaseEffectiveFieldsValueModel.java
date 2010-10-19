@@ -19,26 +19,12 @@ package se.streamsource.streamflow.client.ui.caze;
 
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
-import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.util.DateFunctions;
-import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
-import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
-import se.streamsource.streamflow.domain.form.DateFieldValue;
 import se.streamsource.streamflow.resource.caze.EffectiveFieldDTO;
 import se.streamsource.streamflow.resource.caze.EffectiveFieldsDTO;
-
-import javax.swing.table.AbstractTableModel;
-import java.text.SimpleDateFormat;
-import java.util.Collections;
-import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * List of contacts for a case

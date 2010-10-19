@@ -19,11 +19,7 @@ package se.streamsource.streamflow.client.ui.caze.conversations;
 
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
-import org.qi4j.api.entity.EntityReference;
-import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.LinkValue;
@@ -31,18 +27,13 @@ import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
-import se.streamsource.streamflow.client.ui.caze.CaseResources;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
-import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 
 public class ConversationParticipantsModel
    implements Refreshable
 {
    @Uses
    CommandQueryClient client;
-
-   @Structure
-   ValueBuilderFactory vbf;
 
    BasicEventList<LinkValue> participants = new BasicEventList<LinkValue>();
 
@@ -68,18 +59,9 @@ public class ConversationParticipantsModel
       }
    }
 
-   public void addParticipant( EntityReference participant )
+   public void addParticipant( LinkValue participant )
    {
-      try
-      {
-         ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
-         builder.prototype().entity().set( participant );
-         client.postCommand( "addparticipant", builder.newInstance() );
-         refresh();
-      } catch (ResourceException e)
-      {
-         throw new OperationException( CaseResources.could_not_add_conversation_participant, e );
-      }
+      client.postLink( participant );
    }
 
    public void removeParticipant( LinkValue link )
@@ -87,7 +69,7 @@ public class ConversationParticipantsModel
       client.getSubClient( link.id().get() ).delete();
    }
 
-   public void refresh() throws OperationException
+   public void refresh()
    {
       LinksValue participants = client.query( "index", LinksValue.class );
       EventListSynch.synchronize( participants.links().get(), this.participants );

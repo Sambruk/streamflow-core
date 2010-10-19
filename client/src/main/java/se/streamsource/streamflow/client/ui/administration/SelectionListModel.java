@@ -22,8 +22,6 @@ import ca.odell.glazedlists.EventList;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.LinksValue;
 
-import java.util.Set;
-
 /**
  * Management of selected entities
  */

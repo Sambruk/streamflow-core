@@ -17,23 +17,19 @@
 
 package se.streamsource.streamflow.client.ui.caze;
 
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.TransactionList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilderFactory;
-import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.LinksValue;
-import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.dci.value.TitledLinkValue;
 import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
-import se.streamsource.streamflow.domain.contact.ContactValue;
 import se.streamsource.streamflow.domain.interaction.gtd.Actions;
-import se.streamsource.dci.value.TitledLinkValue;
-import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.BasicEventList;
 
 import java.util.Collection;
 
@@ -65,145 +61,73 @@ public class CaseActionsModel
 
    public EventList<TitledLinkValue> getPossibleProjects()
    {
-      try
-      {
-         BasicEventList<TitledLinkValue> list = new BasicEventList<TitledLinkValue>();
+      BasicEventList<TitledLinkValue> list = new BasicEventList<TitledLinkValue>();
 
-         LinksValue linksValue = client.query( "possiblesendto", LinksValue.class );
-         list.addAll( (Collection) linksValue.links().get() );
+      LinksValue linksValue = client.query( "possiblesendto", LinksValue.class );
+      list.addAll( (Collection) linksValue.links().get() );
 
-         return list;
-      } catch (ResourceException e)
-      {
-         throw new OperationException( WorkspaceResources.could_not_refresh, e );
-      }
+      return list;
    }
 
    public EventList<TitledLinkValue> getPossibleResolutions()
    {
-      try
-      {
-         BasicEventList<TitledLinkValue> list = new BasicEventList<TitledLinkValue>();
+      BasicEventList<TitledLinkValue> list = new BasicEventList<TitledLinkValue>();
 
-         LinksValue linksValue = client.query( "possibleresolutions", LinksValue.class );
-         list.addAll( (Collection) linksValue.links().get() );
+      LinksValue linksValue = client.query( "possibleresolutions", LinksValue.class );
+      list.addAll( (Collection) linksValue.links().get() );
 
-         return list;
-      } catch (ResourceException e)
-      {
-         throw new OperationException( WorkspaceResources.could_not_refresh, e );
-      }
+      return list;
    }
 
    // Actions
    public void open()
    {
-      try
-      {
-         client.postCommand( "open" );
-      } catch (ResourceException e)
-      {
-         throw new OperationException(WorkspaceResources.could_not_perform_operation, e);
-      }
+      client.postCommand( "open" );
    }
 
    public void assignToMe()
    {
-      try
-      {
-         client.postCommand( "assign" );
-      } catch (ResourceException e)
-      {
-         throw new OperationException(WorkspaceResources.could_not_perform_operation, e);
-      }
+      client.postCommand( "assign" );
    }
 
    public void close()
    {
-      try
-      {
-         client.postCommand( "close" );
-      } catch (ResourceException e)
-      {
-         throw new OperationException(WorkspaceResources.could_not_perform_operation, e);
-      }
+      client.postCommand( "close" );
    }
 
    public void delete()
    {
-      try
-      {
-         client.delete();
-      } catch (ResourceException e)
-      {
-         throw new OperationException(WorkspaceResources.could_not_perform_operation, e);
-      }
+      client.delete();
    }
 
 
    public void sendTo( LinkValue linkValue)
    {
-      try
-      {
-         client.postLink( linkValue );
-      } catch (ResourceException e)
-      {
-         throw new OperationException(WorkspaceResources.could_not_perform_operation, e);
-      }
+      client.postLink( linkValue );
    }
 
    public void reopen()
    {
-      try
-      {
-         client.postCommand( "reopen" );
-      } catch (ResourceException e)
-      {
-         throw new OperationException(WorkspaceResources.could_not_perform_operation, e);
-      }
+      client.postCommand( "reopen" );
    }
 
    public void unassign()
    {
-      try
-      {
-         client.postCommand( "unassign" );
-      } catch (ResourceException e)
-      {
-         throw new OperationException(WorkspaceResources.could_not_perform_operation, e);
-      }
+      client.postCommand( "unassign" );
    }
 
    public void onHold()
    {
-      try
-      {
-         client.postCommand( "onhold" );
-      } catch (ResourceException e)
-      {
-         throw new OperationException(WorkspaceResources.could_not_perform_operation, e);
-      }
+      client.postCommand( "onhold" );
    }
 
    public void resume()
    {
-      try
-      {
-         client.postCommand( "resume" );
-      } catch (ResourceException e)
-      {
-         throw new OperationException(WorkspaceResources.could_not_perform_operation, e);
-      }
+      client.postCommand( "resume" );
    }
 
    public void resolve( LinkValue linkValue )
    {
-      try
-      {
-         client.postLink( linkValue );
-      } catch (ResourceException e)
-      {
-         throw new OperationException(WorkspaceResources.could_not_perform_operation, e);
-      }
+      client.postLink( linkValue );
    }
 }

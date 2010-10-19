@@ -26,15 +26,12 @@ import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
-import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.ContextItem;
 import se.streamsource.streamflow.resource.overview.ProjectSummaryValue;
-import se.streamsource.streamflow.resource.overview.ProjectSummaryValuex;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static se.streamsource.streamflow.client.Icons.*;
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
 

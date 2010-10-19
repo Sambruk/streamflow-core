@@ -25,7 +25,6 @@ import com.jgoodies.forms.layout.Sizes;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
-import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
@@ -308,7 +307,7 @@ public class AccessPointView
             {
                for (LinkValue listItemValue : dialog.getSelectedLabels())
                {
-                  model.labelsModel().addLabel( EntityReference.parseEntityReference( listItemValue.id().get() ) );
+                  model.labelsModel().addLabel( listItemValue );
                }
             }
          }

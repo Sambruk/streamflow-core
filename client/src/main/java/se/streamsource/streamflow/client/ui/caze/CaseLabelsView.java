@@ -22,7 +22,6 @@ import ca.odell.glazedlists.event.ListEventListener;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
-import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
@@ -111,7 +110,7 @@ public class CaseLabelsView
             {
                for (LinkValue listItemValue : dialog.getSelectedLabels())
                {
-                  model.addLabel( EntityReference.parseEntityReference( listItemValue.id().get() ) );
+                  model.addLabel( listItemValue );
                }
             }
          };
@@ -131,7 +130,7 @@ public class CaseLabelsView
          {
             Component component = ((Component) e.getSource());
             RemovableLabel label = (RemovableLabel) component.getParent();
-            model.removeLabel( EntityReference.parseEntityReference( label.link().id().get() ) );
+            model.removeLabel( label.link() );
          }
       };
    }

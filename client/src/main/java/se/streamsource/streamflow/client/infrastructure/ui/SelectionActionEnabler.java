@@ -47,19 +47,47 @@ public class SelectionActionEnabler
    {
       if (!e.getValueIsAdjusting())
       {
-         for (Action action1 : action)
+         if (((ListSelectionModel) e.getSource()).isSelectionEmpty())
          {
-            action1.setEnabled( !((ListSelectionModel) e.getSource()).isSelectionEmpty() && isSelectedValueValid( action1 ) );
+            for (Action action1 : action)
+            {
+               action1.setEnabled( false );
+            }
+         } else
+         {
+            selectionChanged();
+
+            for (Action action1 : action)
+            {
+               action1.setEnabled(isSelectedValueValid( action1 ) );
+            }
          }
       }
    }
 
+   protected void selectionChanged()
+   {
+      // Overload this method to do whatever is necessary to get additional context
+   }
+
    public void valueChanged( TreeSelectionEvent e )
    {
-      for (Action action1 : action)
+      if (e.getNewLeadSelectionPath() != null)
       {
-         action1.setEnabled( e.getNewLeadSelectionPath() != null && isSelectedValueValid( action1 ) );
+         selectionChanged();
+
+         for (Action action1 : action)
+         {
+            action1.setEnabled(isSelectedValueValid( action1 ) );
+         }
+      } else
+      {
+         for (Action action1 : action)
+         {
+            action1.setEnabled(false);
+         }
       }
+
    }
 
    /**
@@ -74,9 +102,20 @@ public class SelectionActionEnabler
 
    public void itemStateChanged( ItemEvent e )
    {
-      for (Action action1 : action)
+      if (e.getStateChange() == ItemEvent.SELECTED)
       {
-         action1.setEnabled( e.getStateChange() == ItemEvent.SELECTED && isSelectedValueValid( action1 ) );
+         selectionChanged();
+
+         for (Action action1 : action)
+         {
+            action1.setEnabled(isSelectedValueValid( action1 ) );
+         }
+      } else
+      {
+         for (Action action1 : action)
+         {
+            action1.setEnabled( false );
+         }
       }
    }
 }

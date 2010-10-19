@@ -17,7 +17,6 @@
 
 package se.streamsource.streamflow.client.ui.caze.attachments;
 
-import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.gui.TableFormat;
 import ca.odell.glazedlists.swing.EventJXTableModel;
 import org.jdesktop.application.Action;

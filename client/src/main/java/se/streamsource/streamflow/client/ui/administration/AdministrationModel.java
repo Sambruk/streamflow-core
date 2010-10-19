@@ -20,37 +20,25 @@ package se.streamsource.streamflow.client.ui.administration;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
-import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.dci.value.*;
+import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.domain.individual.Account;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
-import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
-import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.ContextItem;
 import se.streamsource.streamflow.infrastructure.application.TreeNodeValue;
 import se.streamsource.streamflow.infrastructure.application.TreeValue;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
-import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
-import se.streamsource.streamflow.infrastructure.event.source.helper.EventVisitorFilter;
 
-import javax.swing.Icon;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import se.streamsource.streamflow.infrastructure.event.source.helper.Events;
 
 /**
  * JAVADOC
@@ -110,27 +98,26 @@ public class AdministrationModel
    public void createOrganizationalUnit( Object node, String name )
    {
       DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) node;
-      ContextItem client = (ContextItem) treeNode.getUserObject();
+      ContextItem contextItem = (ContextItem) treeNode.getUserObject();
 
       try
       {
          ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
          builder.prototype().string().set( name );
-         client.getClient().getSubClient("organizationalunits" ).postCommand( "createorganizationalunit", builder.newInstance() );
+         contextItem.getClient().getSubClient("organizationalunits" ).postCommand( "createorganizationalunit", builder.newInstance() );
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_create_new_organization, e );
       }
    }
 
-   public void removeOrganizationalUnit( Object parentNode, EntityReference ou)
+   public void removeOrganizationalUnit( Object node)
    {
-      DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) parentNode;
-      ContextItem client = (ContextItem) treeNode.getUserObject();
-
+      DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) node;
+      ContextItem contextItem = (ContextItem) treeNode.getUserObject();
       try
       {
-         client.getClient().getSubClient("organizationalunits").getSubClient( ou.identity() ).delete();
+         contextItem.getClient().delete();
       } catch (ResourceException e)
       {
          if (Status.CLIENT_ERROR_CONFLICT.equals( e.getStatus() ))

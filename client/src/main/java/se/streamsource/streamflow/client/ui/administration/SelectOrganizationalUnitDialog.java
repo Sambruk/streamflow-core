@@ -18,8 +18,8 @@
 package se.streamsource.streamflow.client.ui.administration;
 
 import org.jdesktop.application.Action;
-import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.ApplicationActionMap;
+import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.JXTree;
 import org.jdesktop.swingx.renderer.DefaultTreeRenderer;
 import org.jdesktop.swingx.renderer.IconValue;
@@ -29,14 +29,11 @@ import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
-import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
-import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import java.awt.Dimension;

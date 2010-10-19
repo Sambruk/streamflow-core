@@ -19,7 +19,7 @@ package se.streamsource.streamflow.client;
 
 import org.apache.log4j.Logger;
 
-import javax.swing.*;
+import javax.swing.UnsupportedLookAndFeelException;
 import java.util.Locale;
 
 /**

@@ -22,9 +22,6 @@ import org.qi4j.bootstrap.ApplicationAssembly;
 import org.qi4j.bootstrap.ApplicationAssemblyFactory;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.LayerAssembly;
-import org.qi4j.bootstrap.ModuleAssembly;
-import se.streamsource.streamflow.domain.CommonDomainAssembler;
-import se.streamsource.streamflow.resource.CommonResourceAssembler;
 
 /**
  * JAVADOC

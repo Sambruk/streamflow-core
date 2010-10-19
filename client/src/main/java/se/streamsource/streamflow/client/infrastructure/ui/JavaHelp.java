@@ -18,12 +18,13 @@
 package se.streamsource.streamflow.client.infrastructure.ui;
 
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.help.HelpBroker;
 import javax.help.HelpSet;
 import java.awt.Component;
 import java.net.URL;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 
 public class JavaHelp

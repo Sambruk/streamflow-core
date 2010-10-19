@@ -30,7 +30,6 @@ import se.streamsource.streamflow.client.ui.ListDetailView;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 
 import javax.swing.Action;
-import javax.swing.JPanel;
 import java.awt.Component;
 
 public class OrganizationsView
@@ -46,7 +45,7 @@ public class OrganizationsView
       {
          public Component createDetail( LinkValue detailLink )
          {
-            OrganizationUsersView organizationView = obf.newObjectBuilder( OrganizationUsersView.class ).use( client.getClient( detailLink ).getSubClient( "users" ) ).newInstance();
+            OrganizationUsersView organizationView = obf.newObjectBuilder( OrganizationUsersView.class ).use( client.getClient( detailLink ).getSubClient( "organizationusers" ) ).newInstance();
             return organizationView;
          }
       });

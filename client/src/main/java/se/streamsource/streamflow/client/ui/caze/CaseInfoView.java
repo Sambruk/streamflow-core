@@ -44,8 +44,6 @@ import javax.swing.JTable;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Insets;
-import java.util.Observable;
-import java.util.Observer;
 
 import static se.streamsource.streamflow.infrastructure.event.source.helper.Events.*;
 

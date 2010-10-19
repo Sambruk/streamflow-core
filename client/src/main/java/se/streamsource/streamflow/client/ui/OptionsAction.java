@@ -21,14 +21,9 @@ import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 
 import javax.swing.AbstractAction;
-import javax.swing.Icon;
 import javax.swing.JPopupMenu;
-import javax.swing.ListSelectionModel;
-import javax.swing.SwingUtilities;
-import java.awt.*;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 /**
  * Generic trigger for opening up an options menu as a popup.

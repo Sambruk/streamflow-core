@@ -29,8 +29,6 @@ import se.streamsource.dci.restlet.client.ResponseHandler;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
 
-import javax.swing.SwingUtilities;
-
 /**
  * JAVADOC
  */

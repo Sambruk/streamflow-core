@@ -27,7 +27,6 @@ import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
 import org.jdesktop.swingx.JXDatePicker;
-import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
@@ -49,7 +48,6 @@ import se.streamsource.streamflow.client.ui.CommandTask;
 import se.streamsource.streamflow.client.ui.workspace.GroupedFilterListDialog;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
-import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
 import se.streamsource.streamflow.resource.caze.CaseGeneralDTO;
 
@@ -349,17 +347,6 @@ public class CaseGeneralView extends JScrollPane implements Observer, Transactio
                   model.changeDueOn( (Date) property.get() );
                }
             }.execute();
-         } else if (property.qualifiedName().name().equals( "caseType" ))
-         {
-            new CommandTask()
-            {
-               @Override
-               protected void command() throws Exception
-               {
-                  model.caseType( null );
-                  selectedCaseType.setVisible( false );
-               }
-            }.execute();
          }
       } else
       {
@@ -399,7 +386,7 @@ public class CaseGeneralView extends JScrollPane implements Observer, Transactio
                   {
                      if (link.text().get().toLowerCase().contains( labelQuery.toLowerCase() ))
                      {
-                        labels.getModel().addLabel( EntityReference.parseEntityReference( link.id().get() ) );
+                        labels.getModel().addLabel( link );
                      }
                   }
                }

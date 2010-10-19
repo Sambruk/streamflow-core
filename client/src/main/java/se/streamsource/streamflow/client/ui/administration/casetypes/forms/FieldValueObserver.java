@@ -19,10 +19,7 @@ package se.streamsource.streamflow.client.ui.administration.casetypes.forms;
 
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.property.Property;
-import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.ui.CommandTask;
-import se.streamsource.streamflow.client.ui.caze.CaseResources;
 
 import java.util.Observable;
 import java.util.Observer;

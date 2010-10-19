@@ -22,7 +22,6 @@ import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 import org.jdesktop.swingx.JXDatePicker;
 import org.qi4j.api.property.Property;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 
 import javax.swing.Action;
 import javax.swing.JButton;
@@ -38,9 +37,6 @@ import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import java.awt.Component;
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.Locale;
 
 /**

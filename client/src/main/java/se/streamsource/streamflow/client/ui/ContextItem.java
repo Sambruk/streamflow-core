@@ -19,8 +19,6 @@ package se.streamsource.streamflow.client.ui;
 
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 
-import javax.swing.Icon;
-
 /**
 * JAVADOC
 */

@@ -17,9 +17,16 @@
 
 package se.streamsource.streamflow.client.ui.administration.casetypes.forms;
 
-import java.awt.BorderLayout;
-import java.util.Observable;
-import java.util.Observer;
+import com.jgoodies.forms.factories.Borders;
+import org.jdesktop.application.ApplicationContext;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
+import se.streamsource.streamflow.client.ui.administration.AdministrationView;
+import se.streamsource.streamflow.client.ui.administration.TabbedResourceView;
 
 import javax.swing.ActionMap;
 import javax.swing.JButton;
@@ -27,20 +34,9 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
-
-import org.jdesktop.application.ApplicationContext;
-import org.jdesktop.swingx.SwingXUtilities;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
-
-import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
-import se.streamsource.streamflow.client.ui.administration.AdministrationView;
-
-import com.jgoodies.forms.factories.Borders;
-import se.streamsource.streamflow.client.ui.administration.TabbedResourceView;
+import java.awt.BorderLayout;
+import java.util.Observable;
+import java.util.Observer;
 
 /**
  * JAVADOC

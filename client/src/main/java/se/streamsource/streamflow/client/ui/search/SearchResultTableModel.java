@@ -21,15 +21,11 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import org.restlet.resource.ResourceException;
-import se.streamsource.dci.value.*;
-import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.dci.value.LinksValue;
+import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
 import se.streamsource.streamflow.client.ui.caze.CasesModel;
 import se.streamsource.streamflow.client.ui.caze.CasesTableModel;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
-
-import javax.swing.*;
 
 /**
  * JAVADOC

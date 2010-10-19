@@ -22,11 +22,10 @@ import org.jdesktop.application.Task;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.Restlet;
-import se.streamsource.streamflow.client.LoggerCategories;
-import se.streamsource.streamflow.client.ui.administration.AccountModel;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import se.streamsource.streamflow.client.LoggerCategories;
+import se.streamsource.streamflow.client.ui.administration.AccountModel;
 
 /**
  * JAVADOC

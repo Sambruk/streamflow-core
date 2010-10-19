@@ -18,9 +18,6 @@
 package se.streamsource.streamflow.client.infrastructure.ui;
 
 import se.streamsource.dci.value.LinkValue;
-import se.streamsource.streamflow.client.ui.administration.form.FormElementItem;
-import se.streamsource.streamflow.infrastructure.application.PageListItemValue;
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JList;

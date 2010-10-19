@@ -19,7 +19,6 @@ package se.streamsource.streamflow.client.assembler;
 
 import org.qi4j.api.common.Visibility;
 import org.qi4j.api.structure.Application;
-import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;

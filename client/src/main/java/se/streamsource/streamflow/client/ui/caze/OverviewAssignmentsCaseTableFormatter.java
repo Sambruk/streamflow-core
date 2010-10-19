@@ -22,9 +22,10 @@ import se.streamsource.streamflow.resource.caze.CaseValue;
 
 import java.util.Date;
 
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.text;
-import static se.streamsource.streamflow.client.ui.overview.OverviewResources.assigned_to_column_header;
+import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
+import static se.streamsource.streamflow.client.ui.overview.OverviewResources.*;
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
+import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.created_column_header;
 
 /**
  * JAVADOC

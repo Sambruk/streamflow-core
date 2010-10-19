@@ -22,7 +22,6 @@ import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.dci.restlet.client.SwingCommandQueryClient;
 import se.streamsource.dci.value.ContextValue;
 import se.streamsource.streamflow.client.domain.individual.AccountEntity;
 import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
