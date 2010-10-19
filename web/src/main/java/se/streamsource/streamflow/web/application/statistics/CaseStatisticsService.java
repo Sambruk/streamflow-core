@@ -123,41 +123,41 @@ public interface CaseStatisticsService
       {
          log = LoggerFactory.getLogger( CaseStatisticsService.class );
 
-         router = new EventRouter().route( and( withNames( "changedStatus" ), paramIs( "param1", CaseStates.CLOSED.name()  )),
+         router = new EventRouter().route( and( withNames( "changedStatus" ), paramIs( "param1", CaseStates.CLOSED.name() ) ),
                new EventVisitor()
-         {
-            public boolean visit( DomainEvent event )
-            {
-               // Case was closed
-               UnitOfWork uow = module.unitOfWorkFactory().newUnitOfWork( UsecaseBuilder.newUsecase( "Create statistics" ) );
-               try
                {
-                  CaseEntity entity = null;
-                  try
+                  public boolean visit( DomainEvent event )
                   {
-                     entity = uow.get( CaseEntity.class, event.entity().get() );
-                  } catch (NoSuchEntityException e)
-                  {
-                     // Entity has been deleted. Ignore it
-                     return true;
-                  }
+                     // Case was closed
+                     UnitOfWork uow = module.unitOfWorkFactory().newUnitOfWork( UsecaseBuilder.newUsecase( "Create statistics" ) );
+                     try
+                     {
+                        CaseEntity entity = null;
+                        try
+                        {
+                           entity = uow.get( CaseEntity.class, event.entity().get() );
+                        } catch (NoSuchEntityException e)
+                        {
+                           // Entity has been deleted. Ignore it
+                           return true;
+                        }
 
-                  CaseStatisticsValue stats = createStatistics( entity );
-                  try
-                  {
-                     notifyStores( stats );
-                     return true;
-                  } catch (StatisticsStoreException e)
-                  {
-                     log.warn( e.getMessage(), e.getCause() );
-                     return false;
+                        CaseStatisticsValue stats = createStatistics( entity );
+                        try
+                        {
+                           notifyStores( stats );
+                           return true;
+                        } catch (StatisticsStoreException e)
+                        {
+                           log.warn( e.getMessage(), e.getCause() );
+                           return false;
+                        }
+                     } finally
+                     {
+                        uow.discard();
+                     }
                   }
-               } finally
-               {
-                  uow.discard();
-               }
-            }
-         } ).route( and( withNames( "changedDescription", "changedFieldId", "changedFormId" ), onEntityTypes(
+               } ).route( and( withNames( "changedDescription", "changedFieldId", "changedFormId" ), onEntityTypes(
                LabelEntity.class.getName(),
                UserEntity.class.getName(),
                GroupEntity.class.getName(),
@@ -168,7 +168,7 @@ public interface CaseStatisticsService
                FormEntity.class.getName(),
                FieldEntity.class.getName(),
                CaseTypeEntity.class.getName()
-         )),
+         ) ),
                new EventVisitor()
                {
                   public boolean visit( DomainEvent event )
@@ -221,7 +221,7 @@ public interface CaseStatisticsService
                         uow.discard();
                      }
                   }
-               } ).route( and( withNames( "deletedEntity" ), onEntityTypes( CaseEntity.class.getName() )),
+               } ).route( and( withNames( "deletedEntity" ), onEntityTypes( CaseEntity.class.getName() ) ),
                new EventVisitor()
                {
                   public boolean visit( DomainEvent event )
@@ -490,7 +490,11 @@ public interface CaseStatisticsService
             {
                formBuilder.prototype().formId().set( effectiveFieldValue.form().get().identity() );
                formBuilder.prototype().fieldId().set( effectiveFieldValue.field().get().identity() );
-               formBuilder.prototype().value().set( effectiveFieldValue.value().get() );
+               // truncate field value if greater than 500 chars.
+               // value in fields table is varchar(500)
+               String fieldValue = effectiveFieldValue.value().get();
+               fieldValue = fieldValue.length() > 500 ? fieldValue.substring( 0, 500 ) : fieldValue;
+               formBuilder.prototype().value().set( fieldValue );
                prototype.fields().get().add( formBuilder.newInstance() );
             }
          }

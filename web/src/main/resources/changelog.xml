@@ -99,11 +99,11 @@
     <changeSet id="3" author="rickardoberg">
         <renameTable oldTableName="completed" newTableName="cases"/>
         <renameColumn tableName="cases"
-            oldColumnName="task_id" newColumnName="case_id" columnDataType="varchar(15)"/>
+                      oldColumnName="task_id" newColumnName="case_id" columnDataType="varchar(15)"/>
         <renameColumn tableName="cases"
-            oldColumnName="completed_on" newColumnName="closed_on" columnDataType="datetime"/>
+                      oldColumnName="completed_on" newColumnName="closed_on" columnDataType="datetime"/>
         <renameColumn tableName="cases"
-            oldColumnName="tasktype" newColumnName="casetype" columnDataType="varchar(256)"/>
+                      oldColumnName="tasktype" newColumnName="casetype" columnDataType="varchar(256)"/>
     </changeSet>
     <changeSet id="4" author="rickardoberg">
         <addColumn tableName="cases">
@@ -218,11 +218,20 @@
             (select descriptions.description from descriptions where descriptions.id = cases.resolution) as resolution,
             (select descriptions.description from descriptions where descriptions.id = cases.assigned) as assigned,
             (select descriptions.description from descriptions where descriptions.id = cases.casetype) as casetype,
-            (select descriptions.description from descriptions where descriptions.id = cases.casetype_owner) as casetype_owner,
-            (select descriptions.description from descriptions where descriptions.id = cases.assigned_project) as assigned_project,
-            (select descriptions.description from descriptions where descriptions.id = cases.assigned_organization) as assigned_organization,
-            (select descriptions.description from descriptions where descriptions.id = cases.assigned_group) as assigned_group
+            (select descriptions.description from descriptions where descriptions.id = cases.casetype_owner) as
+            casetype_owner,
+            (select descriptions.description from descriptions where descriptions.id = cases.assigned_project) as
+            assigned_project,
+            (select descriptions.description from descriptions where descriptions.id = cases.assigned_organization) as
+            assigned_organization,
+            (select descriptions.description from descriptions where descriptions.id = cases.assigned_group) as
+            assigned_group
             from cases
         </createView>
+    </changeSet>
+    <changeSet id="7" author="arvidhuss">
+        <modifyColumn tableName="fields">
+            <column name="value" type="varchar(500)"/>
+        </modifyColumn>
     </changeSet>
 </databaseChangeLog>
