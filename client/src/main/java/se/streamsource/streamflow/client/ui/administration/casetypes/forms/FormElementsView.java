@@ -18,36 +18,48 @@
 package se.streamsource.streamflow.client.ui.administration.casetypes.forms;
 
 import ca.odell.glazedlists.swing.EventListModel;
+import com.jgoodies.forms.factories.Borders;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
 import se.streamsource.streamflow.client.infrastructure.ui.FormElementItemListCellRenderer;
+import se.streamsource.streamflow.client.infrastructure.ui.LinkListCellRenderer;
 import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.CommandTask;
 import se.streamsource.streamflow.client.ui.ConfirmationDialog;
-import se.streamsource.streamflow.client.ui.ListDetailView;
 import se.streamsource.streamflow.client.ui.NameDialog;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.source.helper.EventParameters;
 import se.streamsource.streamflow.infrastructure.event.source.helper.Events;
 import se.streamsource.streamflow.util.Strings;
 
 import javax.swing.Action;
 import javax.swing.ActionMap;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.ListModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.awt.BorderLayout;
 import java.awt.Component;
-import java.util.Observable;
 
 import static se.streamsource.streamflow.infrastructure.event.source.helper.Events.*;
 import static se.streamsource.streamflow.util.Iterables.*;
@@ -56,21 +68,26 @@ import static se.streamsource.streamflow.util.Iterables.*;
  * JAVADOC
  */
 public class FormElementsView
-      extends ListDetailView
+      extends JSplitPane
+      implements TransactionListener
+
 {
    @Service
-   DialogService dialogs;
+   private DialogService dialogs;
 
    @Uses
-   Iterable<NameDialog> pageCreationDialog;
+   private Iterable<NameDialog> pageCreationDialog;
 
    @Uses
-   Iterable<FieldCreationDialog> fieldCreationDialog;
+   private Iterable<FieldCreationDialog> fieldCreationDialog;
 
    @Uses
-   Iterable<ConfirmationDialog> confirmationDialog;
+   private Iterable<ConfirmationDialog> confirmationDialog;
+
+   private JList list;
 
    private FormElementsModel model;
+
 
    public FormElementsView( @Service ApplicationContext context,
                             @Uses final CommandQueryClient client,
@@ -80,22 +97,33 @@ public class FormElementsView
 
       final ActionMap am = context.getActionMap( this );
 
-      initMaster( new EventListModel<LinkValue>( model.getFormElementsList()), am.get( "addPage" ),
-            new Action[]{ am.get( "addField" ), am.get( "remove" ), am.get( "up" ), am.get( "down" ) },
+      setBorder( Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
+
+      setRightComponent( new JPanel() );
+      setBorder( BorderFactory.createEmptyBorder() );
+
+      setDividerLocation( 350 );
+      setOneTouchExpandable( true );
+
+
+      initMaster( new EventListModel<LinkValue>( model.getList() ),
             new DetailFactory() {
                public Component createDetail( LinkValue detailLink )
                {
+                  if ( detailLink == null ) return new JPanel();
                   LinkValue link = getSelectedValue();
                   if (link.rel().get().equals("page"))
                   {
                      return obf.newObjectBuilder( PageEditView.class ).use( client.getClient( link ) ).newInstance();
                   } else
                      return obf.newObjectBuilder( FieldEditView.class ).use( client.getClient( link )).newInstance();
-                  }
-            });
+               }
+            },
+            am.get( "addPage" ), am.get( "addField" ), am.get( "remove" ), am.get( "up" ), am.get( "down" ));
 
 
       list.setCellRenderer( new FormElementItemListCellRenderer() );
+      list.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get("addField"), am.get("remove")) );
       list.getSelectionModel().addListSelectionListener(
             new SelectionActionEnabler( am.get( "up" ), am.get( "down" ) )
             {
@@ -169,45 +197,39 @@ public class FormElementsView
       final FieldCreationDialog dialog = fieldCreationDialog.iterator().next();
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( AdministrationResources.add_field_to_form ) );
 
-      if (dialog.name() != null && !"".equals( dialog.name() ))
+      if ( Strings.notEmpty( dialog.name() ) )
       {
-         final LinkValue page = findSelectedPage( (LinkValue) list.getSelectedValue() );
-         if (page != null)
+         final LinkValue page = findSelectedPage(  getSelectedValue() );
+         list.clearSelection();
+         return new CommandTask()
          {
-            list.clearSelection();
-            return new CommandTask()
-            {
-               @Override
-               public void command()
+            @Override
+            public void command()
                   throws Exception
-               {
-                  model.addField( page, dialog.name(), dialog.getFieldType() );
-               }
-            };
-         }
+            {
+               model.addField( page, dialog.name(), dialog.getFieldType() );
+            }
+         };
       }
 
       return null;
    }
 
+   @Structure
+   ValueBuilderFactory vbf;
+
    private LinkValue findSelectedPage( LinkValue selected )
    {
-      ListModel model = list.getModel();
       if (selected.rel().get().equals("page"))
       {
          return selected;
       } else
       {
-         int index = list.getSelectedIndex();
-         for (int i = index; i >= 0; i--)
-         {
-            if (((LinkValue)model.getElementAt( i )).rel().get().equals("page"))
-            {
-               return (LinkValue) model.getElementAt( i );
-            }
-         }
+         int i1 = selected.href().get().indexOf( selected.id().get() );
+         ValueBuilder<LinkValue> builder = vbf.newValueBuilder( LinkValue.class ).withPrototype( selected );
+         builder.prototype().href().set( selected.href().get().substring( 0, i1 ));
+         return builder.newInstance();
       }
-      return null;
    }
 
    @org.jdesktop.application.Action
@@ -223,7 +245,7 @@ public class FormElementsView
          {
             @Override
             public void command()
-               throws Exception
+                  throws Exception
             {
                model.addPage( dialog.name() );
             }
@@ -248,9 +270,9 @@ public class FormElementsView
             {
                @Override
                public void command()
-                  throws Exception
+                     throws Exception
                {
-                  model.removeFormElement( selected );
+                  model.remove( selected );
                }
             };
          }
@@ -267,7 +289,7 @@ public class FormElementsView
       {
          @Override
          public void command()
-            throws Exception
+               throws Exception
          {
             model.move( selected, "up" );
          }
@@ -284,19 +306,13 @@ public class FormElementsView
          {
             @Override
             public void command()
-               throws Exception
+                  throws Exception
             {
                model.move( selected, "down" );
             }
          };
       } else
          return null;
-   }
-
-   public void update( Observable o, Object arg )
-   {
-      list.clearSelection();
-      list.setSelectedValue( arg, true );
    }
 
    public void notifyTransactions( Iterable<TransactionEvents> transactions )
@@ -308,7 +324,7 @@ public class FormElementsView
       if (event != null)
       {
          String id = EventParameters.getParameter( event, 1 );
-         for (LinkValue link : model.getFormElementsList())
+         for (LinkValue link : model.getList())
          {
             if (link.href().get().endsWith( id+"/" ))
             {
@@ -317,5 +333,48 @@ public class FormElementsView
             }
          }
       }
+   }
+
+   protected void initMaster( EventListModel<LinkValue> listModel, final DetailFactory factory, Action... actions)
+   {
+      list = new JList(listModel);
+      list.setCellRenderer( new LinkListCellRenderer() );
+
+      JScrollPane scrollPane = new JScrollPane( list );
+
+      JPanel master = new JPanel(new BorderLayout());
+      master.add( scrollPane, BorderLayout.CENTER );
+
+      // Toolbar
+      JPanel toolbar = new JPanel();
+      for (Action action : actions)
+      {
+         toolbar.add( new JButton( action ) );
+      }
+
+      master.add( toolbar, BorderLayout.SOUTH);
+
+      setLeftComponent( master );
+
+      list.addListSelectionListener( new ListSelectionListener()
+      {
+         public void valueChanged( ListSelectionEvent e )
+         {
+            if (!e.getValueIsAdjusting())
+            {
+               setRightComponent( factory.createDetail( getSelectedValue() ));
+            }
+         }
+      } );
+   }
+
+   public interface DetailFactory
+   {
+      Component createDetail(LinkValue detailLink);
+   }
+
+   private LinkValue getSelectedValue()
+   {
+      return (LinkValue) list.getSelectedValue();
    }
 }

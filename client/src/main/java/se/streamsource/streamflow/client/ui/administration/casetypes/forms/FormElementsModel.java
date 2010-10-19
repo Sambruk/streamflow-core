@@ -17,53 +17,27 @@
 
 package se.streamsource.streamflow.client.ui.administration.casetypes.forms;
 
-import ca.odell.glazedlists.BasicEventList;
-import ca.odell.glazedlists.EventList;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.LinkValue;
-import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
-import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.ui.administration.LinkValueListModel;
 import se.streamsource.streamflow.domain.form.CreateFieldDTO;
 import se.streamsource.streamflow.domain.form.FieldTypes;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
-import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.source.helper.Events;
 
 /**
  * JAVADOC
  */
 public class FormElementsModel
-      implements Refreshable, TransactionListener
+      extends LinkValueListModel
 {
-   @Uses
-   CommandQueryClient client;
-
-   @Structure
-   ValueBuilderFactory vbf;
-
-   @Structure
-   ObjectBuilderFactory obf;
-
-   private EventList<LinkValue> formElements = new BasicEventList<LinkValue>();
-
-   public void refresh()
+   public FormElementsModel()
    {
-      EventListSynch.synchronize( client.query( "formelements", LinksValue.class ).links().get(), formElements );
-   }
-
-   public EventList<LinkValue> getFormElementsList()
-   {
-      return formElements;
+      super( "formelements" );
    }
 
    public void addField( LinkValue pageItem, String name, FieldTypes fieldType )
@@ -72,13 +46,7 @@ public class FormElementsModel
       builder.prototype().name().set( name );
       builder.prototype().fieldType().set( fieldType );
 
-      try
-      {
-         client.getClient( pageItem ).postCommand( "create", builder.newInstance() );
-      } catch (ResourceException e)
-      {
-         throw new OperationException( AdministrationResources.description_cannot_be_more_than_50, e );
-      }
+      client.getClient( pageItem ).postCommand( "create", builder.newInstance() );
    }
 
    public void addPage( String pageName )
@@ -86,18 +54,7 @@ public class FormElementsModel
       ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
       builder.prototype().string().set( pageName );
 
-      try
-      {
-         client.postCommand( "create", builder.newInstance() );
-      } catch (ResourceException e)
-      {
-         throw new OperationException( AdministrationResources.description_cannot_be_more_than_50, e );
-      }
-   }
-
-   public void removeFormElement( LinkValue item )
-   {
-      client.getClient( item ).delete();
+      client.postCommand( "create", builder.newInstance() );
    }
 
    public void move( LinkValue item, String direction )
