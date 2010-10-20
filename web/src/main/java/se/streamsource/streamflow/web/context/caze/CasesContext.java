@@ -17,12 +17,15 @@
 
 package se.streamsource.streamflow.web.context.caze;
 
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.structure.Module;
 import org.restlet.data.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.SubContexts;
@@ -47,19 +50,25 @@ public interface CasesContext
          extends ContextMixin
          implements CasesContext
    {
+      protected static final Logger logger = LoggerFactory.getLogger( CaseContext.class.getName() );
+
       public static LinksValue buildCaseList( Iterable<Case> query, Module module, String basePath )
       {
          LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() ).path( basePath );
-         try
+
+         for (Case aCase : query)
          {
-            for (Case aCase : query)
+            try
             {
                linksBuilder.addLink( CaseContext.Mixin.caseDTO( (CaseEntity) aCase, module, basePath ) );
+            } catch (Exception e)
+            {
+               logger.debug( "Could not add case to search result. Identity: "
+                     + EntityReference.getEntityReference( aCase )
+                     + " Msg: " + e.getMessage() );
             }
-         } catch ( Exception e )
-         {
-            return linksBuilder.newLinks();
          }
+
          return linksBuilder.newLinks();
       }
 
