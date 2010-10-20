@@ -496,6 +496,8 @@ public class InfrastructureAssembler
                   {
                      state.put( "type", "se.streamsource.streamflow.web.domain.entity.form.FormDraftEntity" );
                      JSONObject formValue = state.getJSONObject( "properties" ).getJSONObject( "formSubmissionValue" );
+                     state.getJSONObject( "properties" ).remove( "formSubmissionValue" );
+                     state.getJSONObject( "properties" ).put( "formDraftValue", formValue );
                      formValue.remove( "currentPage" );
 
                      JSONArray pages = formValue.getJSONArray( "pages" );
