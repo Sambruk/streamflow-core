@@ -142,6 +142,11 @@ public interface CaseStatisticsService
                            return true;
                         }
 
+                        // case has been reopend and is still not closed again
+                        // do nothing
+                        if (!entity.isStatus( CaseStates.CLOSED ))
+                           return true;
+
                         CaseStatisticsValue stats = createStatistics( entity );
                         try
                         {
