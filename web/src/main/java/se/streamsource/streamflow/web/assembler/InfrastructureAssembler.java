@@ -494,20 +494,35 @@ public class InfrastructureAssembler
                {
                   public boolean upgrade( JSONObject state, StateStore stateStore, Migrator migrator ) throws JSONException
                   {
-                     state.put( "_type", "se.streamsource.streamflow.web.domain.entity.form.FormDraftEntity" );
+                     state.put( "type", "se.streamsource.streamflow.web.domain.entity.form.FormDraftEntity" );
                      JSONObject formValue = state.getJSONObject( "properties" ).getJSONObject( "formSubmissionValue" );
-                     formValue.put( "_type", "se.streamsource.streamflow.domain.form.FormDraftValue" );
-
                      formValue.remove( "currentPage" );
+
+                     JSONArray pages = formValue.getJSONArray( "pages" );
+
+                     for (int i = 0; i < pages.length(); i++)
+                     {
+                        JSONArray fields = pages.getJSONObject( i ).getJSONArray( "fields" );
+                        for (int j = 0; j < fields.length(); j++)
+                        {
+                           JSONObject fieldDefinitionValue = fields.getJSONObject( j ).getJSONObject( "field" );
+                           JSONObject fieldValue = fieldDefinitionValue.getJSONObject( "fieldValue" );
+
+                           if (fieldValue.get( "_type" ).equals( "se.streamsource.streamflow.domain.form.SignatureFieldValue" ))
+                           {
+                              fieldValue.put( "_type", "se.streamsource.streamflow.domain.form.CommentFieldValue" );  
+                           }
+                        }
+                     }
+
 
                      return true;
                   }
 
                   public boolean downgrade( JSONObject state, StateStore stateStore, Migrator migrator ) throws JSONException
                   {
-                     state.put( "_type", "se.streamsource.streamflow.web.domain.entity.form.FormSubmissionEntity" );
+                     state.put( "type", "se.streamsource.streamflow.web.domain.entity.form.FormSubmissionEntity" );
                      JSONObject formValue = state.getJSONObject( "properties" ).getJSONObject( "formDraftValue" );
-                     formValue.put( "_type", "se.streamsource.streamflow.domain.form.FormSubmissionValue" );
 
                      formValue.put( "currentPage", 0 );
 
@@ -538,8 +553,8 @@ public class InfrastructureAssembler
    }
 
    public abstract static class EntityStorePerformanceCheck
-      extends ConcernOf<EntityStoreSPI>
-      implements EntityStoreSPI
+         extends ConcernOf<EntityStoreSPI>
+         implements EntityStoreSPI
    {
       public StateCommitter applyChanges( EntityStoreUnitOfWork unitOfWork, Iterable<EntityState> state, String version, long lastModified )
       {
@@ -558,7 +573,7 @@ public class InfrastructureAssembler
    }
 
    public static class PerformanceLogConcern
-      extends GenericConcern
+         extends GenericConcern
    {
       public Object invoke( Object proxy, Method method, Object[] args ) throws Throwable
       {
