@@ -23,13 +23,10 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
 import org.qi4j.library.constraints.annotation.MaxLength;
 import se.streamsource.dci.api.Context;
-import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.IndexContext;
-import se.streamsource.dci.api.SubContexts;
-import se.streamsource.dci.value.LinksValue;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.StringValueMaxLength;
-import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnits;
 
@@ -39,35 +36,28 @@ import se.streamsource.streamflow.web.domain.structure.organization.Organization
 @Mixins(OrganizationalUnitsContext.Mixin.class)
 @Constraints(StringValueMaxLength.class)
 public interface OrganizationalUnitsContext
-      extends SubContexts<OrganizationalUnitContext>, IndexContext<LinksValue>, Context
+      extends IndexContext<Iterable<OrganizationalUnit>>, Context
 {
    public void createorganizationalunit( @MaxLength(50) StringValue value );
 
    abstract class Mixin
-         extends ContextMixin
          implements OrganizationalUnitsContext
    {
 
       @Structure
       Module module;
 
-      public LinksValue index()
+      public Iterable<OrganizationalUnit> index()
       {
-         OrganizationalUnits.Data ous = roleMap.get( OrganizationalUnits.Data.class );
-         return new LinksBuilder( module.valueBuilderFactory() ).rel( "organizationalunit" ).addDescribables( ous.organizationalUnits() ).newLinks();
+         OrganizationalUnits.Data ous = RoleMap.role( OrganizationalUnits.Data.class );
+         return ous.organizationalUnits();
       }
 
       public void createorganizationalunit( StringValue value )
       {
-         OrganizationalUnits ous = roleMap.get( OrganizationalUnits.class );
+         OrganizationalUnits ous = RoleMap.role( OrganizationalUnits.class );
 
          ous.createOrganizationalUnit( value.string().get() );
-      }
-
-      public OrganizationalUnitContext context( String id )
-      {
-         roleMap.set( module.unitOfWorkFactory().currentUnitOfWork().get( OrganizationalUnit.class, id ) );
-         return subContext( OrganizationalUnitContext.class );
       }
    }
 }

@@ -99,7 +99,7 @@ public interface DummyDataService
             String response = account.version( client );
             System.out.println( response );
             CommandQueryClient user = account.server( client ).getSubClient( "users" ).getSubClient( "administrator" );
-            System.out.println( user.getSubClient( "workspace").getSubClient( "user" ).getSubClient( "drafts" ).query("cases", LinksValue.class ).links().get().size() );
+            System.out.println( user.getSubClient( "workspace").getSubClient( "user" ).getSubClient( "drafts" ).query("index", LinksValue.class ).links().get().size() );
 
             uow.complete();
 

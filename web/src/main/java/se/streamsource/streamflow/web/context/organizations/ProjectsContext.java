@@ -18,12 +18,13 @@
 package se.streamsource.streamflow.web.context.organizations;
 
 import org.qi4j.api.constraint.Constraints;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.structure.Module;
 import org.qi4j.library.constraints.annotation.MaxLength;
 import se.streamsource.dci.api.Context;
-import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.IndexContext;
-import se.streamsource.dci.api.SubContexts;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.StringValueMaxLength;
@@ -31,38 +32,34 @@ import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.project.Projects;
 
+import static se.streamsource.dci.api.RoleMap.role;
+
 /**
  * JAVADOC
  */
 @Mixins(ProjectsContext.Mixin.class)
 @Constraints(StringValueMaxLength.class)
 public interface ProjectsContext
-      extends SubContexts<ProjectContext>, IndexContext<LinksValue>, Context
+      extends IndexContext<Iterable<Project>>, Context
 {
    void createproject( @MaxLength(50) StringValue name );
 
    abstract class Mixin
-         extends ContextMixin
          implements ProjectsContext
    {
-      public LinksValue index()
-      {
-         Projects.Data projectsState = roleMap.get( Projects.Data.class );
+      @Structure
+      Module module;
 
-         return new LinksBuilder( module.valueBuilderFactory() ).rel( "project" ).addDescribables( projectsState.projects() ).newLinks();
+      public Iterable<Project> index()
+      {
+         return role( Projects.Data.class ).projects();
       }
 
       public void createproject( StringValue name )
       {
-         Projects projects = roleMap.get( Projects.class );
+         Projects projects = role( Projects.class );
 
          projects.createProject( name.string().get() );
-      }
-
-      public ProjectContext context( String id )
-      {
-         roleMap.set( module.unitOfWorkFactory().currentUnitOfWork().get( Project.class, id ) );
-         return subContext( ProjectContext.class );
       }
    }
 }

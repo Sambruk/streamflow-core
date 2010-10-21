@@ -17,52 +17,42 @@
 
 package se.streamsource.streamflow.web.context.structure.labels;
 
-import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.query.Query;
-import se.streamsource.dci.api.Context;
-import se.streamsource.dci.api.ContextMixin;
+import org.qi4j.api.structure.Module;
 import se.streamsource.dci.api.DeleteContext;
+import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.web.context.structure.DescribableContext;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.label.Labels;
 import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
 
+import static se.streamsource.dci.api.RoleMap.*;
+
 /**
  * JAVADOC
  */
-@Mixins(LabelContext.Mixin.class)
-public interface LabelContext
-      extends DescribableContext,
-      DeleteContext,
-      Context
+public class LabelContext
+      implements DeleteContext
 {
-   LinksValue usages();
-
-   abstract class Mixin
-         extends ContextMixin
-         implements LabelContext
+   public Query<SelectedLabels> usages()
    {
-      public LinksValue usages()
-      {
-         Query<SelectedLabels> usageQuery = roleMap.get( Labels.class).usages( roleMap.get(Label.class) );
-         LinksBuilder builder = new LinksBuilder(module.valueBuilderFactory()); // TODO What to use for path here?
-         for (SelectedLabels selectedLabels : usageQuery)
-         {
-            builder.addDescribable( (Describable) selectedLabels );
-         }
+      return role( Labels.class ).usages( role( Label.class ) );
+   }
 
-         return builder.newLinks();
+   public void delete()
+   {
+      Labels labels = role( Labels.class );
+      Label label = role( Label.class );
+
+      // Remove selections
+      for (SelectedLabels selectedLabels : usages())
+      {
+         selectedLabels.removeSelectedLabel( label );
       }
 
-      public void delete()
-      {
-         Labels labels = roleMap.get( Labels.class );
-         Label label = roleMap.get( Label.class );
-
-         labels.removeLabel( label );
-      }
+      labels.removeLabel( label );
    }
 }

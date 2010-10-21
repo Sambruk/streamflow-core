@@ -18,15 +18,21 @@
 package se.streamsource.dci.restlet.server;
 
 import org.json.JSONException;
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.QualifiedName;
 import org.qi4j.api.composite.TransientComposite;
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.property.StateHolder;
+import org.qi4j.api.unitofwork.EntityTypeNotFoundException;
+import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.util.Classes;
 import org.qi4j.api.value.Value;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
@@ -50,7 +56,6 @@ import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
 import org.slf4j.LoggerFactory;
 import se.streamsource.dci.api.Context;
-import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.InteractionConstraints;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.ResourceValue;
@@ -97,12 +102,17 @@ public class CommandQueryResource
    @Service
    InteractionConstraints constraints;
 
+   private
+   @Optional
+   @Service
+   ResultConverter converter;
+
    protected Request request;
    protected Response response;
 
    private Class[] contextClasses;
 
-   public CommandQueryResource( Class... contextClasses )
+   public CommandQueryResource( @Uses Class... contextClasses )
    {
       this.contextClasses = contextClasses;
    }
@@ -110,6 +120,8 @@ public class CommandQueryResource
    @Override
    public final void handle( Request request, Response response )
    {
+      RoleMap.setCurrentRoleMap( new RoleMap(RoleMap.current()) );
+
       this.request = request;
       this.response = response;
 
@@ -124,27 +136,27 @@ public class CommandQueryResource
 
          if (segments.size() > 0)
          {
-            invokeResource( segment, request, response );
+            invokeResource( segment );
          } else
          {
-            invokeCommandQuery( segment, request, response );
+            invokeCommandQuery( segment );
          }
       }
    }
 
-   private void invokeResource( String segment, Request request, Response response )
+   private void invokeResource( String segment )
    {
       if (this instanceof SubResources)
       {
          SubResources subResources = (SubResources) this;
-         subResources.resource( segment, request, response );
+         subResources.resource( segment );
       } else
       {
          // Find @SubResource annotated method
          try
          {
             Method method = getSubResourceMethod( segment );
-            method.invoke( this, request, response );
+            method.invoke( this );
          } catch (Throwable e)
          {
             handleException( response, e );
@@ -154,7 +166,7 @@ public class CommandQueryResource
 
    protected Method getSubResourceMethod( String resourceName )
    {
-      for (Method method : getContextMethods( this.getClass() ))
+      for (Method method : getClass().getMethods())
       {
          if (method.getName().equals( resourceName ) && method.getAnnotation( SubResource.class ) != null)
             return method;
@@ -163,11 +175,11 @@ public class CommandQueryResource
       throw new ResourceException( Status.CLIENT_ERROR_NOT_FOUND );
    }
 
-   public void resource( Request request, Response response )
+   public void resource()
    {
       if (request.getMethod().equals( org.restlet.data.Method.GET ))
       {
-         RoleMap roleMap = getRoleMap( request );
+         RoleMap roleMap = RoleMap.current();
 
          final List<Method> queries = new ArrayList<Method>();
          final List<Method> commands = new ArrayList<Method>();
@@ -178,14 +190,13 @@ public class CommandQueryResource
          for (Class contextClass : contextClasses)
          {
 
-            Iterable<Method> methods = Arrays.asList( contextClass.getMethods() );
+            Method[] methods = contextClass.getMethods();
             // TODO Handle custom constraints        if (context instanceof InteractionConstraints)
             //            methodConstraints = (InteractionConstraints) context;
 
             for (Method method : methods)
             {
-               if (!(method.getDeclaringClass().isAssignableFrom( ContextMixin.class )))
-               {
+               if (!(method.getDeclaringClass().isAssignableFrom( TransientComposite.class )))
                   if (methodConstraints.isValid( method, roleMap ))
                      if (method.getReturnType().equals( Void.TYPE ))
                      {
@@ -194,7 +205,6 @@ public class CommandQueryResource
                      {
                         queries.add( method );
                      }
-               }
             }
          }
 
@@ -203,7 +213,7 @@ public class CommandQueryResource
          {
             try
             {
-               Method resourceMethod = getClass().getMethod( "resource", String.class, Request.class, Response.class );
+               Method resourceMethod = getClass().getMethod( "resource", String.class );
                subResources.add( resourceMethod );
             } catch (NoSuchMethodException e)
             {
@@ -215,18 +225,15 @@ public class CommandQueryResource
 
             for (Method method : methods)
             {
-               if (methodConstraints.isValid( method, roleMap ))
-                  if (method.getAnnotation( SubResource.class ) != null)
-                  {
-                     subResources.add( method );
-                  }
+               if (method.getAnnotation( SubResource.class ) != null && methodConstraints.isValid( method, roleMap ))
+                  subResources.add( method );
             }
          }
 
          Value index = null;
          try
          {
-            index = (Value) invoke( "index", request, response );
+            index = convert(invoke( "index" ));
 
          } catch (Throwable e)
          {
@@ -282,17 +289,26 @@ public class CommandQueryResource
 
    }
 
-   protected Object createContext( String queryName, RoleMap roleMap )
+   protected Object createContext( String queryName )
    {
-      Class contextClass = getInteractionMethod( queryName ).getDeclaringClass();
-
-      if (TransientComposite.class.isAssignableFrom( contextClass ))
+      for (Class contextClass : contextClasses)
       {
-         return module.transientBuilderFactory().newTransientBuilder( contextClass ).use( roleMap ).newInstance();
-      } else
-      {
-         return module.objectBuilderFactory().newObjectBuilder( contextClass ).use( roleMap ).newInstance();
+         for (Method method : getContextMethods( contextClass ))
+         {
+            if (method.getName().equalsIgnoreCase( queryName ))
+            {
+               if (TransientComposite.class.isAssignableFrom( contextClass ))
+               {
+                  return module.transientBuilderFactory().newTransient( contextClass );
+               } else
+               {
+                  return module.objectBuilderFactory().newObject( contextClass );
+               }
+            }
+         }
       }
+
+      throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
    }
 
    protected void result( Object resultValue ) throws Exception
@@ -310,14 +326,19 @@ public class CommandQueryResource
       } else
       {
 
-         ResponseWriter writer = responseWriterFactory.createWriter( request.getResourceRef().getRelativeRef().getSegments(), resultValue.getClass(), getRoleMap( request ), getVariant( request ) );
+         ResponseWriter writer = responseWriterFactory.createWriter( request.getResourceRef().getRelativeRef().getSegments(), resultValue.getClass(), RoleMap.current(), getVariant( request ) );
          writer.write( resultValue, request, response );
       }
    }
 
-   protected Object invoke( String interactionName, Request request, Response response ) throws Throwable
+   protected Object invoke() throws Throwable
    {
-      Object context = createContext( interactionName, getRoleMap( request ) );
+      return invoke(request.getResourceRef().getLastSegment());
+   }
+
+   protected Object invoke(String interactionName) throws Throwable
+   {
+      Object context = createContext( interactionName);
 
       Method method = getInteractionMethod( interactionName );
 
@@ -326,7 +347,7 @@ public class CommandQueryResource
          // Command
 
          // Create argument
-         Object[] arguments = getCommandArguments( request, response, method );
+         Object[] arguments = getCommandArguments( method );
 
          // Invoke method
          try
@@ -353,7 +374,7 @@ public class CommandQueryResource
          {
             try
             {
-               arguments = getQueryArguments( request, response, method );
+               arguments = getQueryArguments( method );
 
                if (arguments == null)
                {
@@ -393,9 +414,14 @@ public class CommandQueryResource
       }
    }
 
-   protected void subResource( Class<? extends CommandQueryResource> subContextClass, Request request, Response response )
+   protected void subResource( Class<? extends CommandQueryResource> subResourceClass )
    {
-      module.objectBuilderFactory().newObjectBuilder( subContextClass ).use( getContext() ).newInstance().handle( request, response );
+      module.objectBuilderFactory().newObjectBuilder( subResourceClass ).use( getContext() ).newInstance().handle( request, response );
+   }
+
+   protected void subResourceContexts( Class<?>... contextClasses )
+   {
+      module.objectBuilderFactory().newObjectBuilder( DefaultCommandQueryResource.class ).use( getContext(), contextClasses ).newInstance().handle( request, response );
    }
 
    protected Method getInteractionMethod( String methodName ) throws ResourceException
@@ -412,22 +438,63 @@ public class CommandQueryResource
       throw new ResourceException( Status.CLIENT_ERROR_NOT_FOUND );
    }
 
-   protected RoleMap getRoleMap( Request request )
-   {
-      return (RoleMap) request.getAttributes().get( "roleMap" );
-   }
-
    protected List<String> getSegments( Request request )
    {
       return (List<String>) request.getAttributes().get( "segments" );
    }
 
-   private void invokeCommandQuery( String segment, Request request, Response response )
+   protected <T> T setRole(Class<T> entityClass, String id, Class... roleClasses)
+         throws ResourceException
+   {
+      try
+      {
+         T composite = module.unitOfWorkFactory().currentUnitOfWork().get( entityClass, id );
+         RoleMap.current().set( composite, roleClasses);
+         return composite;
+      } catch (EntityTypeNotFoundException e)
+      {
+         throw new ResourceException( Status.CLIENT_ERROR_NOT_FOUND);
+      } catch (NoSuchEntityException e)
+      {
+         throw new ResourceException( Status.CLIENT_ERROR_NOT_FOUND);
+      }
+   }
+
+   protected <T> T findManyAssociation( ManyAssociation<T> manyAssociation, String id )
+         throws ResourceException
+   {
+      for (T entity : manyAssociation)
+      {
+         if (entity.toString().equals(id))
+         {
+            RoleMap.current().set( entity );
+            return entity;
+         }
+      }
+
+      throw new ResourceException( Status.CLIENT_ERROR_NOT_FOUND);
+   }
+
+   protected void findList( List<?> list, String indexString )
+   {
+      Integer index = Integer.decode( indexString );
+
+      if (index < 0 || index >= list.size())
+         throw new ResourceException( Status.CLIENT_ERROR_NOT_FOUND);
+
+      RoleMap.current().set( index, Integer.class );
+
+      Object value = list.get( index );
+      RoleMap.current().set( value);
+
+   }
+
+   private void invokeCommandQuery( String segment )
    {
       if (segment.equals( "" ) || segment.equals( "." ))
       {
          // Index for this resource
-         resource( request, response );
+         resource();
       } else
       {
          Method contextMethod = getInteractionMethod( segment );
@@ -489,7 +556,7 @@ public class CommandQueryResource
             {
                try
                {
-                  result( invoke( segment, request, response ) );
+                  result(convert(invoke( segment )));
                } catch (Throwable throwable)
                {
                   handleException( response, throwable );
@@ -500,6 +567,17 @@ public class CommandQueryResource
             }
          }
       }
+   }
+
+   private Value convert( Object result )
+   {
+      Value convertedResult;
+      if (converter != null)
+         convertedResult = converter.convert( result, request );
+      else
+         convertedResult = (Value) result;
+
+      return convertedResult;
    }
 
    private Variant getVariant( Request request )
@@ -522,7 +600,7 @@ public class CommandQueryResource
       return variant;
    }
 
-   protected Object[] getQueryArguments( Request request, Response response, Method method )
+   protected Object[] getQueryArguments( Method method )
          throws ResourceException
    {
       Object[] args = new Object[method.getParameterTypes().length];
@@ -579,7 +657,7 @@ public class CommandQueryResource
       return args;
    }
 
-   protected Object[] getCommandArguments( Request request, Response response, Method method ) throws ResourceException
+   protected Object[] getCommandArguments( Method method ) throws ResourceException
    {
       if (method.getParameterTypes().length > 0)
       {
@@ -691,7 +769,7 @@ public class CommandQueryResource
       if (methods == null)
       {
          methods = new ArrayList<Method>();
-         Method[] allMethods = Context.class.isAssignableFrom( resourceClass ) ? resourceClass.getInterfaces()[0].getMethods() : resourceClass.getDeclaredMethods();
+         Method[] allMethods = resourceClass.getMethods();
          for (Method allMethod : allMethods)
          {
             if (!allMethod.isSynthetic())

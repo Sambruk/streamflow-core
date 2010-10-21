@@ -17,14 +17,16 @@
 
 package se.streamsource.streamflow.web.context.users.overview;
 
-import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.query.Query;
+import org.qi4j.api.structure.Module;
 import org.restlet.data.Reference;
-import se.streamsource.dci.api.Context;
-import se.streamsource.dci.api.ContextMixin;
+import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.LinksValue;
-import se.streamsource.streamflow.web.context.caze.CasesContext;
+import se.streamsource.streamflow.web.context.cases.CasesContext;
 import se.streamsource.streamflow.web.domain.entity.gtd.AssignmentsQueries;
+import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
 
 import static org.qi4j.api.query.QueryExpressions.*;
@@ -32,23 +34,17 @@ import static org.qi4j.api.query.QueryExpressions.*;
 /**
  * JAVADOC
  */
-@Mixins(OverviewProjectAssignmentsContext.Mixin.class)
-public interface OverviewProjectAssignmentsContext
-   extends Context
+public class OverviewProjectAssignmentsContext
+      implements IndexContext<Query<Case>>
 {
-   public LinksValue cases();
+   @Structure
+   Module module;
 
-   abstract class Mixin
-      extends ContextMixin
-      implements OverviewProjectAssignmentsContext
+   public Query<Case> index()
    {
-      public LinksValue cases()
-      {
-         AssignmentsQueries assignmentsQueries = roleMap.get(AssignmentsQueries.class);
+      AssignmentsQueries assignmentsQueries = RoleMap.role( AssignmentsQueries.class );
 
-         Query query = assignmentsQueries.assignments( null ).orderBy( orderBy( templateFor( CreatedOn.class ).createdOn() ) );
-         return CasesContext.Mixin.buildCaseList( query, module, roleMap.get( Reference.class).getBaseRef().getPath());
-      }
-
+      Query<Case> query = (Query<Case>) assignmentsQueries.assignments( null ).orderBy( orderBy( templateFor( CreatedOn.class ).createdOn() ) );
+      return query;
    }
 }

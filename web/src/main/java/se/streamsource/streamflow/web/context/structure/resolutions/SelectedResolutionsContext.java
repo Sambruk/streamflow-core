@@ -18,18 +18,14 @@
 package se.streamsource.streamflow.web.context.structure.resolutions;
 
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
-import se.streamsource.dci.api.Context;
-import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.IndexContext;
-import se.streamsource.dci.api.SubContexts;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationQueries;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationVisitor;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
@@ -45,102 +41,86 @@ import se.streamsource.streamflow.web.domain.structure.project.Projects;
 /**
  * JAVADOC
  */
-@Mixins(SelectedResolutionsContext.Mixin.class)
-public interface SelectedResolutionsContext
-   extends SubContexts<SelectedResolutionContext>, IndexContext<LinksValue>, Context
+public class SelectedResolutionsContext
+   implements IndexContext<LinksValue>
 {
-   public LinksValue possibleresolutions();
-   public void createresolution( StringValue name );
-   public void addresolution( EntityValue resolutionDTO );
+   @Structure
+   Module module;
 
-   abstract class Mixin
-         extends ContextMixin
-         implements SelectedResolutionsContext
+   public LinksValue index()
    {
-      @Structure
-      Module module;
+      SelectedResolutions.Data resolutions = RoleMap.role(SelectedResolutions.Data.class);
 
-      public LinksValue index()
+      return new LinksBuilder( module.valueBuilderFactory() ).rel( "resolution" ).addDescribables( resolutions.selectedResolutions() ).newLinks();
+   }
+
+   public LinksValue possibleresolutions()
+   {
+      OrganizationQueries organizationQueries = RoleMap.role(OrganizationQueries.class);
+      final SelectedResolutions.Data selectedResolutions = RoleMap.role(SelectedResolutions.Data.class);
+
+      final LinksBuilder builder = new LinksBuilder(module.valueBuilderFactory()).command( "addresolution" );
+      organizationQueries.visitOrganization( new OrganizationVisitor()
       {
-         SelectedResolutions.Data resolutions = roleMap.get(SelectedResolutions.Data.class);
 
-         return new LinksBuilder( module.valueBuilderFactory() ).rel( "resolution" ).addDescribables( resolutions.selectedResolutions() ).newLinks();
-      }
+         Describable owner;
 
-      public LinksValue possibleresolutions()
-      {
-         OrganizationQueries organizationQueries = roleMap.get(OrganizationQueries.class);
-         final SelectedResolutions.Data selectedResolutions = roleMap.get(SelectedResolutions.Data.class);
-
-         final LinksBuilder builder = new LinksBuilder(module.valueBuilderFactory()).command( "addresolution" );
-         organizationQueries.visitOrganization( new OrganizationVisitor()
+         @Override
+         public boolean visitOrganizationalUnit( OrganizationalUnit ou )
          {
+            owner = ou;
 
-            Describable owner;
+            return super.visitOrganizationalUnit( ou );
+         }
 
-            @Override
-            public boolean visitOrganizationalUnit( OrganizationalUnit ou )
-            {
-               owner = ou;
+         @Override
+         public boolean visitProject( Project project )
+         {
+            owner = project;
 
-               return super.visitOrganizationalUnit( ou );
-            }
+            return super.visitProject( project );
+         }
 
-            @Override
-            public boolean visitProject( Project project )
-            {
-               owner = project;
+         @Override
+         public boolean visitCaseType( CaseType caseType )
+         {
+            owner = caseType;
 
-               return super.visitProject( project );
-            }
+            return super.visitCaseType( caseType );
+         }
 
-            @Override
-            public boolean visitCaseType( CaseType caseType )
-            {
-               owner = caseType;
+         @Override
+         public boolean visitResolution( Resolution resolution )
+         {
+            if (!selectedResolutions.selectedResolutions().contains( resolution ))
+               builder.addDescribable( resolution, owner );
 
-               return super.visitCaseType( caseType );
-            }
+            return true;
+         }
+      }, new OrganizationQueries.ClassSpecification(
+            OrganizationalUnits.class,
+            OrganizationalUnit.class,
+            Projects.class,
+            CaseTypes.class,
+            CaseType.class,
+            Resolutions.class));
+      return builder.newLinks();
+   }
 
-            @Override
-            public boolean visitResolution( Resolution resolution )
-            {
-               if (!selectedResolutions.selectedResolutions().contains( resolution ))
-                  builder.addDescribable( resolution, owner );
+   public void createresolution( StringValue name )
+   {
+      Resolutions resolutions = RoleMap.role(Resolutions.class);
+      SelectedResolutions selectedResolutions = RoleMap.role(SelectedResolutions.class);
 
-               return true;
-            }
-         }, new OrganizationQueries.ClassSpecification(
-               OrganizationalUnits.class,
-               OrganizationalUnit.class,
-               Projects.class,
-               CaseTypes.class,
-               CaseType.class,
-               Resolutions.class));
-         return builder.newLinks();
-      }
+      Resolution resolution = resolutions.createResolution( name.string().get() );
+      selectedResolutions.addSelectedResolution( resolution );
+   }
 
-      public void createresolution( StringValue name )
-      {
-         Resolutions resolutions = roleMap.get(Resolutions.class);
-         SelectedResolutions selectedResolutions = roleMap.get(SelectedResolutions.class);
+   public void addresolution( EntityValue resolutionDTO )
+   {
+      SelectedResolutions resolutions = RoleMap.role( SelectedResolutions.class);
+      Resolution resolution = module.unitOfWorkFactory().currentUnitOfWork().get( Resolution.class, resolutionDTO.entity().get() );
 
-         Resolution resolution = resolutions.createResolution( name.string().get() );
-         selectedResolutions.addSelectedResolution( resolution );
-      }
-
-      public void addresolution( EntityValue resolutionDTO )
-      {
-         SelectedResolutions resolutions = roleMap.get( SelectedResolutions.class);
-         Resolution resolution = module.unitOfWorkFactory().currentUnitOfWork().get( Resolution.class, resolutionDTO.entity().get() );
-
-         resolutions.addSelectedResolution( resolution );
-      }
-
-      public SelectedResolutionContext context( String id )
-      {
-         roleMap.set( module.unitOfWorkFactory().currentUnitOfWork().get(Resolution.class, id ));
-         return subContext( SelectedResolutionContext.class );
-      }
+      resolutions.addSelectedResolution( resolution );
    }
 }

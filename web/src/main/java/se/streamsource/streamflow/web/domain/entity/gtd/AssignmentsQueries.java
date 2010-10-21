@@ -34,6 +34,7 @@ import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
+import se.streamsource.streamflow.web.domain.structure.caze.Case;
 
 import static org.qi4j.api.query.QueryExpressions.*;
 import static se.streamsource.streamflow.util.Iterables.*;
@@ -41,7 +42,7 @@ import static se.streamsource.streamflow.util.Iterables.*;
 @Mixins(AssignmentsQueries.Mixin.class)
 public interface AssignmentsQueries
 {
-   Query<Assignable> assignments(@Optional Assignee assignee);
+   Query<Case> assignments(@Optional Assignee assignee);
 
    boolean assignmentsHaveActiveCases();
 
@@ -61,13 +62,13 @@ public interface AssignmentsQueries
       @This
       Owner owner;
 
-      public Query<Assignable> assignments( Assignee assignee )
+      public Query<Case> assignments( Assignee assignee )
       {
          Association<Assignee> assignedId = templateFor( Assignable.Data.class ).assignedTo();
          Association<Owner> ownedId = templateFor( Ownable.Data.class ).owner();
 
          // Find all my OPEN cases assigned to optional assignee
-         QueryBuilder<Assignable> openQueryBuilder = qbf.newQueryBuilder( Assignable.class );
+         QueryBuilder<Case> openQueryBuilder = qbf.newQueryBuilder( Case.class );
          openQueryBuilder = openQueryBuilder.where( and(
                eq( templateFor( Status.Data.class ).status(), CaseStates.OPEN ),
                assignee == null ? isNotNull( assignedId ) : eq( assignedId, assignee ),
@@ -75,7 +76,7 @@ public interface AssignmentsQueries
                );
 
          // Find all my ON_HOLD cases assigned to optional assignee
-         QueryBuilder<Assignable> onHoldQueryBuilder = qbf.newQueryBuilder( Assignable.class );
+         QueryBuilder<Case> onHoldQueryBuilder = qbf.newQueryBuilder( Case.class );
          onHoldQueryBuilder = onHoldQueryBuilder.where( and(
                eq( templateFor( Status.Data.class ).status(), CaseStates.ON_HOLD ),
                assignee == null ? isNotNull( assignedId ) : eq( assignedId, assignee ),
@@ -83,8 +84,8 @@ public interface AssignmentsQueries
                );
 
 
-         Iterable<Assignable> assignables = flatten(openQueryBuilder.newQuery(uowf.currentUnitOfWork() ), onHoldQueryBuilder.newQuery( uowf.currentUnitOfWork() ));
-         return qbf.newQueryBuilder( Assignable.class ).newQuery( assignables );
+         Iterable<Case> assignables = flatten(openQueryBuilder.newQuery(uowf.currentUnitOfWork() ), onHoldQueryBuilder.newQuery( uowf.currentUnitOfWork() ));
+         return qbf.newQueryBuilder( Case.class ).newQuery( assignables );
       }
 
       public boolean assignmentsHaveActiveCases()

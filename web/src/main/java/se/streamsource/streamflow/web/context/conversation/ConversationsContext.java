@@ -25,9 +25,8 @@ import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.library.constraints.annotation.MaxLength;
 import se.streamsource.dci.api.Context;
-import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.IndexContext;
-import se.streamsource.dci.api.SubContexts;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.StringValueMaxLength;
@@ -49,12 +48,11 @@ import se.streamsource.streamflow.web.domain.structure.created.Creator;
 @Constraints(StringValueMaxLength.class)
 public interface ConversationsContext
       extends
-      SubContexts<ConversationContext>, IndexContext<LinksValue>, Context
+      IndexContext<LinksValue>, Context
 {
    public void create( @MaxLength(50) StringValue topic );
 
    abstract class Mixin
-         extends ContextMixin
          implements ConversationsContext
    {
       @Structure
@@ -65,7 +63,7 @@ public interface ConversationsContext
          LinksBuilder links = new LinksBuilder( module.valueBuilderFactory() );
          ValueBuilder<ConversationDTO> builder = module.valueBuilderFactory().newValueBuilder( ConversationDTO.class );
 
-         Conversations.Data conversations = roleMap.get( Conversations.Data.class );
+         Conversations.Data conversations = RoleMap.role( Conversations.Data.class );
 
          for (Conversation conversation : conversations.conversations())
          {
@@ -84,17 +82,10 @@ public interface ConversationsContext
 
       public void create( StringValue topic )
       {
-         Conversations conversations = roleMap.get( Conversations.class );
-         Conversation conversation = conversations.createConversation( topic.string().get(), roleMap.get( Creator.class ) );
-         ((ConversationEntity) conversation).addParticipant( roleMap.get( ConversationParticipant.class ) );
+         Conversations conversations = RoleMap.role( Conversations.class );
+         Conversation conversation = conversations.createConversation( topic.string().get(), RoleMap.role( Creator.class ) );
+         ((ConversationEntity) conversation).addParticipant( RoleMap.role( ConversationParticipant.class ) );
 
-      }
-
-      public ConversationContext context( String id )
-      {
-         roleMap.set( module.unitOfWorkFactory().currentUnitOfWork().get( Conversation.class, id ) );
-
-         return subContext( ConversationContext.class );
       }
    }
 }

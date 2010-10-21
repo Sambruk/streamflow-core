@@ -18,13 +18,10 @@
 package se.streamsource.streamflow.web.context.conversation;
 
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
-import se.streamsource.dci.api.Context;
-import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.IndexContext;
-import se.streamsource.dci.api.SubContext;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.resource.conversation.ConversationDTO;
 import se.streamsource.streamflow.web.domain.entity.conversation.ConversationEntity;
@@ -34,56 +31,25 @@ import se.streamsource.streamflow.web.domain.structure.conversation.Messages;
 /**
  * JAVADOC
  */
-@Mixins(ConversationContext.Mixin.class)
-public interface ConversationContext
-      extends /*DeleteContext,*/ Context, IndexContext<ConversationDTO>
+public class ConversationContext
+      implements IndexContext<ConversationDTO>
 {
-   @SubContext
-   MessagesContext messages();
+   @Structure
+   Module module;
 
-   @SubContext
-   ConversationParticipantsContext participants();
-
-   abstract class Mixin
-         extends ContextMixin
-         implements ConversationContext
+   public ConversationDTO index()
    {
-      @Structure
-      Module module;
+      ValueBuilder<ConversationDTO> builder = module.valueBuilderFactory().newValueBuilder( ConversationDTO.class );
+      ConversationEntity conversation = RoleMap.role( ConversationEntity.class );
 
-      public ConversationDTO index()
-      {
-         ValueBuilder<ConversationDTO> builder = module.valueBuilderFactory().newValueBuilder( ConversationDTO.class );
-         ConversationEntity conversation = roleMap.get( ConversationEntity.class );
+      builder.prototype().id().set( conversation.identity().get() );
+      builder.prototype().href().set( conversation.identity().get() );
+      builder.prototype().text().set( conversation.getDescription() );
+      builder.prototype().creationDate().set( conversation.createdOn().get() );
+      builder.prototype().creator().set( ((Describable) conversation.createdBy().get()).getDescription() );
+      builder.prototype().messages().set( ((Messages.Data) conversation).messages().count() );
+      builder.prototype().participants().set( ((ConversationParticipants.Data) conversation).participants().count() );
 
-         builder.prototype().id().set( conversation.identity().get() );
-         builder.prototype().href().set( conversation.identity().get() );                           
-         builder.prototype().text().set( conversation.getDescription() );
-         builder.prototype().creationDate().set( conversation.createdOn().get() );
-         builder.prototype().creator().set( ((Describable)conversation.createdBy().get() ).getDescription());
-         builder.prototype().messages().set( ((Messages.Data)conversation).messages().count() );
-         builder.prototype().participants().set( ((ConversationParticipants.Data)conversation).participants().count() );
-
-         return builder.newInstance();
-      }
-
-      /*public void delete()
-      {
-         Conversations conversations = roleMap.role(Conversations.class);
-         Integer index = roleMap.role(Integer.class);
-
-         conversations.deleteConversation( index );
-
-      } */
-
-      public ConversationParticipantsContext participants()
-      {
-         return subContext( ConversationParticipantsContext.class );
-      }
-
-      public MessagesContext messages()
-      {
-         return subContext( MessagesContext.class );
-      }
+      return builder.newInstance();
    }
 }

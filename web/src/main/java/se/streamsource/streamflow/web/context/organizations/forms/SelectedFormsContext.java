@@ -17,17 +17,14 @@
 
 package se.streamsource.streamflow.web.context.organizations.forms;
 
-import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
-import se.streamsource.dci.api.Context;
-import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.IndexContext;
-import se.streamsource.dci.api.SubContexts;
 import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationQueries;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationVisitor;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
@@ -41,108 +38,97 @@ import se.streamsource.streamflow.web.domain.structure.organization.Organization
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.project.Projects;
 
+import static se.streamsource.dci.api.RoleMap.*;
+
 /**
  * JAVADOC
  */
-@Mixins(SelectedFormsContext.Mixin.class)
-public interface SelectedFormsContext
-   extends SubContexts<SelectedFormContext>, IndexContext<LinksValue>, Context
+public class SelectedFormsContext
+      implements IndexContext<LinksValue>
 {
-   public LinksValue possibleforms();
+   @Structure
+   Module module;
 
-   public void addform( EntityValue caseTypeDTO );
-
-   abstract class Mixin
-      extends ContextMixin
-      implements SelectedFormsContext
+   public LinksValue index()
    {
-      public LinksValue index()
+      SelectedForms.Data forms = role( SelectedForms.Data.class );
+
+      return new LinksBuilder( module.valueBuilderFactory() ).rel( "selectedform" ).addDescribables( forms.selectedForms() ).newLinks();
+   }
+
+   public LinksValue possibleforms()
+   {
+      OrganizationQueries organizationQueries = role( OrganizationQueries.class );
+
+      final SelectedForms.Data selectedForms = role( SelectedForms.Data.class );
+
+      final LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() ).command( "addform" );
+
+      organizationQueries.visitOrganization( new OrganizationVisitor()
       {
-         SelectedForms.Data forms = roleMap.get(SelectedForms.Data.class);
 
-         return new LinksBuilder( module.valueBuilderFactory() ).rel("selectedform").addDescribables( forms.selectedForms() ).newLinks();
-      }
+         Describable owner;
 
-      public LinksValue possibleforms()
-      {
-         OrganizationQueries organizationQueries = roleMap.get(OrganizationQueries.class);
-
-         final SelectedForms.Data selectedForms = roleMap.get(SelectedForms.Data.class);
-
-         final LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() ).command( "addform" );
-
-         organizationQueries.visitOrganization( new OrganizationVisitor()
+         @Override
+         public boolean visitOrganization( Organization org )
          {
+            owner = org;
 
-            Describable owner;
+            return super.visitOrganization( org );
+         }
 
-            @Override
-            public boolean visitOrganization( Organization org )
-            {
-               owner = org;
+         @Override
+         public boolean visitOrganizationalUnit( OrganizationalUnit ou )
+         {
+            owner = ou;
 
-               return super.visitOrganization( org );
-            }
+            return super.visitOrganizationalUnit( ou );
+         }
 
-            @Override
-            public boolean visitOrganizationalUnit( OrganizationalUnit ou )
-            {
-               owner = ou;
+         @Override
+         public boolean visitProject( Project project )
+         {
+            owner = project;
 
-               return super.visitOrganizationalUnit( ou );
-            }
+            return super.visitProject( project );
+         }
 
-            @Override
-            public boolean visitProject( Project project )
-            {
-               owner = project;
+         @Override
+         public boolean visitCaseType( CaseType caseType )
+         {
+            owner = caseType;
 
-               return super.visitProject( project );
-            }
+            return super.visitCaseType( caseType );
+         }
 
-            @Override
-            public boolean visitCaseType( CaseType caseType )
-            {
-               owner = caseType;
+         @Override
+         public boolean visitForm( Form form )
+         {
+            if (!selectedForms.selectedForms().contains( form ))
+               builder.addDescribable( form, owner );
 
-               return super.visitCaseType( caseType );
-            }
+            return true;
+         }
+      }, new OrganizationQueries.ClassSpecification(
+            Organization.class,
+            OrganizationalUnits.class,
+            OrganizationalUnit.class,
+            Projects.class,
+            Project.class,
+            CaseTypes.class,
+            CaseType.class,
+            Forms.class ) );
 
-            @Override
-            public boolean visitForm( Form form )
-            {
-               if (!selectedForms.selectedForms().contains( form ))
-                  builder.addDescribable( form, owner );
+      return builder.newLinks();
+   }
 
-               return true;
-            }
-         }, new OrganizationQueries.ClassSpecification(
-               Organization.class,
-               OrganizationalUnits.class,
-               OrganizationalUnit.class,
-               Projects.class,
-               Project.class,
-               CaseTypes.class,
-               CaseType.class,
-               Forms.class));
+   public void addform( EntityValue formDTO )
+   {
+      UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
 
-         return builder.newLinks();
-      }
+      SelectedForms selectedForms = role( SelectedForms.class );
+      Form form = uow.get( Form.class, formDTO.entity().get() );
 
-      public void addform( EntityValue formDTO )
-      {
-         UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
-
-         SelectedForms selectedForms = roleMap.get(SelectedForms.class);
-         Form form = uow.get( Form.class, formDTO.entity().get() );
-
-         selectedForms.addSelectedForm( form );
-      }
-
-      public SelectedFormContext context( String id )
-      {
-         roleMap.set( module.unitOfWorkFactory().currentUnitOfWork().get( Form.class, id ));
-         return subContext( SelectedFormContext.class );
-      }
+      selectedForms.addSelectedForm( form );
    }
 }

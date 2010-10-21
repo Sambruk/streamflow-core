@@ -53,7 +53,6 @@ public class StreamflowWebContextTestAssembler
       appLayer.moduleAssembly( "Pdf" ).addServices( SubmittedFormPdfGenerator.class ).visibleIn( application );
       new BootstrapAssembler().assemble( appLayer.moduleAssembly( "Bootstrap" ) );
 
-
       ApplicationAssembly applicationAssembly = appLayer.applicationAssembly();
       LayerAssembly layer1 = applicationAssembly.layerAssembly( "Layer 1" );
       layer1.uses(

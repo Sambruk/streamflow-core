@@ -530,7 +530,5 @@ public interface CaseStatisticsService
             statisticsStore.removedCase( id );
          }
       }
-
-
    }
 }

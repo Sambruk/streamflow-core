@@ -44,6 +44,6 @@ public class CasesTableModel
 
    public void refresh()
    {
-      EventListSynch.synchronize( client.query( "cases", LinksValue.class ).links().get(), eventList );
+      EventListSynch.synchronize( client.query( "index", LinksValue.class ).links().get(), eventList );
    }
 }

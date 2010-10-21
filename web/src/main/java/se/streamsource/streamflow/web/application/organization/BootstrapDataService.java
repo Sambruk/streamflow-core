@@ -30,6 +30,7 @@ import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.domain.contact.ContactValue;
 import se.streamsource.streamflow.util.Specification;
 import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity;
@@ -76,6 +77,7 @@ public interface BootstrapDataService
       public void activate() throws Exception
       {
          UnitOfWork uow = uowf.newUnitOfWork( newUsecase( "Bootstrap data" ) );
+         RoleMap.newCurrentRoleMap();
          try
          {
             UsersEntity users;

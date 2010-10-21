@@ -17,18 +17,16 @@
 
 package se.streamsource.streamflow.web.context.organizations;
 
-import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
-import se.streamsource.dci.api.Context;
-import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.IndexContext;
-import se.streamsource.dci.api.SubContexts;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationParticipationsQueries;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationParticipations;
@@ -36,55 +34,43 @@ import se.streamsource.streamflow.web.domain.structure.user.User;
 import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
 
 import static org.qi4j.api.query.QueryExpressions.*;
+import static se.streamsource.dci.api.RoleMap.*;
 
 /**
  * JAVADOC
  */
-@Mixins(OrganizationUsersContext.Mixin.class)
-public interface OrganizationUsersContext
-   extends SubContexts<OrganizationUserContext>, IndexContext<LinksValue>, Context
+public class OrganizationUsersContext
+      implements IndexContext<LinksValue>
 {
-   public LinksValue possibleusers();
+   @Structure
+   Module module;
 
-   public void join( EntityValue userDTO );
-
-   abstract class Mixin
-      extends ContextMixin
-      implements OrganizationUsersContext
+   public LinksValue index()
    {
-      public LinksValue index()
-      {
-         OrganizationParticipationsQueries participants = roleMap.get(OrganizationParticipationsQueries.class);
+      OrganizationParticipationsQueries participants = role( OrganizationParticipationsQueries.class );
 
-         QueryBuilder<User> builder = participants.users();
-         Query<User> query = builder.newQuery( module.unitOfWorkFactory().currentUnitOfWork() ).orderBy( orderBy( templateFor( UserAuthentication.Data.class ).userName() ) );
+      QueryBuilder<User> builder = participants.users();
+      Query<User> query = builder.newQuery( module.unitOfWorkFactory().currentUnitOfWork() ).orderBy( orderBy( templateFor( UserAuthentication.Data.class ).userName() ) );
 
-         return new LinksBuilder(module.valueBuilderFactory()).rel( "user" ).addDescribables( query ).newLinks();
-      }
+      return new LinksBuilder( module.valueBuilderFactory() ).rel( "user" ).addDescribables( query ).newLinks();
+   }
 
-      public LinksValue possibleusers()
-      {
-         OrganizationParticipationsQueries participants = roleMap.get(OrganizationParticipationsQueries.class);
+   public LinksValue possibleusers()
+   {
+      OrganizationParticipationsQueries participants = role( OrganizationParticipationsQueries.class );
 
-         Query<User> query = participants.possibleUsers();
+      Query<User> query = participants.possibleUsers();
 
-         return new LinksBuilder(module.valueBuilderFactory()).command( "join" ).addDescribables( query ).newLinks();
-      }
+      return new LinksBuilder( module.valueBuilderFactory() ).command( "join" ).addDescribables( query ).newLinks();
+   }
 
-      public void join( EntityValue userDTO )
-      {
-         UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
+   public void join( EntityValue userDTO )
+   {
+      UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
 
-         Organization org = roleMap.get( Organization.class );
+      Organization org = role( Organization.class );
 
-         OrganizationParticipations user = uow.get( OrganizationParticipations.class, userDTO.entity().get() );
-         user.join( org );
-      }
-
-      public OrganizationUserContext context( String id )
-      {
-         roleMap.set( module.unitOfWorkFactory().currentUnitOfWork().get( User.class, id ));
-         return subContext( OrganizationUserContext.class );
-      }
+      OrganizationParticipations user = uow.get( OrganizationParticipations.class, userDTO.entity().get() );
+      user.join( org );
    }
 }

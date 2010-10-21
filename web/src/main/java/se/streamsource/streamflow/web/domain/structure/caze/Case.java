@@ -18,12 +18,19 @@
 package se.streamsource.streamflow.web.domain.structure.caze;
 
 import se.streamsource.streamflow.domain.structure.Describable;
+import se.streamsource.streamflow.domain.structure.Notable;
 import se.streamsource.streamflow.domain.structure.Removable;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
+import se.streamsource.streamflow.web.domain.interaction.gtd.CompletableId;
+import se.streamsource.streamflow.web.domain.interaction.gtd.DueOn;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachments;
 import se.streamsource.streamflow.web.domain.structure.casetype.Resolvable;
 import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationOwner;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversations;
+import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
 import se.streamsource.streamflow.web.domain.structure.form.FormDrafts;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedForms;
 import se.streamsource.streamflow.web.domain.structure.label.Labelable;
@@ -33,11 +40,18 @@ import se.streamsource.streamflow.web.domain.structure.label.Labelable;
  */
 public interface Case
       extends
+      Assignable,
+      Describable,
+      DueOn,
+      Notable,
+      Ownable,
+      CompletableId,
+      Status,
+      CreatedOn,
       Attachments,
       Contacts,
       Conversations,
       ConversationOwner,
-      Describable,
       Labelable,
       Removable,
       Resolvable,

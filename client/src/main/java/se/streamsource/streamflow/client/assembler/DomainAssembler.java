@@ -22,7 +22,6 @@ import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.dci.value.ContextValue;
 import se.streamsource.streamflow.client.domain.individual.AccountEntity;
 import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
 import se.streamsource.streamflow.client.domain.individual.IndividualEntity;
@@ -39,8 +38,8 @@ public class DomainAssembler
    {
       new CommonDomainAssembler().assemble( layer );
 
-      individual(layer.moduleAssembly( "Individual" ));
-      restDomainModel(layer.moduleAssembly( "REST domain model" ));
+      individual( layer.moduleAssembly( "Individual" ) );
+      restDomainModel( layer.moduleAssembly( "REST domain model" ) );
    }
 
    private void individual( ModuleAssembly module ) throws AssemblyException
@@ -58,7 +57,5 @@ public class DomainAssembler
       // /users
       module.addObjects( CommandQueryClient.class
       ).visibleIn( Visibility.application );
-
-      module.addValues( ContextValue.class );
    }
 }

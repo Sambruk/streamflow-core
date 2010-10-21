@@ -23,8 +23,8 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
 import org.qi4j.library.constraints.annotation.MaxLength;
 import se.streamsource.dci.api.Context;
-import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.api.SubContexts;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.StringValue;
@@ -33,40 +33,34 @@ import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.label.Labels;
 
+import static se.streamsource.dci.api.RoleMap.role;
+
 /**
  * JAVADOC
  */
 @Mixins(LabelsContext.Mixin.class)
 @Constraints(StringValueMaxLength.class)
 public interface LabelsContext
-      extends Context, SubContexts<LabelContext>, IndexContext<LinksValue>
+      extends Context, IndexContext<Iterable<Label>>
 {
    void createlabel( @MaxLength(50) StringValue name );
 
    abstract class Mixin
-         extends ContextMixin
          implements LabelsContext
    {
       @Structure
       Module module;
 
-      public LinksValue index()
+      public Iterable<Label> index()
       {
-         return new LinksBuilder( module.valueBuilderFactory() ).rel( "label" ).addDescribables( roleMap.get( Labels.class ).getLabels() ).newLinks();
+         return role( Labels.Data.class ).labels();
       }
 
       public void createlabel( StringValue name )
       {
-         Labels labels = roleMap.get( Labels.class );
+         Labels labels = role( Labels.class );
 
          labels.createLabel( name.string().get() );
-      }
-
-      public LabelContext context( String id )
-      {
-         roleMap.set( module.unitOfWorkFactory().currentUnitOfWork().get( Label.class, id ) );
-
-         return subContext( LabelContext.class );
       }
    }
 }

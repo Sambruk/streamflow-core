@@ -36,6 +36,37 @@ import java.util.Map;
  */
 public class RoleMap
 {
+   private static ThreadLocal<RoleMap> currentRoleMap = new ThreadLocal<RoleMap>();
+
+   public static RoleMap current()
+   {
+      return currentRoleMap.get();
+   }
+
+   public static <T> T role(Class<T> roleClass)
+   {
+      RoleMap map = currentRoleMap.get();
+      if (map == null)
+         throw new IllegalStateException("No current role map");
+
+      return map.get( roleClass );
+   }
+
+   public static void setCurrentRoleMap(RoleMap roleMap)
+   {
+      currentRoleMap.set( roleMap );
+   }
+
+   public static void newCurrentRoleMap()
+   {
+      currentRoleMap.set( new RoleMap() );
+   }
+
+   public static void clearCurrentRoleMap()
+   {
+      currentRoleMap.remove();
+   }
+
    private Map<Class, Object> roles = new HashMap<Class, Object>( );
 
    private RoleMap parentRoleMap;

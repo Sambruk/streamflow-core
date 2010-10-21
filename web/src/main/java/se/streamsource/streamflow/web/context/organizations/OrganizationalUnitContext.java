@@ -18,23 +18,15 @@
 package se.streamsource.streamflow.web.context.organizations;
 
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
-import se.streamsource.dci.api.Context;
-import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.DeleteContext;
-import se.streamsource.dci.api.SubContext;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.EntityValue;
 import se.streamsource.streamflow.domain.organization.MergeOrganizationalUnitException;
 import se.streamsource.streamflow.domain.organization.MoveOrganizationalUnitException;
 import se.streamsource.streamflow.domain.organization.OpenProjectExistsException;
-import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
-import se.streamsource.streamflow.web.context.organizations.forms.FormsContext;
-import se.streamsource.streamflow.web.context.structure.DescribableContext;
-import se.streamsource.streamflow.web.context.structure.labels.LabelsContext;
-import se.streamsource.streamflow.web.context.structure.labels.SelectedLabelsContext;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnitRefactoring;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnits;
@@ -42,125 +34,51 @@ import se.streamsource.streamflow.web.domain.structure.organization.Organization
 /**
  * JAVADOC
  */
-@Mixins(OrganizationalUnitContext.Mixin.class)
-public interface OrganizationalUnitContext
-   extends DescribableContext, DeleteContext, Context
+public class OrganizationalUnitContext
+      implements DeleteContext
 {
-   public void move( EntityValue moveValue ) throws ResourceException;
-   public void merge( EntityValue moveValue ) throws ResourceException;
+   @Structure
+   UnitOfWorkFactory uowf;
 
-   @SubContext
-   AdministratorsContext administrators();
-
-   @SubContext
-   GroupsContext groups();
-
-   @SubContext
-   ProjectsContext projects();
-
-   @SubContext
-   FormsContext forms();
-
-   @SubContext
-   CaseTypesContext casetypes();
-
-   @SubContext
-   LabelsContext labels();
-
-   @SubContext
-   SelectedLabelsContext selectedlabels();
-
-   @SubContext
-   OrganizationalUnitsContext organizationalunits();
-
-   abstract class Mixin
-      extends ContextMixin
-      implements OrganizationalUnitContext
+   public void move( EntityValue moveValue ) throws ResourceException
    {
-      @Structure
-      UnitOfWorkFactory uowf;
+      OrganizationalUnitRefactoring ou = RoleMap.role( OrganizationalUnitRefactoring.class );
+      OrganizationalUnits toEntity = uowf.currentUnitOfWork().get( OrganizationalUnits.class, moveValue.entity().get() );
 
-      public void move( EntityValue moveValue ) throws ResourceException
+      try
       {
-         OrganizationalUnitRefactoring ou = roleMap.get(OrganizationalUnitRefactoring.class);
-         OrganizationalUnits toEntity = uowf.currentUnitOfWork().get( OrganizationalUnits.class, moveValue.entity().get() );
-
-         try
-         {
-            ou.moveOrganizationalUnit( toEntity );
-         } catch (MoveOrganizationalUnitException e)
-         {
-            throw new ResourceException( Status.CLIENT_ERROR_CONFLICT );
-         }
+         ou.moveOrganizationalUnit( toEntity );
+      } catch (MoveOrganizationalUnitException e)
+      {
+         throw new ResourceException( Status.CLIENT_ERROR_CONFLICT );
       }
+   }
 
-      public void merge( EntityValue moveValue ) throws ResourceException
+   public void merge( EntityValue moveValue ) throws ResourceException
+   {
+      OrganizationalUnitRefactoring ou = RoleMap.role( OrganizationalUnitRefactoring.class );
+      OrganizationalUnit toEntity = uowf.currentUnitOfWork().get( OrganizationalUnit.class, moveValue.entity().get() );
+
+      try
       {
-         OrganizationalUnitRefactoring ou = roleMap.get(OrganizationalUnitRefactoring.class);
-         OrganizationalUnit toEntity = uowf.currentUnitOfWork().get( OrganizationalUnit.class, moveValue.entity().get() );
-
-         try
-         {
-            ou.mergeOrganizationalUnit( toEntity );
-         } catch (MergeOrganizationalUnitException e)
-         {
-            throw new ResourceException( Status.CLIENT_ERROR_CONFLICT );
-         }
+         ou.mergeOrganizationalUnit( toEntity );
+      } catch (MergeOrganizationalUnitException e)
+      {
+         throw new ResourceException( Status.CLIENT_ERROR_CONFLICT );
       }
+   }
 
-      public void delete() throws ResourceException
+   public void delete() throws ResourceException
+   {
+      OrganizationalUnitRefactoring ou = RoleMap.role( OrganizationalUnitRefactoring.class );
+
+      try
       {
-         OrganizationalUnitRefactoring ou = roleMap.get(OrganizationalUnitRefactoring.class);
+         ou.deleteOrganizationalUnit();
 
-         try
-         {
-            ou.deleteOrganizationalUnit();
-
-         } catch (OpenProjectExistsException pe)
-         {
-            throw new ResourceException( Status.CLIENT_ERROR_CONFLICT, pe.getMessage() );
-         }
-      }
-
-
-      public AdministratorsContext administrators()
+      } catch (OpenProjectExistsException pe)
       {
-         return subContext( AdministratorsContext.class );
-      }
-
-      public GroupsContext groups()
-      {
-         return subContext( GroupsContext.class );
-      }
-
-      public ProjectsContext projects()
-      {
-         return subContext( ProjectsContext.class );
-      }
-
-      public FormsContext forms()
-      {
-         return subContext( FormsContext.class );
-      }
-
-      public CaseTypesContext casetypes()
-      {
-         return subContext( CaseTypesContext.class );
-      }
-
-      public LabelsContext labels()
-      {
-         return subContext(LabelsContext.class);
-      }
-
-      public SelectedLabelsContext selectedlabels()
-      {
-         return subContext( SelectedLabelsContext.class );
-      }
-
-      public OrganizationalUnitsContext organizationalunits()
-      {
-         return subContext( OrganizationalUnitsContext.class );
+         throw new ResourceException( Status.CLIENT_ERROR_CONFLICT, pe.getMessage() );
       }
    }
 }

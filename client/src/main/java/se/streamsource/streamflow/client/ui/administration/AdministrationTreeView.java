@@ -33,7 +33,7 @@ import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.dci.value.ContextValue;
+import se.streamsource.dci.value.ResourceValue;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
@@ -72,7 +72,7 @@ import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
  */
 public class AdministrationTreeView
       extends JPanel
-   implements TransactionListener
+      implements TransactionListener
 {
    private JXTree tree;
 
@@ -93,7 +93,7 @@ public class AdministrationTreeView
    ObjectBuilderFactory obf;
 
    public AdministrationTreeView( @Service ApplicationContext context,
-                                     @Uses CommandQueryClient client, @Structure ObjectBuilderFactory obf) throws Exception
+                                  @Uses CommandQueryClient client, @Structure ObjectBuilderFactory obf ) throws Exception
    {
       super( new BorderLayout() );
       this.model = obf.newObjectBuilder( AdministrationModel.class ).use( client ).newInstance();
@@ -109,7 +109,7 @@ public class AdministrationTreeView
                {
                   DefaultMutableTreeNode node = (DefaultMutableTreeNode) o;
                   ContextItem clientInfo = (ContextItem) node.getUserObject();
-                  return i18n.icon( Icons.valueOf(clientInfo.getRelation()));
+                  return i18n.icon( Icons.valueOf( clientInfo.getRelation() ) );
                }
             },
             new StringValue()
@@ -128,7 +128,7 @@ public class AdministrationTreeView
       JPanel toolbar = new JPanel();
       toolbar.setBorder( BorderFactory.createEtchedBorder() );
 
-      add( new JScrollPane(tree), BorderLayout.CENTER );
+      add( new JScrollPane( tree ), BorderLayout.CENTER );
 
       final ActionMap am = context.getActionMap( this );
 
@@ -140,19 +140,19 @@ public class AdministrationTreeView
       adminPopup.add( am.get( "merge" ) );
 
       JPanel actions = new JPanel();
-      actions.add(new JButton(am.get( "createOrganizationalUnit" )));
-      actions.add(new JButton(new OptionsAction(adminPopup)));
+      actions.add( new JButton( am.get( "createOrganizationalUnit" ) ) );
+      actions.add( new JButton( new OptionsAction( adminPopup ) ) );
 
-      add( actions, BorderLayout.SOUTH);
+      add( actions, BorderLayout.SOUTH );
 
       new RefreshWhenVisible( this, model );
 
       tree.getSelectionModel().addTreeSelectionListener( new SelectionActionEnabler(
             am.get( "changeDescription" ),
             am.get( "delete" ),
-            am.get( "move"),
-            am.get( "merge"),
-            am.get( "createOrganizationalUnit"))
+            am.get( "move" ),
+            am.get( "merge" ),
+            am.get( "createOrganizationalUnit" ) )
       {
          private List<String> commands = new ArrayList<String>();
 
@@ -162,9 +162,9 @@ public class AdministrationTreeView
             commands.clear();
             ContextItem contextItem = (ContextItem) ((DefaultMutableTreeNode) (tree.getSelectionPath().getLastPathComponent())).getUserObject();
             CommandQueryClient client = contextItem.getClient();
-            commands.addAll( client.query( "", ContextValue.class ).commands().get());
-            if (!contextItem.getRelation().equals("account"))
-               commands.addAll( client.getSubClient( "organizationalunits" ).query( "", ContextValue.class ).commands().get());
+            commands.addAll( client.query( "", ResourceValue.class ).commands().get() );
+            if (!contextItem.getRelation().equals( "account" ))
+               commands.addAll( client.getSubClient( "organizationalunits" ).query( "", ResourceValue.class ).commands().get() );
          }
 
          @Override
@@ -174,7 +174,7 @@ public class AdministrationTreeView
             boolean valid = commands.contains( actionName );
             return valid;
          }
-      });
+      } );
 
    }
 
@@ -203,7 +203,7 @@ public class AdministrationTreeView
             {
                @Override
                public void command()
-                  throws Exception
+                     throws Exception
                {
                   client.getClient().putCommand( "changedescription", builder.newInstance() );
                }
@@ -248,7 +248,7 @@ public class AdministrationTreeView
 
       ConfirmationDialog dialog = confirmationDialog.iterator().next();
       DefaultMutableTreeNode mutableTreeNode = (DefaultMutableTreeNode) node;
-      String name = ((ContextItem)mutableTreeNode.getUserObject()).getName();
+      String name = ((ContextItem) mutableTreeNode.getUserObject()).getName();
 
       dialog.setRemovalMessage( name );
       dialogs.showOkCancelHelpDialog( this, dialog, text( StreamflowResources.confirmation ) );
@@ -301,7 +301,7 @@ public class AdministrationTreeView
 
    public void notifyTransactions( Iterable<TransactionEvents> transactions )
    {
-      if (Events.matches( transactions, Events.withNames("changedDescription", "removedOrganizationalUnit", "addedOrganizationalUnit" )))
+      if (Events.matches( transactions, Events.withNames( "changedDescription", "removedOrganizationalUnit", "addedOrganizationalUnit" ) ))
          model.notifyTransactions( transactions );
    }
 }

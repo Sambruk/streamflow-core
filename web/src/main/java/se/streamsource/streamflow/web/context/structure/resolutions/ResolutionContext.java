@@ -17,15 +17,14 @@
 
 package se.streamsource.streamflow.web.context.structure.resolutions;
 
-import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.query.Query;
-import se.streamsource.dci.api.Context;
-import se.streamsource.dci.api.ContextMixin;
+import org.qi4j.api.structure.Module;
 import se.streamsource.dci.api.DeleteContext;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.web.context.structure.DescribableContext;
 import se.streamsource.streamflow.web.domain.structure.casetype.Resolution;
 import se.streamsource.streamflow.web.domain.structure.casetype.Resolutions;
 import se.streamsource.streamflow.web.domain.structure.casetype.SelectedResolutions;
@@ -33,36 +32,29 @@ import se.streamsource.streamflow.web.domain.structure.casetype.SelectedResoluti
 /**
  * JAVADOC
  */
-@Mixins(ResolutionContext.Mixin.class)
-public interface ResolutionContext
-      extends DescribableContext,
-      DeleteContext,
-      Context
+public class ResolutionContext
+      implements DeleteContext
 {
-   LinksValue usages();
+   @Structure
+   Module module;
 
-   abstract class Mixin
-         extends ContextMixin
-         implements ResolutionContext
+   public LinksValue usages()
    {
-      public LinksValue usages()
+      Query<SelectedResolutions> usageQuery = RoleMap.role( Resolutions.class ).usages( RoleMap.role( Resolution.class ) );
+      LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() ); // TODO What to use for path here?
+      for (SelectedResolutions selectedResolutions : usageQuery)
       {
-         Query<SelectedResolutions> usageQuery = roleMap.get( Resolutions.class).usages( roleMap.get( Resolution.class) );
-         LinksBuilder builder = new LinksBuilder(module.valueBuilderFactory()); // TODO What to use for path here?
-         for (SelectedResolutions selectedResolutions : usageQuery)
-         {
-            builder.addDescribable( (Describable) selectedResolutions );
-         }
-
-         return builder.newLinks();
+         builder.addDescribable( (Describable) selectedResolutions );
       }
 
-      public void delete()
-      {
-         Resolutions resolutions = roleMap.get( Resolutions.class );
-         Resolution resolution = roleMap.get( Resolution.class );
+      return builder.newLinks();
+   }
 
-         resolutions.removeResolution( resolution );
-      }
+   public void delete()
+   {
+      Resolutions resolutions = RoleMap.role( Resolutions.class );
+      Resolution resolution = RoleMap.role( Resolution.class );
+
+      resolutions.removeResolution( resolution );
    }
 }

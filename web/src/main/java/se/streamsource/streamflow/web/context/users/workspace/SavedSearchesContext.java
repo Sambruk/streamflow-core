@@ -18,13 +18,9 @@
 package se.streamsource.streamflow.web.context.users.workspace;
 
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
-import se.streamsource.dci.api.Context;
-import se.streamsource.dci.api.ContextMixin;
-import se.streamsource.dci.api.ContextNotFoundException;
 import se.streamsource.dci.api.IndexContext;
-import se.streamsource.dci.api.SubContexts;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.infrastructure.application.TitledLinksBuilder;
 import se.streamsource.streamflow.resource.user.profile.SearchValue;
@@ -34,42 +30,27 @@ import se.streamsource.streamflow.web.domain.structure.user.profile.SavedSearch;
 /**
  * JAVADOC
  */
-@Mixins(SavedSearchesContext.Mixin.class)
-public interface SavedSearchesContext
-      extends SubContexts<SavedSearchContext>, IndexContext<LinksValue>, Context
+public class SavedSearchesContext
+      implements IndexContext<LinksValue>
 {
-   public void createsearch( SearchValue search );
+   @Structure
+   Module module;
 
-   abstract class Mixin
-         extends ContextMixin
-         implements IndexContext<LinksValue>,
-         SavedSearchesContext
+   public LinksValue index()
    {
-      @Structure
-      Module module;
-
-      public LinksValue index()
+      TitledLinksBuilder builder = new TitledLinksBuilder( module.valueBuilderFactory() );
+      SavedSearches.Data searches = RoleMap.role( SavedSearches.Data.class );
+      for (SavedSearch search : searches.searches().toList())
       {
-         TitledLinksBuilder builder = new TitledLinksBuilder( module.valueBuilderFactory() );
-         SavedSearches.Data searches = roleMap.get( SavedSearches.Data.class );
-         for (SavedSearch search : searches.searches().toList())
-         {
-            builder.addDescribable( search, ((SavedSearch.Data) search).query().get() );
-         }
-
-         return builder.newLinks();
+         builder.addDescribable( search, ((SavedSearch.Data) search).query().get() );
       }
 
-      public void createsearch( SearchValue search )
-      {
-         SavedSearches searches = roleMap.get( SavedSearches.class );
-         searches.createSavedSearch( search );
-      }
+      return builder.newLinks();
+   }
 
-      public SavedSearchContext context( String id ) throws ContextNotFoundException
-      {
-         roleMap.set( module.unitOfWorkFactory().currentUnitOfWork().get( SavedSearch.class, id ) );
-         return subContext( SavedSearchContext.class );
-      }
+   public void createsearch( SearchValue search )
+   {
+      SavedSearches searches = RoleMap.role( SavedSearches.class );
+      searches.createSavedSearch( search );
    }
 }

@@ -95,9 +95,13 @@ public class UncaughtExceptionHandler implements Thread.UncaughtExceptionHandler
                {
                   showErrorDialog( ex, frame, text( ErrorResources.unauthorized_access ) );
                   return;
-               }else if (re.getStatus().equals(Status.CONNECTOR_ERROR_COMMUNICATION))
+               } else if (re.getStatus().equals(Status.CONNECTOR_ERROR_COMMUNICATION))
                {
                   showErrorDialog( ex, frame, text( ErrorResources.unauthorized_access ) );
+                  return;
+               } else
+               {
+                  showErrorDialog( ex, frame, re.getMessage()+"\n"+re.getStatus().getUri());
                   return;
                }
             }

@@ -18,17 +18,13 @@
 package se.streamsource.streamflow.web.context.conversation;
 
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import se.streamsource.dci.api.Context;
-import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.IndexContext;
-import se.streamsource.dci.api.SubContexts;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.web.domain.entity.conversation.ConversationParticipantsQueries;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
@@ -40,61 +36,45 @@ import java.util.List;
 /**
  * JAVADOC
  */
-@Mixins(ConversationParticipantsContext.Mixin.class)
-public interface ConversationParticipantsContext
-   extends SubContexts<ConversationParticipantContext>, IndexContext<LinksValue>, Context
+public class ConversationParticipantsContext
+      implements IndexContext<LinksValue>
 {
-   public void addparticipant( EntityValue participantId);
-   public LinksValue possibleparticipants();
+   @Structure
+   Module module;
 
-   abstract class Mixin
-      extends ContextMixin
-      implements ConversationParticipantsContext
+   public LinksValue index()
    {
-      @Structure
-      UnitOfWorkFactory uowf;
+      return new LinksBuilder( module.valueBuilderFactory() ).rel( "participant" ).addDescribables( RoleMap.role( ConversationParticipants.Data.class ).participants() ).newLinks();
+   }
 
-      public LinksValue index()
+   public void addparticipant( EntityValue participantId )
+   {
+      UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
+
+      ConversationParticipant participant = uow.get( ConversationParticipant.class, participantId.entity().get() );
+
+      ConversationParticipants participants = RoleMap.role( ConversationParticipants.class );
+
+      participants.addParticipant( participant );
+   }
+
+   public LinksValue possibleparticipants()
+   {
+      Ownable.Data ownable = RoleMap.role( Ownable.Data.class );
+      Owner owner = ownable.owner().get();
+      LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() ).command( "addparticipant" );
+
+      if (owner != null)
       {
-         return new LinksBuilder(module.valueBuilderFactory()).rel( "participant" ).addDescribables( roleMap.get( ConversationParticipants.Data.class ).participants()).newLinks();
-      }
+         List<ConversationParticipant> possibleParticipants = RoleMap.role( ConversationParticipantsQueries.class ).possibleParticipants( owner );
 
-      public void addparticipant( EntityValue participantId)
-      {
-         UnitOfWork uow = uowf.currentUnitOfWork();
-
-         ConversationParticipant participant = uow.get( ConversationParticipant.class, participantId.entity().get() );
-
-         ConversationParticipants participants = roleMap.get(ConversationParticipants.class);
-
-         participants.addParticipant( participant );
-      }
-
-      public LinksValue possibleparticipants()
-      {
-         Ownable.Data ownable = roleMap.get(Ownable.Data.class);
-         Owner owner = ownable.owner().get();
-         LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() ).command( "addparticipant" );
-
-         if (owner != null)
+         for (ConversationParticipant possibleParticipant : possibleParticipants)
          {
-            List<ConversationParticipant> possibleParticipants = roleMap.get( ConversationParticipantsQueries.class).possibleParticipants(owner);
-
-            for (ConversationParticipant possibleParticipant : possibleParticipants)
-            {
-               String group = "" + Character.toUpperCase( possibleParticipant.getDescription().charAt( 0 ) );
-               linksBuilder.addDescribable( possibleParticipant, group );
-            }
+            String group = "" + Character.toUpperCase( possibleParticipant.getDescription().charAt( 0 ) );
+            linksBuilder.addDescribable( possibleParticipant, group );
          }
-
-         return linksBuilder.newLinks();
       }
 
-
-      public ConversationParticipantContext context( String id )
-      {
-         roleMap.set(uowf.currentUnitOfWork().get( ConversationParticipant.class, id ));
-         return subContext( ConversationParticipantContext.class );
-      }
+      return linksBuilder.newLinks();
    }
 }

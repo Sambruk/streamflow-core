@@ -18,14 +18,18 @@
 package se.streamsource.streamflow.web.context;
 
 import org.hamcrest.CoreMatchers;
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.qi4j.api.Qi4j;
 import org.qi4j.api.composite.TransientBuilderFactory;
+import org.qi4j.api.composite.TransientComposite;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.query.QueryBuilderFactory;
 import org.qi4j.api.service.ServiceFinder;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
@@ -45,12 +49,13 @@ import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.StringValue;
+import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.helper.EventCollector;
 import se.streamsource.streamflow.infrastructure.event.source.helper.Events;
-import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.test.StreamflowWebContextTestAssembler;
+import se.streamsource.streamflow.web.context.organizations.OrganizationalUnitContext;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Actor;
 
 import java.util.ArrayList;
@@ -82,8 +87,6 @@ public abstract class ContextTest
 
    private static EventCollector eventCollector = new EventCollector();
 
-   private static EventSource eventSource;
-
    @BeforeClass
    public static void setUp()
          throws Exception
@@ -99,8 +102,8 @@ public abstract class ContextTest
       api = spi = qi4j.spi();
       application.activate();
 
-      // Assume only one module
-      moduleInstance = (ModuleSPI) application.findModule( "Layer 1", "Module 1" );
+      // Use the Context/Context module
+      moduleInstance = (ModuleSPI) application.findModule( "Context", "Context" );
       transientBuilderFactory = moduleInstance.transientBuilderFactory();
       objectBuilderFactory = moduleInstance.objectBuilderFactory();
       valueBuilderFactory = moduleInstance.valueBuilderFactory();
@@ -167,6 +170,18 @@ public abstract class ContextTest
 
    }
 
+   @Before
+   public void setupRoleMap()
+   {
+      RoleMap.setCurrentRoleMap( new RoleMap() );
+   }
+
+   @After
+   public void clearRoleMap()
+   {
+      RoleMap.clearCurrentRoleMap();
+   }
+
    protected static ApplicationModelSPI newApplication() throws AssemblyException
    {
 
@@ -184,16 +199,36 @@ public abstract class ContextTest
    }
 
    // Helper methods
-   protected static RootContext root(Object... contextObjects)
+   protected static <T> T context( Class<T> contextClass )
    {
-      RoleMap roleMap = new RoleMap();
-      for (Object contextObject : contextObjects)
-      {
-         roleMap.set( contextObject );
-      }
-      unitOfWorkFactory.currentUnitOfWork().metaInfo().set( roleMap );
+      if (TransientComposite.class.isAssignableFrom( contextClass))
+         return transientBuilderFactory.newTransient( contextClass );
+      else
+         return objectBuilderFactory.newObject( contextClass );
+   }
 
-      return transientBuilderFactory.newTransientBuilder( RootContext.class ).use( roleMap ).newInstance();
+   protected static <T> T playRole(T oldEntity)
+   {
+      if (oldEntity == null)
+         throw new NullPointerException("No entity used to play role");
+
+      T entity = unitOfWorkFactory.currentUnitOfWork().get( oldEntity );
+      RoleMap.current().set( entity );
+      return entity;
+   }
+
+   protected static <T> T playRole(Class<T> roleClass, String id)
+   {
+      T entity = unitOfWorkFactory.currentUnitOfWork().get( roleClass, id );
+      RoleMap.current().set( entity );
+      return entity;
+   }
+
+   protected static <T> T playRole(Class<T> roleClass, LinkValue link)
+   {
+      T entity = unitOfWorkFactory.currentUnitOfWork().get( roleClass, link.id().get() );
+      RoleMap.current().set( entity );
+      return entity;
    }
 
    protected static <T> T value( Class<T> valueClass, String json )
@@ -209,6 +244,11 @@ public abstract class ContextTest
    protected static EntityValue entityValue( String value )
    {
       return value( EntityValue.class, "{'entity':'"+value+"'}");
+   }
+
+   protected static EntityValue entityValue( LinkValue link )
+   {
+      return value( EntityValue.class, "{'entity':'"+link.id().get()+"'}");
    }
 
    protected static boolean valueContains( ValueComposite value, String jsonFragment)
@@ -279,6 +319,30 @@ public abstract class ContextTest
                names = linkValue.text().get();
             else
                names+=","+linkValue.text().get();
+         }
+      }
+
+      if (names == null)
+         throw new IllegalArgumentException("No link found named "+name+". List was empty");
+      else
+         throw new IllegalArgumentException("No link found named "+name+". Available names:"+names);
+   }
+
+   protected static <T> T findDescribable( Iterable<T> iterable , String name )
+   {
+      String names = null;
+      for (T item : iterable)
+      {
+         String itemName = ((Describable)item).getDescription();
+         if (itemName.equals(name))
+         {
+            return item;
+         } else
+         {
+            if (names == null)
+               names = itemName;
+            else
+               names+=","+itemName;
          }
       }
 

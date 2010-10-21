@@ -17,31 +17,24 @@
 
 package se.streamsource.streamflow.web.context.organizations;
 
-import org.qi4j.api.mixin.Mixins;
 import org.restlet.resource.ResourceException;
-import se.streamsource.dci.api.Context;
-import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationParticipations;
 
+import static se.streamsource.dci.api.RoleMap.*;
+
 /**
  * JAVADOC
  */
-@Mixins(OrganizationUserContext.Mixin.class)
-public interface OrganizationUserContext
-   extends DeleteContext, Context
+public class OrganizationUserContext
+      implements DeleteContext
 {
-   abstract class Mixin
-      extends ContextMixin
-      implements OrganizationUserContext
+   public void delete() throws ResourceException
    {
-      public void delete() throws ResourceException
-      {
-         Organization org = roleMap.get( Organization.class );
-         OrganizationParticipations uop = roleMap.get(OrganizationParticipations.class);
+      Organization org = role( Organization.class );
+      OrganizationParticipations uop = role( OrganizationParticipations.class );
 
-         uop.leave( org );
-      }
+      uop.leave( org );
    }
 }

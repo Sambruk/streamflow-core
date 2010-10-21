@@ -17,56 +17,19 @@
 
 package se.streamsource.streamflow.web.context.surface.accesspoints.endusers;
 
-import org.qi4j.api.constraint.Constraints;
-import org.qi4j.api.entity.EntityReference;
-import org.qi4j.api.mixin.Mixins;
-import org.restlet.resource.ResourceException;
-import se.streamsource.dci.api.Context;
-import se.streamsource.dci.api.ContextMixin;
-import se.streamsource.dci.api.SubContexts;
-import se.streamsource.dci.value.StringValueMaxLength;
-import se.streamsource.streamflow.web.application.security.UserPrincipal;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.web.domain.structure.user.AnonymousEndUser;
 import se.streamsource.streamflow.web.domain.structure.user.EndUsers;
-
-import javax.security.auth.Subject;
-import java.util.Set;
 
 /**
  * JAVADOC
  */
-@Mixins(EndUsersContext.Mixin.class)
-@Constraints(StringValueMaxLength.class)
-public interface EndUsersContext
-      extends SubContexts<EndUserContext>, Context
+public class EndUsersContext
 {
-   // command
-
-   void createenduser() throws ResourceException;
-
-   abstract class Mixin
-         extends ContextMixin
-         implements EndUsersContext
+   public void createenduser()
    {
-      public void createenduser()
-      {
-         EndUsers endUsers = roleMap.get( EndUsers.class );
-         AnonymousEndUser user = endUsers.createAnonymousEndUser();
-         user.changeDescription( "Anonymous" );
-      }
-
-      public EndUserContext context( String id )
-      {
-         AnonymousEndUser endUser = module.unitOfWorkFactory().currentUnitOfWork().get( AnonymousEndUser.class, id );
-         Subject subject = roleMap.get( Subject.class );
-         Set<UserPrincipal> userPrincipals = subject.getPrincipals( UserPrincipal.class );
-
-         userPrincipals.clear();
-         userPrincipals.add( new UserPrincipal( EntityReference.getEntityReference( endUser ).identity() ) );
-
-         roleMap.set( endUser );
-         return subContext( EndUserContext.class );
-      }
-
+      EndUsers endUsers = RoleMap.role( EndUsers.class );
+      AnonymousEndUser user = endUsers.createAnonymousEndUser();
+      user.changeDescription( "Anonymous" );
    }
 }

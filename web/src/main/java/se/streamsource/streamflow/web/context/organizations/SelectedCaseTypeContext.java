@@ -17,29 +17,22 @@
 
 package se.streamsource.streamflow.web.context.organizations;
 
-import org.qi4j.api.mixin.Mixins;
-import se.streamsource.dci.api.Context;
-import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.SelectedCaseTypes;
 
+import static se.streamsource.dci.api.RoleMap.*;
+
 /**
  * JAVADOC
  */
-@Mixins(SelectedCaseTypeContext.Mixin.class)
-public interface SelectedCaseTypeContext
-   extends DeleteContext, Context
+public class SelectedCaseTypeContext
+      implements DeleteContext
 {
-   abstract class Mixin
-      extends ContextMixin
-      implements SelectedCaseTypeContext
+   public void delete()
    {
-      public void delete()
-      {
-         SelectedCaseTypes caseTypes = roleMap.get( SelectedCaseTypes.class);
-         CaseType caseType = roleMap.get( CaseType.class);
-         caseTypes.removeSelectedCaseType( caseType );
-      }      
+      SelectedCaseTypes caseTypes = role( SelectedCaseTypes.class );
+      CaseType caseType = role( CaseType.class );
+      caseTypes.removeSelectedCaseType( caseType );
    }
 }

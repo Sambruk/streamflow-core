@@ -21,7 +21,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.dci.value.ContextValue;
+import se.streamsource.dci.value.ResourceValue;
 import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypesView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.SelectedCaseTypesView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.forms.FormEditView;
@@ -103,12 +103,12 @@ public class TabbedResourceView
 
    public TabbedResourceView( @Uses CommandQueryClient client, @Structure ObjectBuilderFactory obf )
    {
-      ContextValue context = client.query( "", ContextValue.class );
-      List<String> contexts = context.contexts().get();
+      ResourceValue resource = client.query( "", ResourceValue.class );
+      List<String> resources = resource.resources().get();
       int index = 0;
       for (Map.Entry<String, Class<? extends JComponent>> stringClassEntry : views.entrySet())
       {
-         if (contexts.contains( stringClassEntry.getKey() ))
+         if (resources.contains( stringClassEntry.getKey() ))
          {
             String tabNameText = text( tabNames.get( stringClassEntry.getKey() ) );
             Class<? extends JComponent> tabClass = stringClassEntry.getValue();

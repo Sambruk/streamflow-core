@@ -17,7 +17,9 @@
 
 package se.streamsource.dci.test.interactions.file;
 
-import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.value.Value;
 import org.qi4j.api.value.ValueBuilder;
 import org.restlet.Application;
 import org.restlet.data.MediaType;
@@ -25,12 +27,10 @@ import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.service.MetadataService;
-import se.streamsource.dci.api.ContextMixin;
-import se.streamsource.dci.api.IndexContext;
-import se.streamsource.dci.api.Context;
-import se.streamsource.dci.api.ContextNotFoundException;
+import se.streamsource.dci.api.CreateContext;
 import se.streamsource.dci.api.DeleteContext;
-import se.streamsource.dci.api.SubContexts;
+import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.LinksBuilder;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.StringValue;
@@ -43,94 +43,71 @@ import java.io.IOException;
 /**
  * JAVADOC
  */
-@Mixins(FileContext.Mixin.class)
-public interface FileContext
-   extends Context, IndexContext<LinksValue>, SubContexts<FileContext>, DeleteContext
+public class FileContext
+      implements CreateContext<StringValue>, IndexContext<LinksValue>, DeleteContext
 {
-   void rename(StringValue newName);
+   @Structure
+   Module module;
+
+   public void rename( StringValue newName )
+   {
+      File file = RoleMap.role( File.class );
+      File newFile = new File( file.getParentFile(), newName.string().get() );
+      boolean worked = file.renameTo( newFile );
+      System.out.println( worked );
+   }
 
    @RequiresDirectory
-   void newfile() throws ResourceException;
-
-   @RequiresFile
-   StringValue lastModified();
-
-   @RequiresFile
-   Representation content() throws FileNotFoundException;
-
-   abstract class Mixin
-      extends ContextMixin
-      implements FileContext
+   public void create( StringValue value )
    {
-      public void rename( StringValue newName )
+      try
       {
-         File file = roleMap.get( File.class );
-         File newFile = new File( file.getParentFile(), newName.string().get() );
-         boolean worked = file.renameTo( newFile );
-         System.out.println(worked);
+         new File( RoleMap.role( File.class ), value.string().get() ).createNewFile();
+      } catch (IOException e)
+      {
+         throw new ResourceException( e );
       }
+   }
 
-      public void newfile() throws ResourceException
+   @RequiresFile
+   public StringValue lastModified()
+   {
+      ValueBuilder<StringValue> builder = module.valueBuilderFactory().newValueBuilder( StringValue.class );
+      builder.prototype().string().set( RoleMap.role( File.class ).lastModified() + "" );
+      return builder.newInstance();
+   }
+
+   @RequiresFile
+   public Representation content() throws FileNotFoundException
+   {
+      File file = RoleMap.role( File.class );
+
+      MetadataService metadataService = RoleMap.role( Application.class ).getMetadataService();
+      String ext = file.getName().split( "\\." )[1];
+      MediaType mediaType = metadataService.getMediaType( ext );
+      return new InputRepresentation( new FileInputStream( file ), mediaType );
+   }
+
+   public LinksValue index()
+   {
+      File file = RoleMap.role( File.class );
+
+      LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() ).rel( "page" );
+
+      String[] fileList = file.list();
+      if (fileList != null)
       {
-         try
+         for (String fileName : fileList)
          {
-            new File( roleMap.get(File.class), "New file.txt").createNewFile();
-         } catch (IOException e)
-         {
-            throw new ResourceException(e);
+            builder.addLink( fileName, fileName );
          }
       }
 
-      public StringValue lastModified()
-      {
-         ValueBuilder<StringValue> builder = module.valueBuilderFactory().newValueBuilder( StringValue.class );
-         builder.prototype().string().set( roleMap.get( File.class ).lastModified()+"" );
-         return builder.newInstance();
-      }
+      return builder.newLinks();
+   }
 
-      public Representation content() throws FileNotFoundException
-      {
-         File file = roleMap.get( File.class );
-
-         MetadataService metadataService = roleMap.get( Application.class ).getMetadataService();
-         String ext = file.getName().split( "\\." )[1];
-         MediaType mediaType = metadataService.getMediaType(ext );
-         return new InputRepresentation(new FileInputStream(file), mediaType);
-      }
-
-      public LinksValue index()
-      {
-         File file = roleMap.get( File.class );
-
-         LinksBuilder builder = new LinksBuilder(module.valueBuilderFactory()).rel( "page" );
-
-         String[] fileList = file.list();
-         if (fileList != null)
-         {
-            for (String fileName : fileList)
-            {
-               builder.addLink( fileName, fileName );
-            }
-         }
-
-         return builder.newLinks();
-      }
-
-      public void delete() throws ResourceException
-      {
-         roleMap.get( File.class ).delete();
-      }
-
-      public FileContext context( String id )
-      {
-         File file = new File( roleMap.get( File.class ), id );
-
-         if (!file.exists())
-            throw new ContextNotFoundException();
-
-         roleMap.set( file );
-
-         return subContext( FileContext.class );
-      }
+   public void delete() throws ResourceException
+   {
+      RoleMap.role( File.class ).delete();
    }
 }

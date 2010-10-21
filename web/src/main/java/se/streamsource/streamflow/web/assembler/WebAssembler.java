@@ -30,24 +30,24 @@ import org.restlet.security.ChallengeAuthenticator;
 import se.streamsource.dci.restlet.server.DCIAssembler;
 import se.streamsource.dci.restlet.server.DefaultResponseWriterFactory;
 import se.streamsource.dci.restlet.server.ResourceFinder;
+import se.streamsource.dci.restlet.server.ResultConverter;
 import se.streamsource.streamflow.web.resource.APIRouter;
-import se.streamsource.streamflow.web.resource.StreamflowRootContextFactory;
 import se.streamsource.streamflow.web.resource.admin.ConsoleServerResource;
 import se.streamsource.streamflow.web.resource.admin.SolrSearchServerResource;
 import se.streamsource.streamflow.web.resource.events.DomainEventsServerResource;
 import se.streamsource.streamflow.web.rest.StreamflowRestApplication;
-
-import static org.qi4j.bootstrap.ImportedServiceDeclaration.*;
+import se.streamsource.streamflow.web.rest.StreamflowRestlet;
+import se.streamsource.streamflow.web.rest.StreamflowResultConverter;
 
 /**
  * JAVADOC
  */
 public class WebAssembler
 {
-   public void assemble( LayerAssembly layer)
+   public void assemble( LayerAssembly layer )
          throws AssemblyException
    {
-      rest(layer.moduleAssembly( "REST" ));
+      rest( layer.moduleAssembly( "REST" ) );
    }
 
    private void rest( ModuleAssembly module ) throws AssemblyException
@@ -62,17 +62,11 @@ public class WebAssembler
             EntitiesResource.class,
             EntityResource.class );
 
-      module.importServices( ChallengeAuthenticator.class);
-
-      module.addObjects( DefaultResponseWriterFactory.class);
-      new DCIAssembler().assemble( module );
-
-      module.importServices( StreamflowRootContextFactory.class ).importedBy( NEW_OBJECT );
+      module.importServices( ChallengeAuthenticator.class );
 
       // Resources
       module.addObjects(
             APIRouter.class,
-            StreamflowRootContextFactory.class,
 
             // Events
             DomainEventsServerResource.class,

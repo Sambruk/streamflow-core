@@ -23,14 +23,12 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
 import org.qi4j.library.constraints.annotation.MaxLength;
 import se.streamsource.dci.api.Context;
-import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.IndexContext;
-import se.streamsource.dci.api.SubContexts;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.StringValueMaxLength;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseTypes;
 
 /**
@@ -39,12 +37,11 @@ import se.streamsource.streamflow.web.domain.structure.casetype.CaseTypes;
 @Mixins(CaseTypesContext.Mixin.class)
 @Constraints(StringValueMaxLength.class)
 public interface CaseTypesContext
-      extends SubContexts<CaseTypeContext>, IndexContext<LinksValue>, Context
+      extends IndexContext<LinksValue>, Context
 {
    public void createcasetype( @MaxLength(50) StringValue name );
 
    abstract class Mixin
-         extends ContextMixin
          implements CaseTypesContext
    {
       @Structure
@@ -52,21 +49,14 @@ public interface CaseTypesContext
 
       public LinksValue index()
       {
-         CaseTypes.Data caseTypes = roleMap.get( CaseTypes.Data.class );
+         CaseTypes.Data caseTypes = RoleMap.role( CaseTypes.Data.class );
          return new LinksBuilder( module.valueBuilderFactory() ).rel( "casetype" ).addDescribables( caseTypes.caseTypes() ).newLinks();
       }
 
       public void createcasetype( StringValue name )
       {
-         CaseTypes caseTypes = roleMap.get( CaseTypes.class );
+         CaseTypes caseTypes = RoleMap.role( CaseTypes.class );
          caseTypes.createCaseType( name.string().get() );
-      }
-
-      public CaseTypeContext context( String id )
-      {
-         roleMap.set( module.unitOfWorkFactory().currentUnitOfWork().get( CaseType.class, id ) );
-
-         return subContext( CaseTypeContext.class );
       }
    }
 }

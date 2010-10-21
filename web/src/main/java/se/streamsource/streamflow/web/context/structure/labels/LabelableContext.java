@@ -18,18 +18,13 @@
 package se.streamsource.streamflow.web.context.structure.labels;
 
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import se.streamsource.dci.api.Context;
-import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.IndexContext;
-import se.streamsource.dci.api.SubContexts;
 import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseLabelsQueries;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.label.Labelable;
@@ -37,54 +32,40 @@ import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
 
 import java.util.Map;
 
+import static se.streamsource.dci.api.RoleMap.*;
+
 /**
  * JAVADOC
  */
-@Mixins(LabelableContext.Mixin.class)
-public interface LabelableContext
-      extends SubContexts<LabeledContext>, IndexContext<LinksValue>, Context
+public class LabelableContext
+      implements IndexContext<LinksValue>
 {
-   LinksValue possiblelabels();
+   @Structure
+   Module module;
 
-   void addlabel( EntityValue reference );
-
-   abstract class Mixin
-         extends ContextMixin
-         implements LabelableContext
+   public LinksValue index()
    {
-      @Structure
-      UnitOfWorkFactory uowf;
+      return new LinksBuilder( module.valueBuilderFactory() ).addDescribables( role( Labelable.Data.class ).labels() ).newLinks();
+   }
 
-      public LinksValue index()
+   public LinksValue possiblelabels()
+   {
+      CaseLabelsQueries labels = role( CaseLabelsQueries.class );
+
+      LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() ).command( "addlabel" );
+      for (Map.Entry<Label, SelectedLabels> labelSelectedLabelsEntry : labels.possibleLabels().entrySet())
       {
-         return new LinksBuilder( module.valueBuilderFactory() ).addDescribables( roleMap.get( Labelable.Data.class ).labels() ).newLinks();
+         builder.addDescribable( labelSelectedLabelsEntry.getKey(), (Describable) labelSelectedLabelsEntry.getValue() );
       }
+      return builder.newLinks();
+   }
 
-      public LinksValue possiblelabels()
-      {
-         CaseLabelsQueries labels = roleMap.get( CaseLabelsQueries.class );
+   public void addlabel( EntityValue reference )
+   {
+      UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
+      Labelable labelable = role( Labelable.class );
+      Label label = uow.get( Label.class, reference.entity().get() );
 
-         LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() ).command( "addlabel" );
-         for (Map.Entry<Label, SelectedLabels> labelSelectedLabelsEntry : labels.possibleLabels().entrySet())
-         {
-            builder.addDescribable( labelSelectedLabelsEntry.getKey(), (Describable) labelSelectedLabelsEntry.getValue() );
-         }
-         return builder.newLinks();
-      }
-
-      public void addlabel( EntityValue reference )
-      {
-         UnitOfWork uow = uowf.currentUnitOfWork();
-         Labelable labelable = roleMap.get( Labelable.class );
-         Label label = uow.get( Label.class, reference.entity().get() );
-
-         labelable.addLabel( label );
-      }
-
-      public LabeledContext context( String id )
-      {
-         roleMap.set( module.unitOfWorkFactory().currentUnitOfWork().get( Label.class, id ) );
-         return subContext( LabeledContext.class );
-      }
+      labelable.addLabel( label );
    }
 }

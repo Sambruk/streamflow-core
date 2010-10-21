@@ -17,29 +17,21 @@
 
 package se.streamsource.streamflow.web.context.organizations.forms;
 
-import org.qi4j.api.mixin.Mixins;
-import se.streamsource.dci.api.Context;
-import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.DeleteContext;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
 import se.streamsource.streamflow.web.domain.structure.form.SelectedForms;
 
 /**
  * JAVADOC
  */
-@Mixins(SelectedFormContext.Mixin.class)
-public interface SelectedFormContext
-   extends DeleteContext, Context
+public class SelectedFormContext
+      implements DeleteContext
 {
-   abstract class Mixin
-      extends ContextMixin
-      implements SelectedFormContext
+   public void delete()
    {
-      public void delete()
-      {
-         SelectedForms forms = roleMap.get(SelectedForms.class);
-         Form form = roleMap.get(Form.class);
-         forms.removeSelectedForm( form );
-      }
+      SelectedForms forms = RoleMap.role( SelectedForms.class );
+      Form form = RoleMap.role( Form.class );
+      forms.removeSelectedForm( form );
    }
 }

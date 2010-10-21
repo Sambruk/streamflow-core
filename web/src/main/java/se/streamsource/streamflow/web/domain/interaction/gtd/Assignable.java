@@ -60,7 +60,7 @@ public interface Assignable
    {
       public void assignTo( Assignee assignee )
       {
-         if (!assignee.equals( assignedTo().get() ))
+         if (assignedTo().get() == null || !assignee.equals( assignedTo().get() ))
          {
             assignedTo( DomainEvent.CREATE, assignee );
          }

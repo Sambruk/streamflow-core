@@ -21,16 +21,15 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.qi4j.api.constraint.ConstraintViolationException;
-import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
-import se.streamsource.dci.api.Context;
-import se.streamsource.dci.api.ContextMixin;
-import se.streamsource.dci.api.SubContexts;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.resource.user.NewUserCommand;
 import se.streamsource.streamflow.resource.user.UserEntityListDTO;
 import se.streamsource.streamflow.web.context.RequiresPermission;
@@ -51,164 +50,142 @@ import java.util.regex.Pattern;
 /**
  * JAVADOC
  */
-@Mixins(UsersContext.Mixin.class)
-public interface UsersContext
-   extends SubContexts<UserContext>, Context
+public class UsersContext
 {
-   // Queries
-   @RequiresPermission("administrator")
-   UserEntityListDTO users();
-   
-   // Commands
-   @RequiresPermission("administrator")
-   void createuser( NewUserCommand command);
+   @Structure
+   Module module;
 
    @RequiresPermission("administrator")
-   void importusers( Representation representation ) throws ResourceException;
-
-   abstract class Mixin
-      extends ContextMixin
-      implements UsersContext
+   public UserEntityListDTO users()
    {
-      public UserEntityListDTO users()
+      UsersQueries orgs = RoleMap.role( UsersQueries.class );
+
+      return orgs.users();
+   }
+
+   @RequiresPermission("administrator")
+   public void createuser( NewUserCommand command )
+   {
+      UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
+
+      Users users = RoleMap.role( Users.class );
+      User user = users.createUser( command.username().get(), command.password().get() );
+   }
+
+   @RequiresPermission("administrator")
+   public void importusers( Representation representation ) throws ResourceException
+   {
+      boolean badRequest = false;
+      String errors = "<html>";
+      Locale locale = RoleMap.role( Locale.class );
+
+      ResourceBundle bundle = ResourceBundle.getBundle(
+            UsersContext.class.getName(), locale );
+
+      UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
+
+      Users organizations = RoleMap.role( Users.class );
+
+      try
       {
-         UsersQueries orgs = roleMap.get(UsersQueries.class);
+         List<String> users = new ArrayList<String>();
 
-         return orgs.users();
-      }
-
-      public void createuser( NewUserCommand command )
-      {
-         UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
-
-         Users users = roleMap.get(Users.class);
-         User user = users.createUser( command.username().get(), command.password().get() );
-      }
-
-      public void importusers( Representation representation ) throws ResourceException
-      {
-         boolean badRequest = false;
-         String errors = "<html>";
-         Locale locale = roleMap.get(Locale.class);
-
-         ResourceBundle bundle = ResourceBundle.getBundle(
-               UsersContext.class.getName(), locale );
-
-         UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
-
-         Users organizations = roleMap.get(Users.class);
-
-         try
+         if (representation.getMediaType().equals( MediaType.APPLICATION_EXCEL ))
          {
-            List<String> users = new ArrayList<String>();
+            HSSFWorkbook workbook = new HSSFWorkbook( representation.getStream() );
 
-            if (representation.getMediaType().equals( MediaType.APPLICATION_EXCEL ))
+            //extract a user list
+            Sheet sheet1 = workbook.getSheetAt( 0 );
+            StringBuilder builder;
+            for (Row row : sheet1)
             {
-               HSSFWorkbook workbook = new HSSFWorkbook( representation.getStream() );
+               builder = new StringBuilder();
+               builder.append( row.getCell( 0 ).getStringCellValue() );
+               builder.append( "," );
+               builder.append( row.getCell( 1 ).getStringCellValue() );
 
-               //extract a user list
-               Sheet sheet1 = workbook.getSheetAt( 0 );
-               StringBuilder builder;
-               for (Row row : sheet1)
-               {
-                  builder = new StringBuilder();
-                  builder.append( row.getCell( 0 ).getStringCellValue() );
-                  builder.append( "," );
-                  builder.append( row.getCell( 1 ).getStringCellValue() );
-
-                  ((List<String>) users).add( builder.toString() );
-               }
-
-            } else if (representation.getMediaType().equals( MediaType.TEXT_CSV ))
-            {
-               StringReader reader = new StringReader( representation.getText() );
-               BufferedReader bufReader = new BufferedReader( reader );
-               String line = null;
-               while ((line = bufReader.readLine()) != null)
-               {
-                  users.add( line );
-               }
-            } else
-            {
-               throw new ResourceException( Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE );
+               ((List<String>) users).add( builder.toString() );
             }
 
-            for (String userNamePwd : users)
+         } else if (representation.getMediaType().equals( MediaType.TEXT_CSV ))
+         {
+            StringReader reader = new StringReader( representation.getText() );
+            BufferedReader bufReader = new BufferedReader( reader );
+            String line = null;
+            while ((line = bufReader.readLine()) != null)
             {
-               if (userNamePwd.startsWith( "#" ))
-               {
-                  continue;
-               }
-               Pattern pattern = Pattern.compile( "\\t|," );
-               String[] usrPwdPair = userNamePwd.split( pattern.pattern() );
-
-               if (usrPwdPair.length < 2)
-               {
-                  badRequest = true;
-                  errors += userNamePwd + " - " + bundle.getString( "missing_user_password" ) + "<br></br>";
-                  continue;
-               }
-
-               String name = usrPwdPair[0].trim();
-               String pwd = usrPwdPair[1].trim();
-
-               // Check for empty pwd!!! and log an error for that
-               if ("".equals( pwd.trim() ))
-               {
-                  badRequest = true;
-                  errors += name + " - " + bundle.getString( "missing_password" ) + "<br></br>";
-               }
-
-               try
-               {   // Check if user already exists
-                  UserEntity existingUser = uow.get( UserEntity.class, name );
-                  if (existingUser.isCorrectPassword( pwd ))
-                  {
-                     //nothing to do here
-                     continue;
-                  } else
-                  {
-                     existingUser.resetPassword( pwd );
-                     continue;
-                  }
-
-               } catch (NoSuchEntityException e)
-               {
-                  //Ok user doesnt exist
-               }
-
-               try
-               {
-                  organizations.createUser( name, pwd );
-
-               } catch (ConstraintViolationException e)
-               {
-                  // catch constraint violation and collect errors for the entire transaction
-                  badRequest = true;
-                  errors += name + " - " + bundle.getString( "user_name_not_valid" ) + "<br></br>";
-               }
+               users.add( line );
             }
-         } catch (IOException ioe)
+         } else
          {
-            throw new ResourceException( Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY );
+            throw new ResourceException( Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE );
          }
 
-         // Check for errors and rollback
-         if (badRequest)
+         for (String userNamePwd : users)
          {
-            errors += "</html>";
-            throw new ResourceException( Status.CLIENT_ERROR_BAD_REQUEST, errors );
-         }
+            if (userNamePwd.startsWith( "#" ))
+            {
+               continue;
+            }
+            Pattern pattern = Pattern.compile( "\\t|," );
+            String[] usrPwdPair = userNamePwd.split( pattern.pattern() );
 
+            if (usrPwdPair.length < 2)
+            {
+               badRequest = true;
+               errors += userNamePwd + " - " + bundle.getString( "missing_user_password" ) + "<br></br>";
+               continue;
+            }
+
+            String name = usrPwdPair[0].trim();
+            String pwd = usrPwdPair[1].trim();
+
+            // Check for empty pwd!!! and log an error for that
+            if ("".equals( pwd.trim() ))
+            {
+               badRequest = true;
+               errors += name + " - " + bundle.getString( "missing_password" ) + "<br></br>";
+            }
+
+            try
+            {   // Check if user already exists
+               UserEntity existingUser = uow.get( UserEntity.class, name );
+               if (existingUser.isCorrectPassword( pwd ))
+               {
+                  //nothing to do here
+                  continue;
+               } else
+               {
+                  existingUser.resetPassword( pwd );
+                  continue;
+               }
+
+            } catch (NoSuchEntityException e)
+            {
+               //Ok user doesnt exist
+            }
+
+            try
+            {
+               organizations.createUser( name, pwd );
+
+            } catch (ConstraintViolationException e)
+            {
+               // catch constraint violation and collect errors for the entire transaction
+               badRequest = true;
+               errors += name + " - " + bundle.getString( "user_name_not_valid" ) + "<br></br>";
+            }
+         }
+      } catch (IOException ioe)
+      {
+         throw new ResourceException( Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY );
       }
 
-
-      public UserContext context( String id )
+      // Check for errors and rollback
+      if (badRequest)
       {
-         UserEntity user = module.unitOfWorkFactory().currentUnitOfWork().get( UserEntity.class, id );
-         roleMap.set( user );
-
-         return subContext( UserContext.class);
+         errors += "</html>";
+         throw new ResourceException( Status.CLIENT_ERROR_BAD_REQUEST, errors );
       }
    }
 }

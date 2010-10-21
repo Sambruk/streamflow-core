@@ -18,12 +18,13 @@
 package se.streamsource.streamflow.web.context.organizations.forms;
 
 import org.qi4j.api.constraint.Constraints;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.structure.Module;
 import org.qi4j.library.constraints.annotation.MaxLength;
 import se.streamsource.dci.api.Context;
-import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.IndexContext;
-import se.streamsource.dci.api.SubContexts;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.StringValueMaxLength;
@@ -38,19 +39,21 @@ import se.streamsource.streamflow.web.domain.structure.form.Forms;
 @Mixins(FormsContext.Mixin.class)
 @Constraints(StringValueMaxLength.class)
 public interface FormsContext
-      extends SubContexts<FormContext>, IndexContext<LinksValue>, Context
+      extends IndexContext<LinksValue>, Context
 {
    LinksValue possiblemoveto();
 
    void createform( @MaxLength(50) StringValue formName );
 
    abstract class Mixin
-         extends ContextMixin
          implements FormsContext
    {
+      @Structure
+      Module module;
+
       public LinksValue index()
       {
-         Forms.Data forms = roleMap.get( Forms.Data.class );
+         Forms.Data forms = RoleMap.role( Forms.Data.class );
 
          return new LinksBuilder( module.valueBuilderFactory() ).rel( "form" ).addDescribables( forms.forms() ).newLinks();
       }
@@ -59,21 +62,15 @@ public interface FormsContext
       {
          LinksBuilder builder = new LinksBuilder(module.valueBuilderFactory());
          builder.command( "move" );
-         roleMap.get( PossibleFormMoveToQueries.class).possibleMoveFormTo( builder );
+         RoleMap.role( PossibleFormMoveToQueries.class).possibleMoveFormTo( builder );
          return builder.newLinks();
       }
 
       public void createform( StringValue formName )
       {
-         Forms forms = roleMap.get( Forms.class );
+         Forms forms = RoleMap.role( Forms.class );
          Form form = forms.createForm();
          form.changeDescription( formName.string().get() );
-      }
-
-      public FormContext context( String id )
-      {
-         roleMap.set( module.unitOfWorkFactory().currentUnitOfWork().get( Form.class, id ) );
-         return subContext( FormContext.class );
       }
    }
 }

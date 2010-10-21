@@ -17,88 +17,57 @@
 
 package se.streamsource.streamflow.web.context.surface.accesspoints;
 
-import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
-import se.streamsource.dci.api.Context;
-import se.streamsource.dci.api.ContextMixin;
-import se.streamsource.dci.api.ContextNotFoundException;
 import se.streamsource.dci.api.IndexContext;
-import se.streamsource.dci.api.SubContexts;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.infrastructure.application.TitledLinksBuilder;
-import se.streamsource.streamflow.web.domain.entity.organization.AccessPointEntity;
-import se.streamsource.streamflow.web.domain.structure.form.SelectedForms;
-import se.streamsource.streamflow.web.domain.structure.organization.AccessPoint;
 import se.streamsource.streamflow.web.domain.structure.organization.AccessPoints;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 import se.streamsource.streamflow.web.domain.structure.user.ProxyUser;
 import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
 
+import static se.streamsource.dci.api.RoleMap.*;
+
 /**
  * JAVADOC
  */
-@Mixins(AccessPointsContext.Mixin.class)
-public interface AccessPointsContext
-   extends SubContexts<AccessPointContext>, IndexContext<LinksValue>, Context
+public class AccessPointsContext
+      implements IndexContext<LinksValue>
 {
-   abstract class Mixin
-      extends ContextMixin
-      implements AccessPointsContext
+   @Structure
+   Module module;
+
+   public LinksValue index()
    {
-      public LinksValue index()
+      UserAuthentication authentication = role( UserAuthentication.class );
+
+      if (!(authentication instanceof ProxyUser))
       {
-         UserAuthentication authentication = roleMap.get( UserAuthentication.class );
+         TitledLinksBuilder builder = new TitledLinksBuilder( module.valueBuilderFactory() );
+         ValueBuilder<LinkValue> valueBuilder = module.valueBuilderFactory().newValueBuilder( LinkValue.class );
+         valueBuilder.prototype().href().set( ".." );
+         valueBuilder.prototype().id().set( "" );
+         valueBuilder.prototype().text().set( "back" );
 
-         if ( ! (authentication instanceof ProxyUser) )
-         {
-            TitledLinksBuilder builder = new TitledLinksBuilder( module.valueBuilderFactory() );
-            ValueBuilder<LinkValue> valueBuilder = module.valueBuilderFactory().newValueBuilder( LinkValue.class );
-            valueBuilder.prototype().href().set( ".." );
-            valueBuilder.prototype().id().set( "" );
-            valueBuilder.prototype().text().set( "back" );
+         builder.addLink( valueBuilder.newInstance() );
+         builder.addTitle( "USER NOT A PROXY USER" );
 
-            builder.addLink( valueBuilder.newInstance() );
-            builder.addTitle( "USER NOT A PROXY USER" );
-
-            return builder.newLinks();
-         }
-
-         ProxyUser proxyUser = (ProxyUser) authentication;
-         Organization organization = proxyUser.organization().get();
-
-         AccessPoints.Data data = (AccessPoints.Data) organization;
-
-         LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
-
-         linksBuilder.addDescribables( data.accessPoints() );
-
-         return linksBuilder.newLinks();
+         return builder.newLinks();
       }
 
-      public AccessPointContext context( String id )
-      {
-         ProxyUser proxyUser = roleMap.get( ProxyUser.class );
+      ProxyUser proxyUser = (ProxyUser) authentication;
+      Organization organization = proxyUser.organization().get();
 
-         AccessPoints.Data data = (AccessPoints.Data) proxyUser.organization().get();
+      AccessPoints.Data data = (AccessPoints.Data) organization;
 
-         for (AccessPoint accessPoint : data.accessPoints())
-         {
-            AccessPointEntity entity = (AccessPointEntity) accessPoint;
-            if ( entity.identity().get().equals( id ) )
-            {
-               // accesspoint is valid if it has at least one form
-               roleMap.set( accessPoint );
-               SelectedForms.Data forms = roleMap.get( SelectedForms.Data.class );
-               if ( forms.selectedForms().count() > 0 )
-               {
-                  return subContext( AccessPointContext.class);
-               }
-               throw new ContextNotFoundException();
-            }
-         }
-         throw new ContextNotFoundException();
-      }
+      LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
+
+      linksBuilder.addDescribables( data.accessPoints() );
+
+      return linksBuilder.newLinks();
    }
 }

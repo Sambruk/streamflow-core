@@ -17,85 +17,23 @@
 
 package se.streamsource.streamflow.web.context.organizations;
 
-import org.qi4j.api.mixin.Mixins;
-import se.streamsource.dci.api.Context;
-import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.DeleteContext;
-import se.streamsource.dci.api.SubContext;
-import se.streamsource.streamflow.web.context.organizations.forms.FormsContext;
-import se.streamsource.streamflow.web.context.structure.DescribableContext;
-import se.streamsource.streamflow.web.context.structure.labels.LabelsContext;
-import se.streamsource.streamflow.web.context.structure.labels.SelectedLabelsContext;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.project.Projects;
+
+import static se.streamsource.dci.api.RoleMap.*;
 
 /**
  * JAVADOC
  */
-@Mixins(ProjectContext.Mixin.class)
-public interface ProjectContext
-   extends DeleteContext,
-      DescribableContext,
-      Context
+public class ProjectContext
+   implements DeleteContext
 {
-   @SubContext
-   MembersContext members();
-
-   @SubContext
-   FormsContext forms();
-
-   @SubContext
-   CaseTypesContext casetypes();
-
-   @SubContext
-   public LabelsContext labels();
-
-   @SubContext
-   SelectedLabelsContext selectedlabels();
-
-   @SubContext
-   SelectedCaseTypesContext selectedcasetypes();
-
-   abstract class Mixin
-      extends ContextMixin
-      implements ProjectContext
+   public void delete()
    {
-      public void delete()
-      {
-         Projects projects = roleMap.get(Projects.class);
-         Project project = roleMap.get(Project.class);
+      Projects projects = role(Projects.class);
+      Project project = role(Project.class);
 
-         projects.removeProject( project );
-      }
-
-      public MembersContext members()
-      {
-         return subContext( MembersContext.class );
-      }
-
-      public FormsContext forms()
-      {
-         return subContext( FormsContext.class );
-      }
-
-      public CaseTypesContext casetypes()
-      {
-         return subContext( CaseTypesContext.class );
-      }
-
-      public LabelsContext labels()
-      {
-         return subContext(LabelsContext.class);
-      }
-
-      public SelectedLabelsContext selectedlabels()
-      {
-         return subContext( SelectedLabelsContext.class );
-      }
-
-      public SelectedCaseTypesContext selectedcasetypes()
-      {
-         return subContext( SelectedCaseTypesContext.class );
-      }
+      projects.removeProject( project );
    }
 }

@@ -21,7 +21,7 @@ import org.qi4j.api.composite.TransientBuilderFactory;
 import org.qi4j.api.injection.scope.Structure;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.restlet.server.RootContextFactory;
-import se.streamsource.dci.test.interactions.RootContext;
+import se.streamsource.dci.test.interactions.RootResource;
 
 /**
  * JAVADOC
@@ -34,6 +34,6 @@ public class TestRootContextFactory
 
    public Object getRoot( RoleMap roleMap )
    {
-      return tbf.newTransientBuilder( RootContext.class ).use( roleMap ).newInstance();
+      return tbf.newTransientBuilder( RootResource.class ).use( roleMap ).newInstance();
    }
 }

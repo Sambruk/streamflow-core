@@ -18,49 +18,42 @@
 package se.streamsource.streamflow.web.context.organizations.forms;
 
 import org.qi4j.api.entity.EntityReference;
-import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
-import se.streamsource.dci.api.Context;
-import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.domain.form.FormValue;
-import se.streamsource.streamflow.web.context.structure.DescribableContext;
-import se.streamsource.streamflow.web.context.structure.NotableContext;
 import se.streamsource.streamflow.web.domain.entity.form.FormEntity;
 import se.streamsource.streamflow.web.domain.structure.form.FormId;
 
 /**
  * Information about a single form
  */
-@Mixins(FormInfoContext.Mixin.class)
-public interface FormInfoContext
-      extends DescribableContext, NotableContext, IndexContext<FormValue>, Context
+public class FormInfoContext
+      implements IndexContext<FormValue>
 {
-   void changeformid( StringValue stringValue );
+   @Structure
+   Module module;
 
-   abstract class Mixin
-         extends ContextMixin
-         implements FormInfoContext
+   public FormValue index()
    {
-      public FormValue index()
-      {
-         FormEntity form = roleMap.get( FormEntity.class );
+      FormEntity form = RoleMap.role( FormEntity.class );
 
-         ValueBuilder<FormValue> builder = module.valueBuilderFactory().newValueBuilder( FormValue.class );
+      ValueBuilder<FormValue> builder = module.valueBuilderFactory().newValueBuilder( FormValue.class );
 
-         builder.prototype().note().set( form.note().get() );
-         builder.prototype().description().set( form.description().get() );
-         builder.prototype().form().set( EntityReference.parseEntityReference( form.identity().get() ) );
-         builder.prototype().id().set( form.formId().get() );
+      builder.prototype().note().set( form.note().get() );
+      builder.prototype().description().set( form.description().get() );
+      builder.prototype().form().set( EntityReference.parseEntityReference( form.identity().get() ) );
+      builder.prototype().id().set( form.formId().get() );
 
-         return builder.newInstance();
-      }
+      return builder.newInstance();
+   }
 
-      public void changeformid( StringValue stringValue )
-      {
-         FormId form = roleMap.get( FormId.class );
-         form.changeFormId( stringValue.string().get() );
-      }
+   public void changeformid( StringValue stringValue )
+   {
+      FormId form = RoleMap.role( FormId.class );
+      form.changeFormId( stringValue.string().get() );
    }
 }

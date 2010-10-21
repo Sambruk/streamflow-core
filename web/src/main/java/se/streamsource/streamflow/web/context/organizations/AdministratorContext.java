@@ -17,10 +17,8 @@
 
 package se.streamsource.streamflow.web.context.organizations;
 
-import org.qi4j.api.mixin.Mixins;
-import se.streamsource.dci.api.Context;
-import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.DeleteContext;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.web.domain.structure.group.Participant;
 import se.streamsource.streamflow.web.domain.structure.organization.RolePolicy;
 import se.streamsource.streamflow.web.domain.structure.role.Role;
@@ -29,25 +27,18 @@ import se.streamsource.streamflow.web.domain.structure.role.Roles;
 /**
  * JAVADOC
  */
-@Mixins(AdministratorContext.Mixin.class)
-public interface AdministratorContext
-   extends DeleteContext, Context
+public class AdministratorContext
+   implements DeleteContext
 {
-   abstract class Mixin
-      extends ContextMixin
-      implements AdministratorContext
+   public void delete()
    {
-      public void delete()
-      {
-         RolePolicy role = roleMap.get(RolePolicy.class);
+      RolePolicy role = RoleMap.role(RolePolicy.class);
 
-         Participant participant = roleMap.get(Participant.class);
+      Participant participant = RoleMap.role(Participant.class);
 
-         Roles roles = roleMap.get(Roles.class);
-         Role adminRole = roles.getAdministratorRole();
+      Roles roles = RoleMap.role(Roles.class);
+      Role adminRole = roles.getAdministratorRole();
 
-         role.revokeRole( participant, adminRole );
-      }
-
+      role.revokeRole( participant, adminRole );
    }
 }

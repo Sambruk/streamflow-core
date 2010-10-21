@@ -31,13 +31,15 @@ import se.streamsource.dci.restlet.server.DCIAssembler;
 import se.streamsource.dci.restlet.server.DefaultResponseWriterFactory;
 import se.streamsource.dci.restlet.server.NullCommandResult;
 import se.streamsource.dci.restlet.server.ResourceFinder;
-import se.streamsource.dci.test.interactions.RootContext;
+import se.streamsource.dci.test.interactions.RootResource;
 import se.streamsource.dci.test.interactions.file.FileContext;
-import se.streamsource.dci.test.interactions.file.FilesContext;
-import se.streamsource.dci.test.interactions.jmx.DomainInteractions;
-import se.streamsource.dci.test.interactions.jmx.JmxServerInteractions;
-import se.streamsource.dci.test.interactions.jmx.MBeanAttributeInteractions;
-import se.streamsource.dci.test.interactions.jmx.MBeanInteractions;
+import se.streamsource.dci.test.interactions.jmx.DomainContext;
+import se.streamsource.dci.test.interactions.jmx.DomainResource;
+import se.streamsource.dci.test.interactions.jmx.JmxServerContext;
+import se.streamsource.dci.test.interactions.jmx.JmxServerResource;
+import se.streamsource.dci.test.interactions.jmx.MBeanAttributeContext;
+import se.streamsource.dci.test.interactions.jmx.MBeanContext;
+import se.streamsource.dci.test.interactions.jmx.MBeanResource;
 import se.streamsource.dci.test.interactions.jmx.TabularDataValue;
 
 import static org.qi4j.bootstrap.ImportedServiceDeclaration.NEW_OBJECT;
@@ -86,11 +88,13 @@ public class TestAssembler
       module.addObjects( DefaultResponseWriterFactory.class,
             NullCommandResult.class );
 
-      module.addTransients( RootContext.class,
-            FilesContext.class,
+      module.addObjects( RootResource.class,
             FileContext.class);
 
-      module.addObjects( JmxServerInteractions.class, DomainInteractions.class, MBeanInteractions.class, MBeanAttributeInteractions.class );
+      module.addObjects( JmxServerContext.class, JmxServerResource.class,
+            DomainContext.class, DomainResource.class,
+            MBeanContext.class, MBeanResource.class,
+            MBeanAttributeContext.class );
 
       module.addObjects( TestRestletApplication.class,
             ResourceFinder.class);

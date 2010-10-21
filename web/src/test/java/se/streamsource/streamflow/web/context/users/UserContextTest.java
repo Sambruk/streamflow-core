@@ -23,11 +23,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
-import se.streamsource.dci.value.StringValue;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.resource.user.ChangePasswordCommand;
-import se.streamsource.streamflow.resource.user.NewUserCommand;
 import se.streamsource.streamflow.web.context.ContextTest;
-import se.streamsource.streamflow.web.context.organizations.OrganizationContext;
 import se.streamsource.streamflow.web.domain.structure.user.User;
 import se.streamsource.streamflow.web.domain.structure.user.WrongPasswordException;
 
@@ -56,7 +54,9 @@ public class UserContextTest
    public void testDisabled() throws UnitOfWorkCompletionException
    {
       UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
-      root().users().context( "test" ).changedisabled();
+      RoleMap.newCurrentRoleMap();
+      playRole(User.class, "test");
+      context(UserContext.class).changedisabled();
       uow.complete();
       eventsOccurred( "changedEnabled" );
    }
@@ -66,9 +66,11 @@ public class UserContextTest
    {
       {
          UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
+         RoleMap.newCurrentRoleMap();
+         playRole(User.class, "test");
          try
          {
-            root().users().context( "test" ).changepassword( value( ChangePasswordCommand.class, "{'oldPassword':'test','newPassword':'test2'}") );
+            context(UserContext.class).changepassword( value( ChangePasswordCommand.class, "{'oldPassword':'test','newPassword':'test2'}") );
          } catch (WrongPasswordException e)
          {
             Assert.fail( "Should have been able to change password" );
@@ -80,9 +82,11 @@ public class UserContextTest
 
       {
          UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
+         RoleMap.newCurrentRoleMap();
+         playRole(User.class, "test");
          try
          {
-            root().users().context( "test" ).changepassword( value( ChangePasswordCommand.class, "{'oldPassword':'test','newPassword':'test3'}") );
+            context(UserContext.class).changepassword( value( ChangePasswordCommand.class, "{'oldPassword':'test','newPassword':'test3'}") );
             Assert.fail( "Should not have been able to change password" );
          } catch (WrongPasswordException e)
          {
@@ -99,14 +103,20 @@ public class UserContextTest
    {
       {
          UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
-         root().users().context( "test" ).changemessagedeliverytype( stringValue( "none") );
+         RoleMap.newCurrentRoleMap();
+         playRole(User.class, "test");
+
+         context(UserContext.class).changemessagedeliverytype( stringValue( "none") );
          uow.complete();
          eventsOccurred( "changedMessageDeliveryType" );
       }
 
       {
          UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
-         root().users().context( "test" ).changemessagedeliverytype( stringValue( "none") );
+         RoleMap.newCurrentRoleMap();
+         playRole(User.class, "test");
+
+         context(UserContext.class).changemessagedeliverytype( stringValue( "none") );
          uow.complete();
          eventsOccurred( );
       }

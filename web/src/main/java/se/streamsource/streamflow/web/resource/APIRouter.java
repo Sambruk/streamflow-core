@@ -34,6 +34,7 @@ import org.restlet.routing.Filter;
 import org.restlet.routing.Router;
 import org.restlet.routing.Template;
 import se.streamsource.dci.restlet.server.CommandQueryRestlet;
+import se.streamsource.dci.restlet.server.CommandQueryRestlet2;
 import se.streamsource.dci.restlet.server.ResourceFinder;
 import se.streamsource.streamflow.web.application.security.AuthenticationFilterFactory;
 import se.streamsource.streamflow.web.resource.admin.ConsoleServerResource;
@@ -55,7 +56,7 @@ public class APIRouter
       this.factory = factory;
       this.filterFactory = filterFactory;
 
-      Restlet cqr = factory.newObjectBuilder( CommandQueryRestlet.class ).use( context ).newInstance();
+      Restlet cqr = factory.newObjectBuilder( CommandQueryRestlet2.class ).use( context ).newInstance();
 
       Filter authenticationFilter = this.filterFactory.createFilter( context, cqr );
 

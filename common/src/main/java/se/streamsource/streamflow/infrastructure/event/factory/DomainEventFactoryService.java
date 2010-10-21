@@ -33,6 +33,7 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.time.Time;
 
@@ -83,25 +84,13 @@ public interface DomainEventFactoryService
 
          // Take user either from Subject or UoW
          UnitOfWork uow = uowf.currentUnitOfWork();
-         Subject subject = Subject.getSubject( AccessController.getContext() );
-         if (subject == null)
+         try
          {
-            Principal principal = uow.metaInfo().get( Principal.class );
-            if (principal != null)
-               prototype.by().set( principal.getName() );
-            else
-               prototype.by().set( "unknown" ); // No user set
-
-         }
-         else
+            Principal principal = RoleMap.role( Principal.class );
+            prototype.by().set( principal.getName() );
+         } catch (Exception e)
          {
-            Iterator<Principal> iterator = subject.getPrincipals().iterator();
-            if (iterator.hasNext())
-            {
-               String userName = iterator.next().getName();
-               prototype.by().set( userName );
-            } else
-               prototype.by().set( "unknown" );
+            prototype.by().set( "unknown" ); // No user set
          }
 
          prototype.identity().set( idGenerator.generate( DomainEvent.class ) );

@@ -17,17 +17,15 @@
 
 package se.streamsource.streamflow.web.context.organizations;
 
-import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.query.Query;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
-import se.streamsource.dci.api.Context;
-import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.IndexContext;
-import se.streamsource.dci.api.SubContexts;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationQueries;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationVisitor;
@@ -41,97 +39,83 @@ import se.streamsource.streamflow.web.domain.structure.project.Members;
 import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
 
 import static org.qi4j.api.query.QueryExpressions.*;
+import static se.streamsource.dci.api.RoleMap.role;
 
 /**
  * JAVADOC
  */
-@Mixins(MembersContext.Mixin.class)
-public interface MembersContext
-   extends SubContexts<MemberContext>, IndexContext<LinksValue>, Context
+public class MembersContext
+   implements IndexContext<LinksValue>
 {
-   public void addmember( EntityValue memberId);
+   @Structure
+   Module module;
 
-   public LinksValue possibleusers();
-
-   public LinksValue possiblegroups();
-
-   abstract class Mixin
-      extends ContextMixin
-      implements MembersContext
+   public LinksValue index()
    {
-      public LinksValue index()
+      Members.Data members = role(Members.Data.class);
+
+      return new LinksBuilder( module.valueBuilderFactory() ).rel( "member" ).addDescribables( members.members() ).newLinks();
+   }
+
+   public void addmember( EntityValue memberId)
+   {
+      UnitOfWork unitOfWork = module.unitOfWorkFactory().currentUnitOfWork();
+      Member member = unitOfWork.get( Member.class, memberId.entity().get() );
+
+      Members members = role(Members.class);
+
+      members.addMember( member );
+   }
+
+   public LinksValue possibleusers()
+   {
+      OwningOrganization org = role(OwningOrganization.class);
+      OrganizationEntity organization = (OrganizationEntity) org.organization().get();
+      Members.Data members = role(Members.Data.class);
+
+      Query<UserEntity> users = organization.findUsersByUsername( "*" ).newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
+      users = users.orderBy( orderBy( templateFor( UserAuthentication.Data.class ).userName() ) );
+
+      LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
+      linksBuilder.command("addmember");
+
+      for (UserEntity user : users)
       {
-         Members.Data members = roleMap.get(Members.Data.class);
-
-         return new LinksBuilder( module.valueBuilderFactory() ).rel( "member" ).addDescribables( members.members() ).newLinks();
-      }
-
-      public void addmember( EntityValue memberId)
-      {
-         UnitOfWork unitOfWork = module.unitOfWorkFactory().currentUnitOfWork();
-         Member member = unitOfWork.get( Member.class, memberId.entity().get() );
-
-         Members members = roleMap.get(Members.class);
-
-         members.addMember( member );
-      }
-
-      public LinksValue possibleusers()
-      {
-         OwningOrganization org = roleMap.get(OwningOrganization.class);
-         OrganizationEntity organization = (OrganizationEntity) org.organization().get();
-         Members.Data members = roleMap.get(Members.Data.class);
-
-         Query<UserEntity> users = organization.findUsersByUsername( "*" ).newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
-         users = users.orderBy( orderBy( templateFor( UserAuthentication.Data.class ).userName() ) );
-
-         LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
-         linksBuilder.command("addmember");
-
-         for (UserEntity user : users)
+         if (!members.members().contains( user ))
          {
-            if (!members.members().contains( user ))
-            {
-               String group = "" + Character.toUpperCase( user.getDescription().charAt( 0 ) );
-               linksBuilder.addDescribable( user, group );
-            }
+            String group = "" + Character.toUpperCase( user.getDescription().charAt( 0 ) );
+            linksBuilder.addDescribable( user, group );
          }
-
-         return linksBuilder.newLinks();
       }
 
-      public LinksValue possiblegroups()
+      return linksBuilder.newLinks();
+   }
+
+   public LinksValue possiblegroups()
+   {
+      OrganizationQueries org = role(OrganizationQueries.class);
+
+      final Members.Data members = role(Members.Data.class);
+
+      final LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
+      linksBuilder.command("addmember");
+
+      org.visitOrganization( new OrganizationVisitor()
       {
-         OrganizationQueries org = roleMap.get(OrganizationQueries.class);
-
-         final Members.Data members = roleMap.get(Members.Data.class);
-
-         final LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
-         linksBuilder.command("addmember");
-
-         org.visitOrganization( new OrganizationVisitor()
+         @Override
+         public boolean visitGroup( Group grp )
          {
-            @Override
-            public boolean visitGroup( Group grp )
+            if (!members.members().contains( (Member) grp )
+                  && !members.equals(grp))
             {
-               if (!members.members().contains( (Member) grp )
-                     && !members.equals(grp))
-               {
-                  String group = "" + Character.toUpperCase( grp.getDescription().charAt( 0 ) );
-                  linksBuilder.addDescribable( grp, group );
-               }
-
-               return true;
+               String group = "" + Character.toUpperCase( grp.getDescription().charAt( 0 ) );
+               linksBuilder.addDescribable( grp, group );
             }
-         }, new OrganizationQueries.ClassSpecification( OrganizationalUnits.class, Groups.class));
 
-         return linksBuilder.newLinks();
-      }
+            return true;
+         }
+      }, new OrganizationQueries.ClassSpecification( OrganizationalUnits.class, Groups.class));
 
-      public MemberContext context( String id )
-      {
-         roleMap.set( module.unitOfWorkFactory().currentUnitOfWork().get(Member.class, id ));
-         return subContext( MemberContext.class );
-      }
+      return linksBuilder.newLinks();
    }
 }

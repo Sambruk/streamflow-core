@@ -24,9 +24,16 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.web.context.ContextTest;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
+import se.streamsource.streamflow.web.domain.structure.organization.Organization;
+import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnits;
+import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
 
 import java.io.IOException;
+
+import static se.streamsource.streamflow.util.Iterables.count;
 
 /**
  * JAVADOC
@@ -38,23 +45,30 @@ public class ProjectsContextTest
    public static void createProject(String ouName, String name) throws UnitOfWorkCompletionException
    {
       UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
-      OrganizationContext org = subContext(root().organizations(),"Organization");
-      OrganizationalUnitContext ou = subContext(org.organizationalunits(), ouName);
-      ProjectsContext projects = ou.projects();
+      RoleMap.newCurrentRoleMap();
 
-      projects.createproject( stringValue(name) );
+      playRole( Organizations.class, OrganizationsEntity.ORGANIZATIONS_ID);
+      playRole( Organization.class, findLink( context( OrganizationsContext.class).index(), "Organization" ));
+      playRole( findDescribable(context(OrganizationalUnitsContext.class).index(), ouName));
+
+      context(ProjectsContext.class).createproject( stringValue(name) );
+
       uow.complete();
    }
 
    public static void removeProject( String ouName, String name ) throws IOException, UnitOfWorkCompletionException
    {
       UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
-      OrganizationContext org = subContext(root().organizations(),"Organization");
-      OrganizationalUnitContext ou = subContext(org.organizationalunits(), ouName);
-      ProjectsContext projects = ou.projects();
+      RoleMap.newCurrentRoleMap();
 
-      ProjectContext project = subContext(projects, name);
-      project.delete();
+      playRole( Organizations.class, OrganizationsEntity.ORGANIZATIONS_ID);
+      playRole( OrganizationalUnits.class, findLink( context( OrganizationsContext.class).index(), "Organization" ));
+      playRole( findDescribable(context(OrganizationalUnitsContext.class).index(), ouName));
+
+      playRole(findDescribable(context(ProjectsContext.class).index(), name));
+
+      context(ProjectContext.class).delete();
+
       uow.complete();
    }
 
@@ -84,11 +98,13 @@ public class ProjectsContextTest
       // Check that project can be found
       {
          UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
-         OrganizationContext org = subContext(root().organizations(),"Organization");
-         OrganizationalUnitContext ou = subContext(org.organizationalunits(), "OU1");
-         ProjectsContext projects = ou.projects();
+         RoleMap.newCurrentRoleMap();
 
-         Assert.assertThat( projects.index().links().get().size(), CoreMatchers.equalTo( 1 ));
+         playRole( Organizations.class, OrganizationsEntity.ORGANIZATIONS_ID);
+         playRole( OrganizationalUnits.class, findLink( context( OrganizationsContext.class).index(), "Organization" ));
+         playRole( findDescribable(context(OrganizationalUnitsContext.class).index(), "OU1"));
+
+         Assert.assertThat( count(context(ProjectsContext.class).index()), CoreMatchers.equalTo( 1L ));
          uow.discard();
       }
 

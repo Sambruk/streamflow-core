@@ -18,45 +18,26 @@
 package se.streamsource.streamflow.web.context.users.workspace;
 
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
-import se.streamsource.dci.api.Context;
-import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.IndexContext;
-import se.streamsource.dci.api.SubContexts;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.web.domain.entity.user.ProjectQueries;
-import se.streamsource.streamflow.web.domain.structure.project.Project;
 
 /**
  * JAVADOC
  */
-@Mixins(WorkspaceProjectsContext.Mixin.class)
-public interface WorkspaceProjectsContext
-   extends SubContexts<WorkspaceProjectContext>, IndexContext<LinksValue>, Context
+public class WorkspaceProjectsContext
+      implements IndexContext<LinksValue>
 {
+   @Structure
+   Module module;
 
-   abstract class Mixin
-      extends ContextMixin
-      implements WorkspaceProjectsContext, SubContexts<WorkspaceProjectContext>
+   public LinksValue index()
    {
-      @Structure
-      Module module;
-
-      public LinksValue index()
-      {
-         LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
-         ProjectQueries projectQueries = roleMap.get( ProjectQueries.class);
-         return linksBuilder.addDescribables( projectQueries.allProjects()).newLinks();
-      }
-
-      public WorkspaceProjectContext context( String id )
-      {
-         Project project = module.unitOfWorkFactory().currentUnitOfWork().get( Project.class, id );
-         roleMap.set( project);
-
-         return subContext( WorkspaceProjectContext.class );
-      }
+      LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
+      ProjectQueries projectQueries = RoleMap.role( ProjectQueries.class );
+      return linksBuilder.addDescribables( projectQueries.allProjects() ).newLinks();
    }
 }

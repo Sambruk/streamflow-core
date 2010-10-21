@@ -19,8 +19,8 @@ package se.streamsource.streamflow.web.context.organizations;
 
 import org.qi4j.api.mixin.Mixins;
 import se.streamsource.dci.api.Context;
-import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.DeleteContext;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.web.domain.structure.project.Member;
 import se.streamsource.streamflow.web.domain.structure.project.Members;
 
@@ -29,16 +29,15 @@ import se.streamsource.streamflow.web.domain.structure.project.Members;
  */
 @Mixins(MemberContext.Mixin.class)
 public interface MemberContext
-   extends DeleteContext, Context
+      extends DeleteContext, Context
 {
    abstract class Mixin
-      extends ContextMixin
-      implements MemberContext
+         implements MemberContext
    {
       public void delete()
       {
-         Member member = roleMap.get(Member.class);
-         Members members = roleMap.get( Members.class );
+         Member member = RoleMap.role( Member.class );
+         Members members = RoleMap.role( Members.class );
          members.removeMember( member );
       }
 

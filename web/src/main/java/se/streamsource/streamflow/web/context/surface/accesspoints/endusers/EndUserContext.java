@@ -18,17 +18,15 @@
 package se.streamsource.streamflow.web.context.surface.accesspoints.endusers;
 
 import org.qi4j.api.entity.EntityReference;
-import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.query.Query;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
-import se.streamsource.dci.api.Context;
-import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.IndexContext;
-import se.streamsource.dci.api.SubContexts;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.resource.caze.CaseFormDTO;
-import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.entity.gtd.DraftsQueries;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.form.EndUserCases;
@@ -40,71 +38,52 @@ import se.streamsource.streamflow.web.domain.structure.user.AnonymousEndUser;
 /**
  * JAVADOC
  */
-@Mixins(EndUserContext.Mixin.class)
-public interface EndUserContext
-      extends SubContexts<CaseContext>, Context, IndexContext<LinksValue>
+public class EndUserContext
+      implements IndexContext<LinksValue>
 {
-   // command
-   void createcase( );
+   @Structure
+   Module module;
 
-   void createcasewithform( );
-
-   // query
-   CaseFormDTO findcasewithform();
-
-   abstract class Mixin
-      extends ContextMixin
-      implements EndUserContext
+   public LinksValue index()
    {
+      DraftsQueries draftsQueries = RoleMap.role( DraftsQueries.class );
+      LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
+      linksBuilder.addDescribables( draftsQueries.drafts().newQuery( module.unitOfWorkFactory().currentUnitOfWork() ) );
+      return linksBuilder.newLinks();
+   }
 
-      public LinksValue index()
-      {
-         DraftsQueries draftsQueries = roleMap.get( DraftsQueries.class );
-         LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
-         linksBuilder.addDescribables( draftsQueries.drafts().newQuery( module.unitOfWorkFactory().currentUnitOfWork() ));
-         return linksBuilder.newLinks();
-      }
+   public void createcase()
+   {
+      AnonymousEndUser endUser = RoleMap.role( AnonymousEndUser.class );
+      EndUserCases endUserCases = RoleMap.role( EndUserCases.class );
+      endUserCases.createCase( endUser );
+   }
 
-      public void createcase( )
-      {
-         AnonymousEndUser endUser = roleMap.get( AnonymousEndUser.class );
-         EndUserCases endUserCases = roleMap.get( EndUserCases.class );
-         endUserCases.createCase( endUser );
-      }
+   public void createcasewithform()
+   {
+      AnonymousEndUser endUser = RoleMap.role( AnonymousEndUser.class );
+      EndUserCases endUserCases = RoleMap.role( EndUserCases.class );
+      endUserCases.createCaseWithForm( endUser );
+   }
 
-      public void createcasewithform()
+   public CaseFormDTO findcasewithform()
+   {
+      ValueBuilder<CaseFormDTO> builder = module.valueBuilderFactory().newValueBuilder( CaseFormDTO.class );
+      DraftsQueries queries = RoleMap.role( DraftsQueries.class );
+      Query<Case> query = queries.drafts().newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
+      for (Case aCase : query)
       {
-         AnonymousEndUser endUser = roleMap.get( AnonymousEndUser.class );
-         EndUserCases endUserCases = roleMap.get( EndUserCases.class );
-         endUserCases.createCaseWithForm( endUser );
-      }
-
-      public CaseContext context( String id)
-      {
-         CaseEntity caseEntity = module.unitOfWorkFactory().currentUnitOfWork().get( CaseEntity.class, id );
-         roleMap.set( caseEntity );
-         return subContext( CaseContext.class );
-      }
-
-      public CaseFormDTO findcasewithform()
-      {
-         ValueBuilder<CaseFormDTO> builder = module.valueBuilderFactory().newValueBuilder( CaseFormDTO.class );
-         DraftsQueries queries = roleMap.get( DraftsQueries.class );
-         Query<Case> query = queries.drafts().newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
-         for (Case aCase : query)
+         SelectedForms.Data data = RoleMap.role( SelectedForms.Data.class );
+         Form form = data.selectedForms().get( 0 );
+         FormDraft formSubmission = aCase.getFormSubmission( form );
+         if (formSubmission != null)
          {
-            SelectedForms.Data data = roleMap.get( SelectedForms.Data.class );
-            Form form = data.selectedForms().get( 0 );
-            FormDraft formSubmission = aCase.getFormSubmission( form );
-            if ( formSubmission != null )
-            {
-               builder.prototype().caze().set( EntityReference.getEntityReference( aCase ));
-               builder.prototype().form().set( EntityReference.getEntityReference( formSubmission ));
-               return builder.newInstance();
-            }
+            builder.prototype().caze().set( EntityReference.getEntityReference( aCase ) );
+            builder.prototype().form().set( EntityReference.getEntityReference( formSubmission ) );
+            return builder.newInstance();
          }
-
-         return builder.newInstance();
       }
+
+      return builder.newInstance();
    }
 }

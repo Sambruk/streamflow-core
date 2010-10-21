@@ -17,13 +17,10 @@
 
 package se.streamsource.streamflow.web.context.surface.administration.organizations.proxyusers;
 
-import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
-import se.streamsource.dci.api.Context;
-import se.streamsource.dci.api.ContextMixin;
-import se.streamsource.dci.api.ContextNotFoundException;
 import se.streamsource.dci.api.IndexContext;
-import se.streamsource.dci.api.SubContexts;
 import se.streamsource.streamflow.resource.user.NewProxyUserCommand;
 import se.streamsource.streamflow.resource.user.ProxyUserDTO;
 import se.streamsource.streamflow.resource.user.ProxyUserListDTO;
@@ -34,52 +31,41 @@ import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
 
 import java.util.List;
 
+import static se.streamsource.dci.api.RoleMap.*;
+
 /**
  * JAVADOC
  */
-@Mixins(ProxyUsersContext.Mixin.class)
-public interface ProxyUsersContext
-   extends Context, IndexContext<ProxyUserListDTO>, SubContexts<ProxyUserContext>
+public class ProxyUsersContext
+      implements IndexContext<ProxyUserListDTO>
 {
-   // commands
-   void createproxyuser( NewProxyUserCommand proxyUser );
+   @Structure
+   Module module;
 
-   abstract class Mixin
-      extends ContextMixin
-      implements ProxyUsersContext
+   public void createproxyuser( NewProxyUserCommand proxyUser )
    {
-      public void createproxyuser( NewProxyUserCommand proxyUser )
+      Organization organization = role( Organization.class );
+      organization.createProxyUser( proxyUser.description().get(), proxyUser.password().get() );
+   }
+
+   public ProxyUserListDTO index()
+   {
+      ProxyUsers.Data data = role( ProxyUsers.Data.class );
+
+      ValueBuilder<ProxyUserListDTO> listBuilder = module.valueBuilderFactory().newValueBuilder( ProxyUserListDTO.class );
+
+      ValueBuilder<ProxyUserDTO> builder = module.valueBuilderFactory().newValueBuilder( ProxyUserDTO.class );
+
+      List<ProxyUser> proxyUsers = data.proxyUsers().toList();
+      for (ProxyUser proxyUser : proxyUsers)
       {
-         Organization organization = roleMap.get( Organization.class );
-         organization.createProxyUser( proxyUser.description().get(), proxyUser.password().get() );
+         builder.prototype().username().set( ((UserAuthentication.Data) proxyUser).userName().get() );
+         builder.prototype().disabled().set( ((UserAuthentication.Data) proxyUser).disabled().get() );
+         builder.prototype().description().set( proxyUser.getDescription() );
+
+         listBuilder.prototype().users().get().add( builder.newInstance() );
       }
 
-      public ProxyUserListDTO index()
-      {
-         ProxyUsers.Data data = roleMap.get( ProxyUsers.Data.class );
-
-         ValueBuilder<ProxyUserListDTO> listBuilder = module.valueBuilderFactory().newValueBuilder( ProxyUserListDTO.class );
-
-         ValueBuilder<ProxyUserDTO> builder = module.valueBuilderFactory().newValueBuilder( ProxyUserDTO.class );
-
-         List<ProxyUser> proxyUsers = data.proxyUsers().toList();
-         for( ProxyUser proxyUser : proxyUsers)
-         {
-            builder.prototype().username().set( ((UserAuthentication.Data)proxyUser).userName().get() );
-            builder.prototype().disabled().set( ((UserAuthentication.Data)proxyUser).disabled().get() );
-            builder.prototype().description().set( proxyUser.getDescription() );
-
-            listBuilder.prototype().users().get().add( builder.newInstance() );
-         }
-
-         return listBuilder.newInstance();
-      }
-
-      public ProxyUserContext context( String id ) throws ContextNotFoundException
-      {
-         roleMap.set( module.unitOfWorkFactory().currentUnitOfWork().get( ProxyUser.class, id ));
-
-         return subContext( ProxyUserContext.class );
-      }
+      return listBuilder.newInstance();
    }
 }

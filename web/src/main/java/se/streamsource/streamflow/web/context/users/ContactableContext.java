@@ -18,12 +18,10 @@
 package se.streamsource.streamflow.web.context.users;
 
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.dci.api.Context;
-import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.domain.contact.ContactAddressValue;
 import se.streamsource.streamflow.domain.contact.ContactEmailValue;
@@ -34,137 +32,123 @@ import se.streamsource.streamflow.domain.contact.Contactable;
 /**
  * JAVADOC
  */
-@Mixins(ContactableContext.Mixin.class)
-public interface ContactableContext
-   extends IndexContext<ContactValue>, Context
+public class ContactableContext
+      implements IndexContext<ContactValue>
 {
-   public void changename( StringValue name );
-   public void changenote( StringValue note );
-   public void changecontactid( StringValue contactId );
-   public void changecompany( StringValue company );
-   public void changephonenumber( ContactPhoneValue phoneValue );
-   public void changeaddress( ContactAddressValue addressValue );
-   public void changeemailaddress( ContactEmailValue emailValue );
+   @Structure
+   ValueBuilderFactory vbf;
 
-   abstract class Mixin
-      extends ContextMixin
-      implements ContactableContext
+   public ContactValue index()
    {
-      @Structure
-      ValueBuilderFactory vbf;
+      Contactable contactable = RoleMap.role( Contactable.class );
+      ContactValue contact = contactable.getContact();
+      return contact;
+   }
 
-      public ContactValue index()
+   public void changename( StringValue name )
+   {
+      Contactable contactable = RoleMap.role( Contactable.class );
+      ContactValue contact = contactable.getContact();
+
+      ValueBuilder<ContactValue> builder = contact.buildWith();
+      builder.prototype().name().set( name.string().get().trim() );
+
+      contactable.updateContact( builder.newInstance() );
+   }
+
+   public void changenote( StringValue note )
+   {
+      Contactable contactable = RoleMap.role( Contactable.class );
+      ContactValue contact = contactable.getContact();
+
+      ValueBuilder<ContactValue> builder = contact.buildWith();
+      builder.prototype().note().set( note.string().get() );
+
+      contactable.updateContact( builder.newInstance() );
+   }
+
+   public void changecontactid( StringValue contactId )
+   {
+      Contactable contactable = RoleMap.role( Contactable.class );
+      ContactValue contact = contactable.getContact();
+
+      ValueBuilder<ContactValue> builder = contact.buildWith();
+      builder.prototype().contactId().set( contactId.string().get() );
+
+      contactable.updateContact( builder.newInstance() );
+   }
+
+   public void changecompany( StringValue company )
+   {
+      Contactable contactable = RoleMap.role( Contactable.class );
+      ContactValue contact = contactable.getContact();
+
+      ValueBuilder<ContactValue> builder = contact.buildWith();
+      builder.prototype().company().set( company.string().get() );
+
+      contactable.updateContact( builder.newInstance() );
+   }
+
+   public void changephonenumber( ContactPhoneValue phoneValue )
+   {
+      Contactable contactable = RoleMap.role( Contactable.class );
+      ContactValue contact = contactable.getContact();
+
+      ValueBuilder<ContactValue> builder = contact.buildWith();
+
+      // Create an empty phone value if it doesnt exist already
+      if (contact.phoneNumbers().get().isEmpty())
       {
-         Contactable contactable = roleMap.get(Contactable.class);
-         ContactValue contact = contactable.getContact();
-         return contact;
+         ContactPhoneValue phone = vbf.newValue( ContactPhoneValue.class ).<ContactPhoneValue>buildWith().prototype();
+         phone.phoneNumber().set( phoneValue.phoneNumber().get() );
+         builder.prototype().phoneNumbers().get().add( phone );
+      } else
+      {
+         builder.prototype().phoneNumbers().get().get( 0 ).phoneNumber().set( phoneValue.phoneNumber().get() );
       }
 
-      public void changename( StringValue name )
+      contactable.updateContact( builder.newInstance() );
+   }
+
+   public void changeaddress( ContactAddressValue addressValue )
+   {
+      Contactable contactable = RoleMap.role( Contactable.class );
+      ContactValue contact = contactable.getContact();
+
+      ValueBuilder<ContactValue> builder = contact.buildWith();
+
+      // Create an empty address value if it doesnt exist already
+      if (contact.addresses().get().isEmpty())
       {
-         Contactable contactable = roleMap.get(Contactable.class);
-         ContactValue contact = contactable.getContact();
-
-         ValueBuilder<ContactValue> builder = contact.buildWith();
-         builder.prototype().name().set( name.string().get().trim() );
-
-         contactable.updateContact( builder.newInstance() );
+         ContactAddressValue address = vbf.newValue( ContactAddressValue.class ).<ContactAddressValue>buildWith().prototype();
+         address.address().set( addressValue.address().get() );
+         builder.prototype().addresses().get().add( address );
+      } else
+      {
+         builder.prototype().addresses().get().get( 0 ).address().set( addressValue.address().get() );
       }
 
-      public void changenote( StringValue note )
+      contactable.updateContact( builder.newInstance() );
+   }
+
+   public void changeemailaddress( ContactEmailValue emailValue )
+   {
+      Contactable contactable = RoleMap.role( Contactable.class );
+      ContactValue contact = contactable.getContact();
+
+      ValueBuilder<ContactValue> builder = contact.buildWith();
+
+      // Create an empty email value if it doesnt exist already
+      if (contact.emailAddresses().get().isEmpty())
       {
-         Contactable contactable = roleMap.get(Contactable.class);
-         ContactValue contact = contactable.getContact();
-
-         ValueBuilder<ContactValue> builder = contact.buildWith();
-         builder.prototype().note().set( note.string().get() );
-
-         contactable.updateContact( builder.newInstance() );
+         ContactEmailValue email = vbf.newValue( ContactEmailValue.class ).<ContactEmailValue>buildWith().prototype();
+         email.emailAddress().set( emailValue.emailAddress().get().trim() );
+         builder.prototype().emailAddresses().get().add( email );
+      } else
+      {
+         builder.prototype().emailAddresses().get().get( 0 ).emailAddress().set( emailValue.emailAddress().get().trim() );
       }
 
-      public void changecontactid( StringValue contactId )
-      {
-         Contactable contactable = roleMap.get(Contactable.class);
-         ContactValue contact = contactable.getContact();
-
-         ValueBuilder<ContactValue> builder = contact.buildWith();
-         builder.prototype().contactId().set( contactId.string().get() );
-
-         contactable.updateContact( builder.newInstance() );
-      }
-
-      public void changecompany( StringValue company )
-      {
-         Contactable contactable = roleMap.get(Contactable.class);
-         ContactValue contact = contactable.getContact();
-
-         ValueBuilder<ContactValue> builder = contact.buildWith();
-         builder.prototype().company().set( company.string().get() );
-
-         contactable.updateContact( builder.newInstance() );
-      }
-
-      public void changephonenumber( ContactPhoneValue phoneValue )
-      {
-         Contactable contactable = roleMap.get(Contactable.class);
-         ContactValue contact = contactable.getContact();
-
-         ValueBuilder<ContactValue> builder = contact.buildWith();
-
-         // Create an empty phone value if it doesnt exist already
-         if (contact.phoneNumbers().get().isEmpty())
-         {
-            ContactPhoneValue phone = vbf.newValue( ContactPhoneValue.class ).<ContactPhoneValue>buildWith().prototype();
-            phone.phoneNumber().set( phoneValue.phoneNumber().get() );
-            builder.prototype().phoneNumbers().get().add( phone );
-         } else
-         {
-            builder.prototype().phoneNumbers().get().get( 0 ).phoneNumber().set( phoneValue.phoneNumber().get() );
-         }
-
-         contactable.updateContact( builder.newInstance() );
-      }
-
-      public void changeaddress( ContactAddressValue addressValue )
-      {
-         Contactable contactable = roleMap.get(Contactable.class);
-         ContactValue contact = contactable.getContact();
-
-         ValueBuilder<ContactValue> builder = contact.buildWith();
-
-         // Create an empty address value if it doesnt exist already
-         if (contact.addresses().get().isEmpty())
-         {
-            ContactAddressValue address = vbf.newValue( ContactAddressValue.class ).<ContactAddressValue>buildWith().prototype();
-            address.address().set( addressValue.address().get() );
-            builder.prototype().addresses().get().add( address );
-         } else
-         {
-            builder.prototype().addresses().get().get( 0 ).address().set( addressValue.address().get() );
-         }
-
-         contactable.updateContact( builder.newInstance() );
-      }
-
-      public void changeemailaddress( ContactEmailValue emailValue )
-      {
-         Contactable contactable = roleMap.get(Contactable.class);
-         ContactValue contact = contactable.getContact();
-
-         ValueBuilder<ContactValue> builder = contact.buildWith();
-
-         // Create an empty email value if it doesnt exist already
-         if (contact.emailAddresses().get().isEmpty())
-         {
-            ContactEmailValue email = vbf.newValue( ContactEmailValue.class ).<ContactEmailValue>buildWith().prototype();
-            email.emailAddress().set( emailValue.emailAddress().get().trim() );
-            builder.prototype().emailAddresses().get().add( email );
-         } else
-         {
-            builder.prototype().emailAddresses().get().get( 0 ).emailAddress().set( emailValue.emailAddress().get().trim() );
-         }
-
-         contactable.updateContact( builder.newInstance() );
-      }
+      contactable.updateContact( builder.newInstance() );
    }
 }

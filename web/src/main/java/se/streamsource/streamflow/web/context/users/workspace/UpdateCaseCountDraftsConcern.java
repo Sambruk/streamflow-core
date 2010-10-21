@@ -44,8 +44,7 @@ public abstract class UpdateCaseCountDraftsConcern
 
    public void createcase()
    {
-      RoleMap roleMap = uowf.currentUnitOfWork().metaInfo().get( RoleMap.class );
-      Drafts drafts = roleMap.get( Drafts.class );
+      Drafts drafts = RoleMap.role( Drafts.class );
 
       // Update drafts for user
       new Caching(caching, Caches.CASECOUNTS).addToCache( drafts.toString(), 1 );

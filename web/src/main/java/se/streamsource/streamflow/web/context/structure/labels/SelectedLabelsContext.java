@@ -18,18 +18,13 @@
 package se.streamsource.streamflow.web.context.structure.labels;
 
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
-import se.streamsource.dci.api.Context;
-import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.IndexContext;
-import se.streamsource.dci.api.SubContexts;
 import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationQueries;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationVisitor;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
@@ -42,113 +37,99 @@ import se.streamsource.streamflow.web.domain.structure.organization.Organization
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.project.Projects;
 
+import static se.streamsource.dci.api.RoleMap.*;
+
 /**
  * JAVADOC
  */
-@Mixins(SelectedLabelsContext.Mixin.class)
-public interface SelectedLabelsContext
-   extends SubContexts<SelectedLabelContext>, IndexContext<LinksValue>, Context
+public class SelectedLabelsContext
+   implements IndexContext<LinksValue>
 {
-   public LinksValue possiblelabels();
-   public void createlabel( StringValue name );
-   public void addlabel( EntityValue labelDTO );
+   @Structure
+   Module module;
 
-   abstract class Mixin
-         extends ContextMixin
-         implements SelectedLabelsContext
+   public LinksValue index()
    {
-      @Structure
-      Module module;
+      SelectedLabels.Data labels = role(SelectedLabels.Data.class);
 
-      public LinksValue index()
+      return new LinksBuilder( module.valueBuilderFactory() ).rel( "label" ).addDescribables( labels.selectedLabels() ).newLinks();
+   }
+
+   public LinksValue possiblelabels()
+   {
+      OrganizationQueries orgQueries = role(OrganizationQueries.class);
+      final SelectedLabels.Data selectedLabels = role(SelectedLabels.Data.class);
+
+      final LinksBuilder builder = new LinksBuilder(module.valueBuilderFactory()).command( "addlabel" );
+
+      orgQueries.visitOrganization( new OrganizationVisitor()
       {
-         SelectedLabels.Data labels = roleMap.get(SelectedLabels.Data.class);
 
-         return new LinksBuilder( module.valueBuilderFactory() ).rel( "label" ).addDescribables( labels.selectedLabels() ).newLinks();
-      }
+         Describable owner;
 
-      public LinksValue possiblelabels()
-      {
-         OrganizationQueries orgQueries = roleMap.get(OrganizationQueries.class);
-         final SelectedLabels.Data selectedLabels = roleMap.get(SelectedLabels.Data.class);
-
-         final LinksBuilder builder = new LinksBuilder(module.valueBuilderFactory()).command( "addlabel" );
-
-         orgQueries.visitOrganization( new OrganizationVisitor()
+         @Override
+         public boolean visitOrganization( Organization org )
          {
+            owner = org;
+            return super.visitOrganization( org );
+         }
 
-            Describable owner;
+         @Override
+         public boolean visitOrganizationalUnit( OrganizationalUnit ou )
+         {
+            owner = ou;
 
-            @Override
-            public boolean visitOrganization( Organization org )
-            {
-               owner = org;
-               return super.visitOrganization( org );
-            }
+            return super.visitOrganizationalUnit( ou );
+         }
 
-            @Override
-            public boolean visitOrganizationalUnit( OrganizationalUnit ou )
-            {
-               owner = ou;
+         @Override
+         public boolean visitProject( Project project )
+         {
+            owner = project;
 
-               return super.visitOrganizationalUnit( ou );
-            }
+            return super.visitProject( project );
+         }
 
-            @Override
-            public boolean visitProject( Project project )
-            {
-               owner = project;
+         @Override
+         public boolean visitCaseType( CaseType caseType )
+         {
+            owner = caseType;
 
-               return super.visitProject( project );
-            }
+            return super.visitCaseType( caseType );
+         }
 
-            @Override
-            public boolean visitCaseType( CaseType caseType )
-            {
-               owner = caseType;
+         @Override
+         public boolean visitLabel( Label label )
+         {
+            if (!selectedLabels.selectedLabels().contains( label ))
+               builder.addDescribable( label, owner );
 
-               return super.visitCaseType( caseType );
-            }
+            return true;
+         }
+      }, new OrganizationQueries.ClassSpecification( Organization.class,
+            OrganizationalUnits.class,
+            OrganizationalUnit.class,
+            Projects.class,
+            Project.class,
+            Labels.class));
+      
+      return builder.newLinks();
+   }
 
-            @Override
-            public boolean visitLabel( Label label )
-            {
-               if (!selectedLabels.selectedLabels().contains( label ))
-                  builder.addDescribable( label, owner );
+   public void createlabel( StringValue name )
+   {
+      Labels labels = role(Labels.class);
+      SelectedLabels selectedLabels = role(SelectedLabels.class);
 
-               return true;
-            }
-         }, new OrganizationQueries.ClassSpecification( Organization.class,
-               OrganizationalUnits.class,
-               OrganizationalUnit.class,
-               Projects.class,
-               Project.class,
-               Labels.class));
-         
-         return builder.newLinks();
-      }
+      Label label = labels.createLabel( name.string().get() );
+      selectedLabels.addSelectedLabel( label );
+   }
 
-      public void createlabel( StringValue name )
-      {
-         Labels labels = roleMap.get(Labels.class);
-         SelectedLabels selectedLabels = roleMap.get(SelectedLabels.class);
+   public void addlabel( EntityValue labelDTO )
+   {
+      SelectedLabels labels = role( SelectedLabels.class);
+      Label label = module.unitOfWorkFactory().currentUnitOfWork().get( Label.class, labelDTO.entity().get() );
 
-         Label label = labels.createLabel( name.string().get() );
-         selectedLabels.addSelectedLabel( label );
-      }
-
-      public void addlabel( EntityValue labelDTO )
-      {
-         SelectedLabels labels = roleMap.get( SelectedLabels.class);
-         Label label = module.unitOfWorkFactory().currentUnitOfWork().get( Label.class, labelDTO.entity().get() );
-
-         labels.addSelectedLabel( label );
-      }
-
-      public SelectedLabelContext context( String id )
-      {
-         roleMap.set( module.unitOfWorkFactory().currentUnitOfWork().get(Label.class, id ));
-         return subContext( SelectedLabelContext.class );
-      }
+      labels.addSelectedLabel( label );
    }
 }

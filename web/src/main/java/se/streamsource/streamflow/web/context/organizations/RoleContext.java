@@ -17,28 +17,20 @@
 
 package se.streamsource.streamflow.web.context.organizations;
 
-import org.qi4j.api.mixin.Mixins;
-import se.streamsource.dci.api.Context;
-import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.DeleteContext;
-import se.streamsource.streamflow.web.context.structure.DescribableContext;
 import se.streamsource.streamflow.web.domain.structure.role.Role;
 import se.streamsource.streamflow.web.domain.structure.role.Roles;
+
+import static se.streamsource.dci.api.RoleMap.*;
 
 /**
  * JAVADOC
  */
-@Mixins(RoleContext.Mixin.class)
-public interface RoleContext
-   extends DescribableContext, DeleteContext, Context
+public class RoleContext
+      implements DeleteContext
 {
-   abstract class Mixin
-      extends ContextMixin
-      implements RoleContext
+   public void delete()
    {
-      public void delete()
-      {
-         roleMap.get( Roles.class ).removeRole( roleMap.get( Role.class) );
-      }
+      role( Roles.class ).removeRole( role( Role.class ) );
    }
 }

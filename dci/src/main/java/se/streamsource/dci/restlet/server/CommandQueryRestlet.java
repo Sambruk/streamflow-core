@@ -17,26 +17,6 @@
 
 package se.streamsource.dci.restlet.server;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
-import java.net.URLDecoder;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import javax.security.auth.Subject;
 import org.json.JSONException;
 import org.qi4j.api.common.QualifiedName;
 import org.qi4j.api.composite.TransientComposite;
@@ -93,6 +73,27 @@ import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.api.SubContext;
 import se.streamsource.dci.api.SubContexts;
 import se.streamsource.dci.value.ContextValue;
+
+import javax.security.auth.Subject;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
+import java.net.URLDecoder;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Handle requests to command/query resources.
@@ -576,7 +577,7 @@ public class CommandQueryRestlet
          }
       }
 
-      final Value index = resource instanceof IndexContext ? ((IndexContext) resource).index() : null;
+      final Object index = resource instanceof IndexContext ? ((IndexContext) resource).index() : null;
 
       ValueBuilder<ContextValue> builder = vbf.newValueBuilder( ContextValue.class );
 

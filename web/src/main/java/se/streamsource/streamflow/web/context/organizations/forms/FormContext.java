@@ -18,13 +18,12 @@
 package se.streamsource.streamflow.web.context.organizations.forms;
 
 import org.qi4j.api.entity.EntityReference;
-import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
-import se.streamsource.dci.api.Context;
-import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.IndexContext;
-import se.streamsource.dci.api.SubContext;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.EntityValue;
 import se.streamsource.streamflow.domain.form.FormValue;
 import se.streamsource.streamflow.web.domain.entity.form.FormEntity;
@@ -34,66 +33,37 @@ import se.streamsource.streamflow.web.domain.structure.form.Forms;
 /**
  * JAVADOC
  */
-@Mixins(FormContext.Mixin.class)
-public interface FormContext
-   extends DeleteContext, Context, IndexContext<FormValue>
+public class FormContext
+      implements DeleteContext, IndexContext<FormValue>
 {
-   void move( EntityValue to);
+   @Structure
+   Module module;
 
-   @SubContext
-   FormInfoContext forminfo();
-
-   @SubContext
-   FormPagesContext pages();
-
-   @SubContext
-   FormSignaturesContext signatures();
-
-   abstract class Mixin
-      extends ContextMixin
-      implements FormContext
+   public FormValue index()
    {
-      public FormValue index()
-      {
-         FormEntity form = roleMap.get(FormEntity.class);
+      FormEntity form = RoleMap.role( FormEntity.class );
 
-         ValueBuilder<FormValue> builder = module.valueBuilderFactory().newValueBuilder( FormValue.class );
+      ValueBuilder<FormValue> builder = module.valueBuilderFactory().newValueBuilder( FormValue.class );
 
-         builder.prototype().note().set( form.note().get() );
-         builder.prototype().description().set( form.description().get() );
-         builder.prototype().form().set( EntityReference.parseEntityReference( form.identity().get() ) );
-         builder.prototype().id().set( form.formId().get() );
+      builder.prototype().note().set( form.note().get() );
+      builder.prototype().description().set( form.description().get() );
+      builder.prototype().form().set( EntityReference.parseEntityReference( form.identity().get() ) );
+      builder.prototype().id().set( form.formId().get() );
 
-         return builder.newInstance();
-      }
+      return builder.newInstance();
+   }
 
-      public void move(EntityValue to)
-      {
-         Forms toForms = module.unitOfWorkFactory().currentUnitOfWork().get( Forms.class, to.entity().get() );
-         Form form = roleMap.get(Form.class);
-         roleMap.get( Forms.class ).moveForm(form, toForms);
-      }
+   public void move( EntityValue to )
+   {
+      Forms toForms = module.unitOfWorkFactory().currentUnitOfWork().get( Forms.class, to.entity().get() );
+      Form form = RoleMap.role( Form.class );
+      RoleMap.role( Forms.class ).moveForm( form, toForms );
+   }
 
-      public void delete()
-      {
-         Form form = roleMap.get( Form.class);
-         Forms forms = roleMap.get(Forms.class);
-         forms.removeForm( form );
-      }
-
-      public FormInfoContext forminfo()
-      {
-         return subContext( FormInfoContext.class );
-      }
-
-      public FormPagesContext pages()
-      {
-         return subContext( FormPagesContext.class );
-      }
-
-      public FormSignaturesContext signatures()
-      {
-         return subContext( FormSignaturesContext.class );
-      }
+   public void delete()
+   {
+      Form form = RoleMap.role( Form.class );
+      Forms forms = RoleMap.role( Forms.class );
+      forms.removeForm( form );
    }
 }

@@ -19,33 +19,39 @@ package se.streamsource.streamflow.web.assembler;
 
 import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.velocity.app.VelocityEngine;
 import org.qi4j.api.common.Visibility;
+import org.qi4j.api.composite.TransientComposite;
 import org.qi4j.bootstrap.AssemblyException;
+import org.qi4j.bootstrap.ImportedServiceDeclaration;
 import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.spi.service.importer.NewObjectImporter;
 import se.streamsource.dci.api.InteractionConstraintsService;
+import se.streamsource.dci.restlet.server.CommandQueryResource;
+import se.streamsource.dci.restlet.server.DCIAssembler;
+import se.streamsource.dci.restlet.server.DefaultResponseWriterFactory;
+import se.streamsource.dci.restlet.server.ResponseWriterFactory;
+import se.streamsource.dci.restlet.server.ResultConverter;
 import se.streamsource.streamflow.web.context.RequiresPermission;
-import se.streamsource.streamflow.web.context.RootContext;
 import se.streamsource.streamflow.web.context.ServiceAvailable;
 import se.streamsource.streamflow.web.context.ServicesContext;
-import se.streamsource.streamflow.web.context.caze.AttachmentContext;
-import se.streamsource.streamflow.web.context.caze.AttachmentsContext;
-import se.streamsource.streamflow.web.context.caze.CaseContext;
-import se.streamsource.streamflow.web.context.caze.CaseFormDraftContext;
-import se.streamsource.streamflow.web.context.caze.CaseFormDraftsContext;
-import se.streamsource.streamflow.web.context.caze.CasePossibleFormContext;
-import se.streamsource.streamflow.web.context.caze.CasePossibleFormsContext;
-import se.streamsource.streamflow.web.context.caze.CaseSubmittedFormsContext;
-import se.streamsource.streamflow.web.context.caze.CaseGeneralContext;
-import se.streamsource.streamflow.web.context.caze.CasesContext;
-import se.streamsource.streamflow.web.context.caze.ContactContext;
-import se.streamsource.streamflow.web.context.caze.ContactsContext;
+import se.streamsource.streamflow.web.context.cases.AttachmentContext;
+import se.streamsource.streamflow.web.context.cases.AttachmentsContext;
+import se.streamsource.streamflow.web.context.cases.CaseActionsContext;
+import se.streamsource.streamflow.web.context.cases.CaseContext;
+import se.streamsource.streamflow.web.context.cases.CaseFormDraftContext;
+import se.streamsource.streamflow.web.context.cases.CaseGeneralContext;
+import se.streamsource.streamflow.web.context.cases.CasePossibleFormContext;
+import se.streamsource.streamflow.web.context.cases.CasePossibleFormsContext;
+import se.streamsource.streamflow.web.context.cases.CaseSubmittedFormsContext;
+import se.streamsource.streamflow.web.context.cases.CasesContext;
+import se.streamsource.streamflow.web.context.cases.ContactContext;
+import se.streamsource.streamflow.web.context.cases.ContactsContext;
 import se.streamsource.streamflow.web.context.conversation.ConversationContext;
 import se.streamsource.streamflow.web.context.conversation.ConversationParticipantContext;
 import se.streamsource.streamflow.web.context.conversation.ConversationParticipantsContext;
 import se.streamsource.streamflow.web.context.conversation.ConversationsContext;
-import se.streamsource.streamflow.web.context.conversation.MessageContext;
 import se.streamsource.streamflow.web.context.conversation.MessagesContext;
 import se.streamsource.streamflow.web.context.gtd.AssignmentsContext;
 import se.streamsource.streamflow.web.context.gtd.InboxContext;
@@ -57,7 +63,6 @@ import se.streamsource.streamflow.web.context.organizations.GroupContext;
 import se.streamsource.streamflow.web.context.organizations.GroupsContext;
 import se.streamsource.streamflow.web.context.organizations.MemberContext;
 import se.streamsource.streamflow.web.context.organizations.MembersContext;
-import se.streamsource.streamflow.web.context.organizations.OrganizationContext;
 import se.streamsource.streamflow.web.context.organizations.OrganizationUserContext;
 import se.streamsource.streamflow.web.context.organizations.OrganizationUsersContext;
 import se.streamsource.streamflow.web.context.organizations.OrganizationalUnitContext;
@@ -68,7 +73,6 @@ import se.streamsource.streamflow.web.context.organizations.ParticipantsContext;
 import se.streamsource.streamflow.web.context.organizations.ProjectContext;
 import se.streamsource.streamflow.web.context.organizations.ProjectsContext;
 import se.streamsource.streamflow.web.context.organizations.RoleContext;
-import se.streamsource.streamflow.web.context.organizations.RolesContext;
 import se.streamsource.streamflow.web.context.organizations.SelectedCaseTypeContext;
 import se.streamsource.streamflow.web.context.organizations.SelectedCaseTypesContext;
 import se.streamsource.streamflow.web.context.organizations.forms.FormContext;
@@ -81,6 +85,7 @@ import se.streamsource.streamflow.web.context.organizations.forms.FormSignatures
 import se.streamsource.streamflow.web.context.organizations.forms.FormsContext;
 import se.streamsource.streamflow.web.context.organizations.forms.SelectedFormContext;
 import se.streamsource.streamflow.web.context.organizations.forms.SelectedFormsContext;
+import se.streamsource.streamflow.web.context.resource.administration.organizations.proxyusers.ProxyUsersResource;
 import se.streamsource.streamflow.web.context.structure.SelectedTemplateContext;
 import se.streamsource.streamflow.web.context.structure.labels.LabelContext;
 import se.streamsource.streamflow.web.context.structure.labels.LabelableContext;
@@ -90,20 +95,22 @@ import se.streamsource.streamflow.web.context.structure.labels.SelectedLabelCont
 import se.streamsource.streamflow.web.context.structure.labels.SelectedLabelsContext;
 import se.streamsource.streamflow.web.context.structure.resolutions.ResolutionContext;
 import se.streamsource.streamflow.web.context.structure.resolutions.ResolutionsContext;
+import se.streamsource.streamflow.web.context.structure.resolutions.ResolutionsResource;
 import se.streamsource.streamflow.web.context.structure.resolutions.SelectedResolutionContext;
 import se.streamsource.streamflow.web.context.structure.resolutions.SelectedResolutionsContext;
-import se.streamsource.streamflow.web.context.surface.SurfaceContext;
 import se.streamsource.streamflow.web.context.surface.accesspoints.AccessPointContext;
 import se.streamsource.streamflow.web.context.surface.accesspoints.AccessPointsContext;
 import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.EndUserContext;
 import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.EndUsersContext;
-import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.formdrafts.FormDraftContext;
-import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.formdrafts.FormDraftsContext;
-import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.formdrafts.summary.SummaryContext;
-import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.requiredforms.RequiredFormsContext;
-import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.submittedforms.SubmittedFormContext;
-import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.submittedforms.SubmittedFormsContext;
-import se.streamsource.streamflow.web.context.surface.administration.AdministrationContext;
+import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.SurfaceCaseContext;
+import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.formdrafts.SurfaceFormDraftContext;
+import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.formdrafts.SurfaceFormDraftsContext;
+import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.formdrafts.summary.SurfaceSummaryContext;
+import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.requiredforms.SurfaceRequiredFormsContext;
+import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.submittedforms.SurfaceSubmittedFormContext;
+import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.submittedforms.SurfaceSubmittedFormsContext;
+import se.streamsource.streamflow.web.context.surface.administration.organizations.accesspoints.AccessPointAdministrationContext;
+import se.streamsource.streamflow.web.context.surface.administration.organizations.accesspoints.AccessPointsAdministrationContext;
 import se.streamsource.streamflow.web.context.surface.administration.organizations.proxyusers.ProxyUserContext;
 import se.streamsource.streamflow.web.context.surface.administration.organizations.proxyusers.ProxyUsersContext;
 import se.streamsource.streamflow.web.context.users.ContactableContext;
@@ -112,15 +119,74 @@ import se.streamsource.streamflow.web.context.users.UserContext;
 import se.streamsource.streamflow.web.context.users.UsersContext;
 import se.streamsource.streamflow.web.context.users.overview.OverviewContext;
 import se.streamsource.streamflow.web.context.users.overview.OverviewProjectAssignmentsContext;
-import se.streamsource.streamflow.web.context.users.overview.OverviewProjectContext;
 import se.streamsource.streamflow.web.context.users.overview.OverviewProjectsContext;
 import se.streamsource.streamflow.web.context.users.workspace.DraftsContext;
 import se.streamsource.streamflow.web.context.users.workspace.SavedSearchContext;
 import se.streamsource.streamflow.web.context.users.workspace.SavedSearchesContext;
 import se.streamsource.streamflow.web.context.users.workspace.WorkspaceContext;
-import se.streamsource.streamflow.web.context.users.workspace.WorkspaceProjectContext;
 import se.streamsource.streamflow.web.context.users.workspace.WorkspaceProjectsContext;
-import se.streamsource.streamflow.web.context.users.workspace.WorkspaceUserContext;
+import se.streamsource.streamflow.web.resource.RootResource;
+import se.streamsource.streamflow.web.resource.cases.AttachmentsResource;
+import se.streamsource.streamflow.web.resource.cases.CaseFormDraftsResource;
+import se.streamsource.streamflow.web.resource.cases.CaseGeneralResource;
+import se.streamsource.streamflow.web.resource.cases.CasePossibleFormsResource;
+import se.streamsource.streamflow.web.resource.cases.CaseResource;
+import se.streamsource.streamflow.web.resource.cases.CasesResource;
+import se.streamsource.streamflow.web.resource.cases.ContactsResource;
+import se.streamsource.streamflow.web.resource.conversation.ConversationParticipantsResource;
+import se.streamsource.streamflow.web.resource.conversation.ConversationResource;
+import se.streamsource.streamflow.web.resource.conversation.ConversationsResource;
+import se.streamsource.streamflow.web.resource.organizations.AdministratorsResource;
+import se.streamsource.streamflow.web.resource.organizations.CaseTypeResource;
+import se.streamsource.streamflow.web.resource.organizations.CaseTypesResource;
+import se.streamsource.streamflow.web.resource.organizations.GroupResource;
+import se.streamsource.streamflow.web.resource.organizations.GroupsResource;
+import se.streamsource.streamflow.web.resource.organizations.MembersResource;
+import se.streamsource.streamflow.web.resource.organizations.OrganizationResource;
+import se.streamsource.streamflow.web.resource.organizations.OrganizationUsersResource;
+import se.streamsource.streamflow.web.resource.organizations.OrganizationalUnitResource;
+import se.streamsource.streamflow.web.resource.organizations.OrganizationalUnitsResource;
+import se.streamsource.streamflow.web.resource.organizations.OrganizationsResource;
+import se.streamsource.streamflow.web.resource.organizations.ParticipantsResource;
+import se.streamsource.streamflow.web.resource.organizations.ProjectResource;
+import se.streamsource.streamflow.web.resource.organizations.ProjectsResource;
+import se.streamsource.streamflow.web.resource.organizations.RolesResource;
+import se.streamsource.streamflow.web.resource.organizations.SelectedCaseTypesResource;
+import se.streamsource.streamflow.web.resource.organizations.forms.FormFieldResource;
+import se.streamsource.streamflow.web.resource.organizations.forms.FormPageResource;
+import se.streamsource.streamflow.web.resource.organizations.forms.FormPagesResource;
+import se.streamsource.streamflow.web.resource.organizations.forms.FormResource;
+import se.streamsource.streamflow.web.resource.organizations.forms.FormSignaturesResource;
+import se.streamsource.streamflow.web.resource.organizations.forms.FormsResource;
+import se.streamsource.streamflow.web.resource.organizations.forms.SelectedFormsResource;
+import se.streamsource.streamflow.web.resource.structure.labels.LabelResource;
+import se.streamsource.streamflow.web.resource.structure.labels.LabelableResource;
+import se.streamsource.streamflow.web.resource.structure.labels.LabelsResource;
+import se.streamsource.streamflow.web.resource.structure.labels.SelectedLabelsResource;
+import se.streamsource.streamflow.web.resource.structure.resolutions.SelectedResolutionsResource;
+import se.streamsource.streamflow.web.resource.surface.SurfaceResource;
+import se.streamsource.streamflow.web.resource.surface.accesspoints.AccessPointResource;
+import se.streamsource.streamflow.web.resource.surface.accesspoints.AccessPointsResource;
+import se.streamsource.streamflow.web.resource.surface.accesspoints.endusers.EndUserResource;
+import se.streamsource.streamflow.web.resource.surface.accesspoints.endusers.EndUsersResource;
+import se.streamsource.streamflow.web.resource.surface.accesspoints.endusers.SurfaceCaseResource;
+import se.streamsource.streamflow.web.resource.surface.accesspoints.endusers.formdrafts.SurfaceFormDraftResource;
+import se.streamsource.streamflow.web.resource.surface.accesspoints.endusers.formdrafts.SurfaceFormDraftsResource;
+import se.streamsource.streamflow.web.resource.surface.accesspoints.endusers.submittedforms.SurfaceSubmittedFormsResource;
+import se.streamsource.streamflow.web.resource.surface.administration.organizations.accesspoints.AccessPointAdministrationResource;
+import se.streamsource.streamflow.web.resource.surface.administration.organizations.accesspoints.AccessPointsAdministrationResource;
+import se.streamsource.streamflow.web.resource.users.UserResource;
+import se.streamsource.streamflow.web.resource.users.UsersResource;
+import se.streamsource.streamflow.web.resource.users.WorkspaceResource;
+import se.streamsource.streamflow.web.resource.users.overview.OverviewProjectResource;
+import se.streamsource.streamflow.web.resource.users.overview.OverviewProjectsResource;
+import se.streamsource.streamflow.web.resource.users.overview.OverviewResource;
+import se.streamsource.streamflow.web.resource.users.workspace.SavedSearchesResource;
+import se.streamsource.streamflow.web.resource.users.workspace.WorkspaceProjectResource;
+import se.streamsource.streamflow.web.resource.users.workspace.WorkspaceProjectsResource;
+import se.streamsource.streamflow.web.resource.users.workspace.WorkspaceUserResource;
+import se.streamsource.streamflow.web.rest.StreamflowRestlet;
+import se.streamsource.streamflow.web.rest.StreamflowResultConverter;
 
 import static org.qi4j.bootstrap.ImportedServiceDeclaration.*;
 
@@ -137,6 +203,13 @@ public class ContextAssembler
 
    private void interactions( ModuleAssembly module ) throws AssemblyException
    {
+      module.importServices( ResultConverter.class ).importedBy( ImportedServiceDeclaration.NEW_OBJECT );
+
+      module.addObjects( StreamflowResultConverter.class );
+
+      module.addObjects( DefaultResponseWriterFactory.class );
+      new DCIAssembler().assemble( module );
+
       module.importServices( InteractionConstraintsService.class ).
             importedBy( NewObjectImporter.class ).
             visibleIn( Visibility.application );
@@ -150,71 +223,106 @@ public class ContextAssembler
       factory.setSizeThreshold( 1024 * 1000 * 30 ); // 30 Mb threshold TODO Make this into real service and make this number configurable
       module.importServices( FileItemFactory.class ).importedBy( INSTANCE ).setMetaInfo( factory );
 
-      // Only expose the root to the upper layers
-      module.addTransients(
-            RootContext.class ).visibleIn( Visibility.application );
+      module.addObjects( StreamflowRestlet.class ).visibleIn( Visibility.application );
 
-      module.addTransients(
+      addResourceContexts( module,
+            RootResource.class,
+            
             FormContext.class,
+            FormResource.class,
+
             FormInfoContext.class,
             FormPageContext.class,
+            FormPageResource.class,
             FormPagesContext.class,
+            FormPagesResource.class,
             FormFieldContext.class,
+            FormFieldResource.class,
             FormSignaturesContext.class,
+            FormSignaturesResource.class,
             FormSignatureContext.class,
             FormsContext.class,
+            FormsResource.class,
             SelectedFormsContext.class,
+            SelectedFormsResource.class,
             SelectedFormContext.class,
 
             AdministratorContext.class,
             AdministratorsContext.class,
+            AdministratorsResource.class,
             GroupContext.class,
+            GroupResource.class,
             GroupsContext.class,
+            GroupsResource.class,
             MemberContext.class,
             MembersContext.class,
+            MembersResource.class,
             OrganizationalUnitContext.class,
+            OrganizationalUnitResource.class,
             OrganizationalUnitsContext.class,
-            OrganizationContext.class,
+            OrganizationalUnitsResource.class,
             OrganizationsContext.class,
+            OrganizationsResource.class,
+            OrganizationResource.class,
             OrganizationUserContext.class,
             OrganizationUsersContext.class,
+            OrganizationUsersResource.class,
             ParticipantContext.class,
             ParticipantsContext.class,
+            ParticipantsResource.class,
             ProjectContext.class,
+            ProjectResource.class,
             ProjectsContext.class,
+            ProjectsResource.class,
             RoleContext.class,
-            RolesContext.class,
+            RoleContext.class,
+            RolesResource.class,
             SelectedCaseTypeContext.class,
             SelectedCaseTypesContext.class,
+            SelectedCaseTypesResource.class,
             CaseTypeContext.class,
+            CaseTypeResource.class,
             CaseTypesContext.class,
+            CaseTypesResource.class,
 
             LabelableContext.class,
+            LabelableResource.class,
             LabelContext.class,
+            LabelResource.class,
             LabeledContext.class,
             LabelsContext.class,
+            LabelsResource.class,
             SelectedLabelContext.class,
             SelectedLabelsContext.class,
+            SelectedLabelsResource.class,
 
             ResolutionContext.class,
             ResolutionsContext.class,
+            ResolutionsResource.class,
             SelectedResolutionContext.class,
             SelectedResolutionsContext.class,
+            SelectedResolutionsResource.class,
 
             ContactableContext.class,
             UsersContext.class,
+            UsersResource.class,
             UserContext.class,
+            UserResource.class,
 
             OverviewContext.class,
+            OverviewResource.class,
             OverviewProjectAssignmentsContext.class,
-            OverviewProjectContext.class,
+            OverviewProjectResource.class,
             OverviewProjectsContext.class,
+            OverviewProjectsResource.class,
 
             WorkspaceContext.class,
-            WorkspaceProjectContext.class,
+            WorkspaceResource.class,
+            WorkspaceUserResource.class,
             WorkspaceProjectsContext.class,
+            WorkspaceProjectsResource.class,
+            WorkspaceProjectResource.class,
             UserAdministrationContext.class,
-            WorkspaceUserContext.class,
 
             DraftsContext.class,
             InboxContext.class,
@@ -222,25 +330,35 @@ public class ContextAssembler
 
             ContactContext.class,
             ContactsContext.class,
+            ContactsResource.class,
             CaseContext.class,
+            CaseActionsContext.class,
+            CaseResource.class,
             CaseSubmittedFormsContext.class,
-            CaseFormDraftsContext.class,
+            CaseFormDraftsResource.class,
             CaseFormDraftContext.class,
             CasePossibleFormsContext.class,
+            CasePossibleFormsResource.class,
             CasePossibleFormContext.class,
             CaseGeneralContext.class,
+            CaseGeneralResource.class,
             CasesContext.class,
+            CasesResource.class,
 
             ConversationContext.class,
+            ConversationResource.class,
             ConversationParticipantContext.class,
             ConversationParticipantsContext.class,
+            ConversationParticipantsResource.class,
             ConversationsContext.class,
-            MessageContext.class,
+            ConversationsResource.class,
             MessagesContext.class,
 
             AttachmentsContext.class,
+            AttachmentsResource.class,
             AttachmentContext.class,
             SavedSearchesContext.class,
+            SavedSearchesResource.class,
             SavedSearchContext.class,
             SelectedTemplateContext.class,
 
@@ -248,28 +366,50 @@ public class ContextAssembler
             ServicesContext.class,
 
             // Surface
-            SurfaceContext.class,
-            se.streamsource.streamflow.web.context.surface.administration.organizations.OrganizationContext.class,
-            se.streamsource.streamflow.web.context.surface.administration.organizations.projects.ProjectsContext.class,
-            se.streamsource.streamflow.web.context.surface.administration.organizations.projects.CaseTypesContext.class,
-            se.streamsource.streamflow.web.context.surface.administration.organizations.projects.LabelsContext.class,
-            se.streamsource.streamflow.web.context.surface.administration.organizations.OrganizationsContext.class,
-            se.streamsource.streamflow.web.context.surface.accesspoints.endusers.CaseContext.class,
+            SurfaceResource.class,
+            SurfaceCaseContext.class,
+            SurfaceCaseResource.class,
             EndUserContext.class,
+            EndUserResource.class,
             EndUsersContext.class,
-            SubmittedFormsContext.class,
-            SubmittedFormContext.class,
-            RequiredFormsContext.class,
-            FormDraftsContext.class,
-            FormDraftContext.class,
-            SummaryContext.class,
-            AdministrationContext.class,
+            EndUsersResource.class,
+            SurfaceSubmittedFormsContext.class,
+            SurfaceSubmittedFormsResource.class,
+            SurfaceSubmittedFormContext.class,
+            SurfaceRequiredFormsContext.class,
+            SurfaceFormDraftsContext.class,
+            SurfaceFormDraftsResource.class,
+            SurfaceFormDraftContext.class,
+            SurfaceFormDraftResource.class,
+            SurfaceSummaryContext.class,
             AccessPointsContext.class,
+            AccessPointsResource.class,
             AccessPointContext.class,
-            se.streamsource.streamflow.web.context.surface.administration.organizations.accesspoints.AccessPointContext.class,
-            se.streamsource.streamflow.web.context.surface.administration.organizations.accesspoints.AccessPointsContext.class,
+            AccessPointResource.class,
+            AccessPointAdministrationContext.class,
+            AccessPointAdministrationResource.class,
+            AccessPointsAdministrationContext.class,
+            AccessPointsAdministrationResource.class,
             ProxyUserContext.class,
-            ProxyUsersContext.class
+            ProxyUsersContext.class,
+            ProxyUsersResource.class
       );
+   }
+
+   private void addResourceContexts( ModuleAssembly module, Class<?>... resourceContextClasses ) throws AssemblyException
+   {
+      for (Class<?> resourceContextClass : resourceContextClasses)
+      {
+         if (CommandQueryResource.class.isAssignableFrom( resourceContextClass))
+         {
+            module.addObjects( resourceContextClass );
+         } else if (TransientComposite.class.isAssignableFrom(resourceContextClass))
+         {
+            module.addTransients( (Class<TransientComposite>) resourceContextClass );
+         } else
+         {
+            module.addObjects( resourceContextClass );
+         }
+      }
    }
 }

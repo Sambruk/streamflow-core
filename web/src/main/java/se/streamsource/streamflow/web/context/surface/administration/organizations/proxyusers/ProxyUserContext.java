@@ -17,71 +17,63 @@
 
 package se.streamsource.streamflow.web.context.surface.administration.organizations.proxyusers;
 
-import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
 import org.restlet.resource.ResourceException;
-import se.streamsource.dci.api.Context;
-import se.streamsource.dci.api.ContextMixin;
-import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.web.domain.structure.user.ProxyUser;
 import se.streamsource.streamflow.web.domain.structure.user.ProxyUsers;
 import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
 
+import static se.streamsource.dci.api.RoleMap.*;
+
 /**
  * JAVADOC
  */
-@Mixins(ProxyUserContext.Mixin.class)
-public interface ProxyUserContext
-      extends Context, DeleteContext, IndexContext<StringValue>
+public class ProxyUserContext
+      implements IndexContext<StringValue>
 {
-   void resetpassword( StringValue newPassword );
+   @Structure
+   Module module;
 
-   void changeenabled();
-
-   abstract class Mixin
-         extends ContextMixin
-         implements ProxyUserContext
+   public void changeenabled()
    {
+      UserAuthentication userAuth = role( UserAuthentication.class );
+      UserAuthentication.Data userAuthData = role( UserAuthentication.Data.class );
+      userAuth.changeEnabled( userAuthData.disabled().get() );
+   }
 
-      public void changeenabled()
+   public void resetpassword( StringValue newPassword )
+   {
+      UserAuthentication authentication = role( UserAuthentication.class );
+
+      authentication.resetPassword( newPassword.string().get() );
+   }
+
+   public void delete() throws ResourceException
+   {
+      ProxyUsers.Data proxyUsers = role( ProxyUsers.Data.class );
+      ProxyUser proxyUser = role( ProxyUser.class );
+      UserAuthentication userAuth = role( UserAuthentication.class );
+      UserAuthentication.Data userAuthData = role( UserAuthentication.Data.class );
+
+      if (proxyUsers.proxyUsers().contains( proxyUser ))
       {
-         UserAuthentication userAuth = roleMap.get( UserAuthentication.class );
-         UserAuthentication.Data userAuthData = roleMap.get( UserAuthentication.Data.class );
-         userAuth.changeEnabled( userAuthData.disabled().get() );
+         proxyUsers.proxyUsers().remove( proxyUser );
       }
+      //disable login for proxy user
+      userAuth.changeEnabled( userAuthData.disabled().get() );
+   }
 
-      public void resetpassword( StringValue newPassword )
-      {
-         UserAuthentication authentication = roleMap.get( UserAuthentication.class );
+   public StringValue index()
+   {
+      ProxyUser user = role( ProxyUser.class );
 
-         authentication.resetPassword( newPassword.string().get() );
-      }
+      ValueBuilder<StringValue> builder = module.valueBuilderFactory().newValueBuilder( StringValue.class );
 
-      public void delete() throws ResourceException
-      {
-         ProxyUsers.Data proxyUsers = roleMap.get( ProxyUsers.Data.class );
-         ProxyUser proxyUser = roleMap.get( ProxyUser.class );
-         UserAuthentication userAuth = roleMap.get( UserAuthentication.class );
-         UserAuthentication.Data userAuthData = roleMap.get( UserAuthentication.Data.class );
-
-         if (proxyUsers.proxyUsers().contains( proxyUser ))
-         {
-            proxyUsers.proxyUsers().remove( proxyUser );
-         }
-         //disable login for proxy user
-         userAuth.changeEnabled( userAuthData.disabled().get() );
-      }
-
-      public StringValue index()
-      {
-         ProxyUser user = roleMap.get( ProxyUser.class );
-
-         ValueBuilder<StringValue> builder = module.valueBuilderFactory().newValueBuilder( StringValue.class );
-
-         builder.prototype().string().set( user.getDescription() + " (" + ((UserAuthentication.Data) user).userName().get() + ')' );
-         return builder.newInstance();
-      }
+      builder.prototype().string().set( user.getDescription() + " (" + ((UserAuthentication.Data) user).userName().get() + ')' );
+      return builder.newInstance();
    }
 }

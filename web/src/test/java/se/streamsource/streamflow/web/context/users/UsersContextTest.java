@@ -17,15 +17,22 @@
 
 package se.streamsource.streamflow.web.context.users;
 
-import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.Test;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.resource.user.NewUserCommand;
-import se.streamsource.streamflow.resource.user.UserEntityDTO;
 import se.streamsource.streamflow.web.context.ContextTest;
-import se.streamsource.streamflow.web.context.organizations.OrganizationContext;
+import se.streamsource.streamflow.web.context.organizations.OrganizationUserContext;
+import se.streamsource.streamflow.web.context.organizations.OrganizationUsersContext;
+import se.streamsource.streamflow.web.context.organizations.OrganizationsContext;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
+import se.streamsource.streamflow.web.domain.entity.user.UsersEntity;
+import se.streamsource.streamflow.web.domain.structure.organization.Organization;
+import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
+import se.streamsource.streamflow.web.domain.structure.user.User;
+import se.streamsource.streamflow.web.domain.structure.user.Users;
 
 import java.io.IOException;
 
@@ -42,14 +49,18 @@ public class UsersContextTest
    {
       {
          UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
-         root().users().createuser( value( NewUserCommand.class, "{'username':'"+name+"','password':'"+name+"'}") );
+         RoleMap.newCurrentRoleMap();
+         playRole( Users.class, UsersEntity.USERS_ID);
+         context(UsersContext.class).createuser( value( NewUserCommand.class, "{'username':'"+name+"','password':'"+name+"'}") );
          uow.complete();
       }
 
       {
          UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
-         OrganizationContext org = subContext(root().organizations(), "Organization");
-         org.organizationusers().join( entityValue("test" ));
+         RoleMap.newCurrentRoleMap();
+         playRole( Organizations.class, OrganizationsEntity.ORGANIZATIONS_ID);
+         playRole( Organization.class, findLink( context( OrganizationsContext.class).index(), "Organization" ));
+         context( OrganizationUsersContext.class).join( entityValue("test" ) );
          uow.complete();
       }
    }
@@ -57,8 +68,13 @@ public class UsersContextTest
    public static void removeUser(String name) throws IOException, UnitOfWorkCompletionException
    {
       UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
-      OrganizationContext org = subContext(root().organizations(), "Organization");
-      org.organizationusers().context( name ).delete();
+      RoleMap.newCurrentRoleMap();
+      playRole( Organizations.class, OrganizationsEntity.ORGANIZATIONS_ID);
+      playRole( Organization.class, findLink( context( OrganizationsContext.class).index(), "Organization" ));
+      playRole( User.class, "test");
+
+      context( OrganizationUserContext.class).delete();
+
       uow.complete();
    }
 
@@ -73,8 +89,10 @@ public class UsersContextTest
       // Check that user can be found
       {
          UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
+         RoleMap.newCurrentRoleMap();
+         playRole( Users.class, UsersEntity.USERS_ID);
 
-         Assert.assertThat( valueContains( root().users().users(), "test" ), equalTo(true ));
+         Assert.assertThat( valueContains( context(UsersContext.class).users(), "test" ), equalTo(true ));
 
          uow.discard();
       }

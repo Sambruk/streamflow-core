@@ -24,12 +24,18 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
-import se.streamsource.streamflow.resource.user.NewUserCommand;
+import se.streamsource.dci.api.RoleMap;
+import se.streamsource.streamflow.util.Iterables;
 import se.streamsource.streamflow.web.context.ContextTest;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
+import se.streamsource.streamflow.web.domain.structure.group.Groups;
+import se.streamsource.streamflow.web.domain.structure.organization.Organization;
+import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnits;
+import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
 
 import java.io.IOException;
 
-import static org.hamcrest.CoreMatchers.equalTo;
+import static se.streamsource.streamflow.util.Iterables.count;
 
 /**
  * JAVADOC
@@ -41,23 +47,30 @@ public class GroupsContextTest
    public static void createGroup(String ouName, String name) throws UnitOfWorkCompletionException
    {
       UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
-      OrganizationContext org = subContext(root().organizations(),"Organization");
-      OrganizationalUnitContext ou = subContext(org.organizationalunits(), ouName);
-      GroupsContext groups = ou.groups();
+      RoleMap.newCurrentRoleMap();
 
-      groups.creategroup( stringValue(name) );
+      playRole( Organizations.class, OrganizationsEntity.ORGANIZATIONS_ID);
+      playRole( OrganizationalUnits.class, findLink( context( OrganizationsContext.class).index(), "Organization" ));
+      playRole( findDescribable(context(OrganizationalUnitsContext.class).index(), ouName));
+
+      context(GroupsContext.class).creategroup( stringValue(name) );
+
       uow.complete();
    }
 
    public static void removeGroup( String ouName, String name ) throws IOException, UnitOfWorkCompletionException
    {
       UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
-      OrganizationContext org = subContext(root().organizations(),"Organization");
-      OrganizationalUnitContext ou = subContext(org.organizationalunits(), ouName);
-      GroupsContext groups = ou.groups();
+      RoleMap.newCurrentRoleMap();
 
-      GroupContext group = subContext(groups, name);
-      group.delete();
+      playRole( Organizations.class, OrganizationsEntity.ORGANIZATIONS_ID);
+      playRole( OrganizationalUnits.class, findLink( context( OrganizationsContext.class).index(), "Organization" ));
+      playRole( findDescribable(context(OrganizationalUnitsContext.class).index(), ouName));
+
+      playRole(findDescribable(context(GroupsContext.class).index(), name));
+
+      context(GroupContext.class).delete();
+
       uow.complete();
    }
 
@@ -87,11 +100,13 @@ public class GroupsContextTest
       // Check that group can be found
       {
          UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
-         OrganizationContext org = subContext(root().organizations(),"Organization");
-         OrganizationalUnitContext ou = subContext(org.organizationalunits(), "OU1");
-         GroupsContext groups = ou.groups();
+         RoleMap.newCurrentRoleMap();
 
-         Assert.assertThat( groups.index().links().get().size(), CoreMatchers.equalTo( 1 ));
+         playRole( Organizations.class, OrganizationsEntity.ORGANIZATIONS_ID);
+         playRole( OrganizationalUnits.class, findLink( context( OrganizationsContext.class).index(), "Organization" ));
+         playRole( findDescribable(context(OrganizationalUnitsContext.class).index(), "OU1"));
+
+         Assert.assertThat( count(context(GroupsContext.class).index()), CoreMatchers.equalTo( 1L ));
          uow.discard();
       }
 

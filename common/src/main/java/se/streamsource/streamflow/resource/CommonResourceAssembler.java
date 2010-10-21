@@ -24,15 +24,14 @@ import org.qi4j.bootstrap.ModuleAssembly;
 import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.LinksValue;
+import se.streamsource.dci.value.ResourceValue;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.TitledLinkValue;
 import se.streamsource.dci.value.TitledLinksValue;
 import se.streamsource.streamflow.infrastructure.application.AccessPointValue;
 import se.streamsource.streamflow.infrastructure.application.GroupedListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
-import se.streamsource.streamflow.infrastructure.application.ListValue;
 import se.streamsource.streamflow.infrastructure.application.PageListItemValue;
-import se.streamsource.streamflow.infrastructure.application.ResourceValue;
 import se.streamsource.streamflow.infrastructure.application.TreeNodeValue;
 import se.streamsource.streamflow.infrastructure.application.TreeValue;
 import se.streamsource.streamflow.resource.caze.CaseFormDTO;
@@ -100,7 +99,6 @@ public class CommonResourceAssembler
             LinksValue.class,
             TitledLinkValue.class,
             TitledLinksValue.class,
-            ListValue.class,
             ListItemValue.class,
             GroupedListItemValue.class,
             PageListItemValue.class,

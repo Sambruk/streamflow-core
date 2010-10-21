@@ -44,6 +44,16 @@ public class Iterables
       return new FlattenIterable<X>( Arrays.asList( multiIterator) );
    }
 
+   public static long count(Iterable<?> iterable)
+   {
+      long c = 0;
+      for (Object item : iterable)
+      {
+         c++;
+      }
+      return c;
+   }
+
    private static class FilterIterable<T> implements Iterable<T>
    {
       private Iterable<T> iterable;

@@ -26,6 +26,7 @@ import se.streamsource.dci.value.ContextValue;
 import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.LinksValue;
+import se.streamsource.dci.value.ResourceValue;
 import se.streamsource.dci.value.StringValue;
 
 import java.util.Properties;
@@ -40,15 +41,14 @@ public class DCIAssembler
 {
    public void assemble( ModuleAssembly module ) throws AssemblyException
    {
-      module.importServices( CommandQueryRestlet.class ).setMetaInfo( new Properties() ).importedBy( NEW_OBJECT );
-
       module.importServices( VelocityEngine.class,
             ResponseWriterFactory.class).importedBy( NEW_OBJECT );
-      module.addObjects( VelocityEngine.class,
-            CommandQueryRestlet.class);
+      module.addObjects( VelocityEngine.class);
+
+      module.addObjects( DefaultCommandQueryResource.class );
 
       module.importServices( MetadataService.class );
 
-      module.addValues( ContextValue.class, EntityValue.class, LinksValue.class, LinkValue.class, StringValue.class );
+      module.addValues( ResourceValue.class, ContextValue.class, EntityValue.class, LinksValue.class, LinkValue.class, StringValue.class );
    }
 }

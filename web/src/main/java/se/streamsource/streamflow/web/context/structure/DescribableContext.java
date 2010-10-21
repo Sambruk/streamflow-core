@@ -20,7 +20,7 @@ package se.streamsource.streamflow.web.context.structure;
 import org.qi4j.api.constraint.Constraints;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.library.constraints.annotation.MaxLength;
-import se.streamsource.dci.api.ContextMixin;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.StringValueMaxLength;
 import se.streamsource.streamflow.domain.structure.Describable;
@@ -35,12 +35,11 @@ public interface DescribableContext
    public void changedescription( @MaxLength(50) StringValue stringValue );
 
    abstract class Mixin
-         extends ContextMixin
          implements DescribableContext
    {
       public void changedescription( StringValue stringValue )
       {
-         Describable describable = roleMap.get( Describable.class );
+         Describable describable = RoleMap.role( Describable.class );
          describable.changeDescription( stringValue.string().get() );
       }
    }

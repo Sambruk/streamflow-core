@@ -44,16 +44,14 @@ import org.restlet.representation.ObjectRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ResourceException;
-import se.streamsource.dci.value.ContextValue;
 import se.streamsource.dci.value.LinkValue;
+import se.streamsource.dci.value.ResourceValue;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -61,7 +59,7 @@ import java.util.Set;
  */
 public class CommandQueryClient
 {
-   private static final Set<Tag> validTags = new HashSet<Tag>( );
+   private static final Set<Tag> validTags = new HashSet<Tag>();
 
    @Structure
    private ValueBuilderFactory vbf;
@@ -100,7 +98,7 @@ public class CommandQueryClient
 
       if (response.getStatus().isSuccess())
       {
-         saveTagTimeStamp(response);
+         saveTagTimeStamp( response );
 
          String jsonValue = response.getEntityAsText();
 
@@ -120,7 +118,7 @@ public class CommandQueryClient
       if (!validTags.contains( tag ))
       {
          // This will update the lastModified timestamp + tag before issuing the command
-         query( "", ContextValue.class );
+         query( "", ResourceValue.class );
       }
    }
 
@@ -258,10 +256,10 @@ public class CommandQueryClient
          if (response.getEntity() != null)
          {
             String text = response.getEntityAsText();
-            throw new ResourceException( response.getStatus(), text );
+            throw new ResourceException( response.getStatus().getCode(), response.getStatus().getName(), text, response.getRequest().getResourceRef().toUri().toString() );
          } else
          {
-            throw new ResourceException( response.getStatus() );
+            throw new ResourceException( response.getStatus().getCode(), response.getStatus().getName(), response.getStatus().getDescription(), response.getRequest().getResourceRef().toUri().toString() );
          }
       }
    }
@@ -380,10 +378,10 @@ public class CommandQueryClient
       int tries = 3;
       while (true)
       {
-         Response response = new Response(request);
+         Response response = new Response( request );
          try
          {
-            client.handle(request, response);
+            client.handle( request, response );
             if (!response.getStatus().isSuccess())
             {
                handleError( response );
@@ -439,7 +437,7 @@ public class CommandQueryClient
          reference.setPath( relativePath );
       else
       {
-         reference.setPath( reference.getPath()+relativePath );
+         reference.setPath( reference.getPath() + relativePath );
          reference = reference.normalize();
       }
 

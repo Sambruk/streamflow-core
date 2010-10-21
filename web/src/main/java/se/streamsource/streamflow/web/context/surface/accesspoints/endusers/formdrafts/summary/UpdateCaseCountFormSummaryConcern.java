@@ -32,8 +32,8 @@ import se.streamsource.streamflow.web.infrastructure.caching.CachingService;
  * Update case counts when submitted from Surface
  */
 public abstract class UpdateCaseCountFormSummaryConcern
-      extends ConcernOf<SummaryContext>
-      implements SummaryContext
+      extends ConcernOf<SurfaceSummaryContext>
+      implements SurfaceSummaryContext
 {
    @Optional
    @Service
@@ -46,8 +46,7 @@ public abstract class UpdateCaseCountFormSummaryConcern
    {
       next.submitandsend();
 
-      RoleMap roleMap = uowf.currentUnitOfWork().metaInfo().get( RoleMap.class );
-      CaseEntity caze = roleMap.get( CaseEntity.class );
+      CaseEntity caze = RoleMap.role( CaseEntity.class );
 
       // Update project inbox cache
       new Caching( caching, Caches.CASECOUNTS ).addToCache( caze.owner().get().toString(), 1 );

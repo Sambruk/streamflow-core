@@ -17,10 +17,7 @@
 
 package se.streamsource.streamflow.web.context.organizations.forms;
 
-import org.qi4j.api.mixin.Mixins;
 import org.restlet.resource.ResourceException;
-import se.streamsource.dci.api.Context;
-import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.UpdateContext;
@@ -29,30 +26,26 @@ import se.streamsource.streamflow.web.domain.structure.form.RequiredSignatures;
 
 import java.io.IOException;
 
+import static se.streamsource.dci.api.RoleMap.*;
+
 /**
  * JAVADOC
  */
-@Mixins(FormSignatureContext.Mixin.class)
-public interface FormSignatureContext
-      extends DeleteContext, UpdateContext<RequiredSignatureValue>, Context, IndexContext<RequiredSignatureValue>
+public class FormSignatureContext
+      implements DeleteContext, UpdateContext<RequiredSignatureValue>, IndexContext<RequiredSignatureValue>
 {
-   abstract class Mixin
-         extends ContextMixin
-         implements FormSignatureContext
+   public RequiredSignatureValue index()
    {
-      public RequiredSignatureValue index()
-      {
-         return roleMap.get( RequiredSignatures.Data.class ).requiredSignatures().get().get( roleMap.get( Integer.class ) );
-      }
+      return role( RequiredSignatures.Data.class ).requiredSignatures().get().get( role( Integer.class ) );
+   }
 
-      public void update( RequiredSignatureValue newValue )
-      {
-         roleMap.get( RequiredSignatures.class ).updateRequiredSignature( roleMap.get( Integer.class ), newValue );
-      }
+   public void update( RequiredSignatureValue newValue )
+   {
+      role( RequiredSignatures.class ).updateRequiredSignature( role( Integer.class ), newValue );
+   }
 
-      public void delete() throws ResourceException, IOException
-      {
-         roleMap.get( RequiredSignatures.class ).removeRequiredSignature( roleMap.get( Integer.class ) );
-      }
+   public void delete() throws ResourceException, IOException
+   {
+      role( RequiredSignatures.class ).removeRequiredSignature( role( Integer.class ) );
    }
 }

@@ -26,9 +26,9 @@ import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.dci.value.ContextValue;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.LinksValue;
+import se.streamsource.dci.value.ResourceValue;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
@@ -56,7 +56,7 @@ public class CaseGeneralModel extends Observable implements Refreshable
 
    CaseGeneralDTO general;
 
-   private ContextValue contextValue;
+   private ResourceValue resourceValue;
 
    public CaseGeneralModel( @Uses CommandQueryClient client )
    {
@@ -136,9 +136,9 @@ public class CaseGeneralModel extends Observable implements Refreshable
    {
       try
       {
-         contextValue = client.query( "", ContextValue.class );
+         resourceValue = client.query( "", ResourceValue.class );
 
-         general = (CaseGeneralDTO) contextValue.index().get().buildWith().prototype();
+         general = (CaseGeneralDTO) resourceValue.index().get().buildWith().prototype();
 
          setChanged();
          notifyObservers();
@@ -176,7 +176,7 @@ public class CaseGeneralModel extends Observable implements Refreshable
 
    public boolean getCommandEnabled( String commandName )
    {
-      for (String command : contextValue.commands().get())
+      for (String command : resourceValue.commands().get())
       {
          if (command.equals( commandName )) return true;
       }

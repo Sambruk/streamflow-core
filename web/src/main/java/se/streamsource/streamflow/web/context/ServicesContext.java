@@ -19,9 +19,8 @@ package se.streamsource.streamflow.web.context;
 
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.mixin.Mixins;
-import se.streamsource.dci.api.Context;
-import se.streamsource.dci.api.ContextMixin;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.structure.Module;
 import se.streamsource.streamflow.server.plugin.contact.ContactList;
 import se.streamsource.streamflow.server.plugin.contact.ContactValue;
 import se.streamsource.streamflow.web.application.contact.StreamflowContactLookupService;
@@ -29,26 +28,21 @@ import se.streamsource.streamflow.web.application.contact.StreamflowContactLooku
 /**
  * JAVADOC
  */
-@Mixins(ServicesContext.Mixin.class)
-public interface ServicesContext
-      extends Context
+public class ServicesContext
 {
-   ContactList contactlookup( ContactValue template );
+   @Structure
+   Module module;
 
-   abstract class Mixin
-         extends ContextMixin
-         implements ServicesContext
+   @Optional
+   @Service
+   StreamflowContactLookupService contactLookup;
+
+   @ServiceAvailable(StreamflowContactLookupService.class)
+   public ContactList contactlookup( ContactValue template )
    {
-      @Optional
-      @Service
-      StreamflowContactLookupService contactLookup;
-
-      public ContactList contactlookup( ContactValue template )
-      {
-         if (contactLookup != null)
-            return contactLookup.lookup( template );
-         else
-            return module.valueBuilderFactory().newValue( ContactList.class );
-      }
+      if (contactLookup != null)
+         return contactLookup.lookup( template );
+      else
+         return module.valueBuilderFactory().newValue( ContactList.class );
    }
 }

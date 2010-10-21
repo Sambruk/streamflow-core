@@ -18,12 +18,13 @@
 package se.streamsource.streamflow.web.context.organizations.forms;
 
 import org.qi4j.api.constraint.Constraints;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.structure.Module;
 import org.qi4j.library.constraints.annotation.MaxLength;
 import se.streamsource.dci.api.Context;
-import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.IndexContext;
-import se.streamsource.dci.api.SubContexts;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.StringValueMaxLength;
@@ -39,22 +40,23 @@ import se.streamsource.streamflow.web.domain.structure.form.Pages;
 @Mixins(FormPagesContext.Mixin.class)
 @Constraints(StringValueMaxLength.class)
 public interface FormPagesContext
-      extends SubContexts<FormPageContext>, IndexContext<LinksValue>, Context
+      extends IndexContext<LinksValue>, Context
 {
    public void create( @MaxLength(50) StringValue name );
 
    LinksValue formelements();
 
    abstract class Mixin
-         extends ContextMixin
          implements FormPagesContext
    {
+      @Structure
+      Module module;
 
       public LinksValue index()
       {
          LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
 
-         Pages.Data pages = roleMap.get( Pages.Data.class );
+         Pages.Data pages = RoleMap.role( Pages.Data.class );
          for (Page page : pages.pages())
          {
             linksBuilder.path( null );
@@ -74,7 +76,7 @@ public interface FormPagesContext
 
       public void create( StringValue name )
       {
-         Pages pages = roleMap.get( Pages.class );
+         Pages pages = RoleMap.role( Pages.class );
 
          pages.createPage( name.string().get() );
       }
@@ -83,7 +85,7 @@ public interface FormPagesContext
       {
          LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
 
-         Pages.Data pages = roleMap.get( Pages.Data.class );
+         Pages.Data pages = RoleMap.role( Pages.Data.class );
          for (Page page : pages.pages())
          {
             linksBuilder.path( null );
@@ -99,17 +101,6 @@ public interface FormPagesContext
          }
 
          return linksBuilder.newLinks();
-      }
-
-      public FormPageContext context( String id )
-      {
-         Page page = module.unitOfWorkFactory().currentUnitOfWork().get( Page.class, id );
-
-         if (!roleMap.get( Pages.Data.class ).pages().contains( page ))
-            throw new IllegalArgumentException( "Page is not a member of this form" );
-
-         roleMap.set( page );
-         return subContext( FormPageContext.class );
       }
    }
 }

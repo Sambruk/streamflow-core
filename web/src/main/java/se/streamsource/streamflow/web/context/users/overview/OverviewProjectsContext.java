@@ -18,42 +18,25 @@
 package se.streamsource.streamflow.web.context.users.overview;
 
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
-import se.streamsource.dci.api.Context;
-import se.streamsource.dci.api.ContextMixin;
-import se.streamsource.dci.api.SubContexts;
+import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
 import se.streamsource.streamflow.web.domain.entity.user.ProjectQueries;
 
 /**
  * JAVADOC
  */
-@Mixins(OverviewProjectsContext.Mixin.class)
-public interface OverviewProjectsContext
-   extends SubContexts<OverviewProjectContext>, Context
+public class OverviewProjectsContext
+      implements IndexContext<LinksValue>
 {
-   public LinksValue projects();
+   @Structure
+   Module module;
 
-   abstract class Mixin
-      extends ContextMixin
-      implements OverviewProjectsContext
+   public LinksValue index()
    {
-      @Structure
-      Module module;
-
-      public LinksValue projects()
-      {
-         ProjectQueries participant = roleMap.get(ProjectQueries.class);
-         return new LinksBuilder(module.valueBuilderFactory()).addDescribables( participant.allProjects() ).newLinks();
-      }
-
-      public OverviewProjectContext context( String id )
-      {
-         roleMap.set( module.unitOfWorkFactory().currentUnitOfWork().get( ProjectEntity.class, id ));
-         return subContext( OverviewProjectContext.class );
-      }
+      ProjectQueries participant = RoleMap.role( ProjectQueries.class );
+      return new LinksBuilder( module.valueBuilderFactory() ).addDescribables( participant.allProjects() ).newLinks();
    }
 }

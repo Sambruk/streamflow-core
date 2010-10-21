@@ -17,27 +17,18 @@
 
 package se.streamsource.streamflow.web.context.structure;
 
-import org.qi4j.api.mixin.Mixins;
-import se.streamsource.dci.api.ContextMixin;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.domain.structure.Notable;
 
 /**
  * JAVADOC
  */
-@Mixins(NotableContext.Mixin.class)
-public interface NotableContext
+public class NotableContext
 {
-   public void changenote( StringValue noteValue );
-
-   abstract class Mixin
-      extends ContextMixin
-      implements NotableContext
+   public void changenote( StringValue noteValue )
    {
-      public void changenote( StringValue noteValue )
-      {
-         Notable notable = roleMap.get( Notable.class );
-         notable.changeNote( noteValue.string().get() );
-      }
+      Notable notable = RoleMap.role( Notable.class );
+      notable.changeNote( noteValue.string().get() );
    }
 }

@@ -17,31 +17,22 @@
 
 package se.streamsource.streamflow.web.context.structure.resolutions;
 
-import org.qi4j.api.mixin.Mixins;
-import se.streamsource.dci.api.Context;
-import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.DeleteContext;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.web.domain.structure.casetype.Resolution;
 import se.streamsource.streamflow.web.domain.structure.casetype.SelectedResolutions;
 
 /**
  * JAVADOC
  */
-@Mixins(SelectedResolutionContext.Mixin.class)
-public interface SelectedResolutionContext
-   extends DeleteContext, Context
+public class SelectedResolutionContext
+   implements DeleteContext
 {
-   abstract class Mixin
-      extends ContextMixin
-      implements SelectedResolutionContext
+   public void delete()
    {
-      public void delete()
-      {
-         SelectedResolutions resolutions = roleMap.get( SelectedResolutions.class);
-         Resolution resolution = roleMap.get( Resolution.class);
+      SelectedResolutions resolutions = RoleMap.role( SelectedResolutions.class);
+      Resolution resolution = RoleMap.role( Resolution.class);
 
-         resolutions.removeSelectedResolution( resolution );
-      }
-
+      resolutions.removeSelectedResolution( resolution );
    }
 }

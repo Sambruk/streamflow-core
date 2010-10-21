@@ -18,11 +18,14 @@
 package se.streamsource.dci.restlet.server;
 
 import java.util.List;
+
+import org.qi4j.api.cache.CacheOptions;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.ConcurrentEntityModificationException;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.usecase.Usecase;
 import org.qi4j.api.usecase.UsecaseBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.spi.Qi4jSPI;
@@ -71,12 +74,10 @@ public abstract class CommandQueryRestlet2
          List<String> segments = ref.getScheme().equals( "riap" ) ? ref.getRelativeRef( new Reference( "riap://application/" ) ).getSegments() : ref.getRelativeRef().getSegments();
          request.getAttributes().put( "segments", segments );
 
-         RoleMap roleMap = new RoleMap();
-         request.getAttributes().put( "roleMap", roleMap );
+         Usecase usecase = UsecaseBuilder.buildUsecase( getUsecaseName( request ) ).with( request.getMethod().isSafe() ? CacheOptions.ALWAYS : CacheOptions.NEVER ).newUsecase();
+         UnitOfWork uow = uowf.newUnitOfWork( usecase );
 
-         UnitOfWork uow = uowf.newUnitOfWork( UsecaseBuilder.newUsecase( getUsecaseName( request ) ) );
-         uow.metaInfo().set( roleMap );
-
+         RoleMap.newCurrentRoleMap();
          try
          {
             // Start handling the build-up for the context
@@ -99,6 +100,9 @@ public abstract class CommandQueryRestlet2
             uow.discard();
             handleException( response, e );
             return;
+         } finally
+         {
+            RoleMap.clearCurrentRoleMap();
          }
       }
    }

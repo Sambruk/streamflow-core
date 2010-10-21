@@ -50,23 +50,15 @@ public interface CaseEntity
       extends Case,
 
       // Interactions
-      Assignable,
       Assignable.Data,
-      Describable,
       Describable.Data,
-      DueOn,
       DueOn.Data,
-      Notable,
       Notable.Data,
-      Ownable,
       Ownable.Data,
       PossibleActions,
-      CompletableId,
       CompletableId.Data,
-      Status,
       Status.Data,
-      CreatedOn,
-      Conversations.Data,      
+      Conversations.Data,
 
       // Structure
       Closed,

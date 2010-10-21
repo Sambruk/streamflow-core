@@ -18,48 +18,26 @@
 package se.streamsource.streamflow.web.context.organizations;
 
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import se.streamsource.dci.api.Context;
-import se.streamsource.dci.api.ContextMixin;
+import org.qi4j.api.structure.Module;
 import se.streamsource.dci.api.IndexContext;
-import se.streamsource.dci.api.SubContexts;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
-import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsQueries;
 
 /**
  * JAVADOC
  */
-@Mixins(OrganizationsContext.Mixin.class)
-public interface OrganizationsContext
-   extends SubContexts<OrganizationContext>, IndexContext<LinksValue>, Context
+public class OrganizationsContext
+   implements IndexContext<LinksValue>
 {
-   abstract class Mixin
-      extends ContextMixin
-      implements OrganizationsContext
+   @Structure
+   Module module;
+
+   public LinksValue index()
    {
-      @Structure
-      UnitOfWorkFactory uowf;
+      OrganizationsQueries organizations = RoleMap.role(OrganizationsQueries.class);
 
-      public LinksValue index()
-      {
-         UnitOfWork uow = uowf.currentUnitOfWork();
-         OrganizationsQueries organizations = uow
-               .get( OrganizationsQueries.class, OrganizationsEntity.ORGANIZATIONS_ID );
-
-         return new LinksBuilder(module.valueBuilderFactory()).addDescribables( organizations.organizations().newQuery( uow )).newLinks();
-      }
-
-      public OrganizationContext context( String id )
-      {
-         OrganizationEntity organization = uowf.currentUnitOfWork().get( OrganizationEntity.class, id );
-         organization.dirty().set(organization.dirty().get()+1  );
-         roleMap.set( organization );
-         return subContext( OrganizationContext.class );
-      }
+      return new LinksBuilder(module.valueBuilderFactory()).addDescribables( organizations.organizations().newQuery( module.unitOfWorkFactory().currentUnitOfWork() )).newLinks();
    }
 }

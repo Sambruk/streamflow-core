@@ -41,9 +41,6 @@ public interface FormEntity
       Pages.Data,
       Ownable.Data,
       Removable.Data,
-      RequiredSignatures.Data,
-
-      // Queries
-      PageQueries
+      RequiredSignatures.Data
 {
 }

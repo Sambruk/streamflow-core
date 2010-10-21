@@ -17,12 +17,10 @@
 
 package se.streamsource.dci.api;
 
-import org.qi4j.api.value.Value;
-
 /**
  * JAVADOC
  */
-public interface IndexContext<T extends Value>
+public interface IndexContext<T>
 {
    public T index();
 }

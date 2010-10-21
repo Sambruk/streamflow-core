@@ -18,14 +18,13 @@
 package se.streamsource.streamflow.web.context.conversation;
 
 import org.qi4j.api.entity.EntityReference;
-import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
-import se.streamsource.dci.api.Context;
-import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.IndexContext;
-import se.streamsource.dci.api.SubContexts;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.domain.contact.Contactable;
@@ -40,56 +39,44 @@ import se.streamsource.streamflow.web.domain.structure.conversation.Messages;
 /**
  * JAVADOC
  */
-@Mixins(MessagesContext.Mixin.class)
-public interface MessagesContext
-      extends SubContexts<MessageContext>, IndexContext<LinksValue>, Context
+public class MessagesContext
+      implements IndexContext<LinksValue>
 {
-   public void createmessage( StringValue message ) throws ResourceException;
-
-   abstract class Mixin
-         extends ContextMixin
-         implements MessagesContext
+   @Structure
+   Module module;
+   
+   public LinksValue index()
    {
-      public LinksValue index()
+      LinksBuilder links = new LinksBuilder( module.valueBuilderFactory() );
+      ValueBuilder<MessageDTO> builder = module.valueBuilderFactory().newValueBuilder( MessageDTO.class );
+      ConversationEntity conversation = RoleMap.role( ConversationEntity.class );
+
+      for (Message message : conversation.messages())
       {
-         LinksBuilder links = new LinksBuilder( module.valueBuilderFactory() );
-         ValueBuilder<MessageDTO> builder = module.valueBuilderFactory().newValueBuilder( MessageDTO.class );
-         ConversationEntity conversation = roleMap.get( ConversationEntity.class );
+         Contactable contact = module.unitOfWorkFactory().currentUnitOfWork().get( Contactable.class, EntityReference.getEntityReference( ((MessageEntity) message).sender().get() ).identity() );
+         String sender = contact.getContact().name().get();
+         builder.prototype().sender().set( !"".equals( sender )
+               ? sender
+               : EntityReference.getEntityReference( ((MessageEntity) message).sender().get() ).identity() );
+         builder.prototype().createdOn().set( ((MessageEntity) message).createdOn().get() );
+         builder.prototype().text().set( ((MessageEntity) message).body().get() );
+         builder.prototype().href().set( ((MessageEntity) message).identity().get() );
+         builder.prototype().id().set( ((MessageEntity) message).identity().get() );
 
-         for (Message message : conversation.messages())
-         {
-            Contactable contact = module.unitOfWorkFactory().currentUnitOfWork().get( Contactable.class, EntityReference.getEntityReference( ((MessageEntity) message).sender().get() ).identity() );
-            String sender = contact.getContact().name().get();
-            builder.prototype().sender().set( !"".equals( sender )
-                  ? sender
-                  : EntityReference.getEntityReference( ((MessageEntity) message).sender().get() ).identity() );
-            builder.prototype().createdOn().set( ((MessageEntity) message).createdOn().get() );
-            builder.prototype().text().set( ((MessageEntity) message).body().get() );
-            builder.prototype().href().set( ((MessageEntity) message).identity().get() );
-            builder.prototype().id().set( ((MessageEntity) message).identity().get() );
-
-            links.addLink( builder.newInstance() );
-         }
-         return links.newLinks();
+         links.addLink( builder.newInstance() );
       }
+      return links.newLinks();
+   }
 
-      public void createmessage( StringValue message ) throws ResourceException
+   public void createmessage( StringValue message ) throws ResourceException
+   {
+      try
       {
-         try
-         {
-            Messages messages = roleMap.get( Messages.class );
-            messages.createMessage( message.string().get(), roleMap.get( ConversationParticipant.class ) );
-         } catch (IllegalArgumentException e)
-         {
-            throw new ResourceException( Status.CLIENT_ERROR_FORBIDDEN, e.getMessage() );
-         }
-      }
-
-
-      public MessageContext context( String id )
+         Messages messages = RoleMap.role( Messages.class );
+         messages.createMessage( message.string().get(), RoleMap.role( ConversationParticipant.class ) );
+      } catch (IllegalArgumentException e)
       {
-         roleMap.set( module.unitOfWorkFactory().currentUnitOfWork().get( Message.class, id ) );
-         return subContext( MessageContext.class );
+         throw new ResourceException( Status.CLIENT_ERROR_FORBIDDEN, e.getMessage() );
       }
    }
 }

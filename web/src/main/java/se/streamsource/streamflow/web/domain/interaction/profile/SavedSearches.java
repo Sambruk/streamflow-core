@@ -80,12 +80,15 @@ public interface SavedSearches
       public void removeSavedSearch( SavedSearch search )
       {
          if (state.searches().contains( search ))
+         {
             removedSavedSearch( DomainEvent.CREATE, search );
+         }
       }
 
       public void removedSavedSearch( DomainEvent event, SavedSearch search )
       {
          state.searches().remove( search );
+         uowf.currentUnitOfWork().remove( search );
       }
    }
 }

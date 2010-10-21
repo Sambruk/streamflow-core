@@ -18,20 +18,20 @@
 package se.streamsource.streamflow.web.context.users.workspace;
 
 import org.qi4j.api.concern.Concerns;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
-import org.restlet.data.Reference;
+import org.qi4j.api.structure.Module;
 import se.streamsource.dci.api.Context;
-import se.streamsource.dci.api.ContextMixin;
-import se.streamsource.dci.value.LinksValue;
-import se.streamsource.streamflow.web.context.caze.CasesContext;
+import se.streamsource.dci.api.IndexContext;
 import se.streamsource.streamflow.web.domain.entity.gtd.Drafts;
 import se.streamsource.streamflow.web.domain.entity.gtd.DraftsQueries;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
 
 import static org.qi4j.api.query.QueryExpressions.*;
+import static se.streamsource.dci.api.RoleMap.*;
 
 /**
  * JAVADOC
@@ -39,29 +39,29 @@ import static org.qi4j.api.query.QueryExpressions.*;
 @Concerns(UpdateCaseCountDraftsConcern.class)
 @Mixins(DraftsContext.Mixin.class)
 public interface DraftsContext
-      extends Context
+      extends Context, IndexContext<Query<Case>>
 {
-   LinksValue cases();
-
    void createcase();
 
    abstract class Mixin
-      extends ContextMixin
-      implements DraftsContext
+         implements DraftsContext
    {
-      public LinksValue cases( )
+      @Structure
+      Module module;
+
+      public Query<Case> index()
       {
-         DraftsQueries inbox = roleMap.get( DraftsQueries.class);
+         DraftsQueries inbox = role( DraftsQueries.class );
 
          QueryBuilder<Case> builder = inbox.drafts();
          Query<Case> query = builder.newQuery( module.unitOfWorkFactory().currentUnitOfWork() ).orderBy( orderBy( templateFor( CreatedOn.class ).createdOn() ) );
 
-         return CasesContext.Mixin.buildCaseList(query, module, roleMap.get( Reference.class).getBaseRef().getPath());
+         return query;
       }
 
       public void createcase()
       {
-         Drafts drafts = roleMap.get( Drafts.class );
+         Drafts drafts = role( Drafts.class );
          drafts.createDraft();
       }
    }

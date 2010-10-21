@@ -18,15 +18,14 @@
 package se.streamsource.streamflow.web.context.gtd;
 
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
+import org.qi4j.api.structure.Module;
 import org.restlet.data.Reference;
-import se.streamsource.dci.api.Context;
-import se.streamsource.dci.api.ContextMixin;
+import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.LinksValue;
-import se.streamsource.streamflow.web.context.caze.CasesContext;
+import se.streamsource.streamflow.web.context.cases.CasesContext;
 import se.streamsource.streamflow.web.domain.entity.gtd.InboxQueries;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
@@ -36,27 +35,19 @@ import static org.qi4j.api.query.QueryExpressions.*;
 /**
  * JAVADOC
  */
-@Mixins(InboxContext.Mixin.class)
-public interface InboxContext
-      extends Context
+public class InboxContext
+   implements IndexContext<Query<Case>>
 {
-   LinksValue cases();
+   @Structure
+   Module module;
 
-   abstract class Mixin
-         extends ContextMixin
-         implements InboxContext
+   public Query<Case> index()
    {
-      @Structure
-      ValueBuilderFactory vbf;
+      InboxQueries inbox = RoleMap.role( InboxQueries.class );
 
-      public LinksValue cases()
-      {
-         InboxQueries inbox = roleMap.get( InboxQueries.class );
+      QueryBuilder<Case> builder = inbox.inbox();
+      Query<Case> query = builder.newQuery( module.unitOfWorkFactory().currentUnitOfWork() ).orderBy( orderBy( templateFor( CreatedOn.class ).createdOn() ) );
 
-         QueryBuilder<Case> builder = inbox.inbox();
-         Query<Case> query = builder.newQuery( module.unitOfWorkFactory().currentUnitOfWork() ).orderBy( orderBy( templateFor( CreatedOn.class ).createdOn() ) );
-
-         return CasesContext.Mixin.buildCaseList( query, module, roleMap.get( Reference.class ).getBaseRef().getPath() );
-      }
+      return query;
    }
 }

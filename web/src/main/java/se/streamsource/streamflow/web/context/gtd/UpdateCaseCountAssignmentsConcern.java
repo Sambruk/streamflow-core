@@ -45,9 +45,8 @@ public abstract class UpdateCaseCountAssignmentsConcern
 
    public void createcase()
    {
-      RoleMap roleMap = uowf.currentUnitOfWork().metaInfo().get( RoleMap.class );
-      Owner owner  = roleMap.get( Owner.class );
-      Assignee assignee  = roleMap.get( Assignee.class );
+      Owner owner  = RoleMap.role( Owner.class );
+      Assignee assignee  = RoleMap.role( Assignee.class );
 
       // Update assignments for assignee
       new Caching(caching, Caches.CASECOUNTS).addToCache( owner.toString()+":"+assignee.toString(), 1 );

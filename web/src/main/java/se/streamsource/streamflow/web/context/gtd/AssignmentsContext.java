@@ -18,18 +18,22 @@
 package se.streamsource.streamflow.web.context.gtd;
 
 import org.qi4j.api.concern.Concerns;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
+import org.qi4j.api.structure.Module;
 import org.restlet.data.Reference;
 import se.streamsource.dci.api.Context;
-import se.streamsource.dci.api.ContextMixin;
+import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.LinksValue;
-import se.streamsource.streamflow.web.context.caze.CasesContext;
+import se.streamsource.streamflow.web.context.cases.CasesContext;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.entity.gtd.AssignmentsQueries;
 import se.streamsource.streamflow.web.domain.entity.gtd.Drafts;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
+import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
 
 import static org.qi4j.api.query.QueryExpressions.*;
@@ -40,35 +44,35 @@ import static org.qi4j.api.query.QueryExpressions.*;
 @Concerns(UpdateCaseCountAssignmentsConcern.class)
 @Mixins(AssignmentsContext.Mixin.class)
 public interface AssignmentsContext
-   extends Context
+   extends Context, IndexContext<Query<Case>>
 {
-   LinksValue cases();
-
    public void createcase();
 
    abstract class Mixin
-      extends ContextMixin
       implements AssignmentsContext
    {
-      public LinksValue cases( )
-      {
-         AssignmentsQueries assignments = roleMap.get( AssignmentsQueries.class);
+      @Structure
+      Module module;
 
-         Query query = assignments.assignments( roleMap.get( Assignee.class ) ).orderBy( orderBy( templateFor( CreatedOn.class ).createdOn() ) );
-         return CasesContext.Mixin.buildCaseList( query, module, roleMap.get( Reference.class).getBaseRef().getPath());
+      public Query<Case> index( )
+      {
+         AssignmentsQueries assignments = RoleMap.role( AssignmentsQueries.class);
+
+         Query<Case> query = assignments.assignments( RoleMap.role( Assignee.class ) ).orderBy( orderBy( templateFor( CreatedOn.class ).createdOn() ) );
+         return query;
       }
 
       public void createcase()
       {
-         Drafts drafts = roleMap.get( Drafts.class );
+         Drafts drafts = RoleMap.role( Drafts.class );
          CaseEntity caze = drafts.createDraft();
 
-         Owner owner = roleMap.get( Owner.class);
+         Owner owner = RoleMap.role( Owner.class);
          caze.changeOwner( owner );
 
          caze.open();
 
-         caze.assignTo( roleMap.get(Assignee.class) );
+         caze.assignTo( RoleMap.role(Assignee.class) );
       }
    }
 }

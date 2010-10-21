@@ -19,22 +19,21 @@ package se.streamsource.dci.restlet.server;
 
 import org.restlet.Request;
 import org.restlet.Response;
+import org.restlet.resource.ResourceException;
 import se.streamsource.dci.api.ContextNotFoundException;
 
 /**
  * Resources that have sub-resources should extends this interface.
  */
-public interface SubResources<T>
+public interface SubResources
 {
    /**
     * Instantiate the sub-resource, perform any RoleMap bindings based on
     * the given segment, and then call handle(Request,Response) on the subresource.
     *
     * @param segment the current segment that the sub-resource will correspond to
-    * @param request
-    * @param response
-    * @throws se.streamsource.dci.api.ContextNotFoundException
+    * @throws org.restlet.resource.ResourceException if the subresource could not be lookup up, typically a 404
     */
-   void resource(String segment, Request request, Response response)
-      throws ContextNotFoundException;
+   void resource( String segment )
+      throws ResourceException;
 }

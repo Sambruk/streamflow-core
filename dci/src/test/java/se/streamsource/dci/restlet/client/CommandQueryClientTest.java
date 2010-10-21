@@ -54,7 +54,6 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
 import org.restlet.service.MetadataService;
-import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.InteractionConstraintsService;
 import se.streamsource.dci.api.RequiresRoles;
 import se.streamsource.dci.api.Role;
@@ -285,10 +284,8 @@ public class CommandQueryClientTest
    @Test
    public void testContext()
    {
-      UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
-      RoleMap rm = new RoleMap();
-      rm.set( transientBuilderFactory.newTransient(TestComposite.class ));
-      uow.metaInfo().set( rm );
+      RoleMap.newCurrentRoleMap();
+      RoleMap.current().set( transientBuilderFactory.newTransient(TestComposite.class ));
 
       DescribableContext context = objectBuilderFactory.newObject(DescribableContext.class);
 
@@ -297,8 +294,6 @@ public class CommandQueryClientTest
       context.changeDescription( vb.newInstance() );
 
       assertThat(context.description().string().get(), equalTo("Foo"));
-
-      uow.discard();
    }
 
    public interface TestQuery
@@ -345,22 +340,22 @@ public class CommandQueryClientTest
 
       public void querywithvalue( Request request, Response response ) throws Throwable
       {
-         result( invoke( "querywithvalue", request, response ) );
+         result( invoke( "querywithvalue" ) );
       }
 
       public void querywithoutvalue( Request request, Response response ) throws Throwable
       {
-         result( invoke( "querywithoutvalue", request, response ) );
+         result( invoke( "querywithoutvalue" ) );
       }
 
       public void commandwithvalue( Request request, Response response ) throws Throwable
       {
-         result( invoke( "commandwithvalue", request, response ) );
+         result( invoke( "commandwithvalue" ) );
       }
 
-      public void resource( String currentSegment, Request request, Response response )
+      public void resource( String currentSegment )
       {
-         RoleMap roleMap = getRoleMap( request );
+         RoleMap roleMap = RoleMap.current();
 
          roleMap.set( new File( "" ) );
 
@@ -369,7 +364,7 @@ public class CommandQueryClientTest
          else
             roleMap.set( instance );
 
-         subResource( SubResource1.class, request, response );
+         subResource( SubResource1.class );
       }
    }
 
@@ -383,39 +378,38 @@ public class CommandQueryClientTest
 
       public void genericquery( Request request, Response response ) throws Throwable
       {
-         result( invoke( "genericquery", request, response ) );
+         result( invoke( "genericquery" ) );
       }
 
       public void querywithvalue( Request request, Response response ) throws Throwable
       {
-         result( invoke( "querywithvalue", request, response ) );
+         result( invoke( "querywithvalue" ) );
       }
 
       public void querywithoutvalue( Request request, Response response ) throws Throwable
       {
-         result( invoke( "querywithoutvalue", request, response ) );
+         result( invoke( "querywithoutvalue" ) );
       }
 
       public void commandwithvalue( Request request, Response response ) throws Throwable
       {
-         result( invoke( "commandwithvalue", request, response ) );
+         result( invoke( "commandwithvalue" ) );
       }
 
       @SubResource
-      public void subresource1( Request request, Response response )
+      public void subresource1( )
       {
-         subResource( SubResource1.class, request, response );
+         subResource( SubResource1.class );
       }
 
       @SubResource
-      public void subresource2( Request request, Response response )
+      public void subresource2(  )
       {
-         subResource( SubResource1.class, request, response );
+         subResource( SubResource1.class );
       }
    }
 
    public static class RootContext
-         extends ContextMixin
    {
       private static int count = 0;
 
@@ -471,7 +465,6 @@ public class CommandQueryClientTest
    }
 
    public static class SubContext
-         extends ContextMixin
    {
       @Structure
       ValueBuilderFactory vbf;
@@ -507,7 +500,6 @@ public class CommandQueryClientTest
    }
 
    public static class SubContext2
-         extends ContextMixin
    {
       @Structure
       ValueBuilderFactory vbf;

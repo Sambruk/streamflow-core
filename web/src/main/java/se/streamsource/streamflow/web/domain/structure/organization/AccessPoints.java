@@ -28,6 +28,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.web.domain.entity.organization.AccessPointEntity;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
@@ -107,12 +108,12 @@ public interface
 
       public AccessPoint createdAccessPoint( DomainEvent event, String id, Project project, CaseType caseType, @Optional List<Label> labels )
       {
-         EntityBuilder<AccessPoint> entityBuilder = uowf.currentUnitOfWork().newEntityBuilder( AccessPoint.class, id );
-         entityBuilder.instance().setProject( project );
-         entityBuilder.instance().setCaseType( caseType );
+         EntityBuilder<AccessPointEntity> entityBuilder = uowf.currentUnitOfWork().newEntityBuilder( AccessPointEntity.class, id );
+         entityBuilder.instance().project().set( project );
+         entityBuilder.instance().caseType().set( caseType );
          for (Label label : labels)
          {
-            entityBuilder.instance().addLabel( label );
+            entityBuilder.instance().labels().add( label );
          }
 
          return entityBuilder.newInstance();

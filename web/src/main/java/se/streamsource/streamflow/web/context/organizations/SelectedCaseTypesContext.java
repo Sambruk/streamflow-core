@@ -17,72 +17,58 @@
 
 package se.streamsource.streamflow.web.context.organizations;
 
-import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
-import se.streamsource.dci.api.Context;
-import se.streamsource.dci.api.ContextMixin;
 import se.streamsource.dci.api.IndexContext;
-import se.streamsource.dci.api.SubContexts;
 import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.util.Specification;
 import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypesQueries;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.SelectedCaseTypes;
 
+import static se.streamsource.dci.api.RoleMap.*;
+
 /**
  * JAVADOC
  */
-@Mixins(SelectedCaseTypesContext.Mixin.class)
-public interface SelectedCaseTypesContext
-   extends SubContexts<SelectedCaseTypeContext>, IndexContext<LinksValue>, Context
+public class SelectedCaseTypesContext
+      implements IndexContext<LinksValue>
 {
-   public LinksValue possiblecasetypes();
+   @Structure
+   Module module;
 
-   public void addcasetype( EntityValue caseTypeDTO );
-
-   abstract class Mixin
-      extends ContextMixin
-      implements SelectedCaseTypesContext
+   public LinksValue index()
    {
-      public LinksValue index()
-      {
-         SelectedCaseTypes.Data caseTypes = roleMap.get( SelectedCaseTypes.Data.class);
+      SelectedCaseTypes.Data caseTypes = role( SelectedCaseTypes.Data.class );
 
-         return new LinksBuilder( module.valueBuilderFactory() ).rel("casetype").addDescribables( caseTypes.selectedCaseTypes() ).newLinks();
-      }
+      return new LinksBuilder( module.valueBuilderFactory() ).rel( "casetype" ).addDescribables( caseTypes.selectedCaseTypes() ).newLinks();
+   }
 
-      public LinksValue possiblecasetypes()
+   public LinksValue possiblecasetypes()
+   {
+      final SelectedCaseTypes.Data selectedLabels = role( SelectedCaseTypes.Data.class );
+      CaseTypesQueries caseTypes = role( CaseTypesQueries.class );
+      LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() ).command( "addcasetype" );
+      caseTypes.caseTypes( builder, new Specification<CaseType>()
       {
-         final SelectedCaseTypes.Data selectedLabels = roleMap.get( SelectedCaseTypes.Data.class);
-         CaseTypesQueries caseTypes = roleMap.get( CaseTypesQueries.class);
-         LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() ).command( "addcasetype" );
-         caseTypes.caseTypes( builder, new Specification<CaseType>()
+         public boolean valid( CaseType instance )
          {
-            public boolean valid( CaseType instance )
-            {
-               return !selectedLabels.selectedCaseTypes().contains( instance );
-            }
-         });
-         return builder.newLinks();
-      }
+            return !selectedLabels.selectedCaseTypes().contains( instance );
+         }
+      } );
+      return builder.newLinks();
+   }
 
-      public void addcasetype( EntityValue caseTypeDTO )
-      {
-         UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
+   public void addcasetype( EntityValue caseTypeDTO )
+   {
+      UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
 
-         SelectedCaseTypes caseTypes = roleMap.get( SelectedCaseTypes.class);
-         CaseType caseType = uow.get( CaseType.class, caseTypeDTO.entity().get() );
+      SelectedCaseTypes caseTypes = role( SelectedCaseTypes.class );
+      CaseType caseType = uow.get( CaseType.class, caseTypeDTO.entity().get() );
 
-         caseTypes.addSelectedCaseType( caseType );
-      }
-
-      public SelectedCaseTypeContext context( String id )
-      {
-         roleMap.set( module.unitOfWorkFactory().currentUnitOfWork().get( CaseType.class, id ));
-         return subContext( SelectedCaseTypeContext.class );
-      }
+      caseTypes.addSelectedCaseType( caseType );
    }
 }

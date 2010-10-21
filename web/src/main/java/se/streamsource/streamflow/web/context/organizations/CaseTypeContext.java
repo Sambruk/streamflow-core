@@ -17,19 +17,17 @@
 
 package se.streamsource.streamflow.web.context.organizations;
 
-import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.query.Query;
-import se.streamsource.dci.api.Context;
-import se.streamsource.dci.api.ContextMixin;
+import org.qi4j.api.structure.Module;
 import se.streamsource.dci.api.DeleteContext;
-import se.streamsource.dci.api.SubContext;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.web.context.organizations.forms.FormsContext;
 import se.streamsource.streamflow.web.context.organizations.forms.SelectedFormsContext;
-import se.streamsource.streamflow.web.context.structure.DescribableContext;
 import se.streamsource.streamflow.web.context.structure.labels.LabelsContext;
 import se.streamsource.streamflow.web.context.structure.labels.SelectedLabelsContext;
 import se.streamsource.streamflow.web.context.structure.resolutions.ResolutionsContext;
@@ -42,102 +40,45 @@ import se.streamsource.streamflow.web.domain.structure.casetype.SelectedCaseType
 /**
  * JAVADOC
  */
-@Mixins(CaseTypeContext.Mixin.class)
-public interface CaseTypeContext
-   extends DescribableContext, DeleteContext, Context
+public class CaseTypeContext
+      implements DeleteContext
 {
-   LinksValue usages();
+   @Structure
+   Module module;
 
-   @SubContext
-   FormsContext forms();
-
-   @SubContext
-   SelectedFormsContext selectedforms();
-
-   @SubContext
-   public LabelsContext labels();
-
-   @SubContext
-   SelectedLabelsContext selectedlabels();
-
-   @SubContext
-   ResolutionsContext resolutions();
-
-   @SubContext
-   SelectedResolutionsContext selectedresolutions();
-
-   LinksValue possiblemoveto();
-
-   void move( EntityValue to);
-
-   abstract class Mixin
-      extends ContextMixin
-      implements CaseTypeContext
+   public LinksValue usages()
    {
-      public LinksValue usages()
+      Query<SelectedCaseTypes> usageQuery = RoleMap.role( CaseTypes.class ).usages( RoleMap.role( CaseType.class ) );
+      LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() ); // TODO What to use for path here?
+      for (SelectedCaseTypes selectedCaseTypes : usageQuery)
       {
-         Query<SelectedCaseTypes> usageQuery = roleMap.get( CaseTypes.class).usages( roleMap.get( CaseType.class) );
-         LinksBuilder builder = new LinksBuilder(module.valueBuilderFactory()); // TODO What to use for path here?
-         for (SelectedCaseTypes selectedCaseTypes : usageQuery)
-         {
-            builder.addDescribable( (Describable) selectedCaseTypes );
-         }
-
-         return builder.newLinks();
+         builder.addDescribable( (Describable) selectedCaseTypes );
       }
 
-      public void delete()
-      {
-         CaseTypes caseTypes = roleMap.get( CaseTypes.class);
+      return builder.newLinks();
+   }
 
-         CaseType caseType = roleMap.get( CaseType.class);
+   public void delete()
+   {
+      CaseTypes caseTypes = RoleMap.role( CaseTypes.class );
 
-         caseTypes.removeCaseType( caseType );
-      }
+      CaseType caseType = RoleMap.role( CaseType.class );
 
-      public FormsContext forms()
-      {
-         return subContext( FormsContext.class );
-      }
+      caseTypes.removeCaseType( caseType );
+   }
 
-      public LabelsContext labels()
-      {
-         return subContext(LabelsContext.class);
-      }
+   public LinksValue possiblemoveto()
+   {
+      LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() );
+      builder.command( "move" );
+      RoleMap.role( CaseTypesQueries.class ).possibleMoveCaseTypeTo( builder );
+      return builder.newLinks();
+   }
 
-      public SelectedFormsContext selectedforms()
-      {
-         return subContext( SelectedFormsContext.class );
-      }
-
-      public SelectedLabelsContext selectedlabels()
-      {
-         return subContext( SelectedLabelsContext.class );
-      }
-
-      public ResolutionsContext resolutions()
-      {
-         return subContext( ResolutionsContext.class );
-      }
-
-      public SelectedResolutionsContext selectedresolutions()
-      {
-         return subContext( SelectedResolutionsContext.class );
-      }
-
-      public LinksValue possiblemoveto()
-      {
-         LinksBuilder builder = new LinksBuilder(module.valueBuilderFactory());
-         builder.command( "move" );
-         roleMap.get( CaseTypesQueries.class).possibleMoveCaseTypeTo( builder );
-         return builder.newLinks();
-      }
-
-      public void move( EntityValue to )
-      {
-         CaseTypes toCaseTypes = module.unitOfWorkFactory().currentUnitOfWork().get( CaseTypes.class, to.entity().get() );
-         CaseType caseType = roleMap.get( CaseType.class);
-         roleMap.get( CaseTypes.class ).moveCaseType( caseType, toCaseTypes );
-      }
+   public void move( EntityValue to )
+   {
+      CaseTypes toCaseTypes = module.unitOfWorkFactory().currentUnitOfWork().get( CaseTypes.class, to.entity().get() );
+      CaseType caseType = RoleMap.role( CaseType.class );
+      RoleMap.role( CaseTypes.class ).moveCaseType( caseType, toCaseTypes );
    }
 }
