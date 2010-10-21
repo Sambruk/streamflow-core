@@ -16,14 +16,14 @@
 
 package se.streamsource.streamflow.web.context.cases;
 
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.structure.Module;
 import se.streamsource.dci.api.IndexContext;
-import se.streamsource.dci.value.LinksValue;
-import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
+import se.streamsource.streamflow.web.domain.structure.form.Form;
 import se.streamsource.streamflow.web.domain.structure.form.SelectedForms;
+
+import java.util.Collections;
+import java.util.List;
 
 import static se.streamsource.dci.api.RoleMap.*;
 
@@ -31,35 +31,17 @@ import static se.streamsource.dci.api.RoleMap.*;
  * JAVADOC
  */
 public class CasePossibleFormsContext
-      implements IndexContext<LinksValue>
+      implements IndexContext<List<Form>>
 {
-   @Structure
-   Module module;
-
-   public LinksValue index()
+   public List<Form> index()
    {
-      SelectedForms.Data possibleForms = possibleForms();
-
-      if (possibleForms != null)
-      {
-         return new LinksBuilder( module.valueBuilderFactory() ).addDescribables( possibleForms.selectedForms() ).newLinks();
-      } else
-      {
-         return new LinksBuilder( module.valueBuilderFactory() ).newLinks();
-      }
-   }
-
-   private SelectedForms.Data possibleForms()
-   {
-      SelectedForms.Data forms = null;
-      TypedCase.Data typedCase = role( TypedCase.Data.class );
-
-      CaseType caseType = typedCase.caseType().get();
+      CaseType caseType = role( TypedCase.Data.class ).caseType().get();
 
       if (caseType != null)
       {
-         forms = (SelectedForms.Data) caseType;
+         return ((SelectedForms.Data) caseType).selectedForms().toList();
+      } else {
+         return Collections.emptyList();
       }
-      return forms;
    }
 }
