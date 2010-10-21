@@ -320,7 +320,7 @@ public class FormElementsView
       if (Events.matches( transactions, withNames("changedDescription", "removedField", "movedField" )))
          model.refresh();
 
-      DomainEvent event = first( filter( events(transactions ), withNames("createdField", "createdPage", "movedField")));
+      DomainEvent event = first( filter( events(transactions ), withNames("createdField", "createdPage", "movedField", "movedPage")));
       if (event != null)
       {
          String id = EventParameters.getParameter( event, 1 );
