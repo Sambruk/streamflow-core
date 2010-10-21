@@ -75,7 +75,7 @@ public class EndUserContext
       {
          SelectedForms.Data data = RoleMap.role( SelectedForms.Data.class );
          Form form = data.selectedForms().get( 0 );
-         FormDraft formSubmission = aCase.getFormSubmission( form );
+         FormDraft formSubmission = aCase.getFormDraft( form );
          if (formSubmission != null)
          {
             builder.prototype().caze().set( EntityReference.getEntityReference( aCase ) );

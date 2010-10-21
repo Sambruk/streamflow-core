@@ -50,9 +50,9 @@ public interface FormSubmissionsQueries
       public EntityReferenceDTO getFormSubmission( EntityReference form )
       {
          ValueBuilder<EntityReferenceDTO> builder = vbf.newValueBuilder( EntityReferenceDTO.class );
-         for (FormDraft submission : formSubmissions.formSubmissions())
+         for (FormDraft submission : formSubmissions.formDrafts())
          {
-            if ( submission.getFormDraft().form().get().equals( form ) )
+            if ( submission.getFormDraftValue().form().get().equals( form ) )
             {
                FormDraftEntity entity = (FormDraftEntity) submission;
                builder.prototype().entity().set( parseEntityReference( entity.identity().get() ));

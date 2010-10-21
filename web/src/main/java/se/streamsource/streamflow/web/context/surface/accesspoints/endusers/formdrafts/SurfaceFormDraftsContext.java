@@ -30,6 +30,6 @@ public class SurfaceFormDraftsContext
 {
    public Iterable<FormDraft> index()
    {
-      return RoleMap.role( FormDrafts.Data.class ).formSubmissions();
+      return RoleMap.role( FormDrafts.Data.class ).formDrafts();
    }
 }

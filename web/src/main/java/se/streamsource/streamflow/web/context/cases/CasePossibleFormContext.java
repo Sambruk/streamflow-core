@@ -40,7 +40,7 @@ public class CasePossibleFormContext
       FormDrafts formSubmissions = RoleMap.role( FormDrafts.class );
       Form form = RoleMap.role( Form.class );
 
-      formSubmissions.createFormSubmission( form );
+      formSubmissions.createFormDraft( form );
    }
 
    public LinkValue formdraft(  )
@@ -49,7 +49,7 @@ public class CasePossibleFormContext
 
       FormDrafts formSubmissions = RoleMap.role( FormDrafts.class );
 
-      FormDraft formSubmission = formSubmissions.getFormSubmission( form );
+      FormDraft formSubmission = formSubmissions.getFormDraft( form );
       if (formSubmission == null)
          throw new ResourceException( Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY);
 

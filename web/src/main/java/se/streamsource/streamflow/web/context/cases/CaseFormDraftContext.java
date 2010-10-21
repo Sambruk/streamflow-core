@@ -40,7 +40,7 @@ public class CaseFormDraftContext
    {
       FormDraft formDraft = role( FormDraft.class);
 
-      return formDraft.getFormDraft();
+      return formDraft.getFormDraftValue();
    }
 
    public void updatefield( FieldValueDTO field )

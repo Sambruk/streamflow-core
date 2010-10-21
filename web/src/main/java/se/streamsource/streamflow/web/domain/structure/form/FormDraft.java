@@ -49,9 +49,9 @@ import java.util.regex.Pattern;
 @Mixins(FormDraft.Mixin.class)
 public interface FormDraft
 {
-   FormDraftValue getFormDraft();
+   FormDraftValue getFormDraftValue();
 
-   void changeFormSubmission( FormDraftValue formDraftValue );
+   void changeFormDraftValue( FormDraftValue formDraftValue );
 
    void changeFieldValue( EntityReference fieldId, String newValue);
 
@@ -65,12 +65,12 @@ public interface FormDraft
    abstract class Mixin
          implements FormDraft, Data
    {
-      public FormDraftValue getFormDraft()
+      public FormDraftValue getFormDraftValue()
       {
          return formDraftValue().get();
       }
 
-      public void changeFormSubmission( FormDraftValue formDraftValue )
+      public void changeFormDraftValue( FormDraftValue formDraftValue )
       {
          changedFormDraft( DomainEvent.CREATE, formDraftValue );
       }

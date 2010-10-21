@@ -32,7 +32,7 @@ public class CaseFormDraftsResource
 {
    public void resource( String segment ) throws ContextNotFoundException
    {
-      findManyAssociation( RoleMap.role( FormDrafts.Data.class ).formSubmissions(), segment );
+      findManyAssociation( RoleMap.role( FormDrafts.Data.class ).formDrafts(), segment );
       subResourceContexts( CaseFormDraftContext.class );
    }
 }

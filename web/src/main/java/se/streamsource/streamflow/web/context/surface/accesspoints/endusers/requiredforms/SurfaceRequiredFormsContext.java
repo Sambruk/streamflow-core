@@ -59,6 +59,6 @@ public class SurfaceRequiredFormsContext
       Form form = uow.get( Form.class, formReference.entity().get() );
 
       Case aCase = RoleMap.role( Case.class );
-      aCase.createFormSubmission( form );
+      aCase.createFormDraft( form );
    }
 }

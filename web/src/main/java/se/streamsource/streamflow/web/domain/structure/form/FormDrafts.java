@@ -47,9 +47,9 @@ import java.util.ArrayList;
 @Mixins(FormDrafts.Mixin.class)
 public interface FormDrafts
 {
-   FormDraft getFormSubmission( Form form );
+   FormDraft getFormDraft( Form form );
 
-   FormDraft createFormSubmission( Form form );
+   FormDraft createFormDraft( Form form );
 
    void discardFormDraft( FormDraft form );
 
@@ -57,7 +57,7 @@ public interface FormDrafts
    {
       @Aggregated
       @Queryable(false)
-      ManyAssociation<FormDraft> formSubmissions();
+      ManyAssociation<FormDraft> formDrafts();
 
       FormDraft createdFormDraft( DomainEvent event, Form form );
 
@@ -79,23 +79,23 @@ public interface FormDrafts
       @Structure
       UnitOfWorkFactory uowf;
 
-      public FormDraft getFormSubmission( Form form )
+      public FormDraft getFormDraft( Form form )
       {
-         for (FormDraft formSubmission : formSubmissions().toList())
+         for (FormDraft formDraft : formDrafts().toList())
          {
-            EntityReference formReference = EntityReference.getEntityReference( form );
-            if ( formSubmission.getFormDraft().form().get().equals( formReference ))
+            if ( formDraft.getFormDraftValue() == null) return null;
+            if ( formDraft.getFormDraftValue().form().get().identity().equals( form.toString() ))
             {
-               return formSubmission;
+               return formDraft;
             }
          }
 
          return null;
       }
 
-      public FormDraft createFormSubmission( Form form )
+      public FormDraft createFormDraft( Form form )
       {
-         if ( getFormSubmission( form ) != null )
+         if ( getFormDraft( form ) != null )
          {
             // already exists, don't create
             return null;
@@ -161,10 +161,10 @@ public interface FormDrafts
          builder.prototype().pages().get().remove( pages-1 );
          builder.prototype().pages().get().add( pageBuilder.newInstance() );
 
-         submissionEntityBuilder.instance().changeFormSubmission( builder.newInstance() );
+         submissionEntityBuilder.instance().changeFormDraftValue( builder.newInstance() );
 
          FormDraft formSubmission = submissionEntityBuilder.newInstance();
-         formSubmissions().add( formSubmission );
+         formDrafts().add( formSubmission );
 
          return formSubmission;
       }
@@ -197,17 +197,17 @@ public interface FormDrafts
          return value;
       }
 
-      public void discardFormDraft( FormDraft formSubmission )
+      public void discardFormDraft( FormDraft formDraft )
       {
-         if (formSubmissions().contains( formSubmission ))
+         if (formDrafts().contains( formDraft ))
          {
-            discardedFormDraft( DomainEvent.CREATE, formSubmission );
+            discardedFormDraft( DomainEvent.CREATE, formDraft );
          }
       }
 
       public void discardedFormDraft( DomainEvent event, FormDraft formDraft )
       {
-         formSubmissions().remove( formDraft );
+         formDrafts().remove( formDraft );
          //uowf.currentUnitOfWork().remove( formDraft );
       }
    }

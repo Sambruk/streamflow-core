@@ -64,7 +64,7 @@ public interface EndUserCases
       public CaseEntity createCaseWithForm( AnonymousEndUser endUser )
       {
          CaseEntity caseEntity = createCase( endUser );
-         caseEntity.createFormSubmission( selectedForms.selectedForms().get( 0 ) );
+         caseEntity.createFormDraft( selectedForms.selectedForms().get( 0 ) );
          return caseEntity;
       }
 

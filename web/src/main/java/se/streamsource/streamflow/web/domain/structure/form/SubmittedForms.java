@@ -90,14 +90,14 @@ public interface SubmittedForms
             }
          }
 
-         FormDraftValue value = formSubmission.getFormDraft();
+         FormDraftValue value = formSubmission.getFormDraftValue();
          ValueBuilder<SubmittedFormValue> formBuilder = vbf.newValueBuilder( SubmittedFormValue.class );
 
          formBuilder.prototype().submitter().set( EntityReference.getEntityReference( submitter ) );
          formBuilder.prototype().form().set( value.form().get() );
          formBuilder.prototype().submissionDate().set( new Date() );
 
-         eFieldBuilder.prototype().form().set( formSubmission.getFormDraft().form().get() );
+         eFieldBuilder.prototype().form().set( formSubmission.getFormDraftValue().form().get() );
          eFieldBuilder.prototype().submissionDate().set( formBuilder.prototype().submissionDate().get() );
          eFieldBuilder.prototype().submitter().set( EntityReference.getEntityReference( submitter ) );
 

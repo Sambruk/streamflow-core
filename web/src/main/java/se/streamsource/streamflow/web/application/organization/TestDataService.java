@@ -298,7 +298,7 @@ public interface TestDataService
                aCase.changeCaseType( bug );
                aCase.open();
 
-               FormDraft formSubmission = aCase.createFormSubmission( statusForm );
+               FormDraft formSubmission = aCase.createFormDraft( statusForm );
                submitStatus( aCase, formSubmission, "Progress is slow", (Submitter) testUser );
                submitStatus( aCase, formSubmission, "Progress is getting better", (Submitter) someUser );
 
@@ -327,7 +327,7 @@ public interface TestDataService
 
       private void submitStatus( Case aCase, FormDraft formSubmission, String status, Submitter submitter )
       {
-         FormDraftValue submissionValue = (FormDraftValue) formSubmission.getFormDraft().buildWith().prototype();
+         FormDraftValue submissionValue = (FormDraftValue) formSubmission.getFormDraftValue().buildWith().prototype();
          for (PageSubmissionValue pageValue : submissionValue.pages().get())
          {
             for (FieldSubmissionValue value : pageValue.fields().get())
@@ -335,7 +335,7 @@ public interface TestDataService
                value.value().set( status );
             }
          }
-         formSubmission.changeFormSubmission( submissionValue );
+         formSubmission.changeFormDraftValue( submissionValue );
          aCase.submitForm( formSubmission, submitter );
       }
 
