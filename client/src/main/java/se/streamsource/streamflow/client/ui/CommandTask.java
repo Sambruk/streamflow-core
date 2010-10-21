@@ -18,7 +18,6 @@ package se.streamsource.streamflow.client.ui;
 
 import org.jdesktop.application.Application;
 import org.jdesktop.application.Task;
-import org.jdesktop.swingx.util.WindowUtils;
 import se.streamsource.streamflow.client.StreamflowApplication;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
@@ -26,11 +25,6 @@ import se.streamsource.streamflow.infrastructure.event.source.TransactionListene
 import se.streamsource.streamflow.infrastructure.event.source.helper.TransactionCollector;
 
 import javax.swing.SwingUtilities;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Dialog;
-import java.awt.EventQueue;
-import java.awt.Window;
 
 /**
  * All Swing actions that want to trigger commands in the domain model

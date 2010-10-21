@@ -21,13 +21,9 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.structure.Module;
-import org.restlet.data.Reference;
 import se.streamsource.dci.api.RoleMap;
-import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.domain.structure.Describable;
-import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.entity.user.SearchCaseQueries;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 

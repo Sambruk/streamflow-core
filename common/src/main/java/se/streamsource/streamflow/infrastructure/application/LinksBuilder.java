@@ -19,7 +19,6 @@ package se.streamsource.streamflow.infrastructure.application;
 
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.domain.structure.Describable;
 

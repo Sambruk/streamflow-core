@@ -16,13 +16,9 @@
 
 package se.streamsource.streamflow.web.resource.users.overview;
 
-import org.qi4j.api.injection.scope.Uses;
-import se.streamsource.dci.api.ContextNotFoundException;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.SubResource;
-import se.streamsource.dci.restlet.server.SubResources;
 import se.streamsource.streamflow.web.context.users.overview.OverviewContext;
-import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
 
 /**
  * JAVADOC

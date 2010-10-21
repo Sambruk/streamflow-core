@@ -26,7 +26,6 @@ import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.util.Iterables;
 import se.streamsource.streamflow.web.context.ContextTest;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
-import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnits;
 import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
 

@@ -34,7 +34,7 @@ import se.streamsource.streamflow.web.domain.structure.form.FormDraft;
 import se.streamsource.streamflow.web.domain.structure.form.RequiredSignatures;
 import se.streamsource.streamflow.web.domain.structure.user.AnonymousEndUser;
 
-import static se.streamsource.dci.api.RoleMap.role;
+import static se.streamsource.dci.api.RoleMap.*;
 
 /**
  * JAVADOC

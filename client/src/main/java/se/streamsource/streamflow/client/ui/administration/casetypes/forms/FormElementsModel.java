@@ -18,11 +18,8 @@
 package se.streamsource.streamflow.client.ui.administration.casetypes.forms;
 
 import org.qi4j.api.value.ValueBuilder;
-import org.restlet.resource.ResourceException;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.StringValue;
-import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.administration.LinkValueListModel;
 import se.streamsource.streamflow.domain.form.CreateFieldDTO;
 import se.streamsource.streamflow.domain.form.FieldTypes;

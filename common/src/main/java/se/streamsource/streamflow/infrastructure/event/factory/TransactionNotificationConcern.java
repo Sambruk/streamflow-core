@@ -30,10 +30,10 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.time.Time;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.UnitOfWorkEvents;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
+import se.streamsource.streamflow.infrastructure.time.Time;
 
 /**
  * Notify transaction listeners when a complete transaction of domain events is available.

@@ -25,7 +25,7 @@ import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
 import se.streamsource.streamflow.web.domain.structure.form.SelectedForms;
 
-import static se.streamsource.dci.api.RoleMap.role;
+import static se.streamsource.dci.api.RoleMap.*;
 
 /**
  * JAVADOC

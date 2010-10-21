@@ -17,9 +17,7 @@
 
 package se.streamsource.dci.restlet.server;
 
-import org.qi4j.api.common.ConstructionException;
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.object.NoSuchObjectException;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.restlet.Request;
 import org.restlet.Response;

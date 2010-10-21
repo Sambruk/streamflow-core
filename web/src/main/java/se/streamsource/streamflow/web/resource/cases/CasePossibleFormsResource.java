@@ -16,7 +16,6 @@
 
 package se.streamsource.streamflow.web.resource.cases;
 
-import org.qi4j.api.injection.scope.Uses;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.api.RoleMap;

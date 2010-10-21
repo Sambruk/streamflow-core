@@ -20,8 +20,6 @@ package se.streamsource.streamflow.infrastructure.event.replay;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.qi4j.api.entity.EntityComposite;
-import org.qi4j.api.entity.IdentityGenerator;
-import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.ServiceComposite;
@@ -37,8 +35,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
-import se.streamsource.streamflow.infrastructure.event.source.EventStore;
-import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
 
 import java.lang.reflect.Method;
 import java.text.ParseException;

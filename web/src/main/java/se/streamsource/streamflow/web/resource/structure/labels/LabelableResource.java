@@ -23,7 +23,7 @@ import se.streamsource.streamflow.web.context.structure.labels.LabelableContext;
 import se.streamsource.streamflow.web.context.structure.labels.LabeledContext;
 import se.streamsource.streamflow.web.domain.structure.label.Labelable;
 
-import static se.streamsource.dci.api.RoleMap.role;
+import static se.streamsource.dci.api.RoleMap.*;
 
 /**
  * JAVADOC

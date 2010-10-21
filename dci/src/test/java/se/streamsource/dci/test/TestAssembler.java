@@ -42,7 +42,7 @@ import se.streamsource.dci.test.interactions.jmx.MBeanContext;
 import se.streamsource.dci.test.interactions.jmx.MBeanResource;
 import se.streamsource.dci.test.interactions.jmx.TabularDataValue;
 
-import static org.qi4j.bootstrap.ImportedServiceDeclaration.NEW_OBJECT;
+import static org.qi4j.bootstrap.ImportedServiceDeclaration.*;
 
 /**
  * JAVADOC

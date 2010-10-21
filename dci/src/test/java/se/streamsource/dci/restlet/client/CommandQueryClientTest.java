@@ -30,7 +30,6 @@ import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.unitofwork.ConcurrentEntityModificationException;
-import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCallback;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
@@ -58,8 +57,6 @@ import se.streamsource.dci.api.InteractionConstraintsService;
 import se.streamsource.dci.api.RequiresRoles;
 import se.streamsource.dci.api.Role;
 import se.streamsource.dci.api.RoleMap;
-import se.streamsource.dci.restlet.server.SubResource;
-import se.streamsource.dci.restlet.server.SubResources;
 import se.streamsource.dci.qi4j.RoleInjectionProviderFactory;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.CommandQueryRestlet2;
@@ -67,6 +64,8 @@ import se.streamsource.dci.restlet.server.CommandResult;
 import se.streamsource.dci.restlet.server.DefaultResponseWriterFactory;
 import se.streamsource.dci.restlet.server.NullCommandResult;
 import se.streamsource.dci.restlet.server.ResponseWriterFactory;
+import se.streamsource.dci.restlet.server.SubResource;
+import se.streamsource.dci.restlet.server.SubResources;
 import se.streamsource.dci.value.ContextValue;
 import se.streamsource.dci.value.ResourceValue;
 import se.streamsource.dci.value.StringValue;
@@ -75,9 +74,9 @@ import javax.security.auth.Subject;
 import java.io.File;
 import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.assertThat;
-import static org.qi4j.bootstrap.ImportedServiceDeclaration.NEW_OBJECT;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+import static org.qi4j.bootstrap.ImportedServiceDeclaration.*;
 
 /**
  * Test for CommandQueryClient

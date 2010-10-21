@@ -33,7 +33,7 @@ import se.streamsource.streamflow.web.domain.structure.organization.Organization
 
 import java.io.IOException;
 
-import static se.streamsource.streamflow.util.Iterables.count;
+import static se.streamsource.streamflow.util.Iterables.*;
 
 /**
  * JAVADOC

@@ -24,7 +24,7 @@ import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.web.domain.interaction.profile.SavedSearches;
 import se.streamsource.streamflow.web.domain.structure.user.profile.SavedSearch;
 
-import static se.streamsource.dci.api.RoleMap.role;
+import static se.streamsource.dci.api.RoleMap.*;
 
 /**
  * JAVADOC

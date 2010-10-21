@@ -29,9 +29,7 @@ import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.ResourceValue;
 import se.streamsource.dci.value.StringValue;
 
-import java.util.Properties;
-
-import static org.qi4j.bootstrap.ImportedServiceDeclaration.NEW_OBJECT;
+import static org.qi4j.bootstrap.ImportedServiceDeclaration.*;
 
 /**
  * JAVADOC

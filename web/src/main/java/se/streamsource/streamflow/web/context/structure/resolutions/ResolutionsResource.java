@@ -22,7 +22,7 @@ import se.streamsource.dci.restlet.server.SubResources;
 import se.streamsource.streamflow.web.context.structure.DescribableContext;
 import se.streamsource.streamflow.web.domain.structure.casetype.Resolutions;
 
-import static se.streamsource.dci.api.RoleMap.role;
+import static se.streamsource.dci.api.RoleMap.*;
 
 /**
  * JAVADOC

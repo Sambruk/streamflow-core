@@ -19,7 +19,6 @@ package se.streamsource.dci.test.interactions.file;
 
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.structure.Module;
-import org.qi4j.api.value.Value;
 import org.qi4j.api.value.ValueBuilder;
 import org.restlet.Application;
 import org.restlet.data.MediaType;

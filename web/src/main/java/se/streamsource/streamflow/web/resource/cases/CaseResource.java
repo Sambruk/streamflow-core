@@ -16,9 +16,6 @@
 
 package se.streamsource.streamflow.web.resource.cases;
 
-import org.qi4j.api.injection.scope.Uses;
-import org.restlet.Request;
-import org.restlet.Response;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.SubResource;
 import se.streamsource.streamflow.web.context.cases.CaseActionsContext;

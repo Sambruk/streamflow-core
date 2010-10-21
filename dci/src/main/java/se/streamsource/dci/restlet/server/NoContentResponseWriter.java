@@ -19,10 +19,8 @@ package se.streamsource.dci.restlet.server;
 
 import org.restlet.Request;
 import org.restlet.Response;
-import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
-import se.streamsource.dci.value.LinkValue;
 
 /**
  * Simply set the response to HTTP 204 code.

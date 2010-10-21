@@ -20,7 +20,6 @@ package se.streamsource.streamflow.web.infrastructure.event;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
-import se.streamsource.streamflow.web.infrastructure.event.AbstractEventStoreTest;
 
 /**
  * JAVADOC

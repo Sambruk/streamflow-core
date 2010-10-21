@@ -16,12 +16,9 @@
 
 package se.streamsource.streamflow.web.resource.users;
 
-import org.restlet.Request;
-import org.restlet.Response;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.SubResource;
 import se.streamsource.streamflow.web.context.users.workspace.WorkspaceContext;
-import se.streamsource.streamflow.web.context.users.workspace.WorkspaceProjectsContext;
 import se.streamsource.streamflow.web.resource.users.workspace.SavedSearchesResource;
 import se.streamsource.streamflow.web.resource.users.workspace.WorkspaceProjectsResource;
 import se.streamsource.streamflow.web.resource.users.workspace.WorkspaceUserResource;

@@ -16,7 +16,6 @@
 
 package se.streamsource.streamflow.web.resource.users.workspace;
 
-import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.dci.api.ContextNotFoundException;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.SubResources;

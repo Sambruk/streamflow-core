@@ -18,7 +18,6 @@
 package se.streamsource.streamflow.web.context.surface.accesspoints.endusers.formdrafts;
 
 import org.qi4j.api.entity.EntityReference;
-import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.domain.form.FormDraftValue;

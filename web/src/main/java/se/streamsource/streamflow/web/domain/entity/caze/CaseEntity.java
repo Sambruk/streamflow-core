@@ -37,7 +37,6 @@ import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.caze.Closed;
 import se.streamsource.streamflow.web.domain.structure.caze.Contacts;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversations;
-import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
 import se.streamsource.streamflow.web.domain.structure.form.FormDrafts;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedForms;
 import se.streamsource.streamflow.web.domain.structure.label.Labelable;

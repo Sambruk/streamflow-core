@@ -27,17 +27,12 @@ import org.qi4j.rest.entity.EntityResource;
 import org.qi4j.rest.query.IndexResource;
 import org.qi4j.rest.query.SPARQLResource;
 import org.restlet.security.ChallengeAuthenticator;
-import se.streamsource.dci.restlet.server.DCIAssembler;
-import se.streamsource.dci.restlet.server.DefaultResponseWriterFactory;
 import se.streamsource.dci.restlet.server.ResourceFinder;
-import se.streamsource.dci.restlet.server.ResultConverter;
 import se.streamsource.streamflow.web.resource.APIRouter;
 import se.streamsource.streamflow.web.resource.admin.ConsoleServerResource;
 import se.streamsource.streamflow.web.resource.admin.SolrSearchServerResource;
 import se.streamsource.streamflow.web.resource.events.DomainEventsServerResource;
 import se.streamsource.streamflow.web.rest.StreamflowRestApplication;
-import se.streamsource.streamflow.web.rest.StreamflowRestlet;
-import se.streamsource.streamflow.web.rest.StreamflowResultConverter;
 
 /**
  * JAVADOC

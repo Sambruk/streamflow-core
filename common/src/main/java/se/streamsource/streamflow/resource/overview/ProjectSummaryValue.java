@@ -19,7 +19,6 @@ package se.streamsource.streamflow.resource.overview;
 
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.property.Property;
-import org.qi4j.api.value.ValueComposite;
 import se.streamsource.dci.value.LinkValue;
 
 public interface ProjectSummaryValue

@@ -36,7 +36,7 @@ import se.streamsource.streamflow.web.domain.structure.user.Users;
 
 import java.io.IOException;
 
-import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.*;
 
 /**
  * JAVADOC

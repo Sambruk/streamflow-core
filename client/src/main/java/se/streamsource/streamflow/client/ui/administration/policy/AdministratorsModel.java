@@ -17,8 +17,6 @@
 
 package se.streamsource.streamflow.client.ui.administration.policy;
 
-import org.qi4j.api.value.ValueBuilder;
-import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.client.ui.administration.LinkValueListModel;
 

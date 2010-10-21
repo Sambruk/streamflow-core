@@ -18,8 +18,8 @@
 package se.streamsource.streamflow.domain.structure;
 
 import org.qi4j.api.common.UseDefaults;
-import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;

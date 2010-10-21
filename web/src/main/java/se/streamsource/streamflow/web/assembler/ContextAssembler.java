@@ -19,7 +19,6 @@ package se.streamsource.streamflow.web.assembler;
 
 import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.apache.velocity.app.VelocityEngine;
 import org.qi4j.api.common.Visibility;
 import org.qi4j.api.composite.TransientComposite;
 import org.qi4j.bootstrap.AssemblyException;
@@ -31,7 +30,6 @@ import se.streamsource.dci.api.InteractionConstraintsService;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.DCIAssembler;
 import se.streamsource.dci.restlet.server.DefaultResponseWriterFactory;
-import se.streamsource.dci.restlet.server.ResponseWriterFactory;
 import se.streamsource.dci.restlet.server.ResultConverter;
 import se.streamsource.streamflow.web.context.RequiresPermission;
 import se.streamsource.streamflow.web.context.ServiceAvailable;

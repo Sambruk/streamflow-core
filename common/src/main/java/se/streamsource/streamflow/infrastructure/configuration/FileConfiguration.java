@@ -26,13 +26,13 @@ import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.structure.Application;
 import org.qi4j.spi.service.ServiceDescriptor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.ResourceBundle;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Service for accessing application-specific directories. These will default to

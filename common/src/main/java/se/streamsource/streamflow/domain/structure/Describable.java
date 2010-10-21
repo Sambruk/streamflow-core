@@ -21,9 +21,9 @@ import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
-import org.qi4j.library.constraints.annotation.MaxLength;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import static se.streamsource.streamflow.infrastructure.event.DomainEvent.CREATE;
+
+import static se.streamsource.streamflow.infrastructure.event.DomainEvent.*;
 
 /**
  * Role for maintaining descriptions of entities.

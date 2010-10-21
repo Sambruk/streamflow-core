@@ -24,16 +24,12 @@ import org.qi4j.api.structure.Module;
 import org.qi4j.library.constraints.annotation.MaxLength;
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.IndexContext;
-import se.streamsource.dci.api.RoleMap;
-import se.streamsource.dci.api.SubContexts;
-import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.StringValueMaxLength;
-import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.label.Labels;
 
-import static se.streamsource.dci.api.RoleMap.role;
+import static se.streamsource.dci.api.RoleMap.*;
 
 /**
  * JAVADOC

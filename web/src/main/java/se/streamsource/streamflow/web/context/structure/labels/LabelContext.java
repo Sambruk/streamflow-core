@@ -17,14 +17,8 @@
 
 package se.streamsource.streamflow.web.context.structure.labels;
 
-import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.query.Query;
-import org.qi4j.api.structure.Module;
 import se.streamsource.dci.api.DeleteContext;
-import se.streamsource.dci.restlet.server.CommandQueryResource;
-import se.streamsource.dci.value.LinksValue;
-import se.streamsource.streamflow.domain.structure.Describable;
-import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.label.Labels;
 import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;

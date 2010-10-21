@@ -25,17 +25,14 @@ import org.junit.Test;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import se.streamsource.dci.api.RoleMap;
-import se.streamsource.streamflow.util.Iterables;
 import se.streamsource.streamflow.web.context.ContextTest;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
-import se.streamsource.streamflow.web.domain.structure.group.Groups;
-import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnits;
 import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
 
 import java.io.IOException;
 
-import static se.streamsource.streamflow.util.Iterables.count;
+import static se.streamsource.streamflow.util.Iterables.*;
 
 /**
  * JAVADOC

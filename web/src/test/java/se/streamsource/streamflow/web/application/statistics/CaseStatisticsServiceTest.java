@@ -17,9 +17,6 @@
 
 package se.streamsource.streamflow.web.application.statistics;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.assertThat;
-
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
@@ -28,20 +25,19 @@ import org.hamcrest.Description;
 import org.junit.Test;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
+import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ImportedServiceDeclaration;
+import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.entitystore.memory.MemoryEntityStoreService;
 import org.qi4j.index.rdf.assembly.RdfMemoryStoreAssembler;
 import org.qi4j.spi.uuid.UuidIdentityGeneratorService;
 import org.qi4j.test.AbstractQi4jTest;
-import org.qi4j.bootstrap.AssemblyException;
-import org.qi4j.bootstrap.ModuleAssembly;
 import se.streamsource.streamflow.domain.contact.ContactValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.factory.DomainEventFactoryService;
-import se.streamsource.streamflow.infrastructure.time.TimeService;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
+import se.streamsource.streamflow.infrastructure.event.factory.DomainEventFactoryService;
 import se.streamsource.streamflow.infrastructure.event.source.helper.TransactionTrackerConfiguration;
-import se.streamsource.streamflow.web.infrastructure.event.MemoryEventStoreService;
+import se.streamsource.streamflow.infrastructure.time.TimeService;
 import se.streamsource.streamflow.web.application.security.UserPrincipal;
 import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity;
 import se.streamsource.streamflow.web.domain.entity.casetype.ResolutionEntity;
@@ -64,6 +60,7 @@ import se.streamsource.streamflow.web.domain.structure.organization.Organization
 import se.streamsource.streamflow.web.domain.structure.organization.ParticipantRolesValue;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.user.Users;
+import se.streamsource.streamflow.web.infrastructure.event.MemoryEventStoreService;
 
 import javax.security.auth.Subject;
 import java.security.PrivilegedActionException;
@@ -71,6 +68,9 @@ import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
+
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
 /**
  * JAVADOC

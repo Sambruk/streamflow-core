@@ -17,9 +17,6 @@
 package se.streamsource.dci.api;
 
 import org.qi4j.api.value.Value;
-import org.restlet.resource.ResourceException;
-
-import java.io.IOException;
 
 /**
  * Standard context for update of existing resoruces.

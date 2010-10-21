@@ -17,8 +17,6 @@
 
 package se.streamsource.dci.restlet.server;
 
-import java.util.List;
-
 import org.qi4j.api.cache.CacheOptions;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.structure.Module;
@@ -39,6 +37,8 @@ import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ResourceException;
 import org.slf4j.LoggerFactory;
 import se.streamsource.dci.api.RoleMap;
+
+import java.util.List;
 
 /**
  * JAVADOC

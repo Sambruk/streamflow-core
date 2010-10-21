@@ -37,10 +37,7 @@ import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.time.Time;
 
-import javax.security.auth.Subject;
-import java.security.AccessController;
 import java.security.Principal;
-import java.util.Iterator;
 
 /**
  * DomainEvent factory

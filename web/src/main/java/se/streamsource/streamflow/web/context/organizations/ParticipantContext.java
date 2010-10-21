@@ -21,7 +21,7 @@ import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.streamflow.web.domain.structure.group.Participant;
 import se.streamsource.streamflow.web.domain.structure.group.Participants;
 
-import static se.streamsource.dci.api.RoleMap.role;
+import static se.streamsource.dci.api.RoleMap.*;
 
 /**
  * JAVADOC

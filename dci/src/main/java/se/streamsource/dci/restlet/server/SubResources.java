@@ -17,10 +17,7 @@
 
 package se.streamsource.dci.restlet.server;
 
-import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.resource.ResourceException;
-import se.streamsource.dci.api.ContextNotFoundException;
 
 /**
  * Resources that have sub-resources should extends this interface.
