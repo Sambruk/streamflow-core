@@ -37,27 +37,27 @@ public class CasePossibleFormContext
 
    public void create( )
    {
-      FormDrafts formSubmissions = RoleMap.role( FormDrafts.class );
+      FormDrafts formDrafts = RoleMap.role( FormDrafts.class );
       Form form = RoleMap.role( Form.class );
 
-      formSubmissions.createFormDraft( form );
+      formDrafts.createFormDraft( form );
    }
 
    public LinkValue formdraft(  )
    {
       Form form = RoleMap.role( Form.class );
 
-      FormDrafts formSubmissions = RoleMap.role( FormDrafts.class );
+      FormDrafts formDrafts = RoleMap.role( FormDrafts.class );
 
-      FormDraft formSubmission = formSubmissions.getFormDraft( form );
-      if (formSubmission == null)
+      FormDraft formDraft = formDrafts.getFormDraft( form );
+      if (formDraft == null)
          throw new ResourceException( Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY);
 
       ValueBuilder<LinkValue> builder = module.valueBuilderFactory().newValueBuilder( LinkValue.class );
-      builder.prototype().id().set( formSubmission.toString() );
-      builder.prototype().text().set(formSubmission.toString());
-      builder.prototype().rel().set( "formsubmission" );
-      builder.prototype().href().set( "../formdrafts/"+formSubmission.toString()+"/" );
+      builder.prototype().id().set( formDraft.toString() );
+      builder.prototype().text().set(formDraft.toString());
+      builder.prototype().rel().set( "formdraft" );
+      builder.prototype().href().set( "../formdrafts/"+formDraft.toString()+"/" );
       return builder.newInstance();
    }
 }

@@ -30,6 +30,7 @@ import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
+import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.ui.CommandTask;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
@@ -62,6 +63,7 @@ public class CaseLabelsView
 
       setLayout( new FlowLayout( FlowLayout.LEFT ) );
       //setBorder( BorderFactory.createLineBorder( Color.BLUE, 1));
+      new RefreshWhenVisible( this, model );
    }
 
    public CaseLabelsModel getModel()

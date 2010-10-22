@@ -1,5 +1,4 @@
-/**
- *
+/*
  * Copyright 2009-2010 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -56,6 +55,7 @@ import se.streamsource.streamflow.web.domain.structure.organization.Organization
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.project.Projects;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -76,11 +76,13 @@ public interface AccessPointAdministrationContext
 
    void setform( StringValue id );
 
-   LinksValue possibleprojects();
+   List<Project> possibleprojects();
 
-   LinksValue possiblecasetypes();
+   List<CaseType> possiblecasetypes();
 
    LinksValue possiblelabels();
+
+   List<Form> possibleforms();
 
    abstract class Mixin
          implements AccessPointAdministrationContext
@@ -161,37 +163,40 @@ public interface AccessPointAdministrationContext
          RoleMap.role( AccessPoint.class ).changeDescription( name.string().get() );
       }
 
-      public LinksValue possibleprojects()
+      public List<Project> possibleprojects()
       {
 
-         final LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
+         final List<Project> possibleProjects = new ArrayList<Project>();
          OrganizationQueries organizationQueries = RoleMap.role( OrganizationQueries.class );
          organizationQueries.visitOrganization( new OrganizationVisitor()
          {
             @Override
             public boolean visitProject( Project project )
             {
-               linksBuilder.addDescribable( project );
+               possibleProjects.add( project );
 
                return true;
             }
          }, new OrganizationQueries.ClassSpecification( OrganizationalUnits.class, Projects.class, Project.class ) );
 
-         return linksBuilder.newLinks();
+         return possibleProjects;
       }
 
-      public LinksValue possiblecasetypes()
+      public List<CaseType> possiblecasetypes()
       {
          AccessPointSettings.Data accessPoint = RoleMap.role( AccessPointSettings.Data.class );
          Project project = accessPoint.project().get();
 
-         LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() );
+         List<CaseType> possibleCaseTypes = new ArrayList<CaseType>();
          if (project != null)
          {
             SelectedCaseTypes.Data data = (SelectedCaseTypes.Data) project;
-            builder.addDescribables( data.selectedCaseTypes() );
+            for (CaseType caseType : data.selectedCaseTypes())
+            {
+               possibleCaseTypes.add( caseType );
+            }
          }
-         return builder.newLinks();
+         return possibleCaseTypes;
       }
 
       public void setproject( StringValue id )
@@ -219,7 +224,7 @@ public interface AccessPointAdministrationContext
          Project project = accessPoint.project().get();
          CaseType caseType = accessPoint.caseType().get();
 
-         LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
+         LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() ).path("labels").command( "addlabel" );
          if (project != null && caseType != null)
          {
             ProjectLabelsQueries labelsQueries = (ProjectLabelsQueries) project;
@@ -244,13 +249,13 @@ public interface AccessPointAdministrationContext
          return linksBuilder.newLinks();
       }
 
-      public LinksValue possibleforms()
+      public List<Form> possibleforms()
       {
          AccessPointSettings.Data accessPoint = RoleMap.role( AccessPointSettings.Data.class );
          SelectedForms.Data selected = RoleMap.role( SelectedForms.Data.class );
          CaseType caseType = accessPoint.caseType().get();
 
-         LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() );
+         List<Form> possibleForms = new ArrayList<Form>();
 
          if (caseType != null)
          {
@@ -260,12 +265,12 @@ public interface AccessPointAdministrationContext
             {
                if (!selected.selectedForms().contains( f ))
                {
-                  builder.addDescribable( f );
+                  possibleForms.add( f );
                }
             }
          }
 
-         return builder.newLinks();
+         return possibleForms;
       }
 
       public void setform( StringValue id )

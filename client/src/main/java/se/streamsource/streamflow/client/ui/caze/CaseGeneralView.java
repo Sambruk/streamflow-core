@@ -296,6 +296,7 @@ public class CaseGeneralView extends JScrollPane implements Observer, Transactio
    public void refresh()
    {
       model.refresh();
+      labels.getModel().refresh();
 
       dueOnField.setEnabled( model.getCommandEnabled( "changedueon" ) );
       descriptionField.setEnabled( model.getCommandEnabled( "changedescription" ) );

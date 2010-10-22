@@ -45,22 +45,17 @@ public class AccessPointModel extends Observable
    ValueBuilderFactory vbf;
 
    @Uses
-   CaseLabelsModel caseLabelsModel;
+   private CaseLabelsModel caseLabelsModel;
 
-   CommandQueryClient client;
+   @Uses
+   private CommandQueryClient client;
 
    private AccessPointValue accessPoint;
-
-   public AccessPointModel( @Uses CommandQueryClient client )
-   {
-      this.client = client;
-   }
 
    public void refresh() throws OperationException
    {
       AccessPointValue updatedValue = client.query( "index", AccessPointValue.class );
       accessPoint = (AccessPointValue) updatedValue.buildWith().prototype();
-// TODO      caseLabelsModel.setLabels( accessPoint.labels().get() );
 
       setChanged();
       notifyObservers();

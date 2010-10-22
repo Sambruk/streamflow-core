@@ -110,8 +110,8 @@ public class AccessPointView
                            @Uses CommandQueryClient client,
                            @Structure ObjectBuilderFactory obf )
    {
-      this.model = obf.newObjectBuilder( AccessPointModel.class ).use( client ).newInstance();
-      this.labels = obf.newObjectBuilder( CaseLabelsView.class ).use( client ).newInstance();
+      this.labels = obf.newObjectBuilder( CaseLabelsView.class ).use( client.getSubClient( "labels" )).newInstance();
+      this.model = obf.newObjectBuilder( AccessPointModel.class ).use( client, labels.getModel() ).newInstance();
       model.addObserver( this );
 
       setLayout( new BorderLayout() );
