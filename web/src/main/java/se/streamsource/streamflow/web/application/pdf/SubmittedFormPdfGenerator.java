@@ -17,21 +17,6 @@
 
 package se.streamsource.streamflow.web.application.pdf;
 
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.font.PDType1Font;
-import org.qi4j.api.common.Optional;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.service.ServiceComposite;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import se.streamsource.streamflow.domain.form.DateFieldValue;
-import se.streamsource.streamflow.domain.form.SubmittedFieldValue;
-import se.streamsource.streamflow.domain.form.SubmittedFormValue;
-import se.streamsource.streamflow.web.domain.entity.form.FieldEntity;
-import se.streamsource.streamflow.web.domain.structure.form.Form;
-import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -42,12 +27,30 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.ResourceBundle;
+
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.service.ServiceComposite;
+import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+
+import se.streamsource.streamflow.domain.form.DateFieldValue;
+import se.streamsource.streamflow.domain.form.SubmittedFieldValue;
+import se.streamsource.streamflow.domain.form.SubmittedFormValue;
+import se.streamsource.streamflow.web.domain.entity.form.FieldEntity;
+import se.streamsource.streamflow.web.domain.interaction.gtd.CompletableId;
+import se.streamsource.streamflow.web.domain.structure.form.Form;
+import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
 
 
 @Mixins(SubmittedFormPdfGenerator.Mixin.class)
 public interface SubmittedFormPdfGenerator extends ServiceComposite
 {
-   PDDocument generatepdf( SubmittedFormValue value, @Optional String templateFileName, Locale locale ) throws IOException, URISyntaxException;
+   PDDocument generatepdf( SubmittedFormValue value, CompletableId.Data id, @Optional String templateFileName, Locale locale ) throws IOException, URISyntaxException;
 
    abstract class Mixin
          implements SubmittedFormPdfGenerator
@@ -59,9 +62,12 @@ public interface SubmittedFormPdfGenerator extends ServiceComposite
       @Service
       AttachmentStore store;
 
-      public PDDocument generatepdf( SubmittedFormValue value, String templateUri, Locale locale ) throws IOException, URISyntaxException
+      public PDDocument generatepdf( SubmittedFormValue value, CompletableId.Data id, String templateUri, Locale locale ) throws IOException, URISyntaxException
       {
 
+         ResourceBundle bundle = ResourceBundle.getBundle(
+               SubmittedFormPdfGenerator.class.getName(), locale );
+         
          PdfDocument document = new PdfDocument();
          document.init();
 
@@ -72,8 +78,9 @@ public interface SubmittedFormPdfGenerator extends ServiceComposite
 
          Form form = uowFactory.currentUnitOfWork().get( Form.class, value.form().get().identity() );
 
-         document.println( form.getDescription(), h1Font );
-         document.println( DateFormat.getDateInstance( DateFormat.MEDIUM, locale ).format( value.submissionDate().get() ), descFont );
+         document.println( bundle.getString( "caseid") + ": " + id.caseId().get(), h1Font);
+         document.print( bundle.getString( "form") + ": " + form.getDescription(), h2Font );
+         document.println( bundle.getString( "submission_date") + ": " + DateFormat.getDateInstance( DateFormat.MEDIUM, locale ).format( value.submissionDate().get() ), descFont );
 
          document.line();
 
@@ -112,8 +119,8 @@ public interface SubmittedFormPdfGenerator extends ServiceComposite
          if (templateUri != null)
          {
 
-            String id = new URI( templateUri ).getSchemeSpecificPart();
-            InputStream templateStream = store.getAttachment( id );
+            String attachmentId = new URI( templateUri ).getSchemeSpecificPart();
+            InputStream templateStream = store.getAttachment( attachmentId );
             Underlay underlay = new Underlay();
             submittedFormPdf = underlay.underlay( submittedFormPdf, templateStream );
          }

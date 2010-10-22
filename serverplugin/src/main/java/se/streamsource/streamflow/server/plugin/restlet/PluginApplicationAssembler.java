@@ -27,6 +27,7 @@ import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.entitystore.prefs.PreferencesEntityStoreInfo;
 import org.qi4j.entitystore.prefs.PreferencesEntityStoreService;
+import se.streamsource.streamflow.server.plugin.authentication.UserDetailsValue;
 import se.streamsource.streamflow.server.plugin.authentication.UserIdentityValue;
 import se.streamsource.streamflow.server.plugin.contact.ContactAddressValue;
 import se.streamsource.streamflow.server.plugin.contact.ContactEmailValue;
@@ -71,7 +72,8 @@ public class PluginApplicationAssembler
             ContactAddressValue.class,
             ContactEmailValue.class,
             ContactPhoneValue.class,
-            UserIdentityValue.class ).visibleIn( Visibility.application );
+            UserIdentityValue.class,
+            UserDetailsValue.class ).visibleIn( Visibility.application );
 
       pluginAssembler.assemble( moduleAssembly );
 

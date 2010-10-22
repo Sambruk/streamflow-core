@@ -17,22 +17,23 @@
 
 package se.streamsource.streamflow.server.plugin.authentication;
 
-/**
- * Authenticates a user, given a certain password, against an external system
- */
-public interface Authenticator
+import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueComposite;
+
+public interface UserDetailsValue
+      extends ValueComposite
 {
-   enum error
-   {
-      authentication_bad_username_password,
-      authentication_username_not_unique,
-      authentication_account_locked
-   }
+   @UseDefaults
+   Property<String> username();
+   
+   @UseDefaults
+   Property<String> name();
 
-   ;
-
-   void authenticate( UserIdentityValue user );
-
-   UserDetailsValue userdetails( UserIdentityValue user);
+   @UseDefaults
+   Property<String> emailAddress();
+   
+   @UseDefaults
+   Property<String> phoneNumber(); 
 
 }

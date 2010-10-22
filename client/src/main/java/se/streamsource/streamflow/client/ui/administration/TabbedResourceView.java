@@ -40,8 +40,8 @@ import se.streamsource.streamflow.client.ui.administration.resolutions.Resolutio
 import se.streamsource.streamflow.client.ui.administration.resolutions.SelectedResolutionsView;
 import se.streamsource.streamflow.client.ui.administration.surface.AccessPointsView;
 import se.streamsource.streamflow.client.ui.administration.surface.ProxyUsersView;
+import se.streamsource.streamflow.client.ui.administration.templates.TemplatesView;
 import se.streamsource.streamflow.client.ui.administration.users.UsersAdministrationView;
-import se.streamsource.streamflow.client.ui.caze.attachments.AttachmentsView;
 
 import javax.swing.JComponent;
 import javax.swing.JTabbedPane;
@@ -86,7 +86,7 @@ public class TabbedResourceView
 
       addTab( "accesspoints", AdministrationResources.accesspoints_tab, AccessPointsView.class );
       addTab( "proxyusers", AdministrationResources.proxyusers_tab, ProxyUsersView.class );
-      addTab( "attachments", AdministrationResources.templates_tab, AttachmentsView.class );
+      addTab( "attachments", AdministrationResources.templates_tab, TemplatesView.class );
 
       addTab( "forminfo", AdministrationResources.forminfo_tab, FormEditView.class );
       addTab( "pages", AdministrationResources.formpages_tab, FormElementsView.class );

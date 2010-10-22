@@ -48,6 +48,7 @@ import se.streamsource.streamflow.resource.caze.SubmittedFormListDTO;
 import se.streamsource.streamflow.resource.caze.SubmittedFormsListDTO;
 import se.streamsource.streamflow.resource.conversation.ConversationDTO;
 import se.streamsource.streamflow.resource.conversation.MessageDTO;
+import se.streamsource.streamflow.resource.organization.SelectedTemplateValue;
 import se.streamsource.streamflow.resource.overview.ProjectSummaryValue;
 import se.streamsource.streamflow.resource.overview.ProjectSummaryValuex;
 import se.streamsource.streamflow.resource.roles.BooleanDTO;
@@ -123,6 +124,7 @@ public class CommonResourceAssembler
             UserEntityDTO.class,
             ProxyUserListDTO.class,
             ProxyUserDTO.class,
-            SearchValue.class ).visibleIn( Visibility.application );
+            SearchValue.class,
+            SelectedTemplateValue.class).visibleIn( Visibility.application );
    }
 }

@@ -25,6 +25,7 @@ import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.StringValue;
@@ -57,7 +58,8 @@ public class AccessPointModel extends Observable
 
    public void refresh() throws OperationException
    {
-      accessPoint = client.query( "index", AccessPointValue.class );
+      AccessPointValue updatedValue = client.query( "index", AccessPointValue.class );
+      accessPoint = (AccessPointValue) updatedValue.buildWith().prototype();
 // TODO      caseLabelsModel.setLabels( accessPoint.labels().get() );
 
       setChanged();
@@ -189,11 +191,14 @@ public class AccessPointModel extends Observable
 
    public void setTemplate( String id )
    {
-      client.getSubClient( "template" ).postCommand( "settemplate", getStringValue( id ) );
+      ValueBuilder<EntityValue> builder = vbf.newValueBuilder( EntityValue.class );
+      builder.prototype().entity().set( id );
+      client.getSubClient( "template" ).postCommand( "settemplate", builder.newInstance() );
    }
 
    public void removeTemplate()
    {
-      client.getSubClient( "template" ).delete();
+      ValueBuilder<EntityValue> builder = vbf.newValueBuilder( EntityValue.class );
+      client.getSubClient( "template" ).postCommand( "settemplate", builder.newInstance() );
    }
 }

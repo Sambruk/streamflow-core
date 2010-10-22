@@ -30,6 +30,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilder;
 import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.LinkValue;
@@ -41,6 +42,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.CommandTask;
 import se.streamsource.streamflow.client.ui.caze.CaseLabelsDialog;
 import se.streamsource.streamflow.client.ui.caze.CaseLabelsView;
+import se.streamsource.streamflow.client.ui.caze.RemovableLabel;
 import se.streamsource.streamflow.client.ui.workspace.FilterListDialog;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.infrastructure.application.AccessPointValue;
@@ -98,7 +100,7 @@ public class AccessPointView
    public JLabel selectedForm = new JLabel();
 
    JButton templateButton;
-   JLabel selectedTemplate = new JLabel();
+   RemovableLabel selectedTemplate = new RemovableLabel();
 
    private AccessPointModel model;
 
@@ -115,6 +117,7 @@ public class AccessPointView
       setLayout( new BorderLayout() );
 
       accessPointBinder = obf.newObject( StateBinder.class );
+      accessPointBinder.addObserver( this );
       accessPointBinder.addConverter( new StateBinder.Converter()
       {
          public Object toComponent( Object value )
@@ -234,7 +237,7 @@ public class AccessPointView
       builder.add( templateButton, cc.xy( 1, 9, CellConstraints.FILL, CellConstraints.TOP ) );
 
       builder.add( accessPointBinder.bind( selectedTemplate, template.template() ),
-            new CellConstraints( 3, 9, 1, 1, CellConstraints.LEFT, CellConstraints.TOP, new Insets( 5, 0, 0, 0 ) ) );
+            new CellConstraints( 3, 9, 1, 1, CellConstraints.LEFT, CellConstraints.TOP, new Insets( 3, 0, 0, 0 ) ) );
 
       add( panel, BorderLayout.CENTER );
 
@@ -356,9 +359,6 @@ public class AccessPointView
             if (dialog.getSelected() != null)
             {
                model.setTemplate( dialog.getSelected().identity() );
-            } else
-            {
-               model.removeTemplate();
             }
          }
       };
@@ -367,8 +367,26 @@ public class AccessPointView
 
    public void update( Observable o, Object arg )
    {
-      accessPointBinder.updateWith( model.getAccessPointValue() );
-      updateEnabled();
+      if (o == accessPointBinder)
+      {
+         final Property property = (Property) arg;
+         if (property.qualifiedName().name().equals( "template" ))
+         {
+            new CommandTask()
+            {
+               @Override
+               public void command()
+                     throws Exception
+               {
+                  model.removeTemplate();
+               }
+            }.execute();
+         }
+      } else
+      {
+         accessPointBinder.updateWith( model.getAccessPointValue() );
+         updateEnabled();
+      }
    }
 
    private void updateEnabled()

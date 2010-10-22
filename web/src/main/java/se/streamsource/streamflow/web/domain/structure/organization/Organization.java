@@ -21,6 +21,7 @@ import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.domain.structure.Removable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachments;
+import se.streamsource.streamflow.web.domain.structure.attachment.SelectedTemplate;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseTypes;
 import se.streamsource.streamflow.web.domain.structure.form.Forms;
 import se.streamsource.streamflow.web.domain.structure.label.Labels;
@@ -47,6 +48,7 @@ public interface Organization
       Removable,
       AccessPoints,
       ProxyUsers,
-      Attachments
+      Attachments,
+      SelectedTemplate
 {
 }

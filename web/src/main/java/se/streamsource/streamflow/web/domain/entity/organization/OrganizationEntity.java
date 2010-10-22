@@ -30,6 +30,7 @@ import se.streamsource.streamflow.web.domain.entity.form.PossibleFormMoveToQueri
 import se.streamsource.streamflow.web.domain.interaction.gtd.IdGenerator;
 import se.streamsource.streamflow.web.domain.interaction.security.Authorization;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachments;
+import se.streamsource.streamflow.web.domain.structure.attachment.SelectedTemplate;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseTypes;
 import se.streamsource.streamflow.web.domain.structure.form.Forms;
 import se.streamsource.streamflow.web.domain.structure.label.Labels;
@@ -74,7 +75,8 @@ public interface OrganizationEntity
       AccessPoints.Data,
       ProxyUsers.Data,
       Attachments.Data,
-
+      SelectedTemplate.Data,
+           
       //Queries
       OrganizationParticipationsQueries,
       OrganizationQueries,

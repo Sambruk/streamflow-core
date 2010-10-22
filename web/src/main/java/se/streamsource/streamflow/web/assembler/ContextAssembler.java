@@ -157,6 +157,7 @@ import se.streamsource.streamflow.web.resource.organizations.forms.FormResource;
 import se.streamsource.streamflow.web.resource.organizations.forms.FormSignaturesResource;
 import se.streamsource.streamflow.web.resource.organizations.forms.FormsResource;
 import se.streamsource.streamflow.web.resource.organizations.forms.SelectedFormsResource;
+import se.streamsource.streamflow.web.resource.structure.SelectedTemplateResource;
 import se.streamsource.streamflow.web.resource.structure.labels.LabelResource;
 import se.streamsource.streamflow.web.resource.structure.labels.LabelableResource;
 import se.streamsource.streamflow.web.resource.structure.labels.LabelsResource;
@@ -358,6 +359,7 @@ public class ContextAssembler
             SavedSearchesContext.class,
             SavedSearchesResource.class,
             SavedSearchContext.class,
+            SelectedTemplateResource.class,
             SelectedTemplateContext.class,
 
             // Services

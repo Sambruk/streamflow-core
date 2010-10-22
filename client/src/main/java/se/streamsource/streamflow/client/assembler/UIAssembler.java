@@ -122,6 +122,9 @@ import se.streamsource.streamflow.client.ui.administration.surface.AccessPointsM
 import se.streamsource.streamflow.client.ui.administration.surface.AccessPointsView;
 import se.streamsource.streamflow.client.ui.administration.surface.ProxyUsersModel;
 import se.streamsource.streamflow.client.ui.administration.surface.ProxyUsersView;
+import se.streamsource.streamflow.client.ui.administration.templates.SelectedTemplateModel;
+import se.streamsource.streamflow.client.ui.administration.templates.SelectedTemplateView;
+import se.streamsource.streamflow.client.ui.administration.templates.TemplatesView;
 import se.streamsource.streamflow.client.ui.administration.users.UsersAdministrationModel;
 import se.streamsource.streamflow.client.ui.administration.users.UsersAdministrationView;
 import se.streamsource.streamflow.client.ui.caze.CaseActionsModel;
@@ -573,7 +576,12 @@ public class UIAssembler
             SelectLinksDialog.class );
       addTasks( module, TestConnectionTask.class );
 
-      addViews( module, GroupedSelectionDialog.class, SelectionDialog.class );
+      addViews( module, GroupedSelectionDialog.class, SelectionDialog.class, TemplatesView.class );
+
+      addMV( module,
+            SelectedTemplateModel.class,
+            SelectedTemplateView.class);
+
    }
 
    private void search( ModuleAssembly module ) throws AssemblyException

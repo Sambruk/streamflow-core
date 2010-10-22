@@ -36,7 +36,7 @@ public class AttachmentsTableFormatter
    protected String[] columnNames = new String[]{
          text( attachment_name ),
          text( attachment_size ),
-         text( created_column_header ),
+         text( created_column_header )
          };
    protected Class[] columnClasses;
 

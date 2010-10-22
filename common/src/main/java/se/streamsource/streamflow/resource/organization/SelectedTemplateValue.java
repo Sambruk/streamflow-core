@@ -15,24 +15,18 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.server.plugin.authentication;
+package se.streamsource.streamflow.resource.organization;
+
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueComposite;
+import se.streamsource.dci.value.LinkValue;
 
 /**
- * Authenticates a user, given a certain password, against an external system
  */
-public interface Authenticator
+public interface SelectedTemplateValue
+   extends ValueComposite
 {
-   enum error
-   {
-      authentication_bad_username_password,
-      authentication_username_not_unique,
-      authentication_account_locked
-   }
-
-   ;
-
-   void authenticate( UserIdentityValue user );
-
-   UserDetailsValue userdetails( UserIdentityValue user);
-
+   @Optional
+   Property<LinkValue> selectedTemplate();
 }

@@ -22,6 +22,7 @@ import se.streamsource.streamflow.web.context.resource.administration.organizati
 import se.streamsource.streamflow.web.context.structure.DescribableContext;
 import se.streamsource.streamflow.web.resource.cases.AttachmentsResource;
 import se.streamsource.streamflow.web.resource.organizations.forms.FormsResource;
+import se.streamsource.streamflow.web.resource.structure.SelectedTemplateResource;
 import se.streamsource.streamflow.web.resource.structure.labels.LabelsResource;
 import se.streamsource.streamflow.web.resource.structure.labels.SelectedLabelsResource;
 import se.streamsource.streamflow.web.resource.surface.administration.organizations.accesspoints.AccessPointsAdministrationResource;
@@ -101,5 +102,11 @@ public class OrganizationResource
    public void attachments()
    {
       subResource( AttachmentsResource.class );
+   }
+   
+   @SubResource
+   public void template()
+   {
+      subResource( SelectedTemplateResource.class );
    }
 }

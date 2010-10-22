@@ -17,34 +17,63 @@
 
 package se.streamsource.streamflow.web.context.structure;
 
+import static se.streamsource.dci.api.RoleMap.role;
+
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.structure.Module;
-import se.streamsource.dci.api.DeleteContext;
+import org.qi4j.api.value.ValueBuilder;
+
+import se.streamsource.dci.value.EntityValue;
+import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.LinksBuilder;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.StringValue;
+import se.streamsource.streamflow.resource.organization.SelectedTemplateValue;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachments;
 import se.streamsource.streamflow.web.domain.structure.attachment.SelectedTemplate;
-
-import static se.streamsource.dci.api.RoleMap.*;
 
 
 /**
  * The context that handles selection/deselection of an attachment as some form of template.
  */
 public class SelectedTemplateContext
-      implements DeleteContext
 {
    @Structure
    Module module;
 
-   public void settemplate( StringValue id )
+   public SelectedTemplateValue selectedtemplate()
+   {
+      SelectedTemplate.Data template = role( SelectedTemplate.Data.class );
+      ValueBuilder<SelectedTemplateValue> builder = module.valueBuilderFactory().newValueBuilder( SelectedTemplateValue.class );
+      if (template.selectedTemplate().get() != null)
+      {
+         Attachment attachment = template.selectedTemplate().get();
+         ValueBuilder<LinkValue> linkBuilder = module.valueBuilderFactory().newValueBuilder( LinkValue.class );
+         EntityReference ref = EntityReference.getEntityReference( attachment );
+         linkBuilder.prototype().text().set( ((AttachedFile.Data) attachment).name().get() );
+         linkBuilder.prototype().id().set( ref.identity() );
+         linkBuilder.prototype().href().set( ref.identity() );
+         builder.prototype().selectedTemplate().set( linkBuilder.newInstance() );
+      }
+
+      return builder.newInstance();
+   }
+
+   public void settemplate( EntityValue dto )
    {
       SelectedTemplate template = role( SelectedTemplate.class );
-      template.addSelectedTemplate( module.unitOfWorkFactory().currentUnitOfWork().get( Attachment.class, id.string().get() ) );
+
+      String entityReference = dto.entity().get();
+      if (entityReference != null)
+      {
+         template.addSelectedTemplate( module.unitOfWorkFactory().currentUnitOfWork().get( Attachment.class, entityReference ) );
+      } else
+      {
+         template.removeSelectedTemplate( ((SelectedTemplate.Data) template).selectedTemplate().get() );
+      }
    }
 
    public LinksValue possibletemplates( StringValue extensionFilter )
@@ -65,9 +94,4 @@ public class SelectedTemplateContext
       return linksBuilder.newLinks();
    }
 
-   public void delete()
-   {
-      SelectedTemplate template = role( SelectedTemplate.class );
-      template.removeSelectedTemplate( ((SelectedTemplate.Data) template).selectedTemplate().get() );
-   }
 }

@@ -26,11 +26,15 @@ import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeScheme;
+import org.restlet.data.CharacterSet;
+import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
+import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.server.plugin.authentication.Authenticator;
+import se.streamsource.streamflow.server.plugin.authentication.UserDetailsValue;
 import se.streamsource.streamflow.server.plugin.authentication.UserIdentityValue;
 
 /**
@@ -66,9 +70,19 @@ public class AuthenticationRestlet
 
                try
                {
-                  authenticator.authenticate( builder.newInstance() );
-                  response.setStatus( Status.SUCCESS_NO_CONTENT );
-               } catch (ResourceException e)
+                  if ("userdetails".equalsIgnoreCase( request.getResourceRef().getLastSegment() ))
+                  {
+                     UserDetailsValue userDetailsValue = authenticator.userdetails( builder.newInstance() );
+                     StringRepresentation result = new StringRepresentation( userDetailsValue.toJSON(), MediaType.APPLICATION_JSON, Language.DEFAULT, CharacterSet.UTF_8 );
+                     response.setStatus( Status.SUCCESS_OK );
+                     response.setEntity( result );
+                  } else
+                  {
+                     authenticator.authenticate( builder.newInstance() );
+                     response.setStatus( Status.SUCCESS_NO_CONTENT );
+                  }
+               } catch (ResourceException
+                     e)
                {
                   response.setStatus( e.getStatus() );
                   response.setEntity( e.getStatus().getDescription(), MediaType.TEXT_PLAIN );
@@ -76,6 +90,7 @@ public class AuthenticationRestlet
 
             }
          } else
+
          {
             response.setStatus( Status.CLIENT_ERROR_METHOD_NOT_ALLOWED );
          }

@@ -28,6 +28,7 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import java.awt.Color;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
@@ -100,7 +101,7 @@ public class RemovableLabel extends JPanel
       }
 
       button = new JButton( i18n.icon( Icons.drop, 12 ) );
-      button.setBorder( BorderFactory.createEmptyBorder( 0,0,0,0 ) );
+      button.setBorder( BorderFactory.createEmptyBorder( 0, 0, 0, 0 ) );
       button.setFocusable( false );
 
       switch (buttonOrientation)
@@ -168,7 +169,7 @@ public class RemovableLabel extends JPanel
          setBorder( BorderFactory.createEtchedBorder() );
       } else
       {
-         setBorder( BorderFactory.createEmptyBorder( 0,0,0,0 ) );
+         setBorder( BorderFactory.createEmptyBorder( 0, 0, 0, 0 ) );
       }
       repaint();
    }
@@ -217,6 +218,9 @@ public class RemovableLabel extends JPanel
       if (text != null)
       {
          this.setVisible( true );
+      } else
+      {
+         this.setVisible( false );
       }
    }
 
@@ -227,6 +231,20 @@ public class RemovableLabel extends JPanel
       {
          label.setText( this.link.text().get() );
          this.setVisible( true );
+      }
+   }
+
+   public Font getFont()
+   {
+      return label == null ? null : label.getFont();
+   }
+
+
+   public void setFont( Font f )
+   {
+      if (label != null)
+      {
+         label.setFont( f );
       }
    }
 }

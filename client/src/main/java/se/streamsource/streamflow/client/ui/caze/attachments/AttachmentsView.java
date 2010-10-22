@@ -51,7 +51,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
-import javax.swing.table.TableColumn;
 import java.awt.BorderLayout;
 import java.awt.Desktop;
 import java.awt.KeyboardFocusManager;
@@ -104,17 +103,6 @@ public class AttachmentsView
       attachments.setFocusTraversalKeys( KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS,
             KeyboardFocusManager.getCurrentKeyboardFocusManager()
                   .getDefaultFocusTraversalKeys( KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS ) );
-
-      TableColumn nameColumn = new TableColumn( 0 );
-      nameColumn.setHeaderValue( tableFormat.getColumnName( 0 ) );
-      TableColumn sizeColumn = new TableColumn( 1 );
-      sizeColumn.setHeaderValue( tableFormat.getColumnName( 1 ) );
-      TableColumn dateColumn = new TableColumn( 2 );
-      dateColumn.setHeaderValue( tableFormat.getColumnName( 2 ) );
-
-      attachments.getColumnModel().addColumn( nameColumn );
-      attachments.getColumnModel().addColumn( sizeColumn );
-      attachments.getColumnModel().addColumn( dateColumn );
 
       attachments.getColumn( 1 ).setPreferredWidth( 100 );
       attachments.getColumn( 1 ).setMaxWidth( 100 );
