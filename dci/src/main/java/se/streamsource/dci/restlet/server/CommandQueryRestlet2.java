@@ -35,6 +35,7 @@ import org.restlet.Uniform;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
+import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.representation.StringRepresentation;
@@ -84,6 +85,21 @@ public abstract class CommandQueryRestlet2
          // Root of the call
          Reference ref = request.getResourceRef();
          List<String> segments = ref.getScheme().equals( "riap" ) ? ref.getRelativeRef( new Reference( "riap://application/" ) ).getSegments() : ref.getRelativeRef().getSegments();
+
+         // Handle conversion of verbs into standard interactions
+         if (segments.get( segments.size()-1 ).equals(""))
+         {
+            if (request.getMethod().equals( Method.DELETE ))
+            {
+               // Translate DELETE into command "delete"
+               segments.set( segments.size()-1, "delete" );
+            } else if (request.getMethod().equals( Method.PUT ))
+            {
+               // Translate PUT into command "update"
+               segments.set( segments.size()-1, "update" );
+            }
+         }
+
          request.getAttributes().put( "segments", segments );
 
          Usecase usecase = UsecaseBuilder.buildUsecase( getUsecaseName( request ) ).with( request.getMethod().isSafe() ? CacheOptions.ALWAYS : CacheOptions.NEVER ).newUsecase();

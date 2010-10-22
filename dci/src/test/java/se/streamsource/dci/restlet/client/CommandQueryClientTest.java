@@ -53,6 +53,7 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
 import org.restlet.service.MetadataService;
+import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.InteractionConstraintsService;
 import se.streamsource.dci.api.RequiresRoles;
 import se.streamsource.dci.api.Role;
@@ -72,6 +73,7 @@ import se.streamsource.dci.value.StringValue;
 
 import javax.security.auth.Subject;
 import java.io.File;
+import java.io.IOException;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.*;
@@ -86,6 +88,8 @@ public class CommandQueryClientTest
 {
    static public Server server;
    public CommandQueryClient cqc;
+
+   public static String command = null; // Commands will set this
 
    protected ApplicationModelSPI newApplication()
          throws AssemblyException
@@ -217,6 +221,14 @@ public class CommandQueryClientTest
    }
 
    @Test
+   public void testDelete()
+   {
+      cqc.delete();
+
+      assertThat(command, equalTo("delete"));
+   }
+
+   @Test
    public void testSubResourceQueryWithValue()
    {
       CommandQueryClient cqc2 = cqc.getSubClient( "subresource" );
@@ -230,7 +242,7 @@ public class CommandQueryClientTest
    {
       ResourceValue result = cqc.query( "", ResourceValue.class );
 
-      assertThat( result.toJSON(), equalTo( "{\"commands\":[\"commandwithvalue\",\"idempotentcommandwithvalue\"],\"index\":null,\"queries\":[\"querywithvalue\",\"querywithoutvalue\"],\"resources\":[\"resource\"]}"
+      assertThat( result.toJSON(), equalTo( "{\"commands\":[\"delete\",\"commandwithvalue\",\"idempotentcommandwithvalue\"],\"index\":null,\"queries\":[\"querywithvalue\",\"querywithoutvalue\"],\"resources\":[\"resource\"]}"
  ) );
    }
 
@@ -409,6 +421,7 @@ public class CommandQueryClientTest
    }
 
    public static class RootContext
+      implements DeleteContext
    {
       private static int count = 0;
 
@@ -460,6 +473,12 @@ public class CommandQueryClientTest
             throw new IllegalArgumentException( "Wrong argument" );
 
          // Done
+      }
+
+      public void delete() throws ResourceException, IOException
+      {
+         // Ok!
+         command = "delete";
       }
    }
 
