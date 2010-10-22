@@ -547,7 +547,12 @@ public class CommandQueryResource
             {
                try
                {
-                  result(convert(invoke( segment )));
+                  Object result = invoke( segment );
+                  if (result instanceof Representation)
+                  {
+                     result(convert( result ));
+                  } else
+                     response.setEntity( (Representation) result);
                } catch (Throwable throwable)
                {
                   handleException( response, throwable );
