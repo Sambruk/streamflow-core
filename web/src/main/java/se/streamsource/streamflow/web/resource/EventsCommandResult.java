@@ -36,13 +36,6 @@ public class EventsCommandResult
 
    private ThreadLocal<TransactionEvents> transactions = new ThreadLocal<TransactionEvents>();
 
-/*
-   public EventsCommandResult( @Service EventSource source) throws Exception
-   {
-      source.registerListener( this );
-   }
-*/
-
    public Object getResult()
    {
       TransactionEvents transaction = transactions.get();

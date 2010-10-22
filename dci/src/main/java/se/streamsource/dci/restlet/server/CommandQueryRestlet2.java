@@ -18,6 +18,7 @@
 package se.streamsource.dci.restlet.server;
 
 import org.qi4j.api.cache.CacheOptions;
+import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.ConcurrentEntityModificationException;
@@ -31,13 +32,18 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.Uniform;
+import org.restlet.data.CharacterSet;
+import org.restlet.data.Language;
+import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.representation.StringRepresentation;
+import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
 import org.slf4j.LoggerFactory;
 import se.streamsource.dci.api.RoleMap;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -60,6 +66,12 @@ public abstract class CommandQueryRestlet2
    protected
    @Structure
    Module module;
+
+   @Service
+   CommandResult commandResult;
+
+   @Service
+   ResponseWriterFactory responseFactory;
 
    @Override
    public void handle( Request request, Response response )
@@ -84,10 +96,17 @@ public abstract class CommandQueryRestlet2
             Uniform resource = createRoot(request, response);
             resource.handle(request, response);
 
-            if (request.getMethod().isSafe())
+            if (response.getEntity() != null)
                uow.discard();
             else
+            {
                uow.complete();
+
+               Object result = commandResult.getResult();
+               if (result != null)
+                  responseFactory.createWriter( request.getResourceRef().getRelativeRef().getSegments(), result.getClass(), RoleMap.current(), getVariant(request )).write( result, request, response );
+               return ;
+            }
             return;
 
          } catch (ConcurrentEntityModificationException ex)
@@ -150,5 +169,25 @@ public abstract class CommandQueryRestlet2
          response.setEntity( new StringRepresentation( e.getMessage() ) );
          response.setStatus( Status.SERVER_ERROR_INTERNAL );
       }
+   }
+
+   private Variant getVariant( Request request )
+   {
+      List<Language> possibleLanguages = Arrays.asList( Language.ENGLISH );
+      Language language = request.getClientInfo().getPreferredLanguage( possibleLanguages );
+
+      if (language == null)
+         language = Language.ENGLISH;
+
+      List<MediaType> possibleMediaTypes = Arrays.asList( MediaType.TEXT_HTML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM );
+      MediaType responseType = request.getClientInfo().getPreferredMediaType( possibleMediaTypes );
+
+      if (responseType == null)
+         responseType = MediaType.TEXT_HTML;
+
+      Variant variant = new Variant( responseType, language );
+      variant.setCharacterSet( CharacterSet.UTF_8 );
+
+      return variant;
    }
 }

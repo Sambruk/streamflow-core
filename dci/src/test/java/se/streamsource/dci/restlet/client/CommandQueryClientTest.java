@@ -337,19 +337,19 @@ public class CommandQueryClientTest
          super( RootContext.class );
       }
 
-      public void querywithvalue( Request request, Response response ) throws Throwable
+      public void querywithvalue( ) throws Throwable
       {
-         result( invoke( "querywithvalue" ) );
+         result( invoke( ) );
       }
 
-      public void querywithoutvalue( Request request, Response response ) throws Throwable
+      public void querywithoutvalue( ) throws Throwable
       {
-         result( invoke( "querywithoutvalue" ) );
+         result( invoke(  ) );
       }
 
-      public void commandwithvalue( Request request, Response response ) throws Throwable
+      public void commandwithvalue(  ) throws Throwable
       {
-         result( invoke( "commandwithvalue" ) );
+         result( invoke( ) );
       }
 
       public void resource( String currentSegment )
@@ -375,24 +375,24 @@ public class CommandQueryClientTest
          super( SubContext.class, SubContext2.class, DescribableContext.class );
       }
 
-      public void genericquery( Request request, Response response ) throws Throwable
+      public void genericquery(  ) throws Throwable
       {
-         result( invoke( "genericquery" ) );
+         result( invoke( ) );
       }
 
-      public void querywithvalue( Request request, Response response ) throws Throwable
+      public void querywithvalue( ) throws Throwable
       {
-         result( invoke( "querywithvalue" ) );
+         result( invoke( ) );
       }
 
-      public void querywithoutvalue( Request request, Response response ) throws Throwable
+      public void querywithoutvalue() throws Throwable
       {
-         result( invoke( "querywithoutvalue" ) );
+         result( invoke( ) );
       }
 
-      public void commandwithvalue( Request request, Response response ) throws Throwable
+      public void commandwithvalue( ) throws Throwable
       {
-         result( invoke( "commandwithvalue" ) );
+         result( invoke(  ) );
       }
 
       @SubResource

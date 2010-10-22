@@ -311,19 +311,8 @@ public class CommandQueryResource
 
    protected void result( Object resultValue ) throws Exception
    {
-      if (resultValue == null)
+      if (resultValue != null)
       {
-         if (response.getEntity() == null)
-         {
-            // TODO This should not be necessary
-            String json = "{timestamp:0,events:[]}";
-            StringRepresentation rep = new StringRepresentation( json );
-            response.setEntity( rep );
-            response.setStatus( Status.SUCCESS_OK );
-         }
-      } else
-      {
-
          ResponseWriter writer = responseWriterFactory.createWriter( request.getResourceRef().getRelativeRef().getSegments(), resultValue.getClass(), RoleMap.current(), getVariant( request ) );
          writer.write( resultValue, request, response );
       }
@@ -518,14 +507,18 @@ public class CommandQueryResource
             // We have input data - do either command or query
             try
             {
-               Method method = getClass().getMethod( segment, Request.class, Response.class );
+               Method method = getClass().getMethod( segment );
 
                if (contextMethod.getReturnType().equals( Void.TYPE ))
                {
                   // Command
                   try
                   {
-                     method.invoke( this, request, response );
+                     method.invoke( this );
+                  } catch (IllegalArgumentException e)
+                  {
+                     response.setStatus( Status.SERVER_ERROR_INTERNAL);
+
                   } catch (IllegalAccessException e)
                   {
                      response.setStatus( Status.CLIENT_ERROR_NOT_FOUND );
@@ -539,7 +532,7 @@ public class CommandQueryResource
                   // Query
                   try
                   {
-                     method.invoke( this, request, response );
+                     method.invoke( this );
                   } catch (IllegalAccessException e)
                   {
                      response.setStatus( Status.CLIENT_ERROR_NOT_FOUND );
