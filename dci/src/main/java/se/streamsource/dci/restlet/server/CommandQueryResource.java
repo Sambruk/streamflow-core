@@ -550,9 +550,9 @@ public class CommandQueryResource
                   Object result = invoke( segment );
                   if (result instanceof Representation)
                   {
-                     result(convert( result ));
-                  } else
                      response.setEntity( (Representation) result);
+                  } else
+                     result(convert( result ));
                } catch (Throwable throwable)
                {
                   handleException( response, throwable );
