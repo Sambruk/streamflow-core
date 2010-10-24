@@ -48,8 +48,6 @@ public class SelectUsersAndGroupsDialog
 {
    private ValueBuilderFactory vbf;
 
-   Dimension dialogSize = new Dimension( 600, 300 );
-
    private GroupedFilteredList groupList;
    private GroupedFilteredList userList;
 

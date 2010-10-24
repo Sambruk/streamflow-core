@@ -36,8 +36,7 @@ public class OrganizationsResource
 
    public void resource( String segment ) throws ResourceException
    {
-      OrganizationEntity organization = setRole( OrganizationEntity.class, segment );
-      organization.dirty().set( organization.dirty().get() + 1 );
+      setRole( OrganizationEntity.class, segment );
       subResource( OrganizationResource.class );
    }
 }

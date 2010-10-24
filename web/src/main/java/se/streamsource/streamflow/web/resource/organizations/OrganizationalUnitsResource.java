@@ -17,13 +17,13 @@
 package se.streamsource.streamflow.web.resource.organizations;
 
 import org.restlet.resource.ResourceException;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.SubResources;
 import se.streamsource.streamflow.web.context.organizations.OrganizationalUnitsContext;
 import se.streamsource.streamflow.web.context.structure.DescribableContext;
-import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnits;
-
-import static se.streamsource.dci.api.RoleMap.*;
+import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
+import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganization;
 
 /**
  * JAVADOC
@@ -39,7 +39,13 @@ public class OrganizationalUnitsResource
 
    public void resource( String segment ) throws ResourceException
    {
-      findManyAssociation( role(OrganizationalUnits.Data.class).organizationalUnits(), segment );
+      // Add both OU and ownning Organization to RoleMap, but make sure OU takes precedence
+      OrganizationalUnit ou = module.unitOfWorkFactory().currentUnitOfWork().get( OrganizationalUnit.class, segment );
+      OwningOrganization orgOwner = (OwningOrganization) ou;
+      RoleMap.current().set( orgOwner.organization().get() );
+      RoleMap.setCurrentRoleMap( new RoleMap(RoleMap.current()) );
+      RoleMap.current().set( ou );
+
       subResource( OrganizationalUnitResource.class );
    }
 }

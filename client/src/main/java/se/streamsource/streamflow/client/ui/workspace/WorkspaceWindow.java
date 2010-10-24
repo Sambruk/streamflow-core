@@ -88,7 +88,7 @@ public class WorkspaceWindow
                   {
                      public void run()
                      {
-                        frame.getContentPane().add( obf.newObjectBuilder( WorkspaceView.class ).use( accountModel ).newInstance(), "workspace");
+                        frame.getContentPane().add( obf.newObjectBuilder( WorkspaceView.class ).use( accountModel.serverResource().getSubClient("workspace" )).newInstance(), "workspace");
                         cardLayout.show( frame.getContentPane(), "workspace" );
                      }
                   });

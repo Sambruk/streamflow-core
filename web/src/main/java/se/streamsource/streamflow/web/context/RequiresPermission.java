@@ -22,11 +22,9 @@ import se.streamsource.dci.api.InteractionConstraintDeclaration;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.web.domain.interaction.security.Authorization;
 
-import javax.security.auth.Subject;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.security.Principal;
-import java.util.Iterator;
 
 /**
  * JAVADOC
@@ -38,22 +36,15 @@ public @interface RequiresPermission
    String value();
 
    class RequiresPermissionConstraint
-      implements InteractionConstraint<RequiresPermission>
+         implements InteractionConstraint<RequiresPermission>
    {
       public boolean isValid( RequiresPermission requiresPermission, RoleMap roleMap )
       {
          Authorization policy = roleMap.get( Authorization.class );
 
-         Iterator<Principal> principalIterator = roleMap.get( Subject.class ).getPrincipals( Principal.class ).iterator();
-         if (principalIterator.hasNext())
-         {
-            Principal principal = principalIterator.next();
+         Principal principal = roleMap.role( Principal.class );
 
-            return policy.hasPermission( principal.getName(), requiresPermission.value() );
-         } else
-         {
-            return false;
-         }
+         return policy.hasPermission( principal.getName(), requiresPermission.value() );
       }
    }
 }

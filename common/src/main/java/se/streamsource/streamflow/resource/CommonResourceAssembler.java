@@ -30,6 +30,7 @@ import se.streamsource.dci.value.TitledLinkValue;
 import se.streamsource.dci.value.TitledLinksValue;
 import se.streamsource.streamflow.infrastructure.application.AccessPointValue;
 import se.streamsource.streamflow.infrastructure.application.GroupedListItemValue;
+import se.streamsource.streamflow.infrastructure.application.LinkTree;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.application.PageListItemValue;
 import se.streamsource.streamflow.infrastructure.application.TreeNodeValue;
@@ -63,8 +64,7 @@ import se.streamsource.streamflow.resource.user.ProxyUserDTO;
 import se.streamsource.streamflow.resource.user.ProxyUserListDTO;
 import se.streamsource.streamflow.resource.user.RegisterUserCommand;
 import se.streamsource.streamflow.resource.user.ResetPasswordCommand;
-import se.streamsource.streamflow.resource.user.UserEntityDTO;
-import se.streamsource.streamflow.resource.user.UserEntityListDTO;
+import se.streamsource.streamflow.resource.user.UserEntityValue;
 import se.streamsource.streamflow.resource.user.profile.SearchValue;
 
 /**
@@ -110,6 +110,7 @@ public class CommonResourceAssembler
             EndUserCaseDTO.class,
             ConversationDTO.class,
             MessageDTO.class,
+            LinkTree.class,
             TreeValue.class,
             TreeNodeValue.class,
             ProjectSummaryValue.class,
@@ -120,8 +121,7 @@ public class CommonResourceAssembler
             SubmittedFormDTO.class,
             SubmittedFormListDTO.class,
             SubmittedFormsListDTO.class,
-            UserEntityListDTO.class,
-            UserEntityDTO.class,
+            UserEntityValue.class,
             ProxyUserListDTO.class,
             ProxyUserDTO.class,
             SearchValue.class,

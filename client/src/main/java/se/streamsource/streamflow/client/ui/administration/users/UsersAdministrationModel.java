@@ -28,6 +28,7 @@ import org.restlet.representation.FileRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.application.error.ErrorResources;
 import se.streamsource.streamflow.client.OperationException;
@@ -37,8 +38,7 @@ import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.source.helper.Events;
 import se.streamsource.streamflow.resource.user.NewUserCommand;
-import se.streamsource.streamflow.resource.user.UserEntityDTO;
-import se.streamsource.streamflow.resource.user.UserEntityListDTO;
+import se.streamsource.streamflow.resource.user.UserEntityValue;
 
 import java.io.File;
 
@@ -48,7 +48,7 @@ public class UsersAdministrationModel
    @Structure
    ValueBuilderFactory vbf;
 
-   private EventList<UserEntityDTO> eventList = new BasicEventList<UserEntityDTO>();
+   private EventList<UserEntityValue> eventList = new BasicEventList<UserEntityValue>();
 
    private CommandQueryClient client;
 
@@ -57,14 +57,14 @@ public class UsersAdministrationModel
       this.client = client;
    }
 
-   public EventList<UserEntityDTO> getEventList()
+   public EventList<UserEntityValue> getEventList()
    {
       return eventList;
    }
 
    public void refresh()
    {
-      EventListSynch.synchronize( client.query("users", UserEntityListDTO.class).users().get(), eventList );
+      EventListSynch.synchronize( client.query( "index", LinksValue.class ).links().get(), eventList );
    }
 
    public void createUser( NewUserCommand userCommand )
@@ -79,9 +79,9 @@ public class UsersAdministrationModel
       }
    }
 
-   public void changeDisabled( UserEntityDTO user )
+   public void changeDisabled( UserEntityValue user )
    {
-      client.getSubClient(user.entity().get().identity()).postCommand( "changedisabled" );
+      client.getClient( user ).postCommand( "changedisabled" );
    }
 
    public void importUsers( File f )
@@ -95,17 +95,17 @@ public class UsersAdministrationModel
       client.postCommand( "importusers", representation );
    }
 
-   public void resetPassword( UserEntityDTO user, String password )
+   public void resetPassword( UserEntityValue user, String password )
    {
       ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
       builder.prototype().string().set( password );
 
-      client.getSubClient( user.entity().get().identity() ).putCommand( "resetpassword", builder.newInstance() );
+      client.getClient( user ).putCommand( "resetpassword", builder.newInstance() );
    }
 
    public void notifyTransactions( Iterable<TransactionEvents> transactions )
    {
-      if (Events.matches( transactions, Events.withNames("createdUser", "changedEnabled" )))
+      if (Events.matches( transactions, Events.withNames( "createdUser", "changedEnabled" ) ))
          refresh();
    }
 }

@@ -26,6 +26,7 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
 import se.streamsource.streamflow.client.OperationException;
@@ -90,23 +91,20 @@ public class WorkspaceView
 
    private JDialog popup;
 
-   private SearchView searchView;
-
-
    private JPanel topPanel;
    private CardLayout topLayout = new CardLayout();
 
    private CasesView casesView;
    private final ObjectBuilderFactory obf;
-   private final AccountModel accountModel;
+   private final CommandQueryClient client;
 
 
    public WorkspaceView( final @Service ApplicationContext context,
                          final @Structure ObjectBuilderFactory obf,
-                         final @Uses AccountModel accountModel )
+                         final @Uses CommandQueryClient client )
    {
       this.obf = obf;
-      this.accountModel = accountModel;
+      this.client = client;
       setLayout( new BorderLayout() );
       this.setBorder( Borders.createEmptyBorder( "2dlu, 2dlu, 2dlu, 2dlu" ) );
 
@@ -171,9 +169,9 @@ public class WorkspaceView
       searchButtons.add( new JButton( getActionMap().get( "hideSearch" ) ) );
       searchPanel.add( searchButtons, BorderLayout.EAST );
 
-      searchResultTableModel = obf.newObjectBuilder( SearchResultTableModel.class ).use( accountModel.cases() ).newInstance();
+      searchResultTableModel = obf.newObjectBuilder( SearchResultTableModel.class ).use( client.getSubClient( "search" ) ).newInstance();
 
-      searchView = obf.newObjectBuilder( SearchView.class ).use(accountModel.userResource().getSubClient( "workspace" ).getSubClient( "savedsearches" )).newInstance();
+      SearchView searchView = obf.newObjectBuilder( SearchView.class ).use(client.getSubClient( "search" ).getSubClient( "savedsearches" )).newInstance();
       searchField = searchView.getTextField();
       searchField.setAction( getActionMap().get( "search" ) );
       searchPanel.add( searchView, BorderLayout.CENTER );
@@ -186,7 +184,7 @@ public class WorkspaceView
       add( topPanel, BorderLayout.NORTH );
       add( casesView, BorderLayout.CENTER );
 
-      contextView = obf.newObjectBuilder( WorkspaceContextView2.class ).use( accountModel.userResource().getSubClient( "workspace" ) ).newInstance();
+      contextView = obf.newObjectBuilder( WorkspaceContextView2.class ).use( client.getSubClient( "context" )).newInstance();
       JList workspaceContextList = contextView.getWorkspaceContextList();
       workspaceContextList.addListSelectionListener( new ListSelectionListener()
       {
@@ -413,7 +411,7 @@ public class WorkspaceView
                   if (selectedRow != -1)
                   {
                      String id = (String) caseTable.getModel().getValueAt( selectedRow, 5 );
-                     casesView.showCase( accountModel.cases().getSubClient( id ) );
+                     casesView.showCase( client.getSubClient( "cases" ).getSubClient( id ) );
                   }
                }
             } catch (Exception e1)

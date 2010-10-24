@@ -25,6 +25,7 @@ import org.restlet.data.Reference;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.LinksValue;
+import se.streamsource.dci.value.TitledLinkValue;
 import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.ui.ContextItem;
@@ -73,14 +74,20 @@ public class WorkspaceContextModel2
       }.execute();
 
       List<ContextItem> list = new ArrayList<ContextItem>();
-      list.add( new ContextItem( "", text( drafts_node ), "draft", -1, client.getSubClient( "user" ).getSubClient( "drafts" ) ) );
 
-      CommandQueryClient projectClient = client.getSubClient( "projects" );
-      LinksValue projects = projectClient.query( "index", LinksValue.class );
-      for (LinkValue project : projects.links().get())
+      LinksValue projects = client.query( "index", LinksValue.class );
+      for (LinkValue contextLink : projects.links().get())
       {
-         list.add( new ContextItem( project.text().get(), text( inboxes_node ), "inbox", -1, projectClient.getClient( project ).getSubClient( "inbox" ) ) );
-         list.add( new ContextItem( project.text().get(), text( assignments_node ), "assign", -1, projectClient.getClient( project ).getSubClient( "assignments" ) ) );
+         if (contextLink.rel().get().equals("drafts"))
+         {
+            list.add( new ContextItem( "", text( drafts_node ), "draft", -1, client.getClient( contextLink ) ) );
+         } else if (contextLink.rel().get().equals("inbox"))
+         {
+            list.add( new ContextItem( contextLink.text().get(), text( inboxes_node ), "inbox", -1, client.getClient( contextLink ) ) );
+         } else if (contextLink.rel().get().equals("assignments"))
+         {
+            list.add( new ContextItem( contextLink.text().get(), text( assignments_node ), "assign", -1, client.getClient( contextLink ) ) );
+         }
       }
 
       EventListSynch.synchronize( list, items );

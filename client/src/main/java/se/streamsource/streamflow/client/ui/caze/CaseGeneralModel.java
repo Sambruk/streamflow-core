@@ -26,6 +26,7 @@ import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.ResourceValue;
@@ -154,6 +155,19 @@ public class CaseGeneralModel extends Observable implements Refreshable
       try
       {
          client.postLink( selected );
+
+      } catch (ResourceException e)
+      {
+         throw new OperationException(
+               WorkspaceResources.could_not_perform_operation, e );
+      }
+   }
+
+   public void removeCaseType( )
+   {
+      try
+      {
+         client.postCommand( "casetype", vbf.newValue( EntityValue.class ));
 
       } catch (ResourceException e)
       {

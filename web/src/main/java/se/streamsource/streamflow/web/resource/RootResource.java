@@ -18,13 +18,12 @@ package se.streamsource.streamflow.web.resource;
 
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.SubResource;
-import se.streamsource.streamflow.web.context.ServicesContext;
-import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
 import se.streamsource.streamflow.web.domain.entity.user.UsersEntity;
-import se.streamsource.streamflow.web.resource.cases.CasesResource;
-import se.streamsource.streamflow.web.resource.organizations.OrganizationsResource;
+import se.streamsource.streamflow.web.resource.account.AccountResource;
+import se.streamsource.streamflow.web.resource.administration.AdministrationResource;
+import se.streamsource.streamflow.web.resource.overview.OverviewResource;
 import se.streamsource.streamflow.web.resource.surface.SurfaceResource;
-import se.streamsource.streamflow.web.resource.users.UsersResource;
+import se.streamsource.streamflow.web.resource.workspace.WorkspaceResource;
 
 /**
  * JAVADOC
@@ -33,23 +32,28 @@ public class RootResource
       extends CommandQueryResource
 {
    @SubResource
-   public void users()
+   public void account()
    {
-      setRole( UsersEntity.class, UsersEntity.USERS_ID );
-      subResource( UsersResource.class );
+      subResource( AccountResource.class );
    }
 
    @SubResource
-   public void cases()
+   public void workspace()
    {
-      subResource( CasesResource.class );
+      subResource( WorkspaceResource.class );
    }
 
    @SubResource
-   public void organizations()
+   public void overview()
    {
-      setRole( OrganizationsEntity.class, OrganizationsEntity.ORGANIZATIONS_ID );
-      subResource( OrganizationsResource.class );
+      subResource( OverviewResource.class );
+   }
+
+   @SubResource
+   public void administration()
+   {
+      setRole(UsersEntity.class, UsersEntity.USERS_ID);
+      subResource( AdministrationResource.class );
    }
 
    @SubResource
@@ -59,10 +63,37 @@ public class RootResource
       subResource( SurfaceResource.class );
    }
 
-   @SubResource
-   public void services()
-   {
-      subResourceContexts( ServicesContext.class );
-   }
+/*
+@SubResource
+public void users()
+{
+   setRole( UsersEntity.class, UsersEntity.USERS_ID );
+   subResource( UsersResource.class );
+}
 
+@SubResource
+public void cases()
+{
+   subResource( WorkspaceCasesResource.class );
+}
+
+@SubResource
+public void organizations()
+{
+   setRole( OrganizationsEntity.class, OrganizationsEntity.ORGANIZATIONS_ID );
+   subResource( OrganizationsResource.class );
+}
+
+@SubResource
+public void surface()
+{
+   setRole( UsersEntity.class, UsersEntity.USERS_ID );
+   subResource( SurfaceResource.class );
+}
+
+@SubResource
+public void services()
+{
+   subResourceContexts( ServicesContext.class );
+}*/
 }

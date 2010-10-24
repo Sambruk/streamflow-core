@@ -94,19 +94,6 @@ public class AccountModel extends Observable
       }
    }
 
-   public CommandQueryClient userResource()
-   {
-      UnitOfWork uow = uowf.newUnitOfWork();
-
-      try
-      {
-         return uow.get( account ).user( client );
-      } finally
-      {
-         uow.discard();
-      }
-   }
-
    public CommandQueryClient serverResource()
    {
       UnitOfWork uow = uowf.newUnitOfWork();
@@ -143,20 +130,5 @@ public class AccountModel extends Observable
          uow.discard();
          throw ex;
       }
-   }
-
-   public CommandQueryClient cases()
-   {
-      return serverResource().getSubClient( "cases" );
-   }
-
-   public CommandQueryClient overview()
-   {
-      return userResource().getSubClient( "overview" );
-   }
-
-   public CommandQueryClient administration()
-   {
-      return userResource().getSubClient( "administration" );
    }
 }

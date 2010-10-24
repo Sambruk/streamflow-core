@@ -22,6 +22,7 @@ import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 import se.streamsource.streamflow.domain.structure.Describable;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 
 @Mixins(SavedSearch.Mixin.class)
@@ -34,18 +35,22 @@ public interface SavedSearch
    {
       @Optional
       Property<String> query();
+
+      void changedQuery( DomainEvent event, String query);
    }
 
    abstract class Mixin
-         implements SavedSearch
+         implements SavedSearch, Data
    {
-      @This
-      Data data;
-
       public void changeQuery( String query )
       {
-         if (!data.query().get().equals( query ))
-            data.query().set( query );
+         if (!query().get().equals( query ))
+            changedQuery(DomainEvent.CREATE, query );
+      }
+
+      public void changedQuery( DomainEvent event, String query )
+      {
+         query().set(query);
       }
    }
 }

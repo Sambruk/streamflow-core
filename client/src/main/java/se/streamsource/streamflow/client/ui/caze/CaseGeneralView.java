@@ -348,6 +348,17 @@ public class CaseGeneralView extends JScrollPane implements Observer, Transactio
                   model.changeDueOn( (Date) property.get() );
                }
             }.execute();
+         } else if (property.qualifiedName().name().equals( "caseType" ))
+         {
+            new CommandTask()
+            {
+               @Override
+               public void command()
+                  throws Exception
+               {
+                  model.removeCaseType();
+               }
+            }.execute();
          }
       } else
       {

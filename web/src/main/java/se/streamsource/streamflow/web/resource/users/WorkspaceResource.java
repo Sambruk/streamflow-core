@@ -19,15 +19,15 @@ package se.streamsource.streamflow.web.resource.users;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.SubResource;
 import se.streamsource.streamflow.web.context.users.workspace.WorkspaceContext;
-import se.streamsource.streamflow.web.resource.users.workspace.SavedSearchesResource;
-import se.streamsource.streamflow.web.resource.users.workspace.WorkspaceProjectsResource;
-import se.streamsource.streamflow.web.resource.users.workspace.WorkspaceUserResource;
+import se.streamsource.streamflow.web.resource.workspace.cases.WorkspaceCasesResource;
+import se.streamsource.streamflow.web.resource.workspace.context.WorkspaceContextResource;
+import se.streamsource.streamflow.web.resource.workspace.search.WorkspaceSearchResource;
 
 /**
  * JAVADOC
  */
 public class WorkspaceResource
-   extends CommandQueryResource
+      extends CommandQueryResource
 {
    public WorkspaceResource()
    {
@@ -35,20 +35,20 @@ public class WorkspaceResource
    }
 
    @SubResource
-   public void user( )
+   public void context()
    {
-      subResource( WorkspaceUserResource.class );
+      subResource( WorkspaceContextResource.class );
    }
 
    @SubResource
-   public void projects()
+   public void search()
    {
-      subResource( WorkspaceProjectsResource.class );
+      subResource( WorkspaceSearchResource.class );
    }
 
    @SubResource
-   public void savedsearches()
+   public void cases()
    {
-      subResource( SavedSearchesResource.class );
+      subResource( WorkspaceCasesResource.class );
    }
 }

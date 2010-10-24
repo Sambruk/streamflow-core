@@ -215,13 +215,7 @@ public class RemovableLabel extends JPanel
    public void setText( String text )
    {
       label.setText( text );
-      if (text != null)
-      {
-         this.setVisible( true );
-      } else
-      {
-         this.setVisible( false );
-      }
+      this.setVisible( text != null );
    }
 
    public void setLinkValue( LinkValue link )
@@ -230,8 +224,8 @@ public class RemovableLabel extends JPanel
       if (link != null)
       {
          label.setText( this.link.text().get() );
-         this.setVisible( true );
       }
+      this.setVisible( link != null );
    }
 
    public Font getFont()

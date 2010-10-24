@@ -43,6 +43,7 @@ import se.streamsource.streamflow.util.Strings;
 
 import javax.swing.ActionMap;
 import java.awt.Component;
+import java.awt.Dimension;
 
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 
@@ -141,6 +142,7 @@ public class FormsView
    {
       final LinkValue selected = (LinkValue) list.getSelectedValue();
       final SelectionDialog dialog = possibleMoveToDialogs.use(model.getPossibleMoveTo()).newInstance();
+      dialog.setPreferredSize( new Dimension(200,300) );
 
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.choose_move_to ) );
 

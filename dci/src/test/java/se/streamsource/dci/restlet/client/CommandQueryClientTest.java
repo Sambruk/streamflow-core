@@ -242,7 +242,7 @@ public class CommandQueryClientTest
    {
       ResourceValue result = cqc.query( "", ResourceValue.class );
 
-      assertThat( result.toJSON(), equalTo( "{\"commands\":[\"delete\",\"commandwithvalue\",\"idempotentcommandwithvalue\"],\"index\":null,\"queries\":[\"querywithvalue\",\"querywithoutvalue\"],\"resources\":[\"resource\"]}"
+      assertThat( result.toJSON(), equalTo( "{\"commands\":[\"delete\",\"commandwithvalue\",\"idempotentcommandwithvalue\"],\"index\":null,\"queries\":[\"querywithvalue\",\"querywithoutvalue\"],\"resources\":[]}"
  ) );
    }
 

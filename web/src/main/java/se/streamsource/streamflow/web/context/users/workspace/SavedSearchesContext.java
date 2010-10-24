@@ -21,8 +21,6 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.structure.Module;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
-import se.streamsource.dci.value.LinksValue;
-import se.streamsource.streamflow.infrastructure.application.TitledLinksBuilder;
 import se.streamsource.streamflow.resource.user.profile.SearchValue;
 import se.streamsource.streamflow.web.domain.interaction.profile.SavedSearches;
 import se.streamsource.streamflow.web.domain.structure.user.profile.SavedSearch;
@@ -31,21 +29,15 @@ import se.streamsource.streamflow.web.domain.structure.user.profile.SavedSearch;
  * JAVADOC
  */
 public class SavedSearchesContext
-      implements IndexContext<LinksValue>
+      implements IndexContext<Iterable<SavedSearch>>
 {
    @Structure
    Module module;
 
-   public LinksValue index()
+   public Iterable<SavedSearch> index()
    {
-      TitledLinksBuilder builder = new TitledLinksBuilder( module.valueBuilderFactory() );
       SavedSearches.Data searches = RoleMap.role( SavedSearches.Data.class );
-      for (SavedSearch search : searches.searches().toList())
-      {
-         builder.addDescribable( search, ((SavedSearch.Data) search).query().get() );
-      }
-
-      return builder.newLinks();
+      return searches.searches();
    }
 
    public void createsearch( SearchValue search )

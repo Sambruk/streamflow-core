@@ -303,7 +303,7 @@ public class StreamflowApplication
    @Action
    public void myProfile()
    {
-      ProfileView profile = obf.newObjectBuilder( ProfileView.class ).use( accountSelector.getSelectedAccount().userResource()).newInstance();
+      ProfileView profile = obf.newObjectBuilder( ProfileView.class ).use( accountSelector.getSelectedAccount().serverResource().getSubClient( "account" ).getSubClient( "profile" )).newInstance();
       dialogs.showOkDialog( getMainFrame(), profile, text( AccountResources.profile_title ) );
    }
 

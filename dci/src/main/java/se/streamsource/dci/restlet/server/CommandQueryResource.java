@@ -43,17 +43,20 @@ import org.qi4j.spi.value.ValueDescriptor;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
+import org.restlet.Uniform;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Form;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Parameter;
+import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
 import org.slf4j.LoggerFactory;
+import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.InteractionConstraints;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.ResourceValue;
@@ -73,7 +76,7 @@ import static org.qi4j.spi.util.Annotations.*;
  * JAVADOC
  */
 public class CommandQueryResource
-      extends Restlet
+      implements Uniform
 {
    private Map<Class, List<Method>> contextClassMethods = new ConcurrentHashMap<Class, List<Method>>();
 
@@ -115,18 +118,15 @@ public class CommandQueryResource
       this.contextClasses = contextClasses;
    }
 
-   @Override
    public final void handle( Request request, Response response )
    {
-      RoleMap.setCurrentRoleMap( new RoleMap(RoleMap.current()) );
+      RoleMap.setCurrentRoleMap( new RoleMap( RoleMap.current() ) );
 
       this.request = request;
       this.response = response;
 
       // Find remaining segments
-      List<String> segments = (List<String>) request.getAttributes().get( "segments" );
-
-      super.handle( request, response );
+      List<String> segments = getSegments( request );
 
       if (segments.size() > 0)
       {
@@ -194,7 +194,7 @@ public class CommandQueryResource
 
             for (Method method : methods)
             {
-               if (!(method.getDeclaringClass().isAssignableFrom( TransientComposite.class )))
+               if (!method.isSynthetic() && !(method.getDeclaringClass().isAssignableFrom( TransientComposite.class )))
                   if (methodConstraints.isValid( method, roleMap ))
                      if (method.getReturnType().equals( Void.TYPE ))
                      {
@@ -207,17 +207,7 @@ public class CommandQueryResource
          }
 
          // Add subresources available from this resource
-         if (SubResources.class.isAssignableFrom( getClass() ))
-         {
-            try
-            {
-               Method resourceMethod = getClass().getMethod( "resource", String.class );
-               subResources.add( resourceMethod );
-            } catch (NoSuchMethodException e)
-            {
-               e.printStackTrace();
-            }
-         } else
+         if (!SubResources.class.isAssignableFrom( getClass() ))
          {
             Iterable<Method> methods = Arrays.asList( getClass().getMethods() );
 
@@ -231,7 +221,7 @@ public class CommandQueryResource
          Value index = null;
          try
          {
-            index = convert(invoke( "index" ));
+            index = convert( invoke( "index" ) );
 
          } catch (Throwable e)
          {
@@ -306,7 +296,7 @@ public class CommandQueryResource
          }
       }
 
-      throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
+      throw new ResourceException( Status.CLIENT_ERROR_NOT_FOUND );
    }
 
    protected void result( Object resultValue ) throws Exception
@@ -320,12 +310,12 @@ public class CommandQueryResource
 
    protected Object invoke() throws Throwable
    {
-      return invoke(request.getResourceRef().getLastSegment());
+      return invoke( request.getResourceRef().getLastSegment() );
    }
 
-   protected Object invoke(String interactionName) throws Throwable
+   protected Object invoke( String interactionName ) throws Throwable
    {
-      Object context = createContext( interactionName);
+      Object context = createContext( interactionName );
 
       Method method = getInteractionMethod( interactionName );
 
@@ -403,12 +393,12 @@ public class CommandQueryResource
 
    protected void subResource( Class<? extends CommandQueryResource> subResourceClass )
    {
-      module.objectBuilderFactory().newObjectBuilder( subResourceClass ).use( getContext() ).newInstance().handle( request, response );
+      module.objectBuilderFactory().newObject( subResourceClass ).handle( request, response );
    }
 
    protected void subResourceContexts( Class<?>... contextClasses )
    {
-      module.objectBuilderFactory().newObjectBuilder( DefaultCommandQueryResource.class ).use( getContext(), contextClasses ).newInstance().handle( request, response );
+      module.objectBuilderFactory().newObjectBuilder( DefaultCommandQueryResource.class ).use( contextClasses ).newInstance().handle( request, response );
    }
 
    protected Method getInteractionMethod( String methodName ) throws ResourceException
@@ -430,20 +420,20 @@ public class CommandQueryResource
       return (List<String>) request.getAttributes().get( "segments" );
    }
 
-   protected <T> T setRole(Class<T> entityClass, String id, Class... roleClasses)
+   protected <T> T setRole( Class<T> entityClass, String id, Class... roleClasses )
          throws ResourceException
    {
       try
       {
          T composite = module.unitOfWorkFactory().currentUnitOfWork().get( entityClass, id );
-         RoleMap.current().set( composite, roleClasses);
+         RoleMap.current().set( composite, roleClasses );
          return composite;
       } catch (EntityTypeNotFoundException e)
       {
-         throw new ResourceException( Status.CLIENT_ERROR_NOT_FOUND);
+         throw new ResourceException( Status.CLIENT_ERROR_NOT_FOUND );
       } catch (NoSuchEntityException e)
       {
-         throw new ResourceException( Status.CLIENT_ERROR_NOT_FOUND);
+         throw new ResourceException( Status.CLIENT_ERROR_NOT_FOUND );
       }
    }
 
@@ -452,14 +442,14 @@ public class CommandQueryResource
    {
       for (T entity : manyAssociation)
       {
-         if (entity.toString().equals(id))
+         if (entity.toString().equals( id ))
          {
             RoleMap.current().set( entity );
             return entity;
          }
       }
 
-      throw new ResourceException( Status.CLIENT_ERROR_NOT_FOUND);
+      throw new ResourceException( Status.CLIENT_ERROR_NOT_FOUND );
    }
 
    protected void findList( List<?> list, String indexString )
@@ -467,12 +457,12 @@ public class CommandQueryResource
       Integer index = Integer.decode( indexString );
 
       if (index < 0 || index >= list.size())
-         throw new ResourceException( Status.CLIENT_ERROR_NOT_FOUND);
+         throw new ResourceException( Status.CLIENT_ERROR_NOT_FOUND );
 
       RoleMap.current().set( index, Integer.class );
 
       Object value = list.get( index );
-      RoleMap.current().set( value);
+      RoleMap.current().set( value );
 
    }
 
@@ -517,7 +507,7 @@ public class CommandQueryResource
                      method.invoke( this );
                   } catch (IllegalArgumentException e)
                   {
-                     response.setStatus( Status.SERVER_ERROR_INTERNAL);
+                     response.setStatus( Status.SERVER_ERROR_INTERNAL );
 
                   } catch (IllegalAccessException e)
                   {

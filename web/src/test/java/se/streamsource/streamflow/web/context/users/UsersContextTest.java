@@ -24,6 +24,7 @@ import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.resource.user.NewUserCommand;
 import se.streamsource.streamflow.web.context.ContextTest;
+import se.streamsource.streamflow.web.context.administration.UsersContext;
 import se.streamsource.streamflow.web.context.organizations.OrganizationUserContext;
 import se.streamsource.streamflow.web.context.organizations.OrganizationUsersContext;
 import se.streamsource.streamflow.web.context.organizations.OrganizationsContext;
@@ -51,7 +52,7 @@ public class UsersContextTest
          UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
          RoleMap.newCurrentRoleMap();
          playRole( Users.class, UsersEntity.USERS_ID);
-         context(UsersContext.class).createuser( value( NewUserCommand.class, "{'username':'"+name+"','password':'"+name+"'}") );
+         context( UsersContext.class).createuser( value( NewUserCommand.class, "{'username':'"+name+"','password':'"+name+"'}") );
          uow.complete();
       }
 
@@ -92,7 +93,7 @@ public class UsersContextTest
          RoleMap.newCurrentRoleMap();
          playRole( Users.class, UsersEntity.USERS_ID);
 
-         Assert.assertThat( valueContains( context(UsersContext.class).users(), "test" ), equalTo(true ));
+         Assert.assertThat( valueContains( context(UsersContext.class).index(), "test" ), equalTo(true ));
 
          uow.discard();
       }

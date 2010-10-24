@@ -23,7 +23,6 @@ import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.domain.structure.Removable;
-import se.streamsource.streamflow.web.domain.entity.Aggregate;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
 import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypesQueries;
 import se.streamsource.streamflow.web.domain.entity.form.PossibleFormMoveToQueries;
@@ -50,7 +49,7 @@ import se.streamsource.streamflow.web.domain.structure.user.ProxyUsers;
  */
 @Mixins({OrganizationEntity.LifecycleMixin.class, RolePolicyAuthorization.class})
 public interface OrganizationEntity
-      extends DomainEntity, Aggregate,
+      extends DomainEntity,
 
       // Interactions
       Authorization,

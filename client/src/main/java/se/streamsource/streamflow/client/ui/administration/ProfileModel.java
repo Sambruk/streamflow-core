@@ -64,7 +64,7 @@ public class ProfileModel
 
    public void refresh()
    {
-      contact = client.getSubClient( "contact" ).query("index", ContactValue.class ).<ContactValue>buildWith().prototype();
+      contact = client.query("index", ContactValue.class ).<ContactValue>buildWith().prototype();
       setChanged();
       notifyObservers();
    }
@@ -101,7 +101,7 @@ public class ProfileModel
       ValueBuilder<StringValue> builder = vbf
             .newValueBuilder( StringValue.class );
       builder.prototype().string().set( newName );
-      client.getSubClient( "contact" ).putCommand( "changename", builder.newInstance() );
+      client.putCommand( "changename", builder.newInstance() );
    }
 
    public void changePhoneNumber( String newPhoneNumber )
@@ -109,7 +109,7 @@ public class ProfileModel
       ValueBuilder<ContactPhoneValue> builder = vbf
             .newValueBuilder( ContactPhoneValue.class );
       builder.prototype().phoneNumber().set( newPhoneNumber );
-      client.getSubClient( "contact" ).putCommand( "changephonenumber", builder.newInstance() );
+      client.putCommand( "changephonenumber", builder.newInstance() );
    }
 
    public void changeEmailAddress( String newEmailAddress )
@@ -117,6 +117,6 @@ public class ProfileModel
       ValueBuilder<ContactEmailValue> builder = vbf
             .newValueBuilder( ContactEmailValue.class );
       builder.prototype().emailAddress().set( newEmailAddress );
-      client.getSubClient( "contact" ).putCommand( "changeemailaddress", builder.newInstance() );
+      client.putCommand( "changeemailaddress", builder.newInstance() );
    }
 }

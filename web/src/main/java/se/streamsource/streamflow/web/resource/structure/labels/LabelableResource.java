@@ -19,8 +19,8 @@ package se.streamsource.streamflow.web.resource.structure.labels;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.SubResources;
-import se.streamsource.streamflow.web.context.structure.labels.LabelableContext;
-import se.streamsource.streamflow.web.context.structure.labels.LabeledContext;
+import se.streamsource.streamflow.web.context.workspace.cases.LabelableContext;
+import se.streamsource.streamflow.web.context.workspace.cases.LabeledContext;
 import se.streamsource.streamflow.web.domain.structure.label.Labelable;
 
 import static se.streamsource.dci.api.RoleMap.*;

@@ -80,7 +80,6 @@ public interface DomainEventFactoryService
          prototype.entity().set( entity.identity().get() );
 
          // Take user either from Subject or UoW
-         UnitOfWork uow = uowf.currentUnitOfWork();
          try
          {
             Principal principal = RoleMap.role( Principal.class );
@@ -91,6 +90,8 @@ public interface DomainEventFactoryService
          }
 
          prototype.identity().set( idGenerator.generate( DomainEvent.class ) );
+
+         UnitOfWork uow = uowf.currentUnitOfWork();
          prototype.usecase().set( uow.usecase().name() );
          prototype.version().set( version );
 

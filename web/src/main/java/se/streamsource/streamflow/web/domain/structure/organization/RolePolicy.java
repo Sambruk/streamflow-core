@@ -27,12 +27,11 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.web.domain.structure.group.Participant;
 import se.streamsource.streamflow.web.domain.structure.role.Role;
 
-import javax.security.auth.Subject;
-import java.security.AccessController;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,13 +49,13 @@ public interface RolePolicy
 
    void revokeRole( Participant participant, Role role );
 
-   void revokeRoles(Participant participant);
+   void revokeRoles( Participant participant );
 
    void grantAdministratorToCurrentUser();
 
    boolean participantHasRole( Participant participant, Role role );
 
-   boolean participantHasPermission( String participant, String permission);
+   boolean participantHasPermission( String participant, String permission );
 
    List<Participant> participantsWithRole( Role role );
 
@@ -115,15 +114,11 @@ public interface RolePolicy
 
       public void grantAdministratorToCurrentUser()
       {
-         Subject subject = Subject.getSubject( AccessController.getContext() );
-         if (subject != null)
-         {
-            Principal principal = subject.getPrincipals().iterator().next();
-            Participant user = uowf.currentUnitOfWork().get( Participant.class, principal.getName() );
-            Organization org = orgOwner.organization().get();
-            Role administrator = org.getAdministratorRole();
-            grantRole( user, administrator );
-         }
+         Principal principal = RoleMap.role( Principal.class );
+         Participant user = uowf.currentUnitOfWork().get( Participant.class, principal.getName() );
+         Organization org = orgOwner.organization().get();
+         Role administrator = org.getAdministratorRole();
+         grantRole( user, administrator );
       }
 
       public void grantedRole( DomainEvent event, Participant participant, Role role )
@@ -239,7 +234,7 @@ public interface RolePolicy
             {
                if (participantRole.equals( roleRef ))
                {
-                  participants.add( uow.get( Participant.class, participantRolesValue.participant().get().identity()) );
+                  participants.add( uow.get( Participant.class, participantRolesValue.participant().get().identity() ) );
                   break;
                }
             }

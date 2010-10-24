@@ -16,14 +16,11 @@
 
 package se.streamsource.streamflow.web.rest;
 
-import org.restlet.Application;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Uniform;
 import org.restlet.data.Language;
 import org.restlet.data.Preference;
-import org.restlet.data.Reference;
-import org.restlet.security.User;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.restlet.server.CommandQueryRestlet2;
 import se.streamsource.streamflow.web.application.security.ProxyUserPrincipal;
@@ -31,7 +28,7 @@ import se.streamsource.streamflow.web.domain.structure.user.ProxyUser;
 import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
 import se.streamsource.streamflow.web.resource.RootResource;
 
-import javax.security.auth.Subject;
+import java.security.Principal;
 import java.util.List;
 import java.util.Locale;
 
@@ -39,7 +36,7 @@ import java.util.Locale;
  * JAVADOC
  */
 public class StreamflowRestlet
-   extends CommandQueryRestlet2
+      extends CommandQueryRestlet2
 {
    @Override
    protected Uniform createRoot( Request request, Response response )
@@ -52,28 +49,20 @@ public class StreamflowRestlet
    private void initRoleMap( Request request, RoleMap roleMap )
    {
       roleMap.set( resolveRequestLocale( request ), Locale.class );
-      roleMap.set( request.getResourceRef(), Reference.class );
-      roleMap.set( getApplication(), Application.class );
 
       // TODO Should we really store user AND subject in role map?
-      Subject subject = new Subject();
-      subject.getPrincipals().addAll( request.getClientInfo().getPrincipals() );
-
-      User user = request.getClientInfo().getUser();
-      if (user != null)
+      for (Principal principal : request.getClientInfo().getPrincipals())
       {
-         subject.getPrivateCredentials().add( user.getSecret() );
-      }
+         roleMap.set( principal );
 
-      roleMap.set( subject );
+         String name = principal.getName();
+         UserAuthentication authentication = module.unitOfWorkFactory().currentUnitOfWork().get( UserAuthentication.class, name );
+         roleMap.set( authentication );
 
-      String name = subject.getPrincipals().iterator().next().getName();
-      UserAuthentication authentication = module.unitOfWorkFactory().currentUnitOfWork().get( UserAuthentication.class, name );
-      roleMap.set(authentication);
-
-      if ( authentication instanceof ProxyUser)
-      {
-         subject.getPrincipals().add( new ProxyUserPrincipal( name ));
+         if (authentication instanceof ProxyUser)
+         {
+            roleMap.set( new ProxyUserPrincipal( name ) );
+         }
       }
    }
 
@@ -104,4 +93,5 @@ public class StreamflowRestlet
             locale = Locale.getDefault();
       }
       return locale;
-   }}
+   }
+}

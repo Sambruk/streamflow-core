@@ -20,6 +20,7 @@ package se.streamsource.streamflow.web.context.structure;
 import org.qi4j.api.constraint.Constraints;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.library.constraints.annotation.MaxLength;
+import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.StringValueMaxLength;
@@ -31,6 +32,7 @@ import se.streamsource.streamflow.domain.structure.Describable;
 @Mixins(DescribableContext.Mixin.class)
 @Constraints(StringValueMaxLength.class)
 public interface DescribableContext
+   extends Context
 {
    public void changedescription( @MaxLength(50) StringValue stringValue );
 

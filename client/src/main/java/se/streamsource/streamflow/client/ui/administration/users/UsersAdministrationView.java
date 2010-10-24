@@ -41,7 +41,7 @@ import se.streamsource.streamflow.client.ui.ResetPasswordDialog;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
-import se.streamsource.streamflow.resource.user.UserEntityDTO;
+import se.streamsource.streamflow.resource.user.UserEntityValue;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -67,7 +67,7 @@ public class UsersAdministrationView
    DialogService dialogs;
 
    JXTable usersTable;
-   private EventJXTableModel<UserEntityDTO> tableModel;
+   private EventJXTableModel<UserEntityValue> tableModel;
 
    public UsersAdministrationView( @Service ApplicationContext context, @Uses CommandQueryClient client, @Structure ObjectBuilderFactory obf)
    {
@@ -76,14 +76,14 @@ public class UsersAdministrationView
 
       this.model = obf.newObjectBuilder( UsersAdministrationModel.class ).use( client ).newInstance();
 
-      TableFormat<UserEntityDTO> userAdminTableFormat = new WritableTableFormat<UserEntityDTO>()
+      TableFormat<UserEntityValue> userAdminTableFormat = new WritableTableFormat<UserEntityValue>()
       {
-         public boolean isEditable( UserEntityDTO userEntityDTO, int i )
+         public boolean isEditable( UserEntityValue userEntityDTO, int i )
          {
             return i == 0;
          }
 
-         public UserEntityDTO setColumnValue( UserEntityDTO userEntityDTO, Object o, int i )
+         public UserEntityValue setColumnValue( UserEntityValue userEntityDTO, Object o, int i )
          {
             if (i == 0)
                model.changeDisabled( userEntityDTO );
@@ -101,20 +101,20 @@ public class UsersAdministrationView
             return new String[]{text( AdministrationResources.user_enabled_label ), text( AdministrationResources.username_label )}[i];
          }
 
-         public Object getColumnValue( UserEntityDTO userEntityDTO, int i )
+         public Object getColumnValue( UserEntityValue userEntityDTO, int i )
          {
             switch (i)
             {
                case 0:
                   return userEntityDTO.disabled().get();
                case 1:
-                  return userEntityDTO.username().get();
+                  return userEntityDTO.text().get();
             }
             return null;
          }
       };
 
-      tableModel = new EventJXTableModel<UserEntityDTO>( model.getEventList(), userAdminTableFormat );
+      tableModel = new EventJXTableModel<UserEntityValue>( model.getEventList(), userAdminTableFormat );
 
       usersTable = new JXTable( tableModel );
       usersTable.getColumn( 0 ).setCellRenderer( new DefaultTableRenderer( new CheckBoxProvider() ) );
@@ -194,7 +194,7 @@ public class UsersAdministrationView
    public Task resetPassword()
    {
       final ResetPasswordDialog dialog = resetPwdDialogs.iterator().next();
-      dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.reset_password_title ) + ": " + tableModel.getElementAt( usersTable.getSelectedRow()).username().get() );
+      dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.reset_password_title ) + ": " + tableModel.getElementAt( usersTable.getSelectedRow()).text().get() );
 
       if (dialog.password() != null)
       {

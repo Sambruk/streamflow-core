@@ -23,7 +23,7 @@ import org.qi4j.api.value.Value;
 import org.qi4j.api.value.ValueBuilder;
 import org.restlet.Request;
 import se.streamsource.dci.restlet.server.ResultConverter;
-import se.streamsource.dci.value.LinksValue;
+import se.streamsource.dci.value.*;
 import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
@@ -43,6 +43,13 @@ public class StreamflowResultConverter
 
    public Value convert( Object result, Request request )
    {
+      if (result instanceof String)
+      {
+         ValueBuilder<StringValue> builder = module.valueBuilderFactory().newValueBuilder( StringValue.class );
+         builder.prototype().string().set( (String) result );
+         return builder.newInstance();
+      }
+
       if (result instanceof Case)
       {
          return caseDTO( (CaseEntity) result, module,request.getResourceRef().getBaseRef().getPath() );
@@ -92,7 +99,7 @@ public class StreamflowResultConverter
          prototype.createdBy().set( ((Describable) aCase.createdBy().get()).getDescription() );
       if (aCase.caseId().get() != null)
          prototype.caseId().set( aCase.caseId().get() );
-      prototype.href().set( basePath + "/cases/" + aCase.identity().get() + "/" );
+      prototype.href().set( basePath + "/workspace/cases/" + aCase.identity().get() + "/" );
       prototype.rel().set( "case" );
       if (aCase.owner().get() != null)
          prototype.owner().set( ((Describable) aCase.owner().get()).getDescription() );

@@ -17,7 +17,6 @@
 
 package se.streamsource.streamflow.web.domain.entity.user;
 
-import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
@@ -26,8 +25,9 @@ import org.qi4j.api.query.QueryBuilderFactory;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.resource.user.UserEntityDTO;
-import se.streamsource.streamflow.resource.user.UserEntityListDTO;
+import se.streamsource.dci.value.LinkValue;
+import se.streamsource.dci.value.LinksValue;
+import se.streamsource.streamflow.resource.user.UserEntityValue;
 import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
 import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
 
@@ -38,7 +38,8 @@ import static org.qi4j.api.query.QueryExpressions.*;
 @Mixins(UsersQueries.Mixin.class)
 public interface UsersQueries
 {
-   public UserEntityListDTO users();
+   public LinksValue users();
+
    UserEntity getUserByName( String name );
 
    class Mixin
@@ -56,7 +57,7 @@ public interface UsersQueries
       @This
       Organizations.Data state;
 
-      public UserEntityListDTO users()
+      public LinksValue users()
       {
          Query<UserEntity> usersQuery = qbf.newQueryBuilder( UserEntity.class ).
                newQuery( uowf.currentUnitOfWork() );
@@ -64,15 +65,16 @@ public interface UsersQueries
          usersQuery.orderBy( orderBy( templateFor( UserAuthentication.Data.class ).userName() ) );
 
 
-         ValueBuilder<UserEntityListDTO> listBuilder = vbf.newValueBuilder( UserEntityListDTO.class );
-         List<UserEntityDTO> userlist = listBuilder.prototype().users().get();
+         ValueBuilder<LinksValue> listBuilder = vbf.newValueBuilder( LinksValue.class );
+         List<LinkValue> userlist = listBuilder.prototype().links().get();
 
-         ValueBuilder<UserEntityDTO> builder = vbf.newValueBuilder( UserEntityDTO.class );
+         ValueBuilder<UserEntityValue> builder = vbf.newValueBuilder( UserEntityValue.class );
 
          for (UserEntity user : usersQuery)
          {
-            builder.prototype().entity().set( EntityReference.getEntityReference( user ) );
-            builder.prototype().username().set( user.userName().get() );
+            builder.prototype().href().set( user.toString() + "/" );
+            builder.prototype().id().set( user.toString() );
+            builder.prototype().text().set( user.userName().get() );
             builder.prototype().disabled().set( user.disabled().get() );
 
             userlist.add( builder.newInstance() );

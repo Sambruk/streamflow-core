@@ -42,8 +42,6 @@ import java.util.List;
 public class GroupedFilterListDialog
       extends JPanel
 {
-   Dimension dialogSize = new Dimension( 600, 300 );
-
    public List<LinkValue> selected = new ArrayList<LinkValue>();
    public GroupedFilteredList itemList;
 

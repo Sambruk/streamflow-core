@@ -109,7 +109,10 @@ public class AdministrationTreeView
                {
                   DefaultMutableTreeNode node = (DefaultMutableTreeNode) o;
                   ContextItem clientInfo = (ContextItem) node.getUserObject();
-                  return i18n.icon( Icons.valueOf( clientInfo.getRelation() ) );
+                  if (clientInfo == null)
+                     return i18n.icon( Icons.server );
+                  else
+                     return i18n.icon( Icons.valueOf( clientInfo.getRelation() ) );
                }
             },
             new StringValue()
@@ -118,7 +121,10 @@ public class AdministrationTreeView
                {
                   DefaultMutableTreeNode node = (DefaultMutableTreeNode) o;
                   ContextItem clientInfo = (ContextItem) node.getUserObject();
-                  return clientInfo.getName();
+                  if (clientInfo == null)
+                     return "...";
+                  else
+                     return clientInfo.getName();
                }
             },
             false
@@ -163,7 +169,7 @@ public class AdministrationTreeView
             ContextItem contextItem = (ContextItem) ((DefaultMutableTreeNode) (tree.getSelectionPath().getLastPathComponent())).getUserObject();
             CommandQueryClient client = contextItem.getClient();
             commands.addAll( client.query( "", ResourceValue.class ).commands().get() );
-            if (!contextItem.getRelation().equals( "account" ))
+            if (!contextItem.getRelation().equals( "server" ))
                commands.addAll( client.getSubClient( "organizationalunits" ).query( "", ResourceValue.class ).commands().get() );
          }
 
@@ -215,36 +221,31 @@ public class AdministrationTreeView
    }
 
    @Action
-   public void createOrganizationalUnit()
+   public Task createOrganizationalUnit()
    {
-      Object node = tree.getSelectionPath().getLastPathComponent();
+      final Object node = tree.getSelectionPath().getLastPathComponent();
 
-      NameDialog dialog = nameDialogs.iterator().next();
+      final NameDialog dialog = nameDialogs.iterator().next();
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.create_ou_title ) );
       if (Strings.notEmpty( dialog.name() ))
       {
-         ArrayList<Integer> expandedRows = new ArrayList<Integer>();
-         for (int i = 0; i < tree.getRowCount(); i++)
+         return new CommandTask()
          {
-            if (tree.isExpanded( i ))
-               expandedRows.add( i );
-         }
-         int[] selected = tree.getSelectionRows();
-
-         model.createOrganizationalUnit( node, dialog.name() );
-
-         for (Integer expandedRow : expandedRows)
-         {
-            tree.expandRow( expandedRow );
-         }
-         tree.setSelectionRows( selected );
-      }
+            @Override
+            public void command()
+               throws Exception
+            {
+               model.createOrganizationalUnit( node, dialog.name() );
+            }
+         };
+      } else
+         return null;
    }
 
    @Action
-   public void delete()
+   public Task delete()
    {
-      Object node = tree.getSelectionPath().getLastPathComponent();
+      final Object node = tree.getSelectionPath().getLastPathComponent();
 
       ConfirmationDialog dialog = confirmationDialog.iterator().next();
       DefaultMutableTreeNode mutableTreeNode = (DefaultMutableTreeNode) node;
@@ -255,8 +256,17 @@ public class AdministrationTreeView
 
       if (dialog.isConfirmed())
       {
-         model.removeOrganizationalUnit( node );
-      }
+         return new CommandTask()
+         {
+            @Override
+            public void command()
+               throws Exception
+            {
+               model.removeOrganizationalUnit( node );
+            }
+         };
+      } else
+         return null;
    }
 
    @Action
@@ -302,6 +312,23 @@ public class AdministrationTreeView
    public void notifyTransactions( Iterable<TransactionEvents> transactions )
    {
       if (Events.matches( transactions, Events.withNames( "changedDescription", "removedOrganizationalUnit", "addedOrganizationalUnit" ) ))
+      {
+         ArrayList<Integer> expandedRows = new ArrayList<Integer>();
+         for (int i = 0; i < tree.getRowCount(); i++)
+         {
+            if (tree.isExpanded( i ))
+               expandedRows.add( i );
+         }
+         int[] selected = tree.getSelectionRows();
+
          model.notifyTransactions( transactions );
+
+         for (Integer expandedRow : expandedRows)
+         {
+            tree.expandRow( expandedRow );
+         }
+
+         tree.setSelectionRows( selected );
+      }
    }
 }

@@ -20,8 +20,8 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.SubResources;
-import se.streamsource.streamflow.web.context.structure.resolutions.SelectedResolutionContext;
-import se.streamsource.streamflow.web.context.structure.resolutions.SelectedResolutionsContext;
+import se.streamsource.streamflow.web.context.administration.SelectedResolutionContext;
+import se.streamsource.streamflow.web.context.administration.SelectedResolutionsContext;
 import se.streamsource.streamflow.web.domain.structure.casetype.SelectedResolutions;
 
 /**

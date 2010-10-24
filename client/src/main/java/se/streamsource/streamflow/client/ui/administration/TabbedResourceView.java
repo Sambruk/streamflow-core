@@ -32,6 +32,7 @@ import se.streamsource.streamflow.client.ui.administration.form.SelectedFormsVie
 import se.streamsource.streamflow.client.ui.administration.groups.GroupsView;
 import se.streamsource.streamflow.client.ui.administration.label.LabelsView;
 import se.streamsource.streamflow.client.ui.administration.label.SelectedLabelsView;
+import se.streamsource.streamflow.client.ui.administration.organization.OrganizationUsersView;
 import se.streamsource.streamflow.client.ui.administration.organization.OrganizationsView;
 import se.streamsource.streamflow.client.ui.administration.policy.AdministratorsView;
 import se.streamsource.streamflow.client.ui.administration.projects.MembersView;
@@ -66,6 +67,8 @@ public class TabbedResourceView
 
    static
    {
+      addTab( "users", AdministrationResources.users_tab, UsersAdministrationView.class );
+
       addTab( "members", AdministrationResources.members_tab, MembersView.class );
       addTab( "projects", AdministrationResources.projects_tab, ProjectsView.class );
       addTab( "groups", AdministrationResources.groups_tab, GroupsView.class );
@@ -81,8 +84,7 @@ public class TabbedResourceView
       addTab( "resolutions", AdministrationResources.resolutions_tab, ResolutionsView.class );
       addTab( "selectedresolutions", AdministrationResources.selected_resolutions_tab, SelectedResolutionsView.class );
 
-      addTab( "organizations", AdministrationResources.organizations_tab, OrganizationsView.class );
-      addTab( "users", AdministrationResources.users_tab, UsersAdministrationView.class );
+      addTab( "organizationusers", AdministrationResources.users_tab, OrganizationUsersView.class );
 
       addTab( "accesspoints", AdministrationResources.accesspoints_tab, AccessPointsView.class );
       addTab( "proxyusers", AdministrationResources.proxyusers_tab, ProxyUsersView.class );

@@ -188,19 +188,21 @@ public class HandleSearchesDialog
    {
       if (!searches.isSelectionEmpty())
       {
+         final LinkValue linkValue = (LinkValue) searches.getSelectedValue();
+         final Property property = (Property) arg;
+         final String prop = (String) property.get();
          new CommandTask()
          {
             @Override
             public void command()
                throws Exception
             {
-               Property property = (Property) arg;
                if (property.qualifiedName().name().equals( "name" ))
                {
-                  model.changeDescription( (LinkValue) searches.getSelectedValue(), (String) property.get() );
+                  model.changeDescription( linkValue, prop );
                } else if (property.qualifiedName().name().equals( "query" ))
                {
-                  model.changeQuery( (LinkValue) searches.getSelectedValue(), (String) property.get() );
+                  model.changeQuery( linkValue, prop );
                }
             }
          }.execute();

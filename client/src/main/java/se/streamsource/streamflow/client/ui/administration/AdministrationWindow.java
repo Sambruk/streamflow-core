@@ -71,7 +71,7 @@ public class AdministrationWindow
                   frame.getContentPane().removeAll();
 
                   AccountModel selectedAccount = accountSelector.getSelectedAccount();
-                  AdministrationView administrationView = obf.newObjectBuilder( AdministrationView.class ).use( selectedAccount.administration() ).newInstance();
+                  AdministrationView administrationView = obf.newObjectBuilder( AdministrationView.class ).use( selectedAccount.serverResource().getSubClient( "administration" )).newInstance();
 
                   frame.getContentPane().add( administrationView );
                }

@@ -90,6 +90,8 @@ public class CasesDetailView2
    public void clear()
    {
       layout.show( this, "blank" );
+      casePanel.removeAll();
+      casePanel.revalidate();
       current = null;
    }
 

@@ -50,7 +50,7 @@ public enum Icons
    attachments,
 
    // Admin
-   account,
+   server,
    organization,
    organizationalunit,
 

@@ -16,7 +16,6 @@
 
 package se.streamsource.streamflow.web.resource.surface.accesspoints.endusers;
 
-import org.qi4j.api.entity.EntityReference;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
@@ -25,15 +24,12 @@ import se.streamsource.streamflow.web.application.security.UserPrincipal;
 import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.EndUsersContext;
 import se.streamsource.streamflow.web.domain.structure.user.AnonymousEndUser;
 
-import javax.security.auth.Subject;
-import java.util.Set;
-
 /**
  * JAVADOC
  */
 public class EndUsersResource
-   extends CommandQueryResource
-   implements SubResources
+      extends CommandQueryResource
+      implements SubResources
 {
    public EndUsersResource()
    {
@@ -42,12 +38,8 @@ public class EndUsersResource
 
    public void resource( String segment ) throws ResourceException
    {
-      AnonymousEndUser endUser = setRole( AnonymousEndUser.class, segment );
-      Subject subject = RoleMap.role( Subject.class );
-      Set<UserPrincipal> userPrincipals = subject.getPrincipals( UserPrincipal.class );
-
-      userPrincipals.clear();
-      userPrincipals.add( new UserPrincipal( EntityReference.getEntityReference( endUser ).identity() ) );
+      setRole( AnonymousEndUser.class, segment );
+      RoleMap.current().set( new UserPrincipal( segment ) );
 
       subResource( EndUserResource.class );
    }

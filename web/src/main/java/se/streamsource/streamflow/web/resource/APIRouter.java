@@ -78,7 +78,7 @@ public class APIRouter
 
       Directory dir = new Directory( getContext(), "clap://thread/static/admin/" );
       dir.setIndexName( "index.html" );
-      attach( "/admin", dir );
+      attach( "/admin/", dir );
 
 
       // Version info

@@ -25,11 +25,13 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.ui.ContextItem;
+import se.streamsource.streamflow.infrastructure.application.LinkTree;
 import se.streamsource.streamflow.infrastructure.application.TreeNodeValue;
 import se.streamsource.streamflow.infrastructure.application.TreeValue;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
@@ -58,30 +60,32 @@ public class AdministrationModel
    public AdministrationModel( @Uses CommandQueryClient client)
    {
       super( new DefaultMutableTreeNode() );
-      ((MutableTreeNode)getRoot()).setUserObject( new ContextItem("", "Server", Icons.account.name(), -1, client.getClient( "../../../" )));
       this.client = client;
    }
 
    public void refresh()
    {
-      TreeValue organizations = client.query( "organizations", TreeValue.class );
+      LinkTree administration = client.query( "index", LinkTree.class );
 
       DefaultMutableTreeNode root = (DefaultMutableTreeNode) getRoot();
-      sync(root,client.getClient(  "../../../organizations" ), organizations.roots().get() );
+      sync(root,client, administration);
       reload( (TreeNode) getRoot() );
    }
 
-   private void sync(DefaultMutableTreeNode node, CommandQueryClient parentClient, Iterable<TreeNodeValue> treeNodevalues)
+   private void sync(DefaultMutableTreeNode node, CommandQueryClient parentClient, LinkTree treeNode)
    {
-      node.removeAllChildren();
-      for (TreeNodeValue treeNodeValue : treeNodevalues)
-      {
-         CommandQueryClient childClient = parentClient.getSubClient( treeNodeValue.entity().get().identity() );
-         ContextItem clientInfo = new ContextItem( "", treeNodeValue.description().get(), treeNodeValue.nodeType().get(), -1, childClient);
-         DefaultMutableTreeNode child = new DefaultMutableTreeNode(clientInfo);
-         node.add( child );
+      LinkValue link = treeNode.link().get();
+      CommandQueryClient nodeClient = parentClient.getClient( link );
+      ContextItem clientInfo = new ContextItem( "", link.text().get(), link.rel().get(), -1, nodeClient);
 
-         sync(child, childClient.getSubClient( "organizationalunits" ), treeNodeValue.children().get());
+      node.setUserObject( clientInfo );
+
+      node.removeAllChildren();
+      for (LinkTree childTree : treeNode.children().get())
+      {
+         DefaultMutableTreeNode childNode = new DefaultMutableTreeNode();
+         node.add( childNode );
+         sync(childNode, parentClient, childTree);
       }
    }
 

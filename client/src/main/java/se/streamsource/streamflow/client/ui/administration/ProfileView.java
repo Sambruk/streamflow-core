@@ -76,6 +76,7 @@ public class ProfileView
       setActionMap(am);
 
       model = obf.newObjectBuilder( ProfileModel.class ).use( client ).newInstance();
+      model.addObserver( this );
 
       JPanel panel = new JPanel(new BorderLayout());
       panel.setBorder(new EmptyBorder(new Insets(10, 10, 10, 10)));
@@ -150,7 +151,7 @@ public class ProfileView
       emailBinder.addObserver(this);
       setViewportView(panel);
 
-      new RefreshWhenVisible(this, this);
+      new RefreshWhenVisible(this, model);
    }
 
    @Action
@@ -173,51 +174,57 @@ public class ProfileView
 
    public void refresh()
    {
-      contactBinder.updateWith(model.getContact());
-      phoneNumberBinder.updateWith(model.getPhoneNumber());
-      emailBinder.updateWith(model.getEmailAddress());
-
-      String messageDeliveryType = model.getMessageDeliveryType();
-      if ("email".equalsIgnoreCase(messageDeliveryType))
-      {
-         emailButton.setSelected(true);
-      } else
-      {
-         noneButton.setSelected(true);
-      }
+      model.refresh();
    }
 
    public void update(Observable observable, Object arg)
    {
-      Property property = (Property) arg;
-      if (property.qualifiedName().name().equals("name"))
+      if (observable == model)
       {
-         try
+         contactBinder.updateWith(model.getContact());
+         phoneNumberBinder.updateWith(model.getPhoneNumber());
+         emailBinder.updateWith(model.getEmailAddress());
+
+         String messageDeliveryType = model.getMessageDeliveryType();
+         if ("email".equalsIgnoreCase(messageDeliveryType))
          {
-            model.changeName((String) property.get());
-         } catch (ResourceException e)
+            emailButton.setSelected(true);
+         } else
          {
-            throw new OperationException( CaseResources.could_not_change_name, e);
+            noneButton.setSelected(true);
          }
-      } else if (property.qualifiedName().name().equals("phoneNumber"))
+      } else
       {
-         try
+         Property property = (Property) arg;
+         if (property.qualifiedName().name().equals("name"))
          {
-            model.changePhoneNumber((String) property.get());
-         } catch (ResourceException e)
+            try
+            {
+               model.changeName((String) property.get());
+            } catch (ResourceException e)
+            {
+               throw new OperationException( CaseResources.could_not_change_name, e);
+            }
+         } else if (property.qualifiedName().name().equals("phoneNumber"))
          {
-            throw new OperationException(
-                  CaseResources.could_not_change_phone_number, e);
-         }
-      } else if (property.qualifiedName().name().equals("emailAddress"))
-      {
-         try
+            try
+            {
+               model.changePhoneNumber((String) property.get());
+            } catch (ResourceException e)
+            {
+               throw new OperationException(
+                     CaseResources.could_not_change_phone_number, e);
+            }
+         } else if (property.qualifiedName().name().equals("emailAddress"))
          {
-            model.changeEmailAddress((String) property.get());
-         } catch (ResourceException e)
-         {
-            throw new OperationException(
-                  CaseResources.could_not_change_email_address, e);
+            try
+            {
+               model.changeEmailAddress((String) property.get());
+            } catch (ResourceException e)
+            {
+               throw new OperationException(
+                     CaseResources.could_not_change_email_address, e);
+            }
          }
       }
    }

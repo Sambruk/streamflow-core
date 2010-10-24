@@ -142,6 +142,29 @@ public class LinksBuilder<T extends LinksBuilder>
       return (T) this;
    }
 
+   public T addLink( String description, String id, String rel, String href, String classes, String title )
+   {
+      if (titledLinkBuilder == null)
+         titledLinkBuilder = vbf.newValueBuilder( TitledLinkValue.class );
+
+      titledLinkBuilder.prototype().text().set( description );
+      titledLinkBuilder.prototype().id().set( id );
+
+      if (command != null)
+         titledLinkBuilder.prototype().href().set( command+"?entity="+id );
+      else
+         titledLinkBuilder.prototype().href().set( (path == null ? "" : path+"/")+href );
+      titledLinkBuilder.prototype().rel().set( rel );
+
+      titledLinkBuilder.prototype().title().set( title );
+
+      titledLinkBuilder.prototype().classes().set( classes );
+
+      linksBuilder.prototype().links().get().add( titledLinkBuilder.newInstance() );
+
+      return (T) this;
+   }
+
    public LinksValue newLinks()
    {
       return linksBuilder.newInstance();

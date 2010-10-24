@@ -80,7 +80,7 @@ public class VetoableListSelectionModel extends DefaultListSelectionModel
       {
          try
          {
-            fireVetoableChange( -1, getMinSelectionIndex() );
+            fireVetoableChange( getMinSelectionIndex() , -1 );
          } catch (PropertyVetoException e)
          {
             // vetoed - do nothing

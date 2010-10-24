@@ -155,6 +155,11 @@ public class AuthenticationFilter extends Filter
                   if (user.login(password))
                   {
                      setUserCredentials(request, username);
+                  } else
+                  {
+                     response.setStatus( Status.CLIENT_ERROR_UNAUTHORIZED );
+                     response.setEntity( Authenticator.error.authentication_bad_username_password.toString(), MediaType.TEXT_PLAIN );
+                     return Filter.STOP;
                   }
                } catch (NoSuchEntityException e)
                {

@@ -101,7 +101,7 @@ public interface AccountEntity
 
       public void changePassword( Uniform client, ChangePasswordCommand changePassword ) throws ResourceException
       {
-         user( client ).postCommand( "changepassword", changePassword );
+         server( client ).getSubClient( "account" ).postCommand( "changepassword", changePassword );
 
          AccountSettingsValue settings = state.settings().get().<AccountSettingsValue>buildWith().prototype();
          settings.password().set( changePassword.newPassword().get() );

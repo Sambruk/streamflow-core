@@ -18,10 +18,12 @@
 package se.streamsource.streamflow.web.context.users.workspace;
 
 import net.sf.ehcache.Element;
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
+import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
@@ -39,12 +41,29 @@ import se.streamsource.streamflow.web.infrastructure.caching.CachingService;
  * JAVADOC
  */
 public class WorkspaceContext
+   implements IndexContext<LinksValue>
 {
    @Structure
    Module module;
 
    @Service
    CachingService caching;
+
+   public LinksValue index()
+   {
+      LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
+      ProjectQueries projectQueries = RoleMap.role( ProjectQueries.class );
+
+      linksBuilder.addLink( "Drafts", "drafts", "drafts", "drafts/", "inbox");
+
+      for (Project project : projectQueries.allProjects())
+      {
+         linksBuilder.addLink( project.getDescription(), project.toString(), "inbox", "projects/"+project.toString()+"/inbox/", "inbox");
+         linksBuilder.addLink( project.getDescription(), project.toString(), "assignments", "projects/"+project.toString()+"/assignments/", "assignments");
+      }
+
+      return linksBuilder.newLinks();
+   }
 
    /**
     * Calculate casecounts for this user. Uses caching if available.
@@ -66,7 +85,7 @@ public class WorkspaceContext
          caseCount = new Element( drafts.toString(), Long.toString( drafts.drafts().newQuery( uow ).count() ) );
          caching.put( caseCount );
       }
-      builder.addLink( (String) caseCount.getObjectValue(), "user/drafts" );
+      builder.addLink( (String) caseCount.getObjectValue(), "/drafts" );
 
       for (Project project : RoleMap.role( ProjectQueries.class ).allProjects())
       {

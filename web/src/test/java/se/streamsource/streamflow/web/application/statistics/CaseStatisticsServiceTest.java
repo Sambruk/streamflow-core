@@ -32,6 +32,7 @@ import org.qi4j.entitystore.memory.MemoryEntityStoreService;
 import org.qi4j.index.rdf.assembly.RdfMemoryStoreAssembler;
 import org.qi4j.spi.uuid.UuidIdentityGeneratorService;
 import org.qi4j.test.AbstractQi4jTest;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.domain.contact.ContactValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
@@ -62,9 +63,7 @@ import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.user.Users;
 import se.streamsource.streamflow.web.infrastructure.event.MemoryEventStoreService;
 
-import javax.security.auth.Subject;
 import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -86,7 +85,7 @@ public class CaseStatisticsServiceTest
 
       module.addServices( CaseStatisticsService.class ).instantiateOnStartup();
       module.addServices( MemoryEventStoreService.class );
-      module.addServices( UuidIdentityGeneratorService.class);
+      module.addServices( UuidIdentityGeneratorService.class );
       module.importServices( TimeService.class ).importedBy( ImportedServiceDeclaration.NEW_OBJECT );
       module.addServices( LoggingStatisticsStore.class );
       module.addServices( DomainEventFactoryService.class );
@@ -106,7 +105,7 @@ public class CaseStatisticsServiceTest
             ResolutionEntity.class,
             CaseEntity.class,
             CaseTypeEntity.class );
-      module.addValues( ContactValue.class, ParticipantRolesValue.class);
+      module.addValues( ContactValue.class, ParticipantRolesValue.class );
 
       module.addObjects( TimeService.class, CaseStatisticsServiceTest.class );
 
@@ -127,7 +126,7 @@ public class CaseStatisticsServiceTest
 
       Thread.sleep( 1000 );
 
-      assertThat( appender.getEvents().get( 0 ).getMessage().toString(), equalTo( "id:label1, description:Foo bar, type:label" ));
+      assertThat( appender.getEvents().get( 0 ).getMessage().toString(), equalTo( "id:label1, description:Foo bar, type:label" ) );
    }
 
    @Test
@@ -141,85 +140,77 @@ public class CaseStatisticsServiceTest
       Users users = uow.newEntity( UsersEntity.class, UsersEntity.USERS_ID );
       final UserEntity user1 = (UserEntity) users.createUser( "user1", "user1" );
 
-      Subject subject = new Subject();
-      subject.getPrincipals().add( new UserPrincipal(user1.userName().get()) );
+      RoleMap.newCurrentRoleMap();
+      RoleMap.current().set( new UserPrincipal( user1.userName().get() ) );
 
       final String[] id = new String[1];
 
-      Subject.doAs( subject, new PrivilegedExceptionAction()
-      {
-         public Object run() throws Exception
-         {
-            Organizations orgs = uow.newEntity( Organizations.class, OrganizationsEntity.ORGANIZATIONS_ID );
-            Organization org = orgs.createOrganization( "Organization1" );
-            OrganizationalUnit ou1 = org.createOrganizationalUnit( "OU1" );
-            Group group1 = ou1.createGroup( "Group1" );
-            group1.addParticipant( user1 );
-            Project project1 = ou1.createProject( "Project1" );
-            project1.addMember( group1 );
+      Organizations orgs = uow.newEntity( Organizations.class, OrganizationsEntity.ORGANIZATIONS_ID );
+      Organization org = orgs.createOrganization( "Organization1" );
+      OrganizationalUnit ou1 = org.createOrganizationalUnit( "OU1" );
+      Group group1 = ou1.createGroup( "Group1" );
+      group1.addParticipant( user1 );
+      Project project1 = ou1.createProject( "Project1" );
+      project1.addMember( group1 );
 
-            CaseTypeEntity caseType1 = (CaseTypeEntity) project1.createCaseType( "Casetype" );
-            caseType1.changeDescription( "Casetype" );
-            Resolution fixed = caseType1.createResolution( "Fixed" );
+      CaseTypeEntity caseType1 = (CaseTypeEntity) project1.createCaseType( "Casetype" );
+      caseType1.changeDescription( "Casetype" );
+      Resolution fixed = caseType1.createResolution( "Fixed" );
 
-            Label label1 = caseType1.createLabel( "Label1" );
+      Label label1 = caseType1.createLabel( "Label1" );
 
-            uow.complete();
+      uow.complete();
 
-            UnitOfWork caseUoW = unitOfWorkFactory.newUnitOfWork();
-            UserEntity user = caseUoW.get( user1 );
-            caseType1 = caseUoW.get( caseType1 );
-            project1 = caseUoW.get( project1 );
-            fixed = caseUoW.get( fixed );
-            label1 = caseUoW.get( label1 );
+      UnitOfWork caseUoW = unitOfWorkFactory.newUnitOfWork();
+      UserEntity user = caseUoW.get( user1 );
+      caseType1 = caseUoW.get( caseType1 );
+      project1 = caseUoW.get( project1 );
+      fixed = caseUoW.get( fixed );
+      label1 = caseUoW.get( label1 );
 
-            CaseEntity case1 = user.createDraft();
-            case1.changeDescription( "Case description" );
-            case1.changeNote( "Case note" );
-            case1.addLabel( label1 );
-            case1.changeCaseType( caseType1 );
-            case1.changeOwner( project1 );
-            case1.open();
-            case1.assignTo( user );
-            case1.resolve( fixed );
-            case1.close();
+      CaseEntity case1 = user.createDraft();
+      case1.changeDescription( "Case description" );
+      case1.changeNote( "Case note" );
+      case1.addLabel( label1 );
+      case1.changeCaseType( caseType1 );
+      case1.changeOwner( project1 );
+      case1.open();
+      case1.assignTo( user );
+      case1.resolve( fixed );
+      case1.close();
 
-            id[0] = case1.identity().get();
+      id[0] = case1.identity().get();
 
-            caseUoW.complete();
-
-            return null;
-         }
-      });
+      caseUoW.complete();
 
       Thread.sleep( 1000 );
 
       // Verify log records
       int idx = 0;
-      assertThat( appender.getEvents().get( idx ).getMessage().toString(),new ContainsMatcher("description:Organization1, type:organization" ));
-      assertThat( appender.getEvents().get( ++idx ).getMessage().toString(),new ContainsMatcher("description:OU1, type:organizationalUnit" ));
-      assertThat( appender.getEvents().get( ++idx ).getMessage().toString(),new ContainsMatcher("description:Group1, type:group" ));
-      assertThat( appender.getEvents().get( ++idx ).getMessage().toString(),new ContainsMatcher("description:Project1" ));
-      assertThat( appender.getEvents().get( ++idx ).getMessage().toString(),new ContainsMatcher("description:Casetype" ));
-      assertThat( appender.getEvents().get( ++idx ).getMessage().toString(),new ContainsMatcher("description:Fixed" ));
-      assertThat( appender.getEvents().get( ++idx ).getMessage().toString(),new ContainsMatcher("description:Label1" ));
-      assertThat( appender.getEvents().get( ++idx ).getMessage().toString(),new ContainsMatcher("description:Case description" ));
-      assertThat( appender.getEvents().get( idx ).getMessage().toString(),new ContainsMatcher("note:Case note" ));
+      assertThat( appender.getEvents().get( idx ).getMessage().toString(), new ContainsMatcher( "description:Organization1, type:organization" ) );
+      assertThat( appender.getEvents().get( ++idx ).getMessage().toString(), new ContainsMatcher( "description:OU1, type:organizationalUnit" ) );
+      assertThat( appender.getEvents().get( ++idx ).getMessage().toString(), new ContainsMatcher( "description:Group1, type:group" ) );
+      assertThat( appender.getEvents().get( ++idx ).getMessage().toString(), new ContainsMatcher( "description:Project1" ) );
+      assertThat( appender.getEvents().get( ++idx ).getMessage().toString(), new ContainsMatcher( "description:Casetype" ) );
+      assertThat( appender.getEvents().get( ++idx ).getMessage().toString(), new ContainsMatcher( "description:Fixed" ) );
+      assertThat( appender.getEvents().get( ++idx ).getMessage().toString(), new ContainsMatcher( "description:Label1" ) );
+      assertThat( appender.getEvents().get( ++idx ).getMessage().toString(), new ContainsMatcher( "description:Case description" ) );
+      assertThat( appender.getEvents().get( idx ).getMessage().toString(), new ContainsMatcher( "note:Case note" ) );
 
       UnitOfWork removeUoW = unitOfWorkFactory.newUnitOfWork();
-      CaseEntity case1 = removeUoW.get( CaseEntity.class, id[0] );
+      case1 = removeUoW.get( CaseEntity.class, id[0] );
       case1.deleteEntity();
       removeUoW.complete();
 
       Thread.sleep( 1000 );
 
-      assertThat( appender.getEvents().get( ++idx ).getMessage().toString(),new ContainsMatcher("Removed statistics about" ));
+      assertThat( appender.getEvents().get( ++idx ).getMessage().toString(), new ContainsMatcher( "Removed statistics about" ) );
    }
 
    public static class TestAppender
-      extends AppenderSkeleton
+         extends AppenderSkeleton
    {
-      List<LoggingEvent> events = new ArrayList<LoggingEvent>( );
+      List<LoggingEvent> events = new ArrayList<LoggingEvent>();
 
       @Override
       protected void append( LoggingEvent event )
@@ -243,7 +234,7 @@ public class CaseStatisticsServiceTest
    }
 
    public static class RegularMatcher
-      extends BaseMatcher
+         extends BaseMatcher
    {
       String regex;
 
@@ -264,7 +255,7 @@ public class CaseStatisticsServiceTest
    }
 
    public static class ContainsMatcher
-      extends BaseMatcher
+         extends BaseMatcher
    {
       String str;
 

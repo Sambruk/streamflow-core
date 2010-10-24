@@ -18,9 +18,9 @@ package se.streamsource.streamflow.web.resource.organizations;
 
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.SubResource;
-import se.streamsource.streamflow.web.context.resource.administration.organizations.proxyusers.ProxyUsersResource;
+import se.streamsource.streamflow.web.resource.administration.ProxyUsersResource;
 import se.streamsource.streamflow.web.context.structure.DescribableContext;
-import se.streamsource.streamflow.web.resource.cases.AttachmentsResource;
+import se.streamsource.streamflow.web.resource.workspace.cases.AttachmentsResource;
 import se.streamsource.streamflow.web.resource.organizations.forms.FormsResource;
 import se.streamsource.streamflow.web.resource.structure.SelectedTemplateResource;
 import se.streamsource.streamflow.web.resource.structure.labels.LabelsResource;
@@ -37,6 +37,12 @@ public class OrganizationResource
    {
       super( DescribableContext.class );
    }
+   
+   @SubResource
+   public void organizationalunits()
+   {
+      subResource( OrganizationalUnitsResource.class );
+   }
 
    @SubResource
    public void administrators( )
@@ -51,10 +57,11 @@ public class OrganizationResource
    }
 
    @SubResource
-   public void organizationalunits()
+   public void selectedlabels()
    {
-      subResource( OrganizationalUnitsResource.class );
+      subResource( SelectedLabelsResource.class );
    }
+
 
    @SubResource
    public void organizationusers()
@@ -66,12 +73,6 @@ public class OrganizationResource
    public void roles()
    {
       subResource( RolesResource.class );
-   }
-
-   @SubResource
-   public void selectedlabels()
-   {
-      subResource( SelectedLabelsResource.class );
    }
 
    @SubResource
