@@ -253,6 +253,7 @@ public class ContextAssembler
             UserResource.class,
 
 
+            OrganizationsContext.class,
             OrganizationsResource.class,
             OrganizationResource.class,
 

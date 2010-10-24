@@ -24,6 +24,7 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.util.Iterables;
+import se.streamsource.streamflow.web.application.security.UserPrincipal;
 import se.streamsource.streamflow.web.context.ContextTest;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnits;
@@ -43,6 +44,7 @@ public class OrganizationalUnitsContextTest
       UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
       RoleMap.setCurrentRoleMap( new RoleMap() );
 
+      RoleMap.current().set( new UserPrincipal("administrator") );
       playRole( Organizations.class, OrganizationsEntity.ORGANIZATIONS_ID);
       playRole( OrganizationalUnits.class, findLink( context( OrganizationsContext.class).index(), "Organization" ));
       context( OrganizationalUnitsContext.class).createorganizationalunit( stringValue( name) );
@@ -68,7 +70,7 @@ public class OrganizationalUnitsContextTest
       {
          clearEvents();
          createOU("OU1");
-         eventsOccurred( "createdOrganizationalUnit", "addedOrganizationalUnit", "changedOwner", "changedDescription" );
+         eventsOccurred( "createdOrganizationalUnit", "addedOrganizationalUnit", "changedOwner", "changedDescription", "grantedRole" );
       }
 
       // Check that OU can be found
