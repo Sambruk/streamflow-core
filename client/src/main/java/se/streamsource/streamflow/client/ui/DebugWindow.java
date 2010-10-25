@@ -81,7 +81,7 @@ public class DebugWindow
       public EventTable( )
       {
          eventModel = new DefaultTableModel( new String[]{"Usecase", "Event", "Entity", "Parameters"}, 0 );
-
+         setModel(eventModel);
       }
 
       public void notifyTransactions( Iterable<TransactionEvents> transactions )

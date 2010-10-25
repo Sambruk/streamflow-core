@@ -317,9 +317,6 @@ public class StreamflowApplication
       {
          dispatchTransactions( window, transactions );
       }
-      dispatchTransactions( administrationWindow.getFrame(), transactions );
-      dispatchTransactions( overviewWindow.getFrame(), transactions );
-      dispatchTransactions( debugWindow.getFrame(), transactions );
    }
 
    private void dispatchTransactions( Component component, Iterable<TransactionEvents> transactionEventsIterable )
