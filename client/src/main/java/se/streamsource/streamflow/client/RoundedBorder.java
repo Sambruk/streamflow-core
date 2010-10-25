@@ -62,8 +62,8 @@ public class RoundedBorder implements Border
       g.fillRect( x, y+radius, radius, height-2*radius );
 
       // Right side
-      g.fillArc( x+width-(radius*2), y, radius*2, radius*2, 0, 90 );
-      g.fillArc( x+width-(radius*2), y+height-(radius*2)-1, radius*2, radius*2, 270, 90 );
-      g.fillRect( x+width-radius, y+radius, radius, height-2*radius );
+      g.fillArc( x+width-(radius*2)-1, y, radius*2, radius*2, 0, 90 );
+      g.fillArc( x+width-(radius*2)-1, y+height-(radius*2)-1, radius*2, radius*2, 270, 90 );
+      g.fillRect( x+width-radius-1, y+radius, radius+1, height-2*radius );
    }
 }
