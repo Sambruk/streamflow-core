@@ -35,24 +35,21 @@ import javax.swing.ActionMap;
 import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 
 /**
  * JAVADOC
  */
 public class DebugWindow
       extends FrameView
-      implements TransactionListener
 {
-   public JXTable eventTable;
-   public DefaultTableModel eventModel;
+   public EventTable eventTable;
 
    public DebugWindow( @Service Application application)
    {
       super( application );
 
-      eventModel = new DefaultTableModel( new String[]{"Usecase", "Event", "Entity", "Parameters"}, 0 );
-
-      eventTable = new JXTable( eventModel );
+      eventTable = new EventTable( );
       eventTable.setEditable( false );
 
       JXFrame frame = new JXFrame( "Streamflow Debug" );
@@ -69,22 +66,40 @@ public class DebugWindow
       frame.setSize( 400, 400 );
    }
 
-   public void notifyTransactions( Iterable<TransactionEvents> transactions )
-   {
-      for( DomainEvent event : Events.events( transactions ))
-      {
-         eventModel.addRow( new String[]{event.usecase().get(), event.name().get(), event.entity().get(), event.parameters().get()} );
-
-         if (eventModel.getRowCount() > 100)
-            eventModel.removeRow( 0 );
-      }
-   }
-
    @Action
    public void clear()
    {
-      int count = eventModel.getRowCount();
-      for (int i = 0; i < count; i++)
-         eventModel.removeRow( 0 );
+      eventTable.clear();
+   }
+
+   public static class EventTable
+      extends JXTable
+      implements TransactionListener
+   {
+      private DefaultTableModel eventModel;
+
+      public EventTable( )
+      {
+         eventModel = new DefaultTableModel( new String[]{"Usecase", "Event", "Entity", "Parameters"}, 0 );
+
+      }
+
+      public void notifyTransactions( Iterable<TransactionEvents> transactions )
+      {
+         for( DomainEvent event : Events.events( transactions ))
+         {
+            eventModel.addRow( new String[]{event.usecase().get(), event.name().get(), event.entity().get(), event.parameters().get()} );
+
+            if (eventModel.getRowCount() > 100)
+               eventModel.removeRow( 0 );
+         }
+      }
+
+      public void clear()
+      {
+         int count = eventModel.getRowCount();
+         for (int i = 0; i < count; i++)
+            eventModel.removeRow( 0 );
+      }
    }
 }

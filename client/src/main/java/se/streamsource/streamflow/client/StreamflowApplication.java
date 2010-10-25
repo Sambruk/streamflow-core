@@ -71,6 +71,8 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Frame;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.util.Arrays;
 import java.util.Collections;
@@ -311,7 +313,10 @@ public class StreamflowApplication
 
    public void notifyTransactions( Iterable<TransactionEvents> transactions )
    {
-      dispatchTransactions( workspaceWindow.getFrame(), transactions );
+      for (Window window : Frame.getWindows())
+      {
+         dispatchTransactions( window, transactions );
+      }
       dispatchTransactions( administrationWindow.getFrame(), transactions );
       dispatchTransactions( overviewWindow.getFrame(), transactions );
       dispatchTransactions( debugWindow.getFrame(), transactions );
