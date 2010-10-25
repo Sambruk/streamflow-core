@@ -1,5 +1,4 @@
-/**
- *
+/*
  * Copyright 2009-2010 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,25 +14,14 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.infrastructure.event;
+package se.streamsource.dci.value;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.qi4j.api.value.ValueComposite;
 
 /**
- * List of events for the current UnitOfWork. This will be updated by the DomainEventFactory.
+ * A single row in a table. This should be subtyped to add the individual columns
  */
-public class UnitOfWorkEvents
+public interface RowValue
+   extends ValueComposite
 {
-   private List<DomainEvent> events = new ArrayList<DomainEvent>( );
-
-   public void add(DomainEvent event)
-   {
-      events.add( event );
-   }
-
-   public List<DomainEvent> getEvents()
-   {
-      return events;
-   }
 }

@@ -24,7 +24,7 @@ import org.qi4j.api.service.ServiceComposite;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
-import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.source.helper.Events;
 
 import javax.management.MBeanException;
@@ -48,7 +48,7 @@ public interface EventManagerService
       extends Activatable, ServiceComposite
 {
    class Mixin
-         implements Activatable, TransactionVisitor
+         implements Activatable, TransactionListener
    {
       @Service
       EventSource source;
@@ -86,31 +86,30 @@ public interface EventManagerService
          source.unregisterListener( this );
       }
 
-      public final synchronized boolean visit( TransactionEvents transaction )
+      public final synchronized void notifyTransactions( final Iterable<TransactionEvents> transactions )
       {
-         for (DomainEvent domainEvent : Events.events( transaction ))
+         executor.submit( new Runnable()
          {
-            final Notification notification = new Notification( "domainevent", objectName, seq++, domainEvent.on().get().getTime(), domainEvent.name().get() );
-            notification.setUserData( domainEvent.toJSON() );
-
-            executor.submit( new Runnable()
+            public void run()
             {
-               public void run()
+               try
                {
-                  try
+                  for (DomainEvent domainEvent : Events.events( transactions ))
                   {
+                     final Notification notification = new Notification( "domainevent", objectName, seq++, domainEvent.on().get().getTime(), domainEvent.name().get() );
+                     notification.setUserData( domainEvent.toJSON() );
+
                      mbean.sendNotification( notification );
-                  } catch (MBeanException e)
-                  {
-                     e.printStackTrace();
                   }
+
+               } catch (MBeanException e)
+               {
+                  e.printStackTrace();
                }
-            } );
-
+            }
          }
+         );
 
-         return true;
       }
    }
-
 }

@@ -16,6 +16,7 @@
 
 package se.streamsource.dci.test.interactions.jmx;
 
+import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
@@ -31,6 +32,11 @@ public class MBeanResource
       extends CommandQueryResource
       implements SubResources
 {
+   public MBeanResource()
+   {
+      super( MBeanContext.class );
+   }
+
    public void resource( String segment ) throws ResourceException
    {
       for (MBeanAttributeInfo mBeanAttributeInfo : RoleMap.role( MBeanInfo.class ).getAttributes())

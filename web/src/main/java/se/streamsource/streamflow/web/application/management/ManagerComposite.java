@@ -50,7 +50,10 @@ import se.streamsource.streamflow.infrastructure.event.replay.DomainEventPlayer;
 import se.streamsource.streamflow.infrastructure.event.replay.EventReplayException;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
+import se.streamsource.streamflow.infrastructure.event.source.helper.Events;
+import se.streamsource.streamflow.util.Iterables;
 import se.streamsource.streamflow.web.application.statistics.CaseStatistics;
 import se.streamsource.streamflow.web.application.statistics.StatisticsStoreException;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
@@ -168,7 +171,7 @@ public interface ManagerComposite
       public File exports;
       public File backup;
 
-      public TransactionVisitor failedLoginListener;
+      public TransactionListener failedLoginListener;
 
       public void start() throws Exception
       {
@@ -180,15 +183,11 @@ public interface ManagerComposite
          if (!backup.exists() && !backup.mkdirs())
             throw new IllegalStateException( "Could not create directory for backups" );
 
-         failedLoginListener = new TransactionVisitor()
+         failedLoginListener = new TransactionListener()
          {
-            public boolean visit( TransactionEvents transaction )
+            public void notifyTransactions( Iterable<TransactionEvents> transactions )
             {
-               for (DomainEvent domainEvent : filter( transaction.events().get(), withNames("failedLogin" ) ))
-               {
-                  failedLogins++;
-               }
-               return false;
+               failedLogins += count( filter( events( transactions ), withNames("failedLogin" ) ) );
             }
          };
 

@@ -39,15 +39,9 @@ public class FormsModel
 
    public EventList<LinkValue> getPossibleMoveTo()
    {
-      try
-      {
-         BasicEventList<LinkValue> possibleLinks = new BasicEventList<LinkValue>();
-         possibleLinks.addAll( client.query( "possiblemoveto", LinksValue.class ).links().get() );
-         return possibleLinks;
-      } catch (ResourceException e)
-      {
-         throw new OperationException( AdministrationResources.could_not_refresh, e );
-      }
+      BasicEventList<LinkValue> possibleLinks = new BasicEventList<LinkValue>();
+      possibleLinks.addAll( client.query( "possiblemoveto", LinksValue.class ).links().get() );
+      return possibleLinks;
    }
 
    public void moveForm( LinkValue selected, LinkValue selectedLink )

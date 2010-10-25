@@ -51,7 +51,6 @@ import se.streamsource.streamflow.resource.conversation.ConversationDTO;
 import se.streamsource.streamflow.resource.conversation.MessageDTO;
 import se.streamsource.streamflow.resource.organization.SelectedTemplateValue;
 import se.streamsource.streamflow.resource.overview.ProjectSummaryValue;
-import se.streamsource.streamflow.resource.overview.ProjectSummaryValuex;
 import se.streamsource.streamflow.resource.roles.BooleanDTO;
 import se.streamsource.streamflow.resource.roles.DateDTO;
 import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
@@ -114,7 +113,6 @@ public class CommonResourceAssembler
             TreeValue.class,
             TreeNodeValue.class,
             ProjectSummaryValue.class,
-            ProjectSummaryValuex.class,
             FieldDTO.class,
             EffectiveFieldsDTO.class,
             EffectiveFieldDTO.class,
@@ -125,6 +123,6 @@ public class CommonResourceAssembler
             ProxyUserListDTO.class,
             ProxyUserDTO.class,
             SearchValue.class,
-            SelectedTemplateValue.class).visibleIn( Visibility.application );
+            SelectedTemplateValue.class ).visibleIn( Visibility.application );
    }
 }

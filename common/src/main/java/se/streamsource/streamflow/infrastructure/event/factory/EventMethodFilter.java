@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.infrastructure.event;
+package se.streamsource.streamflow.infrastructure.event.factory;
 
 import org.qi4j.api.common.AppliesToFilter;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 
 import java.lang.reflect.Method;
 

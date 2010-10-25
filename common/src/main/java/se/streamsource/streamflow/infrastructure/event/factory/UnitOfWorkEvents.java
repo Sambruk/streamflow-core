@@ -15,25 +15,27 @@
  * limitations under the License.
  */
 
-package se.streamsource.dci.test;
+package se.streamsource.streamflow.infrastructure.event.factory;
 
-import org.qi4j.api.composite.TransientBuilderFactory;
-import org.qi4j.api.injection.scope.Structure;
-import se.streamsource.dci.api.RoleMap;
-import se.streamsource.dci.restlet.server.RootContextFactory;
-import se.streamsource.dci.test.interactions.RootResource;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * JAVADOC
+ * List of events for the current UnitOfWork. This will be updated by the DomainEventFactory.
  */
-public class TestRootContextFactory
-   implements RootContextFactory
+public class UnitOfWorkEvents
 {
-   @Structure
-   TransientBuilderFactory tbf;
+   private List<DomainEvent> events = new ArrayList<DomainEvent>( );
 
-   public Object getRoot( RoleMap roleMap )
+   public void add(DomainEvent event)
    {
-      return tbf.newTransientBuilder( RootResource.class ).use( roleMap ).newInstance();
+      events.add( event );
+   }
+
+   public List<DomainEvent> getEvents()
+   {
+      return events;
    }
 }

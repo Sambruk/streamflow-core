@@ -68,14 +68,5 @@ public class ClientResponseHandler
    protected void handleTransactionEvents ( final TransactionEvents transactionEvents)
    {
       transactionVisitor.visit( transactionEvents );
-/*
-      SwingUtilities.invokeLater( new Runnable()
-      {
-         public void run()
-         {
-            transactionVisitor.visit( transactionEvents );
-         }
-      });
-*/
    }
 }

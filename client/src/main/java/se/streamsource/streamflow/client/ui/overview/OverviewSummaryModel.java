@@ -22,21 +22,21 @@ import ca.odell.glazedlists.EventList;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.resource.overview.ProjectSummaryValue;
-import se.streamsource.streamflow.resource.overview.ProjectSummaryValuex;
 
 import java.io.IOException;
 import java.io.InputStream;
 
 public class OverviewSummaryModel
-   implements Refreshable
+      implements Refreshable
 {
    @Uses
    CommandQueryClient client;
 
-   private BasicEventList<ProjectSummaryValue> projectOverviews = new BasicEventList<ProjectSummaryValue>( );
+   private BasicEventList<ProjectSummaryValue> projectOverviews = new BasicEventList<ProjectSummaryValue>();
 
    public InputStream generateExcelProjectSummary() throws IOException, ResourceException
    {
@@ -50,6 +50,6 @@ public class OverviewSummaryModel
 
    public void refresh()
    {
-      EventListSynch.synchronize( client.query( "projectsummary", ProjectSummaryValuex.class ).projectOverviews().get(), projectOverviews );
+      EventListSynch.synchronize( client.query( "projectsummary", LinksValue.class ).links().get(), projectOverviews );
    }
 }

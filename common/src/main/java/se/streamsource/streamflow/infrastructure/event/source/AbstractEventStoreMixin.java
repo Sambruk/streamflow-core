@@ -32,6 +32,7 @@ import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -66,7 +67,7 @@ public abstract class AbstractEventStoreMixin
 
    private ExecutorService transactionNotifier;
 
-   final private List<TransactionVisitor> listeners = synchronizedList( new ArrayList<TransactionVisitor>() );
+   final private List<TransactionListener> listeners = synchronizedList( new ArrayList<TransactionListener>() );
 
    public void activate() throws IOException
    {
@@ -111,11 +112,11 @@ public abstract class AbstractEventStoreMixin
          {
             synchronized (listeners)
             {
-               for (TransactionVisitor listener : listeners)
+               for (TransactionListener listener : listeners)
                {
                   try
                   {
-                     listener.visit( transaction );
+                     listener.notifyTransactions( Collections.singleton(transaction ));
                   } catch (Exception e)
                   {
                      logger.warn( "Could not notify event listener", e );
@@ -130,12 +131,12 @@ public abstract class AbstractEventStoreMixin
 
    // EventSource implementation
 
-   public void registerListener( TransactionVisitor subscriber )
+   public void registerListener( TransactionListener subscriber )
    {
       listeners.add( subscriber );
    }
 
-   public void unregisterListener( TransactionVisitor subscriber )
+   public void unregisterListener( TransactionListener subscriber )
    {
       listeners.remove( subscriber );
    }

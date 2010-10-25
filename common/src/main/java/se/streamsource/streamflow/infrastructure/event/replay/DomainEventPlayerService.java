@@ -95,17 +95,17 @@ public interface DomainEventPlayerService
          {
             uow.discard();
             if (e instanceof EventReplayException)
-               throw ((EventReplayException)e);
+               throw ((EventReplayException) e);
             else
                throw new EventReplayException( currentEvent, e );
          }
       }
 
-      public void playEvent( DomainEvent domainEvent, Object entity )
+      public void playEvent( DomainEvent domainEvent, Object object )
             throws EventReplayException
       {
          UnitOfWork uow = uowf.currentUnitOfWork();
-         Class entityType = entity.getClass();
+         Class entityType = object.getClass();
 
          // Get method
          Method eventMethod = getEventMethod( entityType, domainEvent.name().get() );
@@ -123,25 +123,25 @@ public interface DomainEventPlayerService
             JSONObject parameters = (JSONObject) new JSONTokener( jsonParameters ).nextValue();
             Object[] args = new Object[eventMethod.getParameterTypes().length];
             for (int i = 1; i < eventMethod.getParameterTypes().length; i++)
-      {
-         Class<?> parameterType = eventMethod.getParameterTypes()[i];
+            {
+               Class<?> parameterType = eventMethod.getParameterTypes()[i];
 
-         String paramName = "param" + i;
+               String paramName = "param" + i;
 
-         Object value = parameters.get( paramName );
+               Object value = parameters.get( paramName );
 
-         args[i] = getParameterArgument( parameterType, value, uow );
-      }
+               args[i] = getParameterArgument( parameterType, value, uow );
+            }
 
             args[0] = domainEvent;
 
             // Invoke method
-            logger.debug( "Replay:" + domainEvent +" on:"+entity );
+            logger.debug( "Replay:" + domainEvent + " on:" + object );
 
-            eventMethod.invoke( entity, args );
+            eventMethod.invoke( object, args );
          } catch (Exception e)
          {
-            throw new EventReplayException(domainEvent, e);
+            throw new EventReplayException( domainEvent, e );
          }
       }
 

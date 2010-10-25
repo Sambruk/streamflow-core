@@ -33,9 +33,9 @@ import java.util.Map;
 public class EventRouter
    implements EventVisitor
 {
-   Map<Specification, EventVisitor> routes = new HashMap<Specification, EventVisitor>( );
+   Map<Specification<DomainEvent>, EventVisitor> routes = new HashMap<Specification<DomainEvent>, EventVisitor>( );
 
-   public EventRouter route( Specification specification, EventVisitor visitor)
+   public EventRouter route( Specification<DomainEvent> specification, EventVisitor visitor)
    {
       routes.put( specification, visitor );
 
@@ -52,7 +52,7 @@ public class EventRouter
     */
    public boolean visit( DomainEvent event )
    {
-      for (Specification specification : routes.keySet())
+      for (Specification<DomainEvent> specification : routes.keySet())
       {
          if (specification.valid( event ))
          {

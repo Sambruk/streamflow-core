@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
 
 /**
@@ -36,7 +37,7 @@ import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor
  *
  */
 public class TransactionTracker
-   implements TransactionVisitor
+   implements TransactionListener, TransactionVisitor
 {
    private Configuration<? extends TransactionTrackerConfiguration> configuration;
    private TransactionVisitor visitor;
@@ -72,6 +73,15 @@ public class TransactionTracker
       {
          started = false;
          store.unregisterListener( this );
+      }
+   }
+
+   public void notifyTransactions( Iterable<TransactionEvents> transactions )
+   {
+      for (TransactionEvents transaction : transactions)
+      {
+         if (!visit(transaction))
+            break;
       }
    }
 

@@ -15,30 +15,23 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.infrastructure.event.source.helper;
+package se.streamsource.dci.test;
 
-import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
-import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.restlet.Request;
+import org.restlet.Response;
+import org.restlet.Uniform;
+import se.streamsource.dci.restlet.server.CommandQueryRestlet2;
+import se.streamsource.dci.test.interactions.RootResource;
 
 /**
  * JAVADOC
  */
-public class TransactionCollector
-      implements TransactionVisitor
+public class TestCommandQueryRestlet2
+      extends CommandQueryRestlet2
 {
-   List<TransactionEvents> transactions = new ArrayList<TransactionEvents>();
-
-   public boolean visit( TransactionEvents transaction )
+   @Override
+   protected Uniform createRoot( Request request, Response response )
    {
-      transactions.add( transaction );
-      return true;
-   }
-
-   public Iterable<TransactionEvents> transactions()
-   {
-      return transactions;
+      return module.objectBuilderFactory().newObjectBuilder( RootResource.class ).newInstance();
    }
 }

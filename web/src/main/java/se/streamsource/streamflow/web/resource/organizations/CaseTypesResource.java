@@ -20,6 +20,8 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.SubResources;
+import se.streamsource.streamflow.domain.structure.Describable;
+import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.web.context.organizations.CaseTypesContext;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseTypes;
 
@@ -33,6 +35,18 @@ public class CaseTypesResource
    public CaseTypesResource( )
    {
       super( CaseTypesContext.class );
+   }
+
+   public void possiblemoveto() throws Throwable
+   {
+      Iterable<Describable> caseTypes = (Iterable<Describable>) invoke();
+      LinksBuilder builder = new LinksBuilder(module.valueBuilderFactory());
+      builder.command( "move" );
+
+      builder.addDescribables( caseTypes );
+
+      result(builder.newLinks());
+
    }
 
    public void resource( String segment ) throws ResourceException

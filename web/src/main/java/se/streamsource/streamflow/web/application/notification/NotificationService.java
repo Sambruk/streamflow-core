@@ -35,15 +35,14 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
-import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
-import se.streamsource.streamflow.infrastructure.event.source.helper.EventVisitorFilter;
-import se.streamsource.streamflow.infrastructure.event.source.helper.Events;
 import se.streamsource.streamflow.infrastructure.event.source.helper.TransactionTracker;
-import se.streamsource.streamflow.util.Specification;
 import se.streamsource.streamflow.web.application.mail.MailService;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.interaction.profile.MessageRecipient;
+
+import static se.streamsource.streamflow.infrastructure.event.source.helper.Events.*;
+import static se.streamsource.streamflow.util.Iterables.*;
 
 /**
  * Send and receive notifications. This service
@@ -76,18 +75,13 @@ public interface NotificationService
       @This
       Configuration<NotificationConfiguration> config;
 
-      private Specification userNotificationFilter;
-
       private Usecase usecase = UsecaseBuilder.newUsecase( "Notify" );
-      public TransactionVisitor subscriber;
 
       private TransactionTracker tracker;
 
       public void activate() throws Exception
       {
          logger.info( "Starting ..." );
-
-         userNotificationFilter = Events.withNames( "receivedMessage" );
 
          tracker = new TransactionTracker( eventStore, config, this );
          tracker.start();
@@ -102,36 +96,32 @@ public interface NotificationService
 
       public boolean visit( TransactionEvents transaction )
       {
-         return Events.adapter( 
-               new EventVisitorFilter( userNotificationFilter, new EventVisitor()
+         for (DomainEvent domainEvent : filter( events( transaction ), withNames( "receivedMessage" ) ))
+         {
+            UnitOfWork uow = null;
+
+            try
+            {
+               uow = uowf.newUnitOfWork( usecase );
+
+               UserEntity user = uow.get( UserEntity.class, domainEvent.entity().get() );
+
+               if (user.delivery().get().equals( MessageRecipient.MessageDeliveryTypes.email ))
                {
-                  public boolean visit( DomainEvent event )
-                  {
-                     UnitOfWork uow = null;
+                  mail.sendNotification( domainEvent );
+               }
+            } catch (Exception e)
+            {
+               logger.error( "Could not send notification", e );
 
-                     try
-                     {
-                        uow = uowf.newUnitOfWork( usecase );
+               return false;
+            } finally
+            {
+               uow.discard();
+            }
+         }
 
-                        UserEntity user = uow.get( UserEntity.class, event.entity().get() );
-
-                        if (user.delivery().get().equals( MessageRecipient.MessageDeliveryTypes.email ))
-                        {
-                           mail.sendNotification( event );
-                        }
-                     } catch (Exception e)
-                     {
-                        logger.error( "Could not send notification", e );
-
-                        return false;
-                     } finally
-                     {
-                        uow.discard();
-                     }
-
-                     return true;
-                  }
-               } )).visit( transaction );
+         return true;
       }
    }
 }

@@ -17,16 +17,32 @@
 
 package se.streamsource.streamflow.client.ui.administration.casetypes;
 
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
+import se.streamsource.dci.value.LinkValue;
+import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.client.ui.administration.DefinitionListModel;
 
 /**
  * List of casetypes in an Organization
  */
 public class CaseTypesModel
-   extends DefinitionListModel
+      extends DefinitionListModel
 {
    public CaseTypesModel()
    {
       super( "createcasetype" );
+   }
+
+   public EventList<LinkValue> getPossibleMoveTo()
+   {
+      BasicEventList<LinkValue> possibleLinks = new BasicEventList<LinkValue>();
+      possibleLinks.addAll( client.query( "possiblemoveto", LinksValue.class ).links().get() );
+      return possibleLinks;
+   }
+
+   public void moveForm( LinkValue selected, LinkValue selectedLink )
+   {
+      client.getClient( selected ).postLink( selectedLink );
    }
 }

@@ -23,11 +23,11 @@ import org.qi4j.api.value.ValueComposite;
 import java.util.List;
 
 /**
- * A table of strings. The outer list is for the rows, and then each list is one row in the table.
+ * A table of rows. RowValue needs to be subtyped in order to add columns.
  */
 public interface TableValue
       extends ValueComposite
 {
    @UseDefaults
-   Property<List<List<String>>> table();
+   Property<List<RowValue>> table();
 }

@@ -29,7 +29,6 @@ import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.StringValueMaxLength;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.web.domain.entity.form.PossibleFormMoveToQueries;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
 import se.streamsource.streamflow.web.domain.structure.form.Forms;
 
@@ -41,7 +40,7 @@ import se.streamsource.streamflow.web.domain.structure.form.Forms;
 public interface FormsContext
       extends IndexContext<LinksValue>, Context
 {
-   LinksValue possiblemoveto();
+   Iterable<Forms> possiblemoveto();
 
    void createform( @MaxLength(50) StringValue formName );
 
@@ -58,12 +57,9 @@ public interface FormsContext
          return new LinksBuilder( module.valueBuilderFactory() ).rel( "form" ).addDescribables( forms.forms() ).newLinks();
       }
 
-      public LinksValue possiblemoveto()
+      public Iterable<Forms> possiblemoveto()
       {
-         LinksBuilder builder = new LinksBuilder(module.valueBuilderFactory());
-         builder.command( "move" );
-         RoleMap.role( PossibleFormMoveToQueries.class).possibleMoveFormTo( builder );
-         return builder.newLinks();
+         return module.queryBuilderFactory().newQueryBuilder( Forms.class ).newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
       }
 
       public void createform( StringValue formName )

@@ -35,7 +35,7 @@ public class RootResource
    @SubResource
    public void files( )
    {
-      RoleMap.current().set( new File("") );
+      RoleMap.current().set( new File("").getAbsoluteFile() );
       subResource( FileResource.class );
    }
 

@@ -25,7 +25,6 @@ import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.domain.structure.Removable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
 import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypesQueries;
-import se.streamsource.streamflow.web.domain.entity.form.PossibleFormMoveToQueries;
 import se.streamsource.streamflow.web.domain.interaction.gtd.IdGenerator;
 import se.streamsource.streamflow.web.domain.interaction.security.Authorization;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachments;
@@ -80,7 +79,6 @@ public interface OrganizationEntity
       OrganizationParticipationsQueries,
       OrganizationQueries,
       OrganizationalUnitsQueries,
-      PossibleFormMoveToQueries,
       CaseTypesQueries
 {
    abstract class LifecycleMixin

@@ -34,7 +34,7 @@ import org.restlet.data.Protocol;
 import org.restlet.routing.Filter;
 import org.restlet.security.Verifier;
 import org.slf4j.LoggerFactory;
-import se.streamsource.dci.restlet.server.CommandQueryRestlet;
+import se.streamsource.dci.restlet.server.CommandQueryRestlet2;
 import se.streamsource.dci.restlet.server.ExtensionMediaTypeFilter;
 import se.streamsource.dci.restlet.server.sitemesh.RestletFilterBuilder;
 
@@ -51,7 +51,7 @@ public class TestRestletApplication
 
    @Structure
    ObjectBuilderFactory factory;
-   
+
    @Structure
    UnitOfWorkFactory unitOfWorkFactory;
 
@@ -91,7 +91,7 @@ public class TestRestletApplication
    {
       getContext().setDefaultVerifier( verifier );
 
-      Restlet cqr = factory.newObjectBuilder( CommandQueryRestlet.class ).use( getContext() ).newInstance();
+      Restlet cqr = factory.newObjectBuilder( CommandQueryRestlet2.class ).use( getContext() ).newInstance();
 
 //      ViewFilter viewFilter = factory.newObjectBuilder( ViewFilter.class ).use( getContext(), cqr ).newInstance();
 
@@ -101,8 +101,8 @@ public class TestRestletApplication
             addDecoratorPath( "/files*", "clap://class/decorator/menu.html" ).
             addDecoratorPath( "/", "clap://class/decorator/main.html" );
       Filter siteMeshFilter = builder.create();
-      getContext().getClientDispatcher().setProtocols( Arrays.asList( Protocol.CLAP ));
-      return new ExtensionMediaTypeFilter(getContext(), cqr );
+      getContext().getClientDispatcher().setProtocols( Arrays.asList( Protocol.CLAP ) );
+      return new ExtensionMediaTypeFilter( getContext(), cqr );
    }
 
    @Override
@@ -114,7 +114,7 @@ public class TestRestletApplication
 
          // Start Qi4j
          Energy4Java is = new Energy4Java();
-         app = is.newApplication( new TestAssembler(getMetadataService() ) );
+         app = is.newApplication( new TestAssembler( getMetadataService() ) );
          app.activate();
 
          Module module = app.findModule( "Web", "REST" );

@@ -33,6 +33,7 @@ import se.streamsource.dci.restlet.server.NullCommandResult;
 import se.streamsource.dci.restlet.server.ResourceFinder;
 import se.streamsource.dci.test.interactions.RootResource;
 import se.streamsource.dci.test.interactions.file.FileContext;
+import se.streamsource.dci.test.interactions.file.FileResource;
 import se.streamsource.dci.test.interactions.jmx.DomainContext;
 import se.streamsource.dci.test.interactions.jmx.DomainResource;
 import se.streamsource.dci.test.interactions.jmx.JmxServerContext;
@@ -81,14 +82,14 @@ public class TestAssembler
 
    public void assemble( ModuleAssembly module ) throws AssemblyException
    {
-      module.importServices( TestRootContextFactory.class ).importedBy( NewObjectImporter.class );
-      module.addObjects( TestRootContextFactory.class );
+      module.addObjects( TestCommandQueryRestlet2.class );
 
       // Use defaults
       module.addObjects( DefaultResponseWriterFactory.class,
             NullCommandResult.class );
 
       module.addObjects( RootResource.class,
+            FileResource.class,
             FileContext.class);
 
       module.addObjects( JmxServerContext.class, JmxServerResource.class,

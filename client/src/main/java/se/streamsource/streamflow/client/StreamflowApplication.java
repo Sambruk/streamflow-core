@@ -130,9 +130,6 @@ public class StreamflowApplication
 
    AdministrationWindow administrationWindow;
 
-   // do not remove subscriber - holds a weak reference for event handling system
-   private TransactionVisitor subscriber;
-
    public ApplicationSPI app;
 
    public StreamflowApplication()
@@ -195,21 +192,6 @@ public class StreamflowApplication
       setMainFrame( workspaceWindow.getFrame() );
 
       this.accountsModel = accountsModel;
-
-      subscriber = new TransactionVisitor()
-      {
-         public boolean visit( TransactionEvents transaction )
-         {
-            for (DomainEvent domainEvent : transaction.events().get())
-            {
-//               accountsModel.notifyEvent( domainEvent );
-            }
-
-            return true;
-         }
-      };
-
-      source.registerListener( subscriber );
 
       showWorkspaceWindow();
 

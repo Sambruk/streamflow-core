@@ -15,14 +15,16 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.infrastructure.event;
+package se.streamsource.streamflow.infrastructure.event.factory;
 
 import org.qi4j.api.common.AppliesTo;
 import org.qi4j.api.concern.GenericConcern;
 import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.This;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.factory.DomainEventFactory;
+import se.streamsource.streamflow.infrastructure.event.factory.EventMethodFilter;
 
 import java.lang.reflect.Method;
 

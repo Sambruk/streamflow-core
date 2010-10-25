@@ -28,6 +28,15 @@ public interface DomainEventPlayer
    public void playTransaction( TransactionEvents transaction )
          throws EventReplayException;
 
-   public void playEvent( DomainEvent domainEvent, Object entity )
+   /**
+    * Invoke a domain event on a particular object. The object could
+    * be the original object, but could also be a service that wants
+    * to be invoked to handle the event.
+    *
+    * @param domainEvent
+    * @param object
+    * @throws EventReplayException
+    */
+   public void playEvent( DomainEvent domainEvent, Object object )
          throws EventReplayException;
 }

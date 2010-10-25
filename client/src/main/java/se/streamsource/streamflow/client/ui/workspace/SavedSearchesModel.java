@@ -21,6 +21,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.dci.value.LinkValue;
+import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.TitledLinksValue;
 import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
@@ -53,7 +54,7 @@ public class SavedSearchesModel
 
    public void refresh()
    {
-      List<LinkValue> links = client.query( "index", TitledLinksValue.class ).links().get();
+      List<LinkValue> links = client.query( "index", LinksValue.class ).links().get();
       EventListSynch.synchronize( links, linkValues );
    }
 

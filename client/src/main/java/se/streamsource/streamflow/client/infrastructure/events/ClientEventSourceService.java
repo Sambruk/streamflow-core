@@ -22,11 +22,13 @@ import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
 
 import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -48,23 +50,23 @@ public interface ClientEventSourceService
       {
       }
 
-      private List<Reference<TransactionVisitor>> listeners = new ArrayList<Reference<TransactionVisitor>>();
+      private List<Reference<TransactionListener>> listeners = new ArrayList<Reference<TransactionListener>>();
 
       // EventSource implementation
 
-      public void registerListener( TransactionVisitor visitor )
+      public void registerListener( TransactionListener listener )
       {
-         listeners.add( new WeakReference<TransactionVisitor>( visitor ) );
+         listeners.add( new WeakReference<TransactionListener>( listener ) );
       }
 
-      public void unregisterListener( TransactionVisitor subscriber )
+      public void unregisterListener( TransactionListener listener )
       {
-         Iterator<Reference<TransactionVisitor>> referenceIterator = listeners.iterator();
+         Iterator<Reference<TransactionListener>> referenceIterator = listeners.iterator();
          while (referenceIterator.hasNext())
          {
-            Reference<TransactionVisitor> eventSourceListenerReference = referenceIterator.next();
-            TransactionVisitor lstnr = eventSourceListenerReference.get();
-            if (lstnr == null || lstnr.equals( subscriber ))
+            Reference<TransactionListener> eventSourceListenerReference = referenceIterator.next();
+            TransactionListener lstnr = eventSourceListenerReference.get();
+            if (lstnr == null || lstnr.equals( listener ))
             {
                referenceIterator.remove();
                return;
@@ -76,14 +78,14 @@ public interface ClientEventSourceService
 
       public boolean visit( TransactionEvents transaction )
       {
-         Iterator<Reference<TransactionVisitor>> referenceIterator = new ArrayList<Reference<TransactionVisitor>>(listeners).iterator();
+         Iterator<Reference<TransactionListener>> referenceIterator = new ArrayList<Reference<TransactionListener>>(listeners).iterator();
          while (referenceIterator.hasNext())
          {
-            Reference<TransactionVisitor> eventSourceListenerReference = referenceIterator.next();
-            TransactionVisitor lstnr = eventSourceListenerReference.get();
+            Reference<TransactionListener> eventSourceListenerReference = referenceIterator.next();
+            TransactionListener lstnr = eventSourceListenerReference.get();
             if (lstnr != null)
             {
-               lstnr.visit( transaction );
+               lstnr.notifyTransactions( Collections.singleton( transaction ));
             }
          }
 

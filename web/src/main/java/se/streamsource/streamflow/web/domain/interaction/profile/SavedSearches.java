@@ -29,12 +29,12 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.resource.user.profile.SearchValue;
+import se.streamsource.streamflow.web.domain.entity.user.profile.SavedSearchEntity;
 import se.streamsource.streamflow.web.domain.structure.user.profile.SavedSearch;
 
 @Mixins(SavedSearches.Mixin.class)
 public interface SavedSearches
 {
-
    public void createSavedSearch( SearchValue search );
 
    public void removeSavedSearch( SavedSearch search );
@@ -66,15 +66,15 @@ public interface SavedSearches
          String id = idgen.generate( Identity.class );
          SavedSearch newSearch = createdSavedSearch( DomainEvent.CREATE, id );
          newSearch.changeDescription( search.name().get() );
-         ((SavedSearch.Data) newSearch).query().set( search.query().get() );
-
-         state.searches().add( newSearch );
       }
 
-      public SavedSearch createdSavedSearch( DomainEvent event, String id )
+      public SavedSearch createdSavedSearch( DomainEvent event, String id, String query )
       {
-         EntityBuilder<SavedSearch> builder = uowf.currentUnitOfWork().newEntityBuilder( SavedSearch.class, id );
-         return builder.newInstance();
+         EntityBuilder<SavedSearchEntity> builder = uowf.currentUnitOfWork().newEntityBuilder( SavedSearchEntity.class, id );
+         builder.instance().query().set( query );
+         SavedSearch savedSeach = builder.newInstance();
+         state.searches().add( savedSeach );
+         return savedSeach;
       }
 
       public void removeSavedSearch( SavedSearch search )

@@ -25,6 +25,7 @@ import org.jdesktop.application.Task;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilder;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.LinkValue;
@@ -39,12 +40,14 @@ import se.streamsource.streamflow.client.ui.ListDetailView;
 import se.streamsource.streamflow.client.ui.NameDialog;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.administration.TabbedResourceView;
+import se.streamsource.streamflow.client.ui.administration.label.SelectionDialog;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.util.Strings;
 
 import javax.swing.ActionMap;
 import javax.swing.JList;
 import java.awt.Component;
+import java.awt.Dimension;
 
 import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 
@@ -64,6 +67,9 @@ public class CaseTypesView
 
    @Uses
    Iterable<ConfirmationDialog> confirmationDialog;
+
+   @Uses
+   ObjectBuilder<SelectionDialog> possibleMoveToDialogs;
 
    public CaseTypesView( @Service ApplicationContext context,
                          @Uses final CommandQueryClient client,
@@ -150,6 +156,30 @@ public class CaseTypesView
                   throws Exception
             {
                model.changeDescription( item, dialog.name() );
+            }
+         };
+      } else
+         return null;
+   }
+
+   @Action
+   public Task move()
+   {
+      final LinkValue selected = (LinkValue) list.getSelectedValue();
+      final SelectionDialog dialog = possibleMoveToDialogs.use(model.getPossibleMoveTo()).newInstance();
+      dialog.setPreferredSize( new Dimension(200,300) );
+
+      dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.choose_move_to ) );
+
+      if (dialog.getSelectedLinks() != null)
+      {
+         return new CommandTask()
+         {
+            @Override
+            public void command()
+               throws Exception
+            {
+               model.moveForm(selected, dialog.getSelectedLink());
             }
          };
       } else

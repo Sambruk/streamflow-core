@@ -17,6 +17,7 @@
 
 package se.streamsource.dci.test.interactions.file;
 
+import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
@@ -81,12 +82,13 @@ public class FileContext
    {
       File file = RoleMap.role( File.class );
 
-      MetadataService metadataService = RoleMap.role( Application.class ).getMetadataService();
+      MetadataService metadataService = (MetadataService) module.serviceFinder().findService( MetadataService.class ).get();
       String ext = file.getName().split( "\\." )[1];
       MediaType mediaType = metadataService.getMediaType( ext );
       return new InputRepresentation( new FileInputStream( file ), mediaType );
    }
 
+   @RequiresDirectory
    public LinksValue index()
    {
       File file = RoleMap.role( File.class );
@@ -105,6 +107,7 @@ public class FileContext
       return builder.newLinks();
    }
 
+   @RequiresFile
    public void delete() throws ResourceException
    {
       RoleMap.role( File.class ).delete();

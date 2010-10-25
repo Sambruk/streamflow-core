@@ -18,6 +18,7 @@
 package se.streamsource.streamflow.util;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
 
 /**
@@ -52,6 +53,14 @@ public class Iterables
          c++;
       }
       return c;
+   }
+
+   public static <T> void addAll( Collection<T> collection, Iterable<T> iterable)
+   {
+      for (T item : iterable)
+      {
+         collection.add(item);
+      }
    }
 
    private static class FilterIterable<T> implements Iterable<T>

@@ -24,7 +24,7 @@ package se.streamsource.streamflow.infrastructure.event.source;
  */
 public interface EventSource
 {
-   void registerListener( TransactionVisitor subscriber );
+   void registerListener( TransactionListener subscriber );
 
-   void unregisterListener( TransactionVisitor subscriber );
+   void unregisterListener( TransactionListener subscriber );
 }

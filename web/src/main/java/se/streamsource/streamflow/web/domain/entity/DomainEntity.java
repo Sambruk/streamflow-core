@@ -21,7 +21,7 @@ import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.sideeffect.SideEffects;
-import se.streamsource.streamflow.infrastructure.event.EventCreationConcern;
+import se.streamsource.streamflow.infrastructure.event.factory.EventCreationConcern;
 import se.streamsource.streamflow.web.domain.generic.CommandPropertyChangeMixin;
 import se.streamsource.streamflow.web.domain.generic.EventEntityAddedMixin;
 import se.streamsource.streamflow.web.domain.generic.EventEntityCreatedMixin;

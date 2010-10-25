@@ -16,6 +16,7 @@
 
 package se.streamsource.dci.test.interactions.jmx;
 
+import org.qi4j.api.injection.scope.Uses;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.api.RoleMap;
@@ -32,6 +33,11 @@ public class DomainResource
       extends CommandQueryResource
       implements SubResources
 {
+   public DomainResource( )
+   {
+      super( DomainContext.class );
+   }
+
    public void resource( String segment ) throws ResourceException
    {
       try

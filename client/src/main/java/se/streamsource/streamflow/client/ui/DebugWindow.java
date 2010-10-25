@@ -27,6 +27,7 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
 import se.streamsource.streamflow.infrastructure.event.source.helper.Events;
 
@@ -40,18 +41,14 @@ import javax.swing.table.DefaultTableModel;
  */
 public class DebugWindow
       extends FrameView
-      implements TransactionVisitor, EventVisitor
+      implements TransactionListener
 {
    public JXTable eventTable;
    public DefaultTableModel eventModel;
-   public TransactionVisitor visitor;
 
-   public DebugWindow( @Service Application application,
-                       @Service EventSource eventSource )
+   public DebugWindow( @Service Application application)
    {
       super( application );
-
-      eventSource.registerListener( this );
 
       eventModel = new DefaultTableModel( new String[]{"Usecase", "Event", "Entity", "Parameters"}, 0 );
 
@@ -70,25 +67,17 @@ public class DebugWindow
       setToolBar( toolbar );
 
       frame.setSize( 400, 400 );
-
-      visitor = Events.adapter( this );
    }
 
-   public boolean visit( TransactionEvents transaction )
+   public void notifyTransactions( Iterable<TransactionEvents> transactions )
    {
-      visitor.visit( transaction );
+      for( DomainEvent event : Events.events( transactions ))
+      {
+         eventModel.addRow( new String[]{event.usecase().get(), event.name().get(), event.entity().get(), event.parameters().get()} );
 
-      return true;
-   }
-
-   public boolean visit( DomainEvent event )
-   {
-      eventModel.addRow( new String[]{event.usecase().get(), event.name().get(), event.entity().get(), event.parameters().get()} );
-
-      if (eventModel.getRowCount() > 100)
-         eventModel.removeRow( 0 );
-
-      return true;
+         if (eventModel.getRowCount() > 100)
+            eventModel.removeRow( 0 );
+      }
    }
 
    @Action

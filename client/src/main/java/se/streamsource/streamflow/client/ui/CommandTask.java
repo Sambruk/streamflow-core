@@ -18,15 +18,15 @@ package se.streamsource.streamflow.client.ui;
 
 import org.jdesktop.application.Application;
 import org.jdesktop.application.Task;
-import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.StreamflowApplication;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
-import se.streamsource.streamflow.infrastructure.event.source.helper.TransactionCollector;
+import se.streamsource.streamflow.util.Iterables;
 
 import javax.swing.SwingUtilities;
-import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * All Swing actions that want to trigger commands in the domain model
@@ -35,11 +35,14 @@ import java.lang.reflect.InvocationTargetException;
  */
 public abstract class CommandTask
       extends Task<Iterable<TransactionEvents>, Object>
+      implements TransactionListener
 {
    public CommandTask()
    {
       super( Application.getInstance() );
    }
+
+   private List<TransactionEvents> transactions = new ArrayList<TransactionEvents>( );
 
    protected abstract void command()
          throws Exception;
@@ -50,18 +53,22 @@ public abstract class CommandTask
       StreamflowApplication application = (StreamflowApplication) getApplication();
       EventSource source = application.getSource();
 
-      TransactionCollector collector = new TransactionCollector();
-      source.registerListener( collector );
+      source.registerListener( this );
 
       try
       {
          command();
 
-         return collector.transactions();
+         return transactions;
       } finally
       {
-         source.unregisterListener( collector );
+         source.unregisterListener( this );
       }
+   }
+
+   public void notifyTransactions( Iterable<TransactionEvents> transactions )
+   {
+      Iterables.addAll( this.transactions, transactions );
    }
 
    @Override
@@ -72,14 +79,14 @@ public abstract class CommandTask
       {
          public void run()
          {
-            ((TransactionListener)application).notifyTransactions( transactionEventsIterable );
+            ((TransactionListener) application).notifyTransactions( transactionEventsIterable );
          }
-      });
+      } );
    }
 
    @Override
    protected void failed( Throwable throwable )
    {
-      throw new Error(throwable);
+      throw new Error( throwable );
    }
 }

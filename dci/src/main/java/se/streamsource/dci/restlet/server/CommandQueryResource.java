@@ -61,9 +61,11 @@ import se.streamsource.dci.api.InteractionConstraints;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.ResourceValue;
 
+import java.io.UnsupportedEncodingException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -147,7 +149,13 @@ public class CommandQueryResource
       if (this instanceof SubResources)
       {
          SubResources subResources = (SubResources) this;
-         subResources.resource( segment );
+         try
+         {
+            subResources.resource( URLDecoder.decode( segment, "UTF-8") );
+         } catch (UnsupportedEncodingException e)
+         {
+            subResources.resource( segment );
+         }
       } else
       {
          // Find @SubResource annotated method
@@ -398,7 +406,7 @@ public class CommandQueryResource
 
    protected void subResourceContexts( Class<?>... contextClasses )
    {
-      module.objectBuilderFactory().newObjectBuilder( DefaultCommandQueryResource.class ).use( contextClasses ).newInstance().handle( request, response );
+      module.objectBuilderFactory().newObjectBuilder( DefaultCommandQueryResource.class ).use( new Object[]{contextClasses} ).newInstance().handle( request, response );
    }
 
    protected Method getInteractionMethod( String methodName ) throws ResourceException

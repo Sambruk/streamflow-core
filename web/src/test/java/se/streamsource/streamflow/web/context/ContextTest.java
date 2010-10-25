@@ -40,10 +40,7 @@ import org.qi4j.spi.Qi4jSPI;
 import org.qi4j.spi.structure.ApplicationModelSPI;
 import org.qi4j.spi.structure.ApplicationSPI;
 import org.qi4j.spi.structure.ModuleSPI;
-import org.restlet.data.Reference;
-import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
-import se.streamsource.dci.api.SubContexts;
 import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.LinksValue;
@@ -53,12 +50,10 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.source.helper.EventCollector;
 import se.streamsource.streamflow.infrastructure.event.source.helper.Events;
 import se.streamsource.streamflow.test.StreamflowWebContextTestAssembler;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Actor;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * Base class for roleMap tests. RoleMap tests should subclass this test and use the fluent API provided
@@ -196,32 +191,33 @@ public abstract class ContextTest
    }
 
    // Helper methods
+
    protected static <T> T context( Class<T> contextClass )
    {
-      if (TransientComposite.class.isAssignableFrom( contextClass))
+      if (TransientComposite.class.isAssignableFrom( contextClass ))
          return transientBuilderFactory.newTransient( contextClass );
       else
          return objectBuilderFactory.newObject( contextClass );
    }
 
-   protected static <T> T playRole(T oldEntity)
+   protected static <T> T playRole( T oldEntity )
    {
       if (oldEntity == null)
-         throw new NullPointerException("No entity used to play role");
+         throw new NullPointerException( "No entity used to play role" );
 
       T entity = unitOfWorkFactory.currentUnitOfWork().get( oldEntity );
       RoleMap.current().set( entity );
       return entity;
    }
 
-   protected static <T> T playRole(Class<T> roleClass, String id)
+   protected static <T> T playRole( Class<T> roleClass, String id )
    {
       T entity = unitOfWorkFactory.currentUnitOfWork().get( roleClass, id );
       RoleMap.current().set( entity );
       return entity;
    }
 
-   protected static <T> T playRole(Class<T> roleClass, LinkValue link)
+   protected static <T> T playRole( Class<T> roleClass, LinkValue link )
    {
       T entity = unitOfWorkFactory.currentUnitOfWork().get( roleClass, link.id().get() );
       RoleMap.current().set( entity );
@@ -235,20 +231,20 @@ public abstract class ContextTest
 
    protected static StringValue stringValue( String value )
    {
-      return value( StringValue.class, "{'string':'"+value+"'}");
+      return value( StringValue.class, "{'string':'" + value + "'}" );
    }
 
    protected static EntityValue entityValue( String value )
    {
-      return value( EntityValue.class, "{'entity':'"+value+"'}");
+      return value( EntityValue.class, "{'entity':'" + value + "'}" );
    }
 
    protected static EntityValue entityValue( LinkValue link )
    {
-      return value( EntityValue.class, "{'entity':'"+link.id().get()+"'}");
+      return value( EntityValue.class, "{'entity':'" + link.id().get() + "'}" );
    }
 
-   protected static boolean valueContains( ValueComposite value, String jsonFragment)
+   protected static boolean valueContains( ValueComposite value, String jsonFragment )
    {
       return value.toJSON().contains( jsonFragment );
    }
@@ -273,41 +269,12 @@ public abstract class ContextTest
       eventCollector.events().clear();
    }
 
-   protected static Reference reference(String ref)
-   {
-      Reference baseRef = new Reference( ref );
-      return new Reference(baseRef, baseRef.getPath());
-   }
-
-   protected static Actor user(String name)
-   {
-      return unitOfWorkFactory.currentUnitOfWork().get( Actor.class, name );
-   }
-
-   protected static Locale language(String language)
-   {
-      return new Locale(language);
-   }
-
-   protected static <T> T subContext( SubContexts subContexts, String name )
-   {
-      if (subContexts instanceof IndexContext)
-      {
-         IndexContext<LinksValue> index = (IndexContext<LinksValue>) subContexts;
-         LinkValue link = findLink(index.index(), name);
-         return (T)subContexts.context( link.id().get() );
-      } else
-      {
-         return (T) subContexts.context( name );
-      }
-   }
-
    protected static LinkValue findLink( LinksValue links, String name )
    {
       String names = null;
       for (LinkValue linkValue : links.links().get())
       {
-         if (linkValue.text().get().equals(name))
+         if (linkValue.text().get().equals( name ))
          {
             return linkValue;
          } else
@@ -315,23 +282,23 @@ public abstract class ContextTest
             if (names == null)
                names = linkValue.text().get();
             else
-               names+=","+linkValue.text().get();
+               names += "," + linkValue.text().get();
          }
       }
 
       if (names == null)
-         throw new IllegalArgumentException("No link found named "+name+". List was empty");
+         throw new IllegalArgumentException( "No link found named " + name + ". List was empty" );
       else
-         throw new IllegalArgumentException("No link found named "+name+". Available names:"+names);
+         throw new IllegalArgumentException( "No link found named " + name + ". Available names:" + names );
    }
 
-   protected static <T> T findDescribable( Iterable<T> iterable , String name )
+   protected static <T> T findDescribable( Iterable<T> iterable, String name )
    {
       String names = null;
       for (T item : iterable)
       {
-         String itemName = ((Describable)item).getDescription();
-         if (itemName.equals(name))
+         String itemName = ((Describable) item).getDescription();
+         if (itemName.equals( name ))
          {
             return item;
          } else
@@ -339,14 +306,14 @@ public abstract class ContextTest
             if (names == null)
                names = itemName;
             else
-               names+=","+itemName;
+               names += "," + itemName;
          }
       }
 
       if (names == null)
-         throw new IllegalArgumentException("No link found named "+name+". List was empty");
+         throw new IllegalArgumentException( "No link found named " + name + ". List was empty" );
       else
-         throw new IllegalArgumentException("No link found named "+name+". Available names:"+names);
+         throw new IllegalArgumentException( "No link found named " + name + ". Available names:" + names );
    }
 
 
