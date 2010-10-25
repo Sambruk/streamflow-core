@@ -39,7 +39,7 @@ public class CaseResource
    @SubResource
    public void general()
    {
-      subResourceContexts( CaseGeneralContext.class );
+      subResource( CaseGeneralResource.class );
    }
 
    @SubResource
