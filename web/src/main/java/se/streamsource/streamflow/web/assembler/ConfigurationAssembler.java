@@ -22,6 +22,7 @@ import org.qi4j.api.structure.Application;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
+import org.qi4j.cache.ehcache.EhCacheConfiguration;
 import org.qi4j.entitystore.jdbm.JdbmConfiguration;
 import org.qi4j.entitystore.memory.MemoryEntityStoreService;
 import org.qi4j.entitystore.prefs.PreferencesEntityStoreInfo;
@@ -60,6 +61,7 @@ public class ConfigurationAssembler
       module.addServices( FileConfiguration.class, ServiceConfiguration.class ).visibleIn( Visibility.application ).instantiateOnStartup();
 
       // Configurations
+//      module.addEntities( EhCacheConfiguration.class ).visibleIn( Visibility.application );
       module.addEntities( JdbmConfiguration.class ).visibleIn( Visibility.application );
       module.addEntities( NativeConfiguration.class ).visibleIn( Visibility.application );
       module.addEntities( ReindexerConfiguration.class ).visibleIn( Visibility.application );

@@ -27,19 +27,15 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.StringValue;
-import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.ui.ContextItem;
 import se.streamsource.streamflow.infrastructure.application.LinkTree;
-import se.streamsource.streamflow.infrastructure.application.TreeNodeValue;
-import se.streamsource.streamflow.infrastructure.application.TreeValue;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
 
 /**
@@ -57,7 +53,7 @@ public class AdministrationModel
 
    private final CommandQueryClient client;
 
-   public AdministrationModel( @Uses CommandQueryClient client)
+   public AdministrationModel( @Uses CommandQueryClient client )
    {
       super( new DefaultMutableTreeNode() );
       this.client = client;
@@ -68,15 +64,15 @@ public class AdministrationModel
       LinkTree administration = client.query( "index", LinkTree.class );
 
       DefaultMutableTreeNode root = (DefaultMutableTreeNode) getRoot();
-      sync(root,client, administration);
+      sync( root, client, administration );
       reload( (TreeNode) getRoot() );
    }
 
-   private void sync(DefaultMutableTreeNode node, CommandQueryClient parentClient, LinkTree treeNode)
+   private void sync( DefaultMutableTreeNode node, CommandQueryClient parentClient, LinkTree treeNode )
    {
       LinkValue link = treeNode.link().get();
       CommandQueryClient nodeClient = parentClient.getClient( link );
-      ContextItem clientInfo = new ContextItem( "", link.text().get(), link.rel().get(), -1, nodeClient);
+      ContextItem clientInfo = new ContextItem( "", link.text().get(), link.rel().get(), -1, nodeClient );
 
       node.setUserObject( clientInfo );
 
@@ -85,7 +81,7 @@ public class AdministrationModel
       {
          DefaultMutableTreeNode childNode = new DefaultMutableTreeNode();
          node.add( childNode );
-         sync(childNode, parentClient, childTree);
+         sync( childNode, parentClient, childTree );
       }
    }
 
@@ -108,14 +104,14 @@ public class AdministrationModel
       {
          ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
          builder.prototype().string().set( name );
-         contextItem.getClient().getSubClient("organizationalunits" ).postCommand( "createorganizationalunit", builder.newInstance() );
+         contextItem.getClient().getSubClient( "organizationalunits" ).postCommand( "createorganizationalunit", builder.newInstance() );
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_create_new_organization, e );
       }
    }
 
-   public void removeOrganizationalUnit( Object node)
+   public void removeOrganizationalUnit( Object node )
    {
       DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) node;
       ContextItem contextItem = (ContextItem) treeNode.getUserObject();

@@ -17,7 +17,6 @@
 
 package se.streamsource.streamflow.client.infrastructure.ui;
 
-import se.streamsource.streamflow.infrastructure.application.GroupedListItemValue;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.DefaultListCellRenderer;
@@ -35,9 +34,6 @@ public class ListItemListCellRenderer extends DefaultListCellRenderer
       {
          ListItemValue itemValue = (ListItemValue) value;
          String val = itemValue == null ? "" : itemValue.description().get();
-         
-         if (value instanceof GroupedListItemValue)
-            val = "  "+val;
 
          return super.getListCellRendererComponent( list, val, index, isSelected, cellHasFocus );
       } else return super.getListCellRendererComponent( list, value, index, isSelected, cellHasFocus );

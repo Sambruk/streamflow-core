@@ -27,6 +27,7 @@ import org.qi4j.api.structure.Application;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
+import org.qi4j.cache.ehcache.EhCachePoolService;
 import org.qi4j.entitystore.jdbm.JdbmEntityStoreService;
 import org.qi4j.entitystore.map.StateStore;
 import org.qi4j.entitystore.memory.MemoryEntityStoreService;
@@ -116,6 +117,8 @@ public class InfrastructureAssembler
    private void caching( ModuleAssembly moduleAssembly ) throws AssemblyException
    {
       moduleAssembly.addServices( CachingServiceComposite.class ).visibleIn( Visibility.application );
+
+ //     moduleAssembly.addServices( EhCachePoolService.class ).visibleIn( Visibility.layer );
    }
 
    private void attachments( ModuleAssembly module ) throws AssemblyException

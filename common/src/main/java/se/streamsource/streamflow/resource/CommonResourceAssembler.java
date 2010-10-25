@@ -29,12 +29,8 @@ import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.TitledLinkValue;
 import se.streamsource.dci.value.TitledLinksValue;
 import se.streamsource.streamflow.infrastructure.application.AccessPointValue;
-import se.streamsource.streamflow.infrastructure.application.GroupedListItemValue;
 import se.streamsource.streamflow.infrastructure.application.LinkTree;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
-import se.streamsource.streamflow.infrastructure.application.PageListItemValue;
-import se.streamsource.streamflow.infrastructure.application.TreeNodeValue;
-import se.streamsource.streamflow.infrastructure.application.TreeValue;
 import se.streamsource.streamflow.resource.caze.CaseFormDTO;
 import se.streamsource.streamflow.resource.caze.CaseGeneralDTO;
 import se.streamsource.streamflow.resource.caze.CaseValue;
@@ -100,8 +96,6 @@ public class CommonResourceAssembler
             TitledLinkValue.class,
             TitledLinksValue.class,
             ListItemValue.class,
-            GroupedListItemValue.class,
-            PageListItemValue.class,
             CaseValue.class,
             CaseGeneralDTO.class,
             CaseFormDTO.class,
@@ -110,8 +104,6 @@ public class CommonResourceAssembler
             ConversationDTO.class,
             MessageDTO.class,
             LinkTree.class,
-            TreeValue.class,
-            TreeNodeValue.class,
             ProjectSummaryValue.class,
             FieldDTO.class,
             EffectiveFieldsDTO.class,

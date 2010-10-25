@@ -136,6 +136,12 @@
         </dependency>
 
         <dependency>
+            <groupId>org.qi4j</groupId>
+            <artifactId>qi4j-cache-ehcache</artifactId>
+            <version>${version.qi4j-ext}</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.qi4j.extension</groupId>
             <artifactId>qi4j-migration</artifactId>
         </dependency>
