@@ -30,6 +30,7 @@ import org.qi4j.spi.query.NamedQueries;
 import org.qi4j.spi.query.NamedQueryDescriptor;
 import org.qi4j.spi.service.importer.ServiceSelectorImporter;
 import se.streamsource.streamflow.infrastructure.event.replay.DomainEventPlayerService;
+import se.streamsource.streamflow.server.plugin.authentication.UserDetailsValue;
 import se.streamsource.streamflow.web.application.console.ConsoleResultValue;
 import se.streamsource.streamflow.web.application.console.ConsoleScriptValue;
 import se.streamsource.streamflow.web.application.console.ConsoleService;
@@ -147,6 +148,7 @@ public class AppAssembler
    private void security( ModuleAssembly module ) throws AssemblyException
    {
       module.addObjects( AuthenticationFilter.class );
+      module.addValues(UserDetailsValue.class);
       module.addServices( AuthenticationFilterFactoryService.class )
             .identifiedBy( "authentication" )
             .instantiateOnStartup()
