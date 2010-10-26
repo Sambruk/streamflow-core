@@ -51,6 +51,8 @@ public class OrganizationalUnitContext
 
    public LinksValue possiblemoveto()
    {
+      final OrganizationalUnit thisUnit = RoleMap.role( OrganizationalUnit.class );
+
       final LinksBuilder links = new LinksBuilder(vbf);
       links.command( "move" );
       OrganizationQueries queries = RoleMap.role(OrganizationQueries.class);
@@ -64,14 +66,17 @@ public class OrganizationalUnitContext
             return super.visitOrganization( org );
          }
 
+         
+
          @Override
          public boolean visitOrganizationalUnit( OrganizationalUnit ou )
          {
-            links.addDescribable( ou );
+            if (!ou.equals(thisUnit))
+               links.addDescribable( ou );
 
-            return super.visitOrganizationalUnit( ou );
+            return true;
          }
-      }, new OrganizationQueries.ClassSpecification( Organization.class, OrganizationalUnit.class));
+      }, new OrganizationQueries.ClassSpecification( Organization.class, OrganizationalUnits.class, OrganizationalUnit.class));
 
       return links.newLinks();
    }
@@ -92,6 +97,8 @@ public class OrganizationalUnitContext
 
    public LinksValue possiblemergewith()
    {
+      final OrganizationalUnit thisUnit = RoleMap.role( OrganizationalUnit.class );
+
       final LinksBuilder links = new LinksBuilder(vbf);
       links.command( "merge" );
       OrganizationQueries queries = RoleMap.role(OrganizationQueries.class);
@@ -100,11 +107,12 @@ public class OrganizationalUnitContext
          @Override
          public boolean visitOrganizationalUnit( OrganizationalUnit ou )
          {
-            links.addDescribable( ou );
+            if (!ou.equals(thisUnit))
+               links.addDescribable( ou );
 
-            return super.visitOrganizationalUnit( ou );
+            return true;
          }
-      }, new OrganizationQueries.ClassSpecification( OrganizationalUnit.class));
+      }, new OrganizationQueries.ClassSpecification( OrganizationalUnits.class, OrganizationalUnit.class));
 
       return links.newLinks();
    }

@@ -23,6 +23,7 @@ import se.streamsource.streamflow.domain.organization.MergeOrganizationalUnitExc
 import se.streamsource.streamflow.domain.organization.MoveOrganizationalUnitException;
 import se.streamsource.streamflow.domain.organization.OpenProjectExistsException;
 import se.streamsource.streamflow.domain.structure.Removable;
+import se.streamsource.streamflow.web.domain.structure.form.Forms;
 import se.streamsource.streamflow.web.domain.structure.group.Groups;
 import se.streamsource.streamflow.web.domain.structure.project.ProjectRoles;
 import se.streamsource.streamflow.web.domain.structure.project.Projects;
@@ -48,19 +49,7 @@ public interface OrganizationalUnitRefactoring
          implements OrganizationalUnitRefactoring, Data
    {
       @This
-      Projects.Data projects;
-
-      @This
-      ProjectRoles projectRoles;
-
-      @This
-      Groups groups;
-
-      @This
       OrganizationalUnits.Data organizationalUnits;
-
-      @This
-      Removable removable;
 
       @This
       OrganizationalUnit organizationalUnit;
@@ -71,7 +60,7 @@ public interface OrganizationalUnitRefactoring
 
       public void deleteOrganizationalUnit() throws OpenProjectExistsException
       {
-         if (projects.projects().count() > 0)
+         if (((Projects.Data)organizationalUnit).projects().count() > 0)
          {
             throw new OpenProjectExistsException( "There are open projects" );
          } else
@@ -86,7 +75,7 @@ public interface OrganizationalUnitRefactoring
          }
          OrganizationalUnits parent = getParent();
          parent.removeOrganizationalUnit( organizationalUnit );
-         removable.removeEntity();
+         organizationalUnit.removeEntity();
       }
 
       public void moveOrganizationalUnit( OrganizationalUnits to ) throws MoveOrganizationalUnitException
@@ -113,11 +102,17 @@ public interface OrganizationalUnitRefactoring
             throw new MergeOrganizationalUnitException();
          }
 
-         groups.mergeGroups( to );
-         projects.mergeProjects( to );
+         // Move stuff over to merged with OU
+         organizationalUnit.mergeProjects( to );
+         organizationalUnit.mergeGroups( to );
+         organizationalUnit.mergeForms( to );
+         organizationalUnit.mergeCaseTypes( to );
+         organizationalUnit.mergeLabels( to );
+         organizationalUnit.mergeSelectedLabels( to );
+         organizationalUnit.mergeRolePolicy( to );
 
          parent.removeOrganizationalUnit( organizationalUnit );
-         removable.removeEntity();
+         organizationalUnit.removeEntity();
       }
 
       public OrganizationalUnits getParent()

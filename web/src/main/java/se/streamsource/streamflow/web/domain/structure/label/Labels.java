@@ -28,6 +28,7 @@ import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 
 /**
  * JAVADOC
@@ -37,9 +38,11 @@ public interface Labels
 {
    Label createLabel( String name );
 
+   void addLabel(Label label);
+
    void removeLabel( Label label );
 
-   Iterable<Label> getLabels();
+   void mergeLabels( Labels to );
 
    Query<SelectedLabels> usages( Label label );
 
@@ -49,6 +52,8 @@ public interface Labels
       ManyAssociation<Label> labels();
 
       Label createdLabel( DomainEvent event );
+
+      void addedLabel( DomainEvent event, Label label );
 
       void removedLabel( DomainEvent event, Label label );
    }
@@ -72,6 +77,12 @@ public interface Labels
          return label;
       }
 
+      public void addLabel( Label label )
+      {
+         if (!data.labels().contains( label ))
+            addedLabel(DomainEvent.CREATE, label);
+      }
+
       public void removeLabel( Label label )
       {
          if (data.labels().contains( label ))
@@ -81,9 +92,14 @@ public interface Labels
          }
       }
 
-      public Iterable<Label> getLabels()
+      public void mergeLabels( Labels to )
       {
-         return data.labels();
+         while (data.labels().count() > 0)
+         {
+            Label label = data.labels().get( 0 );
+            removedLabel( DomainEvent.CREATE, label );
+            to.addLabel( label );
+         }
       }
 
       public Query<SelectedLabels> usages( Label label )
@@ -104,10 +120,14 @@ public interface Labels
          return label;
       }
 
+      public void addedLabel( DomainEvent event, Label label )
+      {
+         data.labels().add( label );
+      }
+
       public void removedLabel( DomainEvent event, Label label )
       {
          data.labels().remove( label );
-         label.removeEntity();
       }
    }
 }

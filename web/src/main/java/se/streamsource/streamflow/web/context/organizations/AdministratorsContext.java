@@ -66,13 +66,13 @@ public class AdministratorsContext
    {
       UnitOfWork unitOfWork = module.unitOfWorkFactory().currentUnitOfWork();
       Participant participant = unitOfWork.get( Participant.class, participantId.entity().get() );
-      RolePolicy role = RoleMap.role( RolePolicy.class );
+      RolePolicy rolePolicy = RoleMap.role( RolePolicy.class );
 
-      OwningOrganization org = ((OwningOrganization) role);
+      OwningOrganization org = ((OwningOrganization) rolePolicy);
       OrganizationEntity organization = (OrganizationEntity) org.organization().get();
       Role adminRole = organization.getAdministratorRole();
 
-      role.grantRole( participant, adminRole );
+      rolePolicy.grantRole( participant, adminRole );
    }
 
    public LinksValue possibleusers()

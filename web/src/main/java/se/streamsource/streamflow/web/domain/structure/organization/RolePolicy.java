@@ -53,6 +53,8 @@ public interface RolePolicy
 
    void grantAdministratorToCurrentUser();
 
+   void mergeRolePolicy(RolePolicy to);
+
    boolean participantHasRole( Participant participant, Role role );
 
    boolean participantHasPermission( String participant, String permission );
@@ -119,6 +121,19 @@ public interface RolePolicy
          Organization org = orgOwner.organization().get();
          Role administrator = org.getAdministratorRole();
          grantRole( user, administrator );
+      }
+
+      public void mergeRolePolicy( RolePolicy to )
+      {
+         for (ParticipantRolesValue participantRolesValue : policy().get())
+         {
+            Participant participant = uowf.currentUnitOfWork().get( Participant.class, participantRolesValue.participant().get().identity() );
+            for (EntityReference entityReference : participantRolesValue.roles().get())
+            {
+               Role role = uowf.currentUnitOfWork().get( Role.class, entityReference.identity() );
+               to.grantRole( participant, role);
+            }
+         }
       }
 
       public void grantedRole( DomainEvent event, Participant participant, Role role )

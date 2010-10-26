@@ -32,6 +32,8 @@ public interface SelectedLabels
 
    void removeSelectedLabel( Label label );
 
+   void mergeSelectedLabels( SelectedLabels labels );
+
    boolean hasSelectedLabel( Label label );
 
    interface Data
@@ -57,6 +59,16 @@ public interface SelectedLabels
       public void removeSelectedLabel( Label label )
       {
          data.removedSelectedLabel( DomainEvent.CREATE, label );
+      }
+
+      public void mergeSelectedLabels( SelectedLabels to )
+      {
+         while (data.selectedLabels().count() > 0)
+         {
+            Label label = data.selectedLabels().get( 0 );
+            data.removedSelectedLabel( DomainEvent.CREATE, label );
+            to.addSelectedLabel( label );
+         }
       }
 
       public boolean hasSelectedLabel( Label label )

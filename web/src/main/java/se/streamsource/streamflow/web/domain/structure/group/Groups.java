@@ -55,8 +55,6 @@ public interface Groups
       void addedGroup( DomainEvent event, Group group );
 
       void removedGroup( DomainEvent event, Group group );
-
-      Group getGroupByName( String name );
    }
 
    abstract class Mixin
@@ -80,14 +78,12 @@ public interface Groups
 
       public void mergeGroups( Groups groups )
       {
-
          while (data.groups().count() > 0)
          {
             Group group = data.groups().get( 0 );
             data.removedGroup( DomainEvent.CREATE, group );
             groups.addGroup( group );
          }
-
       }
 
       public void addGroup( Group group )
@@ -106,11 +102,6 @@ public interface Groups
          data.removedGroup( DomainEvent.CREATE, group );
          group.removeEntity();
          return true;
-      }
-
-      public Group getGroupByName( String name )
-      {
-         return Describable.Mixin.getDescribable( data.groups(), name );
       }
    }
 }

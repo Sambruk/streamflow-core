@@ -33,6 +33,7 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.web.domain.interaction.gtd.ChangesOwner;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
+import se.streamsource.streamflow.web.domain.structure.project.Project;
 
 /**
  * JAVADOC
@@ -49,6 +50,8 @@ public interface CaseTypes
    boolean removeCaseType( CaseType caseType );
 
    void moveCaseType( CaseType caseType, CaseTypes toCaseTypes );
+
+   void mergeCaseTypes( CaseTypes to );
 
    // Queries
    Query<SelectedCaseTypes> usages( CaseType caseType );
@@ -105,6 +108,16 @@ public interface CaseTypes
          toCaseTypes.addCaseType( caseType );
 
          removedCaseType( DomainEvent.CREATE, caseType );
+      }
+
+      public void mergeCaseTypes( CaseTypes to )
+      {
+         while (data.caseTypes().count() > 0)
+         {
+            CaseType caseType = data.caseTypes().get( 0 );
+            removedCaseType( DomainEvent.CREATE, caseType );
+            to.addCaseType( caseType );
+         }
       }
 
       public boolean removeCaseType( CaseType caseType )

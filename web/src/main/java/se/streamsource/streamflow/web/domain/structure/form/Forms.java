@@ -31,6 +31,8 @@ import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.web.domain.entity.form.FormEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.ChangesOwner;
+import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
+import se.streamsource.streamflow.web.domain.structure.project.Project;
 
 /**
  * JAVADOC
@@ -47,6 +49,8 @@ public interface Forms
 
    void moveForm( Form form, Forms toForms );
 
+   void mergeForms( Forms to );
+
    interface Data
    {
       @Aggregated
@@ -57,8 +61,6 @@ public interface Forms
       void addedForm( DomainEvent create, Form form );
 
       void removedForm( DomainEvent event, Form removedForm );
-
-      Form getFormByName( String name );
    }
 
    abstract class Mixin
@@ -91,12 +93,11 @@ public interface Forms
 
       public void removeForm( Form form )
       {
-         if (!data.forms().contains( form ))
-            return;
-
-         removedForm( DomainEvent.CREATE, form );
-
-         form.removeEntity();
+         if (data.forms().contains( form ))
+         {
+            removedForm( DomainEvent.CREATE, form );
+            form.removeEntity();
+         }
       }
 
       public void moveForm( Form form, Forms toForms )
@@ -120,9 +121,14 @@ public interface Forms
          data.forms().remove( removedForm );
       }
 
-      public Form getFormByName( String name )
+      public void mergeForms( Forms to )
       {
-         return Describable.Mixin.getDescribable( data.forms(), name );
+         while (data.forms().count() > 0)
+         {
+            Form form = data.forms().get( 0 );
+            removedForm( DomainEvent.CREATE, form );
+            to.addForm( form );
+         }
       }
    }
 }

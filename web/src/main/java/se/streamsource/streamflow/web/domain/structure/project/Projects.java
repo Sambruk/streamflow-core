@@ -46,6 +46,8 @@ public interface Projects
    @ChangesOwner
    void addProject( Project project );
 
+   void mergeProjects( Projects projects );
+
    interface Data
    {
       @Aggregated
@@ -56,10 +58,6 @@ public interface Projects
       void removedProject( DomainEvent event, Project project );
 
       void addedProject( DomainEvent event, Project project );
-
-      void mergeProjects( Projects projects );
-
-      Project getProjectByName( String name );
    }
 
    abstract class Mixin
@@ -99,7 +97,7 @@ public interface Projects
          while (data.projects().count() > 0)
          {
             Project project = data.projects().get( 0 );
-            removeProject( project );
+            removedProject( DomainEvent.CREATE, project );
             projects.addProject( project );
          }
       }
@@ -114,20 +112,14 @@ public interface Projects
 
       public boolean removeProject( Project project )
       {
-         if (!data.projects().contains( project ))
+         if (data.projects().contains( project ))
+         {
+
+            data.removedProject( DomainEvent.CREATE, project );
+            project.removeEntity();
+            return true;
+         } else
             return false;
-
-         data.removedProject( DomainEvent.CREATE, project );
-         project.removeEntity();              
-         return true;
       }
-
-      public Project getProjectByName( String name )
-      {
-         return Describable.Mixin.getDescribable( data.projects(), name );
-      }
-
    }
-
-
 }
