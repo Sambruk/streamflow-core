@@ -29,6 +29,7 @@ import se.streamsource.streamflow.domain.form.DateFieldValue;
 import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
 import se.streamsource.streamflow.domain.form.FieldValue;
 import se.streamsource.streamflow.domain.form.FormDraftValue;
+import se.streamsource.streamflow.domain.form.FormSignatureValue;
 import se.streamsource.streamflow.domain.form.ListBoxFieldValue;
 import se.streamsource.streamflow.domain.form.NumberFieldValue;
 import se.streamsource.streamflow.domain.form.OpenSelectionFieldValue;
@@ -39,6 +40,7 @@ import se.streamsource.streamflow.domain.form.TextFieldValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.util.Strings;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -53,13 +55,23 @@ public interface FormDraft
 
    void changeFormDraftValue( FormDraftValue formDraftValue );
 
-   void changeFieldValue( EntityReference fieldId, String newValue);
+   void changeFieldValue( EntityReference fieldId, String fieldValue );
+
+   void addFormSignatureValue( FormSignatureValue formSignatureValue );
+
+   void removeFormSignatures( );
 
    interface Data
    {
       Property<FormDraftValue> formDraftValue();
 
       void changedFormDraft( DomainEvent event, FormDraftValue formDraftValue);
+
+      void changedFieldValue( DomainEvent event, EntityReference fieldId, String fieldValue );
+
+      void addedFormSignatureValue( DomainEvent event, FormSignatureValue formSignatureValue);
+
+      void removedFormSignatures( DomainEvent event );
    }
 
    abstract class Mixin
@@ -77,9 +89,9 @@ public interface FormDraft
 
       public void changeFieldValue( EntityReference fieldId, String newValue )
       {
-         ValueBuilder<FormDraftValue> builder = formDraftValue().get().buildWith();
+         FormDraftValue formDraft = formDraftValue().get();
 
-         for (PageSubmissionValue pageSubmissionValue : builder.prototype().pages().get())
+         for (PageSubmissionValue pageSubmissionValue : formDraft.pages().get())
          {
             for (FieldSubmissionValue field : pageSubmissionValue.fields().get())
             {
@@ -126,14 +138,24 @@ public interface FormDraft
 
                   if ( update )
                   {
-                     field.value().set( newValue );
-                     changedFormDraft( DomainEvent.CREATE, builder.newInstance() );
-                     return;
+                     changedFieldValue( DomainEvent.CREATE, fieldId, newValue );
                   }
+                  return;
                }
             }
-
          }
+      }
+
+
+      public void addFormSignatureValue( FormSignatureValue formSignatureValue )
+      {
+         //validate
+         addedFormSignatureValue( DomainEvent.CREATE, formSignatureValue );
+      }
+
+      public void removeFormSignatures()
+      {
+         removedFormSignatures( DomainEvent.CREATE );
       }
 
       private boolean validate( OpenSelectionFieldValue openSelectionFieldValue, String newValue )
@@ -226,13 +248,39 @@ public interface FormDraft
          }
 
          return value != null;
-
       }
 
 
       public void changedFormDraft( DomainEvent event, FormDraftValue formDraftValue )
       {
          formDraftValue().set( formDraftValue );
+      }
+
+      public void changedFieldValue( DomainEvent event, EntityReference fieldId, String fieldValue )
+      {
+         ValueBuilder<FormDraftValue> builder = formDraftValue().get().buildWith();
+         for (PageSubmissionValue page : builder.prototype().pages().get())
+         {
+            for (FieldSubmissionValue field : page.fields().get())
+            {
+               if (field.field().get().field().get().equals(fieldId))
+               {
+                  field.value().set( fieldValue );
+               }
+            }
+         }
+
+         formDraftValue().set( builder.newInstance() );
+      }
+
+      public void addedFormSignatureValue( DomainEvent event, FormSignatureValue formSignatureValue )
+      {
+         formDraftValue().get().signatures().get().add( formSignatureValue );
+      }
+
+      public void removedFormSignatures( DomainEvent event )
+      {
+         formDraftValue().get().signatures().set( Collections.<FormSignatureValue>emptyList() );
       }
    }
 

@@ -21,6 +21,7 @@ import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.streamflow.domain.form.FieldValueDTO;
 import se.streamsource.streamflow.domain.form.FormDraftValue;
+import se.streamsource.streamflow.domain.form.FormSignatureValue;
 import se.streamsource.streamflow.web.domain.structure.form.FormDraft;
 import se.streamsource.streamflow.web.domain.structure.form.FormDrafts;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedForms;
@@ -47,6 +48,18 @@ public class CaseFormDraftContext
    {
       FormDraft formDraft = role( FormDraft.class);
       formDraft.changeFieldValue( field.field().get(), field.value().get() );
+   }
+
+   public void addsignature( FormSignatureValue signature )
+   {
+      FormDraft formDraft = role( FormDraft.class );
+      formDraft.addFormSignatureValue( signature );
+   }
+
+   public void removeSignatures()
+   {
+      FormDraft formDraft = role( FormDraft.class );
+      formDraft.removeFormSignatures();
    }
 
    public void submit()

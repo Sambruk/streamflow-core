@@ -58,4 +58,12 @@ public interface FormSignatureValue
     * @return
     */
    Property<String> provider();
+
+   /**
+    * This is the name of the signature.
+    * This is taken from the name of the required
+    * signature value on the form definition
+    * @return
+    */
+   Property<String> name();
 }
