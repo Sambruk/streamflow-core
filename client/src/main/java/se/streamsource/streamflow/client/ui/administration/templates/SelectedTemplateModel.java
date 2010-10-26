@@ -82,11 +82,9 @@ public class SelectedTemplateModel extends Observable implements Refreshable
       }
    }
 
-   public void setTemplate( String id )
+   public void setTemplate( LinkValue link )
    {
-      ValueBuilder<EntityValue> builder = vbf.newValueBuilder( EntityValue.class );
-      builder.prototype().entity().set( id );
-      client.postCommand( "settemplate", builder.newInstance() );
+      client.postLink(link);
    }
 
    public void removeTemplate()

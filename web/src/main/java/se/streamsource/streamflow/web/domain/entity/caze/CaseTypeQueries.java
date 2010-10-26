@@ -69,8 +69,6 @@ public interface CaseTypeQueries
 
    List<Project> possibleProjects();
 
-   List<User> possibleUsers();
-
    class Mixin
          implements CaseTypeQueries
    {
@@ -243,49 +241,6 @@ public interface CaseTypeQueries
          } else
          {
             return Collections.emptyList();
-         }
-      }
-
-      public List<User> possibleUsers()
-      {
-         Owner owner = ownable.owner().get();
-         if (owner instanceof OrganizationParticipations)
-         {
-            OrganizationParticipations.Data orgs = (OrganizationParticipations.Data) owner;
-
-            List<User> users = new ArrayList<User>();
-
-            for (Organization organization : orgs.organizations())
-            {
-               addUsers( users, organization );
-            }
-
-            return users;
-         } else if (owner instanceof OwningOrganizationalUnit.Data)
-         {
-            OwningOrganizationalUnit.Data ouOwner = (OwningOrganizationalUnit.Data) owner;
-            OrganizationalUnit ou = ouOwner.organizationalUnit().get();
-            Organization org = ((OwningOrganization) ou).organization().get();
-
-            List<User> users = new ArrayList<User>();
-
-            addUsers( users, org );
-
-            return users;
-         } else
-         {
-            return Collections.emptyList();
-         }
-      }
-
-      private void addUsers( List<User> lvb, Organization organization )
-      {
-         OrganizationParticipations.Data userOrgs = QueryExpressions.templateFor( OrganizationParticipations.Data.class );
-         Query<User> query = qbf.newQueryBuilder( User.class ).where( QueryExpressions.contains( userOrgs.organizations(), organization ) ).newQuery( uowf.currentUnitOfWork() );
-
-         for (User user : query)
-         {
-            lvb.add( user );
          }
       }
    }

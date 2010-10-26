@@ -26,9 +26,9 @@ import org.qi4j.api.value.ValueBuilder;
 
 import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.LinkValue;
-import se.streamsource.dci.value.LinksBuilder;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.StringValue;
+import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.resource.organization.SelectedTemplateValue;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
@@ -78,7 +78,7 @@ public class SelectedTemplateContext
 
    public LinksValue possibletemplates( StringValue extensionFilter )
    {
-      LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
+      LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() ).command( "settemplate" );
 
       Attachments.Data attachments = (Attachments.Data) role( Attachments.Data.class );
       SelectedTemplate.Data template = role( SelectedTemplate.Data.class );
@@ -88,7 +88,7 @@ public class SelectedTemplateContext
          if (!attachment.equals( template.selectedTemplate().get() )
                && ((AttachedFile.Data) attachment).mimeType().get().endsWith( extensionFilter.string().get() ))
          {
-            linksBuilder.addLink( ((AttachedFile.Data) attachment).name().get(), EntityReference.getEntityReference( attachment ) );
+            linksBuilder.addLink(((AttachedFile.Data) attachment).name().get(), attachment.toString() );
          }
       }
       return linksBuilder.newLinks();

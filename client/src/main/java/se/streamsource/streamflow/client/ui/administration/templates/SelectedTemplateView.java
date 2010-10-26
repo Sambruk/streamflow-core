@@ -41,6 +41,7 @@ import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 import se.streamsource.streamflow.client.ui.CommandTask;
 import se.streamsource.streamflow.client.ui.caze.RemovableLabel;
 import se.streamsource.streamflow.client.ui.workspace.FilterListDialog;
+import se.streamsource.streamflow.client.ui.workspace.SelectLinkDialog;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
@@ -67,7 +68,7 @@ public class SelectedTemplateView extends JPanel
    DialogService dialogs;
 
    @Uses
-   protected ObjectBuilder<FilterListDialog> templateDialog;
+   protected ObjectBuilder<SelectLinkDialog> templateDialog;
 
    private StateBinder selectedTemplateBinder;
 
@@ -156,7 +157,7 @@ public class SelectedTemplateView extends JPanel
          public void command()
                throws Exception
          {
-            FilterListDialog dialog = templateDialog.use(
+            SelectLinkDialog dialog = templateDialog.use(
                   i18n.text( WorkspaceResources.choose_template ),
                   model.getPossibleTemplates() ).newInstance();
 
@@ -164,7 +165,7 @@ public class SelectedTemplateView extends JPanel
 
             if (dialog.getSelected() != null)
             {
-               model.setTemplate( dialog.getSelected().identity() );
+               model.setTemplate( dialog.getSelected() );
             }
          }
       };

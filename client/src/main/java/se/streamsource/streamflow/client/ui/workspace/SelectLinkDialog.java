@@ -45,38 +45,35 @@ public class SelectLinkDialog
    public LinkValue selected;
    public JList list;
 
-   public SelectLinkDialog( final @Uses EventList<TitledLinkValue> links,
-                                      @Service ApplicationContext context,
-                                      @Structure ObjectBuilderFactory obf )
-   {
-      super( );
-
-      setName( i18n.text( WorkspaceResources.search_projects_users ) );
-      setActionMap( context.getActionMap( this ) );
-
-      GroupedFilteredList list = new GroupedFilteredList();
-      list.getList().setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
-      list.setEventList( links );
-      this.list = list.getList();
-
-      add( new JScrollPane( list ));
-   }
-
    public SelectLinkDialog( final @Service ApplicationContext context,
-                                     @Uses EventList<LinkValue> links,
+                                     @Uses EventList<? extends LinkValue> links,
                                       @Structure ObjectBuilderFactory obf )
    {
       super( );
 
-      setName( i18n.text( WorkspaceResources.search_projects_users ) );
       setActionMap( context.getActionMap( this ) );
 
-      FilteredList list = new FilteredList();
-      list.getList().setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
-      list.setEventList( links );
-      this.list = list.getList();
+      for (LinkValue link : links)
+      {
+         if (link instanceof TitledLinkValue)
+         {
+            GroupedFilteredList list = new GroupedFilteredList();
+            list.getList().setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
+            list.setEventList( (EventList<TitledLinkValue>) links );
+            add(list);
+            this.list = list.getList();
+            break;
+         } else
+         {
+            FilteredList list = new FilteredList();
+            list.getList().setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
+            list.setEventList( (EventList<LinkValue>) links );
+            add(list);
+            this.list = list.getList();
+            break;
+         }
+      }
 
-      add( new JScrollPane( list ));
    }
 
    public LinkValue getSelected()

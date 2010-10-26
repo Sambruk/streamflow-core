@@ -188,7 +188,7 @@ public interface MailService
             MimeMessage msg = new MimeMessage( session );
             msg.setSender( new InternetAddress( config.configuration().from().get() ) );
             msg.setSubject( "[" + caseId + "]" + conversation.getDescription()
-                  + "(" + EntityReference.getEntityReference( message.conversation().get() ).identity() + ":" + event.entity().get() + ")" );
+                  + "(" + message.conversation().get().toString() + ":" + event.entity().get() + ")" );
 
             String formattedMsg = message.body().get();
             if (formattedMsg.contains( "<body>" ))

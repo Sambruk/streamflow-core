@@ -46,11 +46,11 @@ public class LinksBuilder<T extends LinksBuilder>
       linkBuilder = vbf.newValueBuilder( LinkValue.class );
    }
 
-   public T path(@Optional String subPath)
+   public T path( @Optional String subPath )
    {
       try
       {
-         path = subPath == null ? null : URLEncoder.encode( subPath, "UTF-8");
+         path = subPath == null ? null : URLEncoder.encode( subPath, "UTF-8" );
       } catch (UnsupportedEncodingException e)
       {
          e.printStackTrace();
@@ -59,7 +59,7 @@ public class LinksBuilder<T extends LinksBuilder>
       return (T) this;
    }
 
-   public T rel(String rel)
+   public T rel( String rel )
    {
       this.rel = rel;
 
@@ -75,13 +75,8 @@ public class LinksBuilder<T extends LinksBuilder>
 
    public T addLink( LinkValue linkValue )
    {
-      linksBuilder.prototype().links().get().add( linkValue  );
+      linksBuilder.prototype().links().get().add( linkValue );
       return (T) this;
-   }
-
-   public T addLink( String description, EntityReference ref )
-   {
-      return (T) addLink(description, ref.identity());
    }
 
    public T addLink( String description, String id )
@@ -91,12 +86,12 @@ public class LinksBuilder<T extends LinksBuilder>
          linkBuilder.prototype().text().set( description );
          linkBuilder.prototype().id().set( id );
          if (command != null)
-            linkBuilder.prototype().href().set( command+"?entity="+id );
+            linkBuilder.prototype().href().set( command + "?entity=" + id );
          else
-            linkBuilder.prototype().href().set( (path == null ? "" : path+"/")+URLEncoder.encode( id, "UTF-8")+"/" );
+            linkBuilder.prototype().href().set( (path == null ? "" : path + "/") + URLEncoder.encode( id, "UTF-8" ) + "/" );
          linkBuilder.prototype().rel().set( rel );
 
-         addLink(linkBuilder.newInstance());
+         addLink( linkBuilder.newInstance() );
 
          return (T) this;
       } catch (UnsupportedEncodingException e)
@@ -114,7 +109,7 @@ public class LinksBuilder<T extends LinksBuilder>
       linkBuilder.prototype().href().set( href );
       linkBuilder.prototype().classes().set( classes );
 
-      addLink(linkBuilder.newInstance());
+      addLink( linkBuilder.newInstance() );
 
       return (T) this;
    }
@@ -128,9 +123,9 @@ public class LinksBuilder<T extends LinksBuilder>
       titledLinkBuilder.prototype().id().set( ref.identity() );
 
       if (command != null)
-         titledLinkBuilder.prototype().href().set( command+"?entity="+ref.identity() );
+         titledLinkBuilder.prototype().href().set( command + "?entity=" + ref.identity() );
       else
-         titledLinkBuilder.prototype().href().set( (path == null ? "" : path+"/")+ref.identity()+"/" );
+         titledLinkBuilder.prototype().href().set( (path == null ? "" : path + "/") + ref.identity() + "/" );
       titledLinkBuilder.prototype().rel().set( rel );
 
       titledLinkBuilder.prototype().title().set( title );
@@ -151,9 +146,9 @@ public class LinksBuilder<T extends LinksBuilder>
       titledLinkBuilder.prototype().id().set( id );
 
       if (command != null)
-         titledLinkBuilder.prototype().href().set( command+"?entity="+id );
+         titledLinkBuilder.prototype().href().set( command + "?entity=" + id );
       else
-         titledLinkBuilder.prototype().href().set( (path == null ? "" : path+"/")+href );
+         titledLinkBuilder.prototype().href().set( (path == null ? "" : path + "/") + href );
       titledLinkBuilder.prototype().rel().set( rel );
 
       titledLinkBuilder.prototype().title().set( title );

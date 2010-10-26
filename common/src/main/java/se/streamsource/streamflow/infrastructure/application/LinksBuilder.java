@@ -37,7 +37,7 @@ public class LinksBuilder
    {
       for (Describable item : items)
       {
-         addLink( item.getDescription(), EntityReference.getEntityReference( item ) );
+         addLink( item.getDescription(), item.toString() );
       }
 
       return this;
@@ -45,7 +45,7 @@ public class LinksBuilder
 
    public LinksBuilder addDescribable( Describable item )
    {
-      addLink( item.getDescription(), EntityReference.getEntityReference( item ) );
+      addLink( item.getDescription(), item.toString() );
       return this;
    }
 

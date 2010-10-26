@@ -49,7 +49,6 @@ import se.streamsource.streamflow.resource.organization.SelectedTemplateValue;
 import se.streamsource.streamflow.resource.overview.ProjectSummaryValue;
 import se.streamsource.streamflow.resource.roles.BooleanDTO;
 import se.streamsource.streamflow.resource.roles.DateDTO;
-import se.streamsource.streamflow.resource.roles.EntityReferenceDTO;
 import se.streamsource.streamflow.resource.roles.IntegerDTO;
 import se.streamsource.streamflow.resource.roles.NamedIndexDTO;
 import se.streamsource.streamflow.resource.user.ChangePasswordCommand;
@@ -78,7 +77,6 @@ public class CommonResourceAssembler
             DateDTO.class,
             IntegerDTO.class,
             NamedIndexDTO.class,
-            EntityReferenceDTO.class,
             EntityValue.class,
             NewUserCommand.class,
             NewProxyUserCommand.class,
