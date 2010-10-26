@@ -168,8 +168,8 @@ public class InfrastructureAssembler
       }
 
       module.addObjects( EntityStateSerializer.class, EntityTypeSerializer.class );
-      module.addServices( RdfIndexingEngineService.class ).instantiateOnStartup().visibleIn( Visibility.application ).
-            withConcerns( PerformanceLogConcern.class );
+      module.addServices( RdfIndexingEngineService.class ).instantiateOnStartup().visibleIn( Visibility.application );
+//            withConcerns( PerformanceLogConcern.class );
       module.addServices( RdfQueryParserFactory.class );
    }
 
@@ -187,8 +187,8 @@ public class InfrastructureAssembler
       } else if (mode.equals( Application.Mode.production ))
       {
          // JDBM storage
-         module.addServices( JdbmEntityStoreService.class ).identifiedBy( "data" ).visibleIn( Visibility.application ).
-               withConcerns( EntityStorePerformanceCheck.class );
+         module.addServices( JdbmEntityStoreService.class ).identifiedBy( "data" ).visibleIn( Visibility.application );
+//               withConcerns( EntityStorePerformanceCheck.class );
          module.addServices( UuidIdentityGeneratorService.class ).visibleIn( Visibility.application );
 
          // Migration service
@@ -557,6 +557,7 @@ public class InfrastructureAssembler
       }
    }
 
+/*
    public abstract static class EntityStorePerformanceCheck
          extends ConcernOf<EntityStoreSPI>
          implements EntityStoreSPI
@@ -595,4 +596,5 @@ public class InfrastructureAssembler
          }
       }
    }
+*/
 }
