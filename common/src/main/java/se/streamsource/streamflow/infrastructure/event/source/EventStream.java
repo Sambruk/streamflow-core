@@ -1,4 +1,5 @@
-/*
+/**
+ *
  * Copyright 2009-2010 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,17 +17,14 @@
 
 package se.streamsource.streamflow.infrastructure.event.source;
 
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
-
-import java.io.IOException;
-
 /**
- * Store of domain-events. Internally it stores TransactionEvents, which is a timestamped
- * list of DomainEvents. The timestamp is when the TransactionEvents was created. Moving
- * events from one store to another will create new TransactionEvents with new timestamps.
+ * Stream of event transactions. Registering with a stream will
+ * allow the subscriber to get callbacks when new transactions
+ * are available. The callbacks are done asynchronously.
  */
-public interface EventStore
+public interface EventStream
 {
-   TransactionEvents storeEvents(Iterable<DomainEvent> events) throws IOException;
+   void registerListener( TransactionListener listener );
+
+   void unregisterListener( TransactionListener listener );
 }

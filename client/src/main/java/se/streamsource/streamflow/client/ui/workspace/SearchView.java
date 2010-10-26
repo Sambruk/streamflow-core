@@ -138,7 +138,7 @@ public class SearchView
 
    public void notifyTransactions( Iterable<TransactionEvents> transactions )
    {
-      if (Events.matches( transactions, Specifications.or(Events.onEntities( model.getList() ), Events.withNames( "createdSavedSearch", "removedSavedSearch" ))))
+      if (Events.matches( Specifications.or(Events.onEntities( model.getList() ), Events.withNames( "createdSavedSearch", "removedSavedSearch" )), transactions ))
          model.refresh();
    }
 

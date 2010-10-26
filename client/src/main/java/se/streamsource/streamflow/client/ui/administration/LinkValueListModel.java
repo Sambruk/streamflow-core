@@ -83,8 +83,8 @@ public class LinkValueListModel
    public void notifyTransactions( Iterable<TransactionEvents> transactions )
    {
       // Refresh if either the owner of the list has changed, or if any of the entities in the list has changed
-      if (matches( transactions, or( onEntities( client.getReference().getParentRef().getLastSegment() ), onEntities( client.getReference().getLastSegment() ), 
-            Specifications.and( Events.withNames( "changedDescription" ), onEntities( linkValues )))))
+      if (matches( or( onEntities( client.getReference().getParentRef().getLastSegment() ), onEntities( client.getReference().getLastSegment() ),
+            Specifications.and( Events.withNames( "changedDescription" ), onEntities( linkValues ))), transactions ))
          refresh();
    }
 

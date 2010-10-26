@@ -18,6 +18,7 @@ package se.streamsource.streamflow.web.resource.organizations;
 
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.SubResource;
+import se.streamsource.streamflow.web.context.organizations.OrganizationalUnitsContext;
 import se.streamsource.streamflow.web.resource.administration.ProxyUsersResource;
 import se.streamsource.streamflow.web.context.structure.DescribableContext;
 import se.streamsource.streamflow.web.resource.workspace.cases.AttachmentsResource;
@@ -35,15 +36,9 @@ public class OrganizationResource
 {
    public OrganizationResource()
    {
-      super( DescribableContext.class );
+      super( OrganizationalUnitsContext.class, DescribableContext.class );
    }
    
-   @SubResource
-   public void organizationalunits()
-   {
-      subResource( OrganizationalUnitsResource.class );
-   }
-
    @SubResource
    public void administrators( )
    {

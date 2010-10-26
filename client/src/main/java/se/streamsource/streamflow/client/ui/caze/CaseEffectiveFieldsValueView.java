@@ -83,7 +83,7 @@ public class CaseEffectiveFieldsValueView
 
    public void notifyTransactions( Iterable<TransactionEvents> transactions )
    {
-      if (Events.matches( transactions, Events.withNames( "submittedForm" ) ))
+      if (Events.matches( Events.withNames( "submittedForm" ), transactions ))
       {
          model.refresh();
       }

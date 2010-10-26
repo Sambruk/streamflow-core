@@ -75,9 +75,9 @@ public class Events
       };
    }
 
-   public static boolean matches( Iterable<TransactionEvents> transactions, Specification<DomainEvent> specification )
+   public static boolean matches( Specification<DomainEvent> specification, Iterable<TransactionEvents> transactions )
    {
-      return filter( events( transactions ), specification ).iterator().hasNext();
+      return filter( specification, events( transactions ) ).iterator().hasNext();
    }
 
    // Common specifications

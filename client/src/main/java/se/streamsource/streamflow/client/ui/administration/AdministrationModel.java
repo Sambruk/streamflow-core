@@ -17,6 +17,8 @@
 
 package se.streamsource.streamflow.client.ui.administration;
 
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
@@ -26,8 +28,10 @@ import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.LinkValue;
+import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.ui.ContextItem;
 import se.streamsource.streamflow.infrastructure.application.LinkTree;
@@ -104,7 +108,7 @@ public class AdministrationModel
       {
          ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
          builder.prototype().string().set( name );
-         contextItem.getClient().getSubClient( "organizationalunits" ).postCommand( "createorganizationalunit", builder.newInstance() );
+         contextItem.getClient().postCommand( "createorganizationalunit", builder.newInstance() );
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_create_new_organization, e );
@@ -130,6 +134,38 @@ public class AdministrationModel
          }
 
       }
+   }
+
+   public EventList<LinkValue> possibleMoveTo(Object node)
+   {
+      DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) node;
+      ContextItem contextItem = (ContextItem) treeNode.getUserObject();
+      EventList<LinkValue> links = new BasicEventList<LinkValue>();
+      EventListSynch.synchronize(contextItem.getClient().query( "possiblemoveto", LinksValue.class ).links().get(), links);
+      return links;
+   }
+
+   public void move(Object node, LinkValue link)
+   {
+      DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) node;
+      ContextItem contextItem = (ContextItem) treeNode.getUserObject();
+      contextItem.getClient().postLink( link );
+   }
+
+   public EventList<LinkValue> possibleMergeWith(Object node)
+   {
+      DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) node;
+      ContextItem contextItem = (ContextItem) treeNode.getUserObject();
+      EventList<LinkValue> links = new BasicEventList<LinkValue>();
+      EventListSynch.synchronize(contextItem.getClient().query( "possiblemergewith", LinksValue.class ).links().get(), links);
+      return links;
+   }
+
+   public void merge(Object node, LinkValue link)
+   {
+      DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) node;
+      ContextItem contextItem = (ContextItem) treeNode.getUserObject();
+      contextItem.getClient().postLink( link );
    }
 
    public void notifyTransactions( Iterable<TransactionEvents> transactions )

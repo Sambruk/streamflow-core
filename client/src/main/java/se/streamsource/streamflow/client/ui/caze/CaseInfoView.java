@@ -126,7 +126,7 @@ public class CaseInfoView extends JPanel
 
    public void notifyTransactions( Iterable<TransactionEvents> transactions )
    {
-      if (matches( transactions, withNames( "changedOwner", "changedCaseType", "changedDescription", "assignedTo", "unassigned", "changedStatus" ) ))
+      if (matches( withNames( "changedOwner", "changedCaseType", "changedDescription", "assignedTo", "unassigned", "changedStatus" ), transactions ))
       {
          refresh();
       }

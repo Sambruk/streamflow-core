@@ -79,7 +79,7 @@ public class CaseLabelsModel
 
    public void notifyTransactions( Iterable<TransactionEvents> transactions )
    {
-      if (Events.matches( transactions, Events.withNames("addedLabel", "removedLabel" )))
+      if (Events.matches( Events.withNames("addedLabel", "removedLabel" ), transactions ))
          refresh();
    }
 }

@@ -95,7 +95,7 @@ public class CaseSubmittedFormsView
 
    public void notifyTransactions( Iterable<TransactionEvents> transactions )
    {
-      if (matches( transactions, withNames("submittedForm" )))
+      if (matches( withNames("submittedForm" ), transactions ))
       {
          model.refresh();
       }

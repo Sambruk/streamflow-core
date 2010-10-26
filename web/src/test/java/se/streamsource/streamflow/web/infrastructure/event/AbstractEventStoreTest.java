@@ -37,7 +37,7 @@ import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.factory.EventCreationConcern;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.factory.DomainEventFactoryService;
-import se.streamsource.streamflow.infrastructure.event.source.EventStore;
+import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
 import se.streamsource.streamflow.infrastructure.event.source.helper.TransactionTimestampFilter;
 import se.streamsource.streamflow.infrastructure.time.TimeService;
@@ -61,7 +61,7 @@ public abstract class AbstractEventStoreTest
    }
 
    @Service
-   EventStore eventStore;
+   EventSource eventSource;
 
    @Before
    public void initStore() throws UnitOfWorkCompletionException
@@ -87,7 +87,7 @@ public abstract class AbstractEventStoreTest
    {
       final int[] count = new int[1];
 
-      eventStore.transactionsAfter( 0, new TransactionVisitor()
+      eventSource.transactionsAfter( 0, new TransactionVisitor()
       {
          public boolean visit( TransactionEvents transaction )
          {
@@ -106,7 +106,7 @@ public abstract class AbstractEventStoreTest
    {
       final int[] count = new int[1];
 
-      eventStore.transactionsAfter( 0, new TransactionVisitor()
+      eventSource.transactionsAfter( 0, new TransactionVisitor()
       {
          public boolean visit( TransactionEvents transaction )
          {
@@ -123,7 +123,7 @@ public abstract class AbstractEventStoreTest
    public void getEventsAfterDate()
    {
       TransactionTimestampFilter timestamp;
-      eventStore.transactionsAfter( 0, timestamp = new TransactionTimestampFilter( 0, new TransactionVisitor()
+      eventSource.transactionsAfter( 0, timestamp = new TransactionTimestampFilter( 0, new TransactionVisitor()
       {
          int count = 0;
 
@@ -138,7 +138,7 @@ public abstract class AbstractEventStoreTest
       final long lastTimeStamp = timestamp.lastTimestamp();
 
       final int[] count = new int[1];
-      eventStore.transactionsAfter( lastTimeStamp, new TransactionVisitor()
+      eventSource.transactionsAfter( lastTimeStamp, new TransactionVisitor()
       {
          public boolean visit( TransactionEvents transaction )
          {

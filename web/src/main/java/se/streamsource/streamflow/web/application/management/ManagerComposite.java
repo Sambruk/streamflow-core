@@ -43,17 +43,14 @@ import org.qi4j.spi.structure.ModuleSPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.factory.DomainEventFactory;
 import se.streamsource.streamflow.infrastructure.event.replay.DomainEventPlayer;
 import se.streamsource.streamflow.infrastructure.event.replay.EventReplayException;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
-import se.streamsource.streamflow.infrastructure.event.source.EventStore;
+import se.streamsource.streamflow.infrastructure.event.source.EventStream;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
-import se.streamsource.streamflow.infrastructure.event.source.helper.Events;
-import se.streamsource.streamflow.util.Iterables;
 import se.streamsource.streamflow.web.application.statistics.CaseStatistics;
 import se.streamsource.streamflow.web.application.statistics.StatisticsStoreException;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
@@ -125,7 +122,7 @@ public interface ManagerComposite
       ImportSupport importDatabase;
 
       @Service
-      EventStore eventStore;
+      EventSource eventSource;
 
       @Service
       EntityFinder entityFinder;
@@ -137,7 +134,7 @@ public interface ManagerComposite
       FileConfiguration fileConfig;
 
       @Service
-      EventSource source;
+      EventStream stream;
 
       @Service
       DomainEventFactory domainEventFactory;
@@ -187,16 +184,16 @@ public interface ManagerComposite
          {
             public void notifyTransactions( Iterable<TransactionEvents> transactions )
             {
-               failedLogins += count( filter( events( transactions ), withNames("failedLogin" ) ) );
+               failedLogins += count( filter( withNames("failedLogin" ), events( transactions ) ) );
             }
          };
 
-         source.registerListener( failedLoginListener );
+         stream.registerListener( failedLoginListener );
       }
 
       public void stop() throws Exception
       {
-         source.unregisterListener( failedLoginListener );
+         stream.unregisterListener( failedLoginListener );
       }
 
       // Operations
@@ -374,7 +371,7 @@ public interface ManagerComposite
             {
                // Replay transactions
                final EventReplayException[] ex = new EventReplayException[1];
-               eventStore.transactionsAfter( latestBackupDate.getTime() - 60000, new TransactionVisitor()
+               eventSource.transactionsAfter( latestBackupDate.getTime() - 60000, new TransactionVisitor()
                {
                   public boolean visit( TransactionEvents transaction )
                   {
@@ -650,7 +647,7 @@ public interface ManagerComposite
 
          final IOException[] ex = new IOException[1];
 
-         eventStore.transactionsAfter( 0, new TransactionVisitor()
+         eventSource.transactionsAfter( 0, new TransactionVisitor()
          {
             public boolean visit( TransactionEvents transaction )
             {
@@ -694,7 +691,7 @@ public interface ManagerComposite
 
          final IOException[] ex = new IOException[1];
 
-         eventStore.transactionsAfter( from, new TransactionVisitor()
+         eventSource.transactionsAfter( from, new TransactionVisitor()
          {
             public boolean visit( TransactionEvents transaction )
             {

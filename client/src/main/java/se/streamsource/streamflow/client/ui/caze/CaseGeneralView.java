@@ -411,7 +411,7 @@ public class CaseGeneralView extends JScrollPane implements Observer, Transactio
 
    public void notifyTransactions( Iterable<TransactionEvents> transactions )
    {
-      if (matches( transactions, withNames("addedLabel","removedLabel", "changedOwner", "changedCaseType", "changedStatus" ) ))
+      if (matches( withNames("addedLabel","removedLabel", "changedOwner", "changedCaseType", "changedStatus" ), transactions ))
       {
          refresh();
       }

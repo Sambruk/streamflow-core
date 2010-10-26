@@ -43,6 +43,7 @@ import se.streamsource.streamflow.domain.attachment.AttachmentValue;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.source.helper.Events;
+import se.streamsource.streamflow.util.Iterables;
 
 import javax.swing.ActionMap;
 import javax.swing.JButton;
@@ -65,6 +66,9 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+
+import static se.streamsource.streamflow.infrastructure.event.source.helper.Events.withNames;
+import static se.streamsource.streamflow.util.Iterables.filter;
 
 /**
  * JAVADOC
@@ -222,7 +226,7 @@ public class AttachmentsView
 
    public void notifyTransactions( Iterable<TransactionEvents> transactions )
    {
-      if (Events.matches( transactions, Events.withNames("addedAttachment", "removedAttachment" )))
+      if (Events.matches( Events.withNames("addedAttachment", "removedAttachment" ), transactions ))
          attachmentsModel.refresh();
    }
 

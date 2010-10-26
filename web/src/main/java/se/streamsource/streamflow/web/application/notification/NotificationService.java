@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
-import se.streamsource.streamflow.infrastructure.event.source.EventStore;
+import se.streamsource.streamflow.infrastructure.event.source.EventStream;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
 import se.streamsource.streamflow.infrastructure.event.source.helper.TransactionTracker;
 import se.streamsource.streamflow.web.application.mail.MailService;
@@ -61,10 +61,10 @@ public interface NotificationService
       Qi4j api;
 
       @Service
-      EventStore eventStore;
+      EventSource eventSource;
 
       @Service
-      EventSource source;
+      EventStream stream;
 
       @Service
       MailService mail;
@@ -83,7 +83,7 @@ public interface NotificationService
       {
          logger.info( "Starting ..." );
 
-         tracker = new TransactionTracker( eventStore, config, this );
+         tracker = new TransactionTracker( stream, eventSource, config, this );
          tracker.start();
 
          logger.info( "Started" );
@@ -96,7 +96,7 @@ public interface NotificationService
 
       public boolean visit( TransactionEvents transaction )
       {
-         for (DomainEvent domainEvent : filter( events( transaction ), withNames( "receivedMessage" ) ))
+         for (DomainEvent domainEvent : filter( withNames( "receivedMessage" ), events( transaction ) ))
          {
             UnitOfWork uow = null;
 

@@ -23,7 +23,7 @@ import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
-import se.streamsource.streamflow.infrastructure.event.source.EventSource;
+import se.streamsource.streamflow.infrastructure.event.source.EventStream;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.source.helper.Events;
 
@@ -51,7 +51,7 @@ public interface EventManagerService
          implements Activatable, TransactionListener
    {
       @Service
-      EventSource source;
+      EventStream stream;
 
       @Service
       MBeanServer server;
@@ -73,7 +73,7 @@ public interface EventManagerService
          objectName = new ObjectName( "Streamflow:type=Log,name=domainevents" );
          server.registerMBean( mbean, objectName );
 
-         source.registerListener( this );
+         stream.registerListener( this );
 
          executor = Executors.newSingleThreadExecutor();
       }
@@ -83,7 +83,7 @@ public interface EventManagerService
          executor.shutdown();
 
          server.unregisterMBean( objectName );
-         source.unregisterListener( this );
+         stream.unregisterListener( this );
       }
 
       public final synchronized void notifyTransactions( final Iterable<TransactionEvents> transactions )

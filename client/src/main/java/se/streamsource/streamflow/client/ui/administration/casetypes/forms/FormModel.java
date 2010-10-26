@@ -84,7 +84,7 @@ public class FormModel
    public void notifyTransactions( Iterable<TransactionEvents> transactions )
    {
       // Refresh if either the owner of the list has changed, or if any of the entities in the list has changed
-      if (matches( transactions, onEntities( client.getReference().getLastSegment() )))
+      if (matches( onEntities( client.getReference().getLastSegment() ), transactions ))
          refresh();
    }
 }

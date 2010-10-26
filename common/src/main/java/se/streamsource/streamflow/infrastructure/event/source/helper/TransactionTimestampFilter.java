@@ -48,7 +48,7 @@ public class TransactionTimestampFilter
 
    /**
     * Timestamp of the last evalutated transaction. This can be used as input
-    * to the next call to {@link se.streamsource.streamflow.infrastructure.event.source.EventStore#transactionsAfter(long, TransactionVisitor)} }.
+    * to the next call to {@link se.streamsource.streamflow.infrastructure.event.source.EventSource#transactionsAfter(long, TransactionVisitor)} }.
     *
     * @return
     */

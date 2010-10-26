@@ -412,10 +412,10 @@ public class AccessPointView
 
    public void notifyTransactions( Iterable<TransactionEvents> transactions )
    {
-      if (Events.matches( transactions, Events.withNames( "addedLabel",
+      if (Events.matches( Events.withNames( "addedLabel",
             "removedLabel", "addedCaseType", "addedProject",
             "addedSelectedForm", "changedProject", "changedCaseType",
-            "selectedTemplateAdded", "selectedTemplateRemoved" ) ))
+            "selectedTemplateAdded", "selectedTemplateRemoved" ), transactions ))
       {
          model.refresh();
       }

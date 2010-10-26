@@ -18,13 +18,27 @@
 package se.streamsource.streamflow.infrastructure.event.source;
 
 /**
- * Source of event transactions. Registering with a source will
- * allow the subscriber to get callbacks when new transactions
- * are available. The callbacks are done asynchronously.
+ * An EventSource is a source of events. Events are grouped in the transactions in which they were created.
  */
 public interface EventSource
 {
-   void registerListener( TransactionListener subscriber );
+   /**
+    * Get list of event transactions after the given timestamp. If they are on the exact same timestamp, they will not be included.
+    * <p/>
+    * The method uses the visitor pattern, so a visitor is sent in which is given each transaction, one at a time.
+    *
+    * @param afterTimestamp timestamp of transactions
+    * @param visitor for transactions
+    */
+   void transactionsAfter( long afterTimestamp, TransactionVisitor visitor );
 
-   void unregisterListener( TransactionListener subscriber );
+   /**
+    * Get list of event transactions before the given timestamp. If they are on the exact same timestamp, they will not be included.
+    * <p/>
+    * The method uses the visitor pattern, so a visitor is sent in which is given each transaction, one at a time.
+    *
+    * @param beforeTimestamp timestamp of transactions
+    * @param visitor for transactions
+    */
+   void transactionsBefore( long beforeTimestamp, TransactionVisitor visitor);
 }

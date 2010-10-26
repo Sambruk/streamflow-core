@@ -43,7 +43,7 @@ import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.EventSource;
-import se.streamsource.streamflow.infrastructure.event.source.EventStore;
+import se.streamsource.streamflow.infrastructure.event.source.EventStream;
 import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
 import se.streamsource.streamflow.infrastructure.event.source.helper.EventRouter;
@@ -99,10 +99,10 @@ public interface CaseStatisticsService
          implements TransactionVisitor, Activatable, CaseStatistics
    {
       @Service
-      EventStore eventStore;
+      EventSource eventSource;
 
       @Service
-      EventSource source;
+      EventStream stream;
 
       @Service
       Iterable<StatisticsStore> statisticsStores;
@@ -244,7 +244,7 @@ public interface CaseStatisticsService
                } );
 
          transactionAdapter = Events.adapter( router );
-         tracker = new TransactionTracker( eventStore, config, this );
+         tracker = new TransactionTracker( stream, eventSource, config, this );
          tracker.start();
       }
 

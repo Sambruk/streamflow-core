@@ -35,7 +35,7 @@ import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
-import se.streamsource.streamflow.infrastructure.event.source.EventStore;
+import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
 
 import java.io.IOException;
@@ -52,7 +52,7 @@ public class DomainEventsServerResource
       extends ServerResource
 {
    @Service @Tagged("domain")
-   EventStore store;
+   EventSource source;
 
    public DomainEventsServerResource()
    {
@@ -72,7 +72,7 @@ public class DomainEventsServerResource
       {
          final long afterDate = Long.parseLong( after );
 
-         store.transactionsAfter( afterDate, new RESTTransactionVisitor( transactions ) );
+         source.transactionsAfter( afterDate, new RESTTransactionVisitor( transactions ) );
 
       } else
       {
@@ -80,7 +80,7 @@ public class DomainEventsServerResource
 
          final long beforeDate = before == null ? System.currentTimeMillis() : Long.parseLong( before );
 
-         store.transactionsBefore( beforeDate, new RESTTransactionVisitor( transactions ) );
+         source.transactionsBefore( beforeDate, new RESTTransactionVisitor( transactions ) );
          
          // Reverse list
          Collections.reverse( transactions );

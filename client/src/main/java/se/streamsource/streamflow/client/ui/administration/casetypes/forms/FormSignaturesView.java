@@ -145,7 +145,7 @@ public class FormSignaturesView
    {
       model.notifyTransactions( transactions );
 
-      DomainEvent event = first( filter( events( transactions ), withNames( "createdRequiredSignature" ) ) );
+      DomainEvent event = first( filter( withNames( "createdRequiredSignature" ), events( transactions ) ) );
       if (event != null)
       {
          list.setSelectedIndex( list.getModel().getSize() - 1 );

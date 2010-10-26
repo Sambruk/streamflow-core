@@ -58,9 +58,8 @@ import se.streamsource.streamflow.client.ui.overview.OverviewWindow;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceWindow;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
-import se.streamsource.streamflow.infrastructure.event.source.EventSource;
+import se.streamsource.streamflow.infrastructure.event.source.EventStream;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
-import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
 
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -111,7 +110,7 @@ public class StreamflowApplication
    DialogService dialogs;
 
    @Service
-   EventSource source;
+   EventStream stream;
 
    @Service
    IndividualRepository individualRepo;
@@ -144,12 +143,12 @@ public class StreamflowApplication
    public void init( @Uses final AccountsModel accountsModel,
                      @Structure final ObjectBuilderFactory obf,
                      @Uses final AccountSelector accountSelector,
-                     @Service EventSource source
+                     @Service EventStream stream
    ) throws IllegalAccessException, UnsupportedLookAndFeelException, InstantiationException, ClassNotFoundException
    {
       DOMAIN_EVENT_TYPE = module.valueDescriptor( DomainEvent.class.getName() ).valueType();
 
-      this.source = source;
+      this.stream = stream;
 
 //      NotificationGlassPane.install();
 
@@ -301,9 +300,9 @@ public class StreamflowApplication
       return accountSelector.isSelectionEmpty() ? null : accountSelector.getSelectedAccount().settings().userName().get();
    }
 
-   public EventSource getSource()
+   public EventStream getSource()
    {
-      return source;
+      return stream;
    }
 
    public AccountSelector getAccountSelector()

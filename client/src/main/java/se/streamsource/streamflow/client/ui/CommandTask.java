@@ -20,7 +20,7 @@ import org.jdesktop.application.Application;
 import org.jdesktop.application.Task;
 import se.streamsource.streamflow.client.StreamflowApplication;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
-import se.streamsource.streamflow.infrastructure.event.source.EventSource;
+import se.streamsource.streamflow.infrastructure.event.source.EventStream;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
 import se.streamsource.streamflow.util.Iterables;
 
@@ -51,9 +51,9 @@ public abstract class CommandTask
    protected Iterable<TransactionEvents> doInBackground() throws Exception
    {
       StreamflowApplication application = (StreamflowApplication) getApplication();
-      EventSource source = application.getSource();
+      EventStream stream = application.getSource();
 
-      source.registerListener( this );
+      stream.registerListener( this );
 
       try
       {
@@ -62,7 +62,7 @@ public abstract class CommandTask
          return transactions;
       } finally
       {
-         source.unregisterListener( this );
+         stream.unregisterListener( this );
       }
    }
 

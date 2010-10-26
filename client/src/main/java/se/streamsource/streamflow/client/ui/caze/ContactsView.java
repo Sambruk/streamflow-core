@@ -200,11 +200,11 @@ public class ContactsView
 
    public void notifyTransactions( Iterable<TransactionEvents> transactions )
    {
-      if (Events.matches( transactions, Events.withNames("addedContact", "deletedContact", "updatedContact" )))
+      if (Events.matches( Events.withNames("addedContact", "deletedContact", "updatedContact" ), transactions ))
       {
          model.refresh();
 
-         if (Events.matches( transactions, Events.withNames("addedContact" )))
+         if (Events.matches( Events.withNames("addedContact" ), transactions ))
             contacts.setSelectedIndex( contacts.getModel().getSize()-1 );
       }
 

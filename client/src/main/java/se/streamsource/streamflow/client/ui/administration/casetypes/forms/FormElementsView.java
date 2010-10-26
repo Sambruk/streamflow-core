@@ -317,10 +317,10 @@ public class FormElementsView
 
    public void notifyTransactions( Iterable<TransactionEvents> transactions )
    {
-      if (Events.matches( transactions, withNames("changedDescription", "removedField", "movedField" )))
+      if (Events.matches( withNames("changedDescription", "removedField", "movedField" ), transactions ))
          model.refresh();
 
-      DomainEvent event = first( filter( events(transactions ), withNames("createdField", "createdPage", "movedField", "movedPage")));
+      DomainEvent event = first( filter( withNames("createdField", "createdPage", "movedField", "movedPage"), events(transactions ) ));
       if (event != null)
       {
          String id = EventParameters.getParameter( event, 1 );

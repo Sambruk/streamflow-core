@@ -47,7 +47,11 @@ import se.streamsource.streamflow.domain.attachment.AttachmentValue;
 import se.streamsource.streamflow.domain.attachment.UpdateAttachmentValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
+import se.streamsource.streamflow.infrastructure.event.source.EventStream;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
+import se.streamsource.streamflow.infrastructure.event.source.helper.EventParameters;
+import se.streamsource.streamflow.infrastructure.event.source.helper.Events;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -65,7 +69,7 @@ public class AttachmentsModel
    implements Refreshable
 {
    @Service
-   TransactionVisitor transactionVisitor;
+   EventStream eventStream;
 
    @Structure
    private ValueBuilderFactory vbf;
@@ -91,48 +95,36 @@ public class AttachmentsModel
 
       input.setDisposition( new Disposition(Disposition.TYPE_NONE, disposition) );
 
-      client.postCommand( "createattachment", input, new ResponseHandler()
+      // Update with details once file is uploaded
+      TransactionListener updateListener = new TransactionListener()
       {
-         public void handleResponse( Response response ) throws ResourceException
+         public void notifyTransactions( Iterable<TransactionEvents> transactions )
          {
-            if (response.getStatus().isSuccess() &&
-                  (response.getRequest().getMethod().equals( Method.POST ) ||
-                        response.getRequest().getMethod().equals( Method.DELETE ) ||
-                        response.getRequest().getMethod().equals( Method.PUT )))
+            for (DomainEvent domainEvent : filter( withNames("createdAttachment" ), Events.events( transactions )))
             {
-               try
-               {
-                  Representation entity = response.getEntity();
-                  if (entity != null && !(entity instanceof EmptyRepresentation))
-                  {
-                     String source = entity.getText();
+               ValueBuilder<UpdateAttachmentValue> builder = vbf.newValueBuilder( UpdateAttachmentValue.class );
+               builder.prototype().name().set( file.getName() );
+               builder.prototype().size().set( file.length() );
 
-                     final TransactionEvents transactionEvents = vbf.newValueFromJSON( TransactionEvents.class, source );
-                     transactionVisitor.visit( transactionEvents );
-                     for (DomainEvent domainEvent : filter( transactionEvents.events().get(), withNames("createdAttachment" ) ))
-                     {
-                        String parameterJson = domainEvent.parameters().get();
+               MimeUtil.registerMimeDetector("eu.medsea.mimeutil.detector.MagicMimeMimeDetector");
+               MimeType mimeType = MimeUtil.getMostSpecificMimeType( MimeUtil.getMimeTypes( file ));
 
-                        ValueBuilder<UpdateAttachmentValue> builder = vbf.newValueBuilder( UpdateAttachmentValue.class );
-                        builder.prototype().name().set( file.getName() );
-                        builder.prototype().size().set( file.length() );
+               builder.prototype().mimeType().set( mimeType.toString() );
 
-                        MimeUtil.registerMimeDetector("eu.medsea.mimeutil.detector.MagicMimeMimeDetector");
-                        MimeType mimeType = MimeUtil.getMostSpecificMimeType( MimeUtil.getMimeTypes( file ));
-
-                        builder.prototype().mimeType().set( mimeType.toString() );
-
-                        String attachmentId = new JSONObject(parameterJson).getString( "param1" );
-                        client.getClient( attachmentId+"/" ).postCommand( "update", builder.newInstance() );
-                     }
-                  }
-               } catch (Exception e)
-               {
-                  throw new RuntimeException( "Could not process events", e );
-               }
+               String attachmentId = EventParameters.getParameter( domainEvent, "param1" );
+               client.getClient( attachmentId+"/" ).postCommand( "update", builder.newInstance() );
             }
          }
-      });
+      };
+      eventStream.registerListener( updateListener );
+
+      try
+      {
+         client.postCommand( "createattachment", input);
+      } finally
+      {
+         eventStream.unregisterListener( updateListener );
+      }
    }
 
    public void refresh() throws OperationException

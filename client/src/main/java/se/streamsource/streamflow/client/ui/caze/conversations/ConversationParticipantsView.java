@@ -153,7 +153,7 @@ public class ConversationParticipantsView
 
    public void notifyTransactions( Iterable<TransactionEvents> transactions )
    {
-      if (matches(transactions, withNames("addedParticipant", "removedParticipant"  )))
+      if (matches( withNames("addedParticipant", "removedParticipant"  ), transactions ))
       {
          model.refresh();
       }

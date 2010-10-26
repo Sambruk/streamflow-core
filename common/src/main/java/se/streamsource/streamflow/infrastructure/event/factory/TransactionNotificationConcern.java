@@ -31,8 +31,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
+import se.streamsource.streamflow.infrastructure.event.source.EventStore;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
 import se.streamsource.streamflow.infrastructure.time.Time;
+
+import java.io.IOException;
 
 /**
  * Notify transaction listeners when a complete transaction of domain events is available.
@@ -41,6 +44,9 @@ public class TransactionNotificationConcern
       extends ConcernOf<DomainEventFactory>
       implements DomainEventFactory
 {
+   @Service
+   EventStore eventStore;
+
    @Service
    Iterable<TransactionVisitor> transactionVisitors;
 
@@ -82,21 +88,25 @@ public class TransactionNotificationConcern
                {
                   UnitOfWorkEvents events = unitOfWork.metaInfo().get( UnitOfWorkEvents.class );
 
-                  ValueBuilder<TransactionEvents> builder = vbf.newValueBuilder( TransactionEvents.class );
-                  builder.prototype().timestamp().set( getCurrentTimestamp() );
-                  builder.prototype().events().set( events.getEvents() );
-                  final TransactionEvents transaction = builder.newInstance();
-
-                  for (TransactionVisitor transactionVisitor : transactionVisitors)
+                  try
                   {
-                     try
-                     {
-                        transactionVisitor.visit( transaction );
-                     } catch (Exception e)
-                     {
-                        logger.error( "Could not deliver transaction", e );
+                     final TransactionEvents transaction = eventStore.storeEvents( events.getEvents() );
 
+                     for (TransactionVisitor transactionVisitor : transactionVisitors)
+                     {
+                        try
+                        {
+                           transactionVisitor.visit( transaction );
+                        } catch (Exception e)
+                        {
+                           logger.warn( "Could not deliver transaction", e );
+
+                        }
                      }
+                  } catch (IOException e)
+                  {
+                     logger.error( "Could not store events", e );
+                     // How do we handle this? This is a major error!
                   }
                }
             }

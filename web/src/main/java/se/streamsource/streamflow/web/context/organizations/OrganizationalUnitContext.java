@@ -19,14 +19,20 @@ package se.streamsource.streamflow.web.context.organizations;
 
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.EntityValue;
+import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.domain.organization.MergeOrganizationalUnitException;
 import se.streamsource.streamflow.domain.organization.MoveOrganizationalUnitException;
 import se.streamsource.streamflow.domain.organization.OpenProjectExistsException;
+import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationQueries;
+import se.streamsource.streamflow.web.domain.entity.organization.OrganizationVisitor;
+import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnitRefactoring;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnits;
@@ -38,7 +44,37 @@ public class OrganizationalUnitContext
       implements DeleteContext
 {
    @Structure
+   ValueBuilderFactory vbf;
+   
+   @Structure
    UnitOfWorkFactory uowf;
+
+   public LinksValue possiblemoveto()
+   {
+      final LinksBuilder links = new LinksBuilder(vbf);
+      links.command( "move" );
+      OrganizationQueries queries = RoleMap.role(OrganizationQueries.class);
+      queries.visitOrganization( new OrganizationVisitor()
+      {
+         @Override
+         public boolean visitOrganization( Organization org )
+         {
+            links.addDescribable( org );
+
+            return super.visitOrganization( org );
+         }
+
+         @Override
+         public boolean visitOrganizationalUnit( OrganizationalUnit ou )
+         {
+            links.addDescribable( ou );
+
+            return super.visitOrganizationalUnit( ou );
+         }
+      }, new OrganizationQueries.ClassSpecification( Organization.class, OrganizationalUnit.class));
+
+      return links.newLinks();
+   }
 
    public void move( EntityValue moveValue ) throws ResourceException
    {
@@ -52,6 +88,25 @@ public class OrganizationalUnitContext
       {
          throw new ResourceException( Status.CLIENT_ERROR_CONFLICT );
       }
+   }
+
+   public LinksValue possiblemergewith()
+   {
+      final LinksBuilder links = new LinksBuilder(vbf);
+      links.command( "merge" );
+      OrganizationQueries queries = RoleMap.role(OrganizationQueries.class);
+      queries.visitOrganization( new OrganizationVisitor()
+      {
+         @Override
+         public boolean visitOrganizationalUnit( OrganizationalUnit ou )
+         {
+            links.addDescribable( ou );
+
+            return super.visitOrganizationalUnit( ou );
+         }
+      }, new OrganizationQueries.ClassSpecification( OrganizationalUnit.class));
+
+      return links.newLinks();
    }
 
    public void merge( EntityValue moveValue ) throws ResourceException

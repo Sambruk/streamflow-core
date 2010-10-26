@@ -25,7 +25,9 @@ import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.AbstractEventStoreMixin;
+import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
+import se.streamsource.streamflow.infrastructure.event.source.EventStream;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
 
 import java.io.IOException;
@@ -38,10 +40,11 @@ import java.util.TreeMap;
  */
 @Mixins(MemoryEventStoreService.MemoryEventStoreMixin.class)
 public interface MemoryEventStoreService
-      extends EventStore, TransactionVisitor, Activatable, ServiceComposite
+      extends EventSource, EventStore, EventStream, Activatable, ServiceComposite
 {
    abstract class MemoryEventStoreMixin
          extends AbstractEventStoreMixin
+      implements EventSource
    {
       // This holds all transactions
       private TreeMap<Long, String> store = new TreeMap<Long, String>();

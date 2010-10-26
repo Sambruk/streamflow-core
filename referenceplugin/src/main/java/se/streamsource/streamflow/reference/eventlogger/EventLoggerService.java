@@ -20,7 +20,7 @@ package se.streamsource.streamflow.reference.eventlogger;
 import org.slf4j.LoggerFactory;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
-import se.streamsource.streamflow.infrastructure.event.source.EventSource;
+import se.streamsource.streamflow.infrastructure.event.source.EventStream;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
 
 /**
@@ -29,7 +29,7 @@ import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor
 public class EventLoggerService
    implements TransactionVisitor
 {
-   public EventSource source;
+   public EventStream stream;
 
    public boolean visit( TransactionEvents transaction )
    {

@@ -17,11 +17,19 @@
 
 package se.streamsource.streamflow.client.infrastructure.events;
 
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
+import org.qi4j.api.value.ValueBuilderFactory;
+import org.restlet.Response;
+import org.restlet.data.Method;
+import org.restlet.representation.EmptyRepresentation;
+import org.restlet.representation.Representation;
+import org.restlet.resource.ResourceException;
+import se.streamsource.dci.restlet.client.ResponseHandler;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
-import se.streamsource.streamflow.infrastructure.event.source.EventSource;
+import se.streamsource.streamflow.infrastructure.event.source.EventStream;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
 
@@ -37,11 +45,14 @@ import java.util.List;
  */
 @Mixins(ClientEventSourceService.Mixin.class)
 public interface ClientEventSourceService
-      extends EventSource, TransactionVisitor, ServiceComposite
+      extends EventStream, ResponseHandler, ServiceComposite
 {
    class Mixin
-         implements EventSource, TransactionVisitor, Activatable
+         implements EventStream, ResponseHandler, Activatable
    {
+      @Structure
+      ValueBuilderFactory vbf;
+
       public void activate() throws Exception
       {
       }
@@ -74,9 +85,31 @@ public interface ClientEventSourceService
          }
       }
 
-      // TransactionVisitor implementation
+      public void handleResponse( Response response ) throws ResourceException
+      {
+         if (response.getStatus().isSuccess() &&
+               (response.getRequest().getMethod().equals( Method.POST ) ||
+                     response.getRequest().getMethod().equals( Method.DELETE ) ||
+                     response.getRequest().getMethod().equals( Method.PUT )))
+         {
+            try
+            {
+               Representation entity = response.getEntity();
+               if (entity != null && !(entity instanceof EmptyRepresentation))
+               {
+                  String source = entity.getText();
 
-      public boolean visit( TransactionEvents transaction )
+                  final TransactionEvents transactionEvents = vbf.newValueFromJSON( TransactionEvents.class, source );
+                  notifyTransactionListeners( transactionEvents );
+               }
+            } catch (Exception e)
+            {
+               throw new RuntimeException( "Could not process events", e );
+            }
+         }
+      }
+
+      private void notifyTransactionListeners( TransactionEvents transaction )
       {
          Iterator<Reference<TransactionListener>> referenceIterator = new ArrayList<Reference<TransactionListener>>(listeners).iterator();
          while (referenceIterator.hasNext())
@@ -88,8 +121,7 @@ public interface ClientEventSourceService
                lstnr.notifyTransactions( Collections.singleton( transaction ));
             }
          }
-
-         return true;
       }
+
    }
 }

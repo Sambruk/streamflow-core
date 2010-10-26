@@ -21,7 +21,8 @@ import org.qi4j.api.configuration.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
-import se.streamsource.streamflow.infrastructure.event.source.EventStore;
+import se.streamsource.streamflow.infrastructure.event.source.EventSource;
+import se.streamsource.streamflow.infrastructure.event.source.EventStream;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
 
@@ -41,30 +42,32 @@ public class TransactionTracker
 {
    private Configuration<? extends TransactionTrackerConfiguration> configuration;
    private TransactionVisitor visitor;
-   private EventStore store;
+   private EventStream stream;
+   private EventSource source;
    private boolean started = false;
    private boolean upToSpeed = false;
    private Logger logger;
 
-   public TransactionTracker( EventStore store,
-                        Configuration<? extends TransactionTrackerConfiguration> configuration,
-                        TransactionVisitor visitor)
+   public TransactionTracker( EventStream stream, EventSource source,
+                              Configuration<? extends TransactionTrackerConfiguration> configuration,
+                              TransactionVisitor visitor )
    {
+      this.stream = stream;
       this.configuration = configuration;
       this.visitor = visitor;
-      this.store = store;
+      this.source = source;
 
       logger = LoggerFactory.getLogger( visitor.getClass() );
    }
 
    public void start()
    {
-      store.registerListener( this );
       started = true;
 
       // Get events since last check
       upToSpeed = true; // Pretend that we are up to speed from now on
-      store.transactionsAfter( configuration.configuration().lastEventDate().get(), this);
+      source.transactionsAfter( configuration.configuration().lastEventDate().get(), this);
+      stream.registerListener( this );
    }
 
    public void stop()
@@ -72,7 +75,7 @@ public class TransactionTracker
       if (started)
       {
          started = false;
-         store.unregisterListener( this );
+         stream.unregisterListener( this );
       }
    }
 
@@ -97,7 +100,7 @@ public class TransactionTracker
             upToSpeed = true; // Pretend that we are up to speed from now on
 
             // Get all transactions from last timestamp, including the one in this call
-            store.transactionsAfter( configuration.configuration().lastEventDate().get(), this);
+            source.transactionsAfter( configuration.configuration().lastEventDate().get(), this);
             return upToSpeed; // Hopefully we have everything by now
          }
 

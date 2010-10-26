@@ -118,7 +118,7 @@ public class UsersAdministrationView
 
       usersTable = new JXTable( tableModel );
       usersTable.getColumn( 0 ).setCellRenderer( new DefaultTableRenderer( new CheckBoxProvider() ) );
-      usersTable.getColumn( 0 ).setMaxWidth( 30 );
+      usersTable.getColumn( 0 ).setMaxWidth( 50 );
       usersTable.getColumn( 0 ).setResizable( false );
       usersTable.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "resetPassword" ) ) );
 

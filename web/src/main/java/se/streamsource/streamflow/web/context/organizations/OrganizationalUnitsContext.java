@@ -43,7 +43,6 @@ public interface OrganizationalUnitsContext
    abstract class Mixin
          implements OrganizationalUnitsContext
    {
-
       @Structure
       Module module;
 

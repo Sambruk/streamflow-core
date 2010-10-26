@@ -25,12 +25,9 @@ import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.entitystore.jdbm.JdbmConfiguration;
 import org.qi4j.entitystore.jdbm.JdbmEntityStoreService;
 import org.qi4j.entitystore.memory.MemoryEntityStoreService;
-import org.qi4j.spi.service.importer.NewObjectImporter;
 import org.qi4j.spi.uuid.UuidIdentityGeneratorService;
-import se.streamsource.dci.restlet.client.ResponseHandler;
 import se.streamsource.streamflow.client.infrastructure.configuration.ServiceConfiguration;
 import se.streamsource.streamflow.client.infrastructure.events.ClientEventSourceService;
-import se.streamsource.streamflow.client.infrastructure.events.ClientResponseHandler;
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
@@ -42,9 +39,9 @@ public class InfrastructureAssembler
 {
    public void assemble( LayerAssembly layer ) throws AssemblyException
    {
-      configuration(layer.moduleAssembly( "Configuration" ));
-      clientEntityStyore(layer.moduleAssembly("Client EntityStore"));
-      clientEvents(layer.moduleAssembly("Client Events"));
+      configuration( layer.moduleAssembly( "Configuration" ) );
+      clientEntityStyore( layer.moduleAssembly( "Client EntityStore" ) );
+      clientEvents( layer.moduleAssembly( "Client Events" ) );
    }
 
    public void configuration( ModuleAssembly module ) throws AssemblyException
@@ -85,8 +82,5 @@ public class InfrastructureAssembler
       moduleAssembly.addValues( TransactionEvents.class, DomainEvent.class ).visibleIn( Visibility.application );
 
       moduleAssembly.addServices( ClientEventSourceService.class ).visibleIn( Visibility.application );
-
-      moduleAssembly.importServices( ResponseHandler.class ).importedBy( NewObjectImporter.class ).visibleIn( Visibility.application );
-      moduleAssembly.addObjects( ClientResponseHandler.class );
    }
 }

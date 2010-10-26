@@ -163,7 +163,7 @@ public class PossibleFormsView extends JPanel
 
    public void notifyTransactions( Iterable<TransactionEvents> transactions )
    {
-      if (matches( transactions, withNames("changedOwner", "changedCaseType") ))
+      if (matches( withNames("changedOwner", "changedCaseType"), transactions ))
       {
          refresh();
       }

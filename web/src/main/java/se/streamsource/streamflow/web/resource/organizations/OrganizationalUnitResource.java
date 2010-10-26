@@ -19,6 +19,7 @@ package se.streamsource.streamflow.web.resource.organizations;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.SubResource;
 import se.streamsource.streamflow.web.context.organizations.OrganizationalUnitContext;
+import se.streamsource.streamflow.web.context.organizations.OrganizationalUnitsContext;
 import se.streamsource.streamflow.web.context.structure.DescribableContext;
 import se.streamsource.streamflow.web.resource.organizations.forms.FormsResource;
 import se.streamsource.streamflow.web.resource.structure.labels.LabelsResource;
@@ -32,7 +33,7 @@ public class OrganizationalUnitResource
 {
    public OrganizationalUnitResource()
    {
-      super( OrganizationalUnitContext.class, DescribableContext.class );
+      super( OrganizationalUnitContext.class, OrganizationalUnitsContext.class, DescribableContext.class );
    }
    
    @SubResource
@@ -75,11 +76,5 @@ public class OrganizationalUnitResource
    public void selectedlabels()
    {
       subResource( SelectedLabelsResource.class );
-   }
-
-   @SubResource
-   public void organizationalunits()
-   {
-      subResource( OrganizationalUnitsResource.class );
    }
 }

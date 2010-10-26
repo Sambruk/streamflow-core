@@ -105,7 +105,7 @@ public class UsersAdministrationModel
 
    public void notifyTransactions( Iterable<TransactionEvents> transactions )
    {
-      if (Events.matches( transactions, Events.withNames( "createdUser", "changedEnabled" ) ))
+      if (Events.matches( Events.withNames( "createdUser", "changedEnabled" ), transactions ))
          refresh();
    }
 }

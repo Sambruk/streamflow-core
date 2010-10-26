@@ -201,17 +201,17 @@ public class CaseTableView
 
    public void notifyTransactions( Iterable<TransactionEvents> transactions )
    {
-      if (Events.matches( transactions, withNames("addedLabel", "removedLabel",
+      if (Events.matches( withNames("addedLabel", "removedLabel",
             "changedDescription", "changedCaseType", "changedStatus",
             "changedOwner", "assignedTo", "unassigned", "deletedEntity",
             "updatedContact", "addedContact", "deletedContact",
             "createdConversation", "submittedForm", "createdAttachment",
-            "removedAttachment" ) ))
+            "removedAttachment" ), transactions ))
       {
          model.refresh();
       }
 
-      if (Events.matches( transactions, withNames("createdCase" )))
+      if (Events.matches( withNames("createdCase" ), transactions ))
       {
          caseTable.getSelectionModel().setSelectionInterval( caseTable.getRowCount()-1, caseTable.getRowCount()-1 );
          caseTable.scrollRowToVisible( caseTable.getRowCount()-1 );

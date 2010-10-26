@@ -14,19 +14,12 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.infrastructure.event.source;
-
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
-
-import java.io.IOException;
+package se.streamsource.streamflow.util;
 
 /**
- * Store of domain-events. Internally it stores TransactionEvents, which is a timestamped
- * list of DomainEvents. The timestamp is when the TransactionEvents was created. Moving
- * events from one store to another will create new TransactionEvents with new timestamps.
+ * Map an object of one type to another object of another type.
  */
-public interface EventStore
+public interface Function<FROM, TO>
 {
-   TransactionEvents storeEvents(Iterable<DomainEvent> events) throws IOException;
+   TO map(FROM from);
 }

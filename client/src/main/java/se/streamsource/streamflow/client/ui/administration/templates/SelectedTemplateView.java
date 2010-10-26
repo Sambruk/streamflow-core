@@ -198,8 +198,8 @@ public class SelectedTemplateView extends JPanel
 
    public void notifyTransactions( Iterable<TransactionEvents> transactions )
    {
-      if (Events.matches( transactions, Events.withNames(
-            "selectedTemplateAdded", "selectedTemplateRemoved" ) ))
+      if (Events.matches( Events.withNames(
+            "selectedTemplateAdded", "selectedTemplateRemoved" ), transactions ))
       {
          model.refresh();
       }

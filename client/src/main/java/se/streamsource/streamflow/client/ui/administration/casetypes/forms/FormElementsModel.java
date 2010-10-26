@@ -64,7 +64,7 @@ public class FormElementsModel
 
    public void notifyTransactions( Iterable<TransactionEvents> transactions )
    {
-      if (Events.matches(transactions, Events.onEntities( client.getReference().getLastSegment() )))
+      if (Events.matches( Events.onEntities( client.getReference().getLastSegment() ), transactions ))
       {
          refresh();
       }

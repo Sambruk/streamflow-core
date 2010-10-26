@@ -62,7 +62,7 @@ public class FormSignatureModel
    public void notifyTransactions( Iterable<TransactionEvents> transactions )
    {
       // Refresh if the owner of the list has changed
-      if (matches( transactions, onEntities( client.getReference().getParentRef().getParentRef().getLastSegment() ) ))
+      if (matches( onEntities( client.getReference().getParentRef().getParentRef().getLastSegment() ), transactions ))
          refresh();
    }
 }

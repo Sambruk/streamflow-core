@@ -35,9 +35,14 @@ public class Iterables
          return null;
    }
 
-   public static <X> Iterable<X> filter( Iterable<X> i, Specification<X> specification )
+   public static <X> Iterable<X> filter( Specification<X> specification, Iterable<X> i )
    {
       return new FilterIterable<X>( i, specification );
+   }
+
+   public static <FROM,TO> Iterable<TO> map( Function<FROM, TO> function, Iterable<FROM> from )
+   {
+      return new MapIterable<FROM, TO>(from, function);
    }
 
    public static <X> Iterable<X> flatten( Iterable<X>... multiIterator )
@@ -60,6 +65,52 @@ public class Iterables
       for (T item : iterable)
       {
          collection.add(item);
+      }
+   }
+
+   private static class MapIterable<FROM,TO>
+      implements Iterable<TO>
+   {
+      private final Iterable<FROM> from;
+      private final Function<FROM, TO> function;
+
+      public MapIterable( Iterable<FROM> from, Function<FROM, TO> function )
+      {
+         this.from = from;
+         this.function = function;
+      }
+
+      public Iterator<TO> iterator()
+      {
+         return new MapIterator<FROM,TO>(from.iterator(), function);
+      }
+
+      static class MapIterator<FROM,TO>
+         implements Iterator<TO>
+      {
+         private final Iterator<FROM> fromIterator;
+         private final Function<FROM, TO> function;
+
+         public MapIterator( Iterator<FROM> fromIterator, Function<FROM, TO> function )
+         {
+            this.fromIterator = fromIterator;
+            this.function = function;
+         }
+
+         public boolean hasNext()
+         {
+            return fromIterator.hasNext();
+         }
+
+         public TO next()
+         {
+            return function.map(fromIterator.next());
+         }
+
+         public void remove()
+         {
+            fromIterator.remove();
+         }
       }
    }
 

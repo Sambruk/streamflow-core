@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.client.ui.administration;
 
+import ca.odell.glazedlists.EventList;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationAction;
 import org.jdesktop.application.ApplicationContext;
@@ -26,6 +27,7 @@ import org.jdesktop.swingx.renderer.DefaultTreeRenderer;
 import org.jdesktop.swingx.renderer.IconValue;
 import org.jdesktop.swingx.renderer.StringValue;
 import org.jdesktop.swingx.renderer.WrappingProvider;
+import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
@@ -33,6 +35,7 @@ import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.ResourceValue;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.StreamflowResources;
@@ -45,6 +48,7 @@ import se.streamsource.streamflow.client.ui.ConfirmationDialog;
 import se.streamsource.streamflow.client.ui.ContextItem;
 import se.streamsource.streamflow.client.ui.NameDialog;
 import se.streamsource.streamflow.client.ui.OptionsAction;
+import se.streamsource.streamflow.client.ui.workspace.SelectLinkDialog;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.source.helper.Events;
@@ -169,8 +173,6 @@ public class AdministrationTreeView
             ContextItem contextItem = (ContextItem) ((DefaultMutableTreeNode) (tree.getSelectionPath().getLastPathComponent())).getUserObject();
             CommandQueryClient client = contextItem.getClient();
             commands.addAll( client.query( "", ResourceValue.class ).commands().get() );
-            if (!contextItem.getRelation().equals( "server" ))
-               commands.addAll( client.getSubClient( "organizationalunits" ).query( "", ResourceValue.class ).commands().get() );
          }
 
          @Override
@@ -270,48 +272,52 @@ public class AdministrationTreeView
    }
 
    @Action
-   public void move()
+   public Task move()
    {
-/* TODO
-      SelectOrganizationOrOrganizationalUnitDialog moveDialog = obf.newObjectBuilder( SelectOrganizationOrOrganizationalUnitDialog.class ).use( model ).newInstance();
+      EventList<LinkValue> targets = model.possibleMoveTo( tree.getSelectionPath().getLastPathComponent() );
+      final SelectLinkDialog listDialog = obf.newObjectBuilder( SelectLinkDialog.class ).use( targets ).newInstance();
 
-      dialogs.showOkCancelHelpDialog( WindowUtils.findWindow( this ), moveDialog, i18n.text( AdministrationResources.move_to ) );
-      if (moveDialog.)
-      model.move()
-
-      OrganizationalUnitAdministrationNode moved =
-            (OrganizationalUnitAdministrationNode) tree.getSelectionPath().getLastPathComponent();
-
-
-      if ( moveDialog.target() != null )
+      dialogs.showOkCancelHelpDialog( WindowUtils.findWindow( this ), listDialog, i18n.text( AdministrationResources.move_to ) );
+      if (listDialog.getSelected() != null)
       {
-         moved.model().moveOrganizationalUnit( moveDialog.target() );
-      }
-*/
-
+         return new CommandTask()
+         {
+            @Override
+            public void command()
+               throws Exception
+            {
+               model.move(tree.getSelectionPath().getLastPathComponent(), listDialog.getSelected());
+            }
+         };
+      } else
+         return null;
    }
 
    @Action
-   public void merge()
+   public Task merge()
    {
-/* TODO
-      OrganizationalUnitAdministrationNode moved =
-            (OrganizationalUnitAdministrationNode) tree.getSelectionPath().getLastPathComponent();
+      EventList<LinkValue> targets = model.possibleMergeWith( tree.getSelectionPath().getLastPathComponent() );
+      final SelectLinkDialog listDialog = obf.newObjectBuilder( SelectLinkDialog.class ).use( targets ).newInstance();
 
-      SelectOrganizationalUnitDialog mergeDialog = obf.newObjectBuilder( SelectOrganizationalUnitDialog.class ).use( model ).newInstance();
-
-      dialogs.showOkCancelHelpDialog( WindowUtils.findWindow( this ), mergeDialog, i18n.text( AdministrationResources.merge_to ) );
-
-      if (mergeDialog.target() != null)
+      dialogs.showOkCancelHelpDialog( WindowUtils.findWindow( this ), listDialog, i18n.text( AdministrationResources.move_to ) );
+      if (listDialog.getSelected() != null)
       {
-         moved.model().mergeOrganizationalUnit( mergeDialog.target() );
-      }
-*/
+         return new CommandTask()
+         {
+            @Override
+            public void command()
+               throws Exception
+            {
+               model.move(tree.getSelectionPath().getLastPathComponent(), listDialog.getSelected());
+            }
+         };
+      } else
+         return null;
    }
 
    public void notifyTransactions( Iterable<TransactionEvents> transactions )
    {
-      if (Events.matches( transactions, Events.withNames( "changedDescription", "removedOrganizationalUnit", "addedOrganizationalUnit" ) ))
+      if (Events.matches( Events.withNames( "changedDescription", "removedOrganizationalUnit", "addedOrganizationalUnit" ), transactions ))
       {
          ArrayList<Integer> expandedRows = new ArrayList<Integer>();
          for (int i = 0; i < tree.getRowCount(); i++)

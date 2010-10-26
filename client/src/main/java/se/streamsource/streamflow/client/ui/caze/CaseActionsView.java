@@ -300,7 +300,7 @@ public class CaseActionsView extends JPanel
 
    public void notifyTransactions( Iterable<TransactionEvents> transactions )
    {
-      if (matches( transactions, withUsecases("open", "assign", "close", "delete", "onhold", "reopen", "resume", "unassign") ))
+      if (matches( withUsecases("open", "assign", "close", "delete", "onhold", "reopen", "resume", "unassign"), transactions ))
       {
          model.refresh();
       }

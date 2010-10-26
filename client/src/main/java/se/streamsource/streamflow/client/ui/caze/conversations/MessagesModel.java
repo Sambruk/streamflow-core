@@ -64,7 +64,7 @@ public class MessagesModel
 
    public void notifyTransactions( Iterable<TransactionEvents> transactions )
    {
-      if (Events.matches( transactions, Events.onEntities( client.getReference().getParentRef().getLastSegment() )))
+      if (Events.matches( Events.onEntities( client.getReference().getParentRef().getLastSegment() ), transactions ))
          refresh();
    }
 }

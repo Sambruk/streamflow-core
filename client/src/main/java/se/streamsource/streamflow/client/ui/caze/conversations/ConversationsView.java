@@ -160,7 +160,7 @@ public class ConversationsView
    {
       model.notifyTransactions( transactions );
 
-      if (Events.matches( transactions, Events.withNames("createdConversation" )))
+      if (Events.matches( Events.withNames("createdConversation" ), transactions ))
          list.setSelectedIndex( model.conversations().size() - 1 );
    }
 }

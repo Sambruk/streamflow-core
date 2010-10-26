@@ -18,10 +18,12 @@
 package se.streamsource.streamflow.infrastructure.event.source;
 
 import org.qi4j.api.entity.Identity;
+import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.spi.property.ValueType;
 import org.qi4j.spi.structure.ModuleSPI;
@@ -29,6 +31,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
+import se.streamsource.streamflow.infrastructure.time.Time;
+import se.streamsource.streamflow.util.Iterables;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -45,8 +49,11 @@ import static java.util.Collections.*;
  * Base implementation for EventStores.
  */
 public abstract class AbstractEventStoreMixin
-      implements EventStore, TransactionVisitor, Activatable
+      implements EventStore, EventStream, Activatable
 {
+   @Service
+   Time time;
+
    @This
    protected Identity identity;
 
@@ -60,14 +67,13 @@ public abstract class AbstractEventStoreMixin
    protected ModuleSPI module;
 
    @Structure
-   private UnitOfWorkFactory uowf;
-
-   @Structure
    private ValueBuilderFactory vbf;
 
    private ExecutorService transactionNotifier;
 
    final private List<TransactionListener> listeners = synchronizedList( new ArrayList<TransactionListener>() );
+
+   private long lastTimestamp = 0;
 
    public void activate() throws IOException
    {
@@ -88,18 +94,22 @@ public abstract class AbstractEventStoreMixin
    // TransactionVisitor implementation
    // This is how transactions are put into the store
 
-   public boolean visit( final TransactionEvents transaction )
+
+   public TransactionEvents storeEvents( Iterable<DomainEvent> events )
+         throws IOException
    {
+      // Create new TransactionEvents
+      ValueBuilder<TransactionEvents> builder = vbf.newValueBuilder( TransactionEvents.class );
+      Iterables.addAll( builder.prototype().events().get(), events );
+      builder.prototype().timestamp().set( getCurrentTimestamp() );
+
+      final TransactionEvents transaction = builder.newInstance();
+
       // Lock store so noone else can interrupt
       lock();
       try
       {
          storeEvents( transaction );
-
-      } catch (Exception e)
-      {
-         logger.error( "Could not store events", e );
-         return false;
       } finally
       {
          lock.unlock();
@@ -126,11 +136,10 @@ public abstract class AbstractEventStoreMixin
          }
       } );
 
-      return true;
+      return transaction;
    }
 
-   // EventSource implementation
-
+   // EventStream implementation
    public void registerListener( TransactionListener subscriber )
    {
       listeners.add( subscriber );
@@ -167,5 +176,14 @@ public abstract class AbstractEventStoreMixin
             // Try again
          }
       }
+   }
+
+   private synchronized long getCurrentTimestamp()
+   {
+      long timestamp = time.timeNow();
+      if (timestamp <= lastTimestamp)
+         timestamp = lastTimestamp + 1; // Increase by one to ensure uniqueness
+      lastTimestamp = timestamp;
+      return timestamp;
    }
 }

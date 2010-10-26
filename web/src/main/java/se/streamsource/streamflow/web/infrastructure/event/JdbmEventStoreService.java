@@ -39,7 +39,9 @@ import org.qi4j.api.service.ServiceComposite;
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.AbstractEventStoreMixin;
+import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.EventStore;
+import se.streamsource.streamflow.infrastructure.event.source.EventStream;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
 
 import java.io.BufferedReader;
@@ -55,11 +57,11 @@ import java.util.Properties;
  */
 @Mixins(JdbmEventStoreService.JdbmEventStoreMixin.class)
 public interface JdbmEventStoreService
-      extends EventStore, TransactionVisitor, EventManagement, Activatable, ServiceComposite
+      extends EventSource, EventStore, EventStream, EventManagement, Activatable, ServiceComposite
 {
    class JdbmEventStoreMixin
          extends AbstractEventStoreMixin
-         implements EventManagement
+         implements EventManagement, EventSource
    {
       @Service
       FileConfiguration fileConfig;
@@ -128,10 +130,10 @@ public interface JdbmEventStoreService
                   break; // We're done
                }
             }
-            recordManager.commit();
+            commit();
          } catch (IOException ex)
          {
-            recordManager.rollback();
+            rollback();
          } finally
          {
             lock.unlock();

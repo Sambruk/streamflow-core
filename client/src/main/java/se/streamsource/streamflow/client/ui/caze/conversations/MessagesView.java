@@ -221,7 +221,7 @@ public class MessagesView extends JPanel
 
    public void notifyTransactions( Iterable<TransactionEvents> transactions )
    {
-      if (Events.matches(transactions, Events.withNames("createdMessage")))
+      if (Events.matches( Events.withNames("createdMessage"), transactions ))
       {
          model.refresh();
       }

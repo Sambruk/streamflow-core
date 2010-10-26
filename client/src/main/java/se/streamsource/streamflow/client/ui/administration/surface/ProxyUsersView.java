@@ -181,7 +181,7 @@ public class ProxyUsersView
 
    public void notifyTransactions( Iterable<TransactionEvents> transactions )
    {
-      if (matches( transactions, withNames("createdProxyUser", "changedEnabled" )))
+      if (matches( withNames("createdProxyUser", "changedEnabled" ), transactions ))
       {
          model.refresh();
       }
