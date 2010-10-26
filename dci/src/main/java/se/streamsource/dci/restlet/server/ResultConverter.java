@@ -24,5 +24,5 @@ import org.restlet.Request;
  */
 public interface ResultConverter
 {
-   Value convert(Object result, Request request);
+   Object convert(Object result, Request request);
 }

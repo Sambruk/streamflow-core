@@ -41,7 +41,7 @@ public class StreamflowResultConverter
    @Structure
    Module module;
 
-   public Value convert( Object result, Request request )
+   public Object convert( Object result, Request request )
    {
       if (result instanceof String)
       {
@@ -68,7 +68,7 @@ public class StreamflowResultConverter
          return new LinksBuilder( module.valueBuilderFactory() ).rel( "resource" ).addDescribables( iterable ).newLinks();
       }
 
-      return (Value) result;
+      return result;
    }
 
    private LinksValue buildCaseList( Iterable<Case> query, Module module, String basePath )
