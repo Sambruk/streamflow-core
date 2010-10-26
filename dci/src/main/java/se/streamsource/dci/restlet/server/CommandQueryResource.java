@@ -229,7 +229,7 @@ public class CommandQueryResource
          Value index = null;
          try
          {
-            index = convert( invoke( "index" ) );
+            index = (Value) convert( invoke( "index" ) );
 
          } catch (Throwable e)
          {
@@ -563,15 +563,12 @@ public class CommandQueryResource
       }
    }
 
-   private Value convert( Object result )
+   private Object convert( Object result )
    {
-      Value convertedResult;
       if (converter != null)
-         convertedResult = converter.convert( result, request );
-      else
-         convertedResult = (Value) result;
+         result = converter.convert( result, request );
 
-      return convertedResult;
+      return result;
    }
 
    private Variant getVariant( Request request )
