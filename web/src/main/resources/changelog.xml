@@ -218,14 +218,10 @@
             (select descriptions.description from descriptions where descriptions.id = cases.resolution) as resolution,
             (select descriptions.description from descriptions where descriptions.id = cases.assigned) as assigned,
             (select descriptions.description from descriptions where descriptions.id = cases.casetype) as casetype,
-            (select descriptions.description from descriptions where descriptions.id = cases.casetype_owner) as
-            casetype_owner,
-            (select descriptions.description from descriptions where descriptions.id = cases.assigned_project) as
-            assigned_project,
-            (select descriptions.description from descriptions where descriptions.id = cases.assigned_organization) as
-            assigned_organization,
-            (select descriptions.description from descriptions where descriptions.id = cases.assigned_group) as
-            assigned_group
+            (select descriptions.description from descriptions where descriptions.id = cases.casetype_owner) as casetype_owner,
+            (select descriptions.description from descriptions where descriptions.id = cases.assigned_project) as assigned_project,
+            (select descriptions.description from descriptions where descriptions.id = cases.assigned_organization) as assigned_organization,
+            (select descriptions.description from descriptions where descriptions.id = cases.assigned_group) as assigned_group
             from cases
         </createView>
     </changeSet>
