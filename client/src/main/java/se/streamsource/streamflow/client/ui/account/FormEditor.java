@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.client.util;
+package se.streamsource.streamflow.client.ui.account;
 
 import javax.swing.JComponent;
 import javax.swing.JLabel;

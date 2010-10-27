@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.client.util;
+package se.streamsource.streamflow.client.util.dialog;
 
 import com.jgoodies.forms.builder.ButtonBarBuilder2;
 import org.jdesktop.application.ApplicationContext;

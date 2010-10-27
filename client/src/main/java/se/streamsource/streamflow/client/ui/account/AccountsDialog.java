@@ -33,11 +33,11 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
-import se.streamsource.streamflow.client.util.DialogService;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.ListItemListCellRenderer;
 import se.streamsource.streamflow.client.util.SelectionActionEnabler;
+import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
 import se.streamsource.streamflow.client.util.i18n;
-import se.streamsource.streamflow.client.util.ConfirmationDialog;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import javax.swing.JButton;

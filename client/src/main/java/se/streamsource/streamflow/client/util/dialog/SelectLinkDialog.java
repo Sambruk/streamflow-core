@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.client.util;
+package se.streamsource.streamflow.client.util.dialog;
 
 import ca.odell.glazedlists.EventList;
 import org.jdesktop.application.Action;
@@ -27,6 +27,8 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.TitledLinkValue;
+import se.streamsource.streamflow.client.util.FilteredList;
+import se.streamsource.streamflow.client.util.GroupedFilteredList;
 
 import javax.swing.JList;
 import javax.swing.JPanel;

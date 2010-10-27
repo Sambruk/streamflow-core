@@ -15,60 +15,60 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.client.util;
+package se.streamsource.streamflow.client.util.dialog;
 
 import ca.odell.glazedlists.EventList;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.util.WindowUtils;
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.dci.value.LinkValue;
+import se.streamsource.streamflow.client.util.FilteredList;
 
 import javax.swing.JPanel;
-import java.awt.BorderLayout;
-import java.util.ArrayList;
-import java.util.List;
+import java.awt.Dimension;
+import java.awt.GridLayout;
 
 /**
- * Select links from a list
+ * JAVADOC
  */
-public class SelectionDialog
+public class FilterListDialog
       extends JPanel
 {
-   private FilteredList filteredList = new FilteredList();
-   private List<LinkValue> selectedLinks;
-   private LinkValue selectedLink;
+   Dimension dialogSize = new Dimension( 600, 300 );
 
-   public SelectionDialog( @Service ApplicationContext context, @Uses EventList<LinkValue> list )
+   public LinkValue selected;
+   public FilteredList itemList;
+
+   public FilterListDialog( @Uses String caption,
+                                      final @Uses EventList<LinkValue> items,
+                                      @Service ApplicationContext context,
+                                      @Structure ObjectBuilderFactory obf )
    {
+      super( new GridLayout(1, 1) );
+
+      setName( caption );
       setActionMap( context.getActionMap( this ) );
-      setLayout( new BorderLayout() );
 
-      filteredList.setEventList( list );
-      add( filteredList, BorderLayout.CENTER );
+      itemList = new FilteredList();
+      itemList.setEventList( items );
+
+      add( itemList );
    }
 
-   public Iterable<LinkValue> getSelectedLinks()
+   public EntityReference getSelected()
    {
-      return selectedLinks;
-   }
-
-   public LinkValue getSelectedLink()
-   {
-      return selectedLink;
+      return selected == null ? null : EntityReference.parseEntityReference( selected.id().get());
    }
 
    @Action
    public void execute()
    {
-      selectedLinks = new ArrayList<LinkValue>();
-      for (Object item : filteredList.getList().getSelectedValues())
-      {
-         selectedLinks.add( (LinkValue) item );
-      }
-
-      selectedLink = (LinkValue) filteredList.getList().getSelectedValue();
+      selected = (LinkValue) itemList.getList().getSelectedValue();
 
       WindowUtils.findWindow( this ).dispose();
    }

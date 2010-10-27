@@ -42,6 +42,7 @@ import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.OpenSe
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.OptionButtonsPanel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.TextAreaFieldPanel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.TextFieldPanel;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
 
 import javax.swing.InputVerifier;
 import javax.swing.JCheckBox;

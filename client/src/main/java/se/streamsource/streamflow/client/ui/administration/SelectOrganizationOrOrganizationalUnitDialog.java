@@ -29,7 +29,7 @@ import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
-import se.streamsource.streamflow.client.util.DialogService;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.SelectionActionEnabler;
 
 import javax.swing.BorderFactory;

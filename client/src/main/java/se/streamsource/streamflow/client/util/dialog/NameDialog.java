@@ -15,57 +15,68 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.client.util;
+package se.streamsource.streamflow.client.util.dialog;
 
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
+import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
-import se.streamsource.streamflow.client.StreamflowResources;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.util.i18n;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import java.awt.BorderLayout;
-import java.text.MessageFormat;
 
 /**
- * A general confirmation dialog
+ * Select a name for something.
  */
-public class ConfirmationDialog
+public class NameDialog
       extends JPanel
 {
-   boolean confirm;
-   private JLabel msgLabel;
+   public JTextField nameField;
 
-   public ConfirmationDialog( @Service ApplicationContext context )
+   String name;
+
+   public NameDialog( @Service ApplicationContext context )
    {
       super( new BorderLayout() );
 
       setActionMap( context.getActionMap( this ) );
 
-      JPanel dialog = new JPanel( new BorderLayout() );
-      dialog.add( msgLabel = new JLabel( i18n.text( StreamflowResources.proceed_label ) ), BorderLayout.CENTER );
-      add( dialog, BorderLayout.NORTH );
+      FormLayout layout = new FormLayout( "40dlu, 5dlu, 120dlu:grow", "pref" );
+
+      JPanel form = new JPanel( layout );
+      form.setFocusable( false );
+      DefaultFormBuilder builder = new DefaultFormBuilder( layout,
+            form );
+
+      nameField = new JTextField();
+
+      builder.add(new JLabel( i18n.text( AdministrationResources.name_label ) ));
+      builder.nextColumn(2);
+      builder.add(nameField);
+
+      add(form, BorderLayout.CENTER);
    }
 
-   public boolean isConfirmed()
+   public String name()
    {
-      return confirm;
+      return name;
    }
 
-   public void setRemovalMessage( String description )
-   {
-      msgLabel.setText( new MessageFormat( i18n.text( StreamflowResources.removal_confirmation )).format( new Object[]{description} ));
-   }
-
-   @org.jdesktop.application.Action
+   @Action
    public void execute()
    {
-      confirm = true;
+      name = nameField.getText();
 
       WindowUtils.findWindow( this ).dispose();
    }
 
-   @org.jdesktop.application.Action
+   @Action
    public void close()
    {
       WindowUtils.findWindow( this ).dispose();
