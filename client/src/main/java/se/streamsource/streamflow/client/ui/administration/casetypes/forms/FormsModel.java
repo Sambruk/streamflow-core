@@ -1,5 +1,4 @@
-/**
- *
+/*
  * Copyright 2009-2010 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,12 +18,9 @@ package se.streamsource.streamflow.client.ui.administration.casetypes.forms;
 
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
-import org.restlet.resource.ResourceException;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.LinksValue;
-import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
-import se.streamsource.streamflow.client.ui.administration.DefinitionListModel;
+import se.streamsource.streamflow.client.util.DefinitionListModel;
 
 /**
  * JAVADOC

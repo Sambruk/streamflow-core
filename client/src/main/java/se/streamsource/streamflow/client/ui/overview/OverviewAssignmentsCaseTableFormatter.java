@@ -17,7 +17,6 @@
 
 package se.streamsource.streamflow.client.ui.overview;
 
-import se.streamsource.streamflow.client.ui.workspace.caze.table.AbstractCaseTableFormatter;
 import se.streamsource.streamflow.client.ui.workspace.table.AbstractCaseTableFormatter;
 import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
 import se.streamsource.streamflow.resource.caze.CaseValue;
@@ -28,44 +27,6 @@ import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
 import static se.streamsource.streamflow.client.ui.overview.OverviewResources.*;
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.created_column_header;
-
-/**
- * JAVADOC
- */
-public class OverviewAssignmentsCaseTableFormatter
-   extends AbstractCaseTableFormatter
-{
-   public OverviewAssignmentsCaseTableFormatter()
-   {
-      columnNames = new String[]{
-         text( title_column_header ),
-         text( assigned_to_column_header ),
-         text( casetype_column_header ),
-         text( created_column_header ),
-         text( case_status_header )};
-      columnClasses = new Class[] {
-            String.class,
-            String.class,
-            String.class,
-            Date.class,
-            CaseStates.class
-            };
-   }
-
-   @Override
-   public Object getColumnValue( CaseValue caseValue, int i )
-   {
-      switch (i)
-      {
-         case 0:
-            return super.getColumnValue( caseValue, i );
-         case 1:
-            return caseValue.assignedTo().get();
-         default:
-            return super.getColumnValue( caseValue, i );
-      }
-   }
-}
 
 /**
  * JAVADOC

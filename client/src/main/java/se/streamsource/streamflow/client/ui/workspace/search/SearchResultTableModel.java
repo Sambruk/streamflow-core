@@ -24,8 +24,8 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
-import se.streamsource.streamflow.client.ui.workspace.caze.table.CasesModel;
-import se.streamsource.streamflow.client.ui.workspace.caze.table.CasesTableModel;
+import se.streamsource.streamflow.client.ui.workspace.table.CasesModel;
+import se.streamsource.streamflow.client.ui.workspace.table.CasesTableModel;
 
 /**
  * JAVADOC

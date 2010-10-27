@@ -1,5 +1,4 @@
-/**
- *
+/*
  * Copyright 2009-2010 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +16,7 @@
 
 package se.streamsource.streamflow.client.ui.administration.casetypes.forms;
 
-import se.streamsource.streamflow.client.ui.administration.LinkValueListModel;
+import se.streamsource.streamflow.client.util.LinkValueListModel;
 import se.streamsource.streamflow.domain.form.RequiredSignatureValue;
 
 /**

@@ -16,7 +16,7 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.general.forms;
 
-import se.streamsource.streamflow.client.ui.administration.LinkValueListModel;
+import se.streamsource.streamflow.client.util.LinkValueListModel;
 
 public class PossibleFormsModel
    extends LinkValueListModel

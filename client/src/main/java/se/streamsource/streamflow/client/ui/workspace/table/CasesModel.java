@@ -25,7 +25,7 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.StringValue;
-import se.streamsource.streamflow.client.ui.search.SearchTerms;
+import se.streamsource.streamflow.client.ui.workspace.search.SearchTerms;
 
 /**
  * Model that keeps track of all case models

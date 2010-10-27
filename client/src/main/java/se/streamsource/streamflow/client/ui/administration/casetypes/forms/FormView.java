@@ -1,5 +1,4 @@
-/**
- *
+/*
  * Copyright 2009-2010 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,7 +25,7 @@ import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
 import se.streamsource.streamflow.client.ui.administration.AdministrationView;
-import se.streamsource.streamflow.client.ui.administration.TabbedResourceView;
+import se.streamsource.streamflow.client.util.TabbedResourceView;
 
 import javax.swing.ActionMap;
 import javax.swing.JButton;

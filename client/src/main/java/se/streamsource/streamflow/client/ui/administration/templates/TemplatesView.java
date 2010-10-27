@@ -23,7 +23,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.streamflow.client.ui.workspace.caze.attachments.AttachmentsView;
+import se.streamsource.streamflow.client.ui.workspace.cases.attachments.AttachmentsView;
 
 import javax.swing.JPanel;
 import java.awt.BorderLayout;

@@ -37,7 +37,7 @@ import java.awt.Dimension;
 /**
  * JAVADOC
  */
-public class CasesDetailView2
+public class CasesDetailView
       extends JPanel
    implements TransactionListener
 {
@@ -51,7 +51,7 @@ public class CasesDetailView2
 
    private Reference currentCase;
 
-   public CasesDetailView2( )
+   public CasesDetailView( )
    {
       setLayout( layout );
       setBorder( BorderFactory.createEmptyBorder() );
