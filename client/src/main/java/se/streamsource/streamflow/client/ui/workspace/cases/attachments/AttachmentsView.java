@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.client.ui.caze.attachments;
+package se.streamsource.streamflow.client.ui.workspace.cases.attachments;
 
 import ca.odell.glazedlists.gui.TableFormat;
 import ca.odell.glazedlists.swing.EventJXTableModel;
@@ -43,7 +43,6 @@ import se.streamsource.streamflow.domain.attachment.AttachmentValue;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.source.helper.Events;
-import se.streamsource.streamflow.util.Iterables;
 
 import javax.swing.ActionMap;
 import javax.swing.JButton;
@@ -66,9 +65,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-
-import static se.streamsource.streamflow.infrastructure.event.source.helper.Events.withNames;
-import static se.streamsource.streamflow.util.Iterables.filter;
 
 /**
  * JAVADOC

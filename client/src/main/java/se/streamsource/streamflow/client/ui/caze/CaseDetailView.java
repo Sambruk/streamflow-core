@@ -24,7 +24,7 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.Icons;
-import se.streamsource.streamflow.client.ui.caze.attachments.AttachmentsView;
+import se.streamsource.streamflow.client.ui.workspace.cases.attachments.AttachmentsView;
 import se.streamsource.streamflow.client.ui.caze.conversations.ConversationsView;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 

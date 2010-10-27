@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.client.ui.caze.attachments;
+package se.streamsource.streamflow.client.ui.workspace.cases.attachments;
 
 import ca.odell.glazedlists.gui.AdvancedTableFormat;
 import se.streamsource.streamflow.domain.attachment.AttachmentValue;
