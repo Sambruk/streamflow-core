@@ -39,10 +39,10 @@ import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.ResourceValue;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.StreamflowResources;
-import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
-import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
-import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
-import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.util.DialogService;
+import se.streamsource.streamflow.client.util.RefreshWhenVisible;
+import se.streamsource.streamflow.client.util.SelectionActionEnabler;
+import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.ConfirmationDialog;
 import se.streamsource.streamflow.client.ui.ContextItem;
@@ -69,7 +69,7 @@ import java.awt.BorderLayout;
 import java.util.ArrayList;
 import java.util.List;
 
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
+import static se.streamsource.streamflow.client.util.i18n.*;
 
 /**
  * JAVADOC

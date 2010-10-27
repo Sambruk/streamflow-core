@@ -27,8 +27,8 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.property.Property;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
-import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.util.StateBinder;
+import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.domain.form.PageDefinitionValue;
@@ -40,7 +40,7 @@ import java.awt.BorderLayout;
 import java.util.Observable;
 import java.util.Observer;
 
-import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.*;
+import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.*;
 
 /**
  * JAVADOC

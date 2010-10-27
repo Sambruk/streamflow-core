@@ -51,7 +51,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
+import static se.streamsource.streamflow.client.util.i18n.*;
 
 /**
  * Show a REST resource as a tabbed view. To determine tabs, do a query to the resources directory URL ("/") to get

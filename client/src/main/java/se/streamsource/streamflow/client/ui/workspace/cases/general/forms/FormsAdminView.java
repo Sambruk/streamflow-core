@@ -20,7 +20,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.client.ui.workspace.cases.forms.CaseEffectiveFieldsValueView;
 import se.streamsource.streamflow.client.ui.workspace.cases.forms.SubmittedFormsAdminView;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;

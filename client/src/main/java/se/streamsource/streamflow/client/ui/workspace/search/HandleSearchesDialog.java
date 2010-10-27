@@ -33,10 +33,10 @@ import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.TitledLinkValue;
-import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
-import se.streamsource.streamflow.client.infrastructure.ui.LinkListCellRenderer;
-import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
-import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.util.DialogService;
+import se.streamsource.streamflow.client.util.LinkListCellRenderer;
+import se.streamsource.streamflow.client.util.StateBinder;
+import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.resource.user.profile.SearchValue;
@@ -56,7 +56,7 @@ import java.awt.FlowLayout;
 import java.util.Observable;
 import java.util.Observer;
 
-import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.*;
+import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.*;
 
 /**
  * JAVADOC

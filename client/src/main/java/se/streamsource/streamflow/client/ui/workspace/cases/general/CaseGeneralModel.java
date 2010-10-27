@@ -31,7 +31,7 @@ import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.ResourceValue;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
+import se.streamsource.streamflow.client.util.Refreshable;
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseResources;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.domain.interaction.gtd.Actions;

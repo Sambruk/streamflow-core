@@ -24,15 +24,15 @@ import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.client.Icons;
-import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
-import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
+import se.streamsource.streamflow.client.util.EventListSynch;
+import se.streamsource.streamflow.client.util.Refreshable;
 import se.streamsource.streamflow.client.ui.ContextItem;
 import se.streamsource.streamflow.resource.overview.ProjectSummaryValue;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
+import static se.streamsource.streamflow.client.util.i18n.*;
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
 
 /**

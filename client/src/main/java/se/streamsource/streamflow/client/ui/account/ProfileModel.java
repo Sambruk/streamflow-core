@@ -23,7 +23,7 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.StringValue;
-import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
+import se.streamsource.streamflow.client.util.Refreshable;
 import se.streamsource.streamflow.domain.contact.ContactEmailValue;
 import se.streamsource.streamflow.domain.contact.ContactPhoneValue;
 import se.streamsource.streamflow.domain.contact.ContactValue;

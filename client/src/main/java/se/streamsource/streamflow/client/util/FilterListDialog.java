@@ -27,7 +27,6 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.dci.value.LinkValue;
-import se.streamsource.streamflow.client.infrastructure.ui.FilteredList;
 
 import javax.swing.JPanel;
 import java.awt.Dimension;

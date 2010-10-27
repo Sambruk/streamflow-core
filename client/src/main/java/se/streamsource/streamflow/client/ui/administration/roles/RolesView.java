@@ -26,11 +26,11 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.client.StreamflowResources;
-import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
-import se.streamsource.streamflow.client.infrastructure.ui.LinkComparator;
-import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
-import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
-import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.util.DialogService;
+import se.streamsource.streamflow.client.util.LinkComparator;
+import se.streamsource.streamflow.client.util.ListItemListCellRenderer;
+import se.streamsource.streamflow.client.util.RefreshWhenVisible;
+import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.ConfirmationDialog;
 import se.streamsource.streamflow.client.util.NameDialog;
@@ -44,7 +44,7 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
 
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
+import static se.streamsource.streamflow.client.util.i18n.*;
 
 /**
  * JAVADOC

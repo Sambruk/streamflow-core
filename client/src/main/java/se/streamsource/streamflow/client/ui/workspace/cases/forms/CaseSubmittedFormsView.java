@@ -25,7 +25,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
+import se.streamsource.streamflow.client.util.RefreshWhenVisible;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
 import se.streamsource.streamflow.resource.caze.SubmittedFormListDTO;

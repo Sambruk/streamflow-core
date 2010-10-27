@@ -18,7 +18,7 @@ package se.streamsource.streamflow.client.ui.workspace.cases.info;
 
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
+import se.streamsource.streamflow.client.util.Refreshable;
 import se.streamsource.streamflow.resource.caze.CaseValue;
 
 /**

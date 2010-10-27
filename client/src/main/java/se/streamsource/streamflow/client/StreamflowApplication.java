@@ -44,9 +44,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.streamsource.streamflow.client.assembler.StreamflowClientAssembler;
 import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
-import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
-import se.streamsource.streamflow.client.infrastructure.ui.JavaHelp;
-import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.util.DialogService;
+import se.streamsource.streamflow.client.util.JavaHelp;
+import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.client.ui.account.AccountSelector;
 import se.streamsource.streamflow.client.ui.DebugWindow;
 import se.streamsource.streamflow.client.ui.account.AccountResources;
@@ -77,7 +77,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.EventObject;
 
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
+import static se.streamsource.streamflow.client.util.i18n.*;
 
 /**
  * Controller for the application

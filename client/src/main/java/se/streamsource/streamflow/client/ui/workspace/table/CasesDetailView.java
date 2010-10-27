@@ -20,7 +20,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.restlet.data.Reference;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseDetailView;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;

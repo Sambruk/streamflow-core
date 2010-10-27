@@ -23,8 +23,8 @@ import org.jdesktop.application.ApplicationActionMap;
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
-import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
-import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
+import se.streamsource.streamflow.client.util.SelectionActionEnabler;
+import se.streamsource.streamflow.client.util.StateBinder;
 import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
 import se.streamsource.streamflow.domain.form.ListBoxFieldValue;
 

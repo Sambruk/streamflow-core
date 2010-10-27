@@ -28,9 +28,9 @@ import org.qi4j.api.injection.scope.Uses;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.application.error.ErrorResources;
-import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
-import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
-import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.util.DialogService;
+import se.streamsource.streamflow.client.util.ListItemListCellRenderer;
+import se.streamsource.streamflow.client.util.i18n;
 
 import javax.swing.JList;
 import javax.swing.SwingUtilities;

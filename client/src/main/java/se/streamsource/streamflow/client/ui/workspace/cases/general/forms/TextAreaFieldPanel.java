@@ -17,7 +17,7 @@
 package se.streamsource.streamflow.client.ui.workspace.cases.general.forms;
 
 import org.qi4j.api.injection.scope.Uses;
-import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
+import se.streamsource.streamflow.client.util.StateBinder;
 import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
 import se.streamsource.streamflow.domain.form.TextAreaFieldValue;
 
@@ -28,7 +28,7 @@ import javax.swing.JTextArea;
 import javax.swing.text.JTextComponent;
 import java.awt.BorderLayout;
 
-import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.*;
+import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.*;
 
 public class TextAreaFieldPanel
       extends AbstractFieldPanel

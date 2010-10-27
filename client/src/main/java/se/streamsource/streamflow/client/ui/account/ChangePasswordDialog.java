@@ -26,9 +26,9 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
-import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
-import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.util.DialogService;
+import se.streamsource.streamflow.client.util.StateBinder;
+import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.resource.user.ChangePasswordCommand;
 
@@ -36,7 +36,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 
-import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.*;
+import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.*;
 
 /**
  * Dialog for changing password

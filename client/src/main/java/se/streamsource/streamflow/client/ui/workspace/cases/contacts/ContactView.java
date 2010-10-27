@@ -31,9 +31,9 @@ import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
-import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
-import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.util.DialogService;
+import se.streamsource.streamflow.client.util.StateBinder;
+import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseResources;
 import se.streamsource.streamflow.client.util.CommandTask;
@@ -55,7 +55,7 @@ import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
-import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.*;
+import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.*;
 
 /**
  * JAVADOC

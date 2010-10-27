@@ -23,7 +23,6 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.StringValue;
-import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
 
 /**
  * Management of owned entities

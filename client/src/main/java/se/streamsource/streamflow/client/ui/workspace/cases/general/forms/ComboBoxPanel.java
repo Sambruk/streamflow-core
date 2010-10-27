@@ -17,7 +17,7 @@
 package se.streamsource.streamflow.client.ui.workspace.cases.general.forms;
 
 import org.qi4j.api.injection.scope.Uses;
-import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
+import se.streamsource.streamflow.client.util.StateBinder;
 import se.streamsource.streamflow.domain.form.ComboBoxFieldValue;
 import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
 

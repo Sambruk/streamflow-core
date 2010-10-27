@@ -18,7 +18,7 @@ package se.streamsource.streamflow.client.ui.workspace.cases.general.forms;
 
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.client.Icons;
-import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.util.i18n;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;

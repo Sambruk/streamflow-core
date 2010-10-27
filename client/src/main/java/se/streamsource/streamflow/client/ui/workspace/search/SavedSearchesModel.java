@@ -23,7 +23,7 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.StringValue;
-import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
+import se.streamsource.streamflow.client.util.EventListSynch;
 import se.streamsource.streamflow.client.util.LinkValueListModel;
 import se.streamsource.streamflow.resource.user.profile.SearchValue;
 

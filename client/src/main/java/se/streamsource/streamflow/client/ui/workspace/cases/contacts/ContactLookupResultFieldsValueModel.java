@@ -16,7 +16,7 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.contacts;
 
-import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.domain.contact.ContactValue;
 

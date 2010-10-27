@@ -21,7 +21,6 @@ import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 import se.streamsource.streamflow.client.StreamflowResources;
-import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;

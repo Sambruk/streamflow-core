@@ -33,10 +33,10 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
-import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
-import se.streamsource.streamflow.client.infrastructure.ui.ListItemListCellRenderer;
-import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
-import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.util.DialogService;
+import se.streamsource.streamflow.client.util.ListItemListCellRenderer;
+import se.streamsource.streamflow.client.util.SelectionActionEnabler;
+import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.client.util.ConfirmationDialog;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
@@ -50,7 +50,7 @@ import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Dimension;
 
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
+import static se.streamsource.streamflow.client.util.i18n.*;
 
 /**
  * JAVADOC

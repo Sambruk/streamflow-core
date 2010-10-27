@@ -20,8 +20,8 @@ import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.streamflow.client.infrastructure.ui.EventListSynch;
-import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
+import se.streamsource.streamflow.client.util.EventListSynch;
+import se.streamsource.streamflow.client.util.Refreshable;
 import se.streamsource.streamflow.resource.caze.EffectiveFieldDTO;
 import se.streamsource.streamflow.resource.caze.EffectiveFieldsDTO;
 

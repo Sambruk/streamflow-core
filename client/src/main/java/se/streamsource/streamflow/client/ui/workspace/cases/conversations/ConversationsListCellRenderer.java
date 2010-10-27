@@ -21,7 +21,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import org.jdesktop.swingx.JXList;
 import org.jdesktop.swingx.decorator.HighlighterFactory;
 import se.streamsource.streamflow.client.Icons;
-import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.resource.conversation.ConversationDTO;
 
 import javax.swing.DefaultListCellRenderer;

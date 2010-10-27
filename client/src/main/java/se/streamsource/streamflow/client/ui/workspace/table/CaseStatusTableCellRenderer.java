@@ -16,7 +16,7 @@
 
 package se.streamsource.streamflow.client.ui.workspace.table;
 
-import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseResources;
 import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
 

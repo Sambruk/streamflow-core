@@ -18,7 +18,7 @@
 package se.streamsource.streamflow.client.ui.account;
 
 import org.qi4j.api.injection.scope.Uses;
-import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 
 import javax.swing.BorderFactory;

@@ -27,13 +27,9 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.TitledLinkValue;
-import se.streamsource.streamflow.client.infrastructure.ui.FilteredList;
-import se.streamsource.streamflow.client.infrastructure.ui.GroupedFilteredList;
-import se.streamsource.streamflow.client.infrastructure.ui.i18n;
 
 import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 
 /**

@@ -17,7 +17,7 @@
 
 package se.streamsource.streamflow.client;
 
-import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.util.i18n;
 
 /**
  * Exception thrown by model in the client if something goes wrong in accessing the server-side REST API.

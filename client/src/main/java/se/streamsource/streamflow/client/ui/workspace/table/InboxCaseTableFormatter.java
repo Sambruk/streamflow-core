@@ -21,7 +21,7 @@ import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
 import java.util.ArrayList;
 import java.util.Date;
 
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
+import static se.streamsource.streamflow.client.util.i18n.*;
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
 
 /**

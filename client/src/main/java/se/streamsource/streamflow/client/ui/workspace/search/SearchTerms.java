@@ -17,7 +17,7 @@
 
 package se.streamsource.streamflow.client.ui.workspace.search;
 
-import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.util.i18n;
 
 /**
  * Class for translating search terms from application language to server default.

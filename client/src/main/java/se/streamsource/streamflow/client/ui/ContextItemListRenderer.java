@@ -21,7 +21,7 @@ import org.jdesktop.swingx.renderer.IconValue;
 import org.jdesktop.swingx.renderer.StringValue;
 import org.jdesktop.swingx.renderer.WrappingProvider;
 import se.streamsource.streamflow.client.Icons;
-import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.util.i18n;
 
 import javax.swing.BorderFactory;
 import javax.swing.Icon;

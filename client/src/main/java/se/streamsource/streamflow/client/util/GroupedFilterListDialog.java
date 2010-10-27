@@ -28,10 +28,8 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.TitledLinkValue;
-import se.streamsource.streamflow.client.infrastructure.ui.GroupedFilteredList;
 
 import javax.swing.JPanel;
-import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.util.ArrayList;
 import java.util.List;

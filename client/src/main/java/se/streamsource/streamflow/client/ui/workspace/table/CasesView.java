@@ -29,7 +29,7 @@ import javax.swing.JSplitPane;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
+import static se.streamsource.streamflow.client.util.i18n.*;
 
 /**
  * JAVADOC

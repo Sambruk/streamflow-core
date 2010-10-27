@@ -29,10 +29,10 @@ import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
-import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
-import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
-import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
+import se.streamsource.streamflow.client.util.BindingFormBuilder;
+import se.streamsource.streamflow.client.util.RefreshWhenVisible;
+import se.streamsource.streamflow.client.util.Refreshable;
+import se.streamsource.streamflow.client.util.StateBinder;
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.domain.form.RequiredSignatureValue;
@@ -44,7 +44,7 @@ import java.awt.BorderLayout;
 import java.util.Observable;
 import java.util.Observer;
 
-import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.*;
+import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.*;
 
 /**
  * JAVADOC

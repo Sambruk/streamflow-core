@@ -31,12 +31,12 @@ import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.client.StreamflowResources;
-import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
-import se.streamsource.streamflow.client.infrastructure.ui.LinkComparator;
-import se.streamsource.streamflow.client.infrastructure.ui.LinkListCellRenderer;
-import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
-import se.streamsource.streamflow.client.infrastructure.ui.SelectionActionEnabler;
-import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.util.DialogService;
+import se.streamsource.streamflow.client.util.LinkComparator;
+import se.streamsource.streamflow.client.util.LinkListCellRenderer;
+import se.streamsource.streamflow.client.util.RefreshWhenVisible;
+import se.streamsource.streamflow.client.util.SelectionActionEnabler;
+import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.ConfirmationDialog;
 import se.streamsource.streamflow.client.util.NameDialog;
@@ -54,7 +54,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import java.awt.BorderLayout;
 
-import static se.streamsource.streamflow.client.infrastructure.ui.i18n.*;
+import static se.streamsource.streamflow.client.util.i18n.*;
 
 /**
  * Admin of labels.

@@ -24,8 +24,8 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.TitledLinkValue;
-import se.streamsource.streamflow.client.infrastructure.ui.GroupedFilteredList;
-import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.util.GroupedFilteredList;
+import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 
 import javax.swing.JPanel;

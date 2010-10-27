@@ -30,10 +30,10 @@ import org.qi4j.api.property.Property;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.infrastructure.ui.RefreshWhenVisible;
-import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
-import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
-import se.streamsource.streamflow.client.infrastructure.ui.i18n;
+import se.streamsource.streamflow.client.util.RefreshWhenVisible;
+import se.streamsource.streamflow.client.util.Refreshable;
+import se.streamsource.streamflow.client.util.StateBinder;
+import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseResources;
 import se.streamsource.streamflow.domain.contact.ContactEmailValue;
@@ -51,7 +51,7 @@ import java.awt.Insets;
 import java.util.Observable;
 import java.util.Observer;
 
-import static se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder.Fields.*;
+import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.*;
 
 /**
  * JAVADOC
@@ -126,7 +126,7 @@ public class ProfileView
             phoneTemplate.phoneNumber()));
       contactBuilder.nextLine(2);
 
-      contactBuilder.add(new JLabel(i18n
+      contactBuilder.add(new JLabel( i18n
             .text(WorkspaceResources.choose_message_delivery_type)));
       noneButton = (JRadioButton) RADIOBUTTON.newField();
       noneButton.setAction(am.get("messageDeliveryTypeNone"));

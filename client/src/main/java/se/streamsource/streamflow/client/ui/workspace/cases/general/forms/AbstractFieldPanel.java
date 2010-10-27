@@ -18,8 +18,8 @@ package se.streamsource.streamflow.client.ui.workspace.cases.general.forms;
 
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.object.ObjectBuilderFactory;
-import se.streamsource.streamflow.client.infrastructure.ui.BindingFormBuilder;
-import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
+import se.streamsource.streamflow.client.util.BindingFormBuilder;
+import se.streamsource.streamflow.client.util.StateBinder;
 import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
 
 import javax.swing.JPanel;

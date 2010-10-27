@@ -36,9 +36,8 @@ import se.streamsource.streamflow.client.domain.individual.Account;
 import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
 import se.streamsource.streamflow.client.domain.individual.AccountVisitor;
 import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
-import se.streamsource.streamflow.client.infrastructure.ui.ListItemComparator;
-import se.streamsource.streamflow.client.infrastructure.ui.WeakModelMap;
-import se.streamsource.streamflow.client.ui.account.AccountModel;
+import se.streamsource.streamflow.client.util.ListItemComparator;
+import se.streamsource.streamflow.client.util.WeakModelMap;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 
 import java.util.Observable;

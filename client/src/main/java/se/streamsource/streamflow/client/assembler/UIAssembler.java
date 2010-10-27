@@ -24,11 +24,11 @@ import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.spi.service.importer.NewObjectImporter;
 import org.restlet.Restlet;
 import se.streamsource.streamflow.client.StreamflowApplication;
-import se.streamsource.streamflow.client.infrastructure.ui.DialogService;
-import se.streamsource.streamflow.client.infrastructure.ui.ExceptionHandlerService;
-import se.streamsource.streamflow.client.infrastructure.ui.JavaHelp;
-import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
-import se.streamsource.streamflow.client.infrastructure.ui.UncaughtExceptionHandler;
+import se.streamsource.streamflow.client.util.DialogService;
+import se.streamsource.streamflow.client.util.ExceptionHandlerService;
+import se.streamsource.streamflow.client.util.JavaHelp;
+import se.streamsource.streamflow.client.util.StateBinder;
+import se.streamsource.streamflow.client.util.UncaughtExceptionHandler;
 import se.streamsource.streamflow.client.ui.ApplicationInitializationService;
 import se.streamsource.streamflow.client.ui.DebugWindow;
 import se.streamsource.streamflow.client.ui.DummyDataService;
@@ -211,7 +211,7 @@ import se.streamsource.streamflow.client.util.SelectionDialog;
 import se.streamsource.streamflow.client.util.TabbedResourceView;
 
 import static org.qi4j.api.common.Visibility.*;
-import static se.streamsource.streamflow.client.infrastructure.ui.UIAssemblers.*;
+import static se.streamsource.streamflow.client.util.UIAssemblers.*;
 
 /**
  * JAVADOC
