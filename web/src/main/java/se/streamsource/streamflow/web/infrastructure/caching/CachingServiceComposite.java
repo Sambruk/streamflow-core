@@ -32,6 +32,11 @@ public interface CachingServiceComposite
    class Mixin
       implements CachingService, Activatable
    {
+      public Mixin()
+      {
+         System.out.println("New caching:"+this);
+      }
+
       CacheManager manager;
 
       public void activate() throws Exception

@@ -17,7 +17,7 @@
 
 package se.streamsource.streamflow.client.ui.administration.projects;
 
-import se.streamsource.streamflow.client.ui.administration.SelectionListModel;
+import se.streamsource.streamflow.client.util.SelectionListModel;
 
 /**
  * JAVADOC

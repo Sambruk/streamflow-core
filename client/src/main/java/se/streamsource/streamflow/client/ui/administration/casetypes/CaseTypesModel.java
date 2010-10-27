@@ -21,7 +21,7 @@ import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.LinksValue;
-import se.streamsource.streamflow.client.ui.administration.DefinitionListModel;
+import se.streamsource.streamflow.client.util.DefinitionListModel;
 
 /**
  * List of casetypes in an Organization

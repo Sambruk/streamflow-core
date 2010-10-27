@@ -30,7 +30,7 @@ import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.infrastructure.ui.Refreshable;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
-import se.streamsource.streamflow.client.ui.administration.LinkValueListModel;
+import se.streamsource.streamflow.client.util.LinkValueListModel;
 
 
 public class AccessPointsModel

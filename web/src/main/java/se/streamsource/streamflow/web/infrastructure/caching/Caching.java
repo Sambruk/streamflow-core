@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.web.infrastructure.caching;
 
+import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 
@@ -75,7 +76,9 @@ public class Caching
    {
       if (caching != null)
       {
-         return caching.manager().getEhcache( cache.name() ).get( key );
+         CacheManager cacheManager = caching.manager();
+         Ehcache ehcache = cacheManager.getEhcache( cache.name() );
+         return ehcache.get( key );
       } else
       {
          return null;

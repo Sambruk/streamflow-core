@@ -16,7 +16,7 @@
 
 package se.streamsource.streamflow.client.ui.administration.roles;
 
-import se.streamsource.streamflow.client.ui.administration.DefinitionListModel;
+import se.streamsource.streamflow.client.util.DefinitionListModel;
 
 /**
  * JAVADOC

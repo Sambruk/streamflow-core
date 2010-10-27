@@ -17,7 +17,7 @@
 
 package se.streamsource.streamflow.client.ui.administration.groups;
 
-import se.streamsource.streamflow.client.ui.administration.DefinitionListModel;
+import se.streamsource.streamflow.client.util.DefinitionListModel;
 
 /**
  * JAVADOC

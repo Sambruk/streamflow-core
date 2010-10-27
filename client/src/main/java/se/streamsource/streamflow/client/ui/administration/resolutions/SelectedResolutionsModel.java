@@ -17,7 +17,7 @@
 
 package se.streamsource.streamflow.client.ui.administration.resolutions;
 
-import se.streamsource.streamflow.client.ui.administration.SelectionListModel;
+import se.streamsource.streamflow.client.util.SelectionListModel;
 
 /**
  * Management of selected resolutions of a casetype

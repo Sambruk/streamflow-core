@@ -37,9 +37,8 @@ import se.streamsource.streamflow.client.infrastructure.ui.SeparatorContextItemL
 import se.streamsource.streamflow.client.ui.ContextItem;
 import se.streamsource.streamflow.client.ui.ContextItemGroupComparator;
 import se.streamsource.streamflow.client.ui.ContextItemListRenderer;
-import se.streamsource.streamflow.client.ui.caze.CaseTableView;
-import se.streamsource.streamflow.client.ui.caze.InboxCaseTableFormatter;
-import se.streamsource.streamflow.client.ui.caze.OverviewAssignmentsCaseTableFormatter;
+import se.streamsource.streamflow.client.ui.workspace.caze.table.CaseTableView;
+import se.streamsource.streamflow.client.ui.workspace.caze.table.InboxCaseTableFormatter;
 
 import javax.swing.AbstractAction;
 import javax.swing.JList;

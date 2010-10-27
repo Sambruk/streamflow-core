@@ -18,7 +18,7 @@
 package se.streamsource.streamflow.client.ui.administration.policy;
 
 import se.streamsource.dci.value.LinkValue;
-import se.streamsource.streamflow.client.ui.administration.LinkValueListModel;
+import se.streamsource.streamflow.client.util.LinkValueListModel;
 
 /**
  * JAVADOC

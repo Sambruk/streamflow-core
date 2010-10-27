@@ -40,8 +40,6 @@ public interface Assignable
 
    boolean isAssigned();
 
-   boolean isAssignedTo( Assignee assignee );
-
    interface Data
    {
       @Optional
@@ -75,11 +73,6 @@ public interface Assignable
       public boolean isAssigned()
       {
          return assignedTo().get() != null;
-      }
-
-      public boolean isAssignedTo( Assignee assignee )
-      {
-         return assignee.equals( assignedTo().get() );
       }
 
       public void assignedTo( DomainEvent event, Assignee assignee )

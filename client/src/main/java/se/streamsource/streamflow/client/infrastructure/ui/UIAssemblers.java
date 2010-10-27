@@ -45,11 +45,6 @@ public final class UIAssemblers
       module.addObjects( viewClasses ).visibleIn( Visibility.layer );
    }
 
-   public static void addControllers( ModuleAssembly module, Class... controllerClasses ) throws AssemblyException
-   {
-      module.addObjects( controllerClasses ).visibleIn( Visibility.layer );
-   }
-
    public static void addDialogs( ModuleAssembly module, Class<? extends JComponent>... dialogClasses ) throws AssemblyException
    {
       module.addObjects( dialogClasses ).visibleIn( Visibility.layer );

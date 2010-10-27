@@ -26,8 +26,9 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.infrastructure.ui.JavaHelp;
 import se.streamsource.streamflow.client.infrastructure.ui.i18n;
-import se.streamsource.streamflow.client.ui.AccountSelector;
-import se.streamsource.streamflow.client.ui.administration.AccountModel;
+import se.streamsource.streamflow.client.ui.account.AccountSelector;
+import se.streamsource.streamflow.client.ui.account.AccountModel;
+import se.streamsource.streamflow.client.ui.account.AccountSelectionView;
 import se.streamsource.streamflow.client.ui.menu.WorkspaceMenuBar;
 
 import javax.swing.JPanel;

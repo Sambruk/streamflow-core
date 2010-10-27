@@ -27,6 +27,7 @@ import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.ContextItem;
+import se.streamsource.streamflow.client.util.TabbedResourceView;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;

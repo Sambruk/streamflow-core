@@ -36,6 +36,8 @@ public interface EventSource
     * Get list of event transactions before the given timestamp. If they are on the exact same timestamp, they will not be included.
     * <p/>
     * The method uses the visitor pattern, so a visitor is sent in which is given each transaction, one at a time.
+    * <p/>
+    * The transactions are sent to the visitor with the latest transaction first, i.e. walking backwards in the stream.
     *
     * @param beforeTimestamp timestamp of transactions
     * @param visitor for transactions

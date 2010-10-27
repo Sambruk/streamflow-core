@@ -17,7 +17,7 @@
 
 package se.streamsource.streamflow.client.ui.administration.projects;
 
-import se.streamsource.streamflow.client.ui.administration.DefinitionListModel;
+import se.streamsource.streamflow.client.util.DefinitionListModel;
 
 /**
  * List of projects in a OU

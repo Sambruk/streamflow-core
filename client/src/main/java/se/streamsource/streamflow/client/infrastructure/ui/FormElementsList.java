@@ -20,7 +20,7 @@ package se.streamsource.streamflow.client.infrastructure.ui;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.swing.EventListModel;
 import org.jdesktop.swingx.JXList;
-import se.streamsource.streamflow.client.ui.administration.form.FormElementItem;
+import se.streamsource.streamflow.client.ui.administration.forms.FormElementItem;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
