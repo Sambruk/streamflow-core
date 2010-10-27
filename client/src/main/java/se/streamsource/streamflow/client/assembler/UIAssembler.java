@@ -24,11 +24,6 @@ import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.spi.service.importer.NewObjectImporter;
 import org.restlet.Restlet;
 import se.streamsource.streamflow.client.StreamflowApplication;
-import se.streamsource.streamflow.client.util.dialog.DialogService;
-import se.streamsource.streamflow.client.util.ExceptionHandlerService;
-import se.streamsource.streamflow.client.util.JavaHelp;
-import se.streamsource.streamflow.client.util.StateBinder;
-import se.streamsource.streamflow.client.util.UncaughtExceptionHandler;
 import se.streamsource.streamflow.client.ui.ApplicationInitializationService;
 import se.streamsource.streamflow.client.ui.DebugWindow;
 import se.streamsource.streamflow.client.ui.DummyDataService;
@@ -48,8 +43,6 @@ import se.streamsource.streamflow.client.ui.administration.AdministrationModel;
 import se.streamsource.streamflow.client.ui.administration.AdministrationTreeView;
 import se.streamsource.streamflow.client.ui.administration.AdministrationView;
 import se.streamsource.streamflow.client.ui.administration.AdministrationWindow;
-import se.streamsource.streamflow.client.ui.administration.SelectOrganizationOrOrganizationalUnitDialog;
-import se.streamsource.streamflow.client.ui.administration.SelectOrganizationalUnitDialog;
 import se.streamsource.streamflow.client.ui.administration.UsersAndGroupsModel;
 import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypesModel;
 import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypesView;
@@ -199,16 +192,21 @@ import se.streamsource.streamflow.client.ui.workspace.table.CasesDetailView;
 import se.streamsource.streamflow.client.ui.workspace.table.CasesModel;
 import se.streamsource.streamflow.client.ui.workspace.table.CasesTableModel;
 import se.streamsource.streamflow.client.ui.workspace.table.CasesView;
+import se.streamsource.streamflow.client.util.ExceptionHandlerService;
+import se.streamsource.streamflow.client.util.JavaHelp;
+import se.streamsource.streamflow.client.util.LinksListModel;
+import se.streamsource.streamflow.client.util.StateBinder;
+import se.streamsource.streamflow.client.util.TabbedResourceView;
+import se.streamsource.streamflow.client.util.UncaughtExceptionHandler;
 import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.FilterListDialog;
 import se.streamsource.streamflow.client.util.dialog.GroupedFilterListDialog;
 import se.streamsource.streamflow.client.util.dialog.GroupedSelectionDialog;
-import se.streamsource.streamflow.client.util.LinksListModel;
 import se.streamsource.streamflow.client.util.dialog.NameDialog;
 import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
 import se.streamsource.streamflow.client.util.dialog.SelectLinksDialog;
 import se.streamsource.streamflow.client.util.dialog.SelectionDialog;
-import se.streamsource.streamflow.client.util.TabbedResourceView;
 
 import static org.qi4j.api.common.Visibility.*;
 import static se.streamsource.streamflow.client.util.UIAssemblers.*;
@@ -332,7 +330,7 @@ public class UIAssembler
             FieldEditorOptionButtonsFieldValueView.class,
             FieldEditorOpenSelectionFieldValueView.class,
             FieldEditorTextAreaFieldValueView.class,
-            FieldEditorTextFieldValueView.class);
+            FieldEditorTextFieldValueView.class );
 
       addDialogs( module, FieldCreationDialog.class );
 
@@ -444,7 +442,7 @@ public class UIAssembler
 
       addMV( module, CaseInfoModel.class, CaseInfoView.class );
 
-      addModels( module, CasesModel.class);
+      addModels( module, CasesModel.class );
 
       addViews( module,
             CaseDetailView.class );
@@ -571,8 +569,6 @@ public class UIAssembler
 
       addDialogs( module,
             ChangePasswordDialog.class,
-            SelectOrganizationalUnitDialog.class,
-            SelectOrganizationOrOrganizationalUnitDialog.class,
             SelectLinksDialog.class );
       addTasks( module, TestConnectionTask.class );
 
@@ -580,7 +576,7 @@ public class UIAssembler
 
       addMV( module,
             SelectedTemplateModel.class,
-            SelectedTemplateView.class);
+            SelectedTemplateView.class );
 
    }
 
