@@ -25,8 +25,10 @@ import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.ui.workspace.cases.attachments.AttachmentsView;
-import se.streamsource.streamflow.client.ui.caze.conversations.ConversationsView;
+import se.streamsource.streamflow.client.ui.workspace.cases.contacts.ContactsAdminView;
+import se.streamsource.streamflow.client.ui.workspace.cases.conversations.ConversationsView;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.FormsAdminView;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
