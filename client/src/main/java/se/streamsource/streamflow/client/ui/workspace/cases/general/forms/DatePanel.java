@@ -20,7 +20,6 @@ import org.jdesktop.swingx.JXDatePicker;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.util.DateFunctions;
 import se.streamsource.streamflow.client.infrastructure.ui.StateBinder;
-import se.streamsource.streamflow.client.ui.caze.AbstractFieldPanel;
 import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
 
 import java.awt.BorderLayout;
