@@ -42,7 +42,6 @@ import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.RefreshWhenVisible;
 import se.streamsource.streamflow.client.util.StateBinder;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
-import se.streamsource.streamflow.client.util.dialog.FilterListDialog;
 import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
 import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.application.AccessPointValue;
@@ -56,7 +55,6 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
-import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -77,16 +75,16 @@ public class AccessPointView
    DialogService dialogs;
 
    @Uses
-   protected ObjectBuilder<FilterListDialog> projectDialog;
+   protected ObjectBuilder<SelectLinkDialog> projectDialog;
 
    @Uses
-   protected ObjectBuilder<FilterListDialog> caseTypeDialog;
+   protected ObjectBuilder<SelectLinkDialog> caseTypeDialog;
 
    @Uses
-   protected ObjectBuilder<FilterListDialog> formDialog;
+   protected ObjectBuilder<SelectLinkDialog> formDialog;
 
    @Uses
-   protected ObjectBuilder<FilterListDialog> templateDialog;
+   protected ObjectBuilder<SelectLinkDialog> templateDialog;
 
    @Uses
    protected ObjectBuilder<SelectLinkDialog> labelSelectionDialog;
@@ -111,7 +109,7 @@ public class AccessPointView
                            @Uses CommandQueryClient client,
                            @Structure ObjectBuilderFactory obf )
    {
-      this.labels = obf.newObjectBuilder( CaseLabelsView.class ).use( client.getSubClient( "labels" )).newInstance();
+      this.labels = obf.newObjectBuilder( CaseLabelsView.class ).use( client.getSubClient( "labels" ) ).newInstance();
       this.model = obf.newObjectBuilder( AccessPointModel.class ).use( client, labels.getModel() ).newInstance();
       model.addObserver( this );
 
@@ -195,7 +193,7 @@ public class AccessPointView
 
 
       // Select labels
-      javax.swing.Action labelAction = am.get( "label" );
+      javax.swing.Action labelAction = labels.getActionMap().get( "addLabel" );
       labelButton = new JButton( labelAction );
 
       labelButton.registerKeyboardAction( labelAction, (KeyStroke) labelAction
@@ -245,62 +243,35 @@ public class AccessPointView
       accessPointBinder.updateWith( model.getAccessPointValue() );
 
       new RefreshWhenVisible( this, model );
-// TODO      labels.setLabelsModel( model.labelsModel() );
    }
 
    @Action
    public Task project()
    {
+      final SelectLinkDialog dialog = projectDialog.use( model.getPossibleProjects() ).newInstance();
+      dialogs.showOkCancelHelpDialog( projectButton, dialog, i18n.text( WorkspaceResources.choose_project ) );
+
       return new CommandTask()
       {
          @Override
          public void command()
                throws Exception
          {
-            FilterListDialog dialog = projectDialog.use(
-                  i18n.text( WorkspaceResources.choose_project ),
-                  model.getPossibleProjects() ).newInstance();
-            dialogs.showOkCancelHelpDialog( projectButton, dialog );
-
-            if (dialog.getSelected() != null)
+            if (dialog.getSelectedLink() != null)
             {
-               model.setProject( dialog.getSelected().identity() );
+               model.setProject( dialog.getSelectedLink() );
             }
          }
       };
-
    }
 
    @Action
    public Task casetype()
    {
-      return new CommandTask()
-      {
-         @Override
-         public void command()
-               throws Exception
-         {
-            FilterListDialog dialog = caseTypeDialog.use(
-                  i18n.text( WorkspaceResources.chose_casetype ),
-                  model.getPossibleCaseTypes() ).newInstance();
-            dialogs.showOkCancelHelpDialog( caseTypeButton, dialog );
-
-            if (dialog.getSelected() != null)
-            {
-               model.setCaseType( dialog.getSelected().identity() );
-            }
-         }
-      };
-
-   }
-
-   @Action
-   public Task label()
-   {
-      final SelectLinkDialog dialog = labelSelectionDialog.use( model.getPossibleLabels() ).newInstance();
-      dialog.setSelectionMode( ListSelectionModel.MULTIPLE_INTERVAL_SELECTION );
-
-      dialogs.showOkCancelHelpDialog( labelButton, dialog );
+      final SelectLinkDialog dialog = caseTypeDialog.use(
+            i18n.text( WorkspaceResources.chose_casetype ),
+            model.getPossibleCaseTypes() ).newInstance();
+      dialogs.showOkCancelHelpDialog( caseTypeButton, dialog );
 
       return new CommandTask()
       {
@@ -308,9 +279,9 @@ public class AccessPointView
          public void command()
                throws Exception
          {
-            for (LinkValue listItemValue : dialog.getSelectedLinks())
+            if (dialog.getSelectedLink() != null)
             {
-               model.labelsModel().addLabel( listItemValue );
+               model.setCaseType( dialog.getSelectedLink() );
             }
          }
       };
@@ -320,10 +291,10 @@ public class AccessPointView
    @Action
    public Task form()
    {
-      final FilterListDialog dialog = formDialog.use(
-            i18n.text( WorkspaceResources.choose_form ),
+      final SelectLinkDialog dialog = formDialog.use(
             model.getPossibleForms() ).newInstance();
-      dialogs.showOkCancelHelpDialog( formButton, dialog );
+      dialogs.showOkCancelHelpDialog( formButton, dialog,
+            i18n.text( WorkspaceResources.choose_form ) );
 
       return new CommandTask()
       {
@@ -331,9 +302,9 @@ public class AccessPointView
          public void command()
                throws Exception
          {
-            if (dialog.getSelected() != null)
+            if (dialog.getSelectedLink() != null)
             {
-               model.setForm( dialog.getSelected().identity() );
+               model.setForm( dialog.getSelectedLink() );
             }
          }
       };
@@ -343,21 +314,20 @@ public class AccessPointView
    @Action
    public Task template()
    {
+      final SelectLinkDialog dialog = templateDialog.use(
+            model.getPossibleTemplates() ).newInstance();
+
+      dialogs.showOkCancelHelpDialog( templateButton, dialog, i18n.text( WorkspaceResources.choose_template ));
+
       return new CommandTask()
       {
          @Override
          public void command()
                throws Exception
          {
-            FilterListDialog dialog = templateDialog.use(
-                  i18n.text( WorkspaceResources.choose_template ),
-                  model.getPossibleTemplates() ).newInstance();
-
-            dialogs.showOkCancelHelpDialog( templateButton, dialog );
-
-            if (dialog.getSelected() != null)
+            if (dialog.getSelectedLink() != null)
             {
-               model.setTemplate( dialog.getSelected().identity() );
+               model.setTemplate( dialog.getSelectedLink() );
             }
          }
       };

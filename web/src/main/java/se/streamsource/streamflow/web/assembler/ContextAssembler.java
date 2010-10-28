@@ -102,6 +102,7 @@ import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.requ
 import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.submittedforms.SurfaceSubmittedFormContext;
 import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.submittedforms.SurfaceSubmittedFormsContext;
 import se.streamsource.streamflow.web.context.surface.administration.organizations.accesspoints.AccessPointAdministrationContext;
+import se.streamsource.streamflow.web.context.surface.administration.organizations.accesspoints.AccessPointLabelableContext;
 import se.streamsource.streamflow.web.context.surface.administration.organizations.accesspoints.AccessPointsAdministrationContext;
 import se.streamsource.streamflow.web.context.surface.administration.organizations.proxyusers.ProxyUserContext;
 import se.streamsource.streamflow.web.context.surface.administration.organizations.proxyusers.ProxyUsersContext;
@@ -177,6 +178,7 @@ import se.streamsource.streamflow.web.resource.surface.accesspoints.endusers.for
 import se.streamsource.streamflow.web.resource.surface.accesspoints.endusers.formdrafts.SurfaceFormDraftsResource;
 import se.streamsource.streamflow.web.resource.surface.accesspoints.endusers.submittedforms.SurfaceSubmittedFormsResource;
 import se.streamsource.streamflow.web.resource.surface.administration.organizations.accesspoints.AccessPointAdministrationResource;
+import se.streamsource.streamflow.web.resource.surface.administration.organizations.accesspoints.AccessPointLabelableResource;
 import se.streamsource.streamflow.web.resource.surface.administration.organizations.accesspoints.AccessPointsAdministrationResource;
 import se.streamsource.streamflow.web.resource.workspace.WorkspaceResource;
 import se.streamsource.streamflow.web.resource.workspace.cases.AttachmentsResource;
@@ -414,6 +416,8 @@ public class ContextAssembler
             AccessPointResource.class,
             AccessPointAdministrationContext.class,
             AccessPointAdministrationResource.class,
+            AccessPointLabelableContext.class,
+            AccessPointLabelableResource.class,
             AccessPointsAdministrationContext.class,
             AccessPointsAdministrationResource.class,
             ProxyUserContext.class,

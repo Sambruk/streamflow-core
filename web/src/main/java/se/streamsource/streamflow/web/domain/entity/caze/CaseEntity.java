@@ -71,7 +71,6 @@ public interface CaseEntity
 
       // Queries
       SubmittedFormsQueries,
-      CaseLabelsQueries,
       CaseTypeQueries,
 
       DomainEntity

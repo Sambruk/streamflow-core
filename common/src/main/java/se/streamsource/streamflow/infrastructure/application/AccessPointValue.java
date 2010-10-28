@@ -21,7 +21,6 @@ import org.qi4j.api.common.Optional;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
 import se.streamsource.dci.value.LinkValue;
-import se.streamsource.dci.value.LinksValue;
 
 /**
  * Link value
@@ -36,9 +35,6 @@ public interface AccessPointValue
 
    @Optional
    Property<LinkValue> caseType();
-
-   @Optional
-   Property<LinksValue> labels();
 
    @Optional
    Property<LinkValue> form();

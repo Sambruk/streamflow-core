@@ -17,13 +17,10 @@
 
 package se.streamsource.streamflow.web.context.structure;
 
-import static se.streamsource.dci.api.RoleMap.role;
-
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
-
 import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.LinksValue;
@@ -34,6 +31,8 @@ import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachments;
 import se.streamsource.streamflow.web.domain.structure.attachment.SelectedTemplate;
+
+import static se.streamsource.dci.api.RoleMap.*;
 
 
 /**

@@ -30,9 +30,8 @@ import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.util.Refreshable;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
-import se.streamsource.streamflow.client.ui.workspace.cases.general.CaseLabelsModel;
+import se.streamsource.streamflow.client.util.Refreshable;
 import se.streamsource.streamflow.infrastructure.application.AccessPointValue;
 
 import java.util.Observable;
@@ -45,12 +44,14 @@ public class AccessPointModel extends Observable
    ValueBuilderFactory vbf;
 
    @Uses
-   private CaseLabelsModel caseLabelsModel;
-
-   @Uses
    private CommandQueryClient client;
 
    private AccessPointValue accessPoint;
+
+   public AccessPointValue getAccessPointValue()
+   {
+      return accessPoint;
+   }
 
    public void refresh() throws OperationException
    {
@@ -61,86 +62,36 @@ public class AccessPointModel extends Observable
       notifyObservers();
    }
 
-   public void setProject( String id )
-   {
-      client.postCommand( "setproject", getStringValue( id ) );
-   }
-
-   public void setCaseType( String id )
-   {
-      client.postCommand( "setcasetype", getStringValue( id ) );
-   }
-
-   private StringValue getStringValue( String id )
-   {
-      ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
-      builder.prototype().string().set( id );
-      return builder.newInstance();
-   }
-
    public Object getPossibleProjects()
    {
-      try
-      {
-         BasicEventList<LinkValue> list = new BasicEventList<LinkValue>();
+      BasicEventList<LinkValue> list = new BasicEventList<LinkValue>();
 
-         LinksValue listValue = client.query( "possibleprojects",
-               LinksValue.class );
-         list.addAll( listValue.links().get() );
+      LinksValue listValue = client.query( "possibleprojects",
+            LinksValue.class );
+      list.addAll( listValue.links().get() );
 
-         return list;
-      } catch (ResourceException e)
-      {
-         throw new OperationException( WorkspaceResources.could_not_refresh,
-               e );
-      }
+      return list;
+   }
+
+   public void setProject( LinkValue link )
+   {
+      client.postLink( link );
    }
 
    public EventList<LinkValue> getPossibleCaseTypes()
    {
-      try
-      {
-         BasicEventList<LinkValue> list = new BasicEventList<LinkValue>();
+      BasicEventList<LinkValue> list = new BasicEventList<LinkValue>();
 
-         LinksValue listValue = client.query( "possiblecasetypes",
-               LinksValue.class );
-         list.addAll( listValue.links().get() );
+      LinksValue listValue = client.query( "possiblecasetypes",
+            LinksValue.class );
+      list.addAll( listValue.links().get() );
 
-         return list;
-      } catch (ResourceException e)
-      {
-         throw new OperationException( WorkspaceResources.could_not_refresh,
-               e );
-      }
+      return list;
    }
 
-   public EventList<LinkValue> getPossibleLabels()
+   public void setCaseType( LinkValue link )
    {
-      try
-      {
-         BasicEventList<LinkValue> list = new BasicEventList<LinkValue>();
-
-         LinksValue listValue = client.query( "possiblelabels",
-               LinksValue.class );
-         list.addAll( listValue.links().get() );
-
-         return list;
-      } catch (ResourceException e)
-      {
-         throw new OperationException( WorkspaceResources.could_not_refresh,
-               e );
-      }
-   }
-
-   public AccessPointValue getAccessPointValue()
-   {
-      return accessPoint;
-   }
-
-   public CaseLabelsModel labelsModel()
-   {
-//      caseLabelsModel.setLabels( accessPoint.labels().get() );
-      return caseLabelsModel;
+      client.postLink( link );
    }
 
    public EventList<LinkValue> getPossibleForms()
@@ -161,9 +112,20 @@ public class AccessPointModel extends Observable
       }
    }
 
-   public void setForm( String id )
+   public void setForm( LinkValue link )
    {
-      client.postCommand( "setform", getStringValue( id ) );
+      client.postLink( link );
+   }
+
+   public EventList<LinkValue> getPossibleLabels()
+   {
+      BasicEventList<LinkValue> list = new BasicEventList<LinkValue>();
+
+      LinksValue listValue = client.query( "possiblelabels",
+            LinksValue.class );
+      list.addAll( listValue.links().get() );
+
+      return list;
    }
 
    public EventList<LinkValue> getPossibleTemplates()
@@ -184,16 +146,21 @@ public class AccessPointModel extends Observable
       }
    }
 
-   public void setTemplate( String id )
+   public void setTemplate( LinkValue link)
    {
-      ValueBuilder<EntityValue> builder = vbf.newValueBuilder( EntityValue.class );
-      builder.prototype().entity().set( id );
-      client.getSubClient( "template" ).postCommand( "settemplate", builder.newInstance() );
+      client.getSubClient( "template" ).postLink( link );
    }
 
    public void removeTemplate()
    {
       ValueBuilder<EntityValue> builder = vbf.newValueBuilder( EntityValue.class );
       client.getSubClient( "template" ).postCommand( "settemplate", builder.newInstance() );
+   }
+
+   private StringValue getStringValue( String id )
+   {
+      ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
+      builder.prototype().string().set( id );
+      return builder.newInstance();
    }
 }

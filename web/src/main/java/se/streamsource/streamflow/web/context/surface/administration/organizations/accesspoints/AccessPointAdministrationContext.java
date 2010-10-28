@@ -28,16 +28,14 @@ import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
+import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.LinkValue;
-import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.StringValueMaxLength;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.application.AccessPointValue;
-import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationQueries;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationVisitor;
-import se.streamsource.streamflow.web.domain.entity.project.ProjectLabelsQueries;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
 import se.streamsource.streamflow.web.domain.structure.attachment.SelectedTemplate;
@@ -45,9 +43,7 @@ import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.SelectedCaseTypes;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
 import se.streamsource.streamflow.web.domain.structure.form.SelectedForms;
-import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.label.Labelable;
-import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
 import se.streamsource.streamflow.web.domain.structure.organization.AccessPoint;
 import se.streamsource.streamflow.web.domain.structure.organization.AccessPointSettings;
 import se.streamsource.streamflow.web.domain.structure.organization.AccessPoints;
@@ -57,7 +53,6 @@ import se.streamsource.streamflow.web.domain.structure.project.Projects;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * JAVADOC
@@ -70,19 +65,17 @@ public interface AccessPointAdministrationContext
    void changedescription( @MaxLength(50) StringValue name )
          throws IllegalArgumentException;
 
-   void setproject( StringValue id );
-
-   void setcasetype( StringValue id );
-
-   void setform( StringValue id );
-
    List<Project> possibleprojects();
+
+   void setproject( EntityValue id );
 
    List<CaseType> possiblecasetypes();
 
-   LinksValue possiblelabels();
+   void setcasetype( EntityValue id );
 
    List<Form> possibleforms();
+
+   void setform( EntityValue id );
 
    abstract class Mixin
          implements AccessPointAdministrationContext
@@ -105,11 +98,6 @@ public interface AccessPointAdministrationContext
             builder.prototype().project().set( createLinkValue( accessPointData.project().get() ) );
          if (accessPointData.caseType().get() != null)
             builder.prototype().caseType().set( createLinkValue( accessPointData.caseType().get() ) );
-
-         LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
-         linksBuilder.addDescribables( labelsData.labels() );
-
-         builder.prototype().labels().set( linksBuilder.newLinks() );
 
          if (forms.selectedForms().toList().size() > 0)
             builder.prototype().form().set( createLinkValue( forms.selectedForms().toList().get( 0 ) ) );
@@ -182,6 +170,15 @@ public interface AccessPointAdministrationContext
          return possibleProjects;
       }
 
+      public void setproject( EntityValue id )
+      {
+         AccessPoint accessPoint = RoleMap.role( AccessPoint.class );
+
+         Project project = module.unitOfWorkFactory().currentUnitOfWork().get( Project.class, id.entity().get() );
+
+         accessPoint.setProject( project );
+      }
+
       public List<CaseType> possiblecasetypes()
       {
          AccessPointSettings.Data accessPoint = RoleMap.role( AccessPointSettings.Data.class );
@@ -199,54 +196,13 @@ public interface AccessPointAdministrationContext
          return possibleCaseTypes;
       }
 
-      public void setproject( StringValue id )
+      public void setcasetype( EntityValue id )
       {
          AccessPoint accessPoint = RoleMap.role( AccessPoint.class );
 
-         Project project = module.unitOfWorkFactory().currentUnitOfWork().get( Project.class, id.string().get() );
-
-         accessPoint.setProject( project );
-      }
-
-      public void setcasetype( StringValue id )
-      {
-         AccessPoint accessPoint = RoleMap.role( AccessPoint.class );
-
-         CaseType caseType = module.unitOfWorkFactory().currentUnitOfWork().get( CaseType.class, id.string().get() );
+         CaseType caseType = module.unitOfWorkFactory().currentUnitOfWork().get( CaseType.class, id.entity().get() );
 
          accessPoint.setCaseType( caseType );
-      }
-
-      public LinksValue possiblelabels()
-      {
-         AccessPointSettings.Data accessPoint = RoleMap.role( AccessPointSettings.Data.class );
-         Labelable.Data labelsData = RoleMap.role( Labelable.Data.class );
-         Project project = accessPoint.project().get();
-         CaseType caseType = accessPoint.caseType().get();
-
-         LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() ).path("labels").command( "addlabel" );
-         if (project != null && caseType != null)
-         {
-            ProjectLabelsQueries labelsQueries = (ProjectLabelsQueries) project;
-
-
-            Map<Label, SelectedLabels> map = labelsQueries.possibleLabels( caseType );
-            try
-            {
-               List<Label> labels = labelsData.labels().toList();
-               for (Label label : map.keySet())
-               {
-                  if (!labels.contains( label ))
-                  {
-                     linksBuilder.addDescribable( label, ((Describable) map.get( label )).getDescription() );
-                  }
-               }
-            } catch (IllegalArgumentException e)
-            {
-               linksBuilder.addDescribables( map.keySet() );
-            }
-         }
-         return linksBuilder.newLinks();
       }
 
       public List<Form> possibleforms()
@@ -273,7 +229,7 @@ public interface AccessPointAdministrationContext
          return possibleForms;
       }
 
-      public void setform( StringValue id )
+      public void setform( EntityValue id )
       {
          SelectedForms forms = RoleMap.role( SelectedForms.class );
          SelectedForms.Data formsData = RoleMap.role( SelectedForms.Data.class );
@@ -286,7 +242,7 @@ public interface AccessPointAdministrationContext
          }
 
          // add the last selected from
-         Form form = module.unitOfWorkFactory().currentUnitOfWork().get( Form.class, id.string().get() );
+         Form form = module.unitOfWorkFactory().currentUnitOfWork().get( Form.class, id.entity().get() );
 
          forms.addSelectedForm( form );
       }

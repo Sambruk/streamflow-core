@@ -198,7 +198,6 @@ import se.streamsource.streamflow.client.util.TabbedResourceView;
 import se.streamsource.streamflow.client.util.UncaughtExceptionHandler;
 import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
-import se.streamsource.streamflow.client.util.dialog.FilterListDialog;
 import se.streamsource.streamflow.client.util.dialog.NameDialog;
 import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
 import se.streamsource.streamflow.client.util.dialog.SelectLinksDialog;
@@ -517,7 +516,6 @@ public class UIAssembler
       addMV( module, SavedSearchesModel.class, SearchView.class );
 
       addDialogs( module, SelectLinkDialog.class,
-            FilterListDialog.class,
             SaveSearchDialog.class,
             HandleSearchesDialog.class );
    }
