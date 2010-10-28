@@ -159,21 +159,7 @@ public class AttachmentsView
       {
          final File[] selectedFiles = fileChooser.getSelectedFiles();
 
-         return new CommandTask()
-         {
-            @Override
-            public void command()
-               throws Exception
-            {
-               setMessage( getResourceMap().getString( "description" ) );
-
-               for (File file : selectedFiles)
-               {
-                  FileInputStream fin = new FileInputStream( file );
-                  attachmentsModel.createAttachment( file, fin );
-               }
-            }
-         };
+         return new AddAttachmentTask(selectedFiles);
       } else
          return null;
    }
@@ -223,6 +209,30 @@ public class AttachmentsView
    {
       if (Events.matches( Events.withNames("addedAttachment", "removedAttachment" ), transactions ))
          attachmentsModel.refresh();
+   }
+
+   private class AddAttachmentTask
+      extends CommandTask
+   {
+      File[] selectedFiles;
+
+      private AddAttachmentTask( File[] selectedFiles )
+      {
+         this.selectedFiles = selectedFiles;
+      }
+
+      @Override
+      public void command()
+         throws Exception
+      {
+         setMessage( getResourceMap().getString( "description" ) );
+
+         for (File file : selectedFiles)
+         {
+            FileInputStream fin = new FileInputStream( file );
+            attachmentsModel.createAttachment( file, fin );
+         }
+      }
    }
 
    private class OpenAttachmentTask extends Task<File, Void>
