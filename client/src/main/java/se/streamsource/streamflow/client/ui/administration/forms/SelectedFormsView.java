@@ -30,15 +30,15 @@ import org.qi4j.api.object.ObjectBuilder;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.LinkValue;
-import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.LinkComparator;
 import se.streamsource.streamflow.client.util.LinkListCellRenderer;
 import se.streamsource.streamflow.client.util.RefreshWhenVisible;
 import se.streamsource.streamflow.client.util.SelectionActionEnabler;
-import se.streamsource.streamflow.client.util.CommandTask;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.NameDialog;
-import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
-import se.streamsource.streamflow.client.util.dialog.GroupedSelectionDialog;
+import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
 
@@ -47,6 +47,7 @@ import javax.swing.JButton;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.ListSelectionModel;
 import java.awt.BorderLayout;
 
 import static se.streamsource.streamflow.client.util.i18n.*;
@@ -65,7 +66,7 @@ public class SelectedFormsView
    Iterable<NameDialog> nameDialogs;
 
    @Uses
-   ObjectBuilder<GroupedSelectionDialog> selectDialogs;
+   ObjectBuilder<SelectLinkDialog> selectDialogs;
 
    public JList labelList;
 
@@ -100,7 +101,8 @@ public class SelectedFormsView
    @Action
    public Task add()
    {
-      final GroupedSelectionDialog dialog = selectDialogs.use( model.getPossible() ).newInstance();
+      final SelectLinkDialog dialog = selectDialogs.use( model.getPossible() ).newInstance();
+      dialog.setSelectionMode( ListSelectionModel.MULTIPLE_INTERVAL_SELECTION );
 
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.choose_form_title ) );
 

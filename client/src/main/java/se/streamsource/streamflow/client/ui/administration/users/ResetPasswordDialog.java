@@ -20,6 +20,7 @@ package se.streamsource.streamflow.client.ui.administration.users;
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.swingx.JXDialog;
 import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
@@ -51,6 +52,9 @@ public class ResetPasswordDialog
       super( new BorderLayout() );
 
       setActionMap( context.getActionMap( this ) );
+
+      setActionMap( context.getActionMap( this ) );
+      getActionMap().put( JXDialog.CLOSE_ACTION_COMMAND, getActionMap().get("cancel" ));
 
       FormLayout layout = new FormLayout( "70dlu, 5dlu, 120dlu:grow", "pref, pref" );
 
@@ -95,7 +99,7 @@ public class ResetPasswordDialog
    }
 
    @org.jdesktop.application.Action
-   public void close()
+   public void cancel()
    {
       WindowUtils.findWindow( this ).dispose();
    }

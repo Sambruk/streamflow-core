@@ -180,7 +180,7 @@ public class HandleSearchesDialog
    }
 
    @Action
-   public void execute()
+   public void close()
    {
       WindowUtils.findWindow( this ).dispose();
    }

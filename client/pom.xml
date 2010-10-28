@@ -127,8 +127,15 @@
         <dependency>
             <groupId>org.swinglabs</groupId>
             <artifactId>swingx</artifactId>
+            <version>1.6.1</version>
+        </dependency>
+<!--
+        <dependency>
+            <groupId>org.swinglabs</groupId>
+            <artifactId>swingx</artifactId>
             <version>0.9.7</version>
         </dependency>
+-->
         <dependency>
             <groupId>net.java.dev.glazedlists</groupId>
             <artifactId>glazedlists_java15</artifactId>
@@ -159,7 +166,7 @@
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>
-            <version>3.5-FINAL</version>
+            <version>3.6</version>
         </dependency>
 
         <!-- REST -->

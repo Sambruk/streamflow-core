@@ -30,17 +30,17 @@ import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.client.StreamflowResources;
-import se.streamsource.streamflow.client.util.dialog.DialogService;
-import se.streamsource.streamflow.client.util.LinkListCellRenderer;
-import se.streamsource.streamflow.client.util.RefreshWhenVisible;
-import se.streamsource.streamflow.client.util.dialog.SelectionDialog;
-import se.streamsource.streamflow.client.util.i18n;
-import se.streamsource.streamflow.client.util.CommandTask;
-import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
-import se.streamsource.streamflow.client.util.ListDetailView;
-import se.streamsource.streamflow.client.util.dialog.NameDialog;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.util.CommandTask;
+import se.streamsource.streamflow.client.util.LinkListCellRenderer;
+import se.streamsource.streamflow.client.util.ListDetailView;
+import se.streamsource.streamflow.client.util.RefreshWhenVisible;
 import se.streamsource.streamflow.client.util.TabbedResourceView;
+import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.util.dialog.NameDialog;
+import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
+import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.util.Strings;
 
@@ -69,7 +69,7 @@ public class CaseTypesView
    Iterable<ConfirmationDialog> confirmationDialog;
 
    @Uses
-   ObjectBuilder<SelectionDialog> possibleMoveToDialogs;
+   ObjectBuilder<SelectLinkDialog> possibleMoveToDialogs;
 
    public CaseTypesView( @Service ApplicationContext context,
                          @Uses final CommandQueryClient client,
@@ -166,12 +166,12 @@ public class CaseTypesView
    public Task move()
    {
       final LinkValue selected = (LinkValue) list.getSelectedValue();
-      final SelectionDialog dialog = possibleMoveToDialogs.use(model.getPossibleMoveTo()).newInstance();
+      final SelectLinkDialog dialog = possibleMoveToDialogs.use(model.getPossibleMoveTo()).newInstance();
       dialog.setPreferredSize( new Dimension(200,300) );
 
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.choose_move_to ) );
 
-      if (dialog.getSelectedLinks() != null)
+      if (dialog.getSelectedLink() != null)
       {
          return new CommandTask()
          {

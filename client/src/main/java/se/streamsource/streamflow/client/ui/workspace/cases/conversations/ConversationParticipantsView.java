@@ -28,13 +28,13 @@ import org.qi4j.api.object.ObjectBuilder;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.LinkValue;
-import se.streamsource.streamflow.client.util.dialog.DialogService;
-import se.streamsource.streamflow.client.util.RefreshWhenVisible;
-import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseResources;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.RemovableLabel;
 import se.streamsource.streamflow.client.util.CommandTask;
-import se.streamsource.streamflow.client.util.dialog.GroupedFilterListDialog;
+import se.streamsource.streamflow.client.util.RefreshWhenVisible;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
+import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
 
@@ -58,7 +58,7 @@ public class ConversationParticipantsView
    DialogService dialogs;
 
    @Uses
-   ObjectBuilder<GroupedFilterListDialog> participantsDialog;
+   ObjectBuilder<SelectLinkDialog> participantsDialog;
 
    ConversationParticipantsModel model;
    private JPanel participants;
@@ -114,10 +114,8 @@ public class ConversationParticipantsView
    @Action
    public Task addParticipants()
    {
-      final GroupedFilterListDialog dialog = participantsDialog.use(
-            i18n.text( CaseResources.choose_participant ),
-            model.possibleParticipants() ).newInstance();
-      dialogs.showOkCancelHelpDialog( this, dialog );
+      final SelectLinkDialog dialog = participantsDialog.use( model.possibleParticipants() ).newInstance();
+      dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( CaseResources.choose_participant ) );
 
       return new CommandTask()
       {
@@ -125,7 +123,7 @@ public class ConversationParticipantsView
          public void command()
             throws Exception
          {
-            for (LinkValue participant : dialog.getSelectedItems())
+            for (LinkValue participant : dialog.getSelectedLinks())
             {
                model.addParticipant( participant );
             }

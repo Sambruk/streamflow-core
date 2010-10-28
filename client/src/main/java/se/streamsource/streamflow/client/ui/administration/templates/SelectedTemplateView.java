@@ -162,9 +162,9 @@ public class SelectedTemplateView extends JPanel
 
             dialogs.showOkCancelHelpDialog( templateButton, dialog );
 
-            if (dialog.getSelected() != null)
+            if (dialog.getSelectedLink() != null)
             {
-               model.setTemplate( dialog.getSelected() );
+               model.setTemplate( dialog.getSelectedLink() );
             }
          }
       };

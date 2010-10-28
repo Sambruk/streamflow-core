@@ -28,13 +28,15 @@ import org.qi4j.api.object.ObjectBuilder;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.LinkValue;
-import se.streamsource.streamflow.client.util.dialog.DialogService;
-import se.streamsource.streamflow.client.util.RefreshWhenVisible;
 import se.streamsource.streamflow.client.util.CommandTask;
+import se.streamsource.streamflow.client.util.RefreshWhenVisible;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
 
 import javax.swing.JPanel;
+import javax.swing.ListSelectionModel;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -47,7 +49,7 @@ public class CaseLabelsView
    private DialogService dialogs;
 
    @Uses
-   private ObjectBuilder<CaseLabelsDialog> labelSelectionDialog;
+   private ObjectBuilder<SelectLinkDialog> labelSelectionDialog;
 
    private CaseLabelsModel model;
 
@@ -98,25 +100,21 @@ public class CaseLabelsView
    @Action
    public Task addLabel()
    {
-      final CaseLabelsDialog dialog = labelSelectionDialog.use(
-            model.getPossibleLabels() ).newInstance();
+      final SelectLinkDialog dialog = labelSelectionDialog.use( model.getPossibleLabels() ).newInstance();
+      dialog.setSelectionMode( ListSelectionModel.MULTIPLE_INTERVAL_SELECTION );
       dialogs.showOkCancelHelpDialog( this, dialog );
 
-      if (dialog.getSelectedLabels() != null)
+      return new CommandTask()
       {
-         return new CommandTask()
+         @Override
+         protected void command() throws Exception
          {
-            @Override
-            protected void command() throws Exception
+            for (LinkValue listItemValue : dialog.getSelectedLinks())
             {
-               for (LinkValue listItemValue : dialog.getSelectedLabels())
-               {
-                  model.addLabel( listItemValue );
-               }
+               model.addLabel( listItemValue );
             }
-         };
-      } else
-         return null;
+         }
+      };
    }
 
 

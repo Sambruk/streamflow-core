@@ -20,6 +20,7 @@ package se.streamsource.streamflow.client.ui;
 import ca.odell.glazedlists.EventList;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.swingx.JXDialog;
 import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
@@ -60,6 +61,8 @@ public class SelectUsersAndGroupsDialog
    {
       super( new GridLayout(1, 2) );
       setActionMap( context.getActionMap( this ) );
+      getActionMap().put( JXDialog.CLOSE_ACTION_COMMAND, getActionMap().get("cancel" ));
+
       setName( i18n.text( AdministrationResources.search_users_or_groups) );
 
       selectedEntities = new HashSet<LinkValue>();
@@ -99,7 +102,7 @@ public class SelectUsersAndGroupsDialog
    }
 
    @Action
-   public void close()
+   public void cancel()
    {
       WindowUtils.findWindow( this ).dispose();
    }

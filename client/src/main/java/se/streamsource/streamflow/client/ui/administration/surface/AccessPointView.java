@@ -35,16 +35,16 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
-import se.streamsource.streamflow.client.util.dialog.DialogService;
-import se.streamsource.streamflow.client.util.RefreshWhenVisible;
-import se.streamsource.streamflow.client.util.StateBinder;
-import se.streamsource.streamflow.client.util.dialog.FilterListDialog;
-import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
-import se.streamsource.streamflow.client.ui.workspace.cases.general.CaseLabelsDialog;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.CaseLabelsView;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.RemovableLabel;
 import se.streamsource.streamflow.client.util.CommandTask;
+import se.streamsource.streamflow.client.util.RefreshWhenVisible;
+import se.streamsource.streamflow.client.util.StateBinder;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.util.dialog.FilterListDialog;
+import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
+import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.application.AccessPointValue;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
@@ -56,6 +56,7 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
+import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -88,7 +89,7 @@ public class AccessPointView
    protected ObjectBuilder<FilterListDialog> templateDialog;
 
    @Uses
-   protected ObjectBuilder<CaseLabelsDialog> labelSelectionDialog;
+   protected ObjectBuilder<SelectLinkDialog> labelSelectionDialog;
 
    public CaseLabelsView labels;
    public JLabel selectedCaseType = new JLabel();
@@ -296,22 +297,20 @@ public class AccessPointView
    @Action
    public Task label()
    {
+      final SelectLinkDialog dialog = labelSelectionDialog.use( model.getPossibleLabels() ).newInstance();
+      dialog.setSelectionMode( ListSelectionModel.MULTIPLE_INTERVAL_SELECTION );
+
+      dialogs.showOkCancelHelpDialog( labelButton, dialog );
+
       return new CommandTask()
       {
          @Override
          public void command()
                throws Exception
          {
-            CaseLabelsDialog dialog = labelSelectionDialog.use(
-                  model.getPossibleLabels() ).newInstance();
-            dialogs.showOkCancelHelpDialog( labelButton, dialog );
-
-            if (dialog.getSelectedLabels() != null)
+            for (LinkValue listItemValue : dialog.getSelectedLinks())
             {
-               for (LinkValue listItemValue : dialog.getSelectedLabels())
-               {
-                  model.labelsModel().addLabel( listItemValue );
-               }
+               model.labelsModel().addLabel( listItemValue );
             }
          }
       };
@@ -321,17 +320,17 @@ public class AccessPointView
    @Action
    public Task form()
    {
+      final FilterListDialog dialog = formDialog.use(
+            i18n.text( WorkspaceResources.choose_form ),
+            model.getPossibleForms() ).newInstance();
+      dialogs.showOkCancelHelpDialog( formButton, dialog );
+
       return new CommandTask()
       {
          @Override
          public void command()
                throws Exception
          {
-            FilterListDialog dialog = formDialog.use(
-                  i18n.text( WorkspaceResources.choose_form ),
-                  model.getPossibleForms() ).newInstance();
-            dialogs.showOkCancelHelpDialog( formButton, dialog );
-
             if (dialog.getSelected() != null)
             {
                model.setForm( dialog.getSelected().identity() );

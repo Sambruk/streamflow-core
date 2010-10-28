@@ -44,7 +44,7 @@ import java.beans.PropertyChangeListener;
 public class GroupedFilteredList
       extends JPanel implements PropertyChangeListener
 {
-   private JTextField textField;
+   private JTextField filterField;
    private JList list;
    public JScrollPane pane = new JScrollPane();
 
@@ -52,11 +52,11 @@ public class GroupedFilteredList
    {
       setLayout( new BorderLayout() );
 
-      textField = new JTextField( 20 );
+      filterField = new JTextField( 20 );
 
       FilterLinkListCellRenderer filterCellRenderer = new FilterLinkListCellRenderer();
       filterCellRenderer.addPropertyChangeListener( this );
-      textField.getDocument().addDocumentListener( filterCellRenderer );
+      filterField.getDocument().addDocumentListener( filterCellRenderer );
 
       list = new JList();
 
@@ -71,13 +71,13 @@ public class GroupedFilteredList
       } );
       pane.setViewportView( list );
 
-      add( textField, BorderLayout.NORTH );
+      add( filterField, BorderLayout.NORTH );
       add( pane, BorderLayout.CENTER );
    }
 
-   public JTextField getTextField()
+   public JTextField getFilterField()
    {
-      return textField;
+      return filterField;
    }
 
    public JList getList()
@@ -93,7 +93,7 @@ public class GroupedFilteredList
    public void setEventList( EventList<TitledLinkValue> eventList )
    {
       SortedList<TitledLinkValue> sortedIssues = new SortedList<TitledLinkValue>( eventList, new LinkComparator() );
-      TextComponentMatcherEditor editor = new TextComponentMatcherEditor( textField, new LinkFilterator() );
+      TextComponentMatcherEditor editor = new TextComponentMatcherEditor( filterField, new LinkFilterator() );
       editor.addMatcherEditorListener( new MatcherEditor.Listener()
       {
          public void changedMatcher( MatcherEditor.Event event )
@@ -123,7 +123,7 @@ public class GroupedFilteredList
 
       list.setModel( listModel );
 
-      textField.setText( "" );
+      filterField.setText( "" );
    }
 
    public void propertyChange( PropertyChangeEvent evt )

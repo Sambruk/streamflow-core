@@ -40,7 +40,7 @@ import java.awt.BorderLayout;
 public class FilteredList
       extends JPanel
 {
-   private JTextField textField;
+   private JTextField filterField;
    private JList list;
    public JScrollPane pane = new JScrollPane();
 
@@ -48,7 +48,7 @@ public class FilteredList
    {
       setLayout( new BorderLayout() );
 
-      textField = new JTextField( 20 );
+      filterField = new JTextField( 20 );
 
       list = new JList();
       list.setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
@@ -57,13 +57,13 @@ public class FilteredList
       list.setCellRenderer( filterCellRenderer );
       pane.setViewportView( list );
 
-      add( textField, BorderLayout.NORTH );
+      add( filterField, BorderLayout.NORTH );
       add( pane, BorderLayout.CENTER );
    }
 
-   public JTextField getTextField()
+   public JTextField getFilterField()
    {
-      return textField;
+      return filterField;
    }
 
    public JList getList()
@@ -79,7 +79,7 @@ public class FilteredList
    public void setEventList( EventList<LinkValue> eventList )
    {
       SortedList<LinkValue> sortedIssues = new SortedList<LinkValue>( eventList, new LinkComparator() );
-      final FilterList<LinkValue> textFilteredIssues = new FilterList<LinkValue>( sortedIssues, new TextComponentMatcherEditor( textField, new LinkFilterator() ) );
+      final FilterList<LinkValue> textFilteredIssues = new FilterList<LinkValue>( sortedIssues, new TextComponentMatcherEditor( filterField, new LinkFilterator() ) );
       EventListModel listModel = new EventListModel<LinkValue>( textFilteredIssues );
 
       textFilteredIssues.addListEventListener( new ListEventListener<LinkValue>()
@@ -112,7 +112,7 @@ public class FilteredList
 
       list.setModel( listModel );
 
-      textField.setText( "" );
+      filterField.setText( "" );
 
 
    }

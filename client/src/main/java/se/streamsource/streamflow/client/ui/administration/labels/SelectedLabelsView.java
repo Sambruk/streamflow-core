@@ -30,15 +30,15 @@ import org.qi4j.api.object.ObjectBuilder;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.LinkValue;
-import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.LinkComparator;
 import se.streamsource.streamflow.client.util.LinkListCellRenderer;
 import se.streamsource.streamflow.client.util.RefreshWhenVisible;
 import se.streamsource.streamflow.client.util.SelectionActionEnabler;
-import se.streamsource.streamflow.client.util.CommandTask;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.NameDialog;
-import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
-import se.streamsource.streamflow.client.util.dialog.GroupedSelectionDialog;
+import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
 
@@ -47,6 +47,7 @@ import javax.swing.JButton;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.ListSelectionModel;
 import java.awt.BorderLayout;
 
 import static se.streamsource.streamflow.client.util.i18n.*;
@@ -56,7 +57,7 @@ import static se.streamsource.streamflow.client.util.i18n.*;
  */
 public class SelectedLabelsView
       extends JPanel
-   implements TransactionListener
+      implements TransactionListener
 {
    @Service
    DialogService dialogs;
@@ -65,7 +66,7 @@ public class SelectedLabelsView
    Iterable<NameDialog> nameDialogs;
 
    @Uses
-   ObjectBuilder<GroupedSelectionDialog> labelsDialogs;
+   ObjectBuilder<SelectLinkDialog> labelsDialogs;
 
    public JList labelList;
 
@@ -77,7 +78,7 @@ public class SelectedLabelsView
    {
       super( new BorderLayout() );
       this.modelSelected = obf.newObjectBuilder( SelectedLabelsModel.class ).use( client ).newInstance();
-      setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
+      setBorder( Borders.createEmptyBorder( "2dlu, 2dlu, 2dlu, 2dlu" ) );
 
       ActionMap am = context.getActionMap( this );
       setActionMap( am );
@@ -100,7 +101,8 @@ public class SelectedLabelsView
    @Action
    public Task add()
    {
-      final GroupedSelectionDialog dialog = labelsDialogs.use( modelSelected.getPossible() ).newInstance();
+      final SelectLinkDialog dialog = labelsDialogs.use( modelSelected.getPossible() ).newInstance();
+      dialog.setSelectionMode( ListSelectionModel.MULTIPLE_INTERVAL_SELECTION );
 
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.choose_label_title ) );
 
@@ -110,7 +112,7 @@ public class SelectedLabelsView
          {
             @Override
             public void command()
-               throws Exception
+                  throws Exception
             {
                modelSelected.add( dialog.getSelectedLinks() );
             }
@@ -126,7 +128,7 @@ public class SelectedLabelsView
       {
          @Override
          public void command()
-            throws Exception
+               throws Exception
          {
             LinkValue selected = (LinkValue) labelList.getSelectedValue();
             modelSelected.remove( selected );

@@ -21,6 +21,7 @@ import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.swingx.JXDialog;
 import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
@@ -46,6 +47,7 @@ public class NameDialog
       super( new BorderLayout() );
 
       setActionMap( context.getActionMap( this ) );
+      getActionMap().put( JXDialog.CLOSE_ACTION_COMMAND, getActionMap().get("cancel" ));
 
       FormLayout layout = new FormLayout( "40dlu, 5dlu, 120dlu:grow", "pref" );
 
@@ -77,7 +79,7 @@ public class NameDialog
    }
 
    @Action
-   public void close()
+   public void cancel()
    {
       WindowUtils.findWindow( this ).dispose();
    }

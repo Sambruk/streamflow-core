@@ -20,6 +20,7 @@ package se.streamsource.streamflow.client.util.dialog;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.swing.EventListModel;
 import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.swingx.JXDialog;
 import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
@@ -54,6 +55,7 @@ public class SelectLinksDialog
       this.vbf = vbf;
 
       setActionMap( context.getActionMap( this ) );
+      getActionMap().put( JXDialog.CLOSE_ACTION_COMMAND, getActionMap().get("cancel" ));
 
       list = new JList( new EventListModel<LinkValue>(model) );
       list.setCellRenderer( new LinkListCellRenderer() );
@@ -80,7 +82,7 @@ public class SelectLinksDialog
    }
 
    @org.jdesktop.application.Action
-   public void close()
+   public void cancel()
    {
       WindowUtils.findWindow( this ).dispose();
    }

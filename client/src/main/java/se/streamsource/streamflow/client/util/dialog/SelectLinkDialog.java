@@ -20,6 +20,7 @@ package se.streamsource.streamflow.client.util.dialog;
 import ca.odell.glazedlists.EventList;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.swingx.JXDialog;
 import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
@@ -32,16 +33,22 @@ import se.streamsource.streamflow.client.util.GroupedFilteredList;
 
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * JAVADOC
+ * Select one or more links from a list of links. The links may use grouping with the TitledLinkValue subtype.
  */
 public class SelectLinkDialog
       extends JPanel
 {
-   public LinkValue selected;
-   public JList list;
+
+   private LinkValue selectedLink;
+   private List<LinkValue> selectedLinks;
+   private JList list;
+   private JTextField filterField;
 
    public SelectLinkDialog( final @Service ApplicationContext context,
                                      @Uses EventList<? extends LinkValue> links,
@@ -50,6 +57,7 @@ public class SelectLinkDialog
       super( );
 
       setActionMap( context.getActionMap( this ) );
+      getActionMap().put( JXDialog.CLOSE_ACTION_COMMAND, getActionMap().get("cancel" ));
 
       for (LinkValue link : links)
       {
@@ -60,6 +68,7 @@ public class SelectLinkDialog
             list.setEventList( (EventList<TitledLinkValue>) links );
             add(list);
             this.list = list.getList();
+            this.filterField = list.getFilterField();
             break;
          } else
          {
@@ -68,27 +77,53 @@ public class SelectLinkDialog
             list.setEventList( (EventList<LinkValue>) links );
             add(list);
             this.list = list.getList();
+            this.filterField = list.getFilterField();
             break;
          }
       }
 
    }
 
-   public LinkValue getSelected()
+   public void setSelectionMode(int selectionMode)
    {
-      return selected;
+      list.setSelectionMode( selectionMode );
+   }
+
+   public JTextField getFilterField()
+   {
+      return filterField;
+   }
+
+   public LinkValue getSelectedLink()
+   {
+      return selectedLink;
+   }
+
+   public List<LinkValue> getSelectedLinks()
+   {
+      return selectedLinks;
    }
 
    @Action
    public void execute()
    {
-      selected = (LinkValue) list.getSelectedValue();
+      if (list.getSelectionMode() == ListSelectionModel.SINGLE_SELECTION)
+      {
+         selectedLink = (LinkValue) list.getSelectedValue();
+      } else
+      {
+         selectedLinks = new ArrayList<LinkValue>();
+         for (Object link : list.getSelectedValues())
+         {
+            selectedLinks.add( (LinkValue) link);
+         }
+      }
 
       WindowUtils.findWindow( this ).dispose();
    }
 
    @Action
-   public void close()
+   public void cancel()
    {
       WindowUtils.findWindow( this ).dispose();
    }

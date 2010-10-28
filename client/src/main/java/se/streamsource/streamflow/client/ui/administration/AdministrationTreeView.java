@@ -278,7 +278,7 @@ public class AdministrationTreeView
       final SelectLinkDialog listDialog = obf.newObjectBuilder( SelectLinkDialog.class ).use( targets ).newInstance();
 
       dialogs.showOkCancelHelpDialog( WindowUtils.findWindow( this ), listDialog, i18n.text( AdministrationResources.move_to ) );
-      if (listDialog.getSelected() != null)
+      if (listDialog.getSelectedLink() != null)
       {
          return new CommandTask()
          {
@@ -286,7 +286,7 @@ public class AdministrationTreeView
             public void command()
                throws Exception
             {
-               model.move(tree.getSelectionPath().getLastPathComponent(), listDialog.getSelected());
+               model.move(tree.getSelectionPath().getLastPathComponent(), listDialog.getSelectedLink());
             }
          };
       } else
@@ -300,7 +300,7 @@ public class AdministrationTreeView
       final SelectLinkDialog listDialog = obf.newObjectBuilder( SelectLinkDialog.class ).use( targets ).newInstance();
 
       dialogs.showOkCancelHelpDialog( WindowUtils.findWindow( this ), listDialog, i18n.text( AdministrationResources.merge_to ) );
-      if (listDialog.getSelected() != null)
+      if (listDialog.getSelectedLink() != null)
       {
          return new CommandTask()
          {
@@ -308,7 +308,7 @@ public class AdministrationTreeView
             public void command()
                throws Exception
             {
-               model.move(tree.getSelectionPath().getLastPathComponent(), listDialog.getSelected());
+               model.move(tree.getSelectionPath().getLastPathComponent(), listDialog.getSelectedLink());
             }
          };
       } else

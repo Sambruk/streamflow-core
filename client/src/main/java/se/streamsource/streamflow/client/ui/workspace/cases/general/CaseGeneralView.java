@@ -36,17 +36,17 @@ import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.PossibleFormsView;
 import se.streamsource.streamflow.client.util.BindingFormBuilder;
-import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.RefreshWhenVisible;
 import se.streamsource.streamflow.client.util.Refreshable;
 import se.streamsource.streamflow.client.util.StateBinder;
 import se.streamsource.streamflow.client.util.UncaughtExceptionHandler;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
 import se.streamsource.streamflow.client.util.i18n;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
-import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.PossibleFormsView;
-import se.streamsource.streamflow.client.util.CommandTask;
-import se.streamsource.streamflow.client.util.dialog.GroupedFilterListDialog;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
 import se.streamsource.streamflow.resource.caze.CaseGeneralDTO;
@@ -93,7 +93,7 @@ public class CaseGeneralView extends JScrollPane implements Observer, Transactio
    UncaughtExceptionHandler exception;
 
    @Uses
-   protected ObjectBuilder<GroupedFilterListDialog> caseTypeDialog;
+   protected ObjectBuilder<SelectLinkDialog> caseTypeDialog;
 
    private StateBinder caseBinder;
 
@@ -373,22 +373,21 @@ public class CaseGeneralView extends JScrollPane implements Observer, Transactio
    @Action
    public Task casetype()
    {
-      final GroupedFilterListDialog dialog = caseTypeDialog.use(
-            i18n.text( WorkspaceResources.chose_casetype ),
+      final SelectLinkDialog dialog = caseTypeDialog.use(
             model.getPossibleCaseTypes() ).newInstance();
-      dialogs.showOkCancelHelpDialog( caseTypeButton, dialog );
+      dialogs.showOkCancelHelpDialog( caseTypeButton, dialog, i18n.text( WorkspaceResources.chose_casetype  ));
 
-      if (dialog.getSelectedReference() != null)
+      if (dialog.getSelectedLink() != null)
       {
          return new CommandTask()
          {
             @Override
             protected void command() throws Exception
             {
-               LinkValue selected = dialog.getSelectedItem();
+               LinkValue selected = dialog.getSelectedLink();
                model.changeCaseType( selected );
 
-               String labelQuery = dialog.itemList.getTextField().getText();
+               String labelQuery = dialog.getFilterField().getText();
                // if the query string has any match inside label descriptions
                // we do a search for that labels and add them to the case automatically
                if (!"".equals( labelQuery ) && selected.classes().get().toLowerCase().indexOf( labelQuery.toLowerCase() ) != -1)

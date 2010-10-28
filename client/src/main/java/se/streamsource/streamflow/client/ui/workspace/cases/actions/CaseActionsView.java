@@ -182,7 +182,7 @@ public class CaseActionsView extends JPanel
                dialog,
                i18n.text( AdministrationResources.resolve ) );
 
-         if (dialog.getSelected() != null)
+         if (dialog.getSelectedLink() != null)
          {
             return new CommandTask()
             {
@@ -190,7 +190,7 @@ public class CaseActionsView extends JPanel
                public void command()
                   throws Exception
                {
-                  model.resolve( dialog.getSelected() );
+                  model.resolve( dialog.getSelectedLink() );
                }
             };
          } else
@@ -226,7 +226,7 @@ public class CaseActionsView extends JPanel
             model.getPossibleProjects() ).newInstance();
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( WorkspaceResources.choose_owner_title ) );
 
-      if (dialog.getSelected() != null)
+      if (dialog.getSelectedLink() != null)
       {
          return new CommandTask()
          {
@@ -234,7 +234,7 @@ public class CaseActionsView extends JPanel
             public void command()
                throws Exception
             {
-               model.sendTo( dialog.getSelected() );
+               model.sendTo( dialog.getSelectedLink() );
             }
          };
       } else

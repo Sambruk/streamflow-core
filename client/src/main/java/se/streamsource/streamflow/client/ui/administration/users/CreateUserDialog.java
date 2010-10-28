@@ -21,6 +21,7 @@ import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.swingx.JXDialog;
 import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.constraint.ConstraintViolationException;
 import org.qi4j.api.injection.scope.Service;
@@ -61,6 +62,9 @@ public class CreateUserDialog
    {
       super( new BorderLayout() );
 
+      setActionMap( context.getActionMap( this ) );
+      getActionMap().put( JXDialog.CLOSE_ACTION_COMMAND, getActionMap().get("cancel" ));
+
       FormLayout layout = new FormLayout( "60dlu, 5dlu, 120dlu:grow", "pref, pref, pref, pref, 10dlu, pref, pref, pref, pref" );
 
       JPanel form = new JPanel( layout );
@@ -84,8 +88,6 @@ public class CreateUserDialog
       builder.nextColumn(2);
       builder.add(confirmPasswordField);
       builder.nextLine(2);
-
-      setActionMap( context.getActionMap( this ) );
 
       add(form, BorderLayout.CENTER);
    }
@@ -121,7 +123,7 @@ public class CreateUserDialog
    }
 
    @Action
-   public void close()
+   public void cancel()
    {
       WindowUtils.findWindow( this ).dispose();
    }

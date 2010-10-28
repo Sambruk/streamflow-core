@@ -46,7 +46,6 @@ import se.streamsource.streamflow.client.ui.administration.AdministrationWindow;
 import se.streamsource.streamflow.client.ui.administration.UsersAndGroupsModel;
 import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypesModel;
 import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypesView;
-import se.streamsource.streamflow.client.ui.administration.casetypes.SelectCaseTypesDialog;
 import se.streamsource.streamflow.client.ui.administration.casetypes.SelectedCaseTypesModel;
 import se.streamsource.streamflow.client.ui.administration.casetypes.SelectedCaseTypesView;
 import se.streamsource.streamflow.client.ui.administration.forms.FormModel;
@@ -161,7 +160,6 @@ import se.streamsource.streamflow.client.ui.workspace.cases.forms.CaseSubmittedF
 import se.streamsource.streamflow.client.ui.workspace.cases.forms.SubmittedFormsAdminView;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.CaseGeneralModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.CaseGeneralView;
-import se.streamsource.streamflow.client.ui.workspace.cases.general.CaseLabelsDialog;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.CaseLabelsModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.CaseLabelsView;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.CheckboxesPanel;
@@ -201,12 +199,9 @@ import se.streamsource.streamflow.client.util.UncaughtExceptionHandler;
 import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.FilterListDialog;
-import se.streamsource.streamflow.client.util.dialog.GroupedFilterListDialog;
-import se.streamsource.streamflow.client.util.dialog.GroupedSelectionDialog;
 import se.streamsource.streamflow.client.util.dialog.NameDialog;
 import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
 import se.streamsource.streamflow.client.util.dialog.SelectLinksDialog;
-import se.streamsource.streamflow.client.util.dialog.SelectionDialog;
 
 import static org.qi4j.api.common.Visibility.*;
 import static se.streamsource.streamflow.client.util.UIAssemblers.*;
@@ -281,8 +276,6 @@ public class UIAssembler
 
    private void caseTypeAdministration( ModuleAssembly module ) throws AssemblyException
    {
-      addDialogs( module, SelectCaseTypesDialog.class );
-
       addMV( module, SelectedCaseTypesModel.class, SelectedCaseTypesView.class );
 
       addMV( module, FormsModel.class, FormsView.class );
@@ -436,7 +429,7 @@ public class UIAssembler
             NumberPanel.class, TextAreaFieldPanel.class, TextFieldPanel.class
       );
 
-      addDialogs( module, CaseLabelsDialog.class, ContactLookupResultDialog.class );
+      addDialogs( module, ContactLookupResultDialog.class );
 
       addMV( module, CasesTableModel.class, CaseTableView.class );
 
@@ -525,7 +518,6 @@ public class UIAssembler
 
       addDialogs( module, SelectLinkDialog.class,
             FilterListDialog.class,
-            GroupedFilterListDialog.class,
             SaveSearchDialog.class,
             HandleSearchesDialog.class );
    }
@@ -572,7 +564,7 @@ public class UIAssembler
             SelectLinksDialog.class );
       addTasks( module, TestConnectionTask.class );
 
-      addViews( module, GroupedSelectionDialog.class, SelectionDialog.class, TemplatesView.class );
+      addViews( module, TemplatesView.class );
 
       addMV( module,
             SelectedTemplateModel.class,

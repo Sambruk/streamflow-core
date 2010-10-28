@@ -30,13 +30,14 @@ import org.qi4j.api.object.ObjectBuilder;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.LinkValue;
-import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.LinkComparator;
 import se.streamsource.streamflow.client.util.LinkListCellRenderer;
 import se.streamsource.streamflow.client.util.RefreshWhenVisible;
 import se.streamsource.streamflow.client.util.SelectionActionEnabler;
-import se.streamsource.streamflow.client.util.CommandTask;
-import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
 
@@ -45,6 +46,7 @@ import javax.swing.JButton;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.ListSelectionModel;
 import java.awt.BorderLayout;
 
 import static se.streamsource.streamflow.client.util.i18n.*;
@@ -60,7 +62,7 @@ public class SelectedCaseTypesView
    DialogService dialogs;
 
    @Uses
-   ObjectBuilder<SelectCaseTypesDialog> caseTypesDialogs;
+   ObjectBuilder<SelectLinkDialog> caseTypesDialogs;
 
    public JList caseTypeList;
 
@@ -95,23 +97,20 @@ public class SelectedCaseTypesView
    @Action
    public Task add()
    {
-      final SelectCaseTypesDialog dialog = caseTypesDialogs.use( model.getPossible() ).newInstance();
+      final SelectLinkDialog dialog = caseTypesDialogs.use( model.getPossible() ).newInstance();
+      dialog.setSelectionMode( ListSelectionModel.MULTIPLE_INTERVAL_SELECTION );
 
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.choose_casetypes_title ) );
 
-      if (dialog.getSelectedCaseTypes() != null)
+      return new CommandTask()
       {
-         return new CommandTask()
-         {
-            @Override
-            public void command()
+         @Override
+         public void command()
                throws Exception
-            {
-               model.add( dialog.getSelectedCaseTypes() );
-            }
-         };
-      } else
-         return null;
+         {
+            model.add( dialog.getSelectedLinks() );
+         }
+      };
    }
 
    @Action
@@ -122,9 +121,9 @@ public class SelectedCaseTypesView
       {
          @Override
          public void command()
-            throws Exception
+               throws Exception
          {
-            model.remove(selected);
+            model.remove( selected );
          }
       };
    }

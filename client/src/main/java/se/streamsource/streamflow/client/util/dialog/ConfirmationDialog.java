@@ -18,6 +18,7 @@
 package se.streamsource.streamflow.client.util.dialog;
 
 import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.swingx.JXDialog;
 import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 import se.streamsource.streamflow.client.StreamflowResources;
@@ -42,6 +43,7 @@ public class ConfirmationDialog
       super( new BorderLayout() );
 
       setActionMap( context.getActionMap( this ) );
+      getActionMap().put( JXDialog.CLOSE_ACTION_COMMAND, getActionMap().get("cancel" ));
 
       JPanel dialog = new JPanel( new BorderLayout() );
       dialog.add( msgLabel = new JLabel( i18n.text( StreamflowResources.proceed_label ) ), BorderLayout.CENTER );
@@ -67,7 +69,7 @@ public class ConfirmationDialog
    }
 
    @org.jdesktop.application.Action
-   public void close()
+   public void cancel()
    {
       WindowUtils.findWindow( this ).dispose();
    }
