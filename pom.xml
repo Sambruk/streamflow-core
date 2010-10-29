@@ -32,6 +32,7 @@
 
     <modules>
         <module>common</module>
+        <module>infrastructure</module>
         <module>dci</module>
         <module>client</module>
         <module>serverplugin</module>
@@ -423,6 +424,11 @@
             </dependency>
             <dependency>
                 <groupId>se.streamsource.streamflow</groupId>
+                <artifactId>streamflow-infrastructure</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>se.streamsource.streamflow</groupId>
                 <artifactId>streamflow-dci</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -552,6 +558,11 @@
                 <artifactId>qi4j-entitystore-preferences</artifactId>
                 <version>${version.qi4j-ext}</version>
             </dependency>
+	        <dependency>
+	            <groupId>org.qi4j.extension</groupId>
+	            <artifactId>qi4j-entitystore-rest</artifactId>
+	            <version>${version.qi4j-ext}</version>
+	        </dependency>
             <dependency>
                 <groupId>org.qi4j.extension</groupId>
                 <artifactId>qi4j-migration</artifactId>
