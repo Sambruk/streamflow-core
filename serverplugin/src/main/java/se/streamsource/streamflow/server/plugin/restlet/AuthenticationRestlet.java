@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.server.plugin.restlet;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.value.ValueBuilder;
@@ -45,6 +46,7 @@ public class AuthenticationRestlet extends Restlet
    @Structure
    ValueBuilderFactory vbf;
 
+   @Optional
    @Service
    Authenticator authenticator;
 
@@ -83,7 +85,7 @@ public class AuthenticationRestlet extends Restlet
                   }
                } catch (ResourceException e)
                {
-                  response.setStatus(Status.CLIENT_ERROR_FORBIDDEN);
+                  response.setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
                   response.setEntity(e.getStatus().getDescription(), MediaType.TEXT_PLAIN);
                }
 

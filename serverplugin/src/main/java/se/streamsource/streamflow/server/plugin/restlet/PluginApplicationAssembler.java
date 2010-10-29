@@ -17,6 +17,10 @@
 
 package se.streamsource.streamflow.server.plugin.restlet;
 
+import java.util.prefs.Preferences;
+
+import javax.management.MBeanServer;
+
 import org.qi4j.api.common.Visibility;
 import org.qi4j.bootstrap.ApplicationAssembler;
 import org.qi4j.bootstrap.ApplicationAssembly;
@@ -27,6 +31,9 @@ import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.entitystore.prefs.PreferencesEntityStoreInfo;
 import org.qi4j.entitystore.prefs.PreferencesEntityStoreService;
+import org.qi4j.rest.MBeanServerImporter;
+
+import se.streamsource.streamflow.infrastructure.ConfigurationManagerService;
 import se.streamsource.streamflow.server.plugin.authentication.UserDetailsValue;
 import se.streamsource.streamflow.server.plugin.authentication.UserIdentityValue;
 import se.streamsource.streamflow.server.plugin.contact.ContactAddressValue;
@@ -34,8 +41,6 @@ import se.streamsource.streamflow.server.plugin.contact.ContactEmailValue;
 import se.streamsource.streamflow.server.plugin.contact.ContactList;
 import se.streamsource.streamflow.server.plugin.contact.ContactPhoneValue;
 import se.streamsource.streamflow.server.plugin.contact.ContactValue;
-
-import java.util.prefs.Preferences;
 
 /**
  * Assembler for the plugin application
@@ -77,18 +82,23 @@ public class PluginApplicationAssembler
 
       pluginAssembler.assemble( moduleAssembly );
 
-      webLayer.uses( pluginLayer );
+
+      LayerAssembly adminLayer = app.layerAssembly("Admins");
+      ModuleAssembly adminAssembly = adminLayer.moduleAssembly("Admin");
+      adminAssembly.importServices( MBeanServer.class ).importedBy( MBeanServerImporter.class );
+      adminAssembly.addServices( ConfigurationManagerService.class ).instantiateOnStartup();
 
       LayerAssembly configurationLayer = app.layerAssembly( "Configurations" );
       ModuleAssembly configurationModuleAssembly = configurationLayer.moduleAssembly( "Configuration" );
 
+      
       // Preferences storage
       ClassLoader cl = Thread.currentThread().getContextClassLoader();
       Thread.currentThread().setContextClassLoader( null );
       Preferences node;
       try
       {
-         node = Preferences.userRoot().node( "streamsource/streamflow/reference-plugin" );
+         node = Preferences.userRoot().node( "streamsource/streamflow/plugins" );
       } finally
       {
          Thread.currentThread().setContextClassLoader( cl );
@@ -96,7 +106,8 @@ public class PluginApplicationAssembler
 
       configurationModuleAssembly.addServices( PreferencesEntityStoreService.class ).setMetaInfo( new PreferencesEntityStoreInfo( node ) ).visibleIn( Visibility.application );
 
-
+      adminLayer.uses(pluginLayer);
+      webLayer.uses( pluginLayer );
       pluginLayer.uses( configurationLayer );
 
       return app;

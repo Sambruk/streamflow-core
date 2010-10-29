@@ -20,6 +20,10 @@
             <artifactId>streamflow-common</artifactId>
         </dependency>
         <dependency>
+            <groupId>se.streamsource.streamflow</groupId>
+            <artifactId>streamflow-infrastructure</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.qi4j.core</groupId>
             <artifactId>qi4j-core-api</artifactId>
             <scope>compile</scope>
@@ -33,6 +37,10 @@
         <dependency>
             <groupId>org.qi4j.extension</groupId>
             <artifactId>qi4j-entitystore-preferences</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.qi4j.extension</groupId>
+            <artifactId>qi4j-entitystore-rest</artifactId>
         </dependency>
 
         <!-- REST -->

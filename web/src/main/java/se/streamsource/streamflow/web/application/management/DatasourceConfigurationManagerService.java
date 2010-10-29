@@ -17,27 +17,10 @@
 
 package se.streamsource.streamflow.web.application.management;
 
-import org.qi4j.api.common.QualifiedName;
-import org.qi4j.api.configuration.Configuration;
-import org.qi4j.api.entity.Entity;
-import org.qi4j.api.entity.EntityComposite;
-import org.qi4j.api.entity.association.EntityStateHolder;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.property.Property;
-import org.qi4j.api.service.Activatable;
-import org.qi4j.api.service.ServiceComposite;
-import org.qi4j.api.service.ServiceReference;
-import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.spi.Qi4jSPI;
-import org.qi4j.spi.entity.EntityDescriptor;
-import org.qi4j.spi.property.PropertyType;
-import org.qi4j.spi.service.ServiceDescriptor;
-import org.qi4j.spi.structure.ModuleSPI;
-import se.streamsource.streamflow.web.infrastructure.database.DataSourceConfiguration;
-import se.streamsource.streamflow.web.infrastructure.database.DataSourceService;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.management.Attribute;
 import javax.management.AttributeList;
@@ -57,16 +40,33 @@ import javax.management.NotCompliantMBeanException;
 import javax.management.ObjectName;
 import javax.management.ReflectionException;
 import javax.sql.DataSource;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+
+import org.qi4j.api.common.QualifiedName;
+import org.qi4j.api.entity.Entity;
+import org.qi4j.api.entity.EntityComposite;
+import org.qi4j.api.entity.association.EntityStateHolder;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.service.Activatable;
+import org.qi4j.api.service.ServiceComposite;
+import org.qi4j.api.service.ServiceReference;
+import org.qi4j.api.unitofwork.UnitOfWork;
+import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.spi.Qi4jSPI;
+import org.qi4j.spi.entity.EntityDescriptor;
+import org.qi4j.spi.property.PropertyType;
+import org.qi4j.spi.structure.ModuleSPI;
+
+import se.streamsource.streamflow.web.infrastructure.database.DataSourceConfiguration;
+import se.streamsource.streamflow.web.infrastructure.database.DataSourceService;
 
 /**
- * Expose ConfigurationComposites through JMX. Allow configurations to be edited, and the services to be restarted.
+ * Expose DatasourceConfiguration through JMX. Allow configurations to be edited, and the services to be restarted.
  */
-@Mixins(ConfigurationManagerService.Mixin.class)
-public interface ConfigurationManagerService
+@Mixins(DatasourceConfigurationManagerService.Mixin.class)
+public interface DatasourceConfigurationManagerService
       extends ServiceComposite, Activatable
 {
    class Mixin
@@ -82,9 +82,6 @@ public interface ConfigurationManagerService
       Qi4jSPI spi;
 
       @Service
-      Iterable<ServiceReference<Configuration>> configurableServices;
-
-      @Service
       Iterable<ServiceReference<DataSource>> dataSources;
       @Service
       ServiceReference<DataSourceService> dataSourceService;
@@ -94,44 +91,7 @@ public interface ConfigurationManagerService
       public void activate() throws Exception
       {
          // Expose configurable services
-         exportConfigurableServices();
          exportDataSources();
-      }
-
-      private void exportConfigurableServices() throws NotCompliantMBeanException, MBeanRegistrationException, InstanceAlreadyExistsException, MalformedObjectNameException
-      {
-         for (ServiceReference<Configuration> configurableService : configurableServices)
-         {
-            String serviceClass = configurableService.get().getClass().getInterfaces()[0].getName();
-            String name = configurableService.identity();
-            ServiceDescriptor serviceDescriptor = spi.getServiceDescriptor( configurableService );
-            ModuleSPI module = (ModuleSPI) spi.getModule( configurableService );
-            EntityDescriptor descriptor = module.entityDescriptor( serviceDescriptor.configurationType().getName() );
-            List<MBeanAttributeInfo> attributes = new ArrayList<MBeanAttributeInfo>();
-            Map<String, QualifiedName> properties = new HashMap<String, QualifiedName>();
-            for (PropertyType propertyType : descriptor.entityType().properties())
-            {
-               if (propertyType.propertyType() == PropertyType.PropertyTypeEnum.MUTABLE)
-               {
-                  String propertyName = propertyType.qualifiedName().name();
-                  String type = propertyType.type().type().name();
-                  attributes.add( new MBeanAttributeInfo( propertyName, type, propertyName, true, true, type.equals( "java.lang.Boolean" ) ) );
-                  properties.put( propertyName, propertyType.qualifiedName() );
-               }
-            }
-
-            List<MBeanOperationInfo> operations = new ArrayList<MBeanOperationInfo>();
-            if (configurableService instanceof Activatable)
-            {
-               operations.add( new MBeanOperationInfo( "restart", "Restart service", new MBeanParameterInfo[0], "void", MBeanOperationInfo.ACTION_INFO ) );
-            }
-
-            MBeanInfo mbeanInfo = new MBeanInfo( serviceClass, name, attributes.toArray( new MBeanAttributeInfo[attributes.size()] ), null, operations.toArray( new MBeanOperationInfo[operations.size()] ), null );
-            Object mbean = new ConfigurableService( configurableService, mbeanInfo, name, properties );
-            ObjectName configurableServiceName = new ObjectName( "Streamflow:type=Configuration,name=" + name );
-            server.registerMBean( mbean, configurableServiceName );
-            configurationNames.add( configurableServiceName );
-         }
       }
 
       private void exportDataSources() throws MalformedObjectNameException, MBeanRegistrationException, InstanceAlreadyExistsException, NotCompliantMBeanException
@@ -280,45 +240,6 @@ public interface ConfigurationManagerService
          {
             return info;
          }
-      }
-
-      class ConfigurableService
-         extends EditableConfiguration
-      {
-         private ServiceReference<Configuration> service;
-
-         ConfigurableService( ServiceReference<Configuration> service, MBeanInfo info, String identity, Map<String, QualifiedName> propertyNames )
-         {
-            super( info, identity, propertyNames );
-            this.service = service;
-         }
-
-         public Object invoke( String s, Object[] objects, String[] strings ) throws MBeanException, ReflectionException
-         {
-            if (s.equals( "restart" ))
-            {
-               try
-               {
-                  // Refresh and restart
-                  if (service.isActive())
-                  {
-                     // Refresh configuration
-                     service.get().refresh();
-
-                     ((Activatable) service).passivate();
-                     ((Activatable) service).activate();
-                  }
-
-                  return "Service restarted";
-               } catch (Exception e)
-               {
-                  return "Could not restart service:" + e.getMessage();
-               }
-            }
-
-            return "Unknown operation";
-         }
-
       }
 
       class ConfigurableDataSource

@@ -29,6 +29,8 @@ import org.qi4j.spi.query.NamedEntityFinder;
 import org.qi4j.spi.query.NamedQueries;
 import org.qi4j.spi.query.NamedQueryDescriptor;
 import org.qi4j.spi.service.importer.ServiceSelectorImporter;
+
+import se.streamsource.streamflow.infrastructure.ConfigurationManagerService;
 import se.streamsource.streamflow.infrastructure.event.replay.DomainEventPlayerService;
 import se.streamsource.streamflow.server.plugin.authentication.UserDetailsValue;
 import se.streamsource.streamflow.web.application.console.ConsoleResultValue;
@@ -37,7 +39,7 @@ import se.streamsource.streamflow.web.application.console.ConsoleService;
 import se.streamsource.streamflow.web.application.contact.StreamflowContactLookupService;
 import se.streamsource.streamflow.web.application.mail.MailService;
 import se.streamsource.streamflow.web.application.management.CompositeMBean;
-import se.streamsource.streamflow.web.application.management.ConfigurationManagerService;
+import se.streamsource.streamflow.web.application.management.DatasourceConfigurationManagerService;
 import se.streamsource.streamflow.web.application.management.ErrorLogService;
 import se.streamsource.streamflow.web.application.management.EventManagerService;
 import se.streamsource.streamflow.web.application.management.LoggingService;
@@ -164,6 +166,7 @@ public class AppAssembler
       module.addServices( ManagerService.class ).visibleIn( application ).instantiateOnStartup();
 
       module.addServices( ConfigurationManagerService.class ).instantiateOnStartup();
+      module.addServices( DatasourceConfigurationManagerService.class ).instantiateOnStartup();
 
       module.addServices( JmxConnectorService.class ).identifiedBy( "jmxconnector" ).instantiateOnStartup();
 
