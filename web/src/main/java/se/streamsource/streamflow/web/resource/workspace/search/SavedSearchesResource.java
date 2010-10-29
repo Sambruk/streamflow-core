@@ -16,17 +16,14 @@
 
 package se.streamsource.streamflow.web.resource.workspace.search;
 
-import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.dci.api.ContextNotFoundException;
-import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.SubResources;
 import se.streamsource.streamflow.infrastructure.application.TitledLinksBuilder;
 import se.streamsource.streamflow.web.context.structure.DescribableContext;
-import se.streamsource.streamflow.web.context.users.workspace.SavedSearchContext;
-import se.streamsource.streamflow.web.context.users.workspace.SavedSearchesContext;
+import se.streamsource.streamflow.web.context.workspace.search.SavedSearchContext;
+import se.streamsource.streamflow.web.context.workspace.search.SavedSearchesContext;
 import se.streamsource.streamflow.web.domain.entity.user.profile.SavedSearchEntity;
-import se.streamsource.streamflow.web.domain.interaction.profile.SavedSearches;
 import se.streamsource.streamflow.web.domain.structure.user.profile.SavedSearch;
 
 /**

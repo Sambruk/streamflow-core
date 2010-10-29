@@ -1,4 +1,5 @@
-/*
+/**
+ *
  * Copyright 2009-2010 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,21 +15,23 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.resource.workspace.context;
+package se.streamsource.streamflow.web.context.administration.forms;
 
-import se.streamsource.dci.restlet.server.CommandQueryResource;
-import se.streamsource.dci.restlet.server.SubResource;
-import se.streamsource.streamflow.web.context.workspace.table.DraftsContext;
+import se.streamsource.dci.api.DeleteContext;
+import se.streamsource.dci.api.RoleMap;
+import se.streamsource.streamflow.web.domain.structure.form.Form;
+import se.streamsource.streamflow.web.domain.structure.form.SelectedForms;
 
 /**
  * JAVADOC
  */
-public class WorkspaceDraftsResource
-      extends CommandQueryResource
+public class SelectedFormContext
+      implements DeleteContext
 {
-   @SubResource
-   public void drafts()
+   public void delete()
    {
-      subResourceContexts( DraftsContext.class );
+      SelectedForms forms = RoleMap.role( SelectedForms.class );
+      Form form = RoleMap.role( Form.class );
+      forms.removeSelectedForm( form );
    }
 }

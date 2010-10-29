@@ -20,7 +20,7 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.SubResources;
-import se.streamsource.streamflow.web.context.organizations.forms.FormPagesContext;
+import se.streamsource.streamflow.web.context.administration.forms.definition.FormPagesContext;
 import se.streamsource.streamflow.web.domain.structure.form.Pages;
 
 /**

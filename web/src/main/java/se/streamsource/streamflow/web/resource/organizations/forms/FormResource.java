@@ -18,8 +18,8 @@ package se.streamsource.streamflow.web.resource.organizations.forms;
 
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.SubResource;
-import se.streamsource.streamflow.web.context.organizations.forms.FormContext;
-import se.streamsource.streamflow.web.context.organizations.forms.FormInfoContext;
+import se.streamsource.streamflow.web.context.administration.forms.FormContext;
+import se.streamsource.streamflow.web.context.administration.forms.definition.FormInfoContext;
 import se.streamsource.streamflow.web.context.structure.DescribableContext;
 import se.streamsource.streamflow.web.context.structure.NotableContext;
 

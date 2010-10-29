@@ -21,7 +21,7 @@ import org.restlet.resource.ResourceException;
 
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.SubResources;
-import se.streamsource.streamflow.web.context.structure.SelectedTemplateContext;
+import se.streamsource.streamflow.web.context.administration.surface.SelectedTemplateContext;
 import se.streamsource.streamflow.web.domain.structure.attachment.SelectedTemplate;
 
 public class SelectedTemplateResource extends CommandQueryResource implements SubResources

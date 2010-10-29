@@ -20,8 +20,8 @@ import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.SubResource;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.web.context.structure.SelectedTemplateContext;
-import se.streamsource.streamflow.web.context.surface.administration.organizations.accesspoints.AccessPointAdministrationContext;
+import se.streamsource.streamflow.web.context.administration.surface.SelectedTemplateContext;
+import se.streamsource.streamflow.web.context.administration.surface.accesspoints.AccessPointAdministrationContext;
 
 /**
  * JAVADOC

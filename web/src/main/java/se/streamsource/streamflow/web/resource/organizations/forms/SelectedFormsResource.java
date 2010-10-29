@@ -20,8 +20,8 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.SubResources;
-import se.streamsource.streamflow.web.context.organizations.forms.SelectedFormContext;
-import se.streamsource.streamflow.web.context.organizations.forms.SelectedFormsContext;
+import se.streamsource.streamflow.web.context.administration.forms.SelectedFormContext;
+import se.streamsource.streamflow.web.context.administration.forms.SelectedFormsContext;
 import se.streamsource.streamflow.web.domain.structure.form.SelectedForms;
 
 /**

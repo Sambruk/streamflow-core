@@ -19,8 +19,8 @@ package se.streamsource.streamflow.web.resource.surface.administration.organizat
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.SubResources;
-import se.streamsource.streamflow.web.context.surface.administration.organizations.accesspoints.AccessPointLabelableContext;
-import se.streamsource.streamflow.web.context.workspace.cases.LabeledContext;
+import se.streamsource.streamflow.web.context.administration.surface.accesspoints.AccessPointLabelableContext;
+import se.streamsource.streamflow.web.context.workspace.cases.general.LabeledContext;
 import se.streamsource.streamflow.web.domain.structure.label.Labelable;
 
 import static se.streamsource.dci.api.RoleMap.*;

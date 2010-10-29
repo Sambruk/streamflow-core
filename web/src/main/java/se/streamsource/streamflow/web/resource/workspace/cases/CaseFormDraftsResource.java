@@ -20,7 +20,7 @@ import se.streamsource.dci.api.ContextNotFoundException;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.SubResources;
-import se.streamsource.streamflow.web.context.cases.CaseFormDraftContext;
+import se.streamsource.streamflow.web.context.workspace.cases.general.CaseFormDraftContext;
 import se.streamsource.streamflow.web.domain.structure.form.FormDrafts;
 
 /**

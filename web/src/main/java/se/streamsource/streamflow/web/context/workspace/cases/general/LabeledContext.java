@@ -1,4 +1,5 @@
-/*
+/**
+ *
  * Copyright 2009-2010 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,24 +15,23 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.resource.structure.labels;
+package se.streamsource.streamflow.web.context.workspace.cases.general;
 
 import org.restlet.resource.ResourceException;
-import se.streamsource.dci.restlet.server.CommandQueryResource;
-import se.streamsource.dci.restlet.server.SubResources;
-import se.streamsource.streamflow.web.context.administration.labels.SelectedLabelContext;
-import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
+import se.streamsource.dci.api.DeleteContext;
+import se.streamsource.streamflow.web.domain.structure.label.Label;
+import se.streamsource.streamflow.web.domain.structure.label.Labelable;
+
+import static se.streamsource.dci.api.RoleMap.*;
 
 /**
  * JAVADOC
  */
-public class LabelResource
-   extends CommandQueryResource
-   implements SubResources
+public class LabeledContext
+      implements DeleteContext
 {
-   public void resource( String segment ) throws ResourceException
+   public void delete() throws ResourceException
    {
-      setRole( SelectedLabels.class, segment );
-      subResourceContexts( SelectedLabelContext.class );
+      role( Labelable.class ).removeLabel( role( Label.class ) );
    }
 }

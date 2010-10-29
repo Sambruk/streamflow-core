@@ -20,8 +20,8 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.SubResources;
-import se.streamsource.streamflow.web.context.structure.labels.SelectedLabelContext;
-import se.streamsource.streamflow.web.context.structure.labels.SelectedLabelsContext;
+import se.streamsource.streamflow.web.context.administration.labels.SelectedLabelContext;
+import se.streamsource.streamflow.web.context.administration.labels.SelectedLabelsContext;
 import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
 
 /**

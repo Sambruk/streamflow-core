@@ -18,8 +18,8 @@ package se.streamsource.streamflow.web.resource.workspace.context;
 
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.SubResource;
-import se.streamsource.streamflow.web.context.users.workspace.DraftsContext;
-import se.streamsource.streamflow.web.context.users.workspace.WorkspaceContext;
+import se.streamsource.streamflow.web.context.workspace.table.DraftsContext;
+import se.streamsource.streamflow.web.context.workspace.table.WorkspaceContext;
 
 /**
  * JAVADOC

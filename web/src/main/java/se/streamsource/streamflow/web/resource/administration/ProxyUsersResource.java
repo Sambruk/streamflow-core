@@ -20,8 +20,8 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.SubResources;
-import se.streamsource.streamflow.web.context.surface.administration.organizations.proxyusers.ProxyUserContext;
-import se.streamsource.streamflow.web.context.surface.administration.organizations.proxyusers.ProxyUsersContext;
+import se.streamsource.streamflow.web.context.administration.surface.proxyusers.ProxyUserContext;
+import se.streamsource.streamflow.web.context.administration.surface.proxyusers.ProxyUsersContext;
 import se.streamsource.streamflow.web.domain.structure.user.ProxyUsers;
 
 /**
