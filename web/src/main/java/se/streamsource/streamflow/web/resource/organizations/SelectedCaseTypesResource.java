@@ -19,8 +19,8 @@ package se.streamsource.streamflow.web.resource.organizations;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.SubResources;
-import se.streamsource.streamflow.web.context.organizations.SelectedCaseTypeContext;
-import se.streamsource.streamflow.web.context.organizations.SelectedCaseTypesContext;
+import se.streamsource.streamflow.web.context.administration.SelectedCaseTypeContext;
+import se.streamsource.streamflow.web.context.administration.SelectedCaseTypesContext;
 import se.streamsource.streamflow.web.domain.structure.casetype.SelectedCaseTypes;
 
 import static se.streamsource.dci.api.RoleMap.*;

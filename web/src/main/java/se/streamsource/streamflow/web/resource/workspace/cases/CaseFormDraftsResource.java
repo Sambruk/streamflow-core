@@ -14,30 +14,25 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.resource.organizations;
+package se.streamsource.streamflow.web.resource.workspace.cases;
 
-import org.restlet.resource.ResourceException;
+import se.streamsource.dci.api.ContextNotFoundException;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.SubResources;
-import se.streamsource.streamflow.web.context.administration.GroupsContext;
-import se.streamsource.streamflow.web.domain.structure.group.Groups;
+import se.streamsource.streamflow.web.context.cases.CaseFormDraftContext;
+import se.streamsource.streamflow.web.domain.structure.form.FormDrafts;
 
 /**
  * JAVADOC
  */
-public class GroupsResource
-   extends CommandQueryResource
+public class CaseFormDraftsResource
+      extends CommandQueryResource
       implements SubResources
 {
-   public GroupsResource()
+   public void resource( String segment ) throws ContextNotFoundException
    {
-      super( GroupsContext.class );
-   }
-
-   public void resource( String segment ) throws ResourceException
-   {
-      findManyAssociation( RoleMap.role(Groups.Data.class).groups(), segment );
-      subResource(GroupResource.class );
+      findManyAssociation( RoleMap.role( FormDrafts.Data.class ).formDrafts(), segment );
+      subResourceContexts( CaseFormDraftContext.class );
    }
 }

@@ -1,4 +1,5 @@
-/*
+/**
+ *
  * Copyright 2009-2010 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,31 +15,31 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.resource.organizations;
+package se.streamsource.streamflow.web.context.administration;
 
-import org.restlet.resource.ResourceException;
+import org.qi4j.api.mixin.Mixins;
+import se.streamsource.dci.api.Context;
+import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.RoleMap;
-import se.streamsource.dci.restlet.server.CommandQueryResource;
-import se.streamsource.dci.restlet.server.SubResources;
-import se.streamsource.streamflow.web.context.administration.MemberContext;
-import se.streamsource.streamflow.web.context.administration.MembersContext;
+import se.streamsource.streamflow.web.domain.structure.project.Member;
 import se.streamsource.streamflow.web.domain.structure.project.Members;
 
 /**
  * JAVADOC
  */
-public class MembersResource
-   extends CommandQueryResource
-   implements SubResources
+@Mixins(MemberContext.Mixin.class)
+public interface MemberContext
+      extends DeleteContext, Context
 {
-   public MembersResource( )
+   abstract class Mixin
+         implements MemberContext
    {
-      super( MembersContext.class );
-   }
+      public void delete()
+      {
+         Member member = RoleMap.role( Member.class );
+         Members members = RoleMap.role( Members.class );
+         members.removeMember( member );
+      }
 
-   public void resource( String segment ) throws ResourceException
-   {
-      findManyAssociation( RoleMap.role(Members.Data.class).members(), segment );
-      subResourceContexts( MemberContext.class);
    }
 }

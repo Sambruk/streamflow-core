@@ -18,7 +18,7 @@ package se.streamsource.streamflow.web.resource.organizations;
 
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.SubResource;
-import se.streamsource.streamflow.web.context.organizations.CaseTypeContext;
+import se.streamsource.streamflow.web.context.administration.CaseTypeContext;
 import se.streamsource.streamflow.web.context.structure.DescribableContext;
 import se.streamsource.streamflow.web.resource.administration.ResolutionsResource;
 import se.streamsource.streamflow.web.resource.organizations.forms.FormsResource;

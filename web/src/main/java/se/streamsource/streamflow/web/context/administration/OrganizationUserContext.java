@@ -1,4 +1,5 @@
-/*
+/**
+ *
  * Copyright 2009-2010 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,28 +15,26 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.resource.organizations;
+package se.streamsource.streamflow.web.context.administration;
 
 import org.restlet.resource.ResourceException;
-import se.streamsource.dci.restlet.server.CommandQueryResource;
-import se.streamsource.dci.restlet.server.SubResource;
-import se.streamsource.streamflow.web.context.administration.GroupContext;
-import se.streamsource.streamflow.web.context.structure.DescribableContext;
+import se.streamsource.dci.api.DeleteContext;
+import se.streamsource.streamflow.web.domain.structure.organization.Organization;
+import se.streamsource.streamflow.web.domain.structure.organization.OrganizationParticipations;
+
+import static se.streamsource.dci.api.RoleMap.*;
 
 /**
  * JAVADOC
  */
-public class GroupResource
-   extends CommandQueryResource
+public class OrganizationUserContext
+      implements DeleteContext
 {
-   public GroupResource()
+   public void delete() throws ResourceException
    {
-      super( GroupContext.class, DescribableContext.class );
-   }
+      Organization org = role( Organization.class );
+      OrganizationParticipations uop = role( OrganizationParticipations.class );
 
-   @SubResource
-   public void participants(  ) throws ResourceException
-   {
-      subResource( ParticipantsResource.class );
+      uop.leave( org );
    }
 }

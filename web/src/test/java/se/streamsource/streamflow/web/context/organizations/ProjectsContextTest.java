@@ -26,6 +26,10 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.web.context.ContextTest;
+import se.streamsource.streamflow.web.context.administration.OrganizationalUnitsContext;
+import se.streamsource.streamflow.web.context.administration.OrganizationsContext;
+import se.streamsource.streamflow.web.context.administration.ProjectContext;
+import se.streamsource.streamflow.web.context.administration.ProjectsContext;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnits;
@@ -51,7 +55,7 @@ public class ProjectsContextTest
       playRole( Organization.class, findLink( context( OrganizationsContext.class).index(), "Organization" ));
       playRole( findDescribable(context(OrganizationalUnitsContext.class).index(), ouName));
 
-      context(ProjectsContext.class).createproject( stringValue(name) );
+      context( ProjectsContext.class).createproject( stringValue(name) );
 
       uow.complete();
    }
@@ -63,11 +67,11 @@ public class ProjectsContextTest
 
       playRole( Organizations.class, OrganizationsEntity.ORGANIZATIONS_ID);
       playRole( OrganizationalUnits.class, findLink( context( OrganizationsContext.class).index(), "Organization" ));
-      playRole( findDescribable(context(OrganizationalUnitsContext.class).index(), ouName));
+      playRole( findDescribable(context( OrganizationalUnitsContext.class).index(), ouName));
 
       playRole(findDescribable(context(ProjectsContext.class).index(), name));
 
-      context(ProjectContext.class).delete();
+      context( ProjectContext.class).delete();
 
       uow.complete();
    }

@@ -20,10 +20,8 @@ import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.SubResource;
 import se.streamsource.streamflow.web.context.workspace.cases.CaseActionsContext;
 import se.streamsource.streamflow.web.context.workspace.cases.CaseContext;
-import se.streamsource.streamflow.web.context.workspace.cases.CaseGeneralContext;
 import se.streamsource.streamflow.web.context.workspace.cases.form.CaseSubmittedFormsContext;
-import se.streamsource.streamflow.web.resource.cases.CaseFormDraftsResource;
-import se.streamsource.streamflow.web.resource.conversation.ConversationsResource;
+import se.streamsource.streamflow.web.resource.workspace.cases.conversation.ConversationsResource;
 
 /**
  * JAVADOC

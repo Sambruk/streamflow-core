@@ -26,6 +26,10 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.web.context.ContextTest;
+import se.streamsource.streamflow.web.context.administration.GroupContext;
+import se.streamsource.streamflow.web.context.administration.GroupsContext;
+import se.streamsource.streamflow.web.context.administration.OrganizationalUnitsContext;
+import se.streamsource.streamflow.web.context.administration.OrganizationsContext;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnits;
 import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
@@ -64,9 +68,9 @@ public class GroupsContextTest
       playRole( OrganizationalUnits.class, findLink( context( OrganizationsContext.class).index(), "Organization" ));
       playRole( findDescribable(context(OrganizationalUnitsContext.class).index(), ouName));
 
-      playRole(findDescribable(context(GroupsContext.class).index(), name));
+      playRole(findDescribable(context( GroupsContext.class).index(), name));
 
-      context(GroupContext.class).delete();
+      context( GroupContext.class).delete();
 
       uow.complete();
    }
@@ -101,7 +105,7 @@ public class GroupsContextTest
 
          playRole( Organizations.class, OrganizationsEntity.ORGANIZATIONS_ID);
          playRole( OrganizationalUnits.class, findLink( context( OrganizationsContext.class).index(), "Organization" ));
-         playRole( findDescribable(context(OrganizationalUnitsContext.class).index(), "OU1"));
+         playRole( findDescribable(context( OrganizationalUnitsContext.class).index(), "OU1"));
 
          Assert.assertThat( count(context(GroupsContext.class).index()), CoreMatchers.equalTo( 1L ));
          uow.discard();

@@ -1,4 +1,5 @@
-/*
+/**
+ *
  * Copyright 2009-2010 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,30 +15,23 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.resource.organizations;
+package se.streamsource.streamflow.web.context.administration;
 
-import org.restlet.resource.ResourceException;
+import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.RoleMap;
-import se.streamsource.dci.restlet.server.CommandQueryResource;
-import se.streamsource.dci.restlet.server.SubResources;
-import se.streamsource.streamflow.web.context.administration.GroupsContext;
+import se.streamsource.streamflow.web.domain.structure.group.Group;
 import se.streamsource.streamflow.web.domain.structure.group.Groups;
 
 /**
  * JAVADOC
  */
-public class GroupsResource
-   extends CommandQueryResource
-      implements SubResources
+public class GroupContext
+   implements DeleteContext
 {
-   public GroupsResource()
+   public void delete()
    {
-      super( GroupsContext.class );
-   }
-
-   public void resource( String segment ) throws ResourceException
-   {
-      findManyAssociation( RoleMap.role(Groups.Data.class).groups(), segment );
-      subResource(GroupResource.class );
+      Groups groups = RoleMap.role(Groups.class);
+      Group group = RoleMap.role(Group.class);
+      groups.removeGroup( group );
    }
 }

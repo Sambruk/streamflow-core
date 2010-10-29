@@ -21,8 +21,8 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.SubResources;
-import se.streamsource.streamflow.web.context.organizations.AdministratorContext;
-import se.streamsource.streamflow.web.context.organizations.AdministratorsContext;
+import se.streamsource.streamflow.web.context.administration.AdministratorContext;
+import se.streamsource.streamflow.web.context.administration.AdministratorsContext;
 import se.streamsource.streamflow.web.domain.structure.group.Participant;
 import se.streamsource.streamflow.web.domain.structure.organization.RolePolicy;
 

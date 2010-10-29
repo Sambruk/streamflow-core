@@ -22,7 +22,7 @@ import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.SubResources;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.web.context.organizations.CaseTypesContext;
+import se.streamsource.streamflow.web.context.administration.CaseTypesContext;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseTypes;
 
 /**

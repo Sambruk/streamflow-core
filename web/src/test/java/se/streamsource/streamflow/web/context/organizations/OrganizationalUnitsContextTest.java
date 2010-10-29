@@ -26,6 +26,9 @@ import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.util.Iterables;
 import se.streamsource.streamflow.web.application.security.UserPrincipal;
 import se.streamsource.streamflow.web.context.ContextTest;
+import se.streamsource.streamflow.web.context.administration.OrganizationalUnitContext;
+import se.streamsource.streamflow.web.context.administration.OrganizationalUnitsContext;
+import se.streamsource.streamflow.web.context.administration.OrganizationsContext;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnits;
 import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
@@ -80,7 +83,7 @@ public class OrganizationalUnitsContextTest
 
          playRole( Organizations.class, OrganizationsEntity.ORGANIZATIONS_ID);
          playRole( OrganizationalUnits.class, findLink( context( OrganizationsContext.class).index(), "Organization" ));
-         OrganizationalUnitsContext org = context(OrganizationalUnitsContext.class);
+         OrganizationalUnitsContext org = context( OrganizationalUnitsContext.class);
 
          Assert.assertThat( Iterables.count(org.index()), CoreMatchers.equalTo( 1L ));
          uow.discard();
@@ -94,7 +97,7 @@ public class OrganizationalUnitsContextTest
          playRole( Organizations.class, OrganizationsEntity.ORGANIZATIONS_ID);
          playRole( OrganizationalUnits.class, findLink( context( OrganizationsContext.class).index(), "Organization" ));
          playRole(findDescribable(context(OrganizationalUnitsContext.class).index(), "OU1"));
-         context(OrganizationalUnitContext.class).delete();
+         context( OrganizationalUnitContext.class).delete();
          uow.complete();
          eventsOccurred( "removedOrganizationalUnit", "changedRemoved" );
       }

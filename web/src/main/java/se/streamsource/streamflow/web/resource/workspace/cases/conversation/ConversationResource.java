@@ -14,30 +14,27 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.resource.organizations;
+package se.streamsource.streamflow.web.resource.workspace.cases.conversation;
 
-import org.restlet.resource.ResourceException;
-import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
-import se.streamsource.dci.restlet.server.SubResources;
-import se.streamsource.streamflow.web.context.administration.GroupsContext;
-import se.streamsource.streamflow.web.domain.structure.group.Groups;
+import se.streamsource.dci.restlet.server.SubResource;
+import se.streamsource.streamflow.web.context.workspace.cases.conversation.MessagesContext;
 
 /**
  * JAVADOC
  */
-public class GroupsResource
-   extends CommandQueryResource
-      implements SubResources
+public class ConversationResource
+      extends CommandQueryResource
 {
-   public GroupsResource()
+   @SubResource
+   public void participants( )
    {
-      super( GroupsContext.class );
+      subResource( ConversationParticipantsResource.class );
    }
 
-   public void resource( String segment ) throws ResourceException
+   @SubResource
+   public void messages()
    {
-      findManyAssociation( RoleMap.role(Groups.Data.class).groups(), segment );
-      subResource(GroupResource.class );
+      subResourceContexts( MessagesContext.class);
    }
 }
