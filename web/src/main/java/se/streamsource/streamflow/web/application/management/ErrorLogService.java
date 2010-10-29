@@ -21,7 +21,6 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
-import se.streamsource.streamflow.infrastructure.event.source.EventStream;
 
 import javax.management.MBeanException;
 import javax.management.MBeanServer;
@@ -54,9 +53,6 @@ public interface ErrorLogService
          implements Activatable
    {
       Map<String, String> sourceMappings = new ConcurrentHashMap<String, String>();
-
-      @Service
-      EventStream stream;
 
       @Service
       MBeanServer server;
