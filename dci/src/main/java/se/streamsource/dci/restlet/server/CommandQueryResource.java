@@ -42,21 +42,18 @@ import org.qi4j.spi.structure.ModuleSPI;
 import org.qi4j.spi.value.ValueDescriptor;
 import org.restlet.Request;
 import org.restlet.Response;
-import org.restlet.Restlet;
 import org.restlet.Uniform;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Form;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Parameter;
-import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
 import org.slf4j.LoggerFactory;
-import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.InteractionConstraints;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.ResourceValue;
@@ -597,18 +594,15 @@ public class CommandQueryResource
       Object[] args = new Object[method.getParameterTypes().length];
       int idx = 0;
 
-      Form asForm;
-      if (request.getMethod().isSafe())
+      Form queryAsForm = request.getResourceRef().getQueryAsForm();
+      Form entityAsForm = null;
+      if (request.getEntity() != null)
       {
-         // GET
-         asForm = request.getResourceRef().getQueryAsForm();
+          entityAsForm = new Form(request.getEntity());
       } else
-      {
-         // POST - allowed for queries if submitted entry is very large
-         asForm = new Form( request.getEntity() );
-      }
+        entityAsForm = new Form();
 
-      if (asForm.getNames().size() == 0)
+      if (queryAsForm.isEmpty() && entityAsForm.isEmpty())
       {
          // Nothing submitted yet - show form
          return null;
@@ -620,10 +614,10 @@ public class CommandQueryResource
          {
             Class<?> valueType = method.getParameterTypes()[0];
 
-            args[0] = getValueFromForm( (Class<ValueComposite>) valueType, asForm );
+            args[0] = getValueFromForm( (Class<ValueComposite>) valueType, queryAsForm, entityAsForm );
          } else if (Form.class.equals( method.getParameterTypes()[0] ))
          {
-            args[0] = asForm;
+            args[0] = queryAsForm.isEmpty() ? entityAsForm : queryAsForm;
          } else if (Response.class.equals( method.getParameterTypes()[0] ))
          {
             args[0] = response;
@@ -633,7 +627,7 @@ public class CommandQueryResource
          for (Annotation[] annotations : method.getParameterAnnotations())
          {
             Name name = first( isType( Name.class ), annotations );
-            Object arg = asForm.getFirstValue( name.value() );
+            Object arg = getValue(name.value(), queryAsForm, entityAsForm);
 
             // Parameter conversion
             if (method.getParameterTypes()[idx].equals( EntityReference.class ))
@@ -663,8 +657,8 @@ public class CommandQueryResource
          MediaType type = request.getEntity().getMediaType();
          if (type == null)
          {
-            Form form = request.getResourceRef().getQueryAsForm( CharacterSet.UTF_8 );
-            args[0] = getValueFromForm( commandType, form );
+            Form queryAsForm = request.getResourceRef().getQueryAsForm( CharacterSet.UTF_8 );
+            args[0] = getValueFromForm( commandType, queryAsForm, new Form() );
             return args;
          } else
          {
@@ -697,9 +691,11 @@ public class CommandQueryResource
                   return args;
                } else if (type.equals( (MediaType.APPLICATION_WWW_FORM) ))
                {
-                  Form asForm = new Form( request.getEntity() );
+                   
+                  Form queryAsForm = request.getResourceRef().getQueryAsForm();
+                  Form entityAsForm = new Form( request.getEntity() );
                   Class<?> valueType = method.getParameterTypes()[0];
-                  args[0] = getValueFromForm( (Class<ValueComposite>) valueType, asForm );
+                  args[0] = getValueFromForm( (Class<ValueComposite>) valueType, queryAsForm, entityAsForm );
                   return args;
                } else
                   throw new ResourceException( Status.CLIENT_ERROR_BAD_REQUEST, "Command has to be in JSON format" );
@@ -711,7 +707,7 @@ public class CommandQueryResource
       }
    }
 
-   private ValueComposite getValueFromForm( Class<? extends ValueComposite> valueType, final Form asForm )
+   private ValueComposite getValueFromForm( Class<? extends ValueComposite> valueType, final Form queryAsForm, final Form entityAsForm )
    {
       ValueBuilder<? extends ValueComposite> builder = vbf.newValueBuilder( valueType );
       final ValueDescriptor descriptor = spi.getValueDescriptor( builder.prototype() );
@@ -732,7 +728,11 @@ public class CommandQueryResource
          {
             for (PropertyType propertyType : descriptor.valueType().types())
             {
-               Parameter param = asForm.getFirst( propertyType.qualifiedName().name() );
+               Parameter param = queryAsForm.getFirst( propertyType.qualifiedName().name() );
+
+               if (param == null)
+                  param = entityAsForm.getFirst(propertyType.qualifiedName().name());
+
                if (param != null)
                {
                   String value = param.getValue();
@@ -814,4 +814,12 @@ public class CommandQueryResource
          response.setStatus( Status.SERVER_ERROR_INTERNAL );
       }
    }
+
+    private String getValue(String name, Form queryAsForm, Form entityAsForm)
+    {
+        String value = queryAsForm.getFirstValue( name );
+        if (value == null)
+            value = entityAsForm.getFirstValue( name );
+        return value;
+    }
 }

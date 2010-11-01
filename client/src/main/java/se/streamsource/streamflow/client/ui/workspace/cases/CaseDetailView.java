@@ -29,7 +29,7 @@ import se.streamsource.streamflow.client.ui.workspace.cases.contacts.ContactsAdm
 import se.streamsource.streamflow.client.ui.workspace.cases.conversations.ConversationsView;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.CaseGeneralView;
-import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.FormsAdminView;
+import se.streamsource.streamflow.client.ui.workspace.cases.forms.FormsAdminView;
 import se.streamsource.streamflow.client.ui.workspace.cases.info.CaseInfoView;
 
 import javax.swing.BorderFactory;

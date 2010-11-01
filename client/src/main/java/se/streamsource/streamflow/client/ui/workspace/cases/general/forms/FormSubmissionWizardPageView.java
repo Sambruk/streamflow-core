@@ -36,38 +36,23 @@ import org.qi4j.api.util.DateFunctions;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.client.ui.workspace.cases.CaseResources;
 import se.streamsource.streamflow.client.util.BindingFormBuilder;
 import se.streamsource.streamflow.client.util.StateBinder;
 import se.streamsource.streamflow.client.util.i18n;
-import se.streamsource.streamflow.client.ui.workspace.cases.CaseResources;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
-import se.streamsource.streamflow.domain.form.CheckboxesFieldValue;
-import se.streamsource.streamflow.domain.form.ComboBoxFieldValue;
-import se.streamsource.streamflow.domain.form.CommentFieldValue;
-import se.streamsource.streamflow.domain.form.DateFieldValue;
-import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
-import se.streamsource.streamflow.domain.form.FieldValue;
-import se.streamsource.streamflow.domain.form.ListBoxFieldValue;
-import se.streamsource.streamflow.domain.form.NumberFieldValue;
-import se.streamsource.streamflow.domain.form.OpenSelectionFieldValue;
-import se.streamsource.streamflow.domain.form.OptionButtonsFieldValue;
-import se.streamsource.streamflow.domain.form.PageSubmissionValue;
-import se.streamsource.streamflow.domain.form.TextAreaFieldValue;
-import se.streamsource.streamflow.domain.form.TextFieldValue;
+import se.streamsource.streamflow.domain.form.*;
 
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import java.awt.BorderLayout;
-import java.awt.Component;
+import javax.swing.*;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
+import javax.swing.text.html.HTMLDocument;
+import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Observable;
-import java.util.Observer;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.*;
 
 /**
  * JAVADOC
@@ -81,22 +66,21 @@ public class FormSubmissionWizardPageView
    private ValidationResultModel validationResultModel;
    private FormSubmissionWizardPageModel model;
    private ObjectBuilderFactory obf;
-   private static final Map<Class<? extends FieldValue>, Class<? extends AbstractFieldPanel>> fields = new HashMap<Class<? extends FieldValue>, Class<? extends AbstractFieldPanel>>( );
+   private static final Map<Class<? extends FieldValue>, Class<? extends AbstractFieldPanel>> fields = new HashMap<Class<? extends FieldValue>, Class<? extends AbstractFieldPanel>>();
 
    static
    {
       // Remember to add editors here when creating new types
-      fields.put(CheckboxesFieldValue.class, CheckboxesPanel.class);
-      fields.put(ComboBoxFieldValue.class, ComboBoxPanel.class);
-      fields.put(DateFieldValue.class, DatePanel.class);
-      fields.put(ListBoxFieldValue.class, ListBoxPanel.class);
-      fields.put(NumberFieldValue.class, NumberPanel.class);
-      fields.put(OptionButtonsFieldValue.class, OptionButtonsPanel.class);
-      fields.put(OpenSelectionFieldValue.class, OpenSelectionPanel.class);
-      fields.put(TextAreaFieldValue.class, TextAreaFieldPanel.class);
-      fields.put(TextFieldValue.class, TextFieldPanel.class);
+      fields.put( CheckboxesFieldValue.class, CheckboxesPanel.class );
+      fields.put( ComboBoxFieldValue.class, ComboBoxPanel.class );
+      fields.put( DateFieldValue.class, DatePanel.class );
+      fields.put( ListBoxFieldValue.class, ListBoxPanel.class );
+      fields.put( NumberFieldValue.class, NumberPanel.class );
+      fields.put( OptionButtonsFieldValue.class, OptionButtonsPanel.class );
+      fields.put( OpenSelectionFieldValue.class, OpenSelectionPanel.class );
+      fields.put( TextAreaFieldValue.class, TextAreaFieldPanel.class );
+      fields.put( TextFieldValue.class, TextFieldPanel.class );
    }
-
 
 
    public FormSubmissionWizardPageView( @Structure ObjectBuilderFactory obf,
@@ -104,23 +88,23 @@ public class FormSubmissionWizardPageView
                                         @Uses CommandQueryClient client )
    {
       super( page.title().get() );
-      this.model = obf.newObjectBuilder( FormSubmissionWizardPageModel.class ).use( client).newInstance();
+      this.model = obf.newObjectBuilder( FormSubmissionWizardPageModel.class ).use( client ).newInstance();
       this.obf = obf;
       componentFieldMap = new HashMap<String, AbstractFieldPanel>();
       validationResultModel = new DefaultValidationResultModel();
-      setLayout(new BorderLayout());
-      final JPanel panel = new JPanel( new FormLayout( ) );
+      setLayout( new BorderLayout() );
+      final JPanel panel = new JPanel( new FormLayout() );
 
       fieldBinders = new HashMap<StateBinder, EntityReference>( page.fields().get().size() );
       FormLayout formLayout = new FormLayout( "200dlu", "" );
       DefaultFormBuilder formBuilder = new DefaultFormBuilder( formLayout, panel );
       BindingFormBuilder bb = new BindingFormBuilder( formBuilder, null );
 
-      for (FieldSubmissionValue value : page.fields().get() )
+      for (FieldSubmissionValue value : page.fields().get())
       {
          AbstractFieldPanel component;
          FieldValue fieldValue = value.field().get().fieldValue().get();
-         if ( !(fieldValue instanceof CommentFieldValue) )
+         if (!(fieldValue instanceof CommentFieldValue))
          {
             component = getComponent( value );
             componentFieldMap.put( value.field().get().field().get().identity(), component );
@@ -133,39 +117,71 @@ public class FormSubmissionWizardPageView
             // comment field does not have any input component
             String comment = value.field().get().note().get();
             comment = comment.replaceAll( "\n", "<br/>" );
-            bb.append( new JLabel( "<html>"+comment+"</html>" ) );
+
+            JEditorPane commentPane = new JEditorPane( "text/html", "<html>" + comment + "</html>" );
+            Font font = UIManager.getFont( "Label.font" );
+            String bodyRule = "body { font-family: " + font.getFamily() + "; " +
+                  "font-size: " + font.getSize() + "pt; }";
+            ((HTMLDocument) commentPane.getDocument()).getStyleSheet().addRule( bodyRule );
+
+            commentPane.setOpaque( false );
+            commentPane.setBorder( null );
+            commentPane.setEditable( false );
+            commentPane.addHyperlinkListener( new HyperlinkListener()
+            {
+               public void hyperlinkUpdate( HyperlinkEvent e )
+               {
+                  if (e.getEventType().equals( HyperlinkEvent.EventType.ACTIVATED ))
+                  {
+                     // Open in browser
+                     try
+                     {
+                        Desktop.getDesktop().browse( e.getURL().toURI() );
+                     } catch (IOException e1)
+                     {
+                        e1.printStackTrace();
+                     } catch (URISyntaxException e1)
+                     {
+                        e1.printStackTrace();
+                     }
+                  }
+               }
+            } );
+
+            bb.append( commentPane );
          }
       }
 
-      JComponent validationResultsComponent = ValidationResultViewFactory.createReportList(validationResultModel);
-      formBuilder.appendRow("top:30dlu:g");
+      JComponent validationResultsComponent = ValidationResultViewFactory.createReportList( validationResultModel );
+      formBuilder.appendRow( "top:30dlu:g" );
 
       CellConstraints cc = new CellConstraints();
-      formBuilder.add(validationResultsComponent, cc.xywh(1, formBuilder.getRow() + 1, 1, 1, "fill, bottom"));
+      formBuilder.add( validationResultsComponent, cc.xywh( 1, formBuilder.getRow() + 1, 1, 1, "fill, bottom" ) );
 
-      final JScrollPane scroll = new JScrollPane(panel);
-      add(scroll,  BorderLayout.CENTER);
+      final JScrollPane scroll = new JScrollPane( panel );
+      add( scroll, BorderLayout.CENTER );
 
-      for( Component component : panel.getComponents())
+      for (Component component : panel.getComponents())
       {
-         component.addFocusListener( new FocusAdapter(){
+         component.addFocusListener( new FocusAdapter()
+         {
 
             @Override
             public void focusGained( FocusEvent e )
             {
-               panel.scrollRectToVisible( e.getComponent().getBounds());
+               panel.scrollRectToVisible( e.getComponent().getBounds() );
             }
-         });
+         } );
       }
    }
 
    @Override
    public WizardPanelNavResult allowNext( String s, Map map, Wizard wizard )
    {
-      ValidationResult validation = validatePage( );
+      ValidationResult validation = validatePage();
       validationResultModel.setResult( validation );
 
-      if ( !validation.hasErrors() )
+      if (!validation.hasErrors())
       {
          // last page check needed ???
          return WizardPanelNavResult.PROCEED;
@@ -185,14 +201,15 @@ public class FormSubmissionWizardPageView
    {
       ValidationResult validationResult = validatePage();
       validationResultModel.setResult( validationResult );
-      if ( validationResult.hasErrors() )
+      if (validationResult.hasErrors())
       {
          return WizardPanelNavResult.REMAIN_ON_PAGE;
       }
       return WizardPanelNavResult.PROCEED;
    }
 
-   private ValidationResult validatePage( ) {
+   private ValidationResult validatePage()
+   {
       ValidationResult validationResult = new ValidationResult();
 
       for (AbstractFieldPanel component : componentFieldMap.values())
@@ -200,11 +217,11 @@ public class FormSubmissionWizardPageView
 
          String value = component.getValue();
 
-         if ( component.mandatory() )
+         if (component.mandatory())
          {
-            if ( ValidationUtils.isEmpty( value ) )
+            if (ValidationUtils.isEmpty( value ))
             {
-               validationResult.addError( i18n.text(WorkspaceResources.mandatory_field_missing) + ": " + component.title() );
+               validationResult.addError( i18n.text( WorkspaceResources.mandatory_field_missing ) + ": " + component.title() );
             }
          }
       }
@@ -214,13 +231,13 @@ public class FormSubmissionWizardPageView
    public void update( Observable observable, Object arg )
    {
       Property property = (Property) arg;
-      if ( property.qualifiedName().name().equals( "value" ))
+      if (property.qualifiedName().name().equals( "value" ))
       {
          try
          {
-            if ( property.get() instanceof Date)
+            if (property.get() instanceof Date)
             {
-               model.updateField( fieldBinders.get( observable ), DateFunctions.toUtcString((Date)property.get()) );
+               model.updateField( fieldBinders.get( observable ), DateFunctions.toUtcString( (Date) property.get() ) );
             } else
             {
                model.updateField( fieldBinders.get( observable ), property.get().toString() );
@@ -236,7 +253,7 @@ public class FormSubmissionWizardPageView
    {
       for (FieldSubmissionValue field : page.fields().get())
       {
-         if ( !(field.field().get().fieldValue().get() instanceof CommentFieldValue) )
+         if (!(field.field().get().fieldValue().get() instanceof CommentFieldValue))
          {
             AbstractFieldPanel component = componentFieldMap.get( field.field().get().field().get().identity() );
             String value = component.getValue();
@@ -248,11 +265,11 @@ public class FormSubmissionWizardPageView
       }
    }
 
-   private AbstractFieldPanel getComponent(FieldSubmissionValue field )
+   private AbstractFieldPanel getComponent( FieldSubmissionValue field )
    {
       FieldValue fieldValue = field.field().get().fieldValue().get();
       Class<? extends FieldValue> fieldValueType = (Class<FieldValue>) fieldValue.getClass().getInterfaces()[0];
-      return obf.newObjectBuilder( fields.get( fieldValueType )).use( field, fieldValue ).newInstance();
+      return obf.newObjectBuilder( fields.get( fieldValueType ) ).use( field, fieldValue ).newInstance();
    }
 
 }

@@ -14,18 +14,16 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.client.ui.workspace.cases.general.forms;
+package se.streamsource.streamflow.client.ui.workspace.cases.forms;
 
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.streamflow.client.util.i18n;
-import se.streamsource.streamflow.client.ui.workspace.cases.forms.CaseEffectiveFieldsValueView;
-import se.streamsource.streamflow.client.ui.workspace.cases.forms.SubmittedFormsAdminView;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.client.util.i18n;
 
-import javax.swing.JTabbedPane;
+import javax.swing.*;
 
 
 /**

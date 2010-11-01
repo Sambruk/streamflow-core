@@ -151,13 +151,7 @@ import se.streamsource.streamflow.client.ui.workspace.cases.conversations.Conver
 import se.streamsource.streamflow.client.ui.workspace.cases.conversations.ConversationsView;
 import se.streamsource.streamflow.client.ui.workspace.cases.conversations.MessagesModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.conversations.MessagesView;
-import se.streamsource.streamflow.client.ui.workspace.cases.forms.CaseEffectiveFieldsValueModel;
-import se.streamsource.streamflow.client.ui.workspace.cases.forms.CaseEffectiveFieldsValueView;
-import se.streamsource.streamflow.client.ui.workspace.cases.forms.CaseSubmittedFormModel;
-import se.streamsource.streamflow.client.ui.workspace.cases.forms.CaseSubmittedFormView;
-import se.streamsource.streamflow.client.ui.workspace.cases.forms.CaseSubmittedFormsModel;
-import se.streamsource.streamflow.client.ui.workspace.cases.forms.CaseSubmittedFormsView;
-import se.streamsource.streamflow.client.ui.workspace.cases.forms.SubmittedFormsAdminView;
+import se.streamsource.streamflow.client.ui.workspace.cases.forms.*;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.CaseGeneralModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.CaseGeneralView;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.CaseLabelsModel;
@@ -167,7 +161,7 @@ import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.ComboB
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.DatePanel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.FormSubmissionWizardPageModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.FormSubmissionWizardPageView;
-import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.FormsAdminView;
+import se.streamsource.streamflow.client.ui.workspace.cases.forms.FormsAdminView;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.ListBoxPanel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.NumberPanel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.OpenSelectionPanel;
