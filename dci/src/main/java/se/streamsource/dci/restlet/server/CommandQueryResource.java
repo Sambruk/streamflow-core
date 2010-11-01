@@ -734,15 +734,16 @@ public class CommandQueryResource
                if (param != null)
                {
                   String value = param.getValue();
-                  if (value == null)
-                     value = "";
-                  try
+                  if (value != null)
                   {
-                     Object valueObject = propertyType.type().fromQueryParameter( value, module );
-                     visitor.visitProperty( propertyType.qualifiedName(), valueObject );
-                  } catch (JSONException e)
-                  {
-                     throw new IllegalArgumentException( "Query parameter has invalid JSON format", e );
+                     try
+                     {
+                        Object valueObject = propertyType.type().fromQueryParameter( value, module );
+                        visitor.visitProperty( propertyType.qualifiedName(), valueObject );
+                     } catch (JSONException e)
+                     {
+                        throw new IllegalArgumentException( "Query parameter has invalid JSON format", e );
+                     }
                   }
                }
             }
