@@ -43,6 +43,8 @@ public interface FormSignatureValue
 
    Property<String> signerId();
 
+   Property<String> signerName();
+
    /**
     * This is the signature string after the user
     * has signed the form
