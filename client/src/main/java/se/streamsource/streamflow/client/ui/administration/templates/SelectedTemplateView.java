@@ -34,14 +34,14 @@ import org.qi4j.api.property.Property;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
-import se.streamsource.streamflow.client.util.dialog.DialogService;
-import se.streamsource.streamflow.client.util.RefreshWhenVisible;
-import se.streamsource.streamflow.client.util.StateBinder;
-import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
-import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.RemovableLabel;
 import se.streamsource.streamflow.client.util.CommandTask;
+import se.streamsource.streamflow.client.util.RefreshWhenVisible;
+import se.streamsource.streamflow.client.util.StateBinder;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
+import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.source.helper.Events;
@@ -54,6 +54,7 @@ import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Insets;
 import java.util.Observable;
@@ -72,7 +73,10 @@ public class SelectedTemplateView extends JPanel
    private StateBinder selectedTemplateBinder;
 
    JButton templateButton;
-   RemovableLabel selectedTemplate = new RemovableLabel();
+   JButton caseTemplateButton;
+
+   RemovableLabel selectedTemplate = new RemovableLabel( RemovableLabel.LEFT );
+   RemovableLabel selectedCaseTemplate = new RemovableLabel( RemovableLabel.LEFT );
 
    private SelectedTemplateModel model;
 
@@ -107,8 +111,13 @@ public class SelectedTemplateView extends JPanel
 
       selectedTemplate.setFont( selectedTemplate.getFont().deriveFont(
             Font.BOLD ) );
+      selectedTemplate.setPreferredSize( new Dimension( 150, 25) );
 
-      FormLayout layout = new FormLayout( "60dlu, 5dlu, 150:grow", "pref, 2dlu, default:grow" );
+      selectedCaseTemplate.setFont( selectedCaseTemplate.getFont().deriveFont(
+            Font.BOLD ) );
+      selectedCaseTemplate.setPreferredSize( new Dimension( 150, 25) );
+
+      FormLayout layout = new FormLayout( "60dlu, 5dlu, 150:grow", "pref, 2dlu, pref, 2dlu, pref:grow" );
 
       JPanel panel = new JPanel( layout );
       DefaultFormBuilder builder = new DefaultFormBuilder( layout,
@@ -138,6 +147,21 @@ public class SelectedTemplateView extends JPanel
 
       builder.add( selectedTemplateBinder.bind( selectedTemplate, template.selectedTemplate() ),
             new CellConstraints( 3, 3, 1, 1, CellConstraints.LEFT, CellConstraints.TOP, new Insets( 3, 0, 0, 0 ) ) );
+
+      // Select case template
+      javax.swing.Action caseTemplateAction = am.get( "casetemplate" );
+      caseTemplateButton = new JButton( caseTemplateAction );
+
+      caseTemplateButton.registerKeyboardAction( caseTemplateAction, (KeyStroke) caseTemplateAction
+            .getValue( javax.swing.Action.ACCELERATOR_KEY ),
+            JComponent.WHEN_IN_FOCUSED_WINDOW );
+
+      caseTemplateButton.setHorizontalAlignment( SwingConstants.LEFT );
+
+      builder.add( caseTemplateButton, cc.xy( 1, 5, CellConstraints.FILL, CellConstraints.TOP ) );
+
+      builder.add( selectedTemplateBinder.bind( selectedCaseTemplate, template.caseTemplate() ),
+            new CellConstraints( 3, 5, 1, 1, CellConstraints.LEFT, CellConstraints.TOP, new Insets( 3, 0, 0, 0 ) ) );
 
       add( panel, BorderLayout.CENTER );
 
@@ -171,6 +195,30 @@ public class SelectedTemplateView extends JPanel
 
    }
 
+   @Action
+   public Task casetemplate()
+   {
+      return new CommandTask()
+      {
+         @Override
+         public void command()
+               throws Exception
+         {
+            SelectLinkDialog dialog = templateDialog.use(
+                  i18n.text( WorkspaceResources.choose_template ),
+                  model.getPossibleCaseTemplates() ).newInstance();
+
+            dialogs.showOkCancelHelpDialog( templateButton, dialog );
+
+            if (dialog.getSelectedLink() != null)
+            {
+               model.setCaseTemplate( dialog.getSelectedLink() );
+            }
+         }
+      };
+
+   }
+
 
    public void update( Observable o, Object arg )
    {
@@ -189,6 +237,17 @@ public class SelectedTemplateView extends JPanel
                   model.removeTemplate();
                }
             }.execute();
+         } else if (property.qualifiedName().name().equals( "caseTemplate" ))
+         {
+            new CommandTask()
+            {
+               @Override
+               public void command()
+                     throws Exception
+               {
+                  model.removeCaseTemplate();
+               }
+            }.execute();
          }
       } else
       {
@@ -199,7 +258,7 @@ public class SelectedTemplateView extends JPanel
    public void notifyTransactions( Iterable<TransactionEvents> transactions )
    {
       if (Events.matches( Events.withNames(
-            "selectedTemplateAdded", "selectedTemplateRemoved" ), transactions ))
+            "selectedTemplateAdded", "selectedTemplateRemoved", "caseTemplateAdded", "caseTemplateRemoved" ), transactions ))
       {
          model.refresh();
       }

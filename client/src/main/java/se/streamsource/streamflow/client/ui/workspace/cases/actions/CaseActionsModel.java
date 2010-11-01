@@ -29,7 +29,10 @@ import se.streamsource.dci.value.TitledLinkValue;
 import se.streamsource.streamflow.client.util.EventListSynch;
 import se.streamsource.streamflow.client.util.Refreshable;
 import se.streamsource.streamflow.domain.interaction.gtd.Actions;
+import se.streamsource.streamflow.resource.caze.CaseVisitorConfigValue;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collection;
 
 /**
@@ -128,5 +131,10 @@ public class CaseActionsModel
    public void resolve( LinkValue linkValue )
    {
       client.postLink( linkValue );
+   }
+
+   public InputStream print( CaseVisitorConfigValue config ) throws IOException
+   {
+      return client.queryStream( "exportpdf", config );
    }
 }

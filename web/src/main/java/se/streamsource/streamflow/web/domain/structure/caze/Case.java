@@ -57,6 +57,7 @@ public interface Case
       Resolvable,
       SubmittedForms,
       FormDrafts,
-      TypedCase
+      TypedCase,
+      CaseStructure
 {
 }

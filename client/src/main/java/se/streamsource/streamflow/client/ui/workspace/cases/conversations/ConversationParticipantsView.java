@@ -96,7 +96,7 @@ public class ConversationParticipantsView
       for (int i = 0; i < model.participants().size(); i++)
       {
          LinkValue link = model.participants().get( i );
-         RemovableLabel label = new RemovableLabel( link, new FlowLayout( FlowLayout.LEFT, 2, 1 ), RemovableLabel.LEFT );
+         RemovableLabel label = new RemovableLabel( link, RemovableLabel.LEFT );
          label.addActionListener( getActionMap().get("removeParticipant" ));
          participants.add( label );
       }

@@ -27,6 +27,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
+import org.apache.pdfbox.pdmodel.common.COSStreamArray;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
@@ -268,7 +269,17 @@ public class Underlay
          PDPage page = (PDPage) pageIter.next();
          COSDictionary pageDictionary = page.getCOSDictionary();
          COSBase contents = pageDictionary.getDictionaryObject( COSName.CONTENTS );
-         if (contents instanceof COSStream)
+         if (contents instanceof COSStreamArray)
+         {
+            COSStreamArray cosStreamArray = (COSStreamArray) contents;
+            COSArray array = new COSArray();
+            for (int i = 0; i < cosStreamArray.getStreamCount(); i++)
+            {
+               array.add(cosStreamArray.get( i ));
+            }
+            mergePage( array, page );   
+            pageDictionary.setItem( COSName.CONTENTS, array );
+         } else if (contents instanceof COSStream)
          {
             COSStream contentsStream = (COSStream) contents;
 

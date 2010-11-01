@@ -20,6 +20,7 @@ import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.event.ListEvent;
 import ca.odell.glazedlists.event.ListEventListener;
 import org.jdesktop.application.Action;
+import org.jdesktop.application.Application;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
 import org.jdesktop.swingx.util.WindowUtils;
@@ -28,21 +29,25 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilder;
 import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
+import org.restlet.engine.io.BioUtils;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.TitledLinkValue;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
 import se.streamsource.streamflow.client.StreamflowApplication;
 import se.streamsource.streamflow.client.StreamflowResources;
-import se.streamsource.streamflow.client.util.dialog.DialogService;
-import se.streamsource.streamflow.client.util.RefreshWhenVisible;
-import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
-import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
-import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.util.CommandTask;
+import se.streamsource.streamflow.client.util.RefreshWhenVisible;
+import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
+import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
+import se.streamsource.streamflow.resource.caze.CaseVisitorConfigValue;
 
 import javax.swing.ActionMap;
 import javax.swing.JButton;
@@ -53,7 +58,14 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Desktop;
 import java.awt.GridLayout;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 import static se.streamsource.streamflow.infrastructure.event.source.helper.Events.*;
 
@@ -77,6 +89,9 @@ public class CaseActionsView extends JPanel
 
    @Structure
    ObjectBuilderFactory obf;
+
+   @Structure
+   ValueBuilderFactory vbf;
 
    private CaseActionsModel model;
 
@@ -297,6 +312,19 @@ public class CaseActionsView extends JPanel
       };
    }
 
+   @Action
+   public Task print()
+   {
+      //TODO create a dialog to give the user the oportunity to choose the contents of CaseVisitorConfigValue
+      final ValueBuilder<CaseVisitorConfigValue> config = vbf.newValueBuilder( CaseVisitorConfigValue.class );
+      config.prototype().contacts().set( true );
+      config.prototype().conversations().set( true );
+      config.prototype().effectiveFields().set( true );
+      config.prototype().attachments().set( true );
+
+      return new PrintCaseTask( "Case.pdf", config.newInstance() );
+   }
+
    public void notifyTransactions( Iterable<TransactionEvents> transactions )
    {
       if (matches( withUsecases("open", "assign", "close", "delete", "onhold", "reopen", "resume", "unassign"), transactions ))
@@ -308,5 +336,72 @@ public class CaseActionsView extends JPanel
    public void listChanged( ListEvent<String> stringListEvent )
    {
       refresh();
+   }
+
+    private class PrintCaseTask extends Task<File, Void>
+   {
+      private final String name;
+      private CaseVisitorConfigValue config;
+
+      public PrintCaseTask( String name , CaseVisitorConfigValue config)
+      {
+         super( Application.getInstance() );
+         this.name = name;
+         this.config = config;
+
+         setUserCanCancel( false );
+      }
+
+      @Override
+      protected File doInBackground() throws Exception
+      {
+         setMessage( getResourceMap().getString( "description" ) );
+
+         String[] fileNameParts = name.split( "\\." );
+         File file = File.createTempFile( fileNameParts[0] + "_", "." + fileNameParts[1] );
+         FileOutputStream out = new FileOutputStream( file );
+
+         InputStream in = model.print( config );
+         try
+         {
+            BioUtils.copy( new BufferedInputStream( in, 1024 ), new BufferedOutputStream( out, 4096 ) );
+         } catch (IOException e)
+         {
+            in.close();
+            out.close();
+            throw e;
+         } finally
+         {
+            try
+            {
+               in.close();
+               out.close();
+            } catch (IOException e)
+            {
+               // Ignore
+            }
+         }
+         return file;
+      }
+
+      @Override
+      protected void succeeded( File file )
+      {
+         // Open file
+         Desktop desktop = Desktop.getDesktop();
+         try
+         {
+            desktop.edit( file );
+         } catch (IOException e)
+         {
+            try
+            {
+               desktop.print( file );
+            } catch (IOException e1)
+            {
+               dialogs.showMessageDialog( CaseActionsView.this, i18n.text( WorkspaceResources.could_not_print ), "" );
+            }
+         }
+      }
    }
 }

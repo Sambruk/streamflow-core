@@ -35,14 +35,25 @@ public interface SelectedTemplate
 
    void removeSelectedTemplate( @Optional Attachment attachment );
 
+   void addCaseTemplate( Attachment attachment );
+
+   void removeCaseTemplate( @Optional Attachment attachment );
+
    interface Data
    {
       @Optional
       Association<Attachment> selectedTemplate();
 
+      @Optional
+      Association<Attachment> caseTemplate();
+
       void selectedTemplateAdded( DomainEvent event, Attachment attachment );
 
       void selectedTemplateRemoved( DomainEvent event, Attachment attachment );
+
+      void caseTemplateAdded( DomainEvent event, Attachment attachment );
+
+      void caseTemplateRemoved( DomainEvent event, Attachment attachment );
    }
 
    abstract class Mixin
@@ -73,6 +84,27 @@ public interface SelectedTemplate
       public void selectedTemplateRemoved( DomainEvent event, Attachment attachment )
       {
          selectedTemplate().set( null );
+      }
+
+      public void addCaseTemplate( Attachment attachment )
+      {
+         caseTemplateAdded( DomainEvent.CREATE, attachment );
+      }
+
+      public void removeCaseTemplate( Attachment attachment )
+      {
+         if (data.caseTemplate().get() != null)
+            caseTemplateRemoved( DomainEvent.CREATE, attachment );
+      }
+
+      public void caseTemplateAdded( DomainEvent event, Attachment attachment )
+      {
+         caseTemplate().set( attachment );
+      }
+
+      public void caseTemplateRemoved( DomainEvent event, Attachment attachment )
+      {
+         caseTemplate().set( null );
       }
    }
 }

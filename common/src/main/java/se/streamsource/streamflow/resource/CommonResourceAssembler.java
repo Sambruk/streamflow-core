@@ -34,6 +34,7 @@ import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.resource.caze.CaseFormDTO;
 import se.streamsource.streamflow.resource.caze.CaseGeneralDTO;
 import se.streamsource.streamflow.resource.caze.CaseValue;
+import se.streamsource.streamflow.resource.caze.CaseVisitorConfigValue;
 import se.streamsource.streamflow.resource.caze.CasesQuery;
 import se.streamsource.streamflow.resource.caze.ContactsDTO;
 import se.streamsource.streamflow.resource.caze.EffectiveFieldDTO;
@@ -113,6 +114,7 @@ public class CommonResourceAssembler
             ProxyUserListDTO.class,
             ProxyUserDTO.class,
             SearchValue.class,
-            SelectedTemplateValue.class ).visibleIn( Visibility.application );
+            SelectedTemplateValue.class,
+            CaseVisitorConfigValue.class).visibleIn( Visibility.application );
    }
 }

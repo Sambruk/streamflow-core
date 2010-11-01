@@ -26,22 +26,22 @@ import se.streamsource.streamflow.util.Iterables;
 import se.streamsource.streamflow.web.context.ContextTest;
 import se.streamsource.streamflow.web.context.administration.CaseTypesContext;
 import se.streamsource.streamflow.web.context.administration.MembersContext;
+import se.streamsource.streamflow.web.context.administration.OrganizationalUnitsContext;
 import se.streamsource.streamflow.web.context.administration.OrganizationsContext;
+import se.streamsource.streamflow.web.context.administration.ProjectsContext;
 import se.streamsource.streamflow.web.context.administration.ResolutionsContext;
 import se.streamsource.streamflow.web.context.administration.SelectedCaseTypesContext;
-import se.streamsource.streamflow.web.context.administration.OrganizationalUnitsContext;
-import se.streamsource.streamflow.web.context.organizations.OrganizationalUnitsContextTest;
-import se.streamsource.streamflow.web.context.administration.ProjectsContext;
-import se.streamsource.streamflow.web.context.organizations.ProjectsContextTest;
-import se.streamsource.streamflow.web.context.workspace.cases.general.LabelableContext;
+import se.streamsource.streamflow.web.context.administration.SelectedResolutionsContext;
 import se.streamsource.streamflow.web.context.administration.labels.LabelsContext;
 import se.streamsource.streamflow.web.context.administration.labels.SelectedLabelsContext;
-import se.streamsource.streamflow.web.context.administration.SelectedResolutionsContext;
+import se.streamsource.streamflow.web.context.organizations.OrganizationalUnitsContextTest;
+import se.streamsource.streamflow.web.context.organizations.ProjectsContextTest;
 import se.streamsource.streamflow.web.context.users.UsersContextTest;
-import se.streamsource.streamflow.web.context.workspace.table.DraftsContext;
-import se.streamsource.streamflow.web.context.workspace.table.WorkspaceProjectsContext;
 import se.streamsource.streamflow.web.context.workspace.cases.CaseActionsContext;
 import se.streamsource.streamflow.web.context.workspace.cases.general.CaseGeneralContext;
+import se.streamsource.streamflow.web.context.workspace.cases.general.LabelableContext;
+import se.streamsource.streamflow.web.context.workspace.table.DraftsContext;
+import se.streamsource.streamflow.web.context.workspace.table.WorkspaceProjectsContext;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
@@ -226,7 +226,7 @@ public class CaseActionsContextTest
 
       // Check open actions
       {
-         checkActions( caze, "assign", "sendto", "close", "delete" );
+         checkActions( caze, "assign", "sendto", "close", "delete", "print" );
       }
 
       // Assign case
@@ -247,7 +247,7 @@ public class CaseActionsContextTest
 
       // Check assigned actions
       {
-         checkActions( caze, "sendto", "unassign", "onhold", "close", "delete" );
+         checkActions( caze, "sendto", "unassign", "onhold", "close", "delete", "print" );
       }
 
       // Resolve case
@@ -271,7 +271,7 @@ public class CaseActionsContextTest
 
       // Check resolved actions
       {
-         checkActions( caze, "reopen" );
+         checkActions( caze, "reopen", "print" );
       }
 
       // Reopen case
@@ -289,7 +289,7 @@ public class CaseActionsContextTest
 
       // Check reopened actions
       {
-         checkActions( caze, "sendto", "unassign", "onhold", "close", "delete" );
+         checkActions( caze, "sendto", "unassign", "onhold", "close", "delete", "print" );
       }
 
       // Close
@@ -307,7 +307,7 @@ public class CaseActionsContextTest
 
       // Check closed actions
       {
-         checkActions( caze, "reopen" );
+         checkActions( caze, "reopen", "print" );
       }
    }
 

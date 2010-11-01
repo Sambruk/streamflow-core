@@ -25,8 +25,8 @@ import se.streamsource.streamflow.util.Strings;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -55,36 +55,29 @@ public class RemovableLabel extends JPanel
 
    public RemovableLabel()
    {
-      initComponents( RemovableLabel.RIGHT );
+      initComponents( RIGHT );
    }
 
-   public RemovableLabel( LinkValue link )
+   public RemovableLabel( int buttonOrientation )
    {
-      this( link, new FlowLayout( FlowLayout.LEFT, 2, 1 ), RIGHT );
-
+      this.setLayout( new BorderLayout(2,1) );
+      initComponents( buttonOrientation );
    }
 
    public RemovableLabel( LinkValue link, boolean useBorder )
    {
-      this( link, new FlowLayout( FlowLayout.LEFT, 2, 1 ), RIGHT );
+      this.setLayout( new BorderLayout( 2,1 ) );
+      this.link = link;
       this.useBorder = useBorder;
+      initComponents( RIGHT );
    }
 
-   public RemovableLabel( LinkValue link, FlowLayout layout, int buttonOrientation )
+   public RemovableLabel( LinkValue link, int buttonOrientation )
    {
-      super( layout );
+      super( new BorderLayout( 2, 1 ) );
       this.link = link;
       initComponents( buttonOrientation );
    }
-
-   public RemovableLabel( LinkValue link, FlowLayout layout, int buttonOrientation, boolean useBorder )
-   {
-      super( layout );
-      this.link = link;
-      this.useBorder = useBorder;
-      initComponents( buttonOrientation );
-   }
-
 
    private void initComponents( int buttonOrientation )
    {
@@ -107,13 +100,13 @@ public class RemovableLabel extends JPanel
       {
 
          case RIGHT:
-            this.add( label );
-            this.add( button );
+            this.add( label, BorderLayout.CENTER );
+            this.add( button, BorderLayout.EAST );
             break;
 
          case LEFT:
-            this.add( button );
-            this.add( label );
+            this.add( button, BorderLayout.WEST );
+            this.add( label, BorderLayout.CENTER );
             break;
       }
       if (useBorder)
@@ -214,6 +207,7 @@ public class RemovableLabel extends JPanel
    public void setText( String text )
    {
       label.setText( text );
+      setToolTipText( text );
       this.setVisible( text != null );
    }
 

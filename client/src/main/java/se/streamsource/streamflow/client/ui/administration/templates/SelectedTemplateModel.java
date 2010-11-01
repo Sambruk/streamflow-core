@@ -30,8 +30,8 @@ import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.util.Refreshable;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.client.util.Refreshable;
 import se.streamsource.streamflow.resource.organization.SelectedTemplateValue;
 
 import java.util.Observable;
@@ -82,7 +82,33 @@ public class SelectedTemplateModel extends Observable implements Refreshable
       }
    }
 
+   public EventList<LinkValue> getPossibleCaseTemplates()
+   {
+      try
+      {
+         BasicEventList<LinkValue> list = new BasicEventList<LinkValue>();
+
+         ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
+         builder.prototype().string().set( "pdf" );
+
+         LinksValue listValue = client.query( "possiblecasetemplates",
+               builder.newInstance(), LinksValue.class );
+         list.addAll( listValue.links().get() );
+
+         return list;
+      } catch (ResourceException e)
+      {
+         throw new OperationException( WorkspaceResources.could_not_refresh,
+               e );
+      }
+   }
+
    public void setTemplate( LinkValue link )
+   {
+      client.postLink(link);
+   }
+
+   public void setCaseTemplate( LinkValue link )
    {
       client.postLink(link);
    }
@@ -91,6 +117,12 @@ public class SelectedTemplateModel extends Observable implements Refreshable
    {
       ValueBuilder<EntityValue> builder = vbf.newValueBuilder( EntityValue.class );
       client.postCommand( "settemplate", builder.newInstance() );
+   }
+
+   public void removeCaseTemplate()
+   {
+      ValueBuilder<EntityValue> builder = vbf.newValueBuilder( EntityValue.class );
+      client.postCommand( "setcasetemplate", builder.newInstance() );
    }
 
    public SelectedTemplateValue getSelectedTemplateValue()

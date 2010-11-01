@@ -15,21 +15,30 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.resource.organization;
+package se.streamsource.streamflow.resource.caze;
 
-import org.qi4j.api.common.Optional;
+import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
-import se.streamsource.dci.value.LinkValue;
 
 /**
+ * The configuration for a case visitor.
  */
-public interface SelectedTemplateValue
+public interface CaseVisitorConfigValue
    extends ValueComposite
 {
-   @Optional
-   Property<LinkValue> selectedTemplate();
+   @UseDefaults
+   Property<Boolean> contacts();
 
-   @Optional
-   Property<LinkValue> caseTemplate();
+   @UseDefaults
+   Property<Boolean> conversations();
+
+   @UseDefaults
+   Property<Boolean> effectiveFields();
+
+   @UseDefaults
+   Property<Boolean> submittedForms();
+
+   @UseDefaults
+   Property<Boolean> attachments();
 }

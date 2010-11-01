@@ -15,21 +15,29 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.resource.organization;
+package se.streamsource.streamflow.web.domain.structure.caze;
 
-import org.qi4j.api.common.Optional;
-import org.qi4j.api.property.Property;
-import org.qi4j.api.value.ValueComposite;
-import se.streamsource.dci.value.LinkValue;
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.mixin.Mixins;
+import se.streamsource.streamflow.web.domain.entity.caze.CaseVisitor;
 
 /**
+ * Provides the means to send a visitor to the case_
  */
-public interface SelectedTemplateValue
-   extends ValueComposite
+@Mixins(CaseStructure.Mixin.class)
+public interface CaseStructure
 {
-   @Optional
-   Property<LinkValue> selectedTemplate();
+   public void visitCase( CaseVisitor visitor ) throws Throwable;
 
-   @Optional
-   Property<LinkValue> caseTemplate();
+   class Mixin
+      implements CaseStructure
+   {
+      @This
+      Case caze;
+
+      public void visitCase( CaseVisitor visitor ) throws Throwable
+      {
+         visitor.visitCase( caze );
+      }
+   }
 }

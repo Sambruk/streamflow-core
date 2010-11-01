@@ -58,6 +58,17 @@ public class SelectedTemplateContext
          builder.prototype().selectedTemplate().set( linkBuilder.newInstance() );
       }
 
+      if (template.caseTemplate().get() != null)
+      {
+         Attachment attachment = template.caseTemplate().get();
+         ValueBuilder<LinkValue> linkBuilder = module.valueBuilderFactory().newValueBuilder( LinkValue.class );
+         EntityReference ref = EntityReference.getEntityReference( attachment );
+         linkBuilder.prototype().text().set( ((AttachedFile.Data) attachment).name().get() );
+         linkBuilder.prototype().id().set( ref.identity() );
+         linkBuilder.prototype().href().set( ref.identity() );
+         builder.prototype().caseTemplate().set( linkBuilder.newInstance() );
+      }
+
       return builder.newInstance();
    }
 
@@ -75,6 +86,20 @@ public class SelectedTemplateContext
       }
    }
 
+   public void setcasetemplate( EntityValue dto )
+   {
+      SelectedTemplate template = role( SelectedTemplate.class );
+
+      String entityReference = dto.entity().get();
+      if (entityReference != null)
+      {
+         template.addCaseTemplate( module.unitOfWorkFactory().currentUnitOfWork().get( Attachment.class, entityReference ) );
+      } else
+      {
+         template.removeCaseTemplate( ((SelectedTemplate.Data) template).caseTemplate().get() );
+      }
+   }
+
    public LinksValue possibletemplates( StringValue extensionFilter )
    {
       LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() ).command( "settemplate" );
@@ -85,6 +110,24 @@ public class SelectedTemplateContext
       for (Attachment attachment : attachments.attachments())
       {
          if (!attachment.equals( template.selectedTemplate().get() )
+               && ((AttachedFile.Data) attachment).mimeType().get().endsWith( extensionFilter.string().get() ))
+         {
+            linksBuilder.addLink(((AttachedFile.Data) attachment).name().get(), attachment.toString() );
+         }
+      }
+      return linksBuilder.newLinks();
+   }
+
+   public LinksValue possiblecasetemplates( StringValue extensionFilter )
+   {
+      LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() ).command( "setcasetemplate" );
+
+      Attachments.Data attachments = (Attachments.Data) role( Attachments.Data.class );
+      SelectedTemplate.Data template = role( SelectedTemplate.Data.class );
+
+      for (Attachment attachment : attachments.attachments())
+      {
+         if (!attachment.equals( template.caseTemplate().get() )
                && ((AttachedFile.Data) attachment).mimeType().get().endsWith( extensionFilter.string().get() ))
          {
             linksBuilder.addLink(((AttachedFile.Data) attachment).name().get(), attachment.toString() );

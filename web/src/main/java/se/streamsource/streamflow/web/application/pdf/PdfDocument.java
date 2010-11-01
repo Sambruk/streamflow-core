@@ -22,6 +22,7 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
 
+import java.awt.Color;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -90,27 +91,26 @@ public class PdfDocument
       return print( text + '\n', font );
    }
 
+   public PdfDocument printAlignedRight( String text, PdfFont font ) throws IOException
+   {
+      pageBreakIfNeeded( font );
+
+      float stringLength = (font.font.getStringWidth( text ) / 1000) * font.size;
+      float startFrom = maxStringLength - stringLength;
+      contentStream.moveTextPositionByAmount( startFrom, 0 );
+      contentStream.setFont( font.font, font.size );
+      contentStream.drawString( text );
+      contentStream.moveTextPositionByAmount( -startFrom, -font.height );
+      y -= font.height;
+      return this;
+   }
+
    public PdfDocument print( String text, PdfFont font ) throws IOException
    {
       List<String> lines = createLinesFromText( text, font );
       for (String line : lines)
       {
-         if (y - font.height < margin)
-         {
-            PDPage newPage = new PDPage();
-            newPage.setMediaBox( pageSize );
-            pdf.addPage( newPage );
-            if (contentStream != null)
-            {
-               contentStream.endText();
-               contentStream.close();
-            }
-            contentStream = new PDPageContentStream( pdf, newPage );
-            y = newPage.getMediaBox().getHeight() - margin;
-            contentStream.beginText();
-            contentStream.moveTextPositionByAmount( margin, y );
-
-         }
+         pageBreakIfNeeded( font );
 
          contentStream.setFont( font.font, font.size );
 
@@ -122,6 +122,44 @@ public class PdfDocument
          y -= font.height;
          contentStream.drawString( line );
       }
+      return this;
+   }
+
+   private void pageBreakIfNeeded( PdfFont font )
+         throws IOException
+   {
+      if (y - font.height < margin)
+      {
+         PDPage newPage = new PDPage();
+         newPage.setMediaBox( pageSize );
+         pdf.addPage( newPage );
+         if (contentStream != null)
+         {
+            contentStream.endText();
+            contentStream.close();
+         }
+         contentStream = new PDPageContentStream( pdf, newPage );
+         y = newPage.getMediaBox().getHeight() - margin - font.height;
+         contentStream.beginText();
+         contentStream.moveTextPositionByAmount( margin, y );
+      }
+   }
+
+   public PdfDocument printLabelAndText( String label, PdfFont labelFont, String text, PdfFont font, float tabStop )
+         throws IOException
+   {
+      pageBreakIfNeeded( labelFont );
+
+      if( y == pageSize.getHeight() - margin )
+         y -= labelFont.height;
+      
+      contentStream.moveTextPositionByAmount( 0, 0 );
+      contentStream.setFont( labelFont.font, labelFont.size );
+      contentStream.drawString( label );
+      contentStream.moveTextPositionByAmount( tabStop, font.height );
+      print( text, font );
+      contentStream.moveTextPositionByAmount( -tabStop, -font.height );
+
       return this;
    }
 
@@ -159,13 +197,95 @@ public class PdfDocument
       return resultLines;
    }
 
+   public PdfDocument underLine( String string, PdfFont font ) throws IOException
+   {
+      return line( (font.font.getStringWidth( string ) / 1000) * font.size );
+   }
+
    public PdfDocument line() throws IOException
+   {
+      return line( maxStringLength );
+   }
+
+   public PDDocument generateHeaderAndPageNumbers( PdfFont font, String... headers )
+   {
+      try
+      {
+         int pageTotal = pdf.getNumberOfPages();
+         int pageCount = 1;
+         float stringWidth = 0.0f;
+         float positionX = 0.0f;
+         
+         for (Object o : pdf.getDocumentCatalog().getAllPages())
+         {
+            String numbering = "" + pageCount + " (" + pageTotal + ")";
+
+            PDPage page = (PDPage) o;
+            PDRectangle pageSize = page.findMediaBox();
+            float positionY = pageSize.getHeight() - margin + font.height;
+            PDPageContentStream stream = new PDPageContentStream( pdf, page, true, true );
+            stream.beginText();
+
+            stream.setFont( font.font, font.size );
+            stream.moveTextPositionByAmount( 0, positionY );
+
+            for( String header : headers )
+            {
+               stringWidth = font.font.getStringWidth( header );
+               positionX = (pageSize.getWidth() - margin - (stringWidth*font.size)/1000f);
+
+               stream.moveTextPositionByAmount( positionX, 0 );
+               stream.drawString( header );
+               stream.moveTextPositionByAmount( -positionX, -font.height );
+               positionY -= font.height;
+            }
+
+            stringWidth = font.font.getStringWidth( numbering );
+            positionX = (pageSize.getWidth() - margin - (stringWidth*font.size)/1000f);
+            stream.moveTo( pageSize.getLowerLeftX(), pageSize.getLowerLeftY() );
+            stream.moveTextPositionByAmount( positionX, 30 - positionY );
+            stream.drawString( numbering );
+
+            stream.endText();
+            stream.close();
+            pageCount++;
+         }
+      } catch (IOException ioe)
+      {
+         close();
+      }
+      return closeAndReturn();
+   }
+
+   private PdfDocument line( float endX ) throws IOException
    {
       contentStream.moveTextPositionByAmount( 0, -4 );
       y -= 4;
-      contentStream.drawLine( margin, y, maxStringLength + margin, y );
+      contentStream.drawLine( margin, y, endX + margin, y );
       contentStream.moveTextPositionByAmount( 0, -4 );
       y -= 4;
+      return this;
+   }
+
+   public float calculateTabStop( PdfFont font, String... strings )
+         throws IOException
+   {
+      float tabStop = 0.0f;
+      for (int i = 0; i < strings.length; i++)
+      {
+         String string = strings[i];
+         float length = (font.font.getStringWidth( string ) / 1000) * font.size;
+         tabStop = tabStop < length ? length : tabStop;
+      }
+      return tabStop + 20;
+   }
+
+   public PdfDocument changeColor( Color color )
+         throws IOException
+   {
+      contentStream.setStrokingColor( color );
+      contentStream.setNonStrokingColor( color );
+
       return this;
    }
 

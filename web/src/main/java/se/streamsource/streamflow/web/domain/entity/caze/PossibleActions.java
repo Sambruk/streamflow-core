@@ -85,6 +85,7 @@ public interface PossibleActions
                   CaseType caseType = aCase.caseType().get();
                   actions.add( "close" );
                   actions.add( "delete" );
+                  actions.add( "print" );
                }
 
                return;
@@ -97,6 +98,7 @@ public interface PossibleActions
                {
                   actions.add( "reopen" );
                }
+               actions.add( "print" );
 
                return;
             }

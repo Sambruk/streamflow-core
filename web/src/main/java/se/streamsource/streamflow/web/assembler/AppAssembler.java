@@ -29,7 +29,6 @@ import org.qi4j.spi.query.NamedEntityFinder;
 import org.qi4j.spi.query.NamedQueries;
 import org.qi4j.spi.query.NamedQueryDescriptor;
 import org.qi4j.spi.service.importer.ServiceSelectorImporter;
-
 import se.streamsource.streamflow.infrastructure.ConfigurationManagerService;
 import se.streamsource.streamflow.infrastructure.event.replay.DomainEventPlayerService;
 import se.streamsource.streamflow.server.plugin.authentication.UserDetailsValue;
@@ -50,6 +49,7 @@ import se.streamsource.streamflow.web.application.management.jmxconnector.JmxCon
 import se.streamsource.streamflow.web.application.migration.StartupMigrationService;
 import se.streamsource.streamflow.web.application.notification.NotificationService;
 import se.streamsource.streamflow.web.application.organization.BootstrapAssembler;
+import se.streamsource.streamflow.web.application.pdf.CasePdfGenerator;
 import se.streamsource.streamflow.web.application.pdf.SubmittedFormPdfGenerator;
 import se.streamsource.streamflow.web.application.security.AuthenticationFilter;
 import se.streamsource.streamflow.web.application.security.AuthenticationFilterFactoryService;
@@ -96,6 +96,7 @@ public class AppAssembler
 
    private void pdf( ModuleAssembly moduleAssembly ) throws AssemblyException
    {
+      moduleAssembly.addObjects( CasePdfGenerator.class ).visibleIn( application );
       moduleAssembly.addServices( SubmittedFormPdfGenerator.class ).visibleIn( application );
    }
 
