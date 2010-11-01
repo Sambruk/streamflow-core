@@ -43,12 +43,8 @@ import org.qi4j.spi.value.ValueDescriptor;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Uniform;
-import org.restlet.data.CharacterSet;
-import org.restlet.data.Form;
-import org.restlet.data.Language;
-import org.restlet.data.MediaType;
-import org.restlet.data.Parameter;
-import org.restlet.data.Status;
+import org.restlet.data.*;
+import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.Variant;
@@ -69,7 +65,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static org.qi4j.spi.util.Annotations.*;
+import static org.qi4j.spi.util.Annotations.first;
+import static org.qi4j.spi.util.Annotations.isType;
 
 /**
  * JAVADOC
@@ -596,9 +593,10 @@ public class CommandQueryResource
 
       Form queryAsForm = request.getResourceRef().getQueryAsForm();
       Form entityAsForm = null;
-      if (request.getEntity() != null)
+      Representation representation = request.getEntity();
+      if (representation != null && !EmptyRepresentation.class.isInstance( representation))
       {
-          entityAsForm = new Form(request.getEntity());
+          entityAsForm = new Form(representation);
       } else
         entityAsForm = new Form();
 
