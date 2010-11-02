@@ -30,11 +30,9 @@ import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.TitledLinkValue;
 import se.streamsource.streamflow.client.util.FilteredList;
 import se.streamsource.streamflow.client.util.GroupedFilteredList;
+import se.streamsource.streamflow.util.Iterables;
 
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.ListSelectionModel;
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,29 +57,23 @@ public class SelectLinkDialog
       setActionMap( context.getActionMap( this ) );
       getActionMap().put( JXDialog.CLOSE_ACTION_COMMAND, getActionMap().get("cancel" ));
 
-      for (LinkValue link : links)
+      if (Iterables.first( links ) instanceof TitledLinkValue)
       {
-         if (link instanceof TitledLinkValue)
-         {
-            GroupedFilteredList list = new GroupedFilteredList();
-            list.getList().setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
-            list.setEventList( (EventList<TitledLinkValue>) links );
-            add(list);
-            this.list = list.getList();
-            this.filterField = list.getFilterField();
-            break;
-         } else
-         {
-            FilteredList list = new FilteredList();
-            list.getList().setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
-            list.setEventList( (EventList<LinkValue>) links );
-            add(list);
-            this.list = list.getList();
-            this.filterField = list.getFilterField();
-            break;
-         }
+         GroupedFilteredList list = new GroupedFilteredList();
+         list.getList().setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
+         list.setEventList( (EventList<TitledLinkValue>) links );
+         add(list);
+         this.list = list.getList();
+         this.filterField = list.getFilterField();
+      } else
+      {
+         FilteredList list = new FilteredList();
+         list.getList().setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
+         list.setEventList( (EventList<LinkValue>) links );
+         add(list);
+         this.list = list.getList();
+         this.filterField = list.getFilterField();
       }
-
    }
 
    public void setSelectionMode(int selectionMode)
