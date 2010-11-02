@@ -21,11 +21,14 @@ import org.qi4j.api.entity.EntityReference;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.domain.form.FormDraftValue;
+import se.streamsource.streamflow.domain.form.FormSignatureValue;
 import se.streamsource.streamflow.resource.caze.FieldDTO;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.form.EndUserCases;
 import se.streamsource.streamflow.web.domain.structure.form.FormDraft;
 import se.streamsource.streamflow.web.domain.structure.form.FormDrafts;
+
+import static se.streamsource.dci.api.RoleMap.role;
 
 /**
  * JAVADOC
@@ -40,9 +43,21 @@ public class SurfaceFormDraftContext
 
    public void updatefield( FieldDTO field )
    {
-      FormDraft formSubmission = RoleMap.role( FormDraft.class );
+      FormDraft formDraft = RoleMap.role( FormDraft.class );
 
-      formSubmission.changeFieldValue( EntityReference.parseEntityReference( field.field().get() ), field.value().get() );
+      formDraft.changeFieldValue( EntityReference.parseEntityReference( field.field().get() ), field.value().get() );
+   }
+
+   public void addsignature( FormSignatureValue signature )
+   {
+      FormDraft formDraft = role( FormDraft.class );
+      formDraft.addFormSignatureValue( signature );
+   }
+
+   public void removeSignatures()
+   {
+      FormDraft formDraft = role( FormDraft.class );
+      formDraft.removeFormSignatures();
    }
 
    /**

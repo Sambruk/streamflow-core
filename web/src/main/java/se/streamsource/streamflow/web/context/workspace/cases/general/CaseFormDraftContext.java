@@ -50,18 +50,6 @@ public class CaseFormDraftContext
       formDraft.changeFieldValue( field.field().get(), field.value().get() );
    }
 
-   public void addsignature( FormSignatureValue signature )
-   {
-      FormDraft formDraft = role( FormDraft.class );
-      formDraft.addFormSignatureValue( signature );
-   }
-
-   public void removeSignatures()
-   {
-      FormDraft formDraft = role( FormDraft.class );
-      formDraft.removeFormSignatures();
-   }
-
    public void submit()
    {
       FormDraft formDraft = role( FormDraft.class);

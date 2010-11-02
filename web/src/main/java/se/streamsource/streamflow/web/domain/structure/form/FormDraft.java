@@ -275,12 +275,18 @@ public interface FormDraft
 
       public void addedFormSignatureValue( DomainEvent event, FormSignatureValue formSignatureValue )
       {
-         formDraftValue().get().signatures().get().add( formSignatureValue );
+         ValueBuilder<FormDraftValue> builder = formDraftValue().get().buildWith();
+         builder.prototype().signatures().get().add( formSignatureValue );
+
+         formDraftValue().set( builder.newInstance() );
       }
 
       public void removedFormSignatures( DomainEvent event )
       {
-         formDraftValue().get().signatures().set( Collections.<FormSignatureValue>emptyList() );
+         ValueBuilder<FormDraftValue> builder = formDraftValue().get().buildWith();
+         builder.prototype().signatures().set( Collections.<FormSignatureValue>emptyList() );
+
+         formDraftValue().set( builder.newInstance() );
       }
    }
 
