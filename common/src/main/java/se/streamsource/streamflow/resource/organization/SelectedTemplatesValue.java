@@ -24,12 +24,15 @@ import se.streamsource.dci.value.LinkValue;
 
 /**
  */
-public interface SelectedTemplateValue
+public interface SelectedTemplatesValue
    extends ValueComposite
 {
    @Optional
-   Property<LinkValue> selectedTemplate();
+   Property<LinkValue> defaultPdfTemplate();
+   
+   @Optional
+   Property<LinkValue> formPdfTemplate();
 
    @Optional
-   Property<LinkValue> caseTemplate();
+   Property<LinkValue> casePdfTemplate();
 }

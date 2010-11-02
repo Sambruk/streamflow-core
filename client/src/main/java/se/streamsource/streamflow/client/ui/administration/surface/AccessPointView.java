@@ -384,7 +384,7 @@ public class AccessPointView
       if (Events.matches( Events.withNames( "addedLabel",
             "removedLabel", "addedCaseType", "addedProject",
             "addedSelectedForm", "changedProject", "changedCaseType",
-            "selectedTemplateAdded", "selectedTemplateRemoved" ), transactions ))
+            "formPdfTemplateSet" ), transactions ))
       {
          model.refresh();
       }

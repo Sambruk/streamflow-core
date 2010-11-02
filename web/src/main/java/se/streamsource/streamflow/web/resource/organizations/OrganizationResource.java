@@ -19,14 +19,14 @@ package se.streamsource.streamflow.web.resource.organizations;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.SubResource;
 import se.streamsource.streamflow.web.context.administration.OrganizationalUnitsContext;
-import se.streamsource.streamflow.web.resource.administration.ProxyUsersResource;
 import se.streamsource.streamflow.web.context.structure.DescribableContext;
-import se.streamsource.streamflow.web.resource.workspace.cases.AttachmentsResource;
+import se.streamsource.streamflow.web.resource.administration.ProxyUsersResource;
 import se.streamsource.streamflow.web.resource.organizations.forms.FormsResource;
-import se.streamsource.streamflow.web.resource.structure.SelectedTemplateResource;
+import se.streamsource.streamflow.web.resource.structure.SelectedTemplatesResource;
 import se.streamsource.streamflow.web.resource.structure.labels.LabelsResource;
 import se.streamsource.streamflow.web.resource.structure.labels.SelectedLabelsResource;
 import se.streamsource.streamflow.web.resource.surface.administration.organizations.accesspoints.AccessPointsAdministrationResource;
+import se.streamsource.streamflow.web.resource.workspace.cases.AttachmentsResource;
 
 /**
  * JAVADOC
@@ -101,8 +101,8 @@ public class OrganizationResource
    }
    
    @SubResource
-   public void template()
+   public void templates()
    {
-      subResource( SelectedTemplateResource.class );
+      subResource( SelectedTemplatesResource.class );
    }
 }

@@ -52,7 +52,8 @@ import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresAssigned;
 import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresStatus;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
-import se.streamsource.streamflow.web.domain.structure.attachment.SelectedTemplate;
+import se.streamsource.streamflow.web.domain.structure.attachment.CasePdfTemplate;
+import se.streamsource.streamflow.web.domain.structure.attachment.DefaultPdfTemplate;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.Resolution;
 import se.streamsource.streamflow.web.domain.structure.casetype.Resolvable;
@@ -293,7 +294,12 @@ public interface CaseActionsContext
 
          Organization org = ((OwningOrganization) ou).organization().get();
 
-         AttachedFile.Data template = (AttachedFile.Data) ((SelectedTemplate.Data) org).caseTemplate().get();
+         AttachedFile.Data template = (AttachedFile.Data) ((CasePdfTemplate.Data) org).casePdfTemplate().get();
+
+         if(template == null)
+         {
+            template = (AttachedFile.Data) ((DefaultPdfTemplate.Data) org).defaultPdfTemplate().get();
+         }
 
          String uri = null;
          if (template != null)

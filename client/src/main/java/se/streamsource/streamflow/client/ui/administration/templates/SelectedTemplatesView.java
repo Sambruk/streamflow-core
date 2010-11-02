@@ -45,7 +45,7 @@ import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.source.helper.Events;
-import se.streamsource.streamflow.resource.organization.SelectedTemplateValue;
+import se.streamsource.streamflow.resource.organization.SelectedTemplatesValue;
 
 import javax.swing.ActionMap;
 import javax.swing.JButton;
@@ -61,7 +61,7 @@ import java.util.Observable;
 import java.util.Observer;
 
 
-public class SelectedTemplateView extends JPanel
+public class SelectedTemplatesView extends JPanel
       implements Observer, TransactionListener
 {
    @Service
@@ -70,26 +70,28 @@ public class SelectedTemplateView extends JPanel
    @Uses
    protected ObjectBuilder<SelectLinkDialog> templateDialog;
 
-   private StateBinder selectedTemplateBinder;
+   private StateBinder selectedTemplatesBinder;
 
-   JButton templateButton;
+   JButton defaultTemplateButton;
+   JButton formTemplateButton;
    JButton caseTemplateButton;
 
-   RemovableLabel selectedTemplate = new RemovableLabel( RemovableLabel.LEFT );
-   RemovableLabel selectedCaseTemplate = new RemovableLabel( RemovableLabel.LEFT );
+   RemovableLabel defaultTemplate = new RemovableLabel( RemovableLabel.LEFT );
+   RemovableLabel formTemplate = new RemovableLabel( RemovableLabel.LEFT );
+   RemovableLabel caseTemplate = new RemovableLabel( RemovableLabel.LEFT );
 
-   private SelectedTemplateModel model;
+   private SelectedTemplatesModel model;
 
-   public SelectedTemplateView( @Service ApplicationContext appContext,
+   public SelectedTemplatesView( @Service ApplicationContext appContext,
                                 @Uses CommandQueryClient client,
                                 @Structure ObjectBuilderFactory obf )
    {
-      this.model = obf.newObjectBuilder( SelectedTemplateModel.class ).use( client.getClient( "../template/" ) ).newInstance();
+      this.model = obf.newObjectBuilder( SelectedTemplatesModel.class ).use( client ).newInstance();
       model.addObserver( this );
 
-      selectedTemplateBinder = obf.newObject( StateBinder.class );
-      selectedTemplateBinder.addObserver( this );
-      selectedTemplateBinder.addConverter( new StateBinder.Converter()
+      selectedTemplatesBinder = obf.newObject( StateBinder.class );
+      selectedTemplatesBinder.addObserver( this );
+      selectedTemplatesBinder.addConverter( new StateBinder.Converter()
       {
          public Object toComponent( Object value )
          {
@@ -105,19 +107,23 @@ public class SelectedTemplateView extends JPanel
             return value;
          }
       } );
-      selectedTemplateBinder.setResourceMap( appContext.getResourceMap( getClass() ) );
-      SelectedTemplateValue template = selectedTemplateBinder
-            .bindingTemplate( SelectedTemplateValue.class );
+      selectedTemplatesBinder.setResourceMap( appContext.getResourceMap( getClass() ) );
+      SelectedTemplatesValue template = selectedTemplatesBinder
+            .bindingTemplate( SelectedTemplatesValue.class );
 
-      selectedTemplate.setFont( selectedTemplate.getFont().deriveFont(
+      defaultTemplate.setFont( defaultTemplate.getFont().deriveFont(
             Font.BOLD ) );
-      selectedTemplate.setPreferredSize( new Dimension( 150, 25) );
+      defaultTemplate.setPreferredSize( new Dimension( 150, 25) );
 
-      selectedCaseTemplate.setFont( selectedCaseTemplate.getFont().deriveFont(
+      formTemplate.setFont( formTemplate.getFont().deriveFont(
             Font.BOLD ) );
-      selectedCaseTemplate.setPreferredSize( new Dimension( 150, 25) );
+      formTemplate.setPreferredSize( new Dimension( 150, 25) );
 
-      FormLayout layout = new FormLayout( "60dlu, 5dlu, 150:grow", "pref, 2dlu, pref, 2dlu, pref:grow" );
+      caseTemplate.setFont( caseTemplate.getFont().deriveFont(
+            Font.BOLD ) );
+      caseTemplate.setPreferredSize( new Dimension( 150, 25) );
+
+      FormLayout layout = new FormLayout( "60dlu, 5dlu, 150:grow", "pref, 2dlu, pref, 2dlu, pref, 2dlu, pref:grow" );
 
       JPanel panel = new JPanel( layout );
       DefaultFormBuilder builder = new DefaultFormBuilder( layout,
@@ -129,27 +135,42 @@ public class SelectedTemplateView extends JPanel
 
       setActionMap( appContext.getActionMap( this ) );
       MacOsUIWrapper.convertAccelerators( appContext.getActionMap(
-            SelectedTemplateView.class, this ) );
+            SelectedTemplatesView.class, this ) );
 
       ActionMap am = getActionMap();
 
-      // Select template
-      javax.swing.Action templateAction = am.get( "template" );
-      templateButton = new JButton( templateAction );
+      // Select default template
+      javax.swing.Action defaultTemplateAction = am.get( "defaultTemplate" );
+      defaultTemplateButton = new JButton( defaultTemplateAction );
 
-      templateButton.registerKeyboardAction( templateAction, (KeyStroke) templateAction
+      defaultTemplateButton.registerKeyboardAction( defaultTemplateAction, (KeyStroke) defaultTemplateAction
             .getValue( javax.swing.Action.ACCELERATOR_KEY ),
             JComponent.WHEN_IN_FOCUSED_WINDOW );
 
-      templateButton.setHorizontalAlignment( SwingConstants.LEFT );
+      defaultTemplateButton.setHorizontalAlignment( SwingConstants.LEFT );
 
-      builder.add( templateButton, cc.xy( 1, 3, CellConstraints.FILL, CellConstraints.TOP ) );
+      builder.add( defaultTemplateButton, cc.xy( 1, 3, CellConstraints.FILL, CellConstraints.TOP ) );
 
-      builder.add( selectedTemplateBinder.bind( selectedTemplate, template.selectedTemplate() ),
+      builder.add( selectedTemplatesBinder.bind( defaultTemplate, template.defaultPdfTemplate() ),
             new CellConstraints( 3, 3, 1, 1, CellConstraints.LEFT, CellConstraints.TOP, new Insets( 3, 0, 0, 0 ) ) );
 
+      // Select form template
+      javax.swing.Action formTemplateAction = am.get( "formTemplate" );
+      formTemplateButton = new JButton( formTemplateAction );
+
+      formTemplateButton.registerKeyboardAction( formTemplateAction, (KeyStroke) formTemplateAction
+            .getValue( javax.swing.Action.ACCELERATOR_KEY ),
+            JComponent.WHEN_IN_FOCUSED_WINDOW );
+
+      formTemplateButton.setHorizontalAlignment( SwingConstants.LEFT );
+
+      builder.add( formTemplateButton, cc.xy( 1, 5, CellConstraints.FILL, CellConstraints.TOP ) );
+
+      builder.add( selectedTemplatesBinder.bind( formTemplate, template.formPdfTemplate() ),
+            new CellConstraints( 3, 5, 1, 1, CellConstraints.LEFT, CellConstraints.TOP, new Insets( 3, 0, 0, 0 ) ) );
+
       // Select case template
-      javax.swing.Action caseTemplateAction = am.get( "casetemplate" );
+      javax.swing.Action caseTemplateAction = am.get( "caseTemplate" );
       caseTemplateButton = new JButton( caseTemplateAction );
 
       caseTemplateButton.registerKeyboardAction( caseTemplateAction, (KeyStroke) caseTemplateAction
@@ -158,21 +179,21 @@ public class SelectedTemplateView extends JPanel
 
       caseTemplateButton.setHorizontalAlignment( SwingConstants.LEFT );
 
-      builder.add( caseTemplateButton, cc.xy( 1, 5, CellConstraints.FILL, CellConstraints.TOP ) );
+      builder.add( caseTemplateButton, cc.xy( 1, 7, CellConstraints.FILL, CellConstraints.TOP ) );
 
-      builder.add( selectedTemplateBinder.bind( selectedCaseTemplate, template.caseTemplate() ),
-            new CellConstraints( 3, 5, 1, 1, CellConstraints.LEFT, CellConstraints.TOP, new Insets( 3, 0, 0, 0 ) ) );
+      builder.add( selectedTemplatesBinder.bind( caseTemplate, template.casePdfTemplate() ),
+            new CellConstraints( 3, 7, 1, 1, CellConstraints.LEFT, CellConstraints.TOP, new Insets( 3, 0, 0, 0 ) ) );
 
       add( panel, BorderLayout.CENTER );
 
-      selectedTemplateBinder.updateWith( model.getSelectedTemplateValue() );
+      selectedTemplatesBinder.updateWith( model.getSelectedTemplatesValue() );
 
       new RefreshWhenVisible( this, model );
    }
 
 
    @Action
-   public Task template()
+   public Task defaultTemplate()
    {
       return new CommandTask()
       {
@@ -182,9 +203,9 @@ public class SelectedTemplateView extends JPanel
          {
             SelectLinkDialog dialog = templateDialog.use(
                   i18n.text( WorkspaceResources.choose_template ),
-                  model.getPossibleTemplates() ).newInstance();
+                  model.getPossibleTemplates( "possibledefaulttemplates") ).newInstance();
 
-            dialogs.showOkCancelHelpDialog( templateButton, dialog );
+            dialogs.showOkCancelHelpDialog( defaultTemplateButton, dialog );
 
             if (dialog.getSelectedLink() != null)
             {
@@ -196,7 +217,7 @@ public class SelectedTemplateView extends JPanel
    }
 
    @Action
-   public Task casetemplate()
+   public Task formTemplate()
    {
       return new CommandTask()
       {
@@ -206,13 +227,37 @@ public class SelectedTemplateView extends JPanel
          {
             SelectLinkDialog dialog = templateDialog.use(
                   i18n.text( WorkspaceResources.choose_template ),
-                  model.getPossibleCaseTemplates() ).newInstance();
+                  model.getPossibleTemplates( "possibleformtemplates") ).newInstance();
 
-            dialogs.showOkCancelHelpDialog( templateButton, dialog );
+            dialogs.showOkCancelHelpDialog( formTemplateButton, dialog );
 
             if (dialog.getSelectedLink() != null)
             {
-               model.setCaseTemplate( dialog.getSelectedLink() );
+               model.setTemplate( dialog.getSelectedLink() );
+            }
+         }
+      };
+
+   }
+
+   @Action
+   public Task caseTemplate()
+   {
+      return new CommandTask()
+      {
+         @Override
+         public void command()
+               throws Exception
+         {
+            SelectLinkDialog dialog = templateDialog.use(
+                  i18n.text( WorkspaceResources.choose_template ),
+                  model.getPossibleTemplates( "possiblecasetemplates") ).newInstance();
+
+            dialogs.showOkCancelHelpDialog( defaultTemplateButton, dialog );
+
+            if (dialog.getSelectedLink() != null)
+            {
+               model.setTemplate( dialog.getSelectedLink() );
             }
          }
       };
@@ -223,10 +268,10 @@ public class SelectedTemplateView extends JPanel
    public void update( Observable o, Object arg )
    {
 
-      if (o == selectedTemplateBinder)
+      if (o == selectedTemplatesBinder)
       {
          final Property property = (Property) arg;
-         if (property.qualifiedName().name().equals( "selectedTemplate" ))
+         if (property.qualifiedName().name().equals( "defaultPdfTemplate" ))
          {
             new CommandTask()
             {
@@ -234,10 +279,10 @@ public class SelectedTemplateView extends JPanel
                public void command()
                      throws Exception
                {
-                  model.removeTemplate();
+                  model.removeTemplate("setdefaulttemplate");
                }
             }.execute();
-         } else if (property.qualifiedName().name().equals( "caseTemplate" ))
+         } else if (property.qualifiedName().name().equals( "formPdfTemplate" ))
          {
             new CommandTask()
             {
@@ -245,20 +290,31 @@ public class SelectedTemplateView extends JPanel
                public void command()
                      throws Exception
                {
-                  model.removeCaseTemplate();
+                  model.removeTemplate("setformtemplate");
+               }
+            }.execute();
+         } else if (property.qualifiedName().name().equals( "casePdfTemplate" ))
+         {
+            new CommandTask()
+            {
+               @Override
+               public void command()
+                     throws Exception
+               {
+                  model.removeTemplate("setcasetemplate");
                }
             }.execute();
          }
       } else
       {
-         selectedTemplateBinder.updateWith( model.getSelectedTemplateValue() );
+         selectedTemplatesBinder.updateWith( model.getSelectedTemplatesValue() );
       }
    }
 
    public void notifyTransactions( Iterable<TransactionEvents> transactions )
    {
       if (Events.matches( Events.withNames(
-            "selectedTemplateAdded", "selectedTemplateRemoved", "caseTemplateAdded", "caseTemplateRemoved" ), transactions ))
+            "defaultPdfTemplateSet", "formPdfTemplateSet", "casePdfTemplateSet"), transactions ))
       {
          model.refresh();
       }

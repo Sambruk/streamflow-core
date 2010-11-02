@@ -41,7 +41,7 @@ public class TemplatesView extends JPanel
 
       add( CENTER, obf.newObjectBuilder( AttachmentsView.class ).use( client).newInstance());
 
-      add( EAST, obf.newObjectBuilder(SelectedTemplateView.class ).use(client.getClient( "../template/" )).newInstance());
+      add( EAST, obf.newObjectBuilder( SelectedTemplatesView.class ).use(client.getClient( "../templates/" )).newInstance());
 
    }
 }

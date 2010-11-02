@@ -32,7 +32,9 @@ import se.streamsource.streamflow.domain.structure.Removable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
-import se.streamsource.streamflow.web.domain.structure.attachment.SelectedTemplate;
+import se.streamsource.streamflow.web.domain.structure.attachment.CasePdfTemplate;
+import se.streamsource.streamflow.web.domain.structure.attachment.DefaultPdfTemplate;
+import se.streamsource.streamflow.web.domain.structure.attachment.FormPdfTemplate;
 
 import static org.qi4j.api.query.QueryExpressions.*;
 
@@ -73,15 +75,37 @@ public interface AttachmentEntity
          if (removed)
          {
             {
-               // Remove all usage of this attachement
-               Association<Attachment> selectedTemplate = templateFor( SelectedTemplate.Data.class ).selectedTemplate();
-               Query<SelectedTemplate> templateUsages = qbf.newQueryBuilder( SelectedTemplate.class ).
-                     where( QueryExpressions.eq( selectedTemplate, api.dereference( attachment ) ) ).
+               // Remove all default pdf template usage of this attachement
+               Association<Attachment> defaultPdfTemplate = templateFor( DefaultPdfTemplate.Data.class ).defaultPdfTemplate();
+               Query<DefaultPdfTemplate> defaultPdfTemplateQuery = qbf.newQueryBuilder( DefaultPdfTemplate.class ).
+                     where( QueryExpressions.eq( defaultPdfTemplate, api.dereference( attachment ) ) ).
                      newQuery( uowf.currentUnitOfWork() );
 
-               for (SelectedTemplate selectedTemplateUsage : templateUsages)
+               for (DefaultPdfTemplate defaultPdfTemplateUsage : defaultPdfTemplateQuery)
                {
-                  selectedTemplateUsage.removeSelectedTemplate( ((SelectedTemplate.Data) selectedTemplateUsage).selectedTemplate().get() );
+                  defaultPdfTemplateUsage.setDefaultPdfTemplate( null );
+               }
+
+               // Remove all form template usage of this attachement
+               Association<Attachment> formPdfTemplate = templateFor( FormPdfTemplate.Data.class ).formPdfTemplate();
+               Query<FormPdfTemplate> formPdfTemplateQuery = qbf.newQueryBuilder( FormPdfTemplate.class ).
+                     where( QueryExpressions.eq( formPdfTemplate, api.dereference( attachment ) ) ).
+                     newQuery( uowf.currentUnitOfWork() );
+
+               for (FormPdfTemplate formPdfTemplateUsage : formPdfTemplateQuery)
+               {
+                  formPdfTemplateUsage.setFormPdfTemplate( null );
+               }
+
+               // Remove all case template usage of this attachement
+               Association<Attachment> casePdfTemplate = templateFor( CasePdfTemplate.Data.class ).casePdfTemplate();
+               Query<CasePdfTemplate> casePdfTemplateUsages = qbf.newQueryBuilder( CasePdfTemplate.class ).
+                     where( QueryExpressions.eq( casePdfTemplate, api.dereference( attachment ) ) ).
+                     newQuery( uowf.currentUnitOfWork() );
+
+               for (CasePdfTemplate casePdfTemplateUsage : casePdfTemplateUsages)
+               {
+                  casePdfTemplateUsage.setCasePdfTemplate( null );
                }
             }
          }

@@ -1,4 +1,5 @@
-/*
+/**
+ *
  * Copyright 2009-2010 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,35 +15,35 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.resource.surface.administration.organizations.accesspoints;
+package se.streamsource.streamflow.web.resource.structure;
 
 import se.streamsource.dci.restlet.server.CommandQueryResource;
-import se.streamsource.dci.restlet.server.SubResource;
-import se.streamsource.streamflow.domain.structure.Describable;
-import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.web.context.administration.surface.accesspoints.AccessPointAdministrationContext;
+import se.streamsource.dci.value.LinksBuilder;
+import se.streamsource.streamflow.web.context.administration.surface.SelectedTemplatesContext;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
 
 import java.util.List;
 
-/**
- * JAVADOC
- */
-public class AccessPointAdministrationResource
-      extends CommandQueryResource
+public class SelectedTemplatesResource extends CommandQueryResource
 {
-   public AccessPointAdministrationResource()
+   public SelectedTemplatesResource()
    {
-      super( AccessPointAdministrationContext.class );
+      super( SelectedTemplatesContext.class);
    }
 
-   public void possibleprojects() throws Throwable
+   public void possibledefaulttemplates() throws Throwable
    {
-      result(new LinksBuilder(module.valueBuilderFactory()).
-            command( "setproject" ).
-            addDescribables( (Iterable<? extends Describable>) invoke() ).
-            newLinks());
+      LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() ).command( "setdefaulttemplate" );
+
+      List<Attachment> attachments = (List<Attachment>) invoke();
+
+      for (Attachment attachment : attachments)
+      {
+         linksBuilder.addLink(((AttachedFile.Data) attachment).name().get(), attachment.toString() );
+      }
+
+      result( linksBuilder.newLinks() );
    }
 
    public void possibleformtemplates() throws Throwable
@@ -59,9 +60,17 @@ public class AccessPointAdministrationResource
       result( linksBuilder.newLinks() );
    }
 
-   @SubResource
-   public void labels()
+   public void possiblecasetemplates() throws Throwable
    {
-      subResource( AccessPointLabelableResource.class );
+      LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() ).command( "setcasetemplate" );
+
+      List<Attachment> attachments = (List<Attachment>) invoke();
+
+      for (Attachment attachment : attachments)
+      {
+         linksBuilder.addLink(((AttachedFile.Data) attachment).name().get(), attachment.toString() );
+      }
+
+      result( linksBuilder.newLinks() );
    }
 }

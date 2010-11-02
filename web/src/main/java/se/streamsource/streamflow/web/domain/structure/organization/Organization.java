@@ -21,7 +21,9 @@ import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.domain.structure.Removable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachments;
-import se.streamsource.streamflow.web.domain.structure.attachment.SelectedTemplate;
+import se.streamsource.streamflow.web.domain.structure.attachment.CasePdfTemplate;
+import se.streamsource.streamflow.web.domain.structure.attachment.DefaultPdfTemplate;
+import se.streamsource.streamflow.web.domain.structure.attachment.FormPdfTemplate;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseTypes;
 import se.streamsource.streamflow.web.domain.structure.form.Forms;
 import se.streamsource.streamflow.web.domain.structure.label.Labels;
@@ -49,6 +51,8 @@ public interface Organization
       AccessPoints,
       ProxyUsers,
       Attachments,
-      SelectedTemplate
+      DefaultPdfTemplate,
+      FormPdfTemplate,
+      CasePdfTemplate
 {
 }

@@ -21,13 +21,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.qi4j.api.common.Visibility;
-import org.qi4j.api.concern.ConcernOf;
-import org.qi4j.api.concern.GenericConcern;
 import org.qi4j.api.structure.Application;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
-import org.qi4j.cache.ehcache.EhCachePoolService;
 import org.qi4j.entitystore.jdbm.JdbmEntityStoreService;
 import org.qi4j.entitystore.map.StateStore;
 import org.qi4j.entitystore.memory.MemoryEntityStoreService;
@@ -42,10 +39,6 @@ import org.qi4j.migration.MigrationService;
 import org.qi4j.migration.Migrator;
 import org.qi4j.migration.assembly.EntityMigrationOperation;
 import org.qi4j.migration.assembly.MigrationBuilder;
-import org.qi4j.spi.entity.EntityState;
-import org.qi4j.spi.entitystore.EntityStoreSPI;
-import org.qi4j.spi.entitystore.EntityStoreUnitOfWork;
-import org.qi4j.spi.entitystore.StateCommitter;
 import org.qi4j.spi.service.importer.NewObjectImporter;
 import org.qi4j.spi.uuid.UuidIdentityGeneratorService;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
@@ -71,7 +64,6 @@ import se.streamsource.streamflow.web.infrastructure.plugin.contact.ContactLooku
 import se.streamsource.streamflow.web.resource.EventsCommandResult;
 
 import javax.sql.DataSource;
-import java.lang.reflect.Method;
 
 import static org.qi4j.api.service.qualifier.ServiceTags.*;
 import static org.qi4j.bootstrap.ImportedServiceDeclaration.*;
@@ -533,7 +525,15 @@ public class InfrastructureAssembler
 
                      return true;
                   }
-               }).end();
+               }).end().
+               toVersion( "1.2.9.2945" ).
+                  forEntities( "se.streamsource.streamflow.web.domain.entity.organization.AccessPointEntity" ).
+                     renameAssociation( "selectedTemplate", "formPdfTemplate" ).
+                  end().
+                  forEntities( "se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity" ).
+                     renameAssociation( "selectedTemplate", "formPdfTemplate" ).
+                     renameAssociation( "caseTemplate", "casePdfTemplate" ).
+               end();
 
          module.addServices( MigrationService.class ).setMetaInfo( migrationBuilder );
          module.addObjects( MigrationEventLogger.class );

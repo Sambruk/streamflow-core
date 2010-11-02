@@ -134,7 +134,7 @@ public class AccessPointModel extends Observable
       {
          BasicEventList<LinkValue> list = new BasicEventList<LinkValue>();
 
-         LinksValue listValue = client.getSubClient( "template" ).query( "possibletemplates",
+         LinksValue listValue = client.query( "possibleformtemplates",
                getStringValue( "pdf" ), LinksValue.class );
          list.addAll( listValue.links().get() );
 
@@ -148,13 +148,13 @@ public class AccessPointModel extends Observable
 
    public void setTemplate( LinkValue link)
    {
-      client.getSubClient( "template" ).postLink( link );
+      client.postLink( link );
    }
 
    public void removeTemplate()
    {
       ValueBuilder<EntityValue> builder = vbf.newValueBuilder( EntityValue.class );
-      client.getSubClient( "template" ).postCommand( "settemplate", builder.newInstance() );
+      client.postCommand( "setformtemplate", builder.newInstance() );
    }
 
    private StringValue getStringValue( String id )

@@ -32,21 +32,21 @@ import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.util.Refreshable;
-import se.streamsource.streamflow.resource.organization.SelectedTemplateValue;
+import se.streamsource.streamflow.resource.organization.SelectedTemplatesValue;
 
 import java.util.Observable;
 
-public class SelectedTemplateModel extends Observable implements Refreshable
+public class SelectedTemplatesModel extends Observable implements Refreshable
 {
    @Structure
    private ValueBuilderFactory vbf;
 
    private CommandQueryClient client;
 
-   private SelectedTemplateValue value;
+   private SelectedTemplatesValue value;
 
 
-   public SelectedTemplateModel( @Uses CommandQueryClient client )
+   public SelectedTemplatesModel( @Uses CommandQueryClient client )
    {
       this.client = client;
    }
@@ -54,14 +54,14 @@ public class SelectedTemplateModel extends Observable implements Refreshable
    public void refresh()
    {
 
-      SelectedTemplateValue updatedValue = client.query( "selectedtemplate", SelectedTemplateValue.class );
-      value = (SelectedTemplateValue) updatedValue.buildWith().prototype();
+      SelectedTemplatesValue updatedValue = client.query( "selectedtemplates", SelectedTemplatesValue.class );
+      value = (SelectedTemplatesValue) updatedValue.buildWith().prototype();
       
       setChanged();
       notifyObservers();
    }
 
-   public EventList<LinkValue> getPossibleTemplates()
+   public EventList<LinkValue> getPossibleTemplates( String query)
    {
       try
       {
@@ -70,28 +70,7 @@ public class SelectedTemplateModel extends Observable implements Refreshable
          ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
          builder.prototype().string().set( "pdf" );
          
-         LinksValue listValue = client.query( "possibletemplates",
-               builder.newInstance(), LinksValue.class );
-         list.addAll( listValue.links().get() );
-
-         return list;
-      } catch (ResourceException e)
-      {
-         throw new OperationException( WorkspaceResources.could_not_refresh,
-               e );
-      }
-   }
-
-   public EventList<LinkValue> getPossibleCaseTemplates()
-   {
-      try
-      {
-         BasicEventList<LinkValue> list = new BasicEventList<LinkValue>();
-
-         ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
-         builder.prototype().string().set( "pdf" );
-
-         LinksValue listValue = client.query( "possiblecasetemplates",
+         LinksValue listValue = client.query( query,
                builder.newInstance(), LinksValue.class );
          list.addAll( listValue.links().get() );
 
@@ -108,24 +87,13 @@ public class SelectedTemplateModel extends Observable implements Refreshable
       client.postLink(link);
    }
 
-   public void setCaseTemplate( LinkValue link )
-   {
-      client.postLink(link);
-   }
-
-   public void removeTemplate()
+   public void removeTemplate( String command )
    {
       ValueBuilder<EntityValue> builder = vbf.newValueBuilder( EntityValue.class );
-      client.postCommand( "settemplate", builder.newInstance() );
+      client.postCommand( command, builder.newInstance() );
    }
 
-   public void removeCaseTemplate()
-   {
-      ValueBuilder<EntityValue> builder = vbf.newValueBuilder( EntityValue.class );
-      client.postCommand( "setcasetemplate", builder.newInstance() );
-   }
-
-   public SelectedTemplateValue getSelectedTemplateValue()
+   public SelectedTemplatesValue getSelectedTemplatesValue()
    {
       return value;
    }

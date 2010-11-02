@@ -17,13 +17,6 @@
 
 package se.streamsource.streamflow.web.context.surface.accesspoints.endusers.submittedforms;
 
-import static se.streamsource.dci.api.RoleMap.role;
-
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.URISyntaxException;
-import java.util.Locale;
-
 import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.pdfwriter.COSWriter;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -33,14 +26,21 @@ import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.restlet.data.Disposition;
 import org.restlet.data.MediaType;
 import org.restlet.representation.OutputRepresentation;
-
 import se.streamsource.streamflow.domain.form.SubmittedFormValue;
 import se.streamsource.streamflow.web.application.pdf.SubmittedFormPdfGenerator;
 import se.streamsource.streamflow.web.domain.interaction.gtd.CompletableId;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
-import se.streamsource.streamflow.web.domain.structure.attachment.SelectedTemplate;
+import se.streamsource.streamflow.web.domain.structure.attachment.DefaultPdfTemplate;
+import se.streamsource.streamflow.web.domain.structure.attachment.FormPdfTemplate;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
 import se.streamsource.streamflow.web.domain.structure.user.ProxyUser;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.URISyntaxException;
+import java.util.Locale;
+
+import static se.streamsource.dci.api.RoleMap.*;
 
 /**
  * JAVADOC
@@ -59,13 +59,18 @@ public class SurfaceSubmittedFormContext
 
       Locale locale = role(Locale.class);
 
-      SelectedTemplate.Data selectedTemplate = role(SelectedTemplate.Data.class);
-      AttachedFile.Data template = (AttachedFile.Data) selectedTemplate.selectedTemplate().get();
+      FormPdfTemplate.Data selectedTemplate = role( FormPdfTemplate.Data.class);
+      AttachedFile.Data template = (AttachedFile.Data) selectedTemplate.formPdfTemplate().get();
 
       if (template == null)
       {
          ProxyUser proxyUser = role(ProxyUser.class);
-         template = (AttachedFile.Data) ((SelectedTemplate.Data) proxyUser.organization().get()).selectedTemplate().get();
+         template = (AttachedFile.Data) ((FormPdfTemplate.Data) proxyUser.organization().get()).formPdfTemplate().get();
+
+         if( template == null)
+         {
+            template = (AttachedFile.Data) ((DefaultPdfTemplate.Data) proxyUser.organization().get()).defaultPdfTemplate().get();
+         }
       }
       String uri = null;
       if (template != null)

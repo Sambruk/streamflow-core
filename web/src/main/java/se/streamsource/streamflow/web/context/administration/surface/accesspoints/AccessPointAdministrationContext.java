@@ -38,7 +38,8 @@ import se.streamsource.streamflow.web.domain.entity.organization.OrganizationQue
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationVisitor;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
-import se.streamsource.streamflow.web.domain.structure.attachment.SelectedTemplate;
+import se.streamsource.streamflow.web.domain.structure.attachment.Attachments;
+import se.streamsource.streamflow.web.domain.structure.attachment.FormPdfTemplate;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.SelectedCaseTypes;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
@@ -47,12 +48,15 @@ import se.streamsource.streamflow.web.domain.structure.label.Labelable;
 import se.streamsource.streamflow.web.domain.structure.organization.AccessPoint;
 import se.streamsource.streamflow.web.domain.structure.organization.AccessPointSettings;
 import se.streamsource.streamflow.web.domain.structure.organization.AccessPoints;
+import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnits;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.project.Projects;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static se.streamsource.dci.api.RoleMap.*;
 
 /**
  * JAVADOC
@@ -77,6 +81,10 @@ public interface AccessPointAdministrationContext
 
    void setform( EntityValue id );
 
+   List<Attachment> possibleformtemplates( StringValue extensionFilter );
+
+   void setformtemplate( EntityValue id );
+
    abstract class Mixin
          implements AccessPointAdministrationContext
    {
@@ -91,7 +99,7 @@ public interface AccessPointAdministrationContext
          AccessPointSettings.Data accessPointData = RoleMap.role( AccessPointSettings.Data.class );
          SelectedForms.Data forms = RoleMap.role( SelectedForms.Data.class );
          Labelable.Data labelsData = RoleMap.role( Labelable.Data.class );
-         SelectedTemplate.Data template = RoleMap.role( SelectedTemplate.Data.class );
+         FormPdfTemplate.Data template = RoleMap.role( FormPdfTemplate.Data.class );
 
          builder.prototype().accessPoint().set( createLinkValue( accessPoint ) );
          if (accessPointData.project().get() != null)
@@ -102,9 +110,9 @@ public interface AccessPointAdministrationContext
          if (forms.selectedForms().toList().size() > 0)
             builder.prototype().form().set( createLinkValue( forms.selectedForms().toList().get( 0 ) ) );
 
-         if (template.selectedTemplate().get() != null)
+         if (template.formPdfTemplate().get() != null)
          {
-            Attachment attachment = template.selectedTemplate().get();
+            Attachment attachment = template.formPdfTemplate().get();
             ValueBuilder<LinkValue> linkBuilder = module.valueBuilderFactory().newValueBuilder( LinkValue.class );
             EntityReference ref = EntityReference.getEntityReference( attachment );
             linkBuilder.prototype().text().set( ((AttachedFile.Data) attachment).name().get() );
@@ -245,6 +253,41 @@ public interface AccessPointAdministrationContext
          Form form = module.unitOfWorkFactory().currentUnitOfWork().get( Form.class, id.entity().get() );
 
          forms.addSelectedForm( form );
+      }
+
+      public List<Attachment> possibleformtemplates( final StringValue extensionFilter )
+      {
+         final List<Attachment> possibleFormPdfTemplates = new ArrayList<Attachment>();
+         OrganizationQueries organizationQueries = RoleMap.role( OrganizationQueries.class );
+         final FormPdfTemplate.Data accessPoint = RoleMap.role( FormPdfTemplate.Data.class );
+
+         organizationQueries.visitOrganization( new OrganizationVisitor()
+         {
+            @Override
+            public boolean visitOrganization( Organization org )
+            {
+               List<Attachment> allAttachments = ((Attachments.Data) org).attachments().toList();
+               for (Attachment attachment : allAttachments)
+               {
+                  if (!attachment.equals( accessPoint.formPdfTemplate().get() )
+                        && ((AttachedFile.Data) attachment).mimeType().get().endsWith( extensionFilter.string().get() ))
+                  {
+                     possibleFormPdfTemplates.add( attachment );
+                  }
+               }
+
+               return true;
+            }
+         }, new OrganizationQueries.ClassSpecification( Organization.class ) );
+
+         return possibleFormPdfTemplates;
+      }
+
+      public void setformtemplate( EntityValue id )
+      {
+         FormPdfTemplate accessPoint = role( FormPdfTemplate.class );
+
+         accessPoint.setFormPdfTemplate( id.entity().get() == null ? null : module.unitOfWorkFactory().currentUnitOfWork().get( Attachment.class, id.entity().get() ));
       }
    }
 }

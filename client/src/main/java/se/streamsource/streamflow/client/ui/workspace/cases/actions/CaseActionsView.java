@@ -396,7 +396,7 @@ public class CaseActionsView extends JPanel
          {
             try
             {
-               desktop.print( file );
+               desktop.open( file );
             } catch (IOException e1)
             {
                dialogs.showMessageDialog( CaseActionsView.this, i18n.text( WorkspaceResources.could_not_print ), "" );
