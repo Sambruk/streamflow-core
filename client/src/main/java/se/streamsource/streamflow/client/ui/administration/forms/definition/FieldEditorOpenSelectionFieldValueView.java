@@ -26,9 +26,9 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.util.StateBinder;
 import se.streamsource.streamflow.client.util.i18n;
-import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
 import se.streamsource.streamflow.domain.form.OpenSelectionFieldValue;
 
@@ -96,7 +96,9 @@ public class FieldEditorOpenSelectionFieldValueView
       formBuilder.add( fieldDefinitionBinder.bind( TEXTFIELD.newField(), fieldDefinitionTemplate.fieldId() ) );
       formBuilder.nextLine();
 
-      formBuilder.add( new JLabel( i18n.text( AdministrationResources.open_selection_name )));
+      JLabel openSelectionLabel = new JLabel( i18n.text( AdministrationResources.openselection ));
+      openSelectionLabel.setToolTipText( i18n.text( AdministrationResources.openselection ) );
+      formBuilder.add( openSelectionLabel );
       formBuilder.nextColumn( 2 );
       formBuilder.add( fieldValueBinder.bind( TEXTFIELD.newField(), fieldValueTemplate.openSelectionName()) );
 

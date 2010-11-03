@@ -217,7 +217,6 @@ public enum AdministrationResources
    hint_label,
    regularexpression_label,
    field_id_label,
-   open_selection_name,
    templates_tab,
    cols_label,
    forminfo_tab,
