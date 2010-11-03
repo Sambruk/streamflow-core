@@ -249,10 +249,13 @@ public interface AccessPointAdministrationContext
             forms.removeSelectedForm( f );
          }
 
-         // add the last selected from
-         Form form = module.unitOfWorkFactory().currentUnitOfWork().get( Form.class, id.entity().get() );
+         // if not null, add the last selected from
+         if (id.entity().get() != null)
+         {
+            Form form = module.unitOfWorkFactory().currentUnitOfWork().get( Form.class, id.entity().get() );
 
-         forms.addSelectedForm( form );
+            forms.addSelectedForm( form );
+         }
       }
 
       public List<Attachment> possibleformtemplates( final StringValue extensionFilter )
@@ -287,7 +290,7 @@ public interface AccessPointAdministrationContext
       {
          FormPdfTemplate accessPoint = role( FormPdfTemplate.class );
 
-         accessPoint.setFormPdfTemplate( id.entity().get() == null ? null : module.unitOfWorkFactory().currentUnitOfWork().get( Attachment.class, id.entity().get() ));
+         accessPoint.setFormPdfTemplate( id.entity().get() == null ? null : module.unitOfWorkFactory().currentUnitOfWork().get( Attachment.class, id.entity().get() ) );
       }
    }
 }

@@ -148,13 +148,14 @@ public class AccessPointModel extends Observable
 
    public void setTemplate( LinkValue link)
    {
-      client.postLink( link );
-   }
-
-   public void removeTemplate()
-   {
-      ValueBuilder<EntityValue> builder = vbf.newValueBuilder( EntityValue.class );
-      client.postCommand( "setformtemplate", builder.newInstance() );
+      if( link != null )
+      {
+         client.postLink( link );
+      } else
+      {
+         ValueBuilder<EntityValue> builder = vbf.newValueBuilder( EntityValue.class );
+         client.postCommand( "setformtemplate", builder.newInstance() );
+      }
    }
 
    private StringValue getStringValue( String id )

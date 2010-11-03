@@ -347,7 +347,7 @@ public class AccessPointView
                public void command()
                      throws Exception
                {
-                  model.removeTemplate();
+                  model.setTemplate( null );
                }
             }.execute();
          }

@@ -45,6 +45,22 @@ public class AccessPointAdministrationResource
             newLinks());
    }
 
+   public void possiblecasetypes() throws Throwable
+   {
+      result(new LinksBuilder(module.valueBuilderFactory()).
+            command( "setcasetype" ).
+            addDescribables( (Iterable<? extends Describable>) invoke() ).
+            newLinks());
+   }
+
+   public void possibleforms() throws Throwable
+   {
+      result(new LinksBuilder(module.valueBuilderFactory()).
+            command( "setform" ).
+            addDescribables( (Iterable<? extends Describable>) invoke() ).
+            newLinks());
+   }
+
    public void possibleformtemplates() throws Throwable
    {
       LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() ).command( "setformtemplate" );
