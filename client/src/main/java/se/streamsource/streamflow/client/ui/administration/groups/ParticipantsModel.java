@@ -27,6 +27,6 @@ public class ParticipantsModel
 {
    public ParticipantsModel()
    {
-      super( "" );
+      super( "possibleusers" );
    }
 }

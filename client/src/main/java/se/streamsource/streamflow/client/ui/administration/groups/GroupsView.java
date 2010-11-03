@@ -28,22 +28,21 @@ import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.client.StreamflowResources;
-import se.streamsource.streamflow.client.util.dialog.DialogService;
-import se.streamsource.streamflow.client.util.RefreshWhenVisible;
-import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
-import se.streamsource.streamflow.client.util.i18n;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.ListDetailView;
+import se.streamsource.streamflow.client.util.RefreshWhenVisible;
+import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.NameDialog;
-import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
-import se.streamsource.streamflow.client.ui.administration.surface.AccessPointView;
+import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.util.Strings;
 
-import javax.swing.ActionMap;
-import java.awt.Component;
+import javax.swing.*;
+import java.awt.*;
 
-import static se.streamsource.streamflow.client.util.i18n.*;
+import static se.streamsource.streamflow.client.util.i18n.text;
 
 /**
  * JAVADOC
@@ -73,8 +72,8 @@ public class GroupsView
       {
          public Component createDetail( LinkValue detailLink )
          {
-            CommandQueryClient caseTypeClient = client.getClient( detailLink );
-            return obf.newObjectBuilder( AccessPointView.class ).use( caseTypeClient).newInstance();
+            CommandQueryClient participantsClient = client.getClient( detailLink ).getSubClient( "participants" );
+            return obf.newObjectBuilder( ParticipantsView.class ).use( participantsClient).newInstance();
          }
       });
 
