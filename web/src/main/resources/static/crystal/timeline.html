@@ -1,0 +1,140 @@
+<html>
+<head>
+    <title>Streamflow Timeline</title>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/>
+    <link rel='stylesheet' href='timeline.css' type='text/css' />
+    <script src="http://static.simile.mit.edu/timeline/api-2.3.0/timeline-api.js?bundle=true"
+            type="text/javascript"></script>
+
+    <script type="text/javascript">
+    var tl;
+     function onLoad() {
+        var eventSource = new Timeline.DefaultEventSource();
+
+        var theme = Timeline.ClassicTheme.create(); // create the theme
+                    theme.event.bubble.width = 350;   // modify it
+                    theme.event.bubble.height = 300;
+                    theme.event.track.height = 15;
+                    theme.event.tape.height = 8;
+
+       var bandInfos = [
+         Timeline.createBandInfo({
+             eventSource:    eventSource,
+             width:          "70%",
+             intervalUnit:   Timeline.DateTime.HOUR,
+             intervalPixels: 1000,
+             theme: theme
+         }),
+         Timeline.createBandInfo({
+             eventSource:    eventSource,
+             width:          "30%",
+             intervalUnit:   Timeline.DateTime.DAY,
+             intervalPixels: 400,
+             theme: theme
+         })
+       ];
+
+        bandInfos[1].syncWith = 0;
+        bandInfos[1].highlight = true;
+
+       tl = Timeline.create(document.getElementById("my-timeline"), bandInfos);
+       tl.loadJSON("/streamflow/crystal/timeline.json", function(json, url)
+       {
+          eventSource.loadJSON(json, url);
+
+          tl.finishedEventLoading();
+
+          if (eventSource.getCount() > 0)
+          {
+              // Add decorators to visualize when events start and end
+              addLimitDecorators();
+    
+              // Center the timeline on the next event
+              centerOnNextEvent();
+
+              // Apparently, we need another call to finishedEventLoading
+              tl.finishedEventLoading();
+          }
+       });
+    }
+
+     var resizeTimerID = null;
+     function onResize() {
+         if (resizeTimerID == null) {
+             resizeTimerID = window.setTimeout(function() {
+                 resizeTimerID = null;
+                 tl.layout();
+             }, 500);
+         }
+     }
+
+    // Adds decorators to the timeline to visualize when events start and end
+     function addLimitDecorators() {
+       var es = tl.getBand(0).getEventSource();
+
+       if (es.getCount() > 0) {
+         // Create decorators, so the end of the events is visible
+         // This uses some "private" band variables... apparently adding decorators
+         // after creating the timeline is not officially supported?
+         var negativeInfinity = new Date(-4000, 0, 0);
+         var positiveInfinity = new Date( 4000, 0, 0);
+         var eventsStart = es.getEarliestDate().valueOf() - 3 * 24 * 60 * 60 * 1000;
+         var eventsStop  = es.getLatestDate().valueOf()   + 3 * 24 * 60 * 60 * 1000;
+         var beforeEventsDecorator;
+         var afterEventsDecorator;
+         for (var i = 0; i < tl.getBandCount(); ++i) {
+           beforeEventsDecorator = new Timeline.SpanHighlightDecorator({
+             startDate: negativeInfinity,
+             endDate: eventsStart,
+             color: "#ffc080",
+             opacity: 50
+           });
+           beforeEventsDecorator.initialize(tl.getBand(i), this);
+
+           afterEventsDecorator = new Timeline.SpanHighlightDecorator({
+             startDate: eventsStop,
+             endDate: positiveInfinity,
+             color: "#ffc080",
+             opacity: 50
+           });
+           afterEventsDecorator.initialize(tl.getBand(i), this);
+
+           tl.getBand(i)._decorators.push(beforeEventsDecorator);
+           tl.getBand(i)._decorators.push(afterEventsDecorator);
+         }
+
+         // Set timeline beginning and end, so we cannot scroll past the region where
+         // events are defined.
+         tl.timeline_start = eventsStart;
+         tl.timeline_stop = eventsStop;
+       }
+     }
+
+     // Centers the timeline on the upcoming event
+     function centerOnNextEvent() {
+       var es = tl.getBand(0).getEventSource();
+       if (es.getCount() > 0) {
+         var nextEvent = null;
+         var today = new Date();
+         if (today >= es.getLatestDate()) {
+           // substract one millisecond from the latest date, so we have at least
+           // one event in our interval
+           today = es.getLatestDate().valueOf() - 1;
+         }
+         var it = es.getEventIterator(today, es.getLatestDate());
+         nextEvent = it.next();
+         tl.getBand(0).setCenterVisibleDate(nextEvent.getStart());
+       }
+     }
+
+    </script>
+</head>
+<body onload="onLoad();" onresize="onResize();">
+<div id="my-timeline" style="height: 700px; border: 1px solid #aaa"></div>
+<noscript>
+    This page uses Javascript to show you a Timeline. Please enable Javascript in your browser to see the full page.
+    Thank you.
+</noscript>
+
+</body>
+</html>
