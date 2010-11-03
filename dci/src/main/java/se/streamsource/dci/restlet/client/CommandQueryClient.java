@@ -31,14 +31,7 @@ import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Uniform;
-import org.restlet.data.CharacterSet;
-import org.restlet.data.ClientInfo;
-import org.restlet.data.MediaType;
-import org.restlet.data.Method;
-import org.restlet.data.Preference;
-import org.restlet.data.Reference;
-import org.restlet.data.Status;
-import org.restlet.data.Tag;
+import org.restlet.data.*;
 import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.ObjectRepresentation;
 import org.restlet.representation.Representation;
@@ -49,10 +42,7 @@ import se.streamsource.dci.value.ResourceValue;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Base class for client-side Command/Query resources
@@ -274,6 +264,7 @@ public class CommandQueryClient
       Request request = new Request( Method.GET, ref );
       ClientInfo info = new ClientInfo();
       info.setAcceptedMediaTypes( Collections.singletonList( new Preference<MediaType>( MediaType.APPLICATION_JSON ) ) );
+      info.setAcceptedLanguages( Collections.singletonList( new Preference<Language>(new Language( Locale.getDefault().getLanguage()) )));
       request.setClientInfo( info );
 
       Response response = new Response( request );
