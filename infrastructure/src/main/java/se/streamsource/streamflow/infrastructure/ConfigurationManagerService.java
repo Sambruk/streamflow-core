@@ -90,6 +90,10 @@ public interface ConfigurationManagerService
                {
                   String propertyName = propertyType.qualifiedName().name();
                   String type = propertyType.type().type().name();
+                  if (propertyType.type().isEnum())
+                  {
+                     type = String.class.getName();
+                  }
                   attributes.add( new MBeanAttributeInfo( propertyName, type, propertyName, true, true, type.equals( "java.lang.Boolean" ) ) );
                   properties.put( propertyName, propertyType.qualifiedName() );
                }
@@ -141,7 +145,12 @@ public interface ConfigurationManagerService
                EntityStateHolder state = spi.getState( (EntityComposite) configuration );
                QualifiedName qualifiedName = propertyNames.get( name );
                Property<Object> property = state.getProperty( qualifiedName );
-               return property.get();
+               Object object = property.get();
+               if(object instanceof Enum)
+               {
+                  object = object.toString();
+               }
+               return object;
             } catch (Exception ex)
             {
                throw new ReflectionException( ex, "Could not get attribute " + name );
