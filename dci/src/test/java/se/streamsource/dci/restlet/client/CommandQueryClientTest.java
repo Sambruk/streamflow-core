@@ -17,7 +17,6 @@
 
 package se.streamsource.dci.restlet.client;
 
-import org.apache.velocity.app.VelocityEngine;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,38 +35,18 @@ import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.api.value.ValueComposite;
-import org.qi4j.bootstrap.ApplicationAssembler;
-import org.qi4j.bootstrap.ApplicationAssembly;
-import org.qi4j.bootstrap.ApplicationAssemblyFactory;
-import org.qi4j.bootstrap.AssemblyException;
-import org.qi4j.bootstrap.ModuleAssembly;
+import org.qi4j.bootstrap.*;
 import org.qi4j.spi.service.importer.NewObjectImporter;
 import org.qi4j.spi.structure.ApplicationModelSPI;
 import org.qi4j.test.AbstractQi4jTest;
-import org.restlet.Client;
-import org.restlet.Request;
-import org.restlet.Response;
-import org.restlet.Server;
-import org.restlet.Uniform;
+import org.restlet.*;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.resource.ResourceException;
 import org.restlet.service.MetadataService;
-import se.streamsource.dci.api.DeleteContext;
-import se.streamsource.dci.api.InteractionConstraintsService;
-import se.streamsource.dci.api.RequiresRoles;
-import se.streamsource.dci.api.Role;
-import se.streamsource.dci.api.RoleMap;
+import se.streamsource.dci.api.*;
 import se.streamsource.dci.qi4j.RoleInjectionProviderFactory;
-import se.streamsource.dci.restlet.server.CommandQueryResource;
-import se.streamsource.dci.restlet.server.CommandQueryRestlet2;
-import se.streamsource.dci.restlet.server.CommandResult;
-import se.streamsource.dci.restlet.server.DefaultResponseWriterFactory;
-import se.streamsource.dci.restlet.server.NullCommandResult;
-import se.streamsource.dci.restlet.server.ResponseWriterFactory;
-import se.streamsource.dci.restlet.server.SubResource;
-import se.streamsource.dci.restlet.server.SubResources;
-import se.streamsource.dci.value.ContextValue;
+import se.streamsource.dci.restlet.server.*;
 import se.streamsource.dci.value.ResourceValue;
 import se.streamsource.dci.value.StringValue;
 
@@ -76,9 +55,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
-import static org.qi4j.bootstrap.ImportedServiceDeclaration.*;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertThat;
+import static org.qi4j.bootstrap.ImportedServiceDeclaration.NEW_OBJECT;
 
 /**
  * Test for CommandQueryClient
@@ -121,16 +100,15 @@ public class CommandQueryClientTest
 
       module.addObjects( CommandQueryClient.class );
 
-      module.addValues( ContextValue.class, ResourceValue.class );
 
-      module.addValues( TestQuery.class, TestResult.class, TestCommand.class, StringValue.class );
+      module.addValues( TestQuery.class, TestResult.class, TestCommand.class );
       module.forMixin( TestQuery.class ).declareDefaults().abc().set( "def" );
 
-      module.addObjects( DefaultResponseWriterFactory.class,
-            NullCommandResult.class );
-      module.importServices( VelocityEngine.class, CommandResult.class, ResponseWriterFactory.class ).importedBy( NEW_OBJECT );
-      module.addObjects( VelocityEngine.class,
-            RootRestlet.class );
+      new DCIAssembler().assemble( module );
+
+      module.addObjects(NullCommandResult.class );
+      module.importServices(CommandResult.class).importedBy( NEW_OBJECT );
+      module.addObjects(RootRestlet.class );
 
       module.importServices( InteractionConstraintsService.class ).
             importedBy( NewObjectImporter.class ).

@@ -93,7 +93,7 @@ public class CommandQueryResource
 
    private
    @Service
-   ResponseWriterFactory responseWriterFactory;
+   ResultWriter resultWriter;
 
    private
    @Service
@@ -145,7 +145,7 @@ public class CommandQueryResource
          SubResources subResources = (SubResources) this;
          try
          {
-            subResources.resource( URLDecoder.decode( segment, "UTF-8") );
+            subResources.resource( URLDecoder.decode( segment, "UTF-8" ) );
          } catch (UnsupportedEncodingException e)
          {
             subResources.resource( segment );
@@ -266,8 +266,7 @@ public class CommandQueryResource
 
          try
          {
-            ResponseWriter writer = responseWriterFactory.createWriter( request.getResourceRef().getRelativeRef().getSegments(), ResourceValue.class, roleMap, getVariant( request ) );
-            writer.write( builder.newInstance(), request, response );
+            resultWriter.write( builder.newInstance(), response );
          } catch (Throwable e)
          {
             handleException( response, e );
@@ -305,8 +304,10 @@ public class CommandQueryResource
    {
       if (resultValue != null)
       {
-         ResponseWriter writer = responseWriterFactory.createWriter( request.getResourceRef().getRelativeRef().getSegments(), resultValue.getClass(), RoleMap.current(), getVariant( request ) );
-         writer.write( resultValue, request, response );
+         if (!resultWriter.write( resultValue, response ))
+         {
+            throw new ResourceException( Status.SERVER_ERROR_INTERNAL, "No result writer for type " + resultValue.getClass().getName() );
+         }
       }
    }
 
@@ -480,7 +481,7 @@ public class CommandQueryResource
 
          // Check if this is a request to show the form for this interaction
          if ((request.getMethod().isSafe() && contextMethod.getParameterTypes().length != 0 && request.getResourceRef().getQuery() == null) ||
-               (!request.getMethod().isSafe() && contextMethod.getParameterTypes().length != 0 && request.getEntity() == null))
+               (!request.getMethod().isSafe() && contextMethod.getParameterTypes().length != 0 && !(request.getEntity().isAvailable() || request.getResourceRef().getQuery() != null)))
          {
             // Show form
             try
@@ -542,9 +543,9 @@ public class CommandQueryResource
                   Object result = invoke( segment );
                   if (result instanceof Representation)
                   {
-                     response.setEntity( (Representation) result);
+                     response.setEntity( (Representation) result );
                   } else
-                     result(convert( result ));
+                     result( convert( result ) );
                } catch (Throwable throwable)
                {
                   handleException( response, throwable );
@@ -594,11 +595,11 @@ public class CommandQueryResource
       Form queryAsForm = request.getResourceRef().getQueryAsForm();
       Form entityAsForm = null;
       Representation representation = request.getEntity();
-      if (representation != null && !EmptyRepresentation.class.isInstance( representation))
+      if (representation != null && !EmptyRepresentation.class.isInstance( representation ))
       {
-          entityAsForm = new Form(representation);
+         entityAsForm = new Form( representation );
       } else
-        entityAsForm = new Form();
+         entityAsForm = new Form();
 
       if (queryAsForm.isEmpty() && entityAsForm.isEmpty())
       {
@@ -625,7 +626,7 @@ public class CommandQueryResource
          for (Annotation[] annotations : method.getParameterAnnotations())
          {
             Name name = first( isType( Name.class ), annotations );
-            Object arg = getValue(name.value(), queryAsForm, entityAsForm);
+            Object arg = getValue( name.value(), queryAsForm, entityAsForm );
 
             // Parameter conversion
             if (method.getParameterTypes()[idx].equals( EntityReference.class ))
@@ -652,7 +653,8 @@ public class CommandQueryResource
          {
             return new Object[]{response};
          }
-         MediaType type = request.getEntity().getMediaType();
+         Representation representation = request.getEntity();
+         MediaType type = representation.getMediaType();
          if (type == null)
          {
             Form queryAsForm = request.getResourceRef().getQueryAsForm( CharacterSet.UTF_8 );
@@ -663,11 +665,11 @@ public class CommandQueryResource
             if (method.getParameterTypes()[0].equals( Representation.class ))
             {
                // Command method takes Representation as input
-               return new Object[]{request.getEntity()};
+               return new Object[]{representation};
             } else if (method.getParameterTypes()[0].equals( Form.class ))
             {
                // Command method takes Form as input
-               return new Object[]{new Form( request.getEntity() )};
+               return new Object[]{new Form( representation )};
             } else
             {
                // Need to parse input into ValueComposite
@@ -689,9 +691,15 @@ public class CommandQueryResource
                   return args;
                } else if (type.equals( (MediaType.APPLICATION_WWW_FORM) ))
                {
-                   
+
                   Form queryAsForm = request.getResourceRef().getQueryAsForm();
-                  Form entityAsForm = new Form( request.getEntity() );
+                  Form entityAsForm;
+                  if (representation != null && !EmptyRepresentation.class.isInstance( representation ) && representation.isAvailable())
+                  {
+                     entityAsForm = new Form( representation );
+                  } else
+                     entityAsForm = new Form();
+
                   Class<?> valueType = method.getParameterTypes()[0];
                   args[0] = getValueFromForm( (Class<ValueComposite>) valueType, queryAsForm, entityAsForm );
                   return args;
@@ -729,7 +737,7 @@ public class CommandQueryResource
                Parameter param = queryAsForm.getFirst( propertyType.qualifiedName().name() );
 
                if (param == null)
-                  param = entityAsForm.getFirst(propertyType.qualifiedName().name());
+                  param = entityAsForm.getFirst( propertyType.qualifiedName().name() );
 
                if (param != null)
                {
@@ -814,11 +822,11 @@ public class CommandQueryResource
       }
    }
 
-    private String getValue(String name, Form queryAsForm, Form entityAsForm)
-    {
-        String value = queryAsForm.getFirstValue( name );
-        if (value == null)
-            value = entityAsForm.getFirstValue( name );
-        return value;
-    }
+   private String getValue( String name, Form queryAsForm, Form entityAsForm )
+   {
+      String value = queryAsForm.getFirstValue( name );
+      if (value == null)
+         value = entityAsForm.getFirstValue( name );
+      return value;
+   }
 }

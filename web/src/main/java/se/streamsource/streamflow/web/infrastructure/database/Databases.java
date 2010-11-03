@@ -17,9 +17,12 @@
 
 package se.streamsource.streamflow.web.infrastructure.database;
 
+import se.streamsource.streamflow.util.Visitor;
+
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
@@ -73,8 +76,52 @@ public class Databases
       }
    }
 
+   public void query(String sql, ResultSetVisitor visitor) throws SQLException
+   {
+      query(sql, null, visitor);
+   }
+
+   public  void query(String sql, StatementVisitor statement, ResultSetVisitor resultsetVisitor) throws SQLException
+   {
+      Connection connection = source.getConnection();
+      try
+      {
+         PreparedStatement stmt = connection.prepareStatement( sql);
+         if (statement != null)
+            statement.visit( stmt );
+         try
+         {
+            ResultSet resultSet = stmt.executeQuery();
+            try
+            {
+               while (resultSet.next())
+               {
+                  if (!resultsetVisitor.visit( resultSet ))
+                     return;
+               }
+            } finally
+            {
+               resultSet.close();
+            }
+         } finally
+         {
+            stmt.close();
+         }
+      } finally
+      {
+         connection.close();
+      }
+   }
+
    public interface StatementVisitor
    {
-      void visit(PreparedStatement statement) throws SQLException;
+      void visit( PreparedStatement preparedStatement)
+         throws SQLException;
+   }
+
+   public interface ResultSetVisitor
+      extends Visitor<ResultSet, SQLException>
+   {
+
    }
 }

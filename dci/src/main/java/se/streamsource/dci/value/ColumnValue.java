@@ -16,18 +16,16 @@
 
 package se.streamsource.dci.value;
 
-import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
 
-import java.util.List;
-
 /**
- * A single row in a table.
+ * JAVADOC
  */
-public interface RowValue
+public interface ColumnValue
    extends ValueComposite
 {
-   @UseDefaults
-   Property<List<CellValue>> cells();
+   Property<String> id();
+   Property<String> label();
+   Property<String> columnType();
 }

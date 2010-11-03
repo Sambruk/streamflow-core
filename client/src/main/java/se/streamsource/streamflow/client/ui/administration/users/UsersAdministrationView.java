@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.client.ui.administration.users;
 
+import ca.odell.glazedlists.gui.AdvancedTableFormat;
 import ca.odell.glazedlists.gui.TableFormat;
 import ca.odell.glazedlists.gui.WritableTableFormat;
 import ca.odell.glazedlists.swing.EventJXTableModel;
@@ -30,24 +31,24 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.FileNameExtensionFilter;
 import se.streamsource.streamflow.client.util.RefreshWhenVisible;
 import se.streamsource.streamflow.client.util.SelectionActionEnabler;
-import se.streamsource.streamflow.client.util.CommandTask;
-import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
+import se.streamsource.streamflow.infrastructure.event.source.helper.Events;
 import se.streamsource.streamflow.resource.user.UserEntityValue;
 
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import java.awt.BorderLayout;
+import javax.swing.*;
+import java.awt.*;
+import java.util.Comparator;
 
-import static se.streamsource.streamflow.client.util.i18n.*;
+import static se.streamsource.streamflow.client.util.i18n.text;
 
 public class UsersAdministrationView
       extends JPanel
@@ -74,43 +75,7 @@ public class UsersAdministrationView
 
       this.model = obf.newObjectBuilder( UsersAdministrationModel.class ).use( client ).newInstance();
 
-      TableFormat<UserEntityValue> userAdminTableFormat = new WritableTableFormat<UserEntityValue>()
-      {
-         public boolean isEditable( UserEntityValue userEntityDTO, int i )
-         {
-            return i == 0;
-         }
-
-         public UserEntityValue setColumnValue( UserEntityValue userEntityDTO, Object o, int i )
-         {
-            if (i == 0)
-               model.changeDisabled( userEntityDTO );
-
-            return userEntityDTO;
-         }
-
-         public int getColumnCount()
-         {
-            return 2;
-         }
-
-         public String getColumnName( int i )
-         {
-            return new String[]{text( AdministrationResources.user_enabled_label ), text( AdministrationResources.username_label )}[i];
-         }
-
-         public Object getColumnValue( UserEntityValue userEntityDTO, int i )
-         {
-            switch (i)
-            {
-               case 0:
-                  return userEntityDTO.disabled().get();
-               case 1:
-                  return userEntityDTO.text().get();
-            }
-            return null;
-         }
-      };
+      TableFormat<UserEntityValue> userAdminTableFormat = new UserAdminTableFormat();
 
       tableModel = new EventJXTableModel<UserEntityValue>( model.getEventList(), userAdminTableFormat );
 
@@ -211,6 +176,68 @@ public class UsersAdministrationView
 
    public void notifyTransactions( Iterable<TransactionEvents> transactions )
    {
-      model.refresh();
+      if (!Events.matches( Events.withNames("changedEnabled" ), transactions))
+         model.refresh();
+   }
+
+   private class UserAdminTableFormat
+      implements AdvancedTableFormat<UserEntityValue>, WritableTableFormat<UserEntityValue>
+   {
+      public boolean isEditable( UserEntityValue userEntityDTO, int i )
+      {
+         return i == 0;
+      }
+
+      public UserEntityValue setColumnValue( final UserEntityValue userEntityDTO, Object o, int i )
+      {
+         if (i == 0)
+         {
+            new CommandTask()
+            {
+               @Override
+               protected void command() throws Exception
+               {
+                  model.changeDisabled( userEntityDTO );
+               }
+            }.execute();
+         }
+
+         ValueBuilder<UserEntityValue> builder = userEntityDTO.buildWith();
+         builder.prototype().disabled().set(!builder.prototype().disabled().get());
+
+         return builder.newInstance();
+      }
+
+      public int getColumnCount()
+      {
+         return 2;
+      }
+
+      public String getColumnName( int i )
+      {
+         return new String[]{text( AdministrationResources.user_enabled_label ), text( AdministrationResources.username_label )}[i];
+      }
+
+      public Object getColumnValue( UserEntityValue userEntityDTO, int i )
+      {
+         switch (i)
+         {
+            case 0:
+               return !userEntityDTO.disabled().get();
+            case 1:
+               return userEntityDTO.text().get();
+         }
+         return null;
+      }
+
+      public Class getColumnClass( int column )
+      {
+         return column == 0 ? Boolean.class : Object.class;
+      }
+
+      public Comparator getColumnComparator( int column )
+      {
+         return null;
+      }
    }
 }

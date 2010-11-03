@@ -29,5 +29,8 @@ public interface TableValue
       extends ValueComposite
 {
    @UseDefaults
-   Property<List<RowValue>> table();
+   Property<List<ColumnValue>> columns();
+
+   @UseDefaults
+   Property<List<RowValue>> rows();
 }

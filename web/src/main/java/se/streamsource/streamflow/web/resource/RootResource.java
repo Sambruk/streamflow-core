@@ -21,6 +21,7 @@ import se.streamsource.dci.restlet.server.SubResource;
 import se.streamsource.streamflow.web.domain.entity.user.UsersEntity;
 import se.streamsource.streamflow.web.resource.account.AccountResource;
 import se.streamsource.streamflow.web.resource.administration.AdministrationResource;
+import se.streamsource.streamflow.web.resource.crystal.CrystalResource;
 import se.streamsource.streamflow.web.resource.overview.OverviewResource;
 import se.streamsource.streamflow.web.resource.surface.SurfaceResource;
 import se.streamsource.streamflow.web.resource.workspace.WorkspaceResource;
@@ -63,37 +64,9 @@ public class RootResource
       subResource( SurfaceResource.class );
    }
 
-/*
-@SubResource
-public void users()
-{
-   setRole( UsersEntity.class, UsersEntity.USERS_ID );
-   subResource( UsersResource.class );
-}
-
-@SubResource
-public void cases()
-{
-   subResource( WorkspaceCasesResource.class );
-}
-
-@SubResource
-public void organizations()
-{
-   setRole( OrganizationsEntity.class, OrganizationsEntity.ORGANIZATIONS_ID );
-   subResource( OrganizationsResource.class );
-}
-
-@SubResource
-public void surface()
-{
-   setRole( UsersEntity.class, UsersEntity.USERS_ID );
-   subResource( SurfaceResource.class );
-}
-
-@SubResource
-public void services()
-{
-   subResourceContexts( ServicesContext.class );
-}*/
+   @SubResource
+   public void crystal()
+   {
+      subResource( CrystalResource.class );
+   }
 }

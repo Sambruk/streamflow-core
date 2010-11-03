@@ -44,7 +44,7 @@ public class SelectLinkDialog
 {
 
    private LinkValue selectedLink;
-   private List<LinkValue> selectedLinks;
+   private List<LinkValue> selectedLinks = new ArrayList<LinkValue>();
    private JList list;
    private JTextField filterField;
 
@@ -104,7 +104,6 @@ public class SelectLinkDialog
          selectedLink = (LinkValue) list.getSelectedValue();
       } else
       {
-         selectedLinks = new ArrayList<LinkValue>();
          for (Object link : list.getSelectedValues())
          {
             selectedLinks.add( (LinkValue) link);

@@ -22,14 +22,11 @@ import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import org.restlet.service.MetadataService;
-import se.streamsource.dci.value.ContextValue;
-import se.streamsource.dci.value.EntityValue;
-import se.streamsource.dci.value.LinkValue;
-import se.streamsource.dci.value.LinksValue;
-import se.streamsource.dci.value.ResourceValue;
+import se.streamsource.dci.restlet.server.resultwriter.*;
+import se.streamsource.dci.value.*;
 import se.streamsource.dci.value.StringValue;
 
-import static org.qi4j.bootstrap.ImportedServiceDeclaration.*;
+import static org.qi4j.bootstrap.ImportedServiceDeclaration.NEW_OBJECT;
 
 /**
  * JAVADOC
@@ -47,6 +44,26 @@ public class DCIAssembler
 
       module.importServices( MetadataService.class );
 
-      module.addValues( ResourceValue.class, ContextValue.class, EntityValue.class, LinksValue.class, LinkValue.class, StringValue.class );
+      module.importServices( ResultWriterDelegator.class ).importedBy( NEW_OBJECT );
+      module.addObjects( ResultWriterDelegator.class);
+
+      // Standard result writers
+      module.addObjects( LinksResultWriter.class,
+            TableResultWriter.class,
+            ResourceResultWriter.class,
+            ValueCompositeResultWriter.class,
+            ValueDescriptorResultWriter.class);
+
+      module.addValues( ResourceValue.class,
+            ContextValue.class,
+            EntityValue.class,
+            LinksValue.class,
+            LinkValue.class,
+            StringValue.class,
+
+            TableValue.class,
+            ColumnValue.class,
+            RowValue.class,
+            CellValue.class);
    }
 }

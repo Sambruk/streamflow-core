@@ -71,7 +71,6 @@ public class AttachmentsModel
    private CommandQueryClient client;
 
    private EventList<AttachmentValue> eventList = new BasicEventList<AttachmentValue>();
-   private LinksValue attachments;
 
    public EventList<AttachmentValue> getEventList()
    {
@@ -125,12 +124,7 @@ public class AttachmentsModel
       try
       {
          final LinksValue newRoot = client.query( "index", LinksValue.class );
-         boolean same = newRoot.equals( attachments );
-         if (!same)
-         {
-               EventListSynch.synchronize( newRoot.links().get(), eventList );
-               attachments = newRoot;
-         }
+         EventListSynch.synchronize( newRoot.links().get(), eventList );
       } catch (ResourceException e)
       {
          throw new OperationException( WorkspaceResources.could_not_perform_operation, e );

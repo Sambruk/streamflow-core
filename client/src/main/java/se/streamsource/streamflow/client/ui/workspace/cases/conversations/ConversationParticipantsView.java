@@ -38,17 +38,12 @@ import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
 
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.KeyStroke;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.FlowLayout;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 
-import static se.streamsource.streamflow.infrastructure.event.source.helper.Events.*;
+import static se.streamsource.streamflow.infrastructure.event.source.helper.Events.matches;
+import static se.streamsource.streamflow.infrastructure.event.source.helper.Events.withNames;
 
 public class ConversationParticipantsView
       extends JPanel
@@ -115,6 +110,7 @@ public class ConversationParticipantsView
    public Task addParticipants()
    {
       final SelectLinkDialog dialog = participantsDialog.use( model.possibleParticipants() ).newInstance();
+      dialog.setSelectionMode( ListSelectionModel.MULTIPLE_INTERVAL_SELECTION );
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( CaseResources.choose_participant ) );
 
       return new CommandTask()

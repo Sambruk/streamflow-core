@@ -76,9 +76,17 @@ public class APIRouter
       adminRouter.attach( "/search", createServerResourceFinder( SolrSearchServerResource.class ) );
       attach( "/admin/tools", new ExtensionMediaTypeFilter( getContext(), adminRouter ) );
 
-      Directory dir = new Directory( getContext(), "clap://thread/static/admin/" );
-      dir.setIndexName( "index.html" );
-      attach( "/admin/", dir );
+      {
+         Directory dir = new Directory( getContext(), "clap://thread/static/admin/" );
+         dir.setIndexName( "index.html" );
+         attach( "/admin/", dir );
+      }
+
+      {
+         Directory dir = new Directory( getContext(), "clap://thread/static/crystal/" );
+         dir.setIndexName( "index.html" );
+         attach( "/statistics/", dir );
+      }
 
 
       // Version info

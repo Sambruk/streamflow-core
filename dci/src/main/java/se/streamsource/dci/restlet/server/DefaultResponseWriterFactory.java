@@ -86,7 +86,7 @@ public class DefaultResponseWriterFactory
    {
       this.velocity = velocity;
 
-      URL inputStream = getClass().getResource( "/velocity.properties" );
+      URL inputStream = getClass().getResource( "/org/apache/velocity/runtime/defaults/velocity.properties" );
 
       if (inputStream == null)
          throw new IllegalStateException("Could not find velocity.properties in classpath");

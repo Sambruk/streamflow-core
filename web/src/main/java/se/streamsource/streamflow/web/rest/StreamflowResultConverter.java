@@ -19,11 +19,11 @@ package se.streamsource.streamflow.web.rest;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.structure.Module;
-import org.qi4j.api.value.Value;
 import org.qi4j.api.value.ValueBuilder;
 import org.restlet.Request;
 import se.streamsource.dci.restlet.server.ResultConverter;
-import se.streamsource.dci.value.*;
+import se.streamsource.dci.value.LinksValue;
+import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
@@ -52,7 +52,7 @@ public class StreamflowResultConverter
 
       if (result instanceof Case)
       {
-         return caseDTO( (CaseEntity) result, module,request.getResourceRef().getBaseRef().getPath() );
+         return caseDTO( (CaseEntity) result, module, request.getResourceRef().getBaseRef().getPath() );
       } else if (result instanceof Query)
       {
          Query query = (Query) result;
@@ -130,5 +130,4 @@ public class StreamflowResultConverter
 
       return builder.newInstance();
    }
-
 }
