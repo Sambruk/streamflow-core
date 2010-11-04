@@ -26,7 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * JAVADOC
+ * Query value for Google Data queries.
  */
 @Mixins(TableQuery.Mixin.class)
 public interface TableQuery

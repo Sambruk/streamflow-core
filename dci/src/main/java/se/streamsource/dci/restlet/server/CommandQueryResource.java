@@ -145,6 +145,8 @@ public class CommandQueryResource
          SubResources subResources = (SubResources) this;
          try
          {
+            StringBuilder template = (StringBuilder) request.getAttributes().get("template");
+            template.append( "resource/" );
             subResources.resource( URLDecoder.decode( segment, "UTF-8" ) );
          } catch (UnsupportedEncodingException e)
          {
@@ -156,6 +158,10 @@ public class CommandQueryResource
          try
          {
             Method method = getSubResourceMethod( segment );
+
+            StringBuilder template = (StringBuilder) request.getAttributes().get("template");
+            template.append( segment).append("/" );
+
             method.invoke( this );
          } catch (Throwable e)
          {
@@ -473,10 +479,16 @@ public class CommandQueryResource
    {
       if (segment.equals( "" ) || segment.equals( "." ))
       {
+         StringBuilder template = (StringBuilder) request.getAttributes().get("template");
+         template.append("resource" );
+
          // Index for this resource
          resource();
       } else
       {
+         StringBuilder template = (StringBuilder) request.getAttributes().get("template");
+         template.append( segment);
+
          Method contextMethod = getInteractionMethod( segment );
 
          // Check if this is a request to show the form for this interaction

@@ -100,6 +100,7 @@ public abstract class CommandQueryRestlet2
          }
 
          request.getAttributes().put( "segments", segments );
+         request.getAttributes().put( "template", new StringBuilder("/rest/") );
 
          Usecase usecase = UsecaseBuilder.buildUsecase( getUsecaseName( request ) ).with( request.getMethod().isSafe() ? CacheOptions.ALWAYS : CacheOptions.NEVER ).newUsecase();
          UnitOfWork uow = uowf.newUnitOfWork( usecase );

@@ -48,7 +48,8 @@ public class DCIAssembler
       module.addObjects( ResultWriterDelegator.class);
 
       // Standard result writers
-      module.addObjects( LinksResultWriter.class,
+      module.addObjects( ResourceTemplateResultWriter.class,
+            LinksResultWriter.class,
             TableResultWriter.class,
             ResourceResultWriter.class,
             ValueCompositeResultWriter.class,

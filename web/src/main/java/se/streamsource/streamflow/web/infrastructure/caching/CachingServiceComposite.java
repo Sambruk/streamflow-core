@@ -42,6 +42,7 @@ public interface CachingServiceComposite
       public void activate() throws Exception
       {
          manager = new CacheManager(getClass().getResource( "/ehcache.xml" ));
+         System.out.println("Activated caching:"+manager);
       }
 
       public void passivate() throws Exception
