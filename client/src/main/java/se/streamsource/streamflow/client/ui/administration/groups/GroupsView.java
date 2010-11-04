@@ -39,10 +39,10 @@ import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.util.Strings;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.ActionMap;
+import java.awt.Component;
 
-import static se.streamsource.streamflow.client.util.i18n.text;
+import static se.streamsource.streamflow.client.util.i18n.*;
 
 /**
  * JAVADOC
@@ -127,6 +127,8 @@ public class GroupsView
    @Action
    public Task rename()
    {
+      final LinkValue selected = (LinkValue) list.getSelectedValue();
+
       final NameDialog dialog = nameDialogs.iterator().next();
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.rename_group_title ) );
 
@@ -138,7 +140,7 @@ public class GroupsView
             public void command()
                throws Exception
             {
-               model.changeDescription( (LinkValue)list.getSelectedValue(), dialog.name() );
+               model.changeDescription( selected, dialog.name() );
             }
          };
       } else
