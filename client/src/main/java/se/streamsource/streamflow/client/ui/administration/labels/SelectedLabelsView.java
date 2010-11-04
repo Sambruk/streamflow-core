@@ -124,13 +124,14 @@ public class SelectedLabelsView
    @Action
    public Task remove()
    {
+      final LinkValue selected = (LinkValue) labelList.getSelectedValue();
+      
       return new CommandTask()
       {
          @Override
          public void command()
                throws Exception
          {
-            LinkValue selected = (LinkValue) labelList.getSelectedValue();
             modelSelected.remove( selected );
          }
       };

@@ -31,16 +31,18 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.client.StreamflowResources;
-import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.LinkComparator;
 import se.streamsource.streamflow.client.util.LinkListCellRenderer;
 import se.streamsource.streamflow.client.util.RefreshWhenVisible;
 import se.streamsource.streamflow.client.util.SelectionActionEnabler;
 import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.SelectLinksDialog;
 import se.streamsource.streamflow.client.util.i18n;
-import se.streamsource.streamflow.client.util.CommandTask;
-import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
 
 import javax.swing.ActionMap;
 import javax.swing.JButton;
@@ -49,11 +51,13 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 import java.awt.BorderLayout;
+import java.util.List;
 
 import static se.streamsource.streamflow.client.util.i18n.*;
 
 public class OrganizationUsersView
       extends JPanel
+      implements TransactionListener
 {
    @Uses
    Iterable<ConfirmationDialog> confirmationDialog;
@@ -109,13 +113,15 @@ public class OrganizationUsersView
 
       if (dialog.getSelectedLinks() != null)
       {
+         final List<LinkValue> links = dialog.getSelectedLinks().links().get();
+
          return new CommandTask()
          {
             @Override
             public void command()
                throws Exception
             {
-               model.add( dialog.getSelectedLinks().links().get() );
+               model.add( links );
             }
          };
       } else
@@ -142,5 +148,10 @@ public class OrganizationUsersView
          };
       } else
          return null;
+   }
+
+   public void notifyTransactions( Iterable<TransactionEvents> transactions )
+   {
+      model.notifyTransactions( transactions );
    }
 }

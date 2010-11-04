@@ -33,6 +33,7 @@ import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.resource.user.NewUserCommand;
+import se.streamsource.streamflow.util.Strings;
 import se.streamsource.streamflow.web.context.RequiresPermission;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.entity.user.UsersQueries;
@@ -116,7 +117,8 @@ public class UsersContext
             String line = null;
             while ((line = bufReader.readLine()) != null)
             {
-               users.add( line );
+               if( Strings.notEmpty( line ))
+                  users.add( line );
             }
          } else
          {
