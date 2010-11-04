@@ -64,6 +64,7 @@ public class DCIAssembler
             TableValue.class,
             ColumnValue.class,
             RowValue.class,
-            CellValue.class);
+            CellValue.class,
+            TableQuery.class);
    }
 }

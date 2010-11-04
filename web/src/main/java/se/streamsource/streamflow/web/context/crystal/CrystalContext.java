@@ -30,6 +30,7 @@ import org.restlet.representation.WriterRepresentation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.streamsource.dci.value.TableBuilder;
+import se.streamsource.dci.value.TableQuery;
 import se.streamsource.dci.value.TableValue;
 import se.streamsource.streamflow.web.infrastructure.database.Databases;
 
@@ -40,6 +41,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -126,7 +128,7 @@ public class CrystalContext
       return tableBuilder.newTable();
    }
 
-   public Representation timeline() throws Exception
+   public Representation timeline( final TableQuery query) throws Exception
    {
       final JSONObject timeline = new JSONObject();
 
@@ -134,23 +136,32 @@ public class CrystalContext
 
       final JSONArray events = new JSONArray();
 
-      final Logger logger = LoggerFactory.getLogger( getClass() );
-      final SimpleDateFormat weekFormat = new SimpleDateFormat("yyyy'W'ww");
+//      final Logger logger = LoggerFactory.getLogger( getClass() );
+//      final SimpleDateFormat weekFormat = new SimpleDateFormat("yyyy'W'ww");
 
-      final Calendar[] range = findRange();
+ //     final Calendar[] range = findRange();
 
       Databases databases = new Databases(source.get());
-      databases.query( sql.getString("timeline"), new Databases.StatementVisitor()
+
+      String sqlQuery = sql.getString("timeline");
+      String where;
+      if (query.where() != null)
+         where = "where "+query.where();
+      else
+         where = "";
+
+      String offset = "";
+      if (query.offset() != null)
       {
-         public void visit( PreparedStatement preparedStatement ) throws SQLException
+         if (query.limit() != null)
          {
-            Calendar nextWeek = (Calendar) range[0].clone();
-            nextWeek.roll( Calendar.WEEK_OF_YEAR, 1 );
-            logger.info( "From "+weekFormat.format( range[0].getTime())+" to "+weekFormat.format( nextWeek.getTime()) );
-            preparedStatement.setTimestamp( 1, new Timestamp(range[0].getTimeInMillis()));
-            preparedStatement.setTimestamp( 2, new Timestamp(nextWeek.getTimeInMillis()));
+            offset = "limit "+query.offset()+","+query.limit();
          }
-      }, new Databases.ResultSetVisitor()
+      }
+
+      sqlQuery = MessageFormat.format( sqlQuery, where, offset );
+      
+      databases.query( sqlQuery, new Databases.ResultSetVisitor()
       {
          public boolean visit( ResultSet visited ) throws SQLException
          {

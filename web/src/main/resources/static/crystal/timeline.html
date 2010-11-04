@@ -8,8 +8,21 @@
 
     <script type="text/javascript">
     var tl;
+    var oldMin;
+    var oldMax;
+    var eventSource;
+    var loadBand;
+
+    function dateFormat(date)
+    {
+        if (date != null)
+           return date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate();
+        else
+            return "";
+    }
+
      function onLoad() {
-        var eventSource = new Timeline.DefaultEventSource();
+        eventSource = new Timeline.DefaultEventSource();
 
         var theme = Timeline.ClassicTheme.create(); // create the theme
                     theme.event.bubble.width = 350;   // modify it
@@ -22,40 +35,83 @@
              eventSource:    eventSource,
              width:          "70%",
              intervalUnit:   Timeline.DateTime.HOUR,
-             intervalPixels: 1000,
+             intervalPixels: 800,
              theme: theme
          }),
          Timeline.createBandInfo({
              eventSource:    eventSource,
-             width:          "30%",
+             width:          "20%",
              intervalUnit:   Timeline.DateTime.DAY,
              intervalPixels: 400,
-             theme: theme
+             theme: theme,
+             layout: "overview"
+         }),
+         Timeline.createBandInfo({
+             eventSource:    eventSource,
+             width:          "10%",
+             intervalUnit:   Timeline.DateTime.WEEK,
+             intervalPixels: 400,
+             theme: theme,
+             layout: "overview"
          })
        ];
 
         bandInfos[1].syncWith = 0;
         bandInfos[1].highlight = true;
+        bandInfos[2].syncWith = 1;
+        bandInfos[2].highlight = true;
 
-       tl = Timeline.create(document.getElementById("my-timeline"), bandInfos);
-       tl.loadJSON("/streamflow/crystal/timeline.json", function(json, url)
-       {
-          eventSource.loadJSON(json, url);
+        tl = Timeline.create(document.getElementById("my-timeline"), bandInfos);
+        loadBand = tl.getBand(2);
 
-          tl.finishedEventLoading();
+        loadBand.addOnScrollListener(function(band) {
+               var minDate = loadBand.getMinVisibleDate();
+               var maxDate = loadBand.getMaxVisibleDate();
+               document.getElementById("debug").innerHTML="Data:"+dateFormat(oldMin)+" "+dateFormat(oldMax);
+               if (loadBand.getCenterVisibleDate() < oldMin || loadBand.getCenterVisibleDate() > oldMax)
+               {
+                  oldMin = minDate;
+                  oldMax = maxDate;
+                  loadData();
+               }
+            });
 
-          if (eventSource.getCount() > 0)
-          {
-              // Add decorators to visualize when events start and end
-              addLimitDecorators();
-    
-              // Center the timeline on the next event
-              centerOnNextEvent();
+        tl.getBand(0).setCenterVisibleDate(new Date("2010-05-01"));
 
-              // Apparently, we need another call to finishedEventLoading
-              tl.finishedEventLoading();
-          }
-       });
+        loadData();
+    }
+
+    function loadData()
+    {
+        var minDate = loadBand.getMinVisibleDate();
+        var maxDate = loadBand.getMaxVisibleDate();
+        var minString = dateFormat(minDate);
+        var maxString = dateFormat(maxDate);
+
+        tl.loadJSON("/streamflow/crystal/timeline.json?tq=where%20closed_on%20between%20%22"+minString+"%22%20and%20%22"+maxString+"%22", showData);
+
+        oldMin = minDate;
+        oldMax = maxDate;
+    }
+
+    function showData(json,url)
+    {
+        eventSource.clear();
+        eventSource.loadJSON(json, url);
+
+        tl.finishedEventLoading();
+
+        if (eventSource.getCount() > 0)
+        {
+            // Add decorators to visualize when events start and end
+          //  addLimitDecorators();
+
+            // Center the timeline on the next event
+            // centerOnNextEvent();
+
+            // Apparently, we need another call to finishedEventLoading
+            // tl.finishedEventLoading();
+        }
     }
 
      var resizeTimerID = null;
@@ -126,7 +182,6 @@
          tl.getBand(0).setCenterVisibleDate(nextEvent.getStart());
        }
      }
-
     </script>
 </head>
 <body onload="onLoad();" onresize="onResize();">
@@ -135,6 +190,8 @@
     This page uses Javascript to show you a Timeline. Please enable Javascript in your browser to see the full page.
     Thank you.
 </noscript>
+
+<div id="debug"></div>
 
 </body>
 </html>
