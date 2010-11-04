@@ -80,6 +80,7 @@ public class CommandQueryClientTest
          {
             ApplicationAssembly assembly = applicationFactory.newApplicationAssembly( CommandQueryClientTest.this );
             assembly.setMetaInfo( new RoleInjectionProviderFactory() );
+            assembly.setMetaInfo( new MetadataService() );
             return assembly;
          }
       };
@@ -115,7 +116,7 @@ public class CommandQueryClientTest
             visibleIn( Visibility.application );
       module.addObjects( InteractionConstraintsService.class );
 
-      module.importServices( MetadataService.class ).importedBy( NewObjectImporter.class );
+      module.importServices( MetadataService.class ).importedBy( NEW_OBJECT );
       module.addObjects( MetadataService.class );
 
       module.addObjects( DescribableContext.class );
