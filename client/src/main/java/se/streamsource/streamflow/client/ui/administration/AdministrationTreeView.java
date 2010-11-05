@@ -39,19 +39,18 @@ import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.ResourceValue;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.StreamflowResources;
-import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
-import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.ui.ContextItem;
+import se.streamsource.streamflow.client.ui.OptionsAction;
+import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.RefreshWhenVisible;
 import se.streamsource.streamflow.client.util.SelectionActionEnabler;
+import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.NameDialog;
 import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
 import se.streamsource.streamflow.client.util.i18n;
-import se.streamsource.streamflow.client.util.CommandTask;
-import se.streamsource.streamflow.client.ui.ContextItem;
-import se.streamsource.streamflow.client.ui.OptionsAction;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
-import se.streamsource.streamflow.infrastructure.event.source.helper.Events;
 import se.streamsource.streamflow.util.Strings;
 
 import javax.swing.ActionMap;
@@ -70,6 +69,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static se.streamsource.streamflow.client.util.i18n.*;
+import static se.streamsource.streamflow.infrastructure.event.source.helper.Events.*;
+import static se.streamsource.streamflow.util.Specifications.*;
 
 /**
  * JAVADOC
@@ -317,7 +318,10 @@ public class AdministrationTreeView
 
    public void notifyTransactions( Iterable<TransactionEvents> transactions )
    {
-      if (Events.matches( Events.withNames( "changedDescription", "removedOrganizationalUnit", "addedOrganizationalUnit" ), transactions ))
+      // Only listen for changes on Organization and OrganizationalUnit
+      if (matches( and( onEntityTypes( "se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity",
+                  "se.streamsource.streamflow.web.domain.entity.organization.OrganizationalUnitEntity"),
+            withNames( "changedDescription", "removedOrganizationalUnit", "addedOrganizationalUnit" ) ), transactions ))
       {
          ArrayList<Integer> expandedRows = new ArrayList<Integer>();
          for (int i = 0; i < tree.getRowCount(); i++)

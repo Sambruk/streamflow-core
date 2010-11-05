@@ -39,6 +39,7 @@ import se.streamsource.streamflow.client.util.dialog.NameDialog;
 import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
 import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
 import se.streamsource.streamflow.util.Strings;
 
 import javax.swing.ActionMap;
@@ -52,6 +53,7 @@ import static se.streamsource.streamflow.client.util.i18n.*;
  */
 public class FormsView
       extends ListDetailView
+      implements TransactionListener
 {
    private FormsModel model;
 
