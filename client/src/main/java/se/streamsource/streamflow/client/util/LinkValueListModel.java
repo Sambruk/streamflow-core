@@ -19,6 +19,7 @@ package se.streamsource.streamflow.client.util;
 
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.SortedList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilderFactory;
@@ -34,8 +35,9 @@ import se.streamsource.streamflow.infrastructure.event.source.TransactionListene
 import se.streamsource.streamflow.infrastructure.event.source.helper.Events;
 import se.streamsource.streamflow.util.Specifications;
 
-import static se.streamsource.streamflow.infrastructure.event.source.helper.Events.*;
-import static se.streamsource.streamflow.util.Specifications.*;
+import static se.streamsource.streamflow.infrastructure.event.source.helper.Events.matches;
+import static se.streamsource.streamflow.infrastructure.event.source.helper.Events.onEntities;
+import static se.streamsource.streamflow.util.Specifications.or;
 
 /**
  * A general super class for models that use LinkValue lists shown in a JList.
@@ -50,6 +52,7 @@ public class LinkValueListModel
    protected ValueBuilderFactory vbf;
 
    protected EventList<LinkValue> linkValues = new BasicEventList<LinkValue>();
+   protected EventList<LinkValue> sortedValues = new SortedList<LinkValue>(linkValues, new LinkComparator());
 
    private final String refresh;
 
@@ -70,7 +73,7 @@ public class LinkValueListModel
 
    public EventList<LinkValue> getList()
    {
-      return linkValues;
+      return sortedValues;
    }
 
    public void remove( LinkValue link)
