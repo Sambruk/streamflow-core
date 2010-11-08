@@ -56,6 +56,7 @@ import se.streamsource.streamflow.client.ui.administration.forms.SelectedFormsMo
 import se.streamsource.streamflow.client.ui.administration.forms.SelectedFormsView;
 import se.streamsource.streamflow.client.ui.administration.forms.definition.FieldCreationDialog;
 import se.streamsource.streamflow.client.ui.administration.forms.definition.FieldEditView;
+import se.streamsource.streamflow.client.ui.administration.forms.definition.FieldEditorAttachmentFieldValueView;
 import se.streamsource.streamflow.client.ui.administration.forms.definition.FieldEditorCheckboxesFieldValueView;
 import se.streamsource.streamflow.client.ui.administration.forms.definition.FieldEditorComboBoxFieldValueView;
 import se.streamsource.streamflow.client.ui.administration.forms.definition.FieldEditorCommentFieldValueView;
@@ -313,6 +314,7 @@ public class UIAssembler
             FieldValueEditModel.class, FieldEditView.class );
 
       addViews( module,
+            FieldEditorAttachmentFieldValueView.class,
             FieldEditorCheckboxesFieldValueView.class,
             FieldEditorComboBoxFieldValueView.class,
             FieldEditorCommentFieldValueView.class,

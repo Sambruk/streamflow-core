@@ -221,5 +221,6 @@ public enum AdministrationResources
    cols_label,
    forminfo_tab,
    formpages_tab,
+   attachment,
    add_signature_title, formsignatures_tab
 }

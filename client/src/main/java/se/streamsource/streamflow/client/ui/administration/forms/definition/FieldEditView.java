@@ -22,6 +22,7 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.util.Refreshable;
+import se.streamsource.streamflow.domain.form.AttachmentFieldValue;
 import se.streamsource.streamflow.domain.form.CheckboxesFieldValue;
 import se.streamsource.streamflow.domain.form.ComboBoxFieldValue;
 import se.streamsource.streamflow.domain.form.CommentFieldValue;
@@ -63,6 +64,7 @@ public class FieldEditView
       editors.put(OpenSelectionFieldValue.class, FieldEditorOpenSelectionFieldValueView.class);
       editors.put(TextAreaFieldValue.class, FieldEditorTextAreaFieldValueView.class);
       editors.put(TextFieldValue.class, FieldEditorTextFieldValueView.class);
+      editors.put( AttachmentFieldValue.class, FieldEditorAttachmentFieldValueView.class);
    }
 
    private FieldValueEditModel model;

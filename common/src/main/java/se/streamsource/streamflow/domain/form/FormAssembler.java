@@ -38,6 +38,7 @@ public class FormAssembler
             FormDraftValue.class,
             FieldValue.class,
             FieldValueDTO.class,
+            AttachmentFieldValue.class,
             CheckboxesFieldValue.class,
             ComboBoxFieldValue.class,
             CommentFieldValue.class,

@@ -27,6 +27,7 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.StringValue;
+import se.streamsource.streamflow.domain.form.AttachmentFieldValue;
 import se.streamsource.streamflow.domain.form.CheckboxesFieldValue;
 import se.streamsource.streamflow.domain.form.ComboBoxFieldValue;
 import se.streamsource.streamflow.domain.form.CommentFieldValue;
@@ -108,6 +109,9 @@ public class FormPageContext
       ValueBuilderFactory vbf = module.valueBuilderFactory();
       switch (fieldType)
       {
+         case attachment:
+            value = vbf.newValue( AttachmentFieldValue.class );
+            break;
          case checkboxes:
             value = vbf.newValue( CheckboxesFieldValue.class );
             break;

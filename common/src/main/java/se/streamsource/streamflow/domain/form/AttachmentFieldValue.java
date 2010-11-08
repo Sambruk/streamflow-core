@@ -1,5 +1,4 @@
-/**
- *
+/*
  * Copyright 2009-2010 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,18 +16,15 @@
 
 package se.streamsource.streamflow.domain.form;
 
-public enum FieldTypes
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.property.Property;
+
+import java.util.Date;
+
+/**
+ * JAVADOC
+ */
+public interface AttachmentFieldValue
+      extends FieldValue
 {
-   checkboxes,
-   combobox,
-   comment,
-   date,
-   listbox,
-   number,
-   attachment,
-   optionbuttons,
-   openselection,
-   textarea,
-   signature,
-   text
 }

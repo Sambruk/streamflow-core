@@ -70,6 +70,7 @@ public class FieldCreationDialog
             FieldTypes.openselection,
             FieldTypes.date,
             FieldTypes.number,
+            FieldTypes.attachment,
             FieldTypes.comment
       } );
 
