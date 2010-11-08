@@ -17,7 +17,6 @@
 
 package se.streamsource.streamflow.client.ui.administration.resolutions;
 
-import ca.odell.glazedlists.SortedList;
 import ca.odell.glazedlists.swing.EventListModel;
 import com.jgoodies.forms.factories.Borders;
 import org.jdesktop.application.Action;
@@ -32,7 +31,6 @@ import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.util.CommandTask;
-import se.streamsource.streamflow.client.util.LinkComparator;
 import se.streamsource.streamflow.client.util.LinkListCellRenderer;
 import se.streamsource.streamflow.client.util.RefreshWhenVisible;
 import se.streamsource.streamflow.client.util.SelectionActionEnabler;
@@ -42,15 +40,10 @@ import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
 
-import javax.swing.ActionMap;
-import javax.swing.JButton;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.ListSelectionModel;
-import java.awt.BorderLayout;
+import javax.swing.*;
+import java.awt.*;
 
-import static se.streamsource.streamflow.client.util.i18n.*;
+import static se.streamsource.streamflow.client.util.i18n.text;
 
 /**
  * JAVADOC
@@ -83,7 +76,7 @@ public class SelectedResolutionsView
       ActionMap am = context.getActionMap( this );
       setActionMap( am );
 
-      list = new JList( new EventListModel<LinkValue>( new SortedList<LinkValue>( model.getList(), new LinkComparator() ) ) );
+      list = new JList( new EventListModel<LinkValue>( model.getList() ) );
 
       list.setCellRenderer( new LinkListCellRenderer() );
 

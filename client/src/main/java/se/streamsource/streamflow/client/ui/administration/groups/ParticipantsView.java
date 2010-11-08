@@ -17,7 +17,6 @@
 
 package se.streamsource.streamflow.client.ui.administration.groups;
 
-import ca.odell.glazedlists.SortedList;
 import ca.odell.glazedlists.swing.EventListModel;
 import com.jgoodies.forms.factories.Borders;
 import org.jdesktop.application.Action;
@@ -36,7 +35,6 @@ import se.streamsource.streamflow.client.ui.SelectUsersAndGroupsDialog;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.administration.UsersAndGroupsModel;
 import se.streamsource.streamflow.client.util.CommandTask;
-import se.streamsource.streamflow.client.util.LinkComparator;
 import se.streamsource.streamflow.client.util.LinkListCellRenderer;
 import se.streamsource.streamflow.client.util.RefreshWhenVisible;
 import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
@@ -45,16 +43,13 @@ import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
 
-import javax.swing.ActionMap;
-import javax.swing.JButton;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import java.awt.BorderLayout;
+import javax.swing.*;
+import java.awt.*;
 import java.util.Set;
 
-import static se.streamsource.streamflow.infrastructure.event.source.helper.Events.*;
-import static se.streamsource.streamflow.util.Specifications.*;
+import static se.streamsource.streamflow.infrastructure.event.source.helper.Events.matches;
+import static se.streamsource.streamflow.infrastructure.event.source.helper.Events.withNames;
+import static se.streamsource.streamflow.util.Specifications.not;
 
 /**
  * JAVADOC
@@ -92,7 +87,7 @@ public class ParticipantsView
       ActionMap am = context.getActionMap( this );
       setActionMap( am );
 
-      participantList = new JList( new EventListModel<LinkValue>(new SortedList<LinkValue>(model.getList(), new LinkComparator())) );
+      participantList = new JList( new EventListModel<LinkValue>(model.getList()) );
 
       participantList.setCellRenderer( new LinkListCellRenderer() );
 

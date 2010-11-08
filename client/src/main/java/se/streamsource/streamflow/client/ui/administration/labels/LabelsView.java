@@ -18,7 +18,6 @@
 package se.streamsource.streamflow.client.ui.administration.labels;
 
 import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.SortedList;
 import ca.odell.glazedlists.swing.EventListModel;
 import com.jgoodies.forms.factories.Borders;
 import org.jdesktop.application.Action;
@@ -33,28 +32,18 @@ import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.ui.OptionsAction;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
-import se.streamsource.streamflow.client.util.CommandTask;
-import se.streamsource.streamflow.client.util.LinkComparator;
-import se.streamsource.streamflow.client.util.LinkListCellRenderer;
-import se.streamsource.streamflow.client.util.RefreshWhenVisible;
-import se.streamsource.streamflow.client.util.SelectionActionEnabler;
+import se.streamsource.streamflow.client.util.*;
 import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.NameDialog;
-import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
 import se.streamsource.streamflow.util.Strings;
 
-import javax.swing.ActionMap;
-import javax.swing.JButton;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-import java.awt.BorderLayout;
+import javax.swing.*;
+import java.awt.*;
 
-import static se.streamsource.streamflow.client.util.i18n.*;
+import static se.streamsource.streamflow.client.util.i18n.text;
 
 /**
  * Admin of labels.
@@ -93,7 +82,7 @@ public class LabelsView
       options.add( am.get( "remove" ) );
 
       JScrollPane scrollPane = new JScrollPane();
-      EventList<LinkValue> itemValueEventList = new SortedList<LinkValue>( model.getList(), new LinkComparator() );
+      EventList<LinkValue> itemValueEventList = model.getList();
       labelList = new JList( new EventListModel<LinkValue>( itemValueEventList ) );
       labelList.setCellRenderer( new LinkListCellRenderer() );
       scrollPane.setViewportView( labelList );

@@ -17,7 +17,7 @@
 
 package se.streamsource.streamflow.client.ui.administration.organizations;
 
-import ca.odell.glazedlists.SortedList;
+import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.swing.EventListModel;
 import com.jgoodies.forms.factories.Borders;
 import org.jdesktop.application.ApplicationContext;
@@ -32,28 +32,18 @@ import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
-import se.streamsource.streamflow.client.util.CommandTask;
-import se.streamsource.streamflow.client.util.LinkComparator;
-import se.streamsource.streamflow.client.util.LinkListCellRenderer;
-import se.streamsource.streamflow.client.util.RefreshWhenVisible;
-import se.streamsource.streamflow.client.util.SelectionActionEnabler;
+import se.streamsource.streamflow.client.util.*;
 import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.SelectLinksDialog;
-import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
 
-import javax.swing.ActionMap;
-import javax.swing.JButton;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.ListSelectionModel;
-import java.awt.BorderLayout;
+import javax.swing.*;
+import java.awt.*;
 import java.util.List;
 
-import static se.streamsource.streamflow.client.util.i18n.*;
+import static se.streamsource.streamflow.client.util.i18n.text;
 
 public class OrganizationUsersView
       extends JPanel
@@ -70,7 +60,7 @@ public class OrganizationUsersView
    public JList participantList;
 
    private OrganizationUsersModel model;
-   public SortedList<LinkValue> linkValues;
+   public EventList<LinkValue> linkValues;
 
    public OrganizationUsersView( @Service ApplicationContext context, @Uses CommandQueryClient client, @Structure ObjectBuilderFactory obf )
    {
@@ -82,7 +72,7 @@ public class OrganizationUsersView
       ActionMap am = context.getActionMap( this );
       setActionMap( am );
 
-      linkValues = new SortedList<LinkValue>(model.getList(), new LinkComparator());
+      linkValues = model.getList();
       participantList = new JList( new EventListModel<LinkValue>( linkValues ) );
       participantList.setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
 
