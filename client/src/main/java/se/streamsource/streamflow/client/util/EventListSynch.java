@@ -35,12 +35,12 @@ public class EventListSynch
       eventList.getReadWriteLock().writeLock().lock();
       try
       {
+         if (eventList instanceof TransactionList)
+            ((TransactionList) eventList).beginEvent();
+
          if (list.size() == eventList.size())
          {
-            // Replace items
-            if (eventList instanceof TransactionList)
-               ((TransactionList) eventList).beginEvent();
-
+            // Same size
             int idx = 0;
             for (Object item : list)
             {
@@ -49,20 +49,40 @@ public class EventListSynch
                idx++;
             }
 
-            if (eventList instanceof TransactionList)
-               ((TransactionList) eventList).commitEvent();
+         } else if (list.size() < eventList.size())
+         {
+            // New size is less than current
+            int idx = 0;
+            for (Object item : list)
+            {
+               if (!item.equals( eventList.get(idx )))
+                  eventList.set( idx, (P) item );
+               idx++;
+            }
+
+            // Remove remaining
+            idx = list.size();
+            while (eventList.size() > list.size())
+               eventList.remove( idx );
          } else
          {
-            // Replace items
-            if (eventList instanceof TransactionList)
-               ((TransactionList) eventList).beginEvent();
+            // New size is more than current
+            int idx = 0;
+            for (Object item : list)
+            {
+               if (idx < eventList.size())
+               {
+                  if (!item.equals( eventList.get(idx )))
+                     eventList.set( idx, (P) item );
+               } else
+                  eventList.add( (P) item );
 
-            eventList.clear();
-            eventList.addAll( (Collection<? extends P>) list );
-
-            if (eventList instanceof TransactionList)
-               ((TransactionList) eventList).commitEvent();
+               idx++;
+            }
          }
+
+         if (eventList instanceof TransactionList)
+            ((TransactionList) eventList).commitEvent();
       } catch (Exception e)
       {
          eventList.getReadWriteLock().writeLock().unlock();

@@ -243,9 +243,13 @@ public interface ManagerComposite
             in1 = new GZIPInputStream( in1 );
          }
          Reader in = new InputStreamReader( in1, "UTF-8" );
+
+         logger.info( "Importing " +importFile);
+
          try
          {
             importDatabase.importFrom( in );
+            logger.info( "Imported " +importFile);
          } finally
          {
             in.close();
