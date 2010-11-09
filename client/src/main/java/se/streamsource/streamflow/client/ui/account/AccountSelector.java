@@ -28,6 +28,7 @@ import org.qi4j.api.injection.scope.Uses;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.application.error.ErrorResources;
+import se.streamsource.streamflow.client.StreamflowApplication;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.ListItemListCellRenderer;
 import se.streamsource.streamflow.client.util.i18n;
@@ -57,6 +58,9 @@ public class AccountSelector
    private
    @Service
    DialogService dialogs;
+
+   private @Service
+   StreamflowApplication main;
 
    public AccountSelector( @Uses final AccountsModel dataModel )
    {
@@ -145,6 +149,7 @@ public class AccountSelector
             msg = i18n.text( AccountResources.resource_failure ) + " \r\n" + e.getStatus().toString();
          }
          dialogs.showMessageDialog( this, msg, "Info" );
+         main.manageAccounts();
          throw new PropertyVetoException( msg, evt );
       } catch (IOException e)
       {
