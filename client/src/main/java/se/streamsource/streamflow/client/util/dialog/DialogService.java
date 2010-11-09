@@ -38,6 +38,7 @@ import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Point;
 import java.awt.Window;
+import java.awt.Dialog.ModalityType;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -113,16 +114,19 @@ public class DialogService
       dialog.setMinimumSize(new Dimension(300, 100));
       dialog.pack();
       dialog.setLocationRelativeTo(owner);
-      dialog.setVisible(true);
+      dialog.setModal(true);
 
       okButton.addActionListener(new ActionListener()
       {
          public void actionPerformed(ActionEvent e)
          {
             finalDialog.setVisible(false);
+            WindowUtils.findWindow( finalDialog ).dispose();
          }
       });
 
+      dialog.setVisible(true);
+      
       return dialog;
    }
 
