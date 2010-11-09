@@ -2,6 +2,7 @@ package se.streamsource.streamflow.client.ui.workspace.cases.general.forms;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
+import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationActionMap;
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
@@ -44,6 +45,12 @@ public class AttachmentFieldPanel
       formBuilder.add( attachment, "3,1,1,1" );
    }
 
+   @Action
+   public void attach()
+   {
+
+   }
+   
    @Override
    public String getValue()
    {
