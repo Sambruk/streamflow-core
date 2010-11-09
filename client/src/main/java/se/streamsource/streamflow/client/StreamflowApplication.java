@@ -42,6 +42,8 @@ import org.restlet.data.Protocol;
 import org.restlet.routing.Filter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.client.assembler.StreamflowClientAssembler;
 import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
@@ -56,6 +58,7 @@ import se.streamsource.streamflow.client.ui.account.ProfileView;
 import se.streamsource.streamflow.client.ui.administration.AdministrationWindow;
 import se.streamsource.streamflow.client.ui.overview.OverviewWindow;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceWindow;
+import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.EventStream;
@@ -266,7 +269,9 @@ public class StreamflowApplication
    @Action
    public void manageAccounts()
    {
+      ListItemValue selectedValue = (ListItemValue) accountSelector.getSelectedValue();
       AccountsDialog dialog = accountsDialog.use( accountsModel ).newInstance();
+      dialog.setSelectedAccount(selectedValue);
       dialogs.showOkDialog( getMainFrame(), dialog, text( AccountResources.account_title ) );
    }
 
