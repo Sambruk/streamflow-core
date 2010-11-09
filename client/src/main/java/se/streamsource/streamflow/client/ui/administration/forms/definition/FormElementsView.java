@@ -106,7 +106,7 @@ public class FormElementsView
       setOneTouchExpandable( true );
 
 
-      initMaster( new EventListModel<LinkValue>( model.getList() ),
+      initMaster( new EventListModel<LinkValue>( model.getUnsortedList() ),
             new DetailFactory() {
                public Component createDetail( LinkValue detailLink )
                {
@@ -324,7 +324,7 @@ public class FormElementsView
       if (event != null)
       {
          String id = EventParameters.getParameter( event, 1 );
-         for (LinkValue link : model.getList())
+         for (LinkValue link : model.getUnsortedList())
          {
             if (link.href().get().endsWith( id+"/" ))
             {

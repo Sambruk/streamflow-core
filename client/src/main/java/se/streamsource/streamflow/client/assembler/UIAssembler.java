@@ -164,6 +164,7 @@ import se.streamsource.streamflow.client.ui.workspace.cases.general.CaseGeneralM
 import se.streamsource.streamflow.client.ui.workspace.cases.general.CaseGeneralView;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.CaseLabelsModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.CaseLabelsView;
+import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.AttachmentFieldPanel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.CheckboxesPanel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.ComboBoxPanel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.DatePanel;
@@ -427,7 +428,7 @@ public class UIAssembler
       addViews( module, CasesView.class, CasesDetailView.class, ContactsAdminView.class,
             FormsAdminView.class, SubmittedFormsAdminView.class, CheckboxesPanel.class,
             ComboBoxPanel.class, OptionButtonsPanel.class, OpenSelectionPanel.class, ListBoxPanel.class, DatePanel.class,
-            NumberPanel.class, TextAreaFieldPanel.class, TextFieldPanel.class
+            NumberPanel.class, TextAreaFieldPanel.class, TextFieldPanel.class, AttachmentFieldPanel.class
       );
 
       addDialogs( module, ContactLookupResultDialog.class );

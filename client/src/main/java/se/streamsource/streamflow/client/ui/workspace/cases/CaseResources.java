@@ -75,5 +75,5 @@ public enum CaseResources
    choose_participant,
    regular_expression_does_not_validate,
    invalidinteger,
-   invalidfloat
+   could_not_upload_file, invalidfloat
 }

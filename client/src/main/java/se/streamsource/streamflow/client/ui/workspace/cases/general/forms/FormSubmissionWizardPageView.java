@@ -41,25 +41,54 @@ import se.streamsource.streamflow.client.ui.workspace.cases.CaseResources;
 import se.streamsource.streamflow.client.util.BindingFormBuilder;
 import se.streamsource.streamflow.client.util.StateBinder;
 import se.streamsource.streamflow.client.util.i18n;
-import se.streamsource.streamflow.domain.form.*;
+import se.streamsource.streamflow.domain.form.AttachmentFieldValue;
+import se.streamsource.streamflow.domain.form.CheckboxesFieldValue;
+import se.streamsource.streamflow.domain.form.ComboBoxFieldValue;
+import se.streamsource.streamflow.domain.form.CommentFieldValue;
+import se.streamsource.streamflow.domain.form.DateFieldValue;
+import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
+import se.streamsource.streamflow.domain.form.FieldValue;
+import se.streamsource.streamflow.domain.form.ListBoxFieldValue;
+import se.streamsource.streamflow.domain.form.NumberFieldValue;
+import se.streamsource.streamflow.domain.form.OpenSelectionFieldValue;
+import se.streamsource.streamflow.domain.form.OptionButtonsFieldValue;
+import se.streamsource.streamflow.domain.form.PageSubmissionValue;
+import se.streamsource.streamflow.domain.form.TextAreaFieldValue;
+import se.streamsource.streamflow.domain.form.TextFieldValue;
+import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
+import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
+import se.streamsource.streamflow.infrastructure.event.source.helper.Events;
 
-import javax.swing.*;
+import javax.swing.JComponent;
+import javax.swing.JEditorPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.UIManager;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import javax.swing.text.html.HTMLDocument;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Desktop;
+import java.awt.Font;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
 
 /**
  * JAVADOC
  */
 public class FormSubmissionWizardPageView
       extends WizardPage
-      implements Observer
+      implements Observer, TransactionListener
 {
    private java.util.Map<String, AbstractFieldPanel> componentFieldMap;
    private java.util.Map<StateBinder, EntityReference> fieldBinders;
@@ -80,6 +109,7 @@ public class FormSubmissionWizardPageView
       fields.put( OpenSelectionFieldValue.class, OpenSelectionPanel.class );
       fields.put( TextAreaFieldValue.class, TextAreaFieldPanel.class );
       fields.put( TextFieldValue.class, TextFieldPanel.class );
+      fields.put( AttachmentFieldValue.class, AttachmentFieldPanel.class );
    }
 
 
@@ -238,6 +268,16 @@ public class FormSubmissionWizardPageView
             if (property.get() instanceof Date)
             {
                model.updateField( fieldBinders.get( observable ), DateFunctions.toUtcString( (Date) property.get() ) );
+            } else if (property.get() instanceof File)
+            {
+               try
+               {
+                  FileInputStream fin = new FileInputStream( (File) property.get() );
+                  model.createAttachment( (File)property.get(), fin );
+               } catch (Exception e)
+               {
+                  throw new OperationException( CaseResources.could_not_upload_file, e );
+               }
             } else
             {
                model.updateField( fieldBinders.get( observable ), property.get().toString() );
@@ -272,4 +312,9 @@ public class FormSubmissionWizardPageView
       return obf.newObjectBuilder( fields.get( fieldValueType ) ).use( field, fieldValue ).newInstance();
    }
 
+   public void notifyTransactions( Iterable<TransactionEvents> transactions )
+   {
+      if (Events.matches( Events.withNames("addedAttachment" ), transactions ))
+         ;
+   }
 }

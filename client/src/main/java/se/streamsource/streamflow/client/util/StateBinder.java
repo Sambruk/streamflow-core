@@ -33,6 +33,7 @@ import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.RemovableLabel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.AbstractFieldPanel;
+import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.AttachmentFieldPanel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.CheckboxesPanel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.ComboBoxPanel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.DatePanel;
@@ -114,6 +115,7 @@ public class StateBinder
             ListBoxPanel.class,
             ComboBoxPanel.class,
             DatePanel.class,
+            AttachmentFieldPanel.class,
             JLabel.class,
             JTextField.class,
             JTextArea.class,

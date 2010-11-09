@@ -35,9 +35,8 @@ import se.streamsource.streamflow.infrastructure.event.source.TransactionListene
 import se.streamsource.streamflow.infrastructure.event.source.helper.Events;
 import se.streamsource.streamflow.util.Specifications;
 
-import static se.streamsource.streamflow.infrastructure.event.source.helper.Events.matches;
-import static se.streamsource.streamflow.infrastructure.event.source.helper.Events.onEntities;
-import static se.streamsource.streamflow.util.Specifications.or;
+import static se.streamsource.streamflow.infrastructure.event.source.helper.Events.*;
+import static se.streamsource.streamflow.util.Specifications.*;
 
 /**
  * A general super class for models that use LinkValue lists shown in a JList.
@@ -74,6 +73,11 @@ public class LinkValueListModel
    public EventList<LinkValue> getList()
    {
       return sortedValues;
+   }
+
+   public EventList<LinkValue> getUnsortedList()
+   {
+      return linkValues;
    }
 
    public void remove( LinkValue link)
