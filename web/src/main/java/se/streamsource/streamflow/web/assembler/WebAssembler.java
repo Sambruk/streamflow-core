@@ -28,6 +28,7 @@ import org.qi4j.rest.query.IndexResource;
 import org.qi4j.rest.query.SPARQLResource;
 import org.restlet.security.ChallengeAuthenticator;
 import se.streamsource.dci.restlet.server.ResourceFinder;
+import se.streamsource.streamflow.web.application.security.AuthenticationFilter;
 import se.streamsource.streamflow.web.resource.APIRouter;
 import se.streamsource.streamflow.web.resource.admin.ConsoleServerResource;
 import se.streamsource.streamflow.web.resource.admin.SolrSearchServerResource;
@@ -62,6 +63,7 @@ public class WebAssembler
       // Resources
       module.addObjects(
             APIRouter.class,
+            AuthenticationFilter.class,
 
             // Events
             DomainEventsServerResource.class,

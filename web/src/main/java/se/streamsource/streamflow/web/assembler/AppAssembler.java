@@ -17,6 +17,11 @@
 
 package se.streamsource.streamflow.web.assembler;
 
+import static org.qi4j.api.common.Visibility.application;
+import static org.qi4j.api.common.Visibility.layer;
+
+import javax.management.MBeanServer;
+
 import org.qi4j.api.common.Visibility;
 import org.qi4j.api.service.qualifier.ServiceQualifier;
 import org.qi4j.api.structure.Application;
@@ -29,6 +34,7 @@ import org.qi4j.spi.query.NamedEntityFinder;
 import org.qi4j.spi.query.NamedQueries;
 import org.qi4j.spi.query.NamedQueryDescriptor;
 import org.qi4j.spi.service.importer.ServiceSelectorImporter;
+
 import se.streamsource.streamflow.infrastructure.ConfigurationManagerService;
 import se.streamsource.streamflow.infrastructure.event.replay.DomainEventPlayerService;
 import se.streamsource.streamflow.server.plugin.authentication.UserDetailsValue;
@@ -52,7 +58,7 @@ import se.streamsource.streamflow.web.application.organization.BootstrapAssemble
 import se.streamsource.streamflow.web.application.pdf.CasePdfGenerator;
 import se.streamsource.streamflow.web.application.pdf.SubmittedFormPdfGenerator;
 import se.streamsource.streamflow.web.application.security.AuthenticationFilter;
-import se.streamsource.streamflow.web.application.security.AuthenticationFilterFactoryService;
+import se.streamsource.streamflow.web.application.security.AuthenticationFilterService;
 import se.streamsource.streamflow.web.application.statistics.CaseStatisticsService;
 import se.streamsource.streamflow.web.application.statistics.CaseStatisticsValue;
 import se.streamsource.streamflow.web.application.statistics.FormFieldStatisticsValue;
@@ -60,10 +66,6 @@ import se.streamsource.streamflow.web.application.statistics.JdbcStatisticsStore
 import se.streamsource.streamflow.web.application.statistics.LoggingStatisticsStore;
 import se.streamsource.streamflow.web.application.statistics.RelatedStatisticsValue;
 import se.streamsource.streamflow.web.infrastructure.index.NamedSolrDescriptor;
-
-import javax.management.MBeanServer;
-
-import static org.qi4j.api.common.Visibility.*;
 
 /**
  * JAVADOC
@@ -150,9 +152,8 @@ public class AppAssembler
 
    private void security( ModuleAssembly module ) throws AssemblyException
    {
-      module.addObjects( AuthenticationFilter.class );
       module.addValues(UserDetailsValue.class);
-      module.addServices( AuthenticationFilterFactoryService.class )
+      module.addServices( AuthenticationFilterService.class )
             .identifiedBy( "authentication" )
             .instantiateOnStartup()
             .visibleIn( application );

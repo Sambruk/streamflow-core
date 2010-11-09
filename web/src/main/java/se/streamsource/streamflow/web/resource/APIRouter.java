@@ -33,9 +33,11 @@ import org.restlet.resource.ServerResource;
 import org.restlet.routing.Filter;
 import org.restlet.routing.Router;
 import org.restlet.routing.Template;
+
 import se.streamsource.dci.restlet.server.CommandQueryRestlet2;
 import se.streamsource.dci.restlet.server.ResourceFinder;
-import se.streamsource.streamflow.web.application.security.AuthenticationFilterFactory;
+import se.streamsource.streamflow.web.application.security.AuthenticationFilter;
+import se.streamsource.streamflow.web.application.security.AuthenticationFilterService;
 import se.streamsource.streamflow.web.resource.admin.ConsoleServerResource;
 import se.streamsource.streamflow.web.resource.admin.SolrSearchServerResource;
 import se.streamsource.streamflow.web.resource.events.DomainEventsServerResource;
@@ -47,18 +49,18 @@ public class APIRouter
       extends Router
 {
    private ObjectBuilderFactory factory;
-   private AuthenticationFilterFactory filterFactory;
+   private AuthenticationFilterService filterService;
 
-   public APIRouter( @Uses Context context, @Structure ObjectBuilderFactory factory, @Service AuthenticationFilterFactory filterFactory ) throws Exception
+   public APIRouter( @Uses Context context, @Structure ObjectBuilderFactory factory, @Service AuthenticationFilterService filterService ) throws Exception
    {
       super( context );
       this.factory = factory;
-      this.filterFactory = filterFactory;
+      this.filterService = filterService;
 
-      Restlet cqr = factory.newObjectBuilder( CommandQueryRestlet2.class ).use( context ).newInstance();
+      Restlet cqr = factory.newObjectBuilder( CommandQueryRestlet2.class ).use( getContext() ).newInstance();
 
-      Filter authenticationFilter = this.filterFactory.createFilter( context, cqr );
-
+      Filter authenticationFilter = factory.newObjectBuilder( AuthenticationFilter.class ).use( getContext(), cqr, this.filterService ).newInstance();
+      
       Filter performanceLoggingFilter = new PerformanceLoggingFilter( context, authenticationFilter );
 
       attachDefault( new ExtensionMediaTypeFilter( getContext(), performanceLoggingFilter ) );
@@ -92,7 +94,7 @@ public class APIRouter
       // Version info
       Directory directory = new Directory( getContext(), "clap://thread/static/" );
       directory.setListingAllowed( true );
-      attach( "/static", this.filterFactory.createFilter( getContext(), directory ) );
+      attach( "/static", factory.newObjectBuilder( AuthenticationFilter.class ).use( getContext(), directory, this.filterService ).newInstance());
    }
 
    private Restlet createServerResourceFinder( Class<? extends ServerResource> resource )
@@ -107,7 +109,7 @@ public class APIRouter
 
       if (secure)
       {
-         return filterFactory.createFilter( getContext(), finder );
+         return factory.newObjectBuilder( AuthenticationFilter.class ).use( getContext(), finder, this.filterService ).newInstance();
       } else
          return finder;
    }
