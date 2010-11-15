@@ -31,6 +31,8 @@ import org.qi4j.api.query.grammar.OrderBy;
 import org.qi4j.spi.query.EntityFinderException;
 import org.qi4j.spi.query.NamedEntityFinder;
 import org.qi4j.spi.query.NamedQueryDescriptor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +44,7 @@ public class SolrEntityQueryMixin
    @Service
    private EmbeddedSolrService solr;
 
+   private Logger logger = LoggerFactory.getLogger( SolrEntityQueryMixin.class );
 
    public Iterable<EntityReference> findEntities( NamedQueryDescriptor queryDescriptor, String resultType, @Optional Map<String, Object> variables, @Optional OrderBy[] orderBySegments, @Optional Integer firstResult, @Optional Integer maxResults ) throws EntityFinderException
    {
@@ -67,7 +70,11 @@ public class SolrEntityQueryMixin
             }
          }
 
-         QueryResponse query = server.query( SolrParams.toSolrParams( list ) );
+         SolrParams solrParams = SolrParams.toSolrParams( list );
+         logger.debug( "Search:"+ list.toString());
+
+         QueryResponse query = server.query( solrParams );
+
          SolrDocumentList results = query.getResults();
 
          List<EntityReference> references = new ArrayList<EntityReference>( results.size() );

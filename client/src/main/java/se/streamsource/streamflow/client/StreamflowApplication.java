@@ -42,45 +42,32 @@ import org.restlet.data.Protocol;
 import org.restlet.routing.Filter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.client.assembler.StreamflowClientAssembler;
 import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
-import se.streamsource.streamflow.client.util.dialog.DialogService;
-import se.streamsource.streamflow.client.util.JavaHelp;
-import se.streamsource.streamflow.client.util.i18n;
-import se.streamsource.streamflow.client.ui.account.AccountSelector;
 import se.streamsource.streamflow.client.ui.DebugWindow;
-import se.streamsource.streamflow.client.ui.account.AccountResources;
-import se.streamsource.streamflow.client.ui.account.AccountsDialog;
-import se.streamsource.streamflow.client.ui.account.AccountsModel;
-import se.streamsource.streamflow.client.ui.account.ProfileView;
+import se.streamsource.streamflow.client.ui.account.*;
 import se.streamsource.streamflow.client.ui.administration.AdministrationWindow;
 import se.streamsource.streamflow.client.ui.overview.OverviewWindow;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceWindow;
+import se.streamsource.streamflow.client.util.JavaHelp;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.EventStream;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
 
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.SwingUtilities;
-import javax.swing.ToolTipManager;
-import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Frame;
-import java.awt.Window;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EventObject;
 
-import static se.streamsource.streamflow.client.util.i18n.*;
+import static se.streamsource.streamflow.client.util.i18n.text;
 
 /**
  * Controller for the application
@@ -233,12 +220,16 @@ public class StreamflowApplication
             @Override
             protected int beforeHandle( Request request, Response response )
             {
+               workspaceWindow.getFrame().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+
                return super.beforeHandle( request, response );
             }
 
             @Override
             protected void afterHandle( Request request, Response response )
             {
+               workspaceWindow.getFrame().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+
                super.afterHandle( request, response );
             }
          };

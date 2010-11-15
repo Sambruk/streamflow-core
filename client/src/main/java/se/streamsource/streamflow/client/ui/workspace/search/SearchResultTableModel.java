@@ -17,6 +17,8 @@
 
 package se.streamsource.streamflow.client.ui.workspace.search;
 
+import org.jdesktop.application.Application;
+import org.jdesktop.application.Task;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilder;
@@ -53,8 +55,26 @@ public class SearchResultTableModel
    {
       if (searchString != null)
       {
-         final LinksValue newRoot = performSearch();
-         EventListSynch.synchronize( newRoot.links().get(), eventList );
+         new Task<LinksValue, Void>( Application.getInstance(  ))
+         {
+            @Override
+            protected LinksValue doInBackground() throws Exception
+            {
+               return performSearch();
+            }
+
+            @Override
+            protected void succeeded( LinksValue result )
+            {
+               EventListSynch.synchronize( result.links().get(), eventList );
+            }
+
+            @Override
+            protected void failed( Throwable cause )
+            {
+               throw (RuntimeException) cause;
+            }
+         }.execute();
       }
    }
 

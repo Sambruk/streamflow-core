@@ -30,8 +30,6 @@ import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
 import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.util.dialog.DialogService;
-import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.client.ui.ContextItem;
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseResources;
 import se.streamsource.streamflow.client.ui.workspace.context.WorkspaceContextView2;
@@ -43,34 +41,15 @@ import se.streamsource.streamflow.client.ui.workspace.table.CasesView;
 import se.streamsource.streamflow.client.ui.workspace.table.InboxCaseTableFormatter;
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.RoundedBorder;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
 
-import javax.swing.ActionMap;
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.KeyStroke;
-import javax.swing.SwingUtilities;
-import javax.swing.UIDefaults;
-import javax.swing.UIManager;
+import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Point;
-import java.awt.Toolkit;
+import java.awt.*;
 import java.awt.event.KeyEvent;
 
 /**
@@ -321,7 +300,7 @@ public class WorkspaceView
    public void search()
    {
 
-      String searchString = searchField.getText();
+      final String searchString = searchField.getText();
 
       if (searchString.length() > 500)
       {

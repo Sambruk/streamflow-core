@@ -16,11 +16,13 @@
 
 package se.streamsource.streamflow.web.rest;
 
+import org.qi4j.api.entity.Identity;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
 import org.restlet.Request;
+import org.slf4j.LoggerFactory;
 import se.streamsource.dci.restlet.server.ResultConverter;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.StringValue;
@@ -74,16 +76,16 @@ public class StreamflowResultConverter
    private LinksValue buildCaseList( Iterable<Case> query, Module module, String basePath )
    {
       LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() ).path( basePath );
-      try
-      {
          for (Case aCase : query)
          {
-            linksBuilder.addLink( caseDTO( (CaseEntity) aCase, module, basePath ) );
+            try
+            {
+               linksBuilder.addLink( caseDTO( (CaseEntity) aCase, module, basePath ) );
+            } catch (Exception e)
+            {
+               LoggerFactory.getLogger( getClass() ).error( "Could not create link for case:"+((Identity)aCase).identity().get(), e );
+            }
          }
-      } catch (Exception e)
-      {
-         return linksBuilder.newLinks();
-      }
       return linksBuilder.newLinks();
    }
 
