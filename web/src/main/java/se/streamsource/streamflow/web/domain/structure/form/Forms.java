@@ -26,13 +26,13 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.query.Query;
+import org.qi4j.api.query.QueryBuilderFactory;
+import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.web.domain.entity.form.FormEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.ChangesOwner;
-import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
-import se.streamsource.streamflow.web.domain.structure.project.Project;
 
 /**
  * JAVADOC
@@ -50,6 +50,9 @@ public interface Forms
    void moveForm( Form form, Forms toForms );
 
    void mergeForms( Forms to );
+
+   // Queries
+   Query<SelectedForms> usages( Form form );
 
    interface Data
    {
@@ -71,6 +74,9 @@ public interface Forms
 
       @Structure
       UnitOfWorkFactory uowf;
+
+      @Structure
+      QueryBuilderFactory qbf;
 
       @This
       Data data;
@@ -129,6 +135,16 @@ public interface Forms
             removedForm( DomainEvent.CREATE, form );
             to.addForm( form );
          }
+      }
+
+      public Query<SelectedForms> usages( Form form )
+      {
+         SelectedForms.Data selectedForms = QueryExpressions.templateFor( SelectedForms.Data.class );
+         Query<SelectedForms> formUsages = qbf.newQueryBuilder( SelectedForms.class ).
+               where( QueryExpressions.contains( selectedForms.selectedForms(), form ) ).
+               newQuery( uowf.currentUnitOfWork() );
+
+         return formUsages;
       }
    }
 }

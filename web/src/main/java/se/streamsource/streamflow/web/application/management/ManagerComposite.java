@@ -24,6 +24,10 @@ import org.qi4j.api.composite.TransientComposite;
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.io.Input;
+import org.qi4j.api.io.Inputs;
+import org.qi4j.api.io.Outputs;
+import org.qi4j.api.io.Transforms;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.ComputedPropertyInstance;
 import org.qi4j.api.property.GenericPropertyInfo;
@@ -35,9 +39,8 @@ import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.usecase.UsecaseBuilder;
 import org.qi4j.index.reindexer.Reindexer;
 import org.qi4j.spi.entity.EntityState;
+import org.qi4j.spi.entitystore.BackupRestore;
 import org.qi4j.spi.entitystore.EntityStore;
-import org.qi4j.spi.entitystore.ExportSupport;
-import org.qi4j.spi.entitystore.ImportSupport;
 import org.qi4j.spi.query.EntityFinder;
 import org.qi4j.spi.structure.ModuleSPI;
 import org.slf4j.Logger;
@@ -51,6 +54,8 @@ import se.streamsource.streamflow.infrastructure.event.source.EventSource;
 import se.streamsource.streamflow.infrastructure.event.source.EventStream;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
+import se.streamsource.streamflow.util.Function;
+import se.streamsource.streamflow.util.Iterables;
 import se.streamsource.streamflow.web.application.statistics.CaseStatistics;
 import se.streamsource.streamflow.web.application.statistics.StatisticsStoreException;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
@@ -58,28 +63,18 @@ import se.streamsource.streamflow.web.infrastructure.event.EventManagement;
 import se.streamsource.streamflow.web.infrastructure.index.EmbeddedSolrService;
 import se.streamsource.streamflow.web.infrastructure.index.SolrQueryService;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.io.Reader;
-import java.io.Writer;
+import java.io.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-import static se.streamsource.streamflow.infrastructure.event.source.helper.Events.*;
-import static se.streamsource.streamflow.util.Iterables.*;
+import static se.streamsource.streamflow.infrastructure.event.source.helper.Events.events;
+import static se.streamsource.streamflow.infrastructure.event.source.helper.Events.withNames;
+import static se.streamsource.streamflow.util.Iterables.count;
+import static se.streamsource.streamflow.util.Iterables.filter;
 
 /**
  * Implementation of Manager interface. All general JMX management methods
@@ -116,10 +111,7 @@ public interface ManagerComposite
       Reindexer reindexer;
 
       @Service
-      ExportSupport exportDatabase;
-
-      @Service
-      ImportSupport importDatabase;
+      BackupRestore backupRestore;
 
       @Service
       EventSource eventSource;
@@ -214,16 +206,8 @@ public interface ManagerComposite
       {
          SimpleDateFormat format = new SimpleDateFormat( "yyyyMMdd_HHmmss" );
          File exportFile = new File( exports, "streamflow_data_" + format.format( new Date() ) + (compress ? ".json.gz" : ".json") );
-         OutputStream out = new FileOutputStream( exportFile );
 
-         if (compress)
-         {
-            out = new GZIPOutputStream( out );
-         }
-
-         Writer writer = new OutputStreamWriter( out, "UTF-8" );
-         exportDatabase.exportTo( new PrintWriter(writer) );
-         writer.close();
+         backupRestore.backup().transferTo( Outputs.text(exportFile ));
 
          return "Database exported to:" + exportFile.getAbsolutePath();
       }
@@ -237,22 +221,14 @@ public interface ManagerComposite
          if (!importFile.exists())
             return "No such import file:" + importFile.getAbsolutePath();
 
-         InputStream in1 = new FileInputStream( importFile );
-         if (importFile.getName().endsWith( "gz" ))
-         {
-            in1 = new GZIPInputStream( in1 );
-         }
-         Reader in = new InputStreamReader( in1, "UTF-8" );
-
          logger.info( "Importing " +importFile);
 
          try
          {
-            importDatabase.importFrom( in );
+            Inputs.text( importFile ).transferTo( backupRestore.restore() );
             logger.info( "Imported " +importFile);
          } finally
          {
-            in.close();
             try
             {
                reindex();
@@ -359,18 +335,13 @@ public interface ManagerComposite
             // Replay events from time of snapshot backup
             Date latestBackupDate = latestBackup == null ? new Date( 0 ) : getBackupDate( latestBackup );
 
-            for (File eventFile : eventFiles)
+            Inputs.combine( Iterables.map(new Function<File,Input<String,IOException>>()
             {
-
-               InputStream in = new FileInputStream( eventFile );
-               if (eventFile.getName().endsWith( ".gz" ))
+               public Input<String, IOException> map( File file )
                {
-                  in = new GZIPInputStream( in );
+                  return Inputs.text( file );
                }
-
-               Reader reader = new InputStreamReader( in, "UTF-8" );
-               eventManagement.restoreEvents( reader );
-            }
+            }, Arrays.asList( eventFiles ))).transferTo( eventManagement.restore() );
 
             {
                // Replay transactions
@@ -537,16 +508,10 @@ public interface ManagerComposite
 
       public String databaseSize()
       {
-         final int[] count = {0};
-         entityStore.get().visitEntityStates( new EntityStore.EntityStateVisitor<RuntimeException>()
-         {
-            public void visitEntityState( EntityState entityState )
-            {
-               count[0]++;
-            }
-         }, module );
+         Transforms.Counter<EntityState> counter = new Transforms.Counter<EntityState>();
+         entityStore.get().entityStates( module ).transferTo( Transforms.map( counter, Outputs.<EntityState, RuntimeException>noop() ));
 
-         return "Database contains " + count[0] + " objects";
+         return "Database contains " + counter.getCount() + " objects";
       }
 
       public void refreshStatistics() throws StatisticsStoreException

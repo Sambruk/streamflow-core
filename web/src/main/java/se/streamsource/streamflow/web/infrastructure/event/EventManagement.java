@@ -17,8 +17,9 @@
 
 package se.streamsource.streamflow.web.infrastructure.event;
 
+import org.qi4j.api.io.Output;
+
 import java.io.IOException;
-import java.io.Reader;
 import java.util.Date;
 
 /**
@@ -43,10 +44,9 @@ public interface EventManagement
    void removeTo( Date date ) throws IOException;
 
    /**
-    * Does restore events from the given reader. 
+    * Output used to restore events from a backup
     *
-    * @param in
-    * @throws IOException
+    * @return
     */
-   void restoreEvents( Reader in ) throws IOException;
+   Output<String, IOException> restore();
 }

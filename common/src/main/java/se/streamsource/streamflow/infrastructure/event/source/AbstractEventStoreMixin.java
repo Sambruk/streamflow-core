@@ -22,7 +22,6 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.service.Activatable;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.spi.property.ValueType;
@@ -41,9 +40,10 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import static java.util.Collections.*;
+import static java.util.Collections.synchronizedList;
 
 /**
  * Base implementation for EventStores.
@@ -61,7 +61,7 @@ public abstract class AbstractEventStoreMixin
    protected ValueType domainEventType;
    protected ValueType transactionEventsType;
 
-   protected ReentrantLock lock = new ReentrantLock();
+   protected Lock lock = new ReentrantLock();
 
    @Structure
    protected ModuleSPI module;

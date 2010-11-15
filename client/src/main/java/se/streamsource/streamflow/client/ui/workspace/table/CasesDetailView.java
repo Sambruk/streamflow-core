@@ -118,6 +118,6 @@ public class CasesDetailView
    public void notifyTransactions( Iterable<TransactionEvents> transactions )
    {
       if (Events.matches( Events.withNames("deletedEntity" ), transactions ))
-         layout.show( this, "blank" );
+         clear();
    }
 }

@@ -21,14 +21,13 @@ import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.io.Outputs;
+import org.qi4j.api.io.Transforms;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.structure.Application;
-import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.usecase.Usecase;
-import org.qi4j.api.usecase.UsecaseBuilder;
 import org.qi4j.spi.entity.EntityState;
 import org.qi4j.spi.entitystore.EntityStore;
 import org.qi4j.spi.structure.ModuleSPI;
@@ -70,30 +69,23 @@ public interface StartupMigrationService
             {
                 // Migrate all data eagerly
                 logger.info( "Migrating data to new version" );
-                final Usecase usecase = UsecaseBuilder.newUsecase( "Migrate data" );
-                final UnitOfWork[] uow = new UnitOfWork[]{ uowf.newUnitOfWork( usecase ) };
 
-                entityStore.visitEntityStates( new EntityStore.EntityStateVisitor<Exception>()
+                // Do nothing - the EntityStore will do the migration on load
+                entityStore.entityStates( module ).transferTo( Transforms.map( new Transforms.Function<EntityState, EntityState>()
                 {
-                    public void visitEntityState( EntityState entityState )
-                        throws Exception
-                    {
-                        // Do nothing - the EntityStore will do the migration on load
-                        count[ 0 ]++;
+                   public EntityState map( EntityState entityState )
+                   {
+                      count[ 0 ]++;
 
-                        uow[ 0 ].get( module.classLoader().loadClass( entityState.entityDescriptor()
-                            .entityType()
-                            .type().name() ), entityState.identity().identity() );
+                      if( count[ 0 ] % 1000 == 0 )
+                      {
+                          logger.info( "Checked " + count[ 0 ] + " entities" );
+                      }
 
-                        if( count[ 0 ] % 1000 == 0 )
-                        {
-                            logger.info( "Checked " + count[ 0 ] + " entities" );
-                            uow[ 0 ].complete();
-                            uow[ 0 ] = uowf.newUnitOfWork( usecase );
-                        }
-                    }
-                }, module );
-                uow[ 0 ].complete();
+                      return entityState;
+                   }
+                }, Outputs.<EntityState, RuntimeException>noop() ));
+
                 logger.info( "Migration finished. Checked " + count[ 0 ] + " entities" );
             }
             config.configuration().lastStartupVersion().set( application.version() );

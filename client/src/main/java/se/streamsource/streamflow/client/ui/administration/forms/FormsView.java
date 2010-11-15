@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.client.ui.administration.forms;
 
+import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.swing.EventListModel;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
@@ -30,19 +31,16 @@ import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
-import se.streamsource.streamflow.client.util.CommandTask;
-import se.streamsource.streamflow.client.util.ListDetailView;
-import se.streamsource.streamflow.client.util.RefreshWhenVisible;
+import se.streamsource.streamflow.client.util.*;
 import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.NameDialog;
 import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
-import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
 import se.streamsource.streamflow.util.Strings;
 
-import javax.swing.ActionMap;
+import javax.swing.*;
 import java.awt.Component;
 import java.awt.Dimension;
 
@@ -161,6 +159,21 @@ public class FormsView
          };
       } else
          return null;
+   }
+
+   @Action
+   public void showUsages()
+   {
+      LinkValue item = (LinkValue) list.getSelectedValue();
+      EventList<LinkValue> usageList = model.usages( item );
+
+      JList list = new JList();
+      list.setCellRenderer( new LinkListCellRenderer() );
+      list.setModel( new EventListModel<LinkValue>( usageList ) );
+
+      dialogs.showOkDialog( this, list );
+
+      usageList.dispose();
    }
 
    public void notifyTransactions( Iterable<TransactionEvents> transactions )

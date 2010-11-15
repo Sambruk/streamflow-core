@@ -20,6 +20,7 @@ package se.streamsource.streamflow.client.ui.administration.surface;
 import ca.odell.glazedlists.swing.EventListModel;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Task;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
@@ -27,21 +28,21 @@ import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.client.StreamflowResources;
-import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
+import se.streamsource.streamflow.client.util.CommandTask;
+import se.streamsource.streamflow.client.util.ListDetailView;
 import se.streamsource.streamflow.client.util.RefreshWhenVisible;
+import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.NameDialog;
 import se.streamsource.streamflow.client.util.i18n;
-import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
-import se.streamsource.streamflow.client.util.ListDetailView;
-import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.util.Strings;
 
-import javax.swing.ActionMap;
-import javax.swing.JList;
-import java.awt.Component;
+import javax.swing.*;
+import java.awt.*;
 
-import static se.streamsource.streamflow.client.util.i18n.*;
+import static se.streamsource.streamflow.client.util.i18n.text;
 
 
 public class AccessPointsView
@@ -57,8 +58,6 @@ public class AccessPointsView
 
    @Uses
    Iterable<ConfirmationDialog> confirmationDialog;
-
-   public JList accessPointList;
 
    public AccessPointsView( @Service ApplicationContext context, @Uses final CommandQueryClient client, @Structure final ObjectBuilderFactory obf )
    {
@@ -80,47 +79,69 @@ public class AccessPointsView
    }
 
    @Action
-   public void add()
+   public Task add()
    {
-      NameDialog dialog = nameDialogs.iterator().next();
+      final NameDialog dialog = nameDialogs.iterator().next();
 
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.add_accesspoint_title ) );
 
       if (Strings.notEmpty( dialog.name() ))
       {
-         model.createAccessPoint( dialog.name() );
-      }
+         return new CommandTask()
+         {
+            @Override
+            public void command()
+               throws Exception
+            {
+               model.createAccessPoint( dialog.name() );
+            }
+         };
+      } else
+         return null;
    }
 
    @Action
-   public void remove()
+   public Task remove()
    {
-      LinkValue selected = (LinkValue) accessPointList.getSelectedValue();
+      final LinkValue selected = (LinkValue) list.getSelectedValue();
 
       ConfirmationDialog dialog = confirmationDialog.iterator().next();
       dialog.setRemovalMessage( selected.text().get() );
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation ) );
       if (dialog.isConfirmed())
       {
-         model.removeAccessPoint( selected );
-      }
+         return new CommandTask()
+         {
+            @Override
+            public void command()
+               throws Exception
+            {
+               model.removeAccessPoint( selected );
+            }
+         };
+      } else
+         return null;
    }
 
    @Action
-   public void rename()
+   public Task rename()
    {
-      NameDialog dialog = nameDialogs.iterator().next();
+      final NameDialog dialog = nameDialogs.iterator().next();
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.change_accesspoint_title ) );
 
       if (Strings.notEmpty( dialog.name() ))
       {
-         model.changeDescription( (LinkValue) accessPointList.getSelectedValue(), dialog.name() );
-      }
-   }
-
-   public JList getAccessPointsList()
-   {
-      return accessPointList;
+         return new CommandTask()
+         {
+            @Override
+            public void command()
+               throws Exception
+            {
+               model.changeDescription( (LinkValue) list.getSelectedValue(), dialog.name() );
+            }
+         };
+      } else
+         return null;
    }
 
    public void notifyTransactions( Iterable<TransactionEvents> transactions )

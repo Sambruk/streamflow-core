@@ -19,16 +19,21 @@ package se.streamsource.streamflow.web.context.administration.forms;
 
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.query.Query;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.EntityValue;
+import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.domain.form.FormValue;
+import se.streamsource.streamflow.domain.structure.Describable;
+import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.web.domain.entity.form.FormEntity;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
 import se.streamsource.streamflow.web.domain.structure.form.Forms;
+import se.streamsource.streamflow.web.domain.structure.form.SelectedForms;
 
 /**
  * JAVADOC
@@ -58,6 +63,13 @@ public class FormContext
       Forms toForms = module.unitOfWorkFactory().currentUnitOfWork().get( Forms.class, to.entity().get() );
       Form form = RoleMap.role( Form.class );
       RoleMap.role( Forms.class ).moveForm( form, toForms );
+   }
+
+   public LinksValue usages()
+   {
+      Query<SelectedForms> usageQuery = RoleMap.role( Forms.class ).usages( RoleMap.role( Form.class ) );
+      LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() );
+      return builder.addDescribables( (Iterable<? extends Describable>) usageQuery ).newLinks();
    }
 
    public void delete()

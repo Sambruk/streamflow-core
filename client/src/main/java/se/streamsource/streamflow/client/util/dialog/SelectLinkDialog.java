@@ -33,6 +33,7 @@ import se.streamsource.streamflow.client.util.GroupedFilteredList;
 import se.streamsource.streamflow.util.Iterables;
 
 import javax.swing.*;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,7 +53,7 @@ public class SelectLinkDialog
                                      @Uses EventList<? extends LinkValue> links,
                                       @Structure ObjectBuilderFactory obf )
    {
-      super( );
+      super( new BorderLayout());
 
       setActionMap( context.getActionMap( this ) );
       getActionMap().put( JXDialog.CLOSE_ACTION_COMMAND, getActionMap().get("cancel" ));

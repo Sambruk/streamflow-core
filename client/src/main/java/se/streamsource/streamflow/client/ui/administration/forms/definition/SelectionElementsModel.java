@@ -83,7 +83,6 @@ public class SelectionElementsModel
       try
       {
          client.postCommand( "addselectionelement", builder.newInstance() );
-         refresh();
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_add_field, e );
@@ -98,7 +97,6 @@ public class SelectionElementsModel
       try
       {
          client.postCommand( "removeselectionelement", builder.newInstance() );
-         refresh();
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_remove_field, e );
@@ -113,7 +111,6 @@ public class SelectionElementsModel
       try
       {
          client.postCommand( "moveselectionelement", builder.newInstance() );
-         refresh();
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_remove_field, e );
@@ -128,7 +125,6 @@ public class SelectionElementsModel
       try
       {
          client.postCommand( "changeselectionelementname", builder.newInstance() );
-         refresh();
       } catch (ResourceException e)
       {
          throw new OperationException( AdministrationResources.could_not_add_field, e );

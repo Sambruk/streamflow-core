@@ -21,33 +21,25 @@ import jdbm.RecordManager;
 import jdbm.RecordManagerFactory;
 import jdbm.RecordManagerOptions;
 import jdbm.btree.BTree;
-import jdbm.helper.ByteArraySerializer;
-import jdbm.helper.LongComparator;
-import jdbm.helper.LongSerializer;
-import jdbm.helper.MRU;
-import jdbm.helper.Serializer;
-import jdbm.helper.Tuple;
-import jdbm.helper.TupleBrowser;
+import jdbm.helper.*;
 import jdbm.recman.CacheRecordManager;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.io.Output;
+import org.qi4j.api.io.Receiver;
+import org.qi4j.api.io.Sender;
+import org.qi4j.api.io.Transforms;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
-import se.streamsource.streamflow.infrastructure.event.source.AbstractEventStoreMixin;
-import se.streamsource.streamflow.infrastructure.event.source.EventSource;
-import se.streamsource.streamflow.infrastructure.event.source.EventStore;
-import se.streamsource.streamflow.infrastructure.event.source.EventStream;
-import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
+import se.streamsource.streamflow.infrastructure.event.source.*;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.Properties;
@@ -140,44 +132,53 @@ public interface JdbmEventStoreService
          }
       }
 
-      public void restoreEvents( Reader in ) throws IOException
+      public Output<String, IOException> restore()
       {
-         lock();
-         try
+         return Transforms.lock(JdbmEventStoreMixin.this.lock, new Output<String, IOException>()
          {
-            String valueJson;
-            BufferedReader reader = new BufferedReader( in );
-            int count = 0;
-            logger.info( "Restore events" );
-            while ((valueJson = reader.readLine()) != null)
+            public <SenderThrowableType extends Throwable> void receiveFrom( Sender<String, SenderThrowableType> sender ) throws IOException, SenderThrowableType
             {
-               JSONObject json = (JSONObject) new JSONTokener( valueJson ).nextValue();
-               TransactionEvents transaction = (TransactionEvents) transactionEventsType.fromJSON( json, module );
-
-               storeEvents( transaction );
-
-               count++;
-               if (count % 1000 == 0)
+               try
                {
-                  logger.info( "Restored " + count + " events" );
-                  commit(); // Commit every 1000 transactions to avoid OutOfMemory issues
-               }
+                  sender.sendTo( new Receiver<String, IOException>()
+                  {
+                     int count = 0;
 
+                     public void receive( String item ) throws IOException
+                     {
+                        try
+                        {
+                           JSONObject json = (JSONObject) new JSONTokener( item ).nextValue();
+                           TransactionEvents transaction = (TransactionEvents) transactionEventsType.fromJSON( json, module );
+
+                           storeEvents( transaction );
+
+                           count++;
+                           if (count % 1000 == 0)
+                              commit(); // Commit every 1000 transactions to avoid OutOfMemory issues
+
+                        } catch (JSONException e)
+                        {
+                           throw new IOException(e);
+                        }
+                     }
+                  });
+
+                  commit();
+               } catch (IOException e)
+               {
+                  rollback();
+                  throw e;
+               } catch (Throwable senderThrowableType)
+               {
+                  rollback();
+                  throw (SenderThrowableType) senderThrowableType;
+               }
             }
-            commit();
-            logger.info( "Restore events done, " + count + " events restored" );
-         } catch (JSONException e)
-         {
-            rollback();
-            throw (IOException) new IOException( "Could not parse events" ).initCause( e );
-         } finally
-         {
-            lock.unlock();
-         }
+         });
       }
 
       // EventStore implementation
-
       public void transactionsAfter( long afterTimestamp, TransactionVisitor visitor )
       {
          // Lock datastore first

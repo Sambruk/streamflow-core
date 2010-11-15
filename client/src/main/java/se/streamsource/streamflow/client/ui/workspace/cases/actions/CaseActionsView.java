@@ -49,25 +49,13 @@ import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
 import se.streamsource.streamflow.resource.caze.CaseVisitorConfigValue;
 
-import javax.swing.ActionMap;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.KeyStroke;
-import javax.swing.SwingConstants;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Desktop;
-import java.awt.GridLayout;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.awt.*;
+import java.io.*;
 
-import static se.streamsource.streamflow.infrastructure.event.source.helper.Events.*;
+import static se.streamsource.streamflow.infrastructure.event.source.helper.Events.matches;
+import static se.streamsource.streamflow.infrastructure.event.source.helper.Events.withUsecases;
 
 /**
  * JAVADOC
@@ -327,7 +315,7 @@ public class CaseActionsView extends JPanel
 
    public void notifyTransactions( Iterable<TransactionEvents> transactions )
    {
-      if (matches( withUsecases("open", "assign", "close", "delete", "onhold", "reopen", "resume", "unassign"), transactions ))
+      if (matches( withUsecases("sendto", "open", "assign", "close", "delete", "onhold", "reopen", "resume", "unassign"), transactions ))
       {
          model.refresh();
       }
