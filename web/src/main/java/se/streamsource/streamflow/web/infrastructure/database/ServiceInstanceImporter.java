@@ -50,6 +50,11 @@ public class ServiceInstanceImporter
       return getServiceImporter().isActive( o );
    }
 
+   public boolean isAvailable( Object instance )
+   {
+      return getServiceImporter().isAvailable( instance );
+   }
+
    private ServiceImporter getServiceImporter()
    {
       if (service == null)

@@ -191,9 +191,14 @@ public interface DataSourceService
          return config;
       }
 
-      public boolean isActive( Object o )
+      public boolean isActive( Object instance )
       {
-         return pools.containsValue( o );
+         return pools.containsValue( instance );
+      }
+
+      public boolean isAvailable( Object instance )
+      {
+         return pools.containsValue( instance );
       }
    }
 }

@@ -19,7 +19,6 @@ package se.streamsource.streamflow.web.context.administration.forms;
 
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.query.Query;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.dci.api.DeleteContext;
@@ -33,7 +32,6 @@ import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.web.domain.entity.form.FormEntity;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
 import se.streamsource.streamflow.web.domain.structure.form.Forms;
-import se.streamsource.streamflow.web.domain.structure.form.SelectedForms;
 
 /**
  * JAVADOC
@@ -67,9 +65,9 @@ public class FormContext
 
    public LinksValue usages()
    {
-      Query<SelectedForms> usageQuery = RoleMap.role( Forms.class ).usages( RoleMap.role( Form.class ) );
+      Iterable usageQuery = RoleMap.role( Forms.class ).usages( RoleMap.role( Form.class ) );
       LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() );
-      return builder.addDescribables( (Iterable<? extends Describable>) usageQuery ).newLinks();
+      return builder.addDescribables( (Iterable<Describable>) usageQuery ).newLinks();
    }
 
    public void delete()
