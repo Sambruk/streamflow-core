@@ -225,7 +225,20 @@ public interface ManagerComposite
 
          try
          {
-            Inputs.text( importFile ).transferTo( backupRestore.restore() );
+            Inputs.text( importFile ).transferTo( Transforms.map( new Transforms.Function<String,String>()
+            {
+               int count = 0;
+
+               public String map( String s )
+               {
+                  count++;
+
+                  if (count%1000 == 0)
+                     logger.info( "Imported "+count+" entities" );
+
+                  return s;
+               }
+            }, backupRestore.restore() ));
             logger.info( "Imported " +importFile);
          } finally
          {

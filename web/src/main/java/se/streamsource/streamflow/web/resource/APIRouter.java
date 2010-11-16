@@ -33,12 +33,12 @@ import org.restlet.resource.ServerResource;
 import org.restlet.routing.Filter;
 import org.restlet.routing.Router;
 import org.restlet.routing.Template;
-
 import se.streamsource.dci.restlet.server.CommandQueryRestlet2;
 import se.streamsource.dci.restlet.server.ResourceFinder;
 import se.streamsource.streamflow.web.application.security.AuthenticationFilter;
 import se.streamsource.streamflow.web.application.security.AuthenticationFilterService;
 import se.streamsource.streamflow.web.resource.admin.ConsoleServerResource;
+import se.streamsource.streamflow.web.resource.admin.LoggingServerResource;
 import se.streamsource.streamflow.web.resource.admin.SolrSearchServerResource;
 import se.streamsource.streamflow.web.resource.events.DomainEventsServerResource;
 
@@ -76,6 +76,7 @@ public class APIRouter
       adminRouter.attach( "/index", createServerResourceFinder( IndexResource.class ) );
       adminRouter.attach( "/console", createServerResourceFinder( ConsoleServerResource.class ) );
       adminRouter.attach( "/search", createServerResourceFinder( SolrSearchServerResource.class ) );
+      adminRouter.attach( "/log", LoggingServerResource.class );
       attach( "/admin/tools", new ExtensionMediaTypeFilter( getContext(), adminRouter ) );
 
       {

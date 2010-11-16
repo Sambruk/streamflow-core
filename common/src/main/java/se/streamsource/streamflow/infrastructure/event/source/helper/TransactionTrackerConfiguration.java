@@ -19,6 +19,7 @@ package se.streamsource.streamflow.infrastructure.event.source.helper;
 
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.configuration.ConfigurationComposite;
+import org.qi4j.api.configuration.Enabled;
 import org.qi4j.api.property.Property;
 
 /**
@@ -26,16 +27,8 @@ import org.qi4j.api.property.Property;
  * of the service extend this one.
  */
 public interface TransactionTrackerConfiguration
-   extends ConfigurationComposite
+   extends ConfigurationComposite, Enabled
 {
-   /**
-    * Determine whether transaction notifications should be sent or not.
-    *
-    * @return
-    */
-   @UseDefaults
-   Property<Boolean> enabled();
-
    /**
     * A timestamp when the last transaction was fetched.
     * @return

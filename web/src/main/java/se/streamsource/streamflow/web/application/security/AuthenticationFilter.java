@@ -23,6 +23,7 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.routing.Filter;
+import org.slf4j.MDC;
 
 /**
  * Accept login if user with the given username has the given password in the
@@ -43,6 +44,19 @@ public class AuthenticationFilter extends Filter
    @Override
    protected int beforeHandle(Request request, Response response)
    {
-      return filterService.beforeHandle(request, response, getContext());
+      int result = filterService.beforeHandle(request, response, getContext());
+
+      if (result == Filter.CONTINUE)
+         MDC.put( "user", request.getClientInfo().getUser().getName());
+
+      return result;
+   }
+
+   @Override
+   protected void afterHandle( Request request, Response response )
+   {
+      MDC.remove( "user" );
+
+      super.afterHandle( request, response );
    }
 }

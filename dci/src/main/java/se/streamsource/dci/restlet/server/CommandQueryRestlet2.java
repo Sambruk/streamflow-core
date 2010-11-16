@@ -40,6 +40,7 @@ import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import se.streamsource.dci.api.RoleMap;
 
 import java.util.Arrays;
@@ -76,144 +77,152 @@ public abstract class CommandQueryRestlet2
    @Override
    public void handle( Request request, Response response )
    {
-      int tries = 0;
+      MDC.put( "url", request.getResourceRef().toString() );
 
-      // TODO Make this number configurable
-      while (tries < 10)
+      try
       {
-         // Root of the call
-         Reference ref = request.getResourceRef();
-         List<String> segments = ref.getScheme().equals( "riap" ) ? ref.getRelativeRef( new Reference( "riap://application/" ) ).getSegments() : ref.getRelativeRef().getSegments();
+         int tries = 0;
 
-         // Handle conversion of verbs into standard interactions
-         if (segments.get( segments.size()-1 ).equals(""))
+         // TODO Make this number configurable
+         while (tries < 10)
          {
-            if (request.getMethod().equals( Method.DELETE ))
+            // Root of the call
+            Reference ref = request.getResourceRef();
+            List<String> segments = ref.getScheme().equals( "riap" ) ? ref.getRelativeRef( new Reference( "riap://application/" ) ).getSegments() : ref.getRelativeRef().getSegments();
+
+            // Handle conversion of verbs into standard interactions
+            if (segments.get( segments.size()-1 ).equals(""))
             {
-               // Translate DELETE into command "delete"
-               segments.set( segments.size()-1, "delete" );
-            } else if (request.getMethod().equals( Method.PUT ))
-            {
-               // Translate PUT into command "update"
-               segments.set( segments.size()-1, "update" );
-            }
-         }
-
-         request.getAttributes().put( "segments", segments );
-         request.getAttributes().put( "template", new StringBuilder("/rest/") );
-
-         Usecase usecase = UsecaseBuilder.buildUsecase( getUsecaseName( request ) ).with( request.getMethod().isSafe() ? CacheOptions.ALWAYS : CacheOptions.NEVER ).newUsecase();
-         UnitOfWork uow = uowf.newUnitOfWork( usecase );
-
-         RoleMap.newCurrentRoleMap();
-         try
-         {
-            // Start handling the build-up for the context
-            Uniform resource = createRoot(request, response);
-            resource.handle(request, response);
-
-            if (response.getEntity() != null)
-            {
-               if (response.getEntity().getModificationDate() == null)
+               if (request.getMethod().equals( Method.DELETE ))
                {
+                  // Translate DELETE into command "delete"
+                  segments.set( segments.size()-1, "delete" );
+               } else if (request.getMethod().equals( Method.PUT ))
+               {
+                  // Translate PUT into command "update"
+                  segments.set( segments.size()-1, "update" );
+               }
+            }
+
+            request.getAttributes().put( "segments", segments );
+            request.getAttributes().put( "template", new StringBuilder("/rest/") );
+
+            Usecase usecase = UsecaseBuilder.buildUsecase( getUsecaseName( request ) ).with( request.getMethod().isSafe() ? CacheOptions.ALWAYS : CacheOptions.NEVER ).newUsecase();
+            UnitOfWork uow = uowf.newUnitOfWork( usecase );
+
+            RoleMap.newCurrentRoleMap();
+            try
+            {
+               // Start handling the build-up for the context
+               Uniform resource = createRoot(request, response);
+               resource.handle(request, response);
+
+               if (response.getEntity() != null)
+               {
+                  if (response.getEntity().getModificationDate() == null)
+                  {
+                     try
+                     {
+                        EntityComposite entity = RoleMap.role( EntityComposite.class );
+                        EntityState state = spi.getEntityState( entity );
+                        Date lastModified = new Date( state.lastModified());
+                        Tag tag = new Tag(state.identity().identity()+"/"+state.version());
+                        response.getEntity().setModificationDate( lastModified );
+                        response.getEntity().setTag( tag );
+                     } catch (IllegalArgumentException e)
+                     {
+                        // Ignore
+                     }
+                  }
+
+                  // Check if characterset is set
+                  if (response.getEntity().getCharacterSet() == null)
+                  {
+                     response.getEntity().setCharacterSet( CharacterSet.UTF_8);
+                  }
+
+                  // Check if language is set
+                  if (response.getEntity().getLanguages().isEmpty())
+                  {
+                     response.getEntity().getLanguages().add( Language.ENGLISH );
+                  }
+
+                  uow.discard();
+               }
+               else
+               {
+                  // Check if last modified and tag is set
+                  Date lastModified = null;
+                  Tag tag = null;
                   try
                   {
                      EntityComposite entity = RoleMap.role( EntityComposite.class );
                      EntityState state = spi.getEntityState( entity );
-                     Date lastModified = new Date( state.lastModified());
-                     Tag tag = new Tag(state.identity().identity()+"/"+state.version());
-                     response.getEntity().setModificationDate( lastModified );
-                     response.getEntity().setTag( tag );
+                     lastModified = new Date( state.lastModified());
+                     tag = new Tag(state.identity().identity()+"/"+state.version());
                   } catch (IllegalArgumentException e)
                   {
                      // Ignore
                   }
-               }
 
-               // Check if characterset is set
-               if (response.getEntity().getCharacterSet() == null)
-               {
-                  response.getEntity().setCharacterSet( CharacterSet.UTF_8);
-               }
+                  uow.complete();
 
-               // Check if language is set
-               if (response.getEntity().getLanguages().isEmpty())
-               {
-                  response.getEntity().getLanguages().add( Language.ENGLISH );
-               }
-
-               uow.discard();
-            }
-            else
-            {
-               // Check if last modified and tag is set
-               Date lastModified = null;
-               Tag tag = null;
-               try
-               {
-                  EntityComposite entity = RoleMap.role( EntityComposite.class );
-                  EntityState state = spi.getEntityState( entity );
-                  lastModified = new Date( state.lastModified());
-                  tag = new Tag(state.identity().identity()+"/"+state.version());
-               } catch (IllegalArgumentException e)
-               {
-                  // Ignore
-               }
-
-               uow.complete();
-
-               Object result = commandResult.getResult();
-               if (result != null)
-               {
-                  if (result instanceof Representation)
-                     response.setEntity( (Representation) result);
-                  else
+                  Object result = commandResult.getResult();
+                  if (result != null)
                   {
-                     if (!responseWriter.write( result, response ))
-                        throw new ResourceException(Status.SERVER_ERROR_INTERNAL, "Could not write result of type "+result.getClass().getName());
+                     if (result instanceof Representation)
+                        response.setEntity( (Representation) result);
+                     else
+                     {
+                        if (!responseWriter.write( result, response ))
+                           throw new ResourceException(Status.SERVER_ERROR_INTERNAL, "Could not write result of type "+result.getClass().getName());
+                     }
+
+                     if (response.getEntity() != null)
+                     {
+                        // Check if characterset is set
+                        if (response.getEntity().getCharacterSet() == null)
+                        {
+                           response.getEntity().setCharacterSet( CharacterSet.UTF_8);
+                        }
+
+                        // Check if language is set
+                        if (response.getEntity().getLanguages().isEmpty())
+                        {
+                           response.getEntity().getLanguages().add( Language.ENGLISH );
+                        }
+
+                        // Check if last modified and tag is set
+                        if (lastModified != null)
+                        {
+                           response.getEntity().setModificationDate( lastModified );
+                           response.getEntity().setTag( tag );
+                        }
+                     }
+
                   }
-
-                  if (response.getEntity() != null)
-                  {
-                     // Check if characterset is set
-                     if (response.getEntity().getCharacterSet() == null)
-                     {
-                        response.getEntity().setCharacterSet( CharacterSet.UTF_8);
-                     }
-
-                     // Check if language is set
-                     if (response.getEntity().getLanguages().isEmpty())
-                     {
-                        response.getEntity().getLanguages().add( Language.ENGLISH );
-                     }
-
-                     // Check if last modified and tag is set
-                     if (lastModified != null)
-                     {
-                        response.getEntity().setModificationDate( lastModified );
-                        response.getEntity().setTag( tag );
-                     }
-                  }
-
+                  return;
                }
                return;
+
+            } catch (ConcurrentEntityModificationException ex)
+            {
+               uow.discard();
+
+               // Try again
+            } catch (Throwable e)
+            {
+               uow.discard();
+               handleException( response, e );
+               return;
+            } finally
+            {
+               RoleMap.clearCurrentRoleMap();
             }
-            return;
-
-         } catch (ConcurrentEntityModificationException ex)
-         {
-            uow.discard();
-
-            // Try again
-         } catch (Throwable e)
-         {
-            uow.discard();
-            handleException( response, e );
-            return;
-         } finally
-         {
-            RoleMap.clearCurrentRoleMap();
          }
+      } finally
+      {
+         MDC.clear();
       }
    }
 
