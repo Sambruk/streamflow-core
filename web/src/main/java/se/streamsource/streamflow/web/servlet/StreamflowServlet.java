@@ -18,6 +18,7 @@ package se.streamsource.streamflow.web.servlet;
 
 import org.restlet.ext.servlet.ServletAdapter;
 import se.streamsource.streamflow.web.MainWeb;
+import se.streamsource.streamflow.web.rest.LoggerFilter;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -40,14 +41,17 @@ public class StreamflowServlet
    {
       System.setProperty( "org.restlet.engine.loggerFacadeClass", "org.restlet.ext.slf4j.Slf4jLoggerFacade" );
       System.setProperty( "java.util.logging.config.file", "restlet.properties");
-
+      
       mainWeb = new MainWeb();
-
+      
       try
       {
          mainWeb.start();
 
-         adapter = new ServletAdapter( getServletContext(), mainWeb.getApplication() );
+         LoggerFilter loggerFilter = new LoggerFilter();
+         loggerFilter.setNext(mainWeb.getApplication());
+         
+         adapter = new ServletAdapter( getServletContext(), loggerFilter );
       }
       catch (Throwable throwable)
       {
