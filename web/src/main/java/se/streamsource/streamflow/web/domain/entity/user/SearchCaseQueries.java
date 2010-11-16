@@ -173,7 +173,7 @@ public interface
                {
                   StringBuilder creatorQueryBuilder = new StringBuilder( "type:se.streamsource.streamflow.web.domain.entity.user.UserEntity" );
                   String userName = user.userName().get();
-                  creatorQueryBuilder.append( " id:" ).append( getUserInSearch( search, userName ) );
+                  creatorQueryBuilder.append( " (id:" ).append( getUserInSearch( search, userName ) ).append(" OR ").append( " description:" ).append( getUserInSearch( search, userName ) ).append( ")" );
 
                   Query<UserEntity> users = module.queryBuilderFactory()
                         .newNamedQuery( UserEntity.class, uow, "solrquery" ).setVariable( "query", creatorQueryBuilder.toString() );

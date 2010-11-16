@@ -61,7 +61,7 @@ public class LinksResultWriter
       if (result instanceof LinkValue)
       {
          MediaType type = response.getRequest().getClientInfo().getPreferredMediaType( supportedLinkMediaTypes );
-         if (type.equals( MediaType.APPLICATION_JSON ))
+         if (MediaType.APPLICATION_JSON.equals(type))
          {
             response.setEntity( new StringRepresentation(((LinkValue) result).toJSON(), MediaType.APPLICATION_JSON));
             return true;
@@ -77,11 +77,11 @@ public class LinksResultWriter
       } else if (result instanceof LinksValue)
       {
          MediaType type = response.getRequest().getClientInfo().getPreferredMediaType( supportedLinksMediaTypes );
-         if (type.equals( MediaType.APPLICATION_JSON ))
+         if (MediaType.APPLICATION_JSON.equals( type ))
          {
             response.setEntity( new StringRepresentation(((LinksValue) result).toJSON(), MediaType.APPLICATION_JSON));
             return true;
-         } else if (type.equals( MediaType.TEXT_HTML ))
+         } else if (MediaType.TEXT_HTML.equals( type ))
          {
             Representation rep = new WriterRepresentation( MediaType.TEXT_HTML )
             {
@@ -98,9 +98,9 @@ public class LinksResultWriter
             };
             response.setEntity( rep );
             return true;
-         } else if (type.equals( MediaType.APPLICATION_ATOM ))
+         } else if (MediaType.APPLICATION_ATOM.equals( type ))
          {
-            Representation rep = new WriterRepresentation( MediaType.TEXT_HTML )
+            Representation rep = new WriterRepresentation( MediaType.APPLICATION_ATOM )
             {
                @Override
                public void write( Writer writer ) throws IOException
