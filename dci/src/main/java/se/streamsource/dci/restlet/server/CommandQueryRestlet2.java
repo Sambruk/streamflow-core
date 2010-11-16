@@ -235,11 +235,13 @@ public abstract class CommandQueryRestlet2
       } catch (ResourceException e)
       {
          // IAE (or subclasses) are considered client faults
+         LoggerFactory.getLogger( getClass() ).debug( "ResourceException thrown during processing", e );
          response.setEntity( new StringRepresentation( e.getMessage() ) );
          response.setStatus( e.getStatus() );
       } catch (IllegalArgumentException e)
       {
          // IAE (or subclasses) are considered client faults
+         LoggerFactory.getLogger( getClass() ).debug( "IllegalArgumentsException thrown during processing", e );
          response.setEntity( new StringRepresentation( e.getMessage() ) );
          response.setStatus( Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY );
       } catch (RuntimeException e)
@@ -251,6 +253,7 @@ public abstract class CommandQueryRestlet2
       } catch (Exception e)
       {
          // Checked exceptions are considered client faults
+         LoggerFactory.getLogger( getClass() ).debug( "Checked exception thrown during processing", e );
          response.setEntity( new StringRepresentation( e.getMessage() ) );
          response.setStatus( Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY );
       } catch (Throwable e)
