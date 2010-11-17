@@ -23,10 +23,13 @@ import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationActionMap;
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.util.StateBinder;
 import se.streamsource.streamflow.client.util.i18n;
+import se.streamsource.streamflow.domain.form.AttachmentFieldSubmission;
 import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
 
 import javax.swing.JButton;
@@ -43,6 +46,9 @@ public class AttachmentFieldPanel
 {
    private JButton attach;
    private JLabel attachment = new JLabel();
+
+   @Structure
+   ValueBuilderFactory vbf;
 
    public AttachmentFieldPanel( @Uses FieldSubmissionValue field,
                                 @Service ApplicationContext context )
@@ -62,22 +68,23 @@ public class AttachmentFieldPanel
       formBuilder.add( attachment, "3,1,1,1" );
    }
 
-   @Action
-   public void attach()
-   {
-
-   }
-   
    @Override
    public String getValue()
    {
       return attachment.getText();
    }
 
+   @Action
+   public void attach()
+   {
+      
+   }
+
    @Override
    public void setValue( String newValue )
    {
-      attachment.setText( newValue );
+      AttachmentFieldSubmission submission = vbf.newValueFromJSON( AttachmentFieldSubmission.class, newValue );
+      attachment.setText( submission.name().get() );
    }
 
    @Override

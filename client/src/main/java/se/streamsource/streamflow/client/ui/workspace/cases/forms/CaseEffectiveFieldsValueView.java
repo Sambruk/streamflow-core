@@ -164,6 +164,13 @@ public class CaseEffectiveFieldsValueView
                      panel.add( new JLabel(attachment.name().get()) );
                      JButton button = new JButton( am.get( "open" ) );
                      attachmentButtons.put( button, attachment );
+                     /*button.addActionListener( new ActionListener()
+                     {
+                        public void actionPerformed( ActionEvent actionEvent )
+                        {
+                           new OpenAttachmentTask( attachment ).execute();
+                        }
+                     });*/
                      panel.add( button );
                      component = panel;
                   } else {

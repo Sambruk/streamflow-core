@@ -33,14 +33,19 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.util.DateFunctions;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseResources;
 import se.streamsource.streamflow.client.util.BindingFormBuilder;
+import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.StateBinder;
 import se.streamsource.streamflow.client.util.i18n;
+import se.streamsource.streamflow.domain.form.AttachmentFieldDTO;
+import se.streamsource.streamflow.domain.form.AttachmentFieldSubmission;
 import se.streamsource.streamflow.domain.form.AttachmentFieldValue;
 import se.streamsource.streamflow.domain.form.CheckboxesFieldValue;
 import se.streamsource.streamflow.domain.form.ComboBoxFieldValue;
@@ -55,8 +60,10 @@ import se.streamsource.streamflow.domain.form.OptionButtonsFieldValue;
 import se.streamsource.streamflow.domain.form.PageSubmissionValue;
 import se.streamsource.streamflow.domain.form.TextAreaFieldValue;
 import se.streamsource.streamflow.domain.form.TextFieldValue;
+import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
 import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
+import se.streamsource.streamflow.infrastructure.event.source.helper.EventParameters;
 import se.streamsource.streamflow.infrastructure.event.source.helper.Events;
 
 import javax.swing.JComponent;
@@ -83,6 +90,9 @@ import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 
+import static se.streamsource.streamflow.infrastructure.event.source.helper.Events.*;
+import static se.streamsource.streamflow.util.Iterables.*;
+
 /**
  * JAVADOC
  */
@@ -96,6 +106,9 @@ public class FormSubmissionWizardPageView
    private FormSubmissionWizardPageModel model;
    private ObjectBuilderFactory obf;
    private static final Map<Class<? extends FieldValue>, Class<? extends AbstractFieldPanel>> fields = new HashMap<Class<? extends FieldValue>, Class<? extends AbstractFieldPanel>>();
+
+   @Structure
+   ValueBuilderFactory vbf;
 
    static
    {
@@ -258,29 +271,52 @@ public class FormSubmissionWizardPageView
       return validationResult;
    }
 
-   public void update( Observable observable, Object arg )
+   public void update( final Observable observable, Object arg )
    {
-      Property property = (Property) arg;
+      final Property property = (Property) arg;
       if (property.qualifiedName().name().equals( "value" ))
       {
          try
          {
             if (property.get() instanceof Date)
             {
-               model.updateField( fieldBinders.get( observable ), DateFunctions.toUtcString( (Date) property.get() ) );
+               new CommandTask()
+               {
+                  @Override
+                  public void command()
+                        throws Exception
+                  {
+                     model.updateField( fieldBinders.get( observable ), DateFunctions.toUtcString( (Date) property.get() ) );
+                  }
+               }.execute();
             } else if (property.get() instanceof File)
             {
                try
                {
-                  FileInputStream fin = new FileInputStream( (File) property.get() );
-                  model.createAttachment( fieldBinders.get( observable ), (File)property.get(), fin );
+                  final FileInputStream fin = new FileInputStream( (File) property.get() );
+
+                  new CommandTask()
+                  {
+                     @Override
+                     protected void command() throws Exception
+                     {
+                        model.createAttachment( fieldBinders.get( observable ), (File)property.get(), fin );
+                     }
+                  }.execute();
                } catch (Exception e)
                {
                   throw new OperationException( CaseResources.could_not_upload_file, e );
                }
             } else
             {
-               model.updateField( fieldBinders.get( observable ), property.get().toString() );
+               new CommandTask()
+               {
+                  @Override
+                  protected void command() throws Exception
+                  {
+                     model.updateField( fieldBinders.get( observable ), property.get().toString() );
+                  }
+               }.execute();
             }
          } catch (ResourceException e)
          {
@@ -293,7 +329,7 @@ public class FormSubmissionWizardPageView
    {
       AbstractFieldPanel panel = componentFieldMap.get( fieldId );
       String value = panel.getValue();
-      if ( fieldValue != null && !fieldValue.equals( value ) )
+      if ( fieldValue != null && !fieldValue.equals( value )  )
       {
          panel.setValue( fieldValue );
       }
@@ -308,9 +344,23 @@ public class FormSubmissionWizardPageView
 
    public void notifyTransactions( Iterable<TransactionEvents> transactions )
    {
-      if (Events.matches( Events.withNames("changedFieldAttachmentValue" ), transactions ))
+      if (Events.matches( Events.withNames( "changedFieldAttachmentValue" ), transactions ))
       {
-         // call update field panels         
+         String value = EventParameters.getParameter( first( filter( withNames("changedFieldAttachmentValue" ), events(transactions ) )), "param1" );
+         AttachmentFieldDTO dto = vbf.newValueFromJSON( AttachmentFieldDTO.class, value );
+
+         ValueBuilder<AttachmentFieldSubmission> builder = vbf.newValueBuilder( AttachmentFieldSubmission.class );
+         builder.prototype().attachment().set( dto.attachment().get() );
+         builder.prototype().name().set( dto.name().get() );
+
+         updateFieldPanel( dto.field().get().identity(), builder.newInstance().toJSON() );
+      } else if (Events.matches( Events.withNames( "changedFieldValue" ), transactions ))
+      {
+         DomainEvent event = first( filter( withNames( "changedFieldValue" ), events( transactions ) ) );
+         String fieldId = EventParameters.getParameter( event, "param1" );
+         String value = EventParameters.getParameter( event, "param2" );
+
+         updateFieldPanel( fieldId, value );
       }
    }
 }
