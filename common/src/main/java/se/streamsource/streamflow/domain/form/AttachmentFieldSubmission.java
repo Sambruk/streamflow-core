@@ -1,5 +1,4 @@
-/**
- *
+/*
  * Copyright 2009-2010 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,26 +16,17 @@
 
 package se.streamsource.streamflow.domain.form;
 
-import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
-import se.streamsource.streamflow.domain.attachment.UpdateAttachmentValue;
-
-import java.util.List;
 
 /**
  * JAVADOC
  */
-public interface FormDraftValue
+public interface AttachmentFieldSubmission
       extends ValueComposite
 {
-   Property<EntityReference> form();
+   Property<EntityReference> attachment();
 
-   Property<String> description();
-
-   Property<List<PageSubmissionValue>> pages();
-
-   @UseDefaults
-   Property<List<FormSignatureValue>> signatures();
+   Property<String> name();
 }

@@ -30,13 +30,12 @@ public class CaseSubmittedFormModel
    implements Refreshable
 {
    @Uses CommandQueryClient client;
-   @Uses IntegerDTO index;
 
    private EventList<FieldDTO> eventList = new BasicEventList<FieldDTO>();
 
    public void refresh()
    {
-      SubmittedFormDTO form = client.query( "submittedform", index, SubmittedFormDTO.class );
+      SubmittedFormDTO form = client.query( "index", SubmittedFormDTO.class );
       EventListSynch.synchronize( form.values().get(), eventList );
    }
 

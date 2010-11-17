@@ -18,12 +18,19 @@ package se.streamsource.streamflow.client.ui.workspace.cases.forms;
 
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
+import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.util.EventListSynch;
 import se.streamsource.streamflow.client.util.Refreshable;
 import se.streamsource.streamflow.resource.caze.EffectiveFieldDTO;
 import se.streamsource.streamflow.resource.caze.EffectiveFieldsDTO;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * List of contacts for a case
@@ -33,6 +40,9 @@ public class CaseEffectiveFieldsValueModel
 {
    @Uses
    CommandQueryClient client;
+
+   @Structure
+   ValueBuilderFactory vbf;
 
    EventList<EffectiveFieldDTO> eventList = new BasicEventList<EffectiveFieldDTO>( );
 
@@ -44,5 +54,13 @@ public class CaseEffectiveFieldsValueModel
    public EventList<EffectiveFieldDTO> getEventList()
    {
       return eventList;
+   }
+
+   public InputStream download( String attachmentId ) throws IOException
+   {
+      ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
+      builder.prototype().string().set( attachmentId );
+
+      return client.queryStream( "download", builder.newInstance() );
    }
 }

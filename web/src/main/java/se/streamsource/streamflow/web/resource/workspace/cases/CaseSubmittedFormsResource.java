@@ -20,19 +20,28 @@ import se.streamsource.dci.api.ContextNotFoundException;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.SubResources;
-import se.streamsource.streamflow.web.context.workspace.cases.general.CaseFormDraftContext;
-import se.streamsource.streamflow.web.domain.structure.form.FormDrafts;
+import se.streamsource.streamflow.web.context.workspace.cases.form.CaseSubmittedFormContext;
+import se.streamsource.streamflow.web.context.workspace.cases.form.CaseSubmittedFormsContext;
+import se.streamsource.streamflow.web.domain.entity.form.SubmittedFormsQueries;
 
 /**
  * JAVADOC
  */
-public class CaseFormDraftsResource
+public class CaseSubmittedFormsResource
       extends CommandQueryResource
       implements SubResources
 {
+   public CaseSubmittedFormsResource()
+   {
+      super( CaseSubmittedFormsContext.class);
+   }
+
+
    public void resource( String segment ) throws ContextNotFoundException
    {
-      findManyAssociation( RoleMap.role( FormDrafts.Data.class ).formDrafts(), segment );
-      subResource( CaseFormDraftResource.class );
+      int i = Integer.parseInt( segment );
+      SubmittedFormsQueries forms = RoleMap.role( SubmittedFormsQueries.class );
+      RoleMap.current().set( forms.getSubmittedForm( i ) );
+      subResourceContexts( CaseSubmittedFormContext.class );
    }
 }

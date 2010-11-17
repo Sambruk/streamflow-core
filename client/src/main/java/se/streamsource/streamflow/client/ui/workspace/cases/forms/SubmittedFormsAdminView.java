@@ -56,9 +56,8 @@ public class SubmittedFormsAdminView
                if (idx != -1 && idx < submittedForms.getModel().getSize())
                {
 
-                  ValueBuilder<IntegerDTO> builder = vbf.newValueBuilder( IntegerDTO.class );
-                  builder.prototype().integer().set( idx );
-                  CaseSubmittedFormView submittedFormView = obf.newObjectBuilder( CaseSubmittedFormView.class ).use( client, builder.newInstance() ).newInstance();
+                  CommandQueryClient subClient = client.getSubClient( "" + idx );
+                  CaseSubmittedFormView submittedFormView = obf.newObjectBuilder( CaseSubmittedFormView.class ).use( subClient ).newInstance();
                   setRightComponent( submittedFormView );
                } else
                {

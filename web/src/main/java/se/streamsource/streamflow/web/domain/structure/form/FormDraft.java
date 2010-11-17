@@ -18,10 +18,14 @@
 package se.streamsource.streamflow.web.domain.structure.form;
 
 import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.util.DateFunctions;
 import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
+import se.streamsource.streamflow.domain.form.AttachmentFieldDTO;
+import se.streamsource.streamflow.domain.form.AttachmentFieldSubmission;
 import se.streamsource.streamflow.domain.form.CheckboxesFieldValue;
 import se.streamsource.streamflow.domain.form.ComboBoxFieldValue;
 import se.streamsource.streamflow.domain.form.CommentFieldValue;
@@ -61,6 +65,8 @@ public interface FormDraft
 
    void removeFormSignatures( );
 
+   void changeFieldAttachmentValue( AttachmentFieldDTO fieldAttachment );
+
    interface Data
    {
       Property<FormDraftValue> formDraftValue();
@@ -72,11 +78,18 @@ public interface FormDraft
       void addedFormSignatureValue( DomainEvent event, FormSignatureValue formSignatureValue);
 
       void removedFormSignatures( DomainEvent event );
+
+      void changedFieldAttachmentValue( DomainEvent event, AttachmentFieldDTO fieldAttachment );
+
    }
 
    abstract class Mixin
          implements FormDraft, Data
    {
+
+      @Structure
+      ValueBuilderFactory vbf;
+
       public FormDraftValue getFormDraftValue()
       {
          return formDraftValue().get();
@@ -91,58 +104,50 @@ public interface FormDraft
       {
          FormDraftValue formDraft = formDraftValue().get();
 
-         for (PageSubmissionValue pageSubmissionValue : formDraft.pages().get())
+         FieldSubmissionValue field = findField( formDraft, fieldId );
+
+         boolean update = false;
+         if (field.value().get() != null && field.value().get().equals( newValue ))
          {
-            for (FieldSubmissionValue field : pageSubmissionValue.fields().get())
-            {
-               if (field.field().get().field().get().equals(fieldId))
-               {
-                  boolean update = false;
-                  if (field.value().get() != null && field.value().get().equals( newValue ))
-                  {
-                     return;
-                  } // Skip update - same value
+            return;
+         } // Skip update - same value
 
-                  FieldValue value = field.field().get().fieldValue().get();
-                  if ( value instanceof CheckboxesFieldValue )
-                  {
-                     update = validate( (CheckboxesFieldValue) value, newValue );
-                  } else if ( value instanceof ComboBoxFieldValue)
-                  {
-                     update = validate( (ComboBoxFieldValue) value, newValue );
-                  } else if ( value instanceof CommentFieldValue)
-                  {
-                     update = validate( (CommentFieldValue) value, newValue );
-                  } else if ( value instanceof DateFieldValue)
-                  {
-                     update = validate( (DateFieldValue) value, newValue );
-                  } else if ( value instanceof ListBoxFieldValue)
-                  {
-                     update = validate( (ListBoxFieldValue) value, newValue );
-                  } else if ( value instanceof NumberFieldValue)
-                  {
-                     update = validate( (NumberFieldValue) value, newValue );
-                  } else if ( value instanceof OptionButtonsFieldValue)
-                  {
-                     update = validate( (OptionButtonsFieldValue) value, newValue );
-                  } else if ( value instanceof OpenSelectionFieldValue)
-                  {
-                     update = validate( (OpenSelectionFieldValue) value, newValue );
-                  } else if ( value instanceof TextAreaFieldValue)
-                  {
-                     update = validate( (TextAreaFieldValue) value, newValue );
-                  } else if ( value instanceof TextFieldValue)
-                  {
-                     update = validate( (TextFieldValue) value, newValue );
-                  }
+         FieldValue value = field.field().get().fieldValue().get();
+         if ( value instanceof CheckboxesFieldValue )
+         {
+            update = validate( (CheckboxesFieldValue) value, newValue );
+         } else if ( value instanceof ComboBoxFieldValue)
+         {
+            update = validate( (ComboBoxFieldValue) value, newValue );
+         } else if ( value instanceof CommentFieldValue)
+         {
+            update = validate( (CommentFieldValue) value, newValue );
+         } else if ( value instanceof DateFieldValue)
+         {
+            update = validate( (DateFieldValue) value, newValue );
+         } else if ( value instanceof ListBoxFieldValue)
+         {
+            update = validate( (ListBoxFieldValue) value, newValue );
+         } else if ( value instanceof NumberFieldValue)
+         {
+            update = validate( (NumberFieldValue) value, newValue );
+         } else if ( value instanceof OptionButtonsFieldValue)
+         {
+            update = validate( (OptionButtonsFieldValue) value, newValue );
+         } else if ( value instanceof OpenSelectionFieldValue)
+         {
+            update = validate( (OpenSelectionFieldValue) value, newValue );
+         } else if ( value instanceof TextAreaFieldValue)
+         {
+            update = validate( (TextAreaFieldValue) value, newValue );
+         } else if ( value instanceof TextFieldValue)
+         {
+            update = validate( (TextFieldValue) value, newValue );
+         }
 
-                  if ( update )
-                  {
-                     changedFieldValue( DomainEvent.CREATE, fieldId, newValue );
-                  }
-                  return;
-               }
-            }
+         if ( update )
+         {
+            changedFieldValue( DomainEvent.CREATE, fieldId, newValue );
          }
       }
 
@@ -250,6 +255,21 @@ public interface FormDraft
          return value != null;
       }
 
+      private FieldSubmissionValue findField( FormDraftValue draft, EntityReference fieldRef )
+      {
+         for (PageSubmissionValue pageSubmissionValue : draft.pages().get())
+         {
+            for (FieldSubmissionValue field : pageSubmissionValue.fields().get())
+            {
+               if (field.field().get().field().get().equals(fieldRef) )
+               {
+                  return field;
+               }
+            }
+         }
+         return null;
+      }
+
 
       public void changedFormDraft( DomainEvent event, FormDraftValue formDraftValue )
       {
@@ -259,16 +279,8 @@ public interface FormDraft
       public void changedFieldValue( DomainEvent event, EntityReference fieldId, String fieldValue )
       {
          ValueBuilder<FormDraftValue> builder = formDraftValue().get().buildWith();
-         for (PageSubmissionValue page : builder.prototype().pages().get())
-         {
-            for (FieldSubmissionValue field : page.fields().get())
-            {
-               if (field.field().get().field().get().equals(fieldId))
-               {
-                  field.value().set( fieldValue );
-               }
-            }
-         }
+         FieldSubmissionValue field = findField( builder.prototype(), fieldId );
+         field.value().set( fieldValue );
 
          formDraftValue().set( builder.newInstance() );
       }
@@ -285,6 +297,29 @@ public interface FormDraft
       {
          ValueBuilder<FormDraftValue> builder = formDraftValue().get().buildWith();
          builder.prototype().signatures().set( Collections.<FormSignatureValue>emptyList() );
+
+         formDraftValue().set( builder.newInstance() );
+      }
+
+      public void changeFieldAttachmentValue( AttachmentFieldDTO fieldAttachment )
+      {
+         ValueBuilder<FormDraftValue> builder = formDraftValue().get().buildWith();
+
+         if ( findField( builder.prototype(), fieldAttachment.field().get() ) != null ) {
+            changedFieldAttachmentValue( DomainEvent.CREATE, fieldAttachment );
+         }
+      }
+
+      public void changedFieldAttachmentValue( DomainEvent event, AttachmentFieldDTO fieldAttachment )
+      {
+         ValueBuilder<FormDraftValue> builder = formDraftValue().get().buildWith();
+         FieldSubmissionValue field = findField( builder.prototype(), fieldAttachment.field().get() );
+
+         ValueBuilder<AttachmentFieldSubmission> valueBuilder = vbf.newValueBuilder( AttachmentFieldSubmission.class );
+         valueBuilder.prototype().attachment().set( fieldAttachment.attachment().get() );
+         valueBuilder.prototype().name().set( fieldAttachment.name().get() );
+
+         field.value().set( valueBuilder.newInstance().toJSON() );
 
          formDraftValue().set( builder.newInstance() );
       }

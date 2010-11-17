@@ -23,11 +23,14 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.util.DateFunctions;
+import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.util.RefreshWhenVisible;
 import se.streamsource.streamflow.client.util.ToolTipTableCellRenderer;
 import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.domain.form.AttachmentFieldSubmission;
+import se.streamsource.streamflow.domain.form.AttachmentFieldValue;
 import se.streamsource.streamflow.domain.form.DateFieldValue;
 import se.streamsource.streamflow.resource.caze.FieldDTO;
 import se.streamsource.streamflow.resource.roles.IntegerDTO;
@@ -45,9 +48,10 @@ public class CaseSubmittedFormView
    private EventJXTableModel<FieldDTO> tableModel;
 
 
-   public CaseSubmittedFormView(@Uses CommandQueryClient client, @Uses IntegerDTO index, @Structure ObjectBuilderFactory obf)
+   public CaseSubmittedFormView(@Uses CommandQueryClient client,
+                                @Structure ObjectBuilderFactory obf, @Structure final ValueBuilderFactory vbf )
    {
-      CaseSubmittedFormModel model = obf.newObjectBuilder( CaseSubmittedFormModel.class ).use(client, index).newInstance();
+      CaseSubmittedFormModel model = obf.newObjectBuilder( CaseSubmittedFormModel.class ).use( client ).newInstance();
 
       TableFormat<FieldDTO> fieldDTOTableFormat = new TableFormat<FieldDTO>()
       {
@@ -72,6 +76,10 @@ public class CaseSubmittedFormView
                         Strings.notEmpty( field.value().get() ))
                   {
                      return new SimpleDateFormat( i18n.text( WorkspaceResources.date_time_format ) ).format( DateFunctions.fromString( field.value().get() ) );
+                  } else if ( AttachmentFieldValue.class.getName().equals( field.fieldType().get() )
+                        && Strings.notEmpty( field.value().get() ))
+                  {
+                     return vbf.newValueFromJSON( AttachmentFieldSubmission.class, field.value().get() ).name().get();
                   } else
                   {
                      return field.value().get();

@@ -40,6 +40,10 @@ public interface Attachments
 {
    Attachment createAttachment( String uri ) throws URISyntaxException;
 
+   Attachment getAttachment( String id );
+
+   void addAttachment( Attachment attachment );
+
    void deleteAttachment( Attachment attachment );
 
    boolean hasAttachments();
@@ -83,6 +87,19 @@ public interface Attachments
          return attachment;
       }
 
+      public void addAttachment( Attachment attachment )
+      {
+         for (Attachment anAttachment : attachments().toList())
+         {
+            if ( attachment.toString().equals( anAttachment.toString() ))
+            {
+               // already present so ignore
+               return;
+            }
+         }
+         addedAttachment( DomainEvent.CREATE, attachment );
+      }
+
       public void deleteAttachment( Attachment attachment )
       {
          // Delete the attachment entity
@@ -91,6 +108,17 @@ public interface Attachments
          attachment.removeEntity();
       }
 
+      public Attachment getAttachment( String id )
+      {
+         for (Attachment attachment : attachments())
+         {
+            if ( attachment.toString().equals( id ) )
+            {
+               return attachment;
+            }
+         }
+         return null;
+      }
 
       public boolean hasAttachments()
       {

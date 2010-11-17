@@ -16,23 +16,27 @@
 
 package se.streamsource.streamflow.web.resource.workspace.cases;
 
-import se.streamsource.dci.api.ContextNotFoundException;
-import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
-import se.streamsource.dci.restlet.server.SubResources;
+import se.streamsource.dci.restlet.server.SubResource;
+import se.streamsource.streamflow.web.context.workspace.cases.CaseActionsContext;
+import se.streamsource.streamflow.web.context.workspace.cases.CaseContext;
 import se.streamsource.streamflow.web.context.workspace.cases.general.CaseFormDraftContext;
-import se.streamsource.streamflow.web.domain.structure.form.FormDrafts;
+import se.streamsource.streamflow.web.resource.workspace.cases.conversation.ConversationsResource;
 
 /**
  * JAVADOC
  */
-public class CaseFormDraftsResource
+public class CaseFormDraftResource
       extends CommandQueryResource
-      implements SubResources
 {
-   public void resource( String segment ) throws ContextNotFoundException
+   public CaseFormDraftResource()
    {
-      findManyAssociation( RoleMap.role( FormDrafts.Data.class ).formDrafts(), segment );
-      subResource( CaseFormDraftResource.class );
+      super( CaseFormDraftContext.class );
+   }
+
+   @SubResource
+   public void attachments()
+   {
+      subResource( AttachmentsResource.class );
    }
 }

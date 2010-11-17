@@ -21,16 +21,25 @@ import ca.odell.glazedlists.event.ListEvent;
 import ca.odell.glazedlists.event.ListEventListener;
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
+import org.jdesktop.application.Action;
+import org.jdesktop.application.Application;
 import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Task;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.util.DateFunctions;
+import org.qi4j.api.value.ValueBuilderFactory;
+import org.restlet.engine.io.BioUtils;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.util.RefreshWhenVisible;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.domain.attachment.AttachmentValue;
+import se.streamsource.streamflow.domain.form.AttachmentFieldSubmission;
+import se.streamsource.streamflow.domain.form.AttachmentFieldValue;
 import se.streamsource.streamflow.domain.form.DateFieldValue;
 import se.streamsource.streamflow.domain.form.TextAreaFieldValue;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
@@ -41,13 +50,30 @@ import se.streamsource.streamflow.resource.caze.EffectiveFieldDTO;
 import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
+import java.awt.AWTEvent;
+import java.awt.Desktop;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -57,11 +83,21 @@ public class CaseEffectiveFieldsValueView
       extends JScrollPane
       implements TransactionListener, ListEventListener<EffectiveFieldDTO>
 {
+   @Service
+   DialogService dialogs;
+
    private CaseEffectiveFieldsValueModel model;
 
    private SimpleDateFormat formatter = new SimpleDateFormat( i18n.text( WorkspaceResources.date_time_format ) );
 
    private JPanel forms = new JPanel();
+
+   private final ActionMap am;
+
+   private Map<JButton, AttachmentFieldSubmission> attachmentButtons = new HashMap<JButton, AttachmentFieldSubmission>();
+
+   @Structure
+   ValueBuilderFactory vbf;
 
    public CaseEffectiveFieldsValueView( @Service ApplicationContext context, @Uses CommandQueryClient client, @Structure ObjectBuilderFactory obf )
    {
@@ -69,7 +105,8 @@ public class CaseEffectiveFieldsValueView
 
       model = obf.newObjectBuilder( CaseEffectiveFieldsValueModel.class ).use( client ).newInstance();
 
-      ActionMap am = context.getActionMap( this );
+      am = context.getActionMap( this );
+
       setActionMap( am );
       setMinimumSize( new Dimension( 150, 0 ) );
 
@@ -112,24 +149,36 @@ public class CaseEffectiveFieldsValueView
                if (effectiveFieldDTO.formName().get().equals(formName))
                {
                   String value = effectiveFieldDTO.fieldValue().get();
+                  JComponent component;
+
                   if (effectiveFieldDTO.fieldType().get().equals( DateFieldValue.class.getName() ))
                   {
-                     value = formatter.format( DateFunctions.fromString( value ) );
+                     component = new JLabel( formatter.format( DateFunctions.fromString( value ) ) );
                   } else if (effectiveFieldDTO.fieldType().get().equals( TextAreaFieldValue.class.getName() ))
                   {
-                     value = "<html>"+value.replace( "\n", "<br/>" )+"</html>";
+                     component = new JLabel( "<html>"+value.replace( "\n", "<br/>" )+"</html>" );
+                  } else if ( effectiveFieldDTO.fieldType().get().equals( AttachmentFieldValue.class.getName() ))
+                  {
+                     final AttachmentFieldSubmission attachment = vbf.newValueFromJSON( AttachmentFieldSubmission.class, value );
+                     JPanel panel = new JPanel( new FlowLayout( FlowLayout.LEFT ) );
+                     panel.add( new JLabel(attachment.name().get()) );
+                     JButton button = new JButton( am.get( "open" ) );
+                     attachmentButtons.put( button, attachment );
+                     panel.add( button );
+                     component = panel;
+                  } else {
+                     component = new JLabel( value );
                   }
                   builder.append( new JLabel(effectiveFieldDTO.fieldName().get()+":", SwingConstants.RIGHT), 1 );
-                  JLabel jLabel = new JLabel( value );
-                  jLabel.setToolTipText( effectiveFieldDTO.submitter().get()+", "+formatter.format( effectiveFieldDTO.submissionDate().get() ) );
-                  jLabel.setBorder( BorderFactory.createEtchedBorder());
-                  builder.append( jLabel );
+                  component.setToolTipText( effectiveFieldDTO.submitter().get()+", "+formatter.format( effectiveFieldDTO.submissionDate().get() ) );
+                  component.setBorder( BorderFactory.createEtchedBorder());
+                  builder.append( component );
                   builder.nextLine();
                }
             }
 
             formPanel.setBorder( BorderFactory.createTitledBorder(formName ));
-            
+
             forms.add( formPanel );
          }
          revalidate();
@@ -140,6 +189,80 @@ public class CaseEffectiveFieldsValueView
       }finally
       {
          eventList.getReadWriteLock().readLock().unlock();
+      }
+   }
+
+   @Action
+   public Task open( ActionEvent event ) throws IOException
+   {
+      AttachmentFieldSubmission selectedDocument = attachmentButtons.get( event.getSource() );
+      return new OpenAttachmentTask( selectedDocument );
+   }
+
+
+   private class OpenAttachmentTask extends Task<File, Void>
+   {
+      private final AttachmentFieldSubmission attachment;
+
+      public OpenAttachmentTask( AttachmentFieldSubmission attachment )
+      {
+         super( Application.getInstance() );
+         this.attachment = attachment;
+
+         setUserCanCancel( false );
+      }
+
+      @Override
+      protected File doInBackground() throws Exception
+      {
+         setMessage( getResourceMap().getString( "description" ) );
+
+         String fileName = attachment.name().get();
+         String[] fileNameParts = fileName.split( "\\." );
+         File file = File.createTempFile( fileNameParts[0] + "_", "." + fileNameParts[1] );
+         FileOutputStream out = new FileOutputStream( file );
+
+         InputStream in = model.download( attachment.attachment().get().identity() );
+         try
+         {
+            BioUtils.copy( new BufferedInputStream( in, 1024 ), new BufferedOutputStream( out, 4096 ) );
+         } catch (IOException e)
+         {
+            in.close();
+            out.close();
+            throw e;
+         } finally
+         {
+            try
+            {
+               in.close();
+               out.close();
+            } catch (IOException e)
+            {
+               // Ignore
+            }
+         }
+         return file;
+      }
+
+      @Override
+      protected void succeeded( File file )
+      {
+         // Open file
+         Desktop desktop = Desktop.getDesktop();
+         try
+         {
+            desktop.edit( file );
+         } catch (IOException e)
+         {
+            try
+            {
+               desktop.open( file );
+            } catch (IOException e1)
+            {
+               dialogs.showMessageDialog( CaseEffectiveFieldsValueView.this, i18n.text( WorkspaceResources.could_not_open_attachment ), "" );
+            }
+         }
       }
    }
 }

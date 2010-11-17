@@ -19,9 +19,9 @@ package se.streamsource.streamflow.web.context.workspace.cases.general;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.IndexContext;
+import se.streamsource.streamflow.domain.form.AttachmentFieldDTO;
 import se.streamsource.streamflow.domain.form.FieldValueDTO;
 import se.streamsource.streamflow.domain.form.FormDraftValue;
-import se.streamsource.streamflow.domain.form.FormSignatureValue;
 import se.streamsource.streamflow.web.domain.structure.form.FormDraft;
 import se.streamsource.streamflow.web.domain.structure.form.FormDrafts;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedForms;
@@ -48,6 +48,12 @@ public class CaseFormDraftContext
    {
       FormDraft formDraft = role( FormDraft.class);
       formDraft.changeFieldValue( field.field().get(), field.value().get() );
+   }
+
+   public void updateattachmentfield( AttachmentFieldDTO fieldAttachment )
+   {
+      FormDraft formDraft = role( FormDraft.class);
+      formDraft.changeFieldAttachmentValue( fieldAttachment );
    }
 
    public void submit()

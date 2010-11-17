@@ -273,7 +273,7 @@ public class FormSubmissionWizardPageView
                try
                {
                   FileInputStream fin = new FileInputStream( (File) property.get() );
-                  model.createAttachment( (File)property.get(), fin );
+                  model.createAttachment( fieldBinders.get( observable ), (File)property.get(), fin );
                } catch (Exception e)
                {
                   throw new OperationException( CaseResources.could_not_upload_file, e );
@@ -289,19 +289,13 @@ public class FormSubmissionWizardPageView
       }
    }
 
-   public void updatePage( PageSubmissionValue page )
+   public void updateFieldPanel( String fieldId, String fieldValue )
    {
-      for (FieldSubmissionValue field : page.fields().get())
+      AbstractFieldPanel panel = componentFieldMap.get( fieldId );
+      String value = panel.getValue();
+      if ( fieldValue != null && !fieldValue.equals( value ) )
       {
-         if (!(field.field().get().fieldValue().get() instanceof CommentFieldValue))
-         {
-            AbstractFieldPanel component = componentFieldMap.get( field.field().get().field().get().identity() );
-            String value = component.getValue();
-            if (field.value().get() != null && !field.value().get().equals( value ) || field.field().get().fieldValue().get() instanceof OpenSelectionFieldValue)
-            {
-               component.setValue( field.value().get() );
-            }
-         }
+         panel.setValue( fieldValue );
       }
    }
 
@@ -314,7 +308,9 @@ public class FormSubmissionWizardPageView
 
    public void notifyTransactions( Iterable<TransactionEvents> transactions )
    {
-      if (Events.matches( Events.withNames("addedAttachment" ), transactions ))
-         ;
+      if (Events.matches( Events.withNames("changedFieldAttachmentValue" ), transactions ))
+      {
+         // call update field panels         
+      }
    }
 }

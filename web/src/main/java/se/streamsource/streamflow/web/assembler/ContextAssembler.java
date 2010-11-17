@@ -75,6 +75,7 @@ import se.streamsource.streamflow.web.context.workspace.cases.attachment.Attachm
 import se.streamsource.streamflow.web.context.workspace.cases.contact.ContactContext;
 import se.streamsource.streamflow.web.context.workspace.cases.contact.ContactsContext;
 import se.streamsource.streamflow.web.context.workspace.cases.conversation.*;
+import se.streamsource.streamflow.web.context.workspace.cases.form.CaseSubmittedFormContext;
 import se.streamsource.streamflow.web.context.workspace.cases.form.CaseSubmittedFormsContext;
 import se.streamsource.streamflow.web.context.workspace.cases.general.*;
 import se.streamsource.streamflow.web.context.workspace.context.AssignmentsContext;
@@ -299,6 +300,9 @@ public class ContextAssembler
             CaseActionsContext.class,
             CaseResource.class,
             CaseSubmittedFormsContext.class,
+            CaseSubmittedFormsResource.class,
+            CaseSubmittedFormContext.class,
+            CaseFormDraftResource.class,
             CaseFormDraftsResource.class,
             CaseFormDraftContext.class,
             CasePossibleFormsContext.class,

@@ -32,6 +32,7 @@ import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.domain.attachment.UpdateAttachmentValue;
+import se.streamsource.streamflow.domain.form.AttachmentFieldDTO;
 import se.streamsource.streamflow.domain.form.FieldValueDTO;
 import se.streamsource.streamflow.infrastructure.event.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
@@ -69,7 +70,7 @@ public class FormSubmissionWizardPageModel
       client.putCommand( "updatefield", builder.newInstance() );
    }
 
-   public void createAttachment( final File file, InputStream in) throws IOException
+   public void createAttachment( final EntityReference field, final File file, InputStream in) throws IOException
    {
       Representation input = new InputRepresentation(new BufferedInputStream(in));
       Form disposition = new Form();
@@ -97,6 +98,13 @@ public class FormSubmissionWizardPageModel
 
                String attachmentId = EventParameters.getParameter( domainEvent, "param1" );
                client.getClient( "attachments/" + attachmentId +"/" ).postCommand( "update", builder.newInstance() );
+
+               ValueBuilder<AttachmentFieldDTO> valueBuilder = vbf.newValueBuilder( AttachmentFieldDTO.class );
+               valueBuilder.prototype().field().set( field );
+               valueBuilder.prototype().name().set( file.getName() );
+               valueBuilder.prototype().attachment().set( EntityReference.parseEntityReference( attachmentId ) );
+
+               client.putCommand( "updateattachmentfield",  valueBuilder.newInstance() );
             }
          }
       };
@@ -104,7 +112,7 @@ public class FormSubmissionWizardPageModel
 
       try
       {
-         client.getClient( "attachments" ).postCommand( "createattachment", input);
+         client.getClient( "attachments/" ).postCommand( "createattachment", input);
       } finally
       {
          eventStream.unregisterListener( updateListener );
