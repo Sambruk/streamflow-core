@@ -24,35 +24,28 @@ import org.jdesktop.swingx.JXTable;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.io.Inputs;
+import org.qi4j.api.io.Outputs;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
+import org.restlet.representation.Representation;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.StreamflowApplication;
 import se.streamsource.streamflow.client.StreamflowResources;
-import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.FileNameExtensionFilter;
 import se.streamsource.streamflow.client.util.RefreshWhenVisible;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.resource.overview.ProjectSummaryValue;
 
-import javax.swing.Action;
-import javax.swing.ActionMap;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import java.awt.BorderLayout;
-import java.awt.KeyboardFocusManager;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
 
-import static se.streamsource.streamflow.client.util.i18n.*;
 import static se.streamsource.streamflow.client.ui.overview.OverviewResources.*;
+import static se.streamsource.streamflow.client.util.i18n.text;
 
 public class OverviewSummaryView extends JPanel
 {
@@ -173,32 +166,11 @@ public class OverviewSummaryView extends JPanel
       }
 
       // Generate Excel file on the server.
-      InputStream inputStream = model.generateExcelProjectSummary();
+      Representation representation = model.generateExcelProjectSummary();
 
       File file = fileChooser.getSelectedFile();
-      FileOutputStream out = null;
-      try
-      {
-         out = new FileOutputStream( file );
-         byte[] buffer = new byte[4096];
-         int count;
-         while (((count = inputStream.read( buffer ))) != -1)
-         {
-            out.write( buffer, 0, count );
-         }
-      } finally
-      {
-         inputStream.close();
-         if (out != null)
-            out.close();
-      }
 
-      // Show export confirmation to user and give option to open file.
-//		JXLabel confirmLabel = new JXLabel(i18n
-//				.text(StreamflowResources.export_data_file_with_open_option), (Icon)i18n
-//				.icon(Icons.metadata), JXLabel.LEFT);
-//		dialogs.showOkCancelHelpDialog(WindowUtils.findWindow(this),
-//				confirmLabel, text(StreamflowResources.export_completed));
+      Inputs.byteBuffer( representation.getStream(), 8192 ).transferTo( Outputs.<Object>byteBuffer(file ));
 
       int response = JOptionPane.showConfirmDialog( OverviewSummaryView.this,
             text( StreamflowResources.export_data_file_with_open_option ),

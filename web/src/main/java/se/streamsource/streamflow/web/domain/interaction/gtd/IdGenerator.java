@@ -33,7 +33,7 @@ import java.util.Calendar;
 @Mixins(IdGenerator.IdGeneratorMixin.class)
 public interface IdGenerator
 {
-   void assignId( CompletableId completable );
+   void assignId( CaseId aCase );
 
    interface Data
    {
@@ -56,7 +56,7 @@ public interface IdGenerator
 
       // Commands
 
-      public void assignId( CompletableId completable )
+      public void assignId( CaseId aCase )
       {
          // Check if we should reset the counter
          Calendar now = Calendar.getInstance();
@@ -84,7 +84,7 @@ public interface IdGenerator
 
          String caseId = date + "-" + current;
 
-         completable.assignId( caseId );
+         aCase.assignId( caseId );
       }
 
       // Events

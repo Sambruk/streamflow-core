@@ -32,11 +32,8 @@ import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.resource.caze.CaseVisitorConfigValue;
 import se.streamsource.streamflow.util.Strings;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseVisitor;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
-import se.streamsource.streamflow.web.domain.interaction.gtd.CompletableId;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
+import se.streamsource.streamflow.web.domain.interaction.gtd.*;
+import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachments;
@@ -108,7 +105,7 @@ public class CasePdfGenerator
    @Override
    public boolean visitCase( Case caze ) throws IOException
    {
-      caseId = ((CompletableId.Data) caze).caseId().get();
+      caseId = ((CaseId.Data) caze).caseId().get();
       printedOn = DateFormat.getDateTimeInstance( DateFormat.SHORT, DateFormat.SHORT, locale ).format( new Date() );
 
       document.print( "", valueFont ).changeColor( Color.BLUE )

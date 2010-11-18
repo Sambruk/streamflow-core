@@ -31,7 +31,6 @@ import org.qi4j.api.object.ObjectBuilder;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import org.restlet.engine.io.BioUtils;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.TitledLinkValue;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
@@ -52,7 +51,8 @@ import se.streamsource.streamflow.resource.caze.CaseVisitorConfigValue;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 
 import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.matches;
 import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withUsecases;
@@ -310,7 +310,7 @@ public class CaseActionsView extends JPanel
       config.prototype().effectiveFields().set( true );
       config.prototype().attachments().set( true );
 
-      return new PrintCaseTask( "Case.pdf", config.newInstance() );
+      return new PrintCaseTask( config.newInstance() );
    }
 
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
@@ -328,13 +328,11 @@ public class CaseActionsView extends JPanel
 
     private class PrintCaseTask extends Task<File, Void>
    {
-      private final String name;
       private CaseVisitorConfigValue config;
 
-      public PrintCaseTask( String name , CaseVisitorConfigValue config)
+      public PrintCaseTask( CaseVisitorConfigValue config)
       {
          super( Application.getInstance() );
-         this.name = name;
          this.config = config;
 
          setUserCanCancel( false );
@@ -345,30 +343,8 @@ public class CaseActionsView extends JPanel
       {
          setMessage( getResourceMap().getString( "description" ) );
 
-         String[] fileNameParts = name.split( "\\." );
-         File file = File.createTempFile( fileNameParts[0] + "_", "." + fileNameParts[1] );
-         FileOutputStream out = new FileOutputStream( file );
+         File file = model.print( config );
 
-         InputStream in = model.print( config );
-         try
-         {
-            BioUtils.copy( new BufferedInputStream( in, 1024 ), new BufferedOutputStream( out, 4096 ) );
-         } catch (IOException e)
-         {
-            in.close();
-            out.close();
-            throw e;
-         } finally
-         {
-            try
-            {
-               in.close();
-               out.close();
-            } catch (IOException e)
-            {
-               // Ignore
-            }
-         }
          return file;
       }
 

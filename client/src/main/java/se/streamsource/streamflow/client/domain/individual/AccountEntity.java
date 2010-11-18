@@ -33,7 +33,7 @@ import org.restlet.Uniform;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Reference;
-import org.restlet.engine.io.BioUtils;
+import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.restlet.client.ResponseHandler;
@@ -41,7 +41,6 @@ import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.resource.user.ChangePasswordCommand;
 
 import java.io.IOException;
-import java.io.InputStream;
 
 /**
  * Entity representing a client-side account
@@ -130,13 +129,9 @@ public interface AccountEntity
       public String version(Uniform client) throws ResourceException, IOException
       {
          CommandQueryClient server = server( client );
-         InputStream in = null;
-         in = server.getClient( "/streamflow/static/" ).queryStream( "version.html", null);
-/*
-         ClientResource version = new ClientResource( server.getReference().clone().addSegment( "static" ).addSegment( "version.html" ));
-         version.setNext( server. );
-*/
-         String version = BioUtils.toString( in );
+         Representation in = server.getClient( "/streamflow/static/" ).queryRepresentation( "version.html", null);
+
+         String version = in.getText();
          return version;
       }
    }

@@ -80,7 +80,7 @@ public class CaseTypesView
       ActionMap am = context.getActionMap( this );
       setActionMap( am );
 
-      initMaster( new EventListModel<LinkValue>( model.getList()), am.get("add"), new javax.swing.Action[]{am.get( "rename" ), am.get("showUsages"), am.get( "remove" )}, new DetailFactory()
+      initMaster( new EventListModel<LinkValue>( model.getList()), am.get("add"), new javax.swing.Action[]{am.get("move"), am.get( "rename" ), am.get("showUsages"), am.get( "remove" )}, new DetailFactory()
       {
          public Component createDetail( LinkValue detailLink )
          {

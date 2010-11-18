@@ -27,8 +27,10 @@ import org.jdesktop.swingx.decorator.HighlighterFactory;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.io.Inputs;
+import org.qi4j.api.io.Outputs;
 import org.qi4j.api.object.ObjectBuilderFactory;
-import org.restlet.engine.io.BioUtils;
+import org.restlet.representation.Representation;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
@@ -49,7 +51,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -253,29 +257,12 @@ public class AttachmentsView
 
          String fileName = attachment.text().get();
          String[] fileNameParts = fileName.split( "\\." );
-         File file = File.createTempFile( fileNameParts[0] + "_", "." + fileNameParts[1] );
-         FileOutputStream out = new FileOutputStream( file );
+         Representation representation = attachmentsModel.download( attachment );
 
-         InputStream in = attachmentsModel.download( attachment );
-         try
-         {
-            BioUtils.copy( new BufferedInputStream( in, 1024 ), new BufferedOutputStream( out, 4096 ) );
-         } catch (IOException e)
-         {
-            in.close();
-            out.close();
-            throw e;
-         } finally
-         {
-            try
-            {
-               in.close();
-               out.close();
-            } catch (IOException e)
-            {
-               // Ignore
-            }
-         }
+         File file = File.createTempFile( fileNameParts[0] + "_", "." + fileNameParts[1] );
+
+         Inputs.byteBuffer( representation.getStream(), 8192 ).transferTo( Outputs.byteBuffer( file ));
+
          return file;
       }
 

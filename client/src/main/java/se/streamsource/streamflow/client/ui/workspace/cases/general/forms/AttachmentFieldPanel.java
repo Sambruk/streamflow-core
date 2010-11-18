@@ -83,8 +83,11 @@ public class AttachmentFieldPanel
    @Override
    public void setValue( String newValue )
    {
-      AttachmentFieldSubmission submission = vbf.newValueFromJSON( AttachmentFieldSubmission.class, newValue );
-      attachment.setText( submission.name().get() );
+      if (!newValue.equals(""))
+      {
+         AttachmentFieldSubmission submission = vbf.newValueFromJSON( AttachmentFieldSubmission.class, newValue );
+         attachment.setText( submission.name().get() );
+      }
    }
 
    @Override

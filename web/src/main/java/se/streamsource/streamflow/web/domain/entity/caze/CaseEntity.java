@@ -25,7 +25,7 @@ import se.streamsource.streamflow.web.domain.entity.DomainEntity;
 import se.streamsource.streamflow.web.domain.entity.form.SubmittedFormsQueries;
 import se.streamsource.streamflow.web.domain.interaction.gtd.AssignIdSideEffect;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
-import se.streamsource.streamflow.web.domain.interaction.gtd.CompletableId;
+import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
 import se.streamsource.streamflow.web.domain.interaction.gtd.DueOn;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
@@ -54,7 +54,7 @@ public interface CaseEntity
       Notable.Data,
       Ownable.Data,
       PossibleActions,
-      CompletableId.Data,
+      CaseId.Data,
       Status.Data,
       Conversations.Data,
 

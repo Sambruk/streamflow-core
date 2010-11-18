@@ -28,7 +28,7 @@ public class AssignIdSideEffect
       implements Ownable
 {
    @This
-   CompletableId id;
+   CaseId id;
 
    public boolean isOwnedBy( Owner owner )
    {

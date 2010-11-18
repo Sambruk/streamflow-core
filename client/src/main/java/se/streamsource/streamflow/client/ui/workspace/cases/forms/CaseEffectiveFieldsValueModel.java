@@ -22,15 +22,15 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.dci.value.StringValue;
+import org.restlet.representation.Representation;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.client.util.EventListSynch;
 import se.streamsource.streamflow.client.util.Refreshable;
 import se.streamsource.streamflow.resource.caze.EffectiveFieldDTO;
 import se.streamsource.streamflow.resource.caze.EffectiveFieldsDTO;
 
 import java.io.IOException;
-import java.io.InputStream;
 
 /**
  * List of contacts for a case
@@ -56,11 +56,11 @@ public class CaseEffectiveFieldsValueModel
       return eventList;
    }
 
-   public InputStream download( String attachmentId ) throws IOException
+   public Representation download( String attachmentId ) throws IOException
    {
       ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
       builder.prototype().string().set( attachmentId );
 
-      return client.queryStream( "download", builder.newInstance() );
+      return client.queryRepresentation( "download", builder.newInstance() );
    }
 }

@@ -27,8 +27,8 @@ import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 /**
  * Human readable id
  */
-@Mixins(CompletableId.Mixin.class)
-public interface CompletableId
+@Mixins(CaseId.Mixin.class)
+public interface CaseId
 {
    /**
     * Set new id for the case. It needs to be on the format:
@@ -52,13 +52,13 @@ public interface CompletableId
    }
 
    abstract class Mixin
-         implements CompletableId, Data
+         implements CaseId, Data
    {
       @This
       Data state;
 
       @This
-      CompletableId id;
+      CaseId id;
 
       public void assignId( IdGenerator idgen )
       {

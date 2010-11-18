@@ -42,7 +42,7 @@ import se.streamsource.streamflow.domain.form.DateFieldValue;
 import se.streamsource.streamflow.domain.form.SubmittedFieldValue;
 import se.streamsource.streamflow.domain.form.SubmittedFormValue;
 import se.streamsource.streamflow.web.domain.entity.form.FieldEntity;
-import se.streamsource.streamflow.web.domain.interaction.gtd.CompletableId;
+import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
 import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
 
@@ -50,7 +50,7 @@ import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
 @Mixins(SubmittedFormPdfGenerator.Mixin.class)
 public interface SubmittedFormPdfGenerator extends ServiceComposite
 {
-   PDDocument generatepdf( SubmittedFormValue value, CompletableId.Data id, @Optional String templateFileName, Locale locale ) throws IOException, URISyntaxException;
+   PDDocument generatepdf( SubmittedFormValue value, CaseId.Data id, @Optional String templateFileName, Locale locale ) throws IOException, URISyntaxException;
 
    abstract class Mixin
          implements SubmittedFormPdfGenerator
@@ -62,7 +62,7 @@ public interface SubmittedFormPdfGenerator extends ServiceComposite
       @Service
       AttachmentStore store;
 
-      public PDDocument generatepdf( SubmittedFormValue value, CompletableId.Data id, String templateUri, Locale locale ) throws IOException, URISyntaxException
+      public PDDocument generatepdf( SubmittedFormValue value, CaseId.Data id, String templateUri, Locale locale ) throws IOException, URISyntaxException
       {
 
          ResourceBundle bundle = ResourceBundle.getBundle(

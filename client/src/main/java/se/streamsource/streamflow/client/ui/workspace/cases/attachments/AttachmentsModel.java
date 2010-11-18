@@ -136,8 +136,8 @@ public class AttachmentsModel
       client.getClient( attachment ).delete();
    }
 
-   public InputStream download( AttachmentValue attachment ) throws IOException
+   public Representation download( AttachmentValue attachment ) throws IOException
    {
-      return client.getClient( attachment ).queryStream( "download", null );
+      return client.getClient( attachment ).queryRepresentation( "download", null );
    }
 }

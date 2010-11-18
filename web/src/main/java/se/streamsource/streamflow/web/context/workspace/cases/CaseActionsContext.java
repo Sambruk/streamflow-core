@@ -35,7 +35,6 @@ import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.domain.interaction.gtd.Actions;
 import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
-import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.domain.structure.Removable;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.resource.caze.CaseVisitorConfigValue;
@@ -43,14 +42,7 @@ import se.streamsource.streamflow.web.application.pdf.CasePdfGenerator;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseTypeQueries;
 import se.streamsource.streamflow.web.domain.entity.caze.PossibleActions;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Actor;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
-import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresAssigned;
-import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresStatus;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
+import se.streamsource.streamflow.web.domain.interaction.gtd.*;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
 import se.streamsource.streamflow.web.domain.structure.attachment.CasePdfTemplate;
 import se.streamsource.streamflow.web.domain.structure.attachment.DefaultPdfTemplate;
@@ -69,7 +61,7 @@ import java.io.OutputStream;
 import java.util.List;
 import java.util.Locale;
 
-import static se.streamsource.dci.api.RoleMap.*;
+import static se.streamsource.dci.api.RoleMap.role;
 import static se.streamsource.streamflow.domain.interaction.gtd.CaseStates.*;
 
 /**
@@ -342,7 +334,7 @@ public interface CaseActionsContext
          };
 
          Disposition disposition = new Disposition();
-         disposition.setFilename( ((Describable) caze).getDescription() + ".pdf" );
+         disposition.setFilename( ((CaseId.Data)caze).caseId().get() + ".pdf" );
          disposition.setType( Disposition.TYPE_ATTACHMENT );
          representation.setDisposition( disposition );
 

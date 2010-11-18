@@ -35,7 +35,7 @@ import se.streamsource.streamflow.web.domain.entity.gtd.AssignmentsQueries;
 import se.streamsource.streamflow.web.domain.entity.gtd.InboxQueries;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
-import se.streamsource.streamflow.web.domain.interaction.gtd.CompletableId;
+import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
 import se.streamsource.streamflow.web.domain.interaction.gtd.IdGenerator;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseTypes;
@@ -90,10 +90,10 @@ public interface ProjectEntity
       @This
       OwningOrganizationalUnit.Data state;
 
-      public void assignId( CompletableId completable )
+      public void assignId( CaseId aCase )
       {
          Organization organization = ((OwningOrganization) state.organizationalUnit().get()).organization().get();
-         ((IdGenerator)organization).assignId( completable );
+         ((IdGenerator)organization).assignId( aCase );
       }
    }
 

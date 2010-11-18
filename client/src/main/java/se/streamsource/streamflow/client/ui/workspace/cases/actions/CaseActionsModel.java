@@ -21,7 +21,10 @@ import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.TransactionList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.io.Inputs;
+import org.qi4j.api.io.Outputs;
 import org.qi4j.api.value.ValueBuilderFactory;
+import org.restlet.representation.Representation;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.LinksValue;
@@ -31,8 +34,8 @@ import se.streamsource.streamflow.client.util.Refreshable;
 import se.streamsource.streamflow.domain.interaction.gtd.Actions;
 import se.streamsource.streamflow.resource.caze.CaseVisitorConfigValue;
 
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Collection;
 
 /**
@@ -133,8 +136,14 @@ public class CaseActionsModel
       client.postLink( linkValue );
    }
 
-   public InputStream print( CaseVisitorConfigValue config ) throws IOException
+   public File print( CaseVisitorConfigValue config ) throws IOException
    {
-      return client.queryStream( "exportpdf", config );
+      Representation representation = client.queryRepresentation("exportpdf", config);
+
+      File file = new File(representation.getDisposition().getFilename());
+
+      Inputs.byteBuffer( representation.getStream(), 1024 ).transferTo( Outputs.byteBuffer(file) );
+
+      return file;
    }
 }

@@ -27,7 +27,7 @@ import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.resource.caze.EndUserCaseDTO;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
-import se.streamsource.streamflow.web.domain.interaction.gtd.CompletableId;
+import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.form.EndUserCases;
 
@@ -54,7 +54,7 @@ public interface SurfaceCaseContext
 
          ValueBuilder<EndUserCaseDTO> builder = vbf.newValueBuilder( EndUserCaseDTO.class );
          builder.prototype().description().set( aCase.getDescription() );
-         CompletableId.Data idData = RoleMap.role( CompletableId.Data.class );
+         CaseId.Data idData = RoleMap.role( CaseId.Data.class );
 
          builder.prototype().caseId().set( idData.caseId().get() );
 

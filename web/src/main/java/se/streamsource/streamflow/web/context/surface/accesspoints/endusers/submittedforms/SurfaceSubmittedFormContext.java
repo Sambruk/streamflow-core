@@ -28,7 +28,7 @@ import org.restlet.data.MediaType;
 import org.restlet.representation.OutputRepresentation;
 import se.streamsource.streamflow.domain.form.SubmittedFormValue;
 import se.streamsource.streamflow.web.application.pdf.SubmittedFormPdfGenerator;
-import se.streamsource.streamflow.web.domain.interaction.gtd.CompletableId;
+import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
 import se.streamsource.streamflow.web.domain.structure.attachment.DefaultPdfTemplate;
 import se.streamsource.streamflow.web.domain.structure.attachment.FormPdfTemplate;
@@ -78,7 +78,7 @@ public class SurfaceSubmittedFormContext
          uri = template.uri().get();
       }
 
-      CompletableId.Data idData = role(CompletableId.Data.class);
+      CaseId.Data idData = role( CaseId.Data.class);
 
       Form form = uowFactory.currentUnitOfWork().get(Form.class, submittedFormValue.form().get().identity());
 

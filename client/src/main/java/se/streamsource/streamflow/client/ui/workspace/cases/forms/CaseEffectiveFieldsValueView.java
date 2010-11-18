@@ -28,10 +28,12 @@ import org.jdesktop.application.Task;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.io.Inputs;
+import org.qi4j.api.io.Outputs;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.util.DateFunctions;
 import org.qi4j.api.value.ValueBuilderFactory;
-import org.restlet.engine.io.BioUtils;
+import org.restlet.representation.Representation;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.util.RefreshWhenVisible;
@@ -49,7 +51,8 @@ import se.streamsource.streamflow.resource.caze.EffectiveFieldDTO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -206,29 +209,13 @@ public class CaseEffectiveFieldsValueView
 
          String fileName = attachment.name().get();
          String[] fileNameParts = fileName.split( "\\." );
-         File file = File.createTempFile( fileNameParts[0] + "_", "." + fileNameParts[1] );
-         FileOutputStream out = new FileOutputStream( file );
 
-         InputStream in = model.download( attachment.attachment().get().identity() );
-         try
-         {
-            BioUtils.copy( new BufferedInputStream( in, 1024 ), new BufferedOutputStream( out, 4096 ) );
-         } catch (IOException e)
-         {
-            in.close();
-            out.close();
-            throw e;
-         } finally
-         {
-            try
-            {
-               in.close();
-               out.close();
-            } catch (IOException e)
-            {
-               // Ignore
-            }
-         }
+         Representation representation = model.download( attachment.attachment().get().identity() );
+
+         File file = File.createTempFile( fileNameParts[0] + "_", "." + fileNameParts[1] );
+
+         Inputs.byteBuffer( representation.getStream(), 8192 ).transferTo( Outputs.byteBuffer(file ));
+
          return file;
       }
 

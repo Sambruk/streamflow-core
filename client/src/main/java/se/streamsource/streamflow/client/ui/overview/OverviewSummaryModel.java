@@ -20,6 +20,7 @@ package se.streamsource.streamflow.client.ui.overview;
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import org.qi4j.api.injection.scope.Uses;
+import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.LinksValue;
@@ -28,7 +29,6 @@ import se.streamsource.streamflow.client.util.Refreshable;
 import se.streamsource.streamflow.resource.overview.ProjectSummaryValue;
 
 import java.io.IOException;
-import java.io.InputStream;
 
 public class OverviewSummaryModel
       implements Refreshable
@@ -38,9 +38,9 @@ public class OverviewSummaryModel
 
    private BasicEventList<ProjectSummaryValue> projectOverviews = new BasicEventList<ProjectSummaryValue>();
 
-   public InputStream generateExcelProjectSummary() throws IOException, ResourceException
+   public Representation generateExcelProjectSummary() throws IOException, ResourceException
    {
-      return client.queryStream( "generateexcelprojectsummary", null );
+      return client.queryRepresentation( "generateexcelprojectsummary", null );
    }
 
    public EventList<ProjectSummaryValue> getProjectOverviews()

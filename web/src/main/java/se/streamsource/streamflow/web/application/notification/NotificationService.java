@@ -45,7 +45,7 @@ import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Tran
 import se.streamsource.streamflow.web.application.mail.EmailValue;
 import se.streamsource.streamflow.web.application.mail.MailSender;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
-import se.streamsource.streamflow.web.domain.interaction.gtd.CompletableId;
+import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
 import se.streamsource.streamflow.web.domain.interaction.profile.MessageRecipient;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversation;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationOwner;
@@ -122,7 +122,7 @@ public interface NotificationService
             String caseId = "n/a";
 
             if (owner != null)
-               caseId = ((CompletableId.Data) owner).caseId().get() != null ? ((CompletableId.Data) owner).caseId().get() : "n/a";
+               caseId = ((CaseId.Data) owner).caseId().get() != null ? ((CaseId.Data) owner).caseId().get() : "n/a";
 
             UserEntity user = uow.get( UserEntity.class, event.entity().get() );
 
