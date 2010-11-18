@@ -18,11 +18,14 @@
 package se.streamsource.streamflow.reference.contact;
 
 import org.qi4j.api.common.QualifiedName;
+import org.qi4j.api.composite.Composite;
 import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.property.Property;
 import org.qi4j.api.property.StateHolder;
+import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.api.value.ValueComposite;
@@ -34,6 +37,8 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
+
+import se.streamsource.streamflow.server.plugin.authentication.Authenticator;
 import se.streamsource.streamflow.server.plugin.contact.ContactList;
 import se.streamsource.streamflow.server.plugin.contact.ContactLookup;
 import se.streamsource.streamflow.server.plugin.contact.ContactValue;
@@ -41,10 +46,10 @@ import se.streamsource.streamflow.server.plugin.contact.ContactValue;
 
 @Mixins(StreamflowContactLookupPlugin.Mixin.class)
 public interface StreamflowContactLookupPlugin
-      extends ServiceComposite, ContactLookup, Configuration
+      extends ServiceComposite, ContactLookup, Activatable, Configuration
 {
 
-   class Mixin implements ContactLookup
+   abstract class Mixin implements StreamflowContactLookupPlugin
    {
 
       @This
@@ -56,6 +61,11 @@ public interface StreamflowContactLookupPlugin
       @Structure
       private Qi4jSPI spi;
 
+      public void activate() throws Exception
+      {
+         config.configuration().url().get();
+      }
+      
       public ContactList lookup( ContactValue contactTemplate )
       {
          try
@@ -101,5 +111,6 @@ public interface StreamflowContactLookupPlugin
             }
          } );
       }
+
    }
 }

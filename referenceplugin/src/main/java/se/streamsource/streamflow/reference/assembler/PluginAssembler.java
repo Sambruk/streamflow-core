@@ -32,12 +32,13 @@ public class PluginAssembler
 {
    public void assemble( ModuleAssembly module ) throws AssemblyException
    {
+      module.addEntities( StreamflowContactLookupPluginConfiguration.class ).visibleIn( Visibility.application );
+      
       module.addServices( StreamflowContactLookupPlugin.class ).
             identifiedBy( "streamflowcontactlookup" ).
             visibleIn( Visibility.application ).
             instantiateOnStartup();
 
-      module.addEntities( StreamflowContactLookupPluginConfiguration.class ).visibleIn( Visibility.application );
 
    }
 }

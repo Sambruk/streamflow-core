@@ -34,6 +34,11 @@ import java.io.IOException;
 public class StreamflowPluginServlet
       extends HttpServlet
 {
+   /**
+    * 
+    */
+   private static final long serialVersionUID = 3101786052397455154L;
+   
    private ServletAdapter adapter;
    public Application application;
 
@@ -42,13 +47,14 @@ public class StreamflowPluginServlet
    {
       try
       {
+         String preferenceNode = getInitParameter("preference-node");
          String assemblerClassName = getInitParameter( "assembler" );
 
          Class assemblerClass = Thread.currentThread().getContextClassLoader().loadClass( assemblerClassName );
 
          Assembler pluginAssembler = (Assembler) assemblerClass.newInstance();
 
-         application = new StreamflowPluginRestApplication(new Context(), pluginAssembler);
+         application = new StreamflowPluginRestApplication(new Context(), pluginAssembler, preferenceNode);
 
          application.start();
 

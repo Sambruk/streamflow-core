@@ -49,10 +49,12 @@ public class PluginApplicationAssembler
       implements ApplicationAssembler
 {
    Assembler pluginAssembler;
+   private final String preferenceNode;
 
-   public PluginApplicationAssembler( Assembler pluginAssembler )
+   public PluginApplicationAssembler( Assembler pluginAssembler, String preferenceNode )
    {
       this.pluginAssembler = pluginAssembler;
+      this.preferenceNode = preferenceNode;
    }
 
    public ApplicationAssembly assemble( ApplicationAssemblyFactory applicationFactory ) throws AssemblyException
@@ -98,7 +100,7 @@ public class PluginApplicationAssembler
       Preferences node;
       try
       {
-         node = Preferences.userRoot().node( "streamsource/streamflow/plugins" );
+         node = Preferences.userRoot().node( preferenceNode );
       } finally
       {
          Thread.currentThread().setContextClassLoader( cl );

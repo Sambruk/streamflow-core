@@ -26,10 +26,13 @@
     <servlet>
         <servlet-name>StreamflowPluginServlet</servlet-name>
         <servlet-class>se.streamsource.streamflow.server.plugin.restlet.StreamflowPluginServlet</servlet-class>
-
         <init-param>
             <param-name>assembler</param-name>
             <param-value>se.streamsource.streamflow.reference.assembler.PluginAssembler</param-value>
+        </init-param>
+        <init-param>
+        	<param-name>preference-node</param-name>
+        	<param-value>streamsource/streamflow/plugin-reference</param-value>
         </init-param>
         <load-on-startup>1</load-on-startup>
 
