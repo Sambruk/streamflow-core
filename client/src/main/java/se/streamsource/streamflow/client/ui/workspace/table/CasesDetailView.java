@@ -82,8 +82,9 @@ public class CasesDetailView
             currentCase = client.getReference();
             casePanel.add(current = obf.newObjectBuilder( CaseDetailView.class ).use( client ).newInstance());
             layout.show( this, "detail" );
-
          }
+         
+         current.requestFocusInWindow();
       }
    }
 
@@ -117,7 +118,7 @@ public class CasesDetailView
 
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
    {
-      if (Events.matches( Events.withNames("deletedEntity" ), transactions ))
+      if (Events.matches( Events.withNames("deletedEntity", "createdCase" ), transactions ))
          clear();
    }
 }
