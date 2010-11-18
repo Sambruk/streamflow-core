@@ -16,84 +16,80 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.forms;
 
-import ca.odell.glazedlists.gui.TableFormat;
-import ca.odell.glazedlists.swing.EventJXTableModel;
-import org.jdesktop.swingx.JXTable;
+import ca.odell.glazedlists.event.ListEvent;
+import ca.odell.glazedlists.event.ListEventListener;
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
+import org.jdesktop.application.Action;
+import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Task;
+import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
-import org.qi4j.api.util.DateFunctions;
+import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.util.RefreshWhenVisible;
-import se.streamsource.streamflow.client.util.ToolTipTableCellRenderer;
-import se.streamsource.streamflow.client.util.i18n;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
-import se.streamsource.streamflow.domain.form.AttachmentFieldSubmission;
-import se.streamsource.streamflow.domain.form.AttachmentFieldValue;
-import se.streamsource.streamflow.domain.form.DateFieldValue;
 import se.streamsource.streamflow.resource.caze.FieldDTO;
 import se.streamsource.streamflow.resource.roles.IntegerDTO;
-import se.streamsource.streamflow.util.Strings;
 
-import javax.swing.JScrollPane;
-import java.text.SimpleDateFormat;
+import javax.swing.BorderFactory;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.SwingConstants;
+import java.awt.event.ActionEvent;
 
 /**
  * JAVADOC
  */
 public class CaseSubmittedFormView
-      extends JScrollPane
+      extends CaseSubmittedFormAbstractView
+      implements ListEventListener<FieldDTO>
 {
-   private EventJXTableModel<FieldDTO> tableModel;
+   private CaseSubmittedFormModel model;
 
-
-   public CaseSubmittedFormView(@Uses CommandQueryClient client,
-                                @Structure ObjectBuilderFactory obf, @Structure final ValueBuilderFactory vbf )
+   public CaseSubmittedFormView(@Service ApplicationContext context, @Uses CommandQueryClient client,
+                                @Structure ObjectBuilderFactory obf, @Uses Integer index, @Structure  ValueBuilderFactory vbf)
    {
-      CaseSubmittedFormModel model = obf.newObjectBuilder( CaseSubmittedFormModel.class ).use( client ).newInstance();
+      ValueBuilder<IntegerDTO> builder = vbf.newValueBuilder( IntegerDTO.class );
+      builder.prototype().integer().set( index );
+      model = obf.newObjectBuilder( CaseSubmittedFormModel.class ).use( client, builder.newInstance() ).newInstance();
+      model.getEventList().addListEventListener( this );
 
-      TableFormat<FieldDTO> fieldDTOTableFormat = new TableFormat<FieldDTO>()
-      {
-         public int getColumnCount()
+      setActionMap( context.getActionMap( this ) );
+
+      new RefreshWhenVisible( this, model );
+   }
+
+   public void listChanged( ListEvent<FieldDTO> listEvent )
+   {
+      panel().removeAll();
+      final DefaultFormBuilder builder = builder( panel() );
+
+      safeRead( model.getEventList(), new EventCallback<FieldDTO>() {
+         public void iterate( FieldDTO field )
          {
-            return 2;
+            JLabel label = new JLabel( field.field().get() + ":", SwingConstants.RIGHT );
+            JComponent component = getComponent( field.value().get(), field.fieldType().get() );
+
+            builder.append( label, component );
+            builder.nextLine();
          }
+      });
+      revalidate();
+      repaint(  );
+   }
 
-         public String getColumnName( int i )
-         {
-            return new String[]{i18n.text( WorkspaceResources.field_name ), i18n.text( WorkspaceResources.field_value )}[i];
-         }
+   @Override
+   protected FormAttachmentDownload getModel()
+   {
+      return model;
+   }
 
-         public Object getColumnValue( FieldDTO field, int column )
-         {
-            switch (column)
-            {
-               case 0:
-                  return field.field().get();
-               default:
-                  if (DateFieldValue.class.getName().equals( field.fieldType().get() ) &&
-                        Strings.notEmpty( field.value().get() ))
-                  {
-                     return new SimpleDateFormat( i18n.text( WorkspaceResources.date_time_format ) ).format( DateFunctions.fromString( field.value().get() ) );
-                  } else if ( AttachmentFieldValue.class.getName().equals( field.fieldType().get() )
-                        && Strings.notEmpty( field.value().get() ))
-                  {
-                     return vbf.newValueFromJSON( AttachmentFieldSubmission.class, field.value().get() ).name().get();
-                  } else
-                  {
-                     return field.value().get();
-                  }
-            }
-         }
-      };
-
-      tableModel = new EventJXTableModel<FieldDTO>( model.getEventList(), fieldDTOTableFormat );
-
-      JXTable fieldValues = new JXTable(tableModel);
-      fieldValues.setDefaultRenderer( Object.class, new ToolTipTableCellRenderer() );
-      setViewportView( fieldValues );
-
-      new RefreshWhenVisible(this, model);
+   @Action
+   public Task open( ActionEvent event )
+   {
+      return openAttachment( event );
    }
 }

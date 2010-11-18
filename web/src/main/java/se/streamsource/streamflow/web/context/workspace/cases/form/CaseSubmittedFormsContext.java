@@ -16,6 +16,7 @@
 
 package se.streamsource.streamflow.web.context.workspace.cases.form;
 
+import com.sun.jdi.IntegerValue;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
@@ -25,24 +26,23 @@ import org.restlet.data.Form;
 import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.Representation;
 import se.streamsource.dci.api.IndexContext;
-import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.api.RoleMap;
+import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.domain.form.AttachmentFieldSubmission;
 import se.streamsource.streamflow.domain.form.AttachmentFieldValue;
-import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.resource.caze.EffectiveFieldsDTO;
 import se.streamsource.streamflow.resource.caze.FieldDTO;
+import se.streamsource.streamflow.resource.caze.SubmittedFormDTO;
 import se.streamsource.streamflow.resource.caze.SubmittedFormsListDTO;
+import se.streamsource.streamflow.resource.roles.IntegerDTO;
 import se.streamsource.streamflow.util.Strings;
 import se.streamsource.streamflow.web.domain.entity.form.SubmittedFormsQueries;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
-import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
 import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 
 /**
  * JAVADOC
@@ -71,6 +71,13 @@ public class CaseSubmittedFormsContext
 
       return fields.effectiveFields();
    }
+
+   public SubmittedFormDTO submittedform( IntegerDTO index )
+   {
+      SubmittedFormsQueries forms = RoleMap.role( SubmittedFormsQueries.class );
+      return forms.getSubmittedForm( index.integer().get() );
+   }
+
 
    public Representation download( StringValue id ) throws IOException, URISyntaxException
    {

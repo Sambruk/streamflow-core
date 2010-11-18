@@ -55,7 +55,7 @@ public class CaseResource
    @SubResource
    public void submittedforms()
    {
-      subResource( CaseSubmittedFormsResource.class );
+      subResourceContexts( CaseSubmittedFormsContext.class );
    }
 
    @SubResource

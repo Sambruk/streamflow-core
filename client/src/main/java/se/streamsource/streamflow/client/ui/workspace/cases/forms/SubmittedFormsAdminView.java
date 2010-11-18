@@ -56,8 +56,7 @@ public class SubmittedFormsAdminView
                if (idx != -1 && idx < submittedForms.getModel().getSize())
                {
 
-                  CommandQueryClient subClient = client.getSubClient( "" + idx );
-                  CaseSubmittedFormView submittedFormView = obf.newObjectBuilder( CaseSubmittedFormView.class ).use( subClient ).newInstance();
+                  CaseSubmittedFormView submittedFormView = obf.newObjectBuilder( CaseSubmittedFormView.class ).use( client, idx ).newInstance();
                   setRightComponent( submittedFormView );
                } else
                {

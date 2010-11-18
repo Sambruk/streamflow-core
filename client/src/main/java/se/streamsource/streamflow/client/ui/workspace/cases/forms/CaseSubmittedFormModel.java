@@ -18,24 +18,37 @@ package se.streamsource.streamflow.client.ui.workspace.cases.forms;
 
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
+import org.restlet.representation.Representation;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.dci.value.*;
 import se.streamsource.streamflow.client.util.EventListSynch;
 import se.streamsource.streamflow.client.util.Refreshable;
 import se.streamsource.streamflow.resource.caze.FieldDTO;
 import se.streamsource.streamflow.resource.caze.SubmittedFormDTO;
 import se.streamsource.streamflow.resource.roles.IntegerDTO;
 
+import java.io.IOException;
+import java.io.InputStream;
+
 public class CaseSubmittedFormModel
-   implements Refreshable
+   implements Refreshable, FormAttachmentDownload
 {
    @Uses CommandQueryClient client;
+
+   @Uses IntegerDTO index;
+
+   @Structure
+   ValueBuilderFactory vbf;
 
    private EventList<FieldDTO> eventList = new BasicEventList<FieldDTO>();
 
    public void refresh()
    {
-      SubmittedFormDTO form = client.query( "index", SubmittedFormDTO.class );
+      SubmittedFormDTO form = client.query( "submittedform", index, SubmittedFormDTO.class );
       EventListSynch.synchronize( form.values().get(), eventList );
    }
 
@@ -43,4 +56,13 @@ public class CaseSubmittedFormModel
    {
       return eventList;
    }
+
+   public Representation download( String attachmentId ) throws IOException
+   {
+      ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
+      builder.prototype().string().set( attachmentId );
+
+      return client.queryRepresentation( "download", builder.newInstance() );
+   }
+   
 }

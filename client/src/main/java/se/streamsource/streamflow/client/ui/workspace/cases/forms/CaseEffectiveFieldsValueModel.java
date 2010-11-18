@@ -36,7 +36,7 @@ import java.io.IOException;
  * List of contacts for a case
  */
 public class CaseEffectiveFieldsValueModel
-      implements Refreshable
+      implements Refreshable, FormAttachmentDownload
 {
    @Uses
    CommandQueryClient client;
