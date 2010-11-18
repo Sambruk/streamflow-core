@@ -93,7 +93,6 @@ import se.streamsource.streamflow.web.resource.crystal.CrystalResource;
 import se.streamsource.streamflow.web.resource.organizations.*;
 import se.streamsource.streamflow.web.resource.organizations.forms.*;
 import se.streamsource.streamflow.web.resource.overview.OverviewProjectResource;
-import se.streamsource.streamflow.web.resource.overview.OverviewProjectsResource;
 import se.streamsource.streamflow.web.resource.overview.OverviewResource;
 import se.streamsource.streamflow.web.resource.structure.SelectedTemplatesResource;
 import se.streamsource.streamflow.web.resource.structure.labels.LabelResource;
@@ -271,7 +270,6 @@ public class ContextAssembler
             OverviewProjectAssignmentsContext.class,
             OverviewProjectResource.class,
             OverviewProjectsContext.class,
-            OverviewProjectsResource.class,
 
             // Workspace
             WorkspaceResource.class,

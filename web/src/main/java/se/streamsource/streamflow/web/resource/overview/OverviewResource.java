@@ -16,24 +16,27 @@
 
 package se.streamsource.streamflow.web.resource.overview;
 
+import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
-import se.streamsource.dci.restlet.server.SubResource;
+import se.streamsource.dci.restlet.server.SubResources;
 import se.streamsource.streamflow.web.context.overview.OverviewContext;
+import se.streamsource.streamflow.web.domain.structure.project.Project;
 
 /**
  * JAVADOC
  */
 public class OverviewResource
    extends CommandQueryResource
+   implements SubResources
 {
    public OverviewResource( )
    {
       super( OverviewContext.class );
    }
 
-   @SubResource
-   public void projects()
+   public void resource( String segment ) throws ResourceException
    {
-      subResource( OverviewProjectsResource.class );
+      setRole( Project.class, segment );
+      subResource( OverviewProjectResource.class );
    }
 }
