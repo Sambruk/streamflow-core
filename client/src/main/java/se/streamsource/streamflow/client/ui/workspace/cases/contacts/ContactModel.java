@@ -22,6 +22,7 @@ import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.dci.value.ResourceValue;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.domain.contact.ContactAddressValue;
 import se.streamsource.streamflow.domain.contact.ContactEmailValue;
@@ -111,6 +112,12 @@ public class ContactModel
       ValueBuilder<ContactEmailValue> builder = vbf.newValueBuilder( ContactEmailValue.class );
       builder.prototype().emailAddress().set( newEmailAddress );
       client.putCommand( "changeemailaddress", builder.newInstance() );
+   }
+
+   public boolean isContactLookupEnabled()
+   {
+      ResourceValue resource = client.query( "", ResourceValue.class );
+      return resource.queries().get().contains( "searchcontacts" );
    }
 
    public ContactsDTO searchContacts( ContactValue query ) throws ResourceException

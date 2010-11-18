@@ -90,6 +90,7 @@ public class ContactView
    private JTextField companyField = (JTextField) TEXTFIELD.newField();
 
    private ApplicationContext context;
+   private JPanel lookupPanel;
 
    public ContactView( @Service ApplicationContext appContext, @Structure ObjectBuilderFactory obf )
    {
@@ -154,7 +155,7 @@ public class ContactView
 
       builder.nextLine( 2 );
       builder.nextColumn( 2 );
-      JPanel lookupPanel = new JPanel( new FlowLayout( FlowLayout.CENTER ) );
+      lookupPanel = new JPanel( new FlowLayout( FlowLayout.CENTER ) );
       lookupPanel.add( new JButton( getActionMap().get( "lookupContact" ) ) );
       builder.add( lookupPanel );
 
@@ -177,6 +178,10 @@ public class ContactView
          phoneNumberBinder.updateWith( model.getPhoneNumber() );
          addressBinder.updateWith( model.getAddress() );
          emailBinder.updateWith( model.getEmailAddress() );
+
+         javax.swing.Action action = getActionMap().get( "lookupContact" );
+         action.setEnabled( model.isContactLookupEnabled() );
+         lookupPanel.setVisible( action.isEnabled() );
 
          layout.show( this, "CONTACT" );
 

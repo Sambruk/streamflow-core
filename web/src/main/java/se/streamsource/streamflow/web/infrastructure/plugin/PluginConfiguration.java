@@ -19,22 +19,15 @@ package se.streamsource.streamflow.web.infrastructure.plugin;
 
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.configuration.ConfigurationComposite;
+import org.qi4j.api.configuration.Enabled;
 import org.qi4j.api.property.Property;
 
 /**
  * General plugin configuration. Points out the location of the plugin
  */
 public interface PluginConfiguration
-      extends ConfigurationComposite
+      extends ConfigurationComposite, Enabled
 {
-   /**
-    * Determine whether this plugin is enabled or not.
-    *
-    * @return
-    */
-   @UseDefaults
-   Property<Boolean> enabled();
-
    /**
     * The URL where this plugin is deployed
     *
