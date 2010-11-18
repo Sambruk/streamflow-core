@@ -33,7 +33,9 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.usecase.UsecaseBuilder;
+import org.qi4j.api.util.Annotations;
 import org.qi4j.api.util.Classes;
+import org.qi4j.api.util.Iterables;
 import org.qi4j.api.value.Value;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
@@ -42,21 +44,12 @@ import org.qi4j.spi.Qi4jSPI;
 import org.qi4j.spi.entity.EntityState;
 import org.qi4j.spi.property.PropertyType;
 import org.qi4j.spi.structure.ModuleSPI;
-import org.qi4j.spi.util.Annotations;
 import org.qi4j.spi.value.ValueDescriptor;
 import org.restlet.Application;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
-import org.restlet.data.CharacterSet;
-import org.restlet.data.Form;
-import org.restlet.data.Language;
-import org.restlet.data.MediaType;
-import org.restlet.data.Parameter;
-import org.restlet.data.Preference;
-import org.restlet.data.Reference;
-import org.restlet.data.Status;
-import org.restlet.data.Tag;
+import org.restlet.data.*;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.Variant;
@@ -64,35 +57,19 @@ import org.restlet.resource.ResourceException;
 import org.restlet.security.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import se.streamsource.dci.api.Context;
-import se.streamsource.dci.api.ContextNotFoundException;
-import se.streamsource.dci.api.DeleteContext;
-import se.streamsource.dci.api.IndexContext;
-import se.streamsource.dci.api.InteractionConstraints;
-import se.streamsource.dci.api.RoleMap;
-import se.streamsource.dci.api.SubContext;
-import se.streamsource.dci.api.SubContexts;
+import se.streamsource.dci.api.*;
 import se.streamsource.dci.value.ContextValue;
 
 import javax.security.auth.Subject;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.*;
 import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
 import java.net.URLDecoder;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -819,7 +796,7 @@ public class CommandQueryRestlet
          {
             for (Annotation[] annotations : method.getParameterAnnotations())
             {
-               Name name = Annotations.first( Annotations.isType(Name.class ), annotations);
+               Name name = (Name) Iterables.first( Iterables.filter(Annotations.isType(Name.class ), Iterables.iterable(annotations)));
                Object arg = asForm.getFirstValue( name.value() );
 
                // Parameter conversion

@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.web.domain.structure.conversation;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.entity.Identity;
 import org.qi4j.api.entity.IdentityGenerator;
@@ -26,9 +27,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-
-import static se.streamsource.streamflow.infrastructure.event.DomainEvent.*;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 /**
  * JAVADOC
@@ -42,7 +41,7 @@ public interface Messages
    {
       ManyAssociation<Message> messages();
 
-      Message createdMessage( DomainEvent create, String id, String body, ConversationParticipant participant );
+      Message createdMessage( @Optional DomainEvent create, String id, String body, ConversationParticipant participant );
    }
 
    abstract class Mixin
@@ -64,7 +63,7 @@ public interface Messages
       {
          if (participants.isParticipant(participant))
          {
-            Message message = createdMessage( CREATE, idGen.generate( Identity.class ), body, participant);
+            Message message = createdMessage( null, idGen.generate( Identity.class ), body, participant);
 
             participants.receiveMessage(message);
 

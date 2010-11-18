@@ -42,9 +42,9 @@ import se.streamsource.streamflow.client.util.StateBinder;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
 import se.streamsource.streamflow.client.util.i18n;
-import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
-import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
-import se.streamsource.streamflow.infrastructure.event.source.helper.Events;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
+import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
 import se.streamsource.streamflow.resource.organization.SelectedTemplatesValue;
 
 import javax.swing.ActionMap;
@@ -311,7 +311,7 @@ public class SelectedTemplatesView extends JPanel
       }
    }
 
-   public void notifyTransactions( Iterable<TransactionEvents> transactions )
+   public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
    {
       if (Events.matches( Events.withNames(
             "defaultPdfTemplateSet", "formPdfTemplateSet", "casePdfTemplateSet"), transactions ))

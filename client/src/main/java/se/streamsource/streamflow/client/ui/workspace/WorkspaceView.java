@@ -43,8 +43,8 @@ import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.RoundedBorder;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.i18n;
-import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
-import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -370,7 +370,7 @@ public class WorkspaceView
       casesView.refresh();
    }
 
-   public void notifyTransactions( Iterable<TransactionEvents> transactions )
+   public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
    {
    }
 

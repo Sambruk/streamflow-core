@@ -27,7 +27,7 @@ import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.client.util.RefreshWhenVisible;
 import se.streamsource.streamflow.client.util.ListDetailView;
-import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 
 import javax.swing.Action;
 import java.awt.Component;
@@ -53,7 +53,7 @@ public class OrganizationsView
       new RefreshWhenVisible(this, model );
    }
 
-   public void notifyTransactions( Iterable<TransactionEvents> transactions )
+   public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
    {
       model.notifyTransactions( transactions );
    }

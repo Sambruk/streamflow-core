@@ -49,8 +49,8 @@ import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.NameDialog;
 import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
 import se.streamsource.streamflow.client.util.i18n;
-import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
-import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.util.Strings;
 
 import javax.swing.ActionMap;
@@ -69,8 +69,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static se.streamsource.streamflow.client.util.i18n.*;
-import static se.streamsource.streamflow.infrastructure.event.source.helper.Events.*;
-import static se.streamsource.streamflow.util.Specifications.*;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
+import static org.qi4j.api.util.Specifications.*;
 
 /**
  * JAVADOC
@@ -316,7 +316,7 @@ public class AdministrationTreeView
          return null;
    }
 
-   public void notifyTransactions( Iterable<TransactionEvents> transactions )
+   public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
    {
       // Only listen for changes on Organization and OrganizationalUnit
       if (matches( and( onEntityTypes( "se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity",

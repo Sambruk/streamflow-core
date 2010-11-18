@@ -16,11 +16,12 @@
 
 package se.streamsource.streamflow.web.domain.structure.form;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 import se.streamsource.streamflow.domain.form.RequiredSignatureValue;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 import java.util.List;
 
@@ -39,9 +40,9 @@ public interface RequiredSignatures
       @UseDefaults
       Property<List<RequiredSignatureValue>> requiredSignatures();
 
-      void createdRequiredSignature( DomainEvent event, RequiredSignatureValue requiredSignatureValue );
-      void updatedRequiredSignature( DomainEvent event, int index, RequiredSignatureValue requiredSignatureValue );
-      void removedRequiredSignature( DomainEvent event, int index);
+      void createdRequiredSignature( @Optional DomainEvent event, RequiredSignatureValue requiredSignatureValue );
+      void updatedRequiredSignature( @Optional DomainEvent event, int index, RequiredSignatureValue requiredSignatureValue );
+      void removedRequiredSignature( @Optional DomainEvent event, int index);
    }
 
    abstract class Mixin
@@ -49,19 +50,19 @@ public interface RequiredSignatures
    {
       public void createRequiredSignature( RequiredSignatureValue requiredSignatureValue )
       {
-         createdRequiredSignature( DomainEvent.CREATE, requiredSignatureValue );
+         createdRequiredSignature( null, requiredSignatureValue );
       }
 
       public void updateRequiredSignature( int index, RequiredSignatureValue requiredSignatureValue )
       {
          if (index >= 0 && index < requiredSignatures().get().size())
-            updatedRequiredSignature( DomainEvent.CREATE, index, requiredSignatureValue );
+            updatedRequiredSignature( null, index, requiredSignatureValue );
       }
 
       public void removeRequiredSignature( int index )
       {
          if (index >= 0 && index < requiredSignatures().get().size())
-            removedRequiredSignature( DomainEvent.CREATE, index );
+            removedRequiredSignature( null, index );
       }
 
       public void createdRequiredSignature( DomainEvent event, RequiredSignatureValue requiredSignatureValue )

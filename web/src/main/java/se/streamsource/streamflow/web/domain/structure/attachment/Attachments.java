@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.web.domain.structure.attachment;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.Aggregated;
 import org.qi4j.api.entity.Identity;
 import org.qi4j.api.entity.IdentityGenerator;
@@ -27,7 +28,7 @@ import org.qi4j.api.injection.scope.State;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -54,11 +55,11 @@ public interface Attachments
       @Queryable(false)
       ManyAssociation<Attachment> attachments();
 
-      Attachment createdAttachment( DomainEvent event, String id );
+      Attachment createdAttachment( @Optional DomainEvent event, String id );
 
-      void addedAttachment( DomainEvent event, Attachment attachment );
+      void addedAttachment( @Optional DomainEvent event, Attachment attachment );
 
-      void removedAttachment( DomainEvent event, Attachment attachment );
+      void removedAttachment( @Optional DomainEvent event, Attachment attachment );
    }
 
    abstract class Mixin
@@ -78,11 +79,11 @@ public interface Attachments
          // Check if URI is valid
          new URI( uri );
 
-         Attachment attachment = createdAttachment( DomainEvent.CREATE, idGen.generate( Identity.class ) );
+         Attachment attachment = createdAttachment( null, idGen.generate( Identity.class ) );
          attachment.changeUri( uri );
          attachment.changeName( "New attachment" );
 
-         addedAttachment( DomainEvent.CREATE, attachment );
+         addedAttachment( null, attachment );
 
          return attachment;
       }
@@ -97,13 +98,13 @@ public interface Attachments
                return;
             }
          }
-         addedAttachment( DomainEvent.CREATE, attachment );
+         addedAttachment( null, attachment );
       }
 
       public void deleteAttachment( Attachment attachment )
       {
          // Delete the attachment entity
-         removedAttachment( DomainEvent.CREATE, attachment );
+         removedAttachment( null, attachment );
 
          attachment.removeEntity();
       }

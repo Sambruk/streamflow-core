@@ -17,10 +17,11 @@
 
 package se.streamsource.streamflow.web.domain.structure.label;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 /**
  * JAVADOC
@@ -40,9 +41,9 @@ public interface SelectedLabels
    {
       ManyAssociation<Label> selectedLabels();
 
-      void addedSelectedLabel( DomainEvent event, Label label );
+      void addedSelectedLabel( @Optional DomainEvent event, Label label );
 
-      void removedSelectedLabel( DomainEvent event, Label label );
+      void removedSelectedLabel( @Optional DomainEvent event, Label label );
    }
 
    class Mixin
@@ -53,12 +54,12 @@ public interface SelectedLabels
 
       public void addSelectedLabel( Label label )
       {
-         data.addedSelectedLabel( DomainEvent.CREATE, label );
+         data.addedSelectedLabel( null, label );
       }
 
       public void removeSelectedLabel( Label label )
       {
-         data.removedSelectedLabel( DomainEvent.CREATE, label );
+         data.removedSelectedLabel( null, label );
       }
 
       public void mergeSelectedLabels( SelectedLabels to )
@@ -66,7 +67,7 @@ public interface SelectedLabels
          while (data.selectedLabels().count() > 0)
          {
             Label label = data.selectedLabels().get( 0 );
-            data.removedSelectedLabel( DomainEvent.CREATE, label );
+            data.removedSelectedLabel( null, label );
             to.addSelectedLabel( label );
          }
       }

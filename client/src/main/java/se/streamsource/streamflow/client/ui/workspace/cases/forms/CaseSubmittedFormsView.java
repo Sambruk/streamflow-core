@@ -26,8 +26,8 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.util.RefreshWhenVisible;
-import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
-import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.resource.caze.SubmittedFormListDTO;
 
 import javax.swing.ActionMap;
@@ -41,7 +41,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.text.DateFormat;
 
-import static se.streamsource.streamflow.infrastructure.event.source.helper.Events.*;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 
 /**
  * JAVADOC
@@ -92,7 +92,7 @@ public class CaseSubmittedFormsView
       return submittedForms;
    }
 
-   public void notifyTransactions( Iterable<TransactionEvents> transactions )
+   public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
    {
       if (matches( withNames("submittedForm" ), transactions ))
       {

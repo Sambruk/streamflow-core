@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.web.domain.structure.group;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
@@ -26,7 +27,7 @@ import org.qi4j.api.sideeffect.SideEffects;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.domain.structure.Removable;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,9 +54,9 @@ public interface Participation
    {
       ManyAssociation<Group> groups();
 
-      void joinedGroup( DomainEvent event, Group group );
+      void joinedGroup( @Optional DomainEvent event, Group group );
 
-      void leftGroup( DomainEvent event, Group group );
+      void leftGroup( @Optional DomainEvent event, Group group );
    }
 
    abstract class Mixin
@@ -76,7 +77,7 @@ public interface Participation
       public void joinGroup( Group group )
       {
          if (!group.equals( participant ))
-            joinedGroup( DomainEvent.CREATE, group );
+            joinedGroup( null, group );
       }
 
       public void leaveGroup( Group group )
@@ -84,7 +85,7 @@ public interface Participation
          if (!state.groups().contains( group ))
             return;
 
-         leftGroup( DomainEvent.CREATE, group );
+         leftGroup( null, group );
       }
 
       public Iterable<Group> allGroups()
@@ -107,12 +108,12 @@ public interface Participation
          return groups;
       }
 
-      public void joinedGroup( DomainEvent event, Group group )
+      public void joinedGroup( @Optional DomainEvent event, Group group )
       {
          state.groups().add( group );
       }
 
-      public void leftGroup( DomainEvent event, Group group )
+      public void leftGroup( @Optional DomainEvent event, Group group )
       {
          state.groups().remove( group );
       }

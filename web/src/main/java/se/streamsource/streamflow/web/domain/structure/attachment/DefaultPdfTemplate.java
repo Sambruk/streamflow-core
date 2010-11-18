@@ -23,7 +23,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 /**
  * Handles selection of an attachment as default pdf template.
@@ -38,7 +38,7 @@ public interface DefaultPdfTemplate
       @Optional
       Association<Attachment> defaultPdfTemplate();
 
-      void defaultPdfTemplateSet( DomainEvent event, @Optional Attachment attachment );
+      void defaultPdfTemplateSet( @Optional DomainEvent event, @Optional Attachment attachment );
    }
 
    abstract class Mixin
@@ -52,10 +52,10 @@ public interface DefaultPdfTemplate
 
       public void setDefaultPdfTemplate( Attachment attachment )
       {
-         defaultPdfTemplateSet( DomainEvent.CREATE, attachment );
+         defaultPdfTemplateSet( null, attachment );
       }
 
-      public void defaultPdfTemplateSet( DomainEvent event, Attachment attachment )
+      public void defaultPdfTemplateSet( @Optional DomainEvent event, Attachment attachment )
       {
          defaultPdfTemplate().set( attachment );
       }

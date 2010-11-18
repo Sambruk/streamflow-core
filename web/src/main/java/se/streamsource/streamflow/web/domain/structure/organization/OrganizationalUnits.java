@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.web.domain.structure.organization;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.constraint.Name;
 import org.qi4j.api.entity.Aggregated;
 import org.qi4j.api.entity.EntityBuilder;
@@ -28,7 +29,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.web.domain.interaction.gtd.ChangesOwner;
 import se.streamsource.streamflow.web.domain.structure.role.Roles;
 
@@ -50,11 +51,11 @@ public interface OrganizationalUnits
       @Aggregated
       ManyAssociation<OrganizationalUnit> organizationalUnits();
 
-      OrganizationalUnit createdOrganizationalUnit( DomainEvent event, @Name("id") String id );
+      OrganizationalUnit createdOrganizationalUnit( @Optional DomainEvent event, @Name("id") String id );
 
-      void removedOrganizationalUnit( DomainEvent create, OrganizationalUnit ou );
+      void removedOrganizationalUnit( @Optional DomainEvent create, OrganizationalUnit ou );
 
-      void addedOrganizationalUnit( DomainEvent event, OrganizationalUnit ou );
+      void addedOrganizationalUnit( @Optional DomainEvent event, OrganizationalUnit ou );
 
       OrganizationalUnits getParent( OrganizationalUnit ou );
 
@@ -83,7 +84,7 @@ public interface OrganizationalUnits
 
       public OrganizationalUnit createOrganizationalUnit( String name )
       {
-         OrganizationalUnit ou = createdOrganizationalUnit( DomainEvent.CREATE, idGenerator.generate( Identity.class ) );
+         OrganizationalUnit ou = createdOrganizationalUnit( null, idGenerator.generate( Identity.class ) );
          addOrganizationalUnit( ou );
          ou.changeDescription( name );
 
@@ -97,7 +98,7 @@ public interface OrganizationalUnits
       {
          if (!organizationalUnits().contains( ou ))
          {
-            addedOrganizationalUnit( DomainEvent.CREATE, ou );
+            addedOrganizationalUnit( null, ou );
          }
       }
 
@@ -106,10 +107,10 @@ public interface OrganizationalUnits
          if (!organizationalUnits().contains( ou ))
             return; // OU is not a sub-OU of this OU
 
-         removedOrganizationalUnit( DomainEvent.CREATE, ou );
+         removedOrganizationalUnit( null, ou );
       }
 
-      public OrganizationalUnit createdOrganizationalUnit( DomainEvent event, @Name("id") String id )
+      public OrganizationalUnit createdOrganizationalUnit( @Optional DomainEvent event, @Name("id") String id )
       {
          EntityBuilder<OrganizationalUnit> ouBuilder = uowf.currentUnitOfWork().newEntityBuilder( OrganizationalUnit.class, id );
          ouBuilder.instanceFor(OwningOrganization.class).organization().set( orgOwner.organization().get() );
@@ -117,12 +118,12 @@ public interface OrganizationalUnits
          return ou;
       }
 
-      public void removedOrganizationalUnit( DomainEvent create, OrganizationalUnit ou )
+      public void removedOrganizationalUnit( @Optional DomainEvent create, OrganizationalUnit ou )
       {
          organizationalUnits().remove( ou );
       }
 
-      public void addedOrganizationalUnit( DomainEvent event, OrganizationalUnit ou )
+      public void addedOrganizationalUnit( @Optional DomainEvent event, OrganizationalUnit ou )
       {
          organizationalUnits().add( organizationalUnits().count(), ou );
       }

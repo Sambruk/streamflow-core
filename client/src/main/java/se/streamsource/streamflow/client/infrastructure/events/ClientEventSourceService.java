@@ -28,10 +28,9 @@ import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.ResponseHandler;
-import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
-import se.streamsource.streamflow.infrastructure.event.source.EventStream;
-import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
-import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.EventStream;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 
 import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;
@@ -99,8 +98,8 @@ public interface ClientEventSourceService
                {
                   String source = entity.getText();
 
-                  final TransactionEvents transactionEvents = vbf.newValueFromJSON( TransactionEvents.class, source );
-                  notifyTransactionListeners( transactionEvents );
+                  final TransactionDomainEvents transactionDomainEvents = vbf.newValueFromJSON( TransactionDomainEvents.class, source );
+                  notifyTransactionListeners( transactionDomainEvents );
                }
             } catch (Exception e)
             {
@@ -109,7 +108,7 @@ public interface ClientEventSourceService
          }
       }
 
-      private void notifyTransactionListeners( TransactionEvents transaction )
+      private void notifyTransactionListeners( TransactionDomainEvents transactionDomain )
       {
          Iterator<Reference<TransactionListener>> referenceIterator = new ArrayList<Reference<TransactionListener>>(listeners).iterator();
          while (referenceIterator.hasNext())
@@ -118,7 +117,7 @@ public interface ClientEventSourceService
             TransactionListener lstnr = eventSourceListenerReference.get();
             if (lstnr != null)
             {
-               lstnr.notifyTransactions( Collections.singleton( transaction ));
+               lstnr.notifyTransactions( Collections.singleton( transactionDomain ));
             }
          }
       }

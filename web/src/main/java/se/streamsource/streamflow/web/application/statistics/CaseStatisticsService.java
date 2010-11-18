@@ -40,15 +40,15 @@ import se.streamsource.streamflow.domain.form.EffectiveFieldValue;
 import se.streamsource.streamflow.domain.form.EffectiveFormFieldsValue;
 import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
 import se.streamsource.streamflow.domain.structure.Describable;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
-import se.streamsource.streamflow.infrastructure.event.source.EventSource;
-import se.streamsource.streamflow.infrastructure.event.source.EventStream;
-import se.streamsource.streamflow.infrastructure.event.source.EventVisitor;
-import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
-import se.streamsource.streamflow.infrastructure.event.source.helper.EventRouter;
-import se.streamsource.streamflow.infrastructure.event.source.helper.Events;
-import se.streamsource.streamflow.infrastructure.event.source.helper.TransactionTracker;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.EventSource;
+import se.streamsource.streamflow.infrastructure.event.domain.source.EventStream;
+import se.streamsource.streamflow.infrastructure.event.domain.source.EventVisitor;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionVisitor;
+import se.streamsource.streamflow.infrastructure.event.domain.source.helper.EventRouter;
+import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
+import se.streamsource.streamflow.infrastructure.event.domain.source.helper.TransactionTracker;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
 import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity;
 import se.streamsource.streamflow.web.domain.entity.casetype.ResolutionEntity;
@@ -85,8 +85,8 @@ import se.streamsource.streamflow.web.domain.structure.user.User;
 
 import java.util.Date;
 
-import static se.streamsource.streamflow.infrastructure.event.source.helper.Events.*;
-import static se.streamsource.streamflow.util.Specifications.*;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
+import static org.qi4j.api.util.Specifications.*;
 
 /**
  * Consumes domain events and creates application events for statistics.
@@ -407,9 +407,9 @@ public interface CaseStatisticsService
 
       }
 
-      public boolean visit( TransactionEvents transaction )
+      public boolean visit( TransactionDomainEvents transactionDomain )
       {
-         return transactionAdapter.visit( transaction );
+         return transactionAdapter.visit( transactionDomain );
       }
 
       private RelatedStatisticsValue createRelated( EntityComposite entity, RelatedEnum type )

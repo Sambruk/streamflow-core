@@ -42,20 +42,20 @@ import org.qi4j.migration.assembly.MigrationBuilder;
 import org.qi4j.spi.service.importer.NewObjectImporter;
 import org.qi4j.spi.uuid.UuidIdentityGeneratorService;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
-import se.streamsource.streamflow.infrastructure.event.factory.DomainEventFactoryService;
+import se.streamsource.streamflow.infrastructure.event.application.ApplicationEvent;
+import se.streamsource.streamflow.infrastructure.event.application.TransactionApplicationEvents;
+import se.streamsource.streamflow.infrastructure.event.application.factory.ApplicationEventFactoryService;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.factory.DomainEventFactoryService;
 import se.streamsource.streamflow.infrastructure.time.TimeService;
-import se.streamsource.streamflow.server.plugin.contact.ContactAddressValue;
-import se.streamsource.streamflow.server.plugin.contact.ContactEmailValue;
-import se.streamsource.streamflow.server.plugin.contact.ContactList;
-import se.streamsource.streamflow.server.plugin.contact.ContactPhoneValue;
-import se.streamsource.streamflow.server.plugin.contact.ContactValue;
+import se.streamsource.streamflow.server.plugin.contact.*;
 import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStoreService;
 import se.streamsource.streamflow.web.infrastructure.caching.CachingServiceComposite;
 import se.streamsource.streamflow.web.infrastructure.database.DataSourceService;
 import se.streamsource.streamflow.web.infrastructure.database.LiquibaseService;
 import se.streamsource.streamflow.web.infrastructure.database.ServiceInstanceImporter;
+import se.streamsource.streamflow.web.infrastructure.event.JdbmApplicationEventStoreService;
 import se.streamsource.streamflow.web.infrastructure.event.JdbmEventStoreService;
 import se.streamsource.streamflow.web.infrastructure.event.MemoryEventStoreService;
 import se.streamsource.streamflow.web.infrastructure.index.EmbeddedSolrService;
@@ -65,8 +65,8 @@ import se.streamsource.streamflow.web.resource.EventsCommandResult;
 
 import javax.sql.DataSource;
 
-import static org.qi4j.api.service.qualifier.ServiceTags.*;
-import static org.qi4j.bootstrap.ImportedServiceDeclaration.*;
+import static org.qi4j.api.service.qualifier.ServiceTags.tags;
+import static org.qi4j.bootstrap.ImportedServiceDeclaration.NEW_OBJECT;
 
 /**
  * JAVADOC
@@ -134,16 +134,22 @@ public class InfrastructureAssembler
    {
       module.importServices( EventsCommandResult.class ).importedBy( NEW_OBJECT ).visibleIn( Visibility.application );
       module.addObjects( EventsCommandResult.class );
-      module.addValues( TransactionEvents.class, DomainEvent.class ).visibleIn( Visibility.application );
+      module.addValues( TransactionDomainEvents.class, DomainEvent.class ).visibleIn( Visibility.application );
+      module.addValues( TransactionApplicationEvents.class, ApplicationEvent.class ).visibleIn( Visibility.application );
       module.addServices( DomainEventFactoryService.class ).visibleIn( Visibility.application );
+      module.addServices( ApplicationEventFactoryService.class ).visibleIn( Visibility.application );
       module.addObjects( TimeService.class );
       module.importServices( TimeService.class ).importedBy( NewObjectImporter.class );
 
       if (module.layerAssembly().applicationAssembly().mode() == Application.Mode.production)
       {
          module.addServices( JdbmEventStoreService.class ).identifiedBy( "eventstore" ).setMetaInfo( tags( "domain" ) ).visibleIn( Visibility.application );
+         module.addServices( JdbmApplicationEventStoreService.class ).identifiedBy( "applicationeventstore" ).visibleIn( Visibility.application );
       } else
+      {
          module.addServices( MemoryEventStoreService.class ).identifiedBy( "eventstore" ).visibleIn( Visibility.application );
+         module.addServices( MemoryEventStoreService.class ).identifiedBy( "applicationeventstore" ).visibleIn( Visibility.application );
+      }
    }
 
    private void entityFinder( ModuleAssembly module ) throws AssemblyException

@@ -21,7 +21,7 @@ import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.association.Association;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.web.domain.structure.label.Labelable;
 
 /**
@@ -37,7 +37,7 @@ public interface TypedCase
       @Optional
       Association<CaseType> caseType();
 
-      void changedCaseType( DomainEvent event, @Optional CaseType caseType );
+      void changedCaseType( @Optional DomainEvent event, @Optional CaseType caseType );
    }
 
    abstract class Mixin
@@ -46,7 +46,7 @@ public interface TypedCase
       @This
       Labelable labelable;
 
-      public void changedCaseType( DomainEvent event, @Optional CaseType caseType )
+      public void changedCaseType( @Optional DomainEvent event, @Optional CaseType caseType )
       {
          CaseType currentCaseType = caseType().get();
          if ((currentCaseType == null && caseType != null) || (currentCaseType!=null && !currentCaseType.equals( caseType )))

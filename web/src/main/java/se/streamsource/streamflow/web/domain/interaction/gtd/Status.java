@@ -17,12 +17,13 @@
 
 package se.streamsource.streamflow.web.domain.interaction.gtd;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.web.domain.MethodConstraintsConcern;
 
 import static se.streamsource.streamflow.domain.interaction.gtd.CaseStates.*;
@@ -60,7 +61,7 @@ public interface Status
       @UseDefaults
       Property<CaseStates> status();
 
-      void changedStatus( DomainEvent event, CaseStates status );
+      void changedStatus( @Optional DomainEvent event, CaseStates status );
    }
 
    abstract class Mixin
@@ -69,27 +70,27 @@ public interface Status
 
       public void open()
       {
-         changedStatus( DomainEvent.CREATE, OPEN );
+         changedStatus( null, OPEN );
       }
 
       public void close()
       {
-         changedStatus( DomainEvent.CREATE, CLOSED );
+         changedStatus( null, CLOSED );
       }
 
       public void onHold()
       {
-         changedStatus( DomainEvent.CREATE, ON_HOLD );
+         changedStatus( null, ON_HOLD );
       }
 
       public void reopen()
       {
-         changedStatus( DomainEvent.CREATE, OPEN );
+         changedStatus( null, OPEN );
       }
 
       public void resume()
       {
-         changedStatus( DomainEvent.CREATE, OPEN );
+         changedStatus( null, OPEN );
       }
 
       public boolean isStatus( CaseStates status )

@@ -23,7 +23,7 @@ import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.injection.scope.State;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.property.StateHolder;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -43,7 +43,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class CommandPropertyChangeMixin
       implements InvocationHandler
 {
-   private static Map<Method, Method> methodMappings = new ConcurrentHashMap();
+   private static Map<Method, Method> methodMappings = new ConcurrentHashMap<Method, Method>();
 
    @State
    StateHolder state;
@@ -65,7 +65,7 @@ public class CommandPropertyChangeMixin
          methodMappings.put( method, eventMethod );
       }
 
-      eventMethod.invoke( composite, DomainEvent.CREATE, args[0] );
+      eventMethod.invoke( composite, null, args[0] );
 
       return null;
    }

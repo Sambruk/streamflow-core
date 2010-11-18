@@ -21,9 +21,7 @@ import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-
-import static se.streamsource.streamflow.infrastructure.event.DomainEvent.*;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 /**
  * JAVADOC
@@ -55,10 +53,10 @@ public interface MessageRecipient
       public void changeMessageDeliveryType(MessageDeliveryTypes deliveryType) 
       {
          if (!deliveryType.equals( delivery().get() ))
-            changedMessageDeliveryType(CREATE, deliveryType);
+            changedMessageDeliveryType(null, deliveryType);
       }
       
-      public void changedMessageDeliveryType(DomainEvent event, MessageDeliveryTypes deliveryType)
+      public void changedMessageDeliveryType( DomainEvent event, MessageDeliveryTypes deliveryType)
       {
          state.delivery().set(deliveryType);   
       }

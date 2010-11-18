@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.web.domain.structure.project;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.Aggregated;
 import org.qi4j.api.entity.Identity;
 import org.qi4j.api.entity.IdentityGenerator;
@@ -24,7 +25,7 @@ import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 /**
  * JAVADOC
@@ -45,11 +46,11 @@ public interface ProjectRoles
       @Aggregated
       ManyAssociation<ProjectRole> projectRoles();
 
-      ProjectRole createdProjectRole( DomainEvent event, String id );
+      ProjectRole createdProjectRole( @Optional DomainEvent event, String id );
 
-      void addedProjectRole( DomainEvent event, ProjectRole role );
+      void addedProjectRole( @Optional DomainEvent event, ProjectRole role );
 
-      void removedProjectRole( DomainEvent event, ProjectRole role );
+      void removedProjectRole( @Optional DomainEvent event, ProjectRole role );
    }
 
    class Mixin
@@ -63,7 +64,7 @@ public interface ProjectRoles
 
       public ProjectRole createProjectRole( String name )
       {
-         ProjectRole role = data.createdProjectRole( DomainEvent.CREATE, idGen.generate( Identity.class ));
+         ProjectRole role = data.createdProjectRole( null, idGen.generate( Identity.class ));
          role.changeDescription( name );
          return role;
       }
@@ -84,7 +85,7 @@ public interface ProjectRoles
          {
             return;
          }
-         data.addedProjectRole( DomainEvent.CREATE, projectRole );
+         data.addedProjectRole( null, projectRole );
       }
 
       public boolean removeProjectRole( ProjectRole projectRole )
@@ -94,7 +95,7 @@ public interface ProjectRoles
             return false;
          }
 
-         data.removedProjectRole( DomainEvent.CREATE, projectRole );
+         data.removedProjectRole( null, projectRole );
 
          return true;
       }

@@ -21,9 +21,7 @@ import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-
-import static se.streamsource.streamflow.infrastructure.event.DomainEvent.*;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 /**
  * Role for maintaining descriptions of entities.
@@ -40,7 +38,7 @@ public interface Describable
       @UseDefaults @Optional
       Property<String> description();
 
-      void changedDescription( DomainEvent event, String description );
+      void changedDescription( @Optional DomainEvent event, String description );
    }
 
    public abstract class Mixin
@@ -60,7 +58,7 @@ public interface Describable
       public void changeDescription( String newDescription )
       {
          if (!newDescription.equals( description().get() ))
-            changedDescription( CREATE, newDescription );
+            changedDescription( null, newDescription );
       }
 
       public String getDescription()
@@ -70,7 +68,7 @@ public interface Describable
 
       // State
 
-      public void changedDescription( DomainEvent event, String description )
+      public void changedDescription( @Optional DomainEvent event, String description )
       {
          description().set( description );
       }

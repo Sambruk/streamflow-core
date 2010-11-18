@@ -21,7 +21,7 @@ import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.association.Association;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 /**
  * Generic mixin for anything that is ownable. Represents a child-parent relationship.
@@ -40,7 +40,7 @@ public interface Ownable
       @Optional
       Association<Owner> owner();
 
-      void changedOwner( DomainEvent event, Owner newOwner );
+      void changedOwner( @Optional DomainEvent event, Owner newOwner );
    }
 
    abstract class Mixin
@@ -54,7 +54,7 @@ public interface Ownable
          if (owner != null && owner.equals( owner().get() ))
             return; // Don't try to set to the same owner
 
-         changedOwner( DomainEvent.CREATE, owner );
+         changedOwner( null, owner );
       }
 
       public boolean hasOwner()
@@ -67,7 +67,7 @@ public interface Ownable
          return owner.equals( owner().get() );
       }
 
-      public void changedOwner( DomainEvent event, Owner newOwner )
+      public void changedOwner( @Optional DomainEvent event, Owner newOwner )
       {
          state.owner().set( newOwner );
       }

@@ -23,8 +23,8 @@ import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.client.util.LinkValueListModel;
 import se.streamsource.streamflow.domain.form.CreateFieldDTO;
 import se.streamsource.streamflow.domain.form.FieldTypes;
-import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
-import se.streamsource.streamflow.infrastructure.event.source.helper.Events;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
 
 /**
  * JAVADOC
@@ -62,7 +62,7 @@ public class FormElementsModel
       client.getClient( item ).putCommand( "move",  builder.newInstance() );
    }
 
-   public void notifyTransactions( Iterable<TransactionEvents> transactions )
+   public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
    {
       if (Events.matches( Events.onEntities( client.getReference().getLastSegment() ), transactions ))
       {

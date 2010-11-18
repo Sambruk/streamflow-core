@@ -17,11 +17,12 @@
 
 package se.streamsource.streamflow.domain.contact;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 import se.streamsource.streamflow.domain.structure.Describable;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 /**
  * JAVADOC
@@ -37,7 +38,7 @@ public interface Contactable
    {
       Property<ContactValue> contact();
 
-      void updatedContact( DomainEvent event, ContactValue contact );
+      void updatedContact( @Optional DomainEvent event, ContactValue contact );
    }
 
    abstract class Mixin
@@ -51,7 +52,7 @@ public interface Contactable
 
       public void updateContact( ContactValue newContact )
       {
-         updatedContact( DomainEvent.CREATE, newContact );
+         updatedContact( null, newContact );
       }
 
       public ContactValue getContact()

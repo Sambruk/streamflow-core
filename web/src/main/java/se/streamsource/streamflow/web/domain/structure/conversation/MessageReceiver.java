@@ -17,11 +17,12 @@
 
 package se.streamsource.streamflow.web.domain.structure.conversation;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.entity.Identity;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 /**
  * JAVADOC
@@ -33,7 +34,7 @@ public interface MessageReceiver
 
    interface Data
    {
-      void receivedMessage( DomainEvent event, Message message );
+      void receivedMessage( @Optional DomainEvent event, Message message );
    }
 
    class Mixin
@@ -49,7 +50,7 @@ public interface MessageReceiver
                EntityReference.getEntityReference(
                      ((Message.Data) message).sender().get() ).identity() ))
          {
-            receivedMessage( DomainEvent.CREATE, message );
+            receivedMessage( null, message );
          }
       }
 

@@ -26,11 +26,11 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.QueryBuilder;
 import org.qi4j.api.query.QueryBuilderFactory;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.util.Specification;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.domain.structure.Removable;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.util.Specification;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseTypes;
 import se.streamsource.streamflow.web.domain.structure.casetype.SelectedCaseTypes;
@@ -97,7 +97,7 @@ public interface CaseTypesQueries
             CaseTypes.Data caseTypes = (CaseTypes.Data) organizationalUnit;
             for (CaseType caseType : caseTypes.caseTypes())
             {
-               if (specification.valid( caseType ))
+               if (specification.test( caseType ))
                   builder.addDescribable( caseType, organizationalUnit );
             }
          }
@@ -108,7 +108,7 @@ public interface CaseTypesQueries
             CaseTypes.Data caseTypes = (CaseTypes.Data) project;
             for (CaseType caseType : caseTypes.caseTypes())
             {
-               if (specification.valid( caseType ))
+               if (specification.test( caseType ))
                   builder.addDescribable( caseType, project );
             }
          }

@@ -17,8 +17,11 @@
 
 package se.streamsource.streamflow.web.domain.structure.label;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.Aggregated;
+import org.qi4j.api.entity.IdentityGenerator;
 import org.qi4j.api.entity.association.ManyAssociation;
+import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
@@ -27,7 +30,8 @@ import org.qi4j.api.query.QueryBuilderFactory;
 import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.web.domain.entity.label.LabelEntity;
 
 /**
  * JAVADOC
@@ -50,16 +54,19 @@ public interface Labels
       @Aggregated
       ManyAssociation<Label> labels();
 
-      Label createdLabel( DomainEvent event );
+      Label createdLabel( @Optional DomainEvent event, String identity );
 
-      void addedLabel( DomainEvent event, Label label );
+      void addedLabel( @Optional DomainEvent event, Label label );
 
-      void removedLabel( DomainEvent event, Label label );
+      void removedLabel( @Optional DomainEvent event, Label label );
    }
 
    abstract class Mixin
          implements Labels, Data
    {
+      @Service
+      IdentityGenerator idGen;
+
       @Structure
       UnitOfWorkFactory uowf;
 
@@ -71,7 +78,7 @@ public interface Labels
 
       public Label createLabel( String name )
       {
-         Label label = data.createdLabel( DomainEvent.CREATE );
+         Label label = data.createdLabel( null, idGen.generate( LabelEntity.class ));
          label.changeDescription( name );
          return label;
       }
@@ -79,14 +86,14 @@ public interface Labels
       public void addLabel( Label label )
       {
          if (!data.labels().contains( label ))
-            addedLabel(DomainEvent.CREATE, label);
+            addedLabel(null, label);
       }
 
       public void removeLabel( Label label )
       {
          if (data.labels().contains( label ))
          {
-            removedLabel( DomainEvent.CREATE, label );
+            removedLabel( null, label );
             label.removeEntity();
          }
       }
@@ -96,7 +103,7 @@ public interface Labels
          while (data.labels().count() > 0)
          {
             Label label = data.labels().get( 0 );
-            removedLabel( DomainEvent.CREATE, label );
+            removedLabel( null, label );
             to.addLabel( label );
          }
       }
@@ -111,10 +118,10 @@ public interface Labels
          return labelUsages;
       }
 
-      public Label createdLabel( DomainEvent event )
+      public Label createdLabel( DomainEvent event, String identity )
       {
          UnitOfWork uow = uowf.currentUnitOfWork();
-         Label label = uow.newEntity( Label.class );
+         Label label = uow.newEntity( Label.class, identity );
          data.labels().add( data.labels().count(), label );
          return label;
       }
@@ -124,7 +131,7 @@ public interface Labels
          data.labels().add( label );
       }
 
-      public void removedLabel( DomainEvent event, Label label )
+      public void removedLabel( @Optional DomainEvent event, Label label )
       {
          data.labels().remove( label );
       }

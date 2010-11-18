@@ -17,8 +17,11 @@
 
 package se.streamsource.streamflow.web.domain.structure.casetype;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.Aggregated;
+import org.qi4j.api.entity.IdentityGenerator;
 import org.qi4j.api.entity.association.ManyAssociation;
+import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
@@ -27,7 +30,8 @@ import org.qi4j.api.query.QueryBuilderFactory;
 import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.web.domain.entity.casetype.ResolutionEntity;
 
 /**
  * List of defined Resolutions
@@ -50,14 +54,17 @@ public interface Resolutions
       @Aggregated
       ManyAssociation<Resolution> resolutions();
 
-      Resolution createdResolution( DomainEvent event );
+      Resolution createdResolution( @Optional DomainEvent event, String identity );
 
-      void removedResolution( DomainEvent event, Resolution resolution );
+      void removedResolution( @Optional DomainEvent event, Resolution resolution );
    }
 
    abstract class Mixin
          implements Resolutions, Data
    {
+      @Service
+      IdentityGenerator idGen;
+
       @Structure
       UnitOfWorkFactory uowf;
 
@@ -69,7 +76,7 @@ public interface Resolutions
 
       public Resolution createResolution( String name )
       {
-         Resolution resolution = createdResolution( DomainEvent.CREATE );
+         Resolution resolution = createdResolution( null, idGen.generate( ResolutionEntity.class ));
          resolution.changeDescription( name );
          return resolution;
       }
@@ -78,7 +85,7 @@ public interface Resolutions
       {
          if (state.resolutions().contains( resolution ))
          {
-            removedResolution( DomainEvent.CREATE, resolution );
+            removedResolution( null, resolution );
             resolution.removeEntity();
          }
       }
@@ -103,10 +110,10 @@ public interface Resolutions
          return resolutionUsages;
       }
 
-      public Resolution createdResolution( DomainEvent event )
+      public Resolution createdResolution( DomainEvent event, String identity )
       {
          UnitOfWork uow = uowf.currentUnitOfWork();
-         Resolution resolution = uow.newEntity( Resolution.class );
+         Resolution resolution = uow.newEntity( Resolution.class, identity );
          state.resolutions().add( state.resolutions().count(), resolution );
          return resolution;
       }

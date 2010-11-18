@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.web.domain.structure.form;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.Aggregated;
 import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.entity.EntityReference;
@@ -28,14 +29,8 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
-import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
-import se.streamsource.streamflow.domain.form.FieldValue;
-import se.streamsource.streamflow.domain.form.FormDraftValue;
-import se.streamsource.streamflow.domain.form.PageSubmissionValue;
-import se.streamsource.streamflow.domain.form.SubmittedFieldValue;
-import se.streamsource.streamflow.domain.form.SubmittedFormValue;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.domain.form.*;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
 
@@ -59,9 +54,9 @@ public interface FormDrafts
       @Queryable(false)
       ManyAssociation<FormDraft> formDrafts();
 
-      FormDraft createdFormDraft( DomainEvent event, Form form );
+      FormDraft createdFormDraft( @Optional DomainEvent event, Form form );
 
-      void discardedFormDraft( DomainEvent event, FormDraft formDraft );
+      void discardedFormDraft( @Optional DomainEvent event, FormDraft formDraft );
    }
 
    abstract class Mixin
@@ -108,13 +103,13 @@ public interface FormDrafts
 
             if ( forms.selectedForms().contains( form ) )
             {
-               return createdFormDraft( DomainEvent.CREATE, form );
+               return createdFormDraft( null, form );
             }
          }
          return null;
       }
 
-      public FormDraft createdFormDraft( DomainEvent event, Form form )
+      public FormDraft createdFormDraft( @Optional DomainEvent event, Form form )
       {
          SubmittedFormValue submittedFormValue = findLatestSubmittedForm( form );
 
@@ -201,11 +196,11 @@ public interface FormDrafts
       {
          if (formDrafts().contains( formDraft ))
          {
-            discardedFormDraft( DomainEvent.CREATE, formDraft );
+            discardedFormDraft( null, formDraft );
          }
       }
 
-      public void discardedFormDraft( DomainEvent event, FormDraft formDraft )
+      public void discardedFormDraft( @Optional DomainEvent event, FormDraft formDraft )
       {
          formDrafts().remove( formDraft );
          //uowf.currentUnitOfWork().remove( formDraft );

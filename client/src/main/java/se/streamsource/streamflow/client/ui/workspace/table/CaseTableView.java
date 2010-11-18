@@ -36,9 +36,9 @@ import se.streamsource.streamflow.client.MacOsUIWrapper;
 import se.streamsource.streamflow.client.util.RefreshWhenVisible;
 import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
-import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
-import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
-import se.streamsource.streamflow.infrastructure.event.source.helper.Events;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
+import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
 import se.streamsource.streamflow.resource.caze.CaseValue;
 
 import javax.swing.ActionMap;
@@ -60,7 +60,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
-import static se.streamsource.streamflow.infrastructure.event.source.helper.Events.*;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 
 /**
  * Base class for all views of case lists.
@@ -198,7 +198,7 @@ public class CaseTableView
          return model.getEventList().get( getCaseTable().convertRowIndexToModel( selectedRow ) );
    }
 
-   public void notifyTransactions( Iterable<TransactionEvents> transactions )
+   public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
    {
       if (Events.matches( withNames("addedLabel", "removedLabel",
             "changedDescription", "changedCaseType", "changedStatus",

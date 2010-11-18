@@ -17,7 +17,7 @@
 
 package se.streamsource.streamflow.web.application.notification;
 
-import org.qi4j.api.Qi4j;
+import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
@@ -27,22 +27,30 @@ import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.usecase.Usecase;
 import org.qi4j.api.usecase.UsecaseBuilder;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
-import se.streamsource.streamflow.infrastructure.event.source.EventSource;
-import se.streamsource.streamflow.infrastructure.event.source.EventStream;
-import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
-import se.streamsource.streamflow.infrastructure.event.source.helper.TransactionTracker;
-import se.streamsource.streamflow.web.application.mail.MailService;
+import se.streamsource.streamflow.domain.contact.ContactEmailValue;
+import se.streamsource.streamflow.domain.contact.Contactable;
+import se.streamsource.streamflow.infrastructure.event.application.factory.ApplicationEventCreationConcern;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.replay.DomainEventPlayer;
+import se.streamsource.streamflow.infrastructure.event.domain.source.EventSource;
+import se.streamsource.streamflow.infrastructure.event.domain.source.EventStream;
+import se.streamsource.streamflow.infrastructure.event.domain.source.helper.EventRouter;
+import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
+import se.streamsource.streamflow.infrastructure.event.domain.source.helper.TransactionTracker;
+import se.streamsource.streamflow.web.application.mail.EmailValue;
+import se.streamsource.streamflow.web.application.mail.MailSender;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
+import se.streamsource.streamflow.web.domain.interaction.gtd.CompletableId;
 import se.streamsource.streamflow.web.domain.interaction.profile.MessageRecipient;
-
-import static se.streamsource.streamflow.infrastructure.event.source.helper.Events.*;
-import static se.streamsource.streamflow.util.Iterables.*;
+import se.streamsource.streamflow.web.domain.structure.conversation.Conversation;
+import se.streamsource.streamflow.web.domain.structure.conversation.ConversationOwner;
+import se.streamsource.streamflow.web.domain.structure.conversation.Message;
+import se.streamsource.streamflow.web.domain.structure.conversation.MessageReceiver;
 
 /**
  * Send and receive notifications. This service
@@ -50,43 +58,47 @@ import static se.streamsource.streamflow.util.Iterables.*;
  * a notification to the provided recipient.
  */
 @Mixins(NotificationService.Mixin.class)
+@Concerns(ApplicationEventCreationConcern.class)
 public interface NotificationService
-      extends TransactionVisitor, Configuration, Activatable, ServiceComposite
+      extends Configuration, Activatable, ServiceComposite
 {
    class Mixin
-         implements TransactionVisitor, Activatable
+         implements Activatable
    {
       final Logger logger = LoggerFactory.getLogger( NotificationService.class.getName() );
-      @Structure
-      Qi4j api;
 
       @Service
-      EventSource eventSource;
+      private EventSource eventSource;
 
       @Service
-      EventStream stream;
-
-      @Service
-      MailService mail;
+      private EventStream stream;
 
       @Structure
-      UnitOfWorkFactory uowf;
+      private UnitOfWorkFactory uowf;
+
+      @Structure
+      private ValueBuilderFactory vbf;
 
       @This
-      Configuration<NotificationConfiguration> config;
+      private Configuration<NotificationConfiguration> config;
 
-      private Usecase usecase = UsecaseBuilder.newUsecase( "Notify" );
+      @This
+      private MailSender mailSender;
 
       private TransactionTracker tracker;
 
+      @Service
+      DomainEventPlayer player;
+
+      private SendEmails sendEmails = new SendEmails();
+
       public void activate() throws Exception
       {
-         logger.info( "Starting ..." );
+         EventRouter router = new EventRouter();
+         router.route( Events.withNames( SendEmails.class ), Events.playEvents( player, sendEmails, uowf, UsecaseBuilder.newUsecase("Send email to participant" )) );
 
-         tracker = new TransactionTracker( stream, eventSource, config, this );
+         tracker = new TransactionTracker( stream, eventSource, config, Events.adapter( router ) );
          tracker.start();
-
-         logger.info( "Started" );
       }
 
       public void passivate() throws Exception
@@ -94,34 +106,57 @@ public interface NotificationService
          tracker.stop();
       }
 
-      public boolean visit( TransactionEvents transaction )
+      public class SendEmails
+            implements MessageReceiver.Data
       {
-         for (DomainEvent domainEvent : filter( withNames( "receivedMessage" ), events( transaction ) ))
+         public void receivedMessage( DomainEvent event, Message message )
          {
-            UnitOfWork uow = null;
+            UnitOfWork uow = uowf.currentUnitOfWork();
 
-            try
+            Message.Data messageData = (Message.Data) message;
+
+            Conversation conversation = messageData.conversation().get();
+            ConversationOwner owner = conversation.conversationOwner().get();
+
+            String sender = ((Contactable.Data) messageData.sender().get()).contact().get().name().get();
+            String caseId = "n/a";
+
+            if (owner != null)
+               caseId = ((CompletableId.Data) owner).caseId().get() != null ? ((CompletableId.Data) owner).caseId().get() : "n/a";
+
+            UserEntity user = uow.get( UserEntity.class, event.entity().get() );
+
+            if (user.delivery().get().equals( MessageRecipient.MessageDeliveryTypes.email ))
             {
-               uow = uowf.newUnitOfWork( usecase );
+               String subject = "[" + caseId + "]" + conversation.getDescription()
+                     + "(" + messageData.conversation().get().toString() + ":" + event.entity().get() + ")";
 
-               UserEntity user = uow.get( UserEntity.class, domainEvent.entity().get() );
-
-               if (user.delivery().get().equals( MessageRecipient.MessageDeliveryTypes.email ))
+               String formattedMsg = messageData.body().get();
+               if (formattedMsg.contains( "<body>" ))
                {
-                  mail.sendNotification( domainEvent );
+                  formattedMsg = formattedMsg.replace( "<body>", "<body><b>" + sender + ":</b><br/><br/>" );
+               } else
+               {
+                  formattedMsg = sender + ":\r\n\r\n" + formattedMsg;
                }
-            } catch (Exception e)
-            {
-               logger.error( "Could not send notification", e );
 
-               return false;
-            } finally
-            {
-               uow.discard();
+               ContactEmailValue recipientEmail = user.contact().get().defaultEmail();
+               if (recipientEmail != null)
+               {
+                  ValueBuilder<EmailValue> builder = vbf.newValueBuilder( EmailValue.class );
+   //                  builder.prototype().from().set( );
+                  builder.prototype().replyTo();
+                  builder.prototype().to().set( recipientEmail.emailAddress().get() );
+                  builder.prototype().subject().set( subject );
+                  builder.prototype().content().set( formattedMsg );
+                  builder.prototype().contentType().set( "text/html" );
+
+                  EmailValue emailValue = builder.newInstance();
+
+                  mailSender.sentEmail( null, emailValue );
+               }
             }
          }
-
-         return true;
       }
    }
 }

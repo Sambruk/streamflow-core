@@ -18,13 +18,13 @@ package se.streamsource.streamflow.client.util;
 
 import org.jdesktop.application.Application;
 import org.jdesktop.application.Task;
+import org.qi4j.api.util.Iterables;
 import se.streamsource.streamflow.client.StreamflowApplication;
-import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
-import se.streamsource.streamflow.infrastructure.event.source.EventStream;
-import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
-import se.streamsource.streamflow.util.Iterables;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.EventStream;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,7 +34,7 @@ import java.util.List;
  * and distribute them to the StreamflowApplication, which in turn delegates to all the windows.
  */
 public abstract class CommandTask
-      extends Task<Iterable<TransactionEvents>, Object>
+      extends Task<Iterable<TransactionDomainEvents>, Object>
       implements TransactionListener
 {
    public CommandTask()
@@ -42,13 +42,13 @@ public abstract class CommandTask
       super( Application.getInstance() );
    }
 
-   private List<TransactionEvents> transactions = new ArrayList<TransactionEvents>( );
+   private List<TransactionDomainEvents> transactionDomains = new ArrayList<TransactionDomainEvents>( );
 
    protected abstract void command()
          throws Exception;
 
    @Override
-   protected Iterable<TransactionEvents> doInBackground() throws Exception
+   protected Iterable<TransactionDomainEvents> doInBackground() throws Exception
    {
       StreamflowApplication application = (StreamflowApplication) getApplication();
       EventStream stream = application.getSource();
@@ -59,20 +59,20 @@ public abstract class CommandTask
       {
          command();
 
-         return transactions;
+         return transactionDomains;
       } finally
       {
          stream.unregisterListener( this );
       }
    }
 
-   public void notifyTransactions( Iterable<TransactionEvents> transactions )
+   public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
    {
-      Iterables.addAll( this.transactions, transactions );
+      Iterables.addAll( this.transactionDomains, transactions );
    }
 
    @Override
-   protected void succeeded( final Iterable<TransactionEvents> transactionEventsIterable )
+   protected void succeeded( final Iterable<TransactionDomainEvents> transactionEventsIterable )
    {
       final Application application = Application.getInstance();
       SwingUtilities.invokeLater( new Runnable()

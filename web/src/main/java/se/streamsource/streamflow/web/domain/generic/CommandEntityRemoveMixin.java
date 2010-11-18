@@ -30,7 +30,7 @@ import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.spi.Qi4jSPI;
 import se.streamsource.streamflow.domain.structure.Removable;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 import java.beans.Introspector;
 import java.lang.reflect.InvocationHandler;
@@ -42,7 +42,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Generic mixin for simple command methods that remove an entity from a collection. They have to follow this pattern:
  * boolean removeFoo(SomeType entity)
  * This will check if the entity exists in the ManyAssociation called "foos" and then call the event method
- * removedFoo(DomainEvent.CREATE, entity);
+ * removedFoo(null, entity);
  * The method returns true if the entity was removed, and false if not.
  */
 @AppliesTo(CommandEntityRemoveMixin.CommandEntityRemoveAppliesTo.class)
@@ -97,7 +97,7 @@ public class CommandEntityRemoveMixin
       if (!manyAssociation.contains( args[0] ))
          return false; // ManyAssociation does not contain entity
 
-      eventMethod.invoke( composite, DomainEvent.CREATE, args[0] );
+      eventMethod.invoke( composite, null, args[0] );
 
       // Call Removable.removeEntity()
       if (args[0] instanceof Removable)

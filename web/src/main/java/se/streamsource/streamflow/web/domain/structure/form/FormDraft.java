@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.web.domain.structure.form;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
@@ -24,24 +25,8 @@ import org.qi4j.api.property.Property;
 import org.qi4j.api.util.DateFunctions;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.domain.form.AttachmentFieldDTO;
-import se.streamsource.streamflow.domain.form.AttachmentFieldSubmission;
-import se.streamsource.streamflow.domain.form.CheckboxesFieldValue;
-import se.streamsource.streamflow.domain.form.ComboBoxFieldValue;
-import se.streamsource.streamflow.domain.form.CommentFieldValue;
-import se.streamsource.streamflow.domain.form.DateFieldValue;
-import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
-import se.streamsource.streamflow.domain.form.FieldValue;
-import se.streamsource.streamflow.domain.form.FormDraftValue;
-import se.streamsource.streamflow.domain.form.FormSignatureValue;
-import se.streamsource.streamflow.domain.form.ListBoxFieldValue;
-import se.streamsource.streamflow.domain.form.NumberFieldValue;
-import se.streamsource.streamflow.domain.form.OpenSelectionFieldValue;
-import se.streamsource.streamflow.domain.form.OptionButtonsFieldValue;
-import se.streamsource.streamflow.domain.form.PageSubmissionValue;
-import se.streamsource.streamflow.domain.form.TextAreaFieldValue;
-import se.streamsource.streamflow.domain.form.TextFieldValue;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.domain.form.*;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.util.Strings;
 
 import java.util.Collections;
@@ -71,16 +56,13 @@ public interface FormDraft
    {
       Property<FormDraftValue> formDraftValue();
 
-      void changedFormDraft( DomainEvent event, FormDraftValue formDraftValue);
+      void changedFormDraft( @Optional DomainEvent event, FormDraftValue formDraftValue);
 
-      void changedFieldValue( DomainEvent event, EntityReference fieldId, String fieldValue );
+      void changedFieldValue( @Optional DomainEvent event, EntityReference fieldId, String fieldValue );
 
-      void addedFormSignatureValue( DomainEvent event, FormSignatureValue formSignatureValue);
+      void addedFormSignatureValue( @Optional DomainEvent event, FormSignatureValue formSignatureValue);
 
-      void removedFormSignatures( DomainEvent event );
-
-      void changedFieldAttachmentValue( DomainEvent event, AttachmentFieldDTO fieldAttachment );
-
+      void removedFormSignatures( @Optional DomainEvent event );
    }
 
    abstract class Mixin
@@ -97,7 +79,7 @@ public interface FormDraft
 
       public void changeFormDraftValue( FormDraftValue formDraftValue )
       {
-         changedFormDraft( DomainEvent.CREATE, formDraftValue );
+         changedFormDraft( null, formDraftValue );
       }
 
       public void changeFieldValue( EntityReference fieldId, String newValue )
@@ -147,7 +129,7 @@ public interface FormDraft
 
          if ( update )
          {
-            changedFieldValue( DomainEvent.CREATE, fieldId, newValue );
+            changedFieldValue( null, fieldId, newValue );
          }
       }
 
@@ -155,12 +137,12 @@ public interface FormDraft
       public void addFormSignatureValue( FormSignatureValue formSignatureValue )
       {
          //validate
-         addedFormSignatureValue( DomainEvent.CREATE, formSignatureValue );
+         addedFormSignatureValue( null, formSignatureValue );
       }
 
       public void removeFormSignatures()
       {
-         removedFormSignatures( DomainEvent.CREATE );
+         removedFormSignatures( null );
       }
 
       private boolean validate( OpenSelectionFieldValue openSelectionFieldValue, String newValue )
@@ -270,13 +252,12 @@ public interface FormDraft
          return null;
       }
 
-
       public void changedFormDraft( DomainEvent event, FormDraftValue formDraftValue )
       {
          formDraftValue().set( formDraftValue );
       }
 
-      public void changedFieldValue( DomainEvent event, EntityReference fieldId, String fieldValue )
+      public void changedFieldValue( @Optional DomainEvent event, EntityReference fieldId, String fieldValue )
       {
          ValueBuilder<FormDraftValue> builder = formDraftValue().get().buildWith();
          FieldSubmissionValue field = findField( builder.prototype(), fieldId );
@@ -285,7 +266,7 @@ public interface FormDraft
          formDraftValue().set( builder.newInstance() );
       }
 
-      public void addedFormSignatureValue( DomainEvent event, FormSignatureValue formSignatureValue )
+      public void addedFormSignatureValue( @Optional DomainEvent event, FormSignatureValue formSignatureValue )
       {
          ValueBuilder<FormDraftValue> builder = formDraftValue().get().buildWith();
          builder.prototype().signatures().get().add( formSignatureValue );
@@ -293,7 +274,7 @@ public interface FormDraft
          formDraftValue().set( builder.newInstance() );
       }
 
-      public void removedFormSignatures( DomainEvent event )
+      public void removedFormSignatures( @Optional DomainEvent event )
       {
          ValueBuilder<FormDraftValue> builder = formDraftValue().get().buildWith();
          builder.prototype().signatures().set( Collections.<FormSignatureValue>emptyList() );
@@ -306,7 +287,7 @@ public interface FormDraft
          ValueBuilder<FormDraftValue> builder = formDraftValue().get().buildWith();
 
          if ( findField( builder.prototype(), fieldAttachment.field().get() ) != null ) {
-            changedFieldAttachmentValue( DomainEvent.CREATE, fieldAttachment );
+            changedFieldAttachmentValue( null, fieldAttachment );
          }
       }
 

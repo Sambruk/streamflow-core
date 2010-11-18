@@ -21,15 +21,10 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.QueryBuilder;
+import org.qi4j.api.util.Specification;
 import org.qi4j.spi.structure.ModuleSPI;
-import se.streamsource.streamflow.util.Specification;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
-import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
-import se.streamsource.streamflow.web.domain.structure.casetype.CaseTypes;
-import se.streamsource.streamflow.web.domain.structure.casetype.Resolution;
-import se.streamsource.streamflow.web.domain.structure.casetype.Resolutions;
-import se.streamsource.streamflow.web.domain.structure.casetype.SelectedCaseTypes;
-import se.streamsource.streamflow.web.domain.structure.casetype.SelectedResolutions;
+import se.streamsource.streamflow.web.domain.structure.casetype.*;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
 import se.streamsource.streamflow.web.domain.structure.form.Forms;
 import se.streamsource.streamflow.web.domain.structure.form.SelectedForms;
@@ -85,32 +80,32 @@ public interface OrganizationQueries
 
       public void visitOrganization( OrganizationVisitor visitor, Specification<Class> typeSpecification)
       {
-         if (typeSpecification.valid( Organization.class ) && !visitor.visitOrganization( org ))
+         if (typeSpecification.test( Organization.class ) && !visitor.visitOrganization( org ))
             return;
 
          // Visit items on Organization
-         if (typeSpecification.valid( Labels.class ))
+         if (typeSpecification.test( Labels.class ))
             for (Label label : ((Labels.Data) org).labels())
             {
                if (!visitor.visitLabel( label ))
                   return;
             }
 
-         if (typeSpecification.valid( Forms.class ))
+         if (typeSpecification.test( Forms.class ))
             for (Form form : ((Forms.Data)org).forms())
             {
                if (!visitor.visitForm( form ))
                   return;
             }
 
-         if (typeSpecification.valid( CaseTypes.class ))
+         if (typeSpecification.test( CaseTypes.class ))
             for (CaseType caseType : ((CaseTypes.Data)org).caseTypes())
             {
                if (!visitCaseType( caseType, visitor, typeSpecification ))
                   return;
             }
 
-         if (typeSpecification.valid( OrganizationalUnits.class ))
+         if (typeSpecification.test( OrganizationalUnits.class ))
             for (OrganizationalUnit organizationalUnit : ((OrganizationalUnits.Data) org).organizationalUnits())
             {
                if (!visitOu(organizationalUnit, visitor, typeSpecification))
@@ -120,38 +115,38 @@ public interface OrganizationQueries
 
       private boolean visitOu( OrganizationalUnit organizationalUnit, OrganizationVisitor visitor, Specification<Class> typeSpecification )
       {
-         if (typeSpecification.valid( OrganizationalUnit.class ) && !visitor.visitOrganizationalUnit( organizationalUnit ))
+         if (typeSpecification.test( OrganizationalUnit.class ) && !visitor.visitOrganizationalUnit( organizationalUnit ))
             return false;
 
-         if (typeSpecification.valid( Labels.class ))
+         if (typeSpecification.test( Labels.class ))
             for (Label label : ((Labels.Data) organizationalUnit).labels())
             {
                if (!visitor.visitLabel( label ))
                   return false;
             }
 
-         if (typeSpecification.valid( Forms.class ))
+         if (typeSpecification.test( Forms.class ))
             for (Form form : ((Forms.Data)organizationalUnit).forms())
             {
                if (!visitor.visitForm( form ))
                   return false;
             }
 
-         if (typeSpecification.valid( CaseTypes.class ))
+         if (typeSpecification.test( CaseTypes.class ))
             for (CaseType caseType : ((CaseTypes.Data)organizationalUnit).caseTypes())
             {
                if (!visitCaseType( caseType, visitor, typeSpecification ))
                   return false;
             }
 
-         if (typeSpecification.valid( Groups.class ))
+         if (typeSpecification.test( Groups.class ))
             for (Group group : ((Groups.Data) organizationalUnit).groups())
             {
                if (!visitor.visitGroup( group ))
                   return false;
             }
 
-         if (typeSpecification.valid( Projects.class ))
+         if (typeSpecification.test( Projects.class ))
             for (Project project : ((Projects.Data) organizationalUnit).projects())
             {
                if (!visitProject(project, visitor, typeSpecification))
@@ -169,32 +164,32 @@ public interface OrganizationQueries
 
       private boolean visitProject( Project project, OrganizationVisitor visitor, Specification<Class> typeSpecification)
       {
-         if (typeSpecification.valid( Project.class ))
+         if (typeSpecification.test( Project.class ))
             if (!visitor.visitProject( project ))
                return false;
 
-         if (typeSpecification.valid( Labels.class ))
+         if (typeSpecification.test( Labels.class ))
             for (Label label : ((Labels.Data) project).labels())
             {
                if (!visitor.visitLabel( label ))
                   return false;
             }
 
-         if (typeSpecification.valid( Forms.class ))
+         if (typeSpecification.test( Forms.class ))
             for (Form form : ((Forms.Data)project).forms())
             {
                if (!visitor.visitForm( form ))
                   return false;
             }
 
-         if (typeSpecification.valid( CaseTypes.class ))
+         if (typeSpecification.test( CaseTypes.class ))
             for (CaseType caseType : ((CaseTypes.Data)project).caseTypes())
             {
                if (!visitCaseType( caseType, visitor, typeSpecification ))
                   return false;
             }
 
-         if (typeSpecification.valid( SelectedCaseTypes.class ))
+         if (typeSpecification.test( SelectedCaseTypes.class ))
             for (CaseType caseType : ((SelectedCaseTypes.Data)project).selectedCaseTypes())
             {
                if (!visitor.visitSelectedCaseType( caseType ))
@@ -206,45 +201,45 @@ public interface OrganizationQueries
 
       private boolean visitCaseType( CaseType caseType, OrganizationVisitor visitor, Specification<Class> typeSpecification )
       {
-         if (typeSpecification.valid( CaseType.class ) && !visitor.visitCaseType( caseType ))
+         if (typeSpecification.test( CaseType.class ) && !visitor.visitCaseType( caseType ))
             return false;
 
-         if (typeSpecification.valid( Labels.class ))
+         if (typeSpecification.test( Labels.class ))
             for (Label label : ((Labels.Data) caseType).labels())
             {
                if (!visitor.visitLabel( label ))
                   return false;
             }
 
-         if (typeSpecification.valid( SelectedLabels.class ))
+         if (typeSpecification.test( SelectedLabels.class ))
             for (Label label : ((SelectedLabels.Data) caseType).selectedLabels())
             {
                if (!visitor.visitSelectedLabel( label ))
                   return false;
             }
 
-         if (typeSpecification.valid( Forms.class ))
+         if (typeSpecification.test( Forms.class ))
             for (Form form : ((Forms.Data)caseType).forms())
             {
                if (!visitor.visitForm( form ))
                   return false;
             }
 
-         if (typeSpecification.valid( SelectedForms.class ))
+         if (typeSpecification.test( SelectedForms.class ))
             for (Form form : ((SelectedForms.Data)caseType).selectedForms())
             {
                if (!visitor.visitSelectedForm( form ))
                   return false;
             }
 
-         if (typeSpecification.valid( Resolutions.class ))
+         if (typeSpecification.test( Resolutions.class ))
             for (Resolution resolution : ((Resolutions.Data)caseType).resolutions())
             {
                if (!visitor.visitResolution( resolution ))
                   return false;
             }
 
-         if (typeSpecification.valid( SelectedResolutions.class ))
+         if (typeSpecification.test( SelectedResolutions.class ))
             for (Resolution resolution : ((SelectedResolutions.Data)caseType).selectedResolutions())
             {
                if (!visitor.visitSelectedResolution( resolution ))
@@ -265,7 +260,7 @@ public interface OrganizationQueries
          this.classes = classes;
       }
 
-      public boolean valid( Class instance )
+      public boolean test( Class instance )
       {
          for (int i = 0; i < classes.length; i++)
          {

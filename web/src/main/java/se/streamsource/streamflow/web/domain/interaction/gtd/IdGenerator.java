@@ -22,7 +22,7 @@ import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -43,9 +43,9 @@ public interface IdGenerator
       @Optional
       Property<Long> lastIdDate();
 
-      void setCounter( DomainEvent event, long counter );
+      void setCounter( @Optional DomainEvent event, long counter );
 
-      void changedDate( DomainEvent create, long timeInMillis );
+      void changedDate( @Optional DomainEvent create, long timeInMillis );
    }
 
    abstract class IdGeneratorMixin
@@ -68,17 +68,17 @@ public interface IdGenerator
             // Day has changed - reset counter
             if (now.get( Calendar.DAY_OF_YEAR ) != lastDate.get( Calendar.DAY_OF_YEAR ))
             {
-               state.setCounter( DomainEvent.CREATE, 0 );
+               state.setCounter( null, 0 );
             }
          }
          // Save current date
-         state.changedDate( DomainEvent.CREATE, now.getTimeInMillis() );
+         state.changedDate( null, now.getTimeInMillis() );
 
          SimpleDateFormat format = new SimpleDateFormat( "yyyyMMdd" );
 
          long current = state.current().get();
          current++;
-         setCounter( DomainEvent.CREATE, current );
+         setCounter( null, current );
 
          String date = format.format( now.getTime() );
 
@@ -89,12 +89,12 @@ public interface IdGenerator
 
       // Events
 
-      public void changedDate( DomainEvent create, long timeInMillis )
+      public void changedDate( @Optional DomainEvent create, long timeInMillis )
       {
          state.lastIdDate().set( timeInMillis );
       }
 
-      public void setCounter( DomainEvent event, long counter )
+      public void setCounter( @Optional DomainEvent event, long counter )
       {
          state.current().set( counter );
       }

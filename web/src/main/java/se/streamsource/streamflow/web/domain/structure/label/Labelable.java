@@ -21,7 +21,7 @@ import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,9 +42,9 @@ public interface Labelable
    {
       ManyAssociation<Label> labels();
 
-      void addedLabel( DomainEvent event, Label label );
+      void addedLabel( @Optional DomainEvent event, Label label );
 
-      void removedLabel( DomainEvent event, Label label );
+      void removedLabel( @Optional DomainEvent event, Label label );
    }
 
    abstract class Mixin
@@ -55,14 +55,14 @@ public interface Labelable
 
       public void addLabel( Label label )
       {
-         data.addedLabel( DomainEvent.CREATE, label );
+         data.addedLabel( null, label );
       }
 
       public void removeLabel( Label label )
       {
          if (data.labels().contains( label ))
          {
-            data.removedLabel( DomainEvent.CREATE, label );
+            data.removedLabel( null, label );
          }
       }
 
@@ -95,7 +95,7 @@ public interface Labelable
          }
       }
 
-      public void addedLabel( DomainEvent event, Label label )
+      public void addedLabel( @Optional DomainEvent event, Label label )
       {
          for (int i = 0; i < data.labels().count(); i++)
          {
@@ -109,7 +109,7 @@ public interface Labelable
          data.labels().add( label );
       }
 
-      public void removedLabel( DomainEvent event, Label label )
+      public void removedLabel( @Optional DomainEvent event, Label label )
       {
          data.labels().remove( label );
       }

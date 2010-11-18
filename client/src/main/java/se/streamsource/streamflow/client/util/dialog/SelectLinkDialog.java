@@ -26,11 +26,11 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.util.Iterables;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.TitledLinkValue;
 import se.streamsource.streamflow.client.util.FilteredList;
 import se.streamsource.streamflow.client.util.GroupedFilteredList;
-import se.streamsource.streamflow.util.Iterables;
 
 import javax.swing.*;
 import java.awt.*;

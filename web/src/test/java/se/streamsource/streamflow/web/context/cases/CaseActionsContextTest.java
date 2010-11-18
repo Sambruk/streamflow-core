@@ -21,17 +21,10 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
+import org.qi4j.api.util.Iterables;
 import se.streamsource.dci.api.RoleMap;
-import se.streamsource.streamflow.util.Iterables;
 import se.streamsource.streamflow.web.context.ContextTest;
-import se.streamsource.streamflow.web.context.administration.CaseTypesContext;
-import se.streamsource.streamflow.web.context.administration.MembersContext;
-import se.streamsource.streamflow.web.context.administration.OrganizationalUnitsContext;
-import se.streamsource.streamflow.web.context.administration.OrganizationsContext;
-import se.streamsource.streamflow.web.context.administration.ProjectsContext;
-import se.streamsource.streamflow.web.context.administration.ResolutionsContext;
-import se.streamsource.streamflow.web.context.administration.SelectedCaseTypesContext;
-import se.streamsource.streamflow.web.context.administration.SelectedResolutionsContext;
+import se.streamsource.streamflow.web.context.administration.*;
 import se.streamsource.streamflow.web.context.administration.labels.LabelsContext;
 import se.streamsource.streamflow.web.context.administration.labels.SelectedLabelsContext;
 import se.streamsource.streamflow.web.context.organizations.OrganizationalUnitsContextTest;
@@ -52,10 +45,10 @@ import se.streamsource.streamflow.web.domain.structure.user.User;
 
 import java.util.List;
 
-import static java.util.Arrays.*;
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
-import static se.streamsource.streamflow.util.Iterables.*;
+import static java.util.Arrays.asList;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertThat;
+import static org.qi4j.api.util.Iterables.first;
 
 /**
  * Check lifecycle of a case

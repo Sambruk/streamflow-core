@@ -35,8 +35,8 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
-import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
-import se.streamsource.streamflow.infrastructure.event.source.*;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -149,9 +149,9 @@ public interface JdbmEventStoreService
                         try
                         {
                            JSONObject json = (JSONObject) new JSONTokener( item ).nextValue();
-                           TransactionEvents transaction = (TransactionEvents) transactionEventsType.fromJSON( json, module );
+                           TransactionDomainEvents transactionDomain = (TransactionDomainEvents) transactionEventsType.fromJSON( json, module );
 
-                           storeEvents( transaction );
+                           storeEvents( transactionDomain );
 
                            count++;
                            if (count % 1000 == 0)
@@ -195,9 +195,9 @@ public interface JdbmEventStoreService
             while (browser.getNext( tuple ))
             {
                // Get next transaction
-               TransactionEvents events = readTransactionEvents( tuple );
+               TransactionDomainEvents domainEvents = readTransactionEvents( tuple );
 
-               if (!visitor.visit( events ))
+               if (!visitor.visit( domainEvents ))
                {
                   return;
                }
@@ -227,9 +227,9 @@ public interface JdbmEventStoreService
             while (browser.getPrevious( tuple ))
             {
                // Get previous transaction
-               TransactionEvents events = readTransactionEvents( tuple );
+               TransactionDomainEvents domainEvents = readTransactionEvents( tuple );
 
-               if (!visitor.visit( events ))
+               if (!visitor.visit( domainEvents ))
                {
                   return;
                }
@@ -255,11 +255,11 @@ public interface JdbmEventStoreService
          recordManager.commit();
       }
 
-      protected void storeEvents( TransactionEvents transaction )
+      protected void storeEvents( TransactionDomainEvents transactionDomain )
             throws IOException
       {
-         String jsonString = transaction.toJSON();
-         index.insert( transaction.timestamp().get(), jsonString.getBytes( "UTF-8" ), false );
+         String jsonString = transactionDomain.toJSON();
+         index.insert( transactionDomain.timestamp().get(), jsonString.getBytes( "UTF-8" ), false );
       }
 
       private void initialize( String name, Properties properties )
@@ -281,14 +281,14 @@ public interface JdbmEventStoreService
          commit();
       }
 
-      private TransactionEvents readTransactionEvents( Tuple tuple )
+      private TransactionDomainEvents readTransactionEvents( Tuple tuple )
             throws UnsupportedEncodingException, JSONException
       {
          byte[] eventData = (byte[]) tuple.getValue();
          String eventJson = new String( eventData, "UTF-8" );
          JSONTokener tokener = new JSONTokener( eventJson );
          JSONObject transaction = (JSONObject) tokener.nextValue();
-         return (TransactionEvents) transactionEventsType.fromJSON( transaction, module );
+         return (TransactionDomainEvents) transactionEventsType.fromJSON( transaction, module );
       }
    }
 }

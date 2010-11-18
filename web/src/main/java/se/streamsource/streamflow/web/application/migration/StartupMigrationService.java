@@ -28,6 +28,7 @@ import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.structure.Application;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.util.Function;
 import org.qi4j.spi.entity.EntityState;
 import org.qi4j.spi.entitystore.EntityStore;
 import org.qi4j.spi.structure.ModuleSPI;
@@ -71,7 +72,7 @@ public interface StartupMigrationService
                 logger.info( "Migrating data to new version" );
 
                 // Do nothing - the EntityStore will do the migration on load
-                entityStore.entityStates( module ).transferTo( Transforms.map( new Transforms.Function<EntityState, EntityState>()
+                entityStore.entityStates( module ).transferTo( Transforms.map( new Function<EntityState, EntityState>()
                 {
                    public EntityState map( EntityState entityState )
                    {
@@ -84,7 +85,7 @@ public interface StartupMigrationService
 
                       return entityState;
                    }
-                }, Outputs.<EntityState, RuntimeException>noop() ));
+                }, Outputs.<EntityState>noop() ));
 
                 logger.info( "Migration finished. Checked " + count[ 0 ] + " entities" );
             }

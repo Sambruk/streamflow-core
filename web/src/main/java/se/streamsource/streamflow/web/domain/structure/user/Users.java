@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.web.domain.structure.user;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.entity.IdentityGenerator;
 import org.qi4j.api.injection.scope.Service;
@@ -30,9 +31,7 @@ import se.streamsource.streamflow.domain.contact.ContactValue;
 import se.streamsource.streamflow.domain.contact.Contactable;
 import se.streamsource.streamflow.domain.user.Password;
 import se.streamsource.streamflow.domain.user.Username;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-
-import static se.streamsource.streamflow.infrastructure.event.DomainEvent.*;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 /**
  * JAVADOC
@@ -54,7 +53,7 @@ public interface Users
 
    interface Data
    {
-      User createdUser( DomainEvent event, String username, String password );
+      User createdUser( @Optional DomainEvent event, String username, String password );
    }
 
    abstract class Mixin
@@ -86,7 +85,7 @@ public interface Users
             // Ok!
          }
 
-         User user = createdUser( CREATE, username, password );
+         User user = createdUser( null, username, password );
          return user;
       }
 

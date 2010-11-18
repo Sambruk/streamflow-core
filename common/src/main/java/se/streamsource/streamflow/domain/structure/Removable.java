@@ -17,13 +17,14 @@
 
 package se.streamsource.streamflow.domain.structure;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 /**
  * Generic interface for removing objects. They are not
@@ -57,9 +58,9 @@ public interface Removable
       @UseDefaults
       Property<Boolean> removed();
 
-      void changedRemoved( DomainEvent event, boolean isRemoved );
+      void changedRemoved( @Optional DomainEvent event, boolean isRemoved );
 
-      void deletedEntity( DomainEvent event);
+      void deletedEntity( @Optional DomainEvent event);
    }
 
    abstract class Mixin
@@ -75,7 +76,7 @@ public interface Removable
       {
          if (!state.removed().get())
          {
-            state.changedRemoved( DomainEvent.CREATE, true );
+            state.changedRemoved( null, true );
             return true;
          } else
          {
@@ -92,7 +93,7 @@ public interface Removable
       {
          if (state.removed().get())
          {
-            state.changedRemoved( DomainEvent.CREATE, false );
+            state.changedRemoved( null, false );
             return true;
          } else
          {
@@ -102,7 +103,7 @@ public interface Removable
 
       public void deleteEntity()
       {
-         state.deletedEntity( DomainEvent.CREATE );
+         state.deletedEntity( null );
       }
 
       public void deletedEntity( DomainEvent event )

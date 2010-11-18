@@ -17,11 +17,8 @@
 
 package se.streamsource.streamflow.web.domain.structure.conversation;
 
-import org.qi4j.api.entity.Aggregated;
-import org.qi4j.api.entity.EntityBuilder;
-import org.qi4j.api.entity.Identity;
-import org.qi4j.api.entity.IdentityGenerator;
-import org.qi4j.api.entity.Queryable;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.entity.*;
 import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.State;
@@ -29,7 +26,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
 import se.streamsource.streamflow.web.domain.structure.created.Creator;
 
@@ -49,7 +46,7 @@ public interface Conversations
       @Queryable(false)
       ManyAssociation<Conversation> conversations();
 
-      Conversation createdConversation( DomainEvent event, String id, Creator creator );
+      Conversation createdConversation( @Optional DomainEvent event, String id, Creator creator );
    }
 
    abstract class Mixin
@@ -69,7 +66,7 @@ public interface Conversations
 
       public Conversation createConversation( String topic, Creator creator )
       {
-         Conversation conversation = createdConversation( DomainEvent.CREATE, idGen.generate( Identity.class ), creator);
+         Conversation conversation = createdConversation( null, idGen.generate( Identity.class ), creator);
          conversation.changeDescription( topic );
 
          return conversation;

@@ -22,7 +22,7 @@ import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.entity.association.Association;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.web.domain.MethodConstraintsConcern;
 
 import java.util.Date;
@@ -48,7 +48,7 @@ public interface Assignable
       @Optional
       Property<Date> assignedOn();
 
-      void assignedTo( DomainEvent event, Assignee assignee );
+      void assignedTo( @Optional DomainEvent event, Assignee assignee );
 
       void unassigned( DomainEvent event );
    }
@@ -60,14 +60,14 @@ public interface Assignable
       {
          if (assignedTo().get() == null || !assignee.equals( assignedTo().get() ))
          {
-            assignedTo( DomainEvent.CREATE, assignee );
+            assignedTo( null, assignee );
          }
       }
 
       public void unassign()
       {
          if (assignedTo().get() != null)
-            unassigned( DomainEvent.CREATE );
+            unassigned( null );
       }
 
       public boolean isAssigned()
@@ -75,13 +75,13 @@ public interface Assignable
          return assignedTo().get() != null;
       }
 
-      public void assignedTo( DomainEvent event, Assignee assignee )
+      public void assignedTo( @Optional DomainEvent event, Assignee assignee )
       {
          assignedTo().set( assignee );
          assignedOn().set( event.on().get() );
       }
 
-      public void unassigned( DomainEvent event )
+      public void unassigned( @Optional DomainEvent event )
       {
          assignedTo().set( null );
          assignedOn().set( null );

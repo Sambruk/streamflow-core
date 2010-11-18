@@ -40,8 +40,8 @@ import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
 import se.streamsource.streamflow.client.ui.OptionsAction;
 import se.streamsource.streamflow.client.ui.administration.users.ResetPasswordDialog;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
-import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
-import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.resource.user.ProxyUserDTO;
 
 import javax.swing.JButton;
@@ -51,7 +51,7 @@ import javax.swing.JScrollPane;
 import java.awt.BorderLayout;
 
 import static se.streamsource.streamflow.client.util.i18n.*;
-import static se.streamsource.streamflow.infrastructure.event.source.helper.Events.*;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 
 public class ProxyUsersView
       extends JPanel
@@ -178,7 +178,7 @@ public class ProxyUsersView
          return null;
    }
 
-   public void notifyTransactions( Iterable<TransactionEvents> transactions )
+   public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
    {
       if (matches( withNames("createdProxyUser", "changedEnabled" ), transactions ))
       {

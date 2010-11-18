@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.web.domain.structure.form;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.Aggregated;
 import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.entity.Identity;
@@ -30,7 +31,7 @@ import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.library.constraints.annotation.GreaterThan;
 import se.streamsource.streamflow.domain.structure.Describable;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 /**
  * JAVADOC
@@ -51,11 +52,11 @@ public interface Pages
       @Aggregated
       ManyAssociation<Page> pages();
 
-      Page createdPage( DomainEvent event, String id );
+      Page createdPage( @Optional DomainEvent event, String id );
 
-      void removedPage( DomainEvent event, Page Page );
+      void removedPage( @Optional DomainEvent event, Page Page );
 
-      void movedPage( DomainEvent event, Page page, int toIdx );
+      void movedPage( @Optional DomainEvent event, Page page, int toIdx );
    }
 
    abstract class Mixin
@@ -75,7 +76,7 @@ public interface Pages
 
       public Page createPage( String name )
       {
-         Page Page = createdPage( DomainEvent.CREATE, idGen.generate( Identity.class ) );
+         Page Page = createdPage( null, idGen.generate( Identity.class ) );
          Page.changeDescription( name );
          return Page;
       }
@@ -85,7 +86,7 @@ public interface Pages
          if (!data.pages().contains( page ))
             return;
 
-         removedPage( DomainEvent.CREATE, page );
+         removedPage( null, page );
       }
 
       public void movePage( Page page, Integer toIdx )
@@ -93,7 +94,7 @@ public interface Pages
          if (!data.pages().contains( page ) || data.pages().count() <= toIdx)
             return;
 
-         movedPage( DomainEvent.CREATE, page, toIdx );
+         movedPage( null, page, toIdx );
       }
 
       public Page getPageByName( String name )
@@ -106,7 +107,7 @@ public interface Pages
          return null;
       }
 
-      public Page createdPage( DomainEvent event, String id )
+      public Page createdPage( @Optional DomainEvent event, String id )
       {
 
          EntityBuilder<Page> builder = uowf.currentUnitOfWork().newEntityBuilder( Page.class, id );
@@ -118,14 +119,14 @@ public interface Pages
          return page;
       }
 
-      public void movedPage( DomainEvent event, Page page, int toIdx )
+      public void movedPage( @Optional DomainEvent event, Page page, int toIdx )
       {
          data.pages().remove( page );
 
          data.pages().add( toIdx, page );
       }
 
-      public void removedPage( DomainEvent event, Page page )
+      public void removedPage( @Optional DomainEvent event, Page page )
       {
          data.pages().remove( page );
       }

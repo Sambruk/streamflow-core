@@ -39,15 +39,15 @@ import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
 import se.streamsource.streamflow.client.util.ListDetailView;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.domain.form.RequiredSignatureValue;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.util.Strings;
 
 import javax.swing.ActionMap;
 import java.awt.Component;
 
-import static se.streamsource.streamflow.infrastructure.event.source.helper.Events.*;
-import static se.streamsource.streamflow.util.Iterables.*;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
+import static org.qi4j.api.util.Iterables.*;
 
 
 /**
@@ -141,7 +141,7 @@ public class FormSignaturesView
       return null;
    }
 
-   public void notifyTransactions( Iterable<TransactionEvents> transactions )
+   public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
    {
       model.notifyTransactions( transactions );
 

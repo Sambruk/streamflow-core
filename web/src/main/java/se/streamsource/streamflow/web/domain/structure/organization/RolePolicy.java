@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.web.domain.structure.organization;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
@@ -28,7 +29,7 @@ import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.dci.api.RoleMap;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.web.domain.structure.group.Participant;
 import se.streamsource.streamflow.web.domain.structure.role.Role;
 
@@ -36,7 +37,7 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.qi4j.api.entity.EntityReference.*;
+import static org.qi4j.api.entity.EntityReference.getEntityReference;
 
 /**
  * Policy for managging Roles assigned to Participants. Participants
@@ -68,9 +69,9 @@ public interface RolePolicy
       @UseDefaults
       Property<List<ParticipantRolesValue>> policy();
 
-      void grantedRole( DomainEvent event, Participant participant, Role role );
+      void grantedRole( @Optional DomainEvent event, Participant participant, Role role );
 
-      void revokedRole( DomainEvent event, Participant participant, Role role );
+      void revokedRole( @Optional DomainEvent event, Participant participant, Role role );
    }
 
    abstract class Mixin
@@ -90,7 +91,7 @@ public interface RolePolicy
          if (participantHasRole( participant, role ))
             return;
 
-         grantedRole( DomainEvent.CREATE, participant, role );
+         grantedRole( null, participant, role );
       }
 
       public void revokeRole( Participant participant, Role role )
@@ -98,7 +99,7 @@ public interface RolePolicy
          if (!participantHasRole( participant, role ))
             return;
 
-         revokedRole( DomainEvent.CREATE, participant, role );
+         revokedRole( null, participant, role );
       }
 
       public void revokeRoles( Participant participant )
@@ -136,7 +137,7 @@ public interface RolePolicy
          }
       }
 
-      public void grantedRole( DomainEvent event, Participant participant, Role role )
+      public void grantedRole( @Optional DomainEvent event, Participant participant, Role role )
       {
          EntityReference participantRef = getEntityReference( participant );
          List<ParticipantRolesValue> participantRoles = policy().get();
@@ -166,7 +167,7 @@ public interface RolePolicy
          policy().set( policy );
       }
 
-      public void revokedRole( DomainEvent event, Participant participant, Role role )
+      public void revokedRole( @Optional DomainEvent event, Participant participant, Role role )
       {
          EntityReference participantRef = getEntityReference( participant );
          List<ParticipantRolesValue> participantRoles = policy().get();

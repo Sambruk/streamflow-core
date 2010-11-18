@@ -17,11 +17,6 @@
 
 package se.streamsource.streamflow.web.assembler;
 
-import static org.qi4j.api.common.Visibility.application;
-import static org.qi4j.api.common.Visibility.layer;
-
-import javax.management.MBeanServer;
-
 import org.qi4j.api.common.Visibility;
 import org.qi4j.api.service.qualifier.ServiceQualifier;
 import org.qi4j.api.structure.Application;
@@ -34,38 +29,33 @@ import org.qi4j.spi.query.NamedEntityFinder;
 import org.qi4j.spi.query.NamedQueries;
 import org.qi4j.spi.query.NamedQueryDescriptor;
 import org.qi4j.spi.service.importer.ServiceSelectorImporter;
-
 import se.streamsource.streamflow.infrastructure.ConfigurationManagerService;
-import se.streamsource.streamflow.infrastructure.event.replay.DomainEventPlayerService;
+import se.streamsource.streamflow.infrastructure.event.application.replay.ApplicationEventPlayerService;
+import se.streamsource.streamflow.infrastructure.event.domain.replay.DomainEventPlayerService;
 import se.streamsource.streamflow.server.plugin.authentication.UserDetailsValue;
 import se.streamsource.streamflow.web.application.console.ConsoleResultValue;
 import se.streamsource.streamflow.web.application.console.ConsoleScriptValue;
 import se.streamsource.streamflow.web.application.console.ConsoleService;
 import se.streamsource.streamflow.web.application.contact.StreamflowContactLookupService;
-import se.streamsource.streamflow.web.application.mail.MailService;
-import se.streamsource.streamflow.web.application.management.CompositeMBean;
-import se.streamsource.streamflow.web.application.management.DatasourceConfigurationManagerService;
-import se.streamsource.streamflow.web.application.management.ErrorLogService;
-import se.streamsource.streamflow.web.application.management.EventManagerService;
-import se.streamsource.streamflow.web.application.management.LoggingService;
-import se.streamsource.streamflow.web.application.management.ManagerComposite;
-import se.streamsource.streamflow.web.application.management.ManagerService;
-import se.streamsource.streamflow.web.application.management.ReindexOnStartupService;
+import se.streamsource.streamflow.web.application.mail.EmailValue;
+import se.streamsource.streamflow.web.application.mail.ReceiveMailService;
+import se.streamsource.streamflow.web.application.mail.SendMailService;
+import se.streamsource.streamflow.web.application.management.*;
 import se.streamsource.streamflow.web.application.management.jmxconnector.JmxConnectorService;
 import se.streamsource.streamflow.web.application.migration.StartupMigrationService;
+import se.streamsource.streamflow.web.application.notification.ConversationResponseService;
 import se.streamsource.streamflow.web.application.notification.NotificationService;
 import se.streamsource.streamflow.web.application.organization.BootstrapAssembler;
 import se.streamsource.streamflow.web.application.pdf.CasePdfGenerator;
 import se.streamsource.streamflow.web.application.pdf.SubmittedFormPdfGenerator;
-import se.streamsource.streamflow.web.application.security.AuthenticationFilter;
 import se.streamsource.streamflow.web.application.security.AuthenticationFilterService;
-import se.streamsource.streamflow.web.application.statistics.CaseStatisticsService;
-import se.streamsource.streamflow.web.application.statistics.CaseStatisticsValue;
-import se.streamsource.streamflow.web.application.statistics.FormFieldStatisticsValue;
-import se.streamsource.streamflow.web.application.statistics.JdbcStatisticsStore;
-import se.streamsource.streamflow.web.application.statistics.LoggingStatisticsStore;
-import se.streamsource.streamflow.web.application.statistics.RelatedStatisticsValue;
+import se.streamsource.streamflow.web.application.statistics.*;
 import se.streamsource.streamflow.web.infrastructure.index.NamedSolrDescriptor;
+
+import javax.management.MBeanServer;
+
+import static org.qi4j.api.common.Visibility.application;
+import static org.qi4j.api.common.Visibility.layer;
 
 /**
  * JAVADOC
@@ -118,13 +108,21 @@ public class AppAssembler
 
    private void mail( ModuleAssembly module ) throws AssemblyException
    {
-      module.addServices( MailService.class ).identifiedBy( "mail" ).instantiateOnStartup().visibleIn( Visibility.application );
+      module.addValues( EmailValue.class ).visibleIn( Visibility.application );
+      
+      module.addServices( ReceiveMailService.class ).identifiedBy( "receivemail" ).instantiateOnStartup().visibleIn( Visibility.application );
+      module.addServices( SendMailService.class ).identifiedBy( "sendmail" ).instantiateOnStartup().visibleIn( Visibility.application );
    }
 
    private void notification( ModuleAssembly module ) throws AssemblyException
    {
       module.addServices( NotificationService.class )
             .identifiedBy( "notification" )
+            .instantiateOnStartup()
+            .visibleIn( layer );
+
+      module.addServices( ConversationResponseService.class )
+            .identifiedBy( "conversationresponse" )
             .instantiateOnStartup()
             .visibleIn( layer );
    }
@@ -175,7 +173,8 @@ public class AppAssembler
       module.addServices( ReindexerService.class ).identifiedBy( "reindexer" ).visibleIn( layer );
       module.addServices( ReindexOnStartupService.class ).instantiateOnStartup();
 
-      module.addServices( EventManagerService.class, DomainEventPlayerService.class ).instantiateOnStartup();
+      module.addServices( DomainEventPlayerService.class, ApplicationEventPlayerService.class ).visibleIn( Visibility.layer );
+      module.addServices( EventManagerService.class).instantiateOnStartup();
       module.addServices( ErrorLogService.class ).instantiateOnStartup();
 
       module.addServices( LoggingService.class ).instantiateOnStartup();

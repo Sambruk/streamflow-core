@@ -34,12 +34,12 @@ import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.domain.attachment.UpdateAttachmentValue;
 import se.streamsource.streamflow.domain.form.AttachmentFieldDTO;
 import se.streamsource.streamflow.domain.form.FieldValueDTO;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
-import se.streamsource.streamflow.infrastructure.event.source.EventStream;
-import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
-import se.streamsource.streamflow.infrastructure.event.source.helper.EventParameters;
-import se.streamsource.streamflow.infrastructure.event.source.helper.Events;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.EventStream;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
+import se.streamsource.streamflow.infrastructure.event.domain.source.helper.EventParameters;
+import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -47,8 +47,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
 
-import static se.streamsource.streamflow.infrastructure.event.source.helper.Events.*;
-import static se.streamsource.streamflow.util.Iterables.*;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
+import static org.qi4j.api.util.Iterables.*;
 
 public class FormSubmissionWizardPageModel
 {
@@ -83,7 +83,7 @@ public class FormSubmissionWizardPageModel
       // Update with details once file is uploaded
       TransactionListener updateListener = new TransactionListener()
       {
-         public void notifyTransactions( Iterable<TransactionEvents> transactions )
+         public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
          {
             for (DomainEvent domainEvent : filter( withNames("createdAttachment" ), Events.events( transactions )))
             {

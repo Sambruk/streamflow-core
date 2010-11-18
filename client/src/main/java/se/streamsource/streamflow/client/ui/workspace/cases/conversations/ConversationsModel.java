@@ -28,12 +28,12 @@ import se.streamsource.dci.value.LinksValue;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.client.util.EventListSynch;
 import se.streamsource.streamflow.client.util.Refreshable;
-import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
-import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.resource.conversation.ConversationDTO;
 
-import static se.streamsource.streamflow.infrastructure.event.source.helper.Events.*;
-import static se.streamsource.streamflow.util.Specifications.*;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
+import static org.qi4j.api.util.Specifications.*;
 
 public class ConversationsModel
    implements Refreshable, TransactionListener
@@ -64,7 +64,7 @@ public class ConversationsModel
       client.postCommand( "create", newTopic.newInstance() );
    }
 
-   public void notifyTransactions( Iterable<TransactionEvents> transactions )
+   public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
    {
       // Refresh if either the owner of the list has changed, or if any of the entities in the list has changed
       if (matches( or( onEntities( client.getReference().getParentRef().getLastSegment() ), onEntities( conversations )), transactions ))

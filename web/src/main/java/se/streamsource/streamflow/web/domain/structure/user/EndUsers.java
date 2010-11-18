@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.web.domain.structure.user;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.Aggregated;
 import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.entity.Identity;
@@ -26,7 +27,7 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 /**
  * JAVADOC
@@ -45,11 +46,11 @@ public interface EndUsers
       @Aggregated
       ManyAssociation<AnonymousEndUser> anonymousEndUsers();
 
-      AnonymousEndUser createdAnonymousEndUser( DomainEvent event, String id );
+      AnonymousEndUser createdAnonymousEndUser( @Optional DomainEvent event, String id );
 
-      void removedAnonymousEndUser( DomainEvent event, AnonymousEndUser user );
+      void removedAnonymousEndUser( @Optional DomainEvent event, AnonymousEndUser user );
 
-      void addedAnonymousEndUser( DomainEvent event, AnonymousEndUser user );
+      void addedAnonymousEndUser( @Optional DomainEvent event, AnonymousEndUser user );
    }
 
    abstract class Mixin
@@ -65,8 +66,8 @@ public interface EndUsers
       {
          String id = idgen.generate( Identity.class );
 
-         AnonymousEndUser anonymousEndUser = createdAnonymousEndUser( DomainEvent.CREATE, id );
-         addedAnonymousEndUser( DomainEvent.CREATE, anonymousEndUser );
+         AnonymousEndUser anonymousEndUser = createdAnonymousEndUser( null, id );
+         addedAnonymousEndUser( null, anonymousEndUser );
 
          return anonymousEndUser;
       }
@@ -84,7 +85,7 @@ public interface EndUsers
          {
             return;
          }
-         addedAnonymousEndUser( DomainEvent.CREATE, user );
+         addedAnonymousEndUser( null, user );
       }
 
       public boolean removeAnonymousEndUser( AnonymousEndUser user )
@@ -92,7 +93,7 @@ public interface EndUsers
          if (!anonymousEndUsers().contains( user ))
             return false;
 
-         removedAnonymousEndUser( DomainEvent.CREATE, user );
+         removedAnonymousEndUser( null, user );
          user.removeEntity();
          return true;
       }

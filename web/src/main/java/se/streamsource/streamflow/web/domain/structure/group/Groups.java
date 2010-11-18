@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.web.domain.structure.group;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.Aggregated;
 import org.qi4j.api.entity.IdentityGenerator;
 import org.qi4j.api.entity.association.ManyAssociation;
@@ -25,8 +26,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import se.streamsource.streamflow.domain.structure.Describable;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.web.domain.entity.organization.GroupEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.ChangesOwner;
 
@@ -50,11 +50,11 @@ public interface Groups
       @Aggregated
       ManyAssociation<Group> groups();
 
-      Group createdGroup( DomainEvent event, String id );
+      Group createdGroup( @Optional DomainEvent event, String id );
 
-      void addedGroup( DomainEvent event, Group group );
+      void addedGroup( @Optional DomainEvent event, Group group );
 
-      void removedGroup( DomainEvent event, Group group );
+      void removedGroup( @Optional DomainEvent event, Group group );
    }
 
    abstract class Mixin
@@ -70,7 +70,7 @@ public interface Groups
 
       public Group createGroup( String name )
       {
-         Group group = data.createdGroup(DomainEvent.CREATE, idGen.generate( GroupEntity.class ));
+         Group group = data.createdGroup(null, idGen.generate( GroupEntity.class ));
          group.changeDescription( name );
          addGroup(group);
          return group;
@@ -81,7 +81,7 @@ public interface Groups
          while (data.groups().count() > 0)
          {
             Group group = data.groups().get( 0 );
-            data.removedGroup( DomainEvent.CREATE, group );
+            data.removedGroup( null, group );
             groups.addGroup( group );
          }
       }
@@ -90,7 +90,7 @@ public interface Groups
       {
          if (!data.groups().contains( group ))
          {
-            data.addedGroup( DomainEvent.CREATE, group );
+            data.addedGroup( null, group );
          }
       }
 
@@ -99,7 +99,7 @@ public interface Groups
          if (!data.groups().contains( group ))
             return false;
 
-         data.removedGroup( DomainEvent.CREATE, group );
+         data.removedGroup( null, group );
          group.removeEntity();
          return true;
       }

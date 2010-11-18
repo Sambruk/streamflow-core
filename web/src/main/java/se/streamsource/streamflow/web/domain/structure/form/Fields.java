@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.web.domain.structure.form;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.Aggregated;
 import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.entity.Identity;
@@ -32,7 +33,7 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.library.constraints.annotation.GreaterThan;
 import se.streamsource.streamflow.domain.form.FieldValue;
 import se.streamsource.streamflow.domain.structure.Describable;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 /**
  * JAVADOC
@@ -53,11 +54,11 @@ public interface Fields
       @Aggregated
       ManyAssociation<Field> fields();
 
-      Field createdField( DomainEvent event, String id, FieldValue value );
+      Field createdField( @Optional DomainEvent event, String id, FieldValue value );
 
-      void removedField( DomainEvent event, Field field );
+      void removedField( @Optional DomainEvent event, Field field );
 
-      void movedField( DomainEvent event, Field field, int toIdx );
+      void movedField( @Optional DomainEvent event, Field field, int toIdx );
    }
 
    abstract class Mixin
@@ -77,7 +78,7 @@ public interface Fields
 
       public Field createField( String name, FieldValue fieldValue )
       {
-         Field field = createdField( DomainEvent.CREATE, idGen.generate( Identity.class ), fieldValue );
+         Field field = createdField( null, idGen.generate( Identity.class ), fieldValue );
          field.changeDescription( name );
          return field;
       }
@@ -87,7 +88,7 @@ public interface Fields
          if (!data.fields().contains( field ))
             return;
 
-         removedField( DomainEvent.CREATE, field );
+         removedField( null, field );
       }
 
       public void moveField( Field field, Integer toIdx )
@@ -95,7 +96,7 @@ public interface Fields
          if (!data.fields().contains( field ) || data.fields().count() <= toIdx)
             return;
 
-         movedField( DomainEvent.CREATE, field, toIdx );
+         movedField( null, field, toIdx );
       }
 
       public Field getFieldByName( String name )

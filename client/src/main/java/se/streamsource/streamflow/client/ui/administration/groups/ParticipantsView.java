@@ -40,16 +40,16 @@ import se.streamsource.streamflow.client.util.RefreshWhenVisible;
 import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.i18n;
-import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
-import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.Set;
 
-import static se.streamsource.streamflow.infrastructure.event.source.helper.Events.matches;
-import static se.streamsource.streamflow.infrastructure.event.source.helper.Events.withNames;
-import static se.streamsource.streamflow.util.Specifications.not;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.matches;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withNames;
+import static org.qi4j.api.util.Specifications.not;
 
 /**
  * JAVADOC
@@ -143,7 +143,7 @@ public class ParticipantsView
          return null;
    }
 
-   public void notifyTransactions( Iterable<TransactionEvents> transactions )
+   public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
    {
       if( matches( not( withNames( "removedGroup", "changedRemoved") ), transactions ) )
          model.notifyTransactions( transactions );

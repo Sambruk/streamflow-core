@@ -34,10 +34,10 @@ import org.qi4j.spi.uuid.UuidIdentityGeneratorService;
 import org.qi4j.test.AbstractQi4jTest;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.domain.contact.ContactValue;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
-import se.streamsource.streamflow.infrastructure.event.factory.DomainEventFactoryService;
-import se.streamsource.streamflow.infrastructure.event.source.helper.TransactionTrackerConfiguration;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.factory.DomainEventFactoryService;
+import se.streamsource.streamflow.infrastructure.event.domain.source.helper.TransactionTrackerConfiguration;
 import se.streamsource.streamflow.infrastructure.time.TimeService;
 import se.streamsource.streamflow.web.application.security.UserPrincipal;
 import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity;
@@ -109,7 +109,7 @@ public class CaseStatisticsServiceTest
 
       module.addObjects( TimeService.class, CaseStatisticsServiceTest.class );
 
-      module.addValues( DomainEvent.class, TransactionEvents.class );
+      module.addValues( DomainEvent.class, TransactionDomainEvents.class );
       module.addValues( CaseStatisticsValue.class, FormFieldStatisticsValue.class, RelatedStatisticsValue.class );
    }
 

@@ -40,6 +40,7 @@ import se.streamsource.streamflow.web.application.security.AuthenticationFilterS
 import se.streamsource.streamflow.web.resource.admin.ConsoleServerResource;
 import se.streamsource.streamflow.web.resource.admin.LoggingServerResource;
 import se.streamsource.streamflow.web.resource.admin.SolrSearchServerResource;
+import se.streamsource.streamflow.web.resource.events.ApplicationEventsServerResource;
 import se.streamsource.streamflow.web.resource.events.DomainEventsServerResource;
 
 /**
@@ -67,6 +68,7 @@ public class APIRouter
 
       // Events
       attach( "/events/domain", new ExtensionMediaTypeFilter( getContext(), createServerResourceFinder( DomainEventsServerResource.class ) ), Template.MODE_STARTS_WITH );
+      attach( "/events/application", new ExtensionMediaTypeFilter( getContext(), createServerResourceFinder( ApplicationEventsServerResource.class ) ), Template.MODE_STARTS_WITH );
 
       // Admin resources
       Router adminRouter = new Router( getContext() );

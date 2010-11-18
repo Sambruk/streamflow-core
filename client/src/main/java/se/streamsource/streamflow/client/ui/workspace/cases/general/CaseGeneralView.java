@@ -47,8 +47,8 @@ import se.streamsource.streamflow.client.util.UncaughtExceptionHandler;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
 import se.streamsource.streamflow.client.util.i18n;
-import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
-import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.resource.caze.CaseGeneralDTO;
 
 import javax.swing.ActionMap;
@@ -79,7 +79,7 @@ import java.util.Observer;
 
 import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.*;
 import static se.streamsource.streamflow.domain.interaction.gtd.CaseStates.*;
-import static se.streamsource.streamflow.infrastructure.event.source.helper.Events.*;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 
 /**
  * JAVADOC
@@ -408,7 +408,7 @@ public class CaseGeneralView extends JScrollPane implements Observer, Transactio
          return null;
    }
 
-   public void notifyTransactions( Iterable<TransactionEvents> transactions )
+   public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
    {
       if (matches( withNames("addedLabel","removedLabel", "changedOwner", "changedCaseType", "changedStatus" ), transactions ))
       {

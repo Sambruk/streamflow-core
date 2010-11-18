@@ -45,8 +45,8 @@ import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
 import se.streamsource.streamflow.client.util.i18n;
-import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
-import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.resource.caze.CaseVisitorConfigValue;
 
 import javax.swing.*;
@@ -54,8 +54,8 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.io.*;
 
-import static se.streamsource.streamflow.infrastructure.event.source.helper.Events.matches;
-import static se.streamsource.streamflow.infrastructure.event.source.helper.Events.withUsecases;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.matches;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withUsecases;
 
 /**
  * JAVADOC
@@ -313,7 +313,7 @@ public class CaseActionsView extends JPanel
       return new PrintCaseTask( "Case.pdf", config.newInstance() );
    }
 
-   public void notifyTransactions( Iterable<TransactionEvents> transactions )
+   public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
    {
       if (matches( withUsecases("sendto", "open", "assign", "close", "delete", "onhold", "reopen", "resume", "unassign"), transactions ))
       {

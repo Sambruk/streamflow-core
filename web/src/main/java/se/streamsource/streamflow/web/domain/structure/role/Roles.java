@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.web.domain.structure.role;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.Aggregated;
 import org.qi4j.api.entity.IdentityGenerator;
 import org.qi4j.api.entity.association.ManyAssociation;
@@ -25,7 +26,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.web.domain.entity.organization.RoleEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.ChangesOwner;
 
@@ -50,11 +51,11 @@ public interface Roles
       @Aggregated
       ManyAssociation<Role> roles();
 
-      Role createdRole( DomainEvent event, String id );
+      Role createdRole( @Optional DomainEvent event, String id );
 
-      void addedRole( DomainEvent event, Role role );
+      void addedRole( @Optional DomainEvent event, Role role );
 
-      void removedRole( DomainEvent event, Role role );
+      void removedRole( @Optional DomainEvent event, Role role );
    }
 
    public class Mixin
@@ -71,8 +72,8 @@ public interface Roles
 
       public Role createRole( String name )
       {
-         Role role = data.createdRole( DomainEvent.CREATE, idGen.generate( RoleEntity.class ));
-         data.addedRole( DomainEvent.CREATE, role );
+         Role role = data.createdRole( null, idGen.generate( RoleEntity.class ));
+         data.addedRole( null, role );
          role.changeDescription( name );
 
          return role;
@@ -82,7 +83,7 @@ public interface Roles
       {
          if (!data.roles().contains( role ))
          {
-            data.addedRole( DomainEvent.CREATE, role );
+            data.addedRole( null, role );
          }
       }
 
@@ -90,7 +91,7 @@ public interface Roles
       {
          if (data.roles().contains( projectRole ))
          {
-            data.removedRole(DomainEvent.CREATE, projectRole);
+            data.removedRole(null, projectRole);
             projectRole.removeEntity();
          }
       }

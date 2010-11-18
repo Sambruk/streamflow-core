@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.web.domain.structure.project;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.Aggregated;
 import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.entity.Identity;
@@ -27,8 +28,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import se.streamsource.streamflow.domain.structure.Describable;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.web.domain.interaction.gtd.ChangesOwner;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganizationalUnit;
@@ -53,11 +53,11 @@ public interface Projects
       @Aggregated
       ManyAssociation<Project> projects();
 
-      Project createdProject( DomainEvent event, String id );
+      Project createdProject( @Optional DomainEvent event, String id );
 
-      void removedProject( DomainEvent event, Project project );
+      void removedProject( @Optional DomainEvent event, Project project );
 
-      void addedProject( DomainEvent event, Project project );
+      void addedProject( @Optional DomainEvent event, Project project );
    }
 
    abstract class Mixin
@@ -78,7 +78,7 @@ public interface Projects
       {
          String id = idgen.generate( Identity.class );
 
-         Project project = createdProject( DomainEvent.CREATE, id );
+         Project project = createdProject( null, id );
          addProject( project );
          project.changeDescription( name );
 
@@ -97,7 +97,7 @@ public interface Projects
          while (data.projects().count() > 0)
          {
             Project project = data.projects().get( 0 );
-            removedProject( DomainEvent.CREATE, project );
+            removedProject( null, project );
             projects.addProject( project );
          }
       }
@@ -106,7 +106,7 @@ public interface Projects
       {
          if (!data.projects().contains( project ))
          {
-            data.addedProject( DomainEvent.CREATE, project );
+            data.addedProject( null, project );
          }
       }
 
@@ -115,7 +115,7 @@ public interface Projects
          if (data.projects().contains( project ))
          {
 
-            data.removedProject( DomainEvent.CREATE, project );
+            data.removedProject( null, project );
             project.removeEntity();
             return true;
          } else

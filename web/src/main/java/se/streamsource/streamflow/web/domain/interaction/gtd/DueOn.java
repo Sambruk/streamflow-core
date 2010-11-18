@@ -20,7 +20,7 @@ package se.streamsource.streamflow.web.domain.interaction.gtd;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 import java.util.Date;
 
@@ -38,7 +38,7 @@ public interface DueOn
       Property<Date> dueOn();
 
 
-      void changedDueOn( DomainEvent event, Date dueDate );
+      void changedDueOn( @Optional DomainEvent event, Date dueDate );
    }
 
    abstract class Mixin
@@ -46,10 +46,10 @@ public interface DueOn
    {
       public void dueOn( Date dueDate )
       {
-         changedDueOn( DomainEvent.CREATE, dueDate );
+         changedDueOn( null, dueDate );
       }
 
-      public void changedDueOn( DomainEvent event, Date dueDate )
+      public void changedDueOn( @Optional DomainEvent event, Date dueDate )
       {
          dueOn().set( dueDate );
       }

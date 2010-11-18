@@ -21,7 +21,7 @@ import org.qi4j.api.common.AppliesTo;
 import org.qi4j.api.common.AppliesToFilter;
 import org.qi4j.api.injection.scope.State;
 import org.qi4j.api.property.StateHolder;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 import java.beans.Introspector;
 import java.lang.reflect.InvocationHandler;

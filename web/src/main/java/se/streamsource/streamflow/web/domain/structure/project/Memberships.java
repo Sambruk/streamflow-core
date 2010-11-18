@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.web.domain.structure.project;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
@@ -26,7 +27,7 @@ import org.qi4j.api.sideeffect.SideEffects;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.domain.structure.Removable;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.web.domain.structure.group.Group;
 import se.streamsource.streamflow.web.domain.structure.group.Participant;
 
@@ -47,9 +48,9 @@ public interface Memberships
    {
       ManyAssociation<Project> projects();
 
-      void joinedProject( DomainEvent event, Project project);
+      void joinedProject( @Optional DomainEvent event, Project project);
 
-      void leftProject( DomainEvent event, Project project );
+      void leftProject( @Optional DomainEvent event, Project project );
    }
 
    abstract class Mixin
@@ -72,7 +73,7 @@ public interface Memberships
          if (state.projects().contains( project ))
             return;
 
-         joinedProject( DomainEvent.CREATE, project );
+         joinedProject( null, project );
       }
 
       public void leaveProject( Project project )
@@ -80,7 +81,7 @@ public interface Memberships
          if (!state.projects().contains( project ))
             return;
 
-         leftProject( DomainEvent.CREATE, project );
+         leftProject( null, project );
       }
 
       public boolean isMember( Project project )

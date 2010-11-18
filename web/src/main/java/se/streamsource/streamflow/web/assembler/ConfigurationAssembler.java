@@ -22,7 +22,6 @@ import org.qi4j.api.structure.Application;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
-import org.qi4j.cache.ehcache.EhCacheConfiguration;
 import org.qi4j.entitystore.jdbm.JdbmConfiguration;
 import org.qi4j.entitystore.memory.MemoryEntityStoreService;
 import org.qi4j.entitystore.prefs.PreferencesEntityStoreInfo;
@@ -31,9 +30,11 @@ import org.qi4j.index.reindexer.ReindexerConfiguration;
 import org.qi4j.library.rdf.repository.NativeConfiguration;
 import org.qi4j.migration.MigrationConfiguration;
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
-import se.streamsource.streamflow.web.application.mail.MailConfiguration;
+import se.streamsource.streamflow.web.application.mail.ReceiveMailConfiguration;
+import se.streamsource.streamflow.web.application.mail.SendMailConfiguration;
 import se.streamsource.streamflow.web.application.management.jmxconnector.JmxConnectorConfiguration;
 import se.streamsource.streamflow.web.application.migration.StartupMigrationConfiguration;
+import se.streamsource.streamflow.web.application.notification.ConversationResponseConfiguration;
 import se.streamsource.streamflow.web.application.notification.NotificationConfiguration;
 import se.streamsource.streamflow.web.application.statistics.StatisticsConfiguration;
 import se.streamsource.streamflow.web.configuration.ServiceConfiguration;
@@ -67,12 +68,14 @@ public class ConfigurationAssembler
       module.addEntities( ReindexerConfiguration.class ).visibleIn( Visibility.application );
       module.addEntities( StatisticsConfiguration.class ).visibleIn( Visibility.application );
       module.addEntities( NotificationConfiguration.class ).visibleIn( Visibility.application );
+      module.addEntities( ConversationResponseConfiguration.class ).visibleIn( Visibility.application );
       module.addEntities( DataSourceConfiguration.class ).visibleIn( Visibility.application );
       module.addEntities( LiquibaseConfiguration.class ).visibleIn( Visibility.application );
       module.addEntities( StartupMigrationConfiguration.class ).visibleIn( Visibility.application );
       module.addEntities( JmxConnectorConfiguration.class ).visibleIn( Visibility.application );
       module.addEntities( MigrationConfiguration.class ).visibleIn( Visibility.application );
-      module.addEntities( MailConfiguration.class ).visibleIn( Visibility.application );
+      module.addEntities( SendMailConfiguration.class ).visibleIn( Visibility.application );
+      module.addEntities( ReceiveMailConfiguration.class ).visibleIn( Visibility.application );
 
       // Plugin configurations
       module.addEntities( PluginConfiguration.class ).visibleIn( Visibility.application );
@@ -82,6 +85,7 @@ public class ConfigurationAssembler
       module.forMixin( LiquibaseConfiguration.class ).declareDefaults().enabled().set(true);
       module.forMixin( LiquibaseConfiguration.class ).declareDefaults().changeLog().set("changelog.xml");
       module.forMixin( NotificationConfiguration.class ).declareDefaults().enabled().set( true );
+      module.forMixin( ConversationResponseConfiguration.class ).declareDefaults().enabled().set( true );
 
       // Configuration store
       Application.Mode mode = module.layerAssembly().applicationAssembly().mode();

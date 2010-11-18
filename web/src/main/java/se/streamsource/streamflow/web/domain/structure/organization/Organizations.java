@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.web.domain.structure.organization;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.entity.Identity;
 import org.qi4j.api.entity.IdentityGenerator;
@@ -26,9 +27,7 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.QueryBuilderFactory;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-
-import static se.streamsource.streamflow.infrastructure.event.DomainEvent.*;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 /**
  * JAVADOC
@@ -40,7 +39,7 @@ public interface Organizations
 
    interface Data
    {
-      Organization createdOrganization( DomainEvent event, String id );
+      Organization createdOrganization( @Optional DomainEvent event, String id );
    }
 
    abstract class Mixin
@@ -60,7 +59,7 @@ public interface Organizations
 
       public Organization createOrganization(String name)
       {
-         Organization ou = createdOrganization( CREATE, idGen.generate( Identity.class ) );
+         Organization ou = createdOrganization( null, idGen.generate( Identity.class ) );
 //         Organization ou = createdOrganization( CREATE, "Organization" );
 
          // Change name

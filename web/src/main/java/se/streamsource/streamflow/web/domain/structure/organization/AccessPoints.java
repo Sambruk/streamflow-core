@@ -27,15 +27,13 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.web.domain.entity.organization.AccessPointEntity;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 
 import java.util.List;
-
-import static se.streamsource.streamflow.infrastructure.event.DomainEvent.*;
 
 /**
  * JAVADOC
@@ -55,11 +53,11 @@ public interface
       @Aggregated
       ManyAssociation<AccessPoint> accessPoints();
 
-      AccessPoint createdAccessPoint( DomainEvent event, String id, Project project, CaseType caseType, @Optional List<Label> labels );
+      AccessPoint createdAccessPoint( @Optional DomainEvent event, String id, Project project, CaseType caseType, @Optional List<Label> labels );
 
-      void addedAccessPoint( DomainEvent event, AccessPoint accessPoint );
+      void addedAccessPoint( @Optional DomainEvent event, AccessPoint accessPoint );
 
-      void removedAccessPoint( DomainEvent event, AccessPoint accessPoint );
+      void removedAccessPoint( @Optional DomainEvent event, AccessPoint accessPoint );
    }
 
    abstract class Mixin
@@ -73,9 +71,9 @@ public interface
 
       public AccessPoint createAccessPoint( String name, Project project, CaseType caseType, @Optional List<Label> labels )
       {
-         AccessPoint ap = createdAccessPoint( CREATE, idGen.generate( Identity.class ), project, caseType, labels );
+         AccessPoint ap = createdAccessPoint( null, idGen.generate( Identity.class ), project, caseType, labels );
 
-         addedAccessPoint( CREATE, ap );
+         addedAccessPoint( null, ap );
          ap.changeDescription( name );
 
          return ap;
@@ -93,20 +91,20 @@ public interface
             }
          }
 
-         AccessPoint ap = createdAccessPoint( CREATE, idGen.generate( Identity.class ) );
+         AccessPoint ap = createdAccessPoint( null, idGen.generate( Identity.class ) );
 
-         addedAccessPoint( CREATE, ap );
+         addedAccessPoint( null, ap );
          ap.changeDescription( name );
       }
 
-      public AccessPoint createdAccessPoint( DomainEvent event, String id )
+      public AccessPoint createdAccessPoint( @Optional DomainEvent event, String id )
       {
          EntityBuilder<AccessPoint> entityBuilder = uowf.currentUnitOfWork().newEntityBuilder( AccessPoint.class, id );
 
          return entityBuilder.newInstance();
       }
 
-      public AccessPoint createdAccessPoint( DomainEvent event, String id, Project project, CaseType caseType, @Optional List<Label> labels )
+      public AccessPoint createdAccessPoint( @Optional DomainEvent event, String id, Project project, CaseType caseType, @Optional List<Label> labels )
       {
          EntityBuilder<AccessPointEntity> entityBuilder = uowf.currentUnitOfWork().newEntityBuilder( AccessPointEntity.class, id );
          entityBuilder.instance().project().set( project );
@@ -124,7 +122,7 @@ public interface
          if (!accessPoints().contains( accessPoint ))
             return false;
 
-         removedAccessPoint( DomainEvent.CREATE, accessPoint );
+         removedAccessPoint( null, accessPoint );
          accessPoint.removeEntity();
          return true;
       }

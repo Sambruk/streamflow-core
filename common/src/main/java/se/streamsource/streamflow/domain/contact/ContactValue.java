@@ -18,15 +18,18 @@
 package se.streamsource.streamflow.domain.contact;
 
 import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
 import org.qi4j.library.constraints.annotation.Matches;
 
 import java.util.List;
+import java.util.ListIterator;
 
 /**
  * Contact information for either a person or a company
  */
+@Mixins(ContactValue.Mixin.class)
 public interface ContactValue
       extends ValueComposite
 {
@@ -57,4 +60,32 @@ public interface ContactValue
 
    @UseDefaults
    Property<String> note();
+
+   ContactEmailValue defaultEmail();
+
+   ContactPhoneValue defaultPhone();
+
+   abstract class Mixin
+      implements ContactValue
+   {
+      public ContactEmailValue defaultEmail()
+      {
+         ListIterator<ContactEmailValue> listIter = emailAddresses().get().listIterator();
+         if (listIter.hasNext())
+         {
+            return listIter.next();
+         } else
+            return null;
+      }
+
+      public ContactPhoneValue defaultPhone()
+      {
+         ListIterator<ContactPhoneValue> listIter = phoneNumbers().get().listIterator();
+         if (listIter.hasNext())
+         {
+            return listIter.next();
+         } else
+            return null;
+      }
+   }
 }

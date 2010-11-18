@@ -17,12 +17,13 @@
 
 package se.streamsource.streamflow.web.domain.structure.form;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 import org.qi4j.library.constraints.annotation.NotEmpty;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 /**
  * Technical id for a field. May not be empty
@@ -37,7 +38,7 @@ public interface FieldId
       @UseDefaults
       Property<String> fieldId();
 
-      void changedFieldId( DomainEvent event, String newId );
+      void changedFieldId( @Optional DomainEvent event, String newId );
    }
 
    class Mixin
@@ -48,7 +49,7 @@ public interface FieldId
 
       public void changeFieldId( String id)
       {
-         data.changedFieldId( DomainEvent.CREATE, id );
+         data.changedFieldId( null, id );
       }
    }
 

@@ -37,7 +37,7 @@ import se.streamsource.streamflow.web.domain.structure.organization.Organization
 
 import java.io.IOException;
 
-import static se.streamsource.streamflow.util.Iterables.*;
+import static org.qi4j.api.util.Iterables.*;
 
 /**
  * JAVADOC

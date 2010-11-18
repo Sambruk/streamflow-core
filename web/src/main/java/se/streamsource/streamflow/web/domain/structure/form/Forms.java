@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.web.domain.structure.form;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.Aggregated;
 import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.entity.Identity;
@@ -30,7 +31,7 @@ import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilderFactory;
 import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.web.domain.entity.form.FormEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.ChangesOwner;
 
@@ -59,11 +60,11 @@ public interface Forms
       @Aggregated
       ManyAssociation<Form> forms();
 
-      Form createdForm( DomainEvent event, String id);
+      Form createdForm( @Optional DomainEvent event, String id);
 
-      void addedForm( DomainEvent create, Form form );
+      void addedForm( @Optional DomainEvent create, Form form );
 
-      void removedForm( DomainEvent event, Form removedForm );
+      void removedForm( @Optional DomainEvent event, Form removedForm );
    }
 
    abstract class Mixin
@@ -83,7 +84,7 @@ public interface Forms
 
       public Form createForm()
       {
-         Form form = createdForm( DomainEvent.CREATE, idGen.generate( Identity.class ) );
+         Form form = createdForm( null, idGen.generate( Identity.class ) );
          addForm(form);
 
          return form;
@@ -94,14 +95,14 @@ public interface Forms
          if (data.forms().contains( form ))
             return;
 
-         data.addedForm(DomainEvent.CREATE, form);
+         data.addedForm(null, form);
       }
 
       public void removeForm( Form form )
       {
          if (data.forms().contains( form ))
          {
-            removedForm( DomainEvent.CREATE, form );
+            removedForm( null, form );
             form.removeEntity();
          }
       }
@@ -110,10 +111,10 @@ public interface Forms
       {
          toForms.addForm(form);
 
-         removedForm(DomainEvent.CREATE, form);
+         removedForm(null, form);
       }
 
-      public Form createdForm( DomainEvent event, String id )
+      public Form createdForm( @Optional DomainEvent event, String id )
       {
          EntityBuilder<FormEntity> builder = uowf.currentUnitOfWork().newEntityBuilder( FormEntity.class, id );
          builder.instance().formId().set( "form"+(forms().count()+1) );
@@ -122,7 +123,7 @@ public interface Forms
          return form;
       }
 
-      public void removedForm( DomainEvent event, Form removedForm )
+      public void removedForm( @Optional DomainEvent event, Form removedForm )
       {
          data.forms().remove( removedForm );
       }
@@ -132,7 +133,7 @@ public interface Forms
          while (data.forms().count() > 0)
          {
             Form form = data.forms().get( 0 );
-            removedForm( DomainEvent.CREATE, form );
+            removedForm( null, form );
             to.addForm( form );
          }
       }

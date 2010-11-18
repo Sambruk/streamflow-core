@@ -29,8 +29,8 @@ import org.qi4j.spi.uuid.UuidIdentityGeneratorService;
 import se.streamsource.streamflow.client.infrastructure.configuration.ServiceConfiguration;
 import se.streamsource.streamflow.client.infrastructure.events.ClientEventSourceService;
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 
 /**
  * JAVADOC
@@ -79,7 +79,7 @@ public class InfrastructureAssembler
 
    private void clientEvents( ModuleAssembly moduleAssembly ) throws AssemblyException
    {
-      moduleAssembly.addValues( TransactionEvents.class, DomainEvent.class ).visibleIn( Visibility.application );
+      moduleAssembly.addValues( TransactionDomainEvents.class, DomainEvent.class ).visibleIn( Visibility.application );
 
       moduleAssembly.addServices( ClientEventSourceService.class ).visibleIn( Visibility.application );
    }

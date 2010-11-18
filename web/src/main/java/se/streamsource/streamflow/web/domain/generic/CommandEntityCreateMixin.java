@@ -30,7 +30,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -41,7 +41,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Generic mixin for simple command methods that create an entity and add it to a collection. They have to follow this pattern:
  * SomeType createFoo(<args>)
  * This will generated an id for "SomeType" (so SomeType needs to extend EntityComposite!) and then call the
- * event method "createdFoo(DomainEvent.CREATE, id)"
+ * event method "createdFoo(null, id)"
  * followed by "addFoo(entity)".
  * The new entity is then returned from the method.
  */
@@ -98,7 +98,7 @@ public class CommandEntityCreateMixin
       String id = idGen.generate( (Class<? extends Identity>) method.getReturnType() );
 
       // Create entity
-      Object entity = createdMethod.invoke( composite, DomainEvent.CREATE, id );
+      Object entity = createdMethod.invoke( composite, null, id );
 
       // Add entity to collection
       addedMethod.invoke( composite, entity );

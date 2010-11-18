@@ -36,8 +36,8 @@ import se.streamsource.streamflow.client.util.StateBinder;
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.domain.form.RequiredSignatureValue;
-import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
-import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
@@ -125,7 +125,7 @@ public class FormSignatureView
       }
    }
 
-   public void notifyTransactions( Iterable<TransactionEvents> transactions )
+   public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
    {
 
       model.notifyTransactions( transactions );

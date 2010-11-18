@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.web.domain.structure.group;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
@@ -25,7 +26,7 @@ import org.qi4j.api.sideeffect.SideEffectOf;
 import org.qi4j.api.sideeffect.SideEffects;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.domain.structure.Removable;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 /**
  * JAVADOC
@@ -52,9 +53,9 @@ public interface Participants
    {
       ManyAssociation<Participant> participants();
 
-      void addedParticipant( DomainEvent event, Participant participant );
+      void addedParticipant( @Optional DomainEvent event, Participant participant );
 
-      void removedParticipant( DomainEvent event, Participant participant );
+      void removedParticipant( @Optional DomainEvent event, Participant participant );
    }
 
    class Mixin
@@ -72,7 +73,7 @@ public interface Participants
       {
          if (!data.participants().contains( participant ))
          {
-            data.addedParticipant( DomainEvent.CREATE, participant );
+            data.addedParticipant( null, participant );
             participant.joinGroup( group );
          }
       }
@@ -81,7 +82,7 @@ public interface Participants
       {
          if (data.participants().contains( participant ))
          {
-            data.removedParticipant( DomainEvent.CREATE, participant );
+            data.removedParticipant( null, participant );
             participant.leaveGroup( group );
          }
       }

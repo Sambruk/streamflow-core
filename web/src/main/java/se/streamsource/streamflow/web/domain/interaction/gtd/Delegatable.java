@@ -22,7 +22,7 @@ import org.qi4j.api.entity.association.Association;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 import java.util.Date;
 
@@ -58,11 +58,11 @@ public interface Delegatable
       @Optional
       Property<Date> delegatedOn();
 
-      void delegatedTo( DomainEvent create, Delegatee delegatee, Delegator delegator, Owner delegatedFrom );
+      void delegatedTo( @Optional DomainEvent create, Delegatee delegatee, Delegator delegator, Owner delegatedFrom );
 
-      void rejectedDelegation( DomainEvent event );
+      void rejectedDelegation( @Optional DomainEvent event );
 
-      void cancelledDelegation( DomainEvent event );
+      void cancelledDelegation( @Optional DomainEvent event );
    }
 
    abstract class Mixin
@@ -76,10 +76,10 @@ public interface Delegatable
 
       public void delegateTo( Delegatee delegatee, Delegator delegator, Owner delegatedFrom )
       {
-         delegatedTo( DomainEvent.CREATE, delegatee, delegator, delegatedFrom );
+         delegatedTo( null, delegatee, delegator, delegatedFrom );
       }
 
-      public void delegatedTo( DomainEvent event, Delegatee delegatee, Delegator delegator, Owner delegatedFrom )
+      public void delegatedTo( @Optional DomainEvent event, Delegatee delegatee, Delegator delegator, Owner delegatedFrom )
       {
          delegatedTo().set( delegatee );
          delegatedBy().set( delegator );
@@ -93,7 +93,7 @@ public interface Delegatable
          if (delegatedTo().get() != null)
          {
             ownable.changeOwner( delegatedFrom().get() );
-            rejectedDelegation( DomainEvent.CREATE );
+            rejectedDelegation( null );
          }
       }
 
@@ -102,7 +102,7 @@ public interface Delegatable
          if (delegatedTo().get() != null)
          {
             ownable.changeOwner( delegatedFrom().get() );
-            cancelledDelegation( DomainEvent.CREATE );
+            cancelledDelegation( null );
          }
       }
 
@@ -127,7 +127,7 @@ public interface Delegatable
             return false;
       }
 
-      public void rejectedDelegation( DomainEvent event )
+      public void rejectedDelegation( @Optional DomainEvent event )
       {
          delegatedTo().set( null );
          delegatedBy().set( null );
@@ -136,7 +136,7 @@ public interface Delegatable
          status.reopen();
       }
 
-      public void cancelledDelegation( DomainEvent event )
+      public void cancelledDelegation( @Optional DomainEvent event )
       {
          delegatedTo().set( null );
          delegatedBy().set( null );

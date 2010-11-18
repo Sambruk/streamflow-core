@@ -20,7 +20,7 @@ package se.streamsource.streamflow.web.domain.structure.attachment;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.property.Property;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 import java.util.Date;
 
@@ -82,10 +82,10 @@ public interface AttachedFile
       @Optional
       Property<Long> size();
 
-      void changedName( DomainEvent event, String newName);
-      void changedMimeType( DomainEvent event, String newMimeType);
-      void changedUri( DomainEvent event, String newMimeType);
-      void changedModificationDate( DomainEvent event, Date newModificationDate);
+      void changedName( @Optional DomainEvent event, String newName);
+      void changedMimeType( @Optional DomainEvent event, String newMimeType);
+      void changedUri( @Optional DomainEvent event, String newMimeType);
+      void changedModificationDate( @Optional DomainEvent event, Date newModificationDate);
       void changedSize(DomainEvent event, long size);
    }
 }

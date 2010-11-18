@@ -37,7 +37,7 @@ import se.streamsource.streamflow.domain.form.NumberFieldValue;
 import se.streamsource.streamflow.domain.form.OptionButtonsFieldValue;
 import se.streamsource.streamflow.domain.form.PageSubmissionValue;
 import se.streamsource.streamflow.domain.form.TextFieldValue;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.web.application.security.UserPrincipal;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.entity.conversation.ConversationEntity;
@@ -315,7 +315,7 @@ public interface TestDataService
          labels.add( question );
          organization.createAccessPoint( "ComplaintAccess", invoicing, complaint, labels );
 
-         organization.createdProxyUser( DomainEvent.CREATE, "surface", "surface", "surface" );
+         organization.createdProxyUser( null, "surface", "surface", "surface" );
 
          uow.complete();
       }

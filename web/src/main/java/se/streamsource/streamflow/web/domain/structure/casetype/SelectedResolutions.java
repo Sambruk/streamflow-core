@@ -17,9 +17,10 @@
 
 package se.streamsource.streamflow.web.domain.structure.casetype;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.mixin.Mixins;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 /**
  * JAVADOC
@@ -39,9 +40,9 @@ public interface SelectedResolutions
    {
       ManyAssociation<Resolution> selectedResolutions();
 
-      void addedSelectedResolution( DomainEvent event, Resolution resolution );
+      void addedSelectedResolution( @Optional DomainEvent event, Resolution resolution );
 
-      void removedSelectedResolution( DomainEvent event, Resolution resolution );
+      void removedSelectedResolution( @Optional DomainEvent event, Resolution resolution );
    }
 
    abstract class Mixin
@@ -49,12 +50,12 @@ public interface SelectedResolutions
    {
       public void addSelectedResolution( Resolution resolution )
       {
-         addedSelectedResolution( DomainEvent.CREATE, resolution );
+         addedSelectedResolution( null, resolution );
       }
 
       public void removeSelectedResolution( Resolution resolution )
       {
-         removedSelectedResolution( DomainEvent.CREATE, resolution );
+         removedSelectedResolution( null, resolution );
       }
 
       public boolean hasSelectedResolutions( )

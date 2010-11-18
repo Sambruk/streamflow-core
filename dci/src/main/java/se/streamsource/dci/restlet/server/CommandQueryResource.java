@@ -32,6 +32,8 @@ import org.qi4j.api.property.StateHolder;
 import org.qi4j.api.unitofwork.EntityTypeNotFoundException;
 import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.util.Annotations;
+import org.qi4j.api.util.Iterables;
 import org.qi4j.api.value.Value;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
@@ -64,9 +66,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-import static org.qi4j.spi.util.Annotations.first;
-import static org.qi4j.spi.util.Annotations.isType;
 
 /**
  * JAVADOC
@@ -637,7 +636,7 @@ public class CommandQueryResource
       {
          for (Annotation[] annotations : method.getParameterAnnotations())
          {
-            Name name = first( isType( Name.class ), annotations );
+            Name name = (Name) Iterables.first( Iterables.filter(Annotations.isType( Name.class ), Iterables.iterable(annotations )));
             Object arg = getValue( name.value(), queryAsForm, entityAsForm );
 
             // Parameter conversion

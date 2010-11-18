@@ -27,21 +27,9 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.domain.form.AttachmentFieldSubmission;
-import se.streamsource.streamflow.domain.form.AttachmentFieldValue;
-import se.streamsource.streamflow.domain.form.CommentFieldValue;
-import se.streamsource.streamflow.domain.form.EffectiveFieldValue;
-import se.streamsource.streamflow.domain.form.EffectiveFormFieldsValue;
-import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
-import se.streamsource.streamflow.domain.form.FormDraftValue;
-import se.streamsource.streamflow.domain.form.PageSubmissionValue;
-import se.streamsource.streamflow.domain.form.SubmittedFieldValue;
-import se.streamsource.streamflow.domain.form.SubmittedFormValue;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
-import se.streamsource.streamflow.web.domain.structure.attachment.Attachments;
+import se.streamsource.streamflow.domain.form.*;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -66,7 +54,7 @@ public interface SubmittedForms
       @Queryable(false)
       Property<EffectiveFormFieldsValue> effectiveFieldValues();
 
-      void submittedForm( DomainEvent event, EffectiveFormFieldsValue effectiveFieldsValue, SubmittedFormValue form );
+      void submittedForm( @Optional DomainEvent event, EffectiveFormFieldsValue effectiveFieldsValue, SubmittedFormValue form );
    }
 
    abstract class Mixin
@@ -148,7 +136,7 @@ public interface SubmittedForms
 
             EffectiveFormFieldsValue effectiveFormFieldsValue = fieldsBuilder.newInstance();
 
-            submittedForm( DomainEvent.CREATE, effectiveFormFieldsValue, formBuilder.newInstance() );
+            submittedForm( null, effectiveFormFieldsValue, formBuilder.newInstance() );
          }
 
          // Now discard it
@@ -156,7 +144,7 @@ public interface SubmittedForms
       }
 
 
-      public void submittedForm( DomainEvent event, EffectiveFormFieldsValue effectiveFieldsValue, SubmittedFormValue form )
+      public void submittedForm( @Optional DomainEvent event, EffectiveFormFieldsValue effectiveFieldsValue, SubmittedFormValue form )
       {
          effectiveFieldValues().set( effectiveFieldsValue );
          List<SubmittedFormValue> forms = submittedForms().get();

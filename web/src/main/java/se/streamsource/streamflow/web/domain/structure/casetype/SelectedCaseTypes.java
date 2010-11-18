@@ -17,11 +17,12 @@
 
 package se.streamsource.streamflow.web.domain.structure.casetype;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 /**
  * JAVADOC
@@ -39,9 +40,9 @@ public interface SelectedCaseTypes
    {
       ManyAssociation<CaseType> selectedCaseTypes();
 
-      void selectedCaseTypeAdded( DomainEvent event, CaseType caseType );
+      void selectedCaseTypeAdded( @Optional DomainEvent event, CaseType caseType );
 
-      void selectedCaseTypeRemoved( DomainEvent event, CaseType caseType );
+      void selectedCaseTypeRemoved( @Optional DomainEvent event, CaseType caseType );
    }
 
    abstract class Mixin
@@ -52,12 +53,12 @@ public interface SelectedCaseTypes
 
       public void addSelectedCaseType( CaseType caseType )
       {
-         selectedCaseTypeAdded( DomainEvent.CREATE, caseType );
+         selectedCaseTypeAdded( null, caseType );
       }
 
       public void removeSelectedCaseType( CaseType caseType )
       {
-         selectedCaseTypeRemoved( DomainEvent.CREATE, caseType );
+         selectedCaseTypeRemoved( null, caseType );
       }
 
       public boolean hasSelectedCaseType( CaseType caseType )

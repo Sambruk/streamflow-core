@@ -17,12 +17,13 @@
 
 package se.streamsource.streamflow.web.domain.structure.user;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 import se.streamsource.streamflow.domain.user.Password;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import sun.misc.BASE64Encoder;
 
 import java.io.UnsupportedEncodingException;
@@ -56,9 +57,9 @@ public interface UserAuthentication
 
       boolean isAdministrator();
 
-      void changedPassword( DomainEvent event, String hashedPassword );
+      void changedPassword( @Optional DomainEvent event, String hashedPassword );
 
-      void changedEnabled( DomainEvent event, boolean enabled );
+      void changedEnabled( @Optional DomainEvent event, boolean enabled );
    }
 
    abstract class Mixin
@@ -71,7 +72,7 @@ public interface UserAuthentication
       {
          if (enabled == disabled().get())
          {
-            changedEnabled( DomainEvent.CREATE, !enabled );
+            changedEnabled( null, !enabled );
          }
       }
 
@@ -83,20 +84,20 @@ public interface UserAuthentication
             throw new WrongPasswordException();
          }
 
-         changedPassword( DomainEvent.CREATE, hashPassword( newPassword ) );
+         changedPassword( null, hashPassword( newPassword ) );
       }
 
       public void resetPassword( String password )
       {
-         changedPassword( DomainEvent.CREATE, hashPassword( password ) );
+         changedPassword( null, hashPassword( password ) );
       }
 
-      public void changedPassword( DomainEvent event, String hashedPassword )
+      public void changedPassword( @Optional DomainEvent event, String hashedPassword )
       {
          hashedPassword().set( hashedPassword );
       }
 
-      public void changedEnabled( DomainEvent event, boolean enabled )
+      public void changedEnabled( @Optional DomainEvent event, boolean enabled )
       {
          authenticationState.disabled().set( enabled );
       }

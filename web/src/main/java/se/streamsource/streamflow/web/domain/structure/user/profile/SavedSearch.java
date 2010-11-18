@@ -18,11 +18,10 @@
 package se.streamsource.streamflow.web.domain.structure.user.profile;
 
 import org.qi4j.api.common.Optional;
-import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 import se.streamsource.streamflow.domain.structure.Describable;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 
 @Mixins(SavedSearch.Mixin.class)
@@ -36,7 +35,7 @@ public interface SavedSearch
       @Optional
       Property<String> query();
 
-      void changedQuery( DomainEvent event, String query);
+      void changedQuery( @Optional DomainEvent event, String query);
    }
 
    abstract class Mixin
@@ -45,10 +44,10 @@ public interface SavedSearch
       public void changeQuery( String query )
       {
          if (!query().get().equals( query ))
-            changedQuery(DomainEvent.CREATE, query );
+            changedQuery(null, query );
       }
 
-      public void changedQuery( DomainEvent event, String query )
+      public void changedQuery( @Optional DomainEvent event, String query )
       {
          query().set(query);
       }

@@ -33,10 +33,10 @@ import org.restlet.representation.Variant;
 import org.restlet.representation.WriterRepresentation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
-import se.streamsource.streamflow.infrastructure.event.source.EventSource;
-import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.EventSource;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionVisitor;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -66,13 +66,13 @@ public class DomainEventsServerResource
    {
       String before = null;
       String after = getRequest().getResourceRef().getQueryAsForm().getFirstValue( "after" );
-      final List<TransactionEvents> transactions = new ArrayList<TransactionEvents>( );
-      // Get transactions first
+      final List<TransactionDomainEvents> transactionDomains = new ArrayList<TransactionDomainEvents>( );
+      // Get transactionDomains first
       if (after != null)
       {
          final long afterDate = Long.parseLong( after );
 
-         source.transactionsAfter( afterDate, new RESTTransactionVisitor( transactions ) );
+         source.transactionsAfter( afterDate, new RESTTransactionVisitor( transactionDomains ) );
 
       } else
       {
@@ -80,10 +80,10 @@ public class DomainEventsServerResource
 
          final long beforeDate = before == null ? System.currentTimeMillis() : Long.parseLong( before );
 
-         source.transactionsBefore( beforeDate, new RESTTransactionVisitor( transactions ) );
+         source.transactionsBefore( beforeDate, new RESTTransactionVisitor( transactionDomains ) );
          
          // Reverse list
-         Collections.reverse( transactions );
+         Collections.reverse( transactionDomains );
       }
 
       if (variant.getMediaType().equals( MediaType.TEXT_HTML ))
@@ -92,8 +92,8 @@ public class DomainEventsServerResource
          {
             public void write( final Writer writer ) throws IOException
             {
-               String earlier = transactions.size() == 0 ? System.currentTimeMillis()+"" : transactions.get( 0 ).timestamp().get().toString();
-               String later = transactions.size() == 0 ? System.currentTimeMillis()+"" : transactions.get( transactions.size()-1).timestamp().get().toString();
+               String earlier = transactionDomains.size() == 0 ? System.currentTimeMillis()+"" : transactionDomains.get( 0 ).timestamp().get().toString();
+               String later = transactionDomains.size() == 0 ? System.currentTimeMillis()+"" : transactionDomains.get( transactionDomains.size()-1).timestamp().get().toString();
 
                writer.append( "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n" +
                      "<head>\n" +
@@ -113,7 +113,7 @@ public class DomainEventsServerResource
                      "        <th>User</th>\n" +
                      "    </tr>\n");
 
-               for (TransactionEvents transaction : transactions)
+               for (TransactionDomainEvents transaction : transactionDomains)
                {
                   for (DomainEvent domainEvent : transaction.events().get())
                   {
@@ -141,17 +141,17 @@ public class DomainEventsServerResource
          final Feed feed = new Feed();
          feed.setTitle( new Text("Domain events"+ (after == null ? " before "+before : " after "+after)));
 
-         for (TransactionEvents transaction : transactions)
+         for (TransactionDomainEvents transactionDomain : transactionDomains)
          {
             Entry entry = new Entry();
-            entry.setPublished( new Date(transaction.timestamp().get()) );
+            entry.setPublished( new Date( transactionDomain.timestamp().get()) );
             Content content = new Content();
-            content.setInlineContent( new StringRepresentation(transaction.toJSON(), MediaType.APPLICATION_JSON) );
+            content.setInlineContent( new StringRepresentation( transactionDomain.toJSON(), MediaType.APPLICATION_JSON) );
             entry.setContent( content );
             feed.getEntries().add( entry );
          }
 
-         WriterRepresentation representation = new WriterRepresentation( MediaType.TEXT_HTML )
+         WriterRepresentation representation = new WriterRepresentation( MediaType.APPLICATION_ATOM )
          {
             public void write( final Writer writer ) throws IOException
             {
@@ -172,16 +172,16 @@ public class DomainEventsServerResource
       int maxResults = 100;
       int currentResults = 0;
 
-      private List<TransactionEvents> transactions;
+      private List<TransactionDomainEvents> transactionDomains;
 
-      public RESTTransactionVisitor( List<TransactionEvents> transactions)
+      public RESTTransactionVisitor( List<TransactionDomainEvents> transactionDomains )
       {
-         this.transactions = transactions;
+         this.transactionDomains = transactionDomains;
       }
 
-      public boolean visit( TransactionEvents transaction )
+      public boolean visit( TransactionDomainEvents transactionDomain )
       {
-         transactions.add( transaction );
+         transactionDomains.add( transactionDomain );
 
          currentResults++;
 

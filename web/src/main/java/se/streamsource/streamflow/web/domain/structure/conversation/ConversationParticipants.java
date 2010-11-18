@@ -17,9 +17,10 @@
 
 package se.streamsource.streamflow.web.domain.structure.conversation;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.mixin.Mixins;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 /**
  * JAVADOC
@@ -38,8 +39,8 @@ public interface ConversationParticipants
    {
       ManyAssociation<ConversationParticipant> participants();
 
-      void addedParticipant( DomainEvent event, ConversationParticipant participant);
-      void removedParticipant( DomainEvent event, ConversationParticipant participant);
+      void addedParticipant( @Optional DomainEvent event, ConversationParticipant participant);
+      void removedParticipant( @Optional DomainEvent event, ConversationParticipant participant);
    }
 
    abstract class Mixin
@@ -48,13 +49,13 @@ public interface ConversationParticipants
       public void addParticipant( ConversationParticipant participant )
       {
          if (!isParticipant( participant ))
-            addedParticipant( DomainEvent.CREATE, participant );
+            addedParticipant( null, participant );
       }
 
       public void removeParticipant( ConversationParticipant participant )
       {
          if (isParticipant( participant ))
-            removedParticipant( DomainEvent.CREATE, participant );
+            removedParticipant( null, participant );
       }
 
       public boolean isParticipant( ConversationParticipant participant )

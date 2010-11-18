@@ -22,7 +22,7 @@ import org.qi4j.api.common.AppliesToFilter;
 import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;

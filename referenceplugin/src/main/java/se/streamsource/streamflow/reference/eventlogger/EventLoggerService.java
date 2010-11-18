@@ -18,10 +18,10 @@
 package se.streamsource.streamflow.reference.eventlogger;
 
 import org.slf4j.LoggerFactory;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
-import se.streamsource.streamflow.infrastructure.event.source.EventStream;
-import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.EventStream;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionVisitor;
 
 /**
  * JAVADOC
@@ -31,9 +31,9 @@ public class EventLoggerService
 {
    public EventStream stream;
 
-   public boolean visit( TransactionEvents transaction )
+   public boolean visit( TransactionDomainEvents transactionDomain )
    {
-      for (DomainEvent domainEvent : transaction.events().get())
+      for (DomainEvent domainEvent : transactionDomain.events().get())
       {
          LoggerFactory.getLogger( "events" ).info( domainEvent.name().get() );
       }

@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.web.domain.entity.gtd;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.entity.Identity;
 import org.qi4j.api.entity.IdentityGenerator;
@@ -27,7 +28,7 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.domain.contact.ContactValue;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.web.domain.entity.RoleMixin;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
@@ -43,7 +44,7 @@ public interface Drafts
 
    interface Data
    {
-      CaseEntity createdCase( DomainEvent event, String id );
+      CaseEntity createdCase( @Optional DomainEvent event, String id );
    }
 
    abstract class Mixin
@@ -63,7 +64,7 @@ public interface Drafts
 
       public CaseEntity createDraft()
       {
-         CaseEntity aCase = data.createdCase( DomainEvent.CREATE, idGenerator.generate( Identity.class ) );
+         CaseEntity aCase = data.createdCase( null, idGenerator.generate( Identity.class ) );
          aCase.addContact( vbf.newValue( ContactValue.class ) );
 
          return aCase;

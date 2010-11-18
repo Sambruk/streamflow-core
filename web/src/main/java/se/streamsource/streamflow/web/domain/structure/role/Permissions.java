@@ -17,10 +17,11 @@
 
 package se.streamsource.streamflow.web.domain.structure.role;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 import java.util.List;
 
@@ -40,8 +41,8 @@ public interface Permissions
       @UseDefaults
       Property<List<String>> permissions();
 
-      void addedPermission( DomainEvent event, String permission);
-      void removedPermission( DomainEvent event, String permission);
+      void addedPermission( @Optional DomainEvent event, String permission);
+      void removedPermission( @Optional DomainEvent event, String permission);
    }
 
    abstract class Mixin
@@ -51,7 +52,7 @@ public interface Permissions
       {
          if (!permissions().get().contains( permission ))
          {
-            addedPermission( DomainEvent.CREATE, permission );
+            addedPermission( null, permission );
          }
       }
 
@@ -59,7 +60,7 @@ public interface Permissions
       {
          if (permissions().get().contains( permission ))
          {
-            removedPermission( DomainEvent.CREATE, permission );
+            removedPermission( null, permission );
          }
       }
 

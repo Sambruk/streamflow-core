@@ -26,7 +26,7 @@ import org.qi4j.api.sideeffect.SideEffects;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.domain.structure.Removable;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 /**
  * JAVADOC
@@ -70,7 +70,7 @@ public interface Members
          if (data.members().contains( member ))
             return;
 
-         data.addedMember( DomainEvent.CREATE, member );
+         data.addedMember( null, member );
 
          member.joinProject( project );
       }
@@ -83,7 +83,7 @@ public interface Members
          }
          member.leaveProject( project );
 
-         data.removedMember( DomainEvent.CREATE, member );
+         data.removedMember( null, member );
       }
 
       public void removeAllMembers()

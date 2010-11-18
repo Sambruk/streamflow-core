@@ -32,6 +32,7 @@ import se.streamsource.streamflow.web.application.security.AuthenticationFilter;
 import se.streamsource.streamflow.web.resource.APIRouter;
 import se.streamsource.streamflow.web.resource.admin.ConsoleServerResource;
 import se.streamsource.streamflow.web.resource.admin.SolrSearchServerResource;
+import se.streamsource.streamflow.web.resource.events.ApplicationEventsServerResource;
 import se.streamsource.streamflow.web.resource.events.DomainEventsServerResource;
 import se.streamsource.streamflow.web.rest.StreamflowRestApplication;
 
@@ -67,6 +68,7 @@ public class WebAssembler
 
             // Events
             DomainEventsServerResource.class,
+            ApplicationEventsServerResource.class,
 
             // Admin
             ConsoleServerResource.class,

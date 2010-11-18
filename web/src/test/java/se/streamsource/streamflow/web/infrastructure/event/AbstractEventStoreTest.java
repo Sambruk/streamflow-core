@@ -21,6 +21,7 @@ import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.injection.scope.Service;
@@ -33,13 +34,13 @@ import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.spi.service.importer.NewObjectImporter;
 import org.qi4j.test.AbstractQi4jTest;
 import org.qi4j.test.EntityTestAssembler;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.factory.EventCreationConcern;
-import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
-import se.streamsource.streamflow.infrastructure.event.factory.DomainEventFactoryService;
-import se.streamsource.streamflow.infrastructure.event.source.EventSource;
-import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
-import se.streamsource.streamflow.infrastructure.event.source.helper.TransactionTimestampFilter;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.factory.DomainEventFactoryService;
+import se.streamsource.streamflow.infrastructure.event.domain.factory.EventCreationConcern;
+import se.streamsource.streamflow.infrastructure.event.domain.source.EventSource;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionVisitor;
+import se.streamsource.streamflow.infrastructure.event.domain.source.helper.TransactionTimestampFilter;
 import se.streamsource.streamflow.infrastructure.time.TimeService;
 
 /**
@@ -53,7 +54,7 @@ public abstract class AbstractEventStoreTest
       module.layerAssembly().applicationAssembly().setMode( Application.Mode.test );
 
       new EntityTestAssembler().assemble( module );
-      module.addValues( TransactionEvents.class, DomainEvent.class );
+      module.addValues( TransactionDomainEvents.class, DomainEvent.class );
       module.addServices( DomainEventFactoryService.class );
       module.addObjects( getClass(), TimeService.class );
       module.addEntities( TestEntity.class );
@@ -78,7 +79,7 @@ public abstract class AbstractEventStoreTest
    {
       UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
       TestEntity entity = uow.newEntity( TestEntity.class );
-      entity.somethingHappened( DomainEvent.CREATE, "foo" );
+      entity.somethingHappened( null, "foo" );
       uow.complete();
    }
 
@@ -89,10 +90,10 @@ public abstract class AbstractEventStoreTest
 
       eventSource.transactionsAfter( 0, new TransactionVisitor()
       {
-         public boolean visit( TransactionEvents transaction )
+         public boolean visit( TransactionDomainEvents transactionDomain )
          {
             count[0]++;
-            System.out.println( transaction.toJSON() );
+            System.out.println( transactionDomain.toJSON() );
 
             return true;
          }
@@ -108,7 +109,7 @@ public abstract class AbstractEventStoreTest
 
       eventSource.transactionsAfter( 0, new TransactionVisitor()
       {
-         public boolean visit( TransactionEvents transaction )
+         public boolean visit( TransactionDomainEvents transactionDomain )
          {
             count[0]++;
 
@@ -127,7 +128,7 @@ public abstract class AbstractEventStoreTest
       {
          int count = 0;
 
-         public boolean visit( TransactionEvents transaction )
+         public boolean visit( TransactionDomainEvents transactionDomain )
          {
             count++;
 
@@ -140,9 +141,9 @@ public abstract class AbstractEventStoreTest
       final int[] count = new int[1];
       eventSource.transactionsAfter( lastTimeStamp, new TransactionVisitor()
       {
-         public boolean visit( TransactionEvents transaction )
+         public boolean visit( TransactionDomainEvents transactionDomain )
          {
-            Assert.assertThat( transaction.timestamp().get(), CoreMatchers.not( lastTimeStamp ) );
+            Assert.assertThat( transactionDomain.timestamp().get(), CoreMatchers.not( lastTimeStamp ) );
 
             count[0]++;
 
@@ -158,7 +159,7 @@ public abstract class AbstractEventStoreTest
    public interface TestEntity
          extends EntityComposite
    {
-      void somethingHappened( DomainEvent event, String parameter1 );
+      void somethingHappened( @Optional DomainEvent event, String parameter1 );
 
       abstract class TestMixin
             implements TestEntity

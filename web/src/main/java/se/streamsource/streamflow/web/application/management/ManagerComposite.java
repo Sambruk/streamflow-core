@@ -37,6 +37,8 @@ import org.qi4j.api.service.ServiceReference;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.usecase.UsecaseBuilder;
+import org.qi4j.api.util.Function;
+import org.qi4j.api.util.Iterables;
 import org.qi4j.index.reindexer.Reindexer;
 import org.qi4j.spi.entity.EntityState;
 import org.qi4j.spi.entitystore.BackupRestore;
@@ -46,16 +48,14 @@ import org.qi4j.spi.structure.ModuleSPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
-import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
-import se.streamsource.streamflow.infrastructure.event.factory.DomainEventFactory;
-import se.streamsource.streamflow.infrastructure.event.replay.DomainEventPlayer;
-import se.streamsource.streamflow.infrastructure.event.replay.EventReplayException;
-import se.streamsource.streamflow.infrastructure.event.source.EventSource;
-import se.streamsource.streamflow.infrastructure.event.source.EventStream;
-import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
-import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
-import se.streamsource.streamflow.util.Function;
-import se.streamsource.streamflow.util.Iterables;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.factory.DomainEventFactory;
+import se.streamsource.streamflow.infrastructure.event.domain.replay.DomainEventPlayer;
+import se.streamsource.streamflow.infrastructure.event.domain.replay.EventReplayException;
+import se.streamsource.streamflow.infrastructure.event.domain.source.EventSource;
+import se.streamsource.streamflow.infrastructure.event.domain.source.EventStream;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionVisitor;
 import se.streamsource.streamflow.web.application.statistics.CaseStatistics;
 import se.streamsource.streamflow.web.application.statistics.StatisticsStoreException;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
@@ -71,10 +71,10 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.zip.GZIPOutputStream;
 
-import static se.streamsource.streamflow.infrastructure.event.source.helper.Events.events;
-import static se.streamsource.streamflow.infrastructure.event.source.helper.Events.withNames;
-import static se.streamsource.streamflow.util.Iterables.count;
-import static se.streamsource.streamflow.util.Iterables.filter;
+import static org.qi4j.api.util.Iterables.count;
+import static org.qi4j.api.util.Iterables.filter;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.events;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withNames;
 
 /**
  * Implementation of Manager interface. All general JMX management methods
@@ -174,7 +174,7 @@ public interface ManagerComposite
 
          failedLoginListener = new TransactionListener()
          {
-            public void notifyTransactions( Iterable<TransactionEvents> transactions )
+            public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
             {
                failedLogins += count( filter( withNames("failedLogin" ), events( transactions ) ) );
             }
@@ -225,7 +225,7 @@ public interface ManagerComposite
 
          try
          {
-            Inputs.text( importFile ).transferTo( Transforms.map( new Transforms.Function<String,String>()
+            Inputs.text( importFile ).transferTo( Transforms.map( new Function<String,String>()
             {
                int count = 0;
 
@@ -361,11 +361,11 @@ public interface ManagerComposite
                final EventReplayException[] ex = new EventReplayException[1];
                eventSource.transactionsAfter( latestBackupDate.getTime() - 60000, new TransactionVisitor()
                {
-                  public boolean visit( TransactionEvents transaction )
+                  public boolean visit( TransactionDomainEvents transactionDomain )
                   {
                      try
                      {
-                        eventPlayer.playTransaction( transaction );
+                        eventPlayer.playTransaction( transactionDomain );
                         return true;
                      } catch (EventReplayException e)
                      {
@@ -522,7 +522,7 @@ public interface ManagerComposite
       public String databaseSize()
       {
          Transforms.Counter<EntityState> counter = new Transforms.Counter<EntityState>();
-         entityStore.get().entityStates( module ).transferTo( Transforms.map( counter, Outputs.<EntityState, RuntimeException>noop() ));
+         entityStore.get().entityStates( module ).transferTo( Transforms.map( counter, Outputs.<EntityState>noop() ));
 
          return "Database contains " + counter.getCount() + " objects";
       }
@@ -631,11 +631,11 @@ public interface ManagerComposite
 
          eventSource.transactionsAfter( 0, new TransactionVisitor()
          {
-            public boolean visit( TransactionEvents transaction )
+            public boolean visit( TransactionDomainEvents transactionDomain )
             {
                try
                {
-                  writer.write( transaction.toJSON() + "\n" );
+                  writer.write( transactionDomain.toJSON() + "\n" );
                } catch (IOException e)
                {
                   ex[0] = e;
@@ -675,14 +675,14 @@ public interface ManagerComposite
 
          eventSource.transactionsAfter( from, new TransactionVisitor()
          {
-            public boolean visit( TransactionEvents transaction )
+            public boolean visit( TransactionDomainEvents transactionDomain )
             {
-               if (transaction.timestamp().get() > to)
+               if (transactionDomain.timestamp().get() > to)
                   return false;
 
                try
                {
-                  writer.write( transaction.toJSON() + "\n" );
+                  writer.write( transactionDomain.toJSON() + "\n" );
                } catch (IOException e)
                {
                   ex[0] = e;

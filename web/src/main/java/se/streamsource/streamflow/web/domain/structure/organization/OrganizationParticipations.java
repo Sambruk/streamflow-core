@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.web.domain.structure.organization;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.concern.ConcernOf;
 import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.entity.association.ManyAssociation;
@@ -24,7 +25,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.web.domain.structure.group.Group;
 import se.streamsource.streamflow.web.domain.structure.group.Groups;
 import se.streamsource.streamflow.web.domain.structure.group.Participant;
@@ -47,9 +48,9 @@ public interface OrganizationParticipations
    {
       ManyAssociation<Organization> organizations();
 
-      void joinedOrganization( DomainEvent event, Organization org );
+      void joinedOrganization( @Optional DomainEvent event, Organization org );
 
-      void leftOrganization( DomainEvent event, Organization org );
+      void leftOrganization( @Optional DomainEvent event, Organization org );
    }
 
    abstract class Mixin
@@ -62,7 +63,7 @@ public interface OrganizationParticipations
       {
          if (!state.organizations().contains( ou ))
          {
-            joinedOrganization( DomainEvent.CREATE, ou );
+            joinedOrganization( null, ou );
          }
       }
 
@@ -70,16 +71,16 @@ public interface OrganizationParticipations
       {
          if (state.organizations().contains( ou ))
          {
-            leftOrganization( DomainEvent.CREATE, ou );
+            leftOrganization( null, ou );
          }
       }
 
-      public void joinedOrganization( DomainEvent event, Organization org )
+      public void joinedOrganization( @Optional DomainEvent event, Organization org )
       {
          state.organizations().add( org );
       }
 
-      public void leftOrganization( DomainEvent event, Organization org )
+      public void leftOrganization( @Optional DomainEvent event, Organization org )
       {
          state.organizations().remove( org );
       }

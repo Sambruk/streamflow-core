@@ -34,8 +34,8 @@ import se.streamsource.streamflow.client.util.Refreshable;
 import se.streamsource.streamflow.client.util.LinkValueListModel;
 import se.streamsource.streamflow.domain.form.FormDraftValue;
 import se.streamsource.streamflow.domain.form.PageSubmissionValue;
-import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
-import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
@@ -48,7 +48,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Map;
 
-import static se.streamsource.streamflow.infrastructure.event.source.helper.Events.*;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 
 public class PossibleFormsView extends JPanel
       implements ActionListener, Refreshable, TransactionListener
@@ -160,7 +160,7 @@ public class PossibleFormsView extends JPanel
       }
    }
 
-   public void notifyTransactions( Iterable<TransactionEvents> transactions )
+   public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
    {
       if (matches( withNames("changedOwner", "changedCaseType"), transactions ))
       {

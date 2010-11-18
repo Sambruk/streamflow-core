@@ -23,12 +23,12 @@ import org.json.JSONTokener;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
-import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
-import se.streamsource.streamflow.infrastructure.event.source.AbstractEventStoreMixin;
-import se.streamsource.streamflow.infrastructure.event.source.EventSource;
-import se.streamsource.streamflow.infrastructure.event.source.EventStore;
-import se.streamsource.streamflow.infrastructure.event.source.EventStream;
-import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.AbstractEventStoreMixin;
+import se.streamsource.streamflow.infrastructure.event.domain.source.EventSource;
+import se.streamsource.streamflow.infrastructure.event.domain.source.EventStore;
+import se.streamsource.streamflow.infrastructure.event.domain.source.EventStream;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionVisitor;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -72,7 +72,7 @@ public interface MemoryEventStoreService
             {
                JSONTokener tokener = new JSONTokener( txJson );
                JSONObject json = (JSONObject) tokener.nextValue();
-               TransactionEvents tx = (TransactionEvents) transactionEventsType.fromJSON( json, module );
+               TransactionDomainEvents tx = (TransactionDomainEvents) transactionEventsType.fromJSON( json, module );
 
                if (!visitor.visit( tx ))
                {
@@ -108,7 +108,7 @@ public interface MemoryEventStoreService
             {
                JSONTokener tokener = new JSONTokener( txJson );
                JSONObject json = (JSONObject) tokener.nextValue();
-               TransactionEvents tx = (TransactionEvents) transactionEventsType.fromJSON( json, module );
+               TransactionDomainEvents tx = (TransactionDomainEvents) transactionEventsType.fromJSON( json, module );
 
                if (!visitor.visit( tx ))
                {
@@ -134,11 +134,11 @@ public interface MemoryEventStoreService
       {
       }
 
-      protected void storeEvents( TransactionEvents transaction )
+      protected void storeEvents( TransactionDomainEvents transactionDomain )
             throws IOException
       {
-         String jsonString = transaction.toString();
-         store.put( transaction.timestamp().get(), jsonString );
+         String jsonString = transactionDomain.toString();
+         store.put( transactionDomain.timestamp().get(), jsonString );
       }
    }
 }

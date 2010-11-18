@@ -19,6 +19,7 @@ package se.streamsource.streamflow.web.domain.generic;
 
 import junit.framework.Assert;
 import org.junit.Test;
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.entity.EntityComposite;
@@ -30,10 +31,10 @@ import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.spi.service.importer.NewObjectImporter;
 import org.qi4j.test.AbstractQi4jTest;
 import org.qi4j.test.EntityTestAssembler;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.factory.EventCreationConcern;
-import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
-import se.streamsource.streamflow.infrastructure.event.factory.DomainEventFactoryService;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.factory.DomainEventFactoryService;
+import se.streamsource.streamflow.infrastructure.event.domain.factory.EventCreationConcern;
 import se.streamsource.streamflow.infrastructure.time.Time;
 import se.streamsource.streamflow.infrastructure.time.TimeService;
 import se.streamsource.streamflow.web.infrastructure.event.MemoryEventStoreService;
@@ -46,7 +47,7 @@ public class EventPropertyChangeMixinTest
 {
    public void assemble( ModuleAssembly module ) throws AssemblyException
    {
-      module.addValues( DomainEvent.class, TransactionEvents.class );
+      module.addValues( DomainEvent.class, TransactionDomainEvents.class );
       module.addEntities( TestEntity.class );
       module.addObjects( TimeService.class );
       module.importServices( Time.class ).importedBy( NewObjectImporter.class );
@@ -75,7 +76,7 @@ public class EventPropertyChangeMixinTest
          @UseDefaults
          Property<String> foo();
 
-         void changedFoo( DomainEvent event, String newFoo );
+         void changedFoo( @Optional DomainEvent event, String newFoo );
       }
    }
 

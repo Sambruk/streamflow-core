@@ -17,11 +17,12 @@
 
 package se.streamsource.streamflow.web.domain.structure.form;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.mixin.Mixins;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 /**
  * JAVADOC
@@ -39,9 +40,9 @@ public interface SelectedForms
    {
       ManyAssociation<Form> selectedForms();
 
-      void addedSelectedForm( DomainEvent event, Form form );
+      void addedSelectedForm( @Optional DomainEvent event, Form form );
 
-      void removedSelectedForm( DomainEvent event, Form form );
+      void removedSelectedForm( @Optional DomainEvent event, Form form );
 
       public void possibleForms( LinksBuilder builder, Iterable<Forms.Data> forms );
    }
@@ -51,12 +52,12 @@ public interface SelectedForms
    {
       public void addSelectedForm( Form form )
       {
-         addedSelectedForm( DomainEvent.CREATE, form );
+         addedSelectedForm( null, form );
       }
 
       public void removeSelectedForm( Form form )
       {
-         removedSelectedForm( DomainEvent.CREATE, form );
+         removedSelectedForm( null, form );
       }
 
       public boolean hasSelectedForm( Form form )
@@ -64,12 +65,12 @@ public interface SelectedForms
          return selectedForms().contains( form );
       }
 
-      public void addedSelectedForm( DomainEvent event, Form form )
+      public void addedSelectedForm( @Optional DomainEvent event, Form form )
       {
          selectedForms().add( form );
       }
 
-      public void removedSelectedForm( DomainEvent event, Form form )
+      public void removedSelectedForm( @Optional DomainEvent event, Form form )
       {
          selectedForms().remove( form );
       }

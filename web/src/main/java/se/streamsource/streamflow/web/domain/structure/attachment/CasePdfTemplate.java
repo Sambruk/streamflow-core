@@ -23,7 +23,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 /**
  * Handles selection of an attachment as pdf template for Case.
@@ -38,7 +38,7 @@ public interface CasePdfTemplate
       @Optional
       Association<Attachment> casePdfTemplate();
 
-      void casePdfTemplateSet( DomainEvent event, @Optional Attachment attachment );
+      void casePdfTemplateSet( @Optional DomainEvent event, @Optional Attachment attachment );
    }
 
    abstract class Mixin
@@ -52,10 +52,10 @@ public interface CasePdfTemplate
 
       public void setCasePdfTemplate( Attachment attachment )
       {
-         casePdfTemplateSet( DomainEvent.CREATE, attachment );
+         casePdfTemplateSet( null, attachment );
       }
 
-      public void casePdfTemplateSet( DomainEvent event, Attachment attachment )
+      public void casePdfTemplateSet( @Optional DomainEvent event, Attachment attachment )
       {
          casePdfTemplate().set( attachment );
       }

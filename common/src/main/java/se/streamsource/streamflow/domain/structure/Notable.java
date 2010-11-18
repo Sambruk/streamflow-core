@@ -17,10 +17,11 @@
 
 package se.streamsource.streamflow.domain.structure;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 /**
  * Maintain a note. A note is a longer multi-line string.
@@ -38,7 +39,7 @@ public interface Notable
       @UseDefaults
       Property<String> note();
 
-      void changedNote( DomainEvent event, String newNote );
+      void changedNote( @Optional DomainEvent event, String newNote );
    }
 
    abstract class Mixin
@@ -46,7 +47,7 @@ public interface Notable
    {
       public void changeNote( String newNote )
       {
-         changedNote(DomainEvent.CREATE, newNote);
+         changedNote(null, newNote);
       }
 
       public String getNote()

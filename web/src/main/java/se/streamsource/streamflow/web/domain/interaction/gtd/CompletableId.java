@@ -22,7 +22,7 @@ import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 import org.qi4j.library.constraints.annotation.Matches;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 /**
  * Human readable id
@@ -48,7 +48,7 @@ public interface CompletableId
       Property<String> caseId();
 
 
-      void assignedCaseId( DomainEvent event, String id );
+      void assignedCaseId( @Optional DomainEvent event, String id );
    }
 
    abstract class Mixin
@@ -72,13 +72,13 @@ public interface CompletableId
       {
          if (state.caseId().get() == null)
          {
-            state.assignedCaseId( DomainEvent.CREATE, id );
+            state.assignedCaseId( null, id );
          }
       }
 
       // Event
 
-      public void assignedCaseId( DomainEvent event, String id )
+      public void assignedCaseId( @Optional DomainEvent event, String id )
       {
          state.caseId().set( id );
       }

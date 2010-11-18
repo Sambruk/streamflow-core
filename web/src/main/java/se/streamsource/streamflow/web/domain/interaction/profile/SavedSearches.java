@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.web.domain.interaction.profile;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.Aggregated;
 import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.entity.Identity;
@@ -27,7 +28,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.resource.user.profile.SearchValue;
 import se.streamsource.streamflow.web.domain.entity.user.profile.SavedSearchEntity;
 import se.streamsource.streamflow.web.domain.structure.user.profile.SavedSearch;
@@ -44,9 +45,9 @@ public interface SavedSearches
       @Aggregated
       ManyAssociation<SavedSearch> searches();
 
-      SavedSearch createdSavedSearch( DomainEvent event, String id );
+      SavedSearch createdSavedSearch( @Optional DomainEvent event, String id );
 
-      void removedSavedSearch( DomainEvent event, SavedSearch search );
+      void removedSavedSearch( @Optional DomainEvent event, SavedSearch search );
    }
 
    abstract class Mixin
@@ -64,7 +65,7 @@ public interface SavedSearches
       public void createSavedSearch( SearchValue search )
       {
          String id = idgen.generate( Identity.class );
-         SavedSearch newSearch = createdSavedSearch( DomainEvent.CREATE, id );
+         SavedSearch newSearch = createdSavedSearch( null, id );
          newSearch.changeDescription( search.name().get() );
       }
 
@@ -81,7 +82,7 @@ public interface SavedSearches
       {
          if (state.searches().contains( search ))
          {
-            removedSavedSearch( DomainEvent.CREATE, search );
+            removedSavedSearch( null, search );
          }
       }
 

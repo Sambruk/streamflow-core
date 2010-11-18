@@ -20,7 +20,7 @@ package se.streamsource.streamflow.web.domain.structure.casetype;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.association.Association;
 import org.qi4j.api.mixin.Mixins;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 /**
  * JAVADOC
@@ -37,9 +37,9 @@ public interface Resolvable
       @Optional
       Association<Resolution> resolution();
 
-      void resolved( DomainEvent event, Resolution resolution );
+      void resolved( @Optional DomainEvent event, Resolution resolution );
 
-      void unresolved( DomainEvent event );
+      void unresolved( @Optional DomainEvent event );
    }
 
    abstract class Mixin
@@ -47,20 +47,20 @@ public interface Resolvable
    {
       public void resolve( Resolution resolution )
       {
-         resolved( DomainEvent.CREATE, resolution );
+         resolved( null, resolution );
       }
 
       public void unresolve( )
       {
-         unresolved( DomainEvent.CREATE);
+         unresolved( null);
       }
 
-      public void resolved( DomainEvent event, Resolution resolution )
+      public void resolved( @Optional DomainEvent event, Resolution resolution )
       {
          resolution().set(resolution);
       }
 
-      public void unresolved( DomainEvent event)
+      public void unresolved( @Optional DomainEvent event)
       {
          resolution().set(null);
       }

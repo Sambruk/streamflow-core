@@ -37,7 +37,7 @@ import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 
 import static org.qi4j.api.query.QueryExpressions.*;
-import static se.streamsource.streamflow.util.Iterables.*;
+import static org.qi4j.api.util.Iterables.*;
 
 @Mixins(AssignmentsQueries.Mixin.class)
 public interface AssignmentsQueries

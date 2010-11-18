@@ -17,11 +17,12 @@
 
 package se.streamsource.streamflow.web.domain.structure.form;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 /**
  * JAVADOC
@@ -38,7 +39,7 @@ public interface Mandatory
       @UseDefaults
       Property<Boolean> mandatory();
 
-      void changedMandatory( DomainEvent event, Boolean mandatory );
+      void changedMandatory( @Optional DomainEvent event, Boolean mandatory );
    }
 
    class Mixin
@@ -51,7 +52,7 @@ public interface Mandatory
       {
          if (mandatory.booleanValue() != data.mandatory().get().booleanValue())
          {
-            data.changedMandatory( DomainEvent.CREATE, mandatory );
+            data.changedMandatory( null, mandatory );
          }
       }
 

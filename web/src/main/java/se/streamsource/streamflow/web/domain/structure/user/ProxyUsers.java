@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.web.domain.structure.user;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.Aggregated;
 import org.qi4j.api.entity.EntityBuilder;
 import org.qi4j.api.entity.Identity;
@@ -30,7 +31,7 @@ import org.qi4j.api.query.QueryBuilderFactory;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.domain.user.Password;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 
 /**
@@ -49,7 +50,7 @@ public interface ProxyUsers
       @Aggregated
       ManyAssociation<ProxyUser> proxyUsers();
 
-      ProxyUser createdProxyUser( DomainEvent event, String id, String description, String password );
+      ProxyUser createdProxyUser( @Optional DomainEvent event, String id, String description, String password );
    }
 
    abstract class Mixin
@@ -70,10 +71,10 @@ public interface ProxyUsers
       public ProxyUser createProxyUser( String description, String password )
             throws IllegalArgumentException
       {
-         return createdProxyUser( DomainEvent.CREATE, idGen.generate( Identity.class ), description, password );
+         return createdProxyUser( null, idGen.generate( Identity.class ), description, password );
       }
 
-      public ProxyUser createdProxyUser( DomainEvent event, String id, String description, String password )
+      public ProxyUser createdProxyUser( @Optional DomainEvent event, String id, String description, String password )
       {
          EntityBuilder<ProxyUser> builder = uowf.currentUnitOfWork().newEntityBuilder( ProxyUser.class, id );
          builder.instance().organization().set( organization );

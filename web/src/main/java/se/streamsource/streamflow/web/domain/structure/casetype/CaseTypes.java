@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.web.domain.structure.casetype;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.Aggregated;
 import org.qi4j.api.entity.Identity;
 import org.qi4j.api.entity.IdentityGenerator;
@@ -30,10 +31,9 @@ import org.qi4j.api.query.QueryBuilderFactory;
 import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.web.domain.interaction.gtd.ChangesOwner;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
-import se.streamsource.streamflow.web.domain.structure.project.Project;
 
 /**
  * JAVADOC
@@ -61,9 +61,9 @@ public interface CaseTypes
       @Aggregated
       ManyAssociation<CaseType> caseTypes();
 
-      CaseType createdCaseType( DomainEvent event, String id );
+      CaseType createdCaseType( @Optional DomainEvent event, String id );
 
-      void removedCaseType( DomainEvent event, CaseType caseType );
+      void removedCaseType( @Optional DomainEvent event, CaseType caseType );
 
       void addedCaseType(DomainEvent event, CaseType caseType);
    }
@@ -91,7 +91,7 @@ public interface CaseTypes
 
       public CaseType createCaseType( String name )
       {
-         CaseType caseType = createdCaseType( DomainEvent.CREATE, idGen.generate( Identity.class ) );
+         CaseType caseType = createdCaseType( null, idGen.generate( Identity.class ) );
          addCaseType(caseType );
          caseType.changeDescription( name );
 
@@ -100,14 +100,14 @@ public interface CaseTypes
 
       public void addCaseType( CaseType caseType )
       {
-         addedCaseType(DomainEvent.CREATE, caseType );
+         addedCaseType(null, caseType );
       }
 
       public void moveCaseType( CaseType caseType, CaseTypes toCaseTypes )
       {
          toCaseTypes.addCaseType( caseType );
 
-         removedCaseType( DomainEvent.CREATE, caseType );
+         removedCaseType( null, caseType );
       }
 
       public void mergeCaseTypes( CaseTypes to )
@@ -115,7 +115,7 @@ public interface CaseTypes
          while (data.caseTypes().count() > 0)
          {
             CaseType caseType = data.caseTypes().get( 0 );
-            removedCaseType( DomainEvent.CREATE, caseType );
+            removedCaseType( null, caseType );
             to.addCaseType( caseType );
          }
       }
@@ -124,7 +124,7 @@ public interface CaseTypes
       {
          if (data.caseTypes().contains( caseType ))
          {
-            removedCaseType( DomainEvent.CREATE, caseType );
+            removedCaseType( null, caseType );
             caseType.removeEntity();
             return true;
          }

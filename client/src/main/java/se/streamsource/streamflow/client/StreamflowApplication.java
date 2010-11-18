@@ -53,10 +53,10 @@ import se.streamsource.streamflow.client.util.JavaHelp;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
-import se.streamsource.streamflow.infrastructure.event.source.EventStream;
-import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.EventStream;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -306,7 +306,7 @@ public class StreamflowApplication
       return accountSelector;
    }
 
-   public void notifyTransactions( Iterable<TransactionEvents> transactions )
+   public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
    {
       for (Window window : Frame.getWindows())
       {
@@ -314,7 +314,7 @@ public class StreamflowApplication
       }
    }
 
-   private void dispatchTransactions( Component component, Iterable<TransactionEvents> transactionEventsIterable )
+   private void dispatchTransactions( Component component, Iterable<TransactionDomainEvents> transactionEventsIterable )
    {
       if (!component.isVisible())
          return;

@@ -21,8 +21,8 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.dci.restlet.server.CommandResult;
-import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
-import se.streamsource.streamflow.infrastructure.event.source.TransactionVisitor;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionVisitor;
 
 /**
  * This filter will record all the Events from the call, and if any occured and the
@@ -34,28 +34,28 @@ public class EventsCommandResult
    @Structure
    protected ValueBuilderFactory vbf;
 
-   private ThreadLocal<TransactionEvents> transactions = new ThreadLocal<TransactionEvents>();
+   private ThreadLocal<TransactionDomainEvents> transactions = new ThreadLocal<TransactionDomainEvents>();
 
    public Object getResult()
    {
-      TransactionEvents transaction = transactions.get();
-      if (transaction == null)
+      TransactionDomainEvents transactionDomain = transactions.get();
+      if (transactionDomain == null)
       {
-         ValueBuilder<TransactionEvents> builder = vbf.newValueBuilder( TransactionEvents.class );
+         ValueBuilder<TransactionDomainEvents> builder = vbf.newValueBuilder( TransactionDomainEvents.class );
          builder.prototype().timestamp().set( System.currentTimeMillis() );
-         transaction = builder.newInstance();
+         transactionDomain = builder.newInstance();
       } else
       {
          transactions.set( null ); // Clear for next request
       }
 
-      return transaction;
+      return transactionDomain;
    }
 
 
-   public boolean visit( TransactionEvents transaction )
+   public boolean visit( TransactionDomainEvents transactionDomain )
    {
-      transactions.set(transaction);
+      transactions.set( transactionDomain );
 
       return true;
    }

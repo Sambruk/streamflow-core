@@ -20,16 +20,16 @@ package se.streamsource.streamflow.web.context.administration;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
+import org.qi4j.api.util.Specification;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.util.Specification;
 import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypesQueries;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.SelectedCaseTypes;
 
-import static se.streamsource.dci.api.RoleMap.*;
+import static se.streamsource.dci.api.RoleMap.role;
 
 /**
  * JAVADOC
@@ -54,7 +54,7 @@ public class SelectedCaseTypesContext
       LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() ).command( "addcasetype" );
       caseTypes.caseTypes( builder, new Specification<CaseType>()
       {
-         public boolean valid( CaseType instance )
+         public boolean test( CaseType instance )
          {
             return !selectedLabels.selectedCaseTypes().contains( instance );
          }

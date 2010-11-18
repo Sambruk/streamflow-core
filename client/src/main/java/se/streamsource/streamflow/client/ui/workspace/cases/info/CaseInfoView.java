@@ -32,8 +32,8 @@ import se.streamsource.streamflow.client.util.Refreshable;
 import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.client.ui.workspace.table.CaseStatusTableCellRenderer;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
-import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
-import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.resource.caze.CaseValue;
 
 import javax.swing.BorderFactory;
@@ -45,7 +45,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Insets;
 
-import static se.streamsource.streamflow.infrastructure.event.source.helper.Events.*;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 
 /**
  * JAVADOC
@@ -124,7 +124,7 @@ public class CaseInfoView extends JPanel
       new RefreshWhenVisible(this, this);
    }
 
-   public void notifyTransactions( Iterable<TransactionEvents> transactions )
+   public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
    {
       if (matches( withNames( "changedOwner", "changedCaseType", "changedDescription", "assignedTo", "unassigned", "changedStatus" ), transactions ))
       {

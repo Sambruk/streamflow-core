@@ -30,8 +30,8 @@ import se.streamsource.streamflow.application.error.ErrorResources;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.util.EventListSynch;
 import se.streamsource.streamflow.client.util.Refreshable;
-import se.streamsource.streamflow.infrastructure.event.TransactionEvents;
-import se.streamsource.streamflow.infrastructure.event.source.TransactionListener;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.resource.user.NewProxyUserCommand;
 import se.streamsource.streamflow.resource.user.ProxyUserDTO;
 import se.streamsource.streamflow.resource.user.ProxyUserListDTO;
@@ -88,7 +88,7 @@ public class ProxyUsersModel
       client.getSubClient( proxyUser.username().get() ).delete();
    }
 
-   public void notifyTransactions( Iterable<TransactionEvents> transactions )
+   public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
    {
       refresh();
    }

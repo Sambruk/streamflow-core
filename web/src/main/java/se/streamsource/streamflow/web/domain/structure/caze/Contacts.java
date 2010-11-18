@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.web.domain.structure.caze;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
@@ -24,7 +25,7 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.domain.contact.ContactValue;
-import se.streamsource.streamflow.infrastructure.event.DomainEvent;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 import java.util.List;
 
@@ -47,11 +48,11 @@ public interface Contacts
       @UseDefaults
       Property<List<ContactValue>> contacts();
 
-      void addedContact( DomainEvent event, ContactValue newContact );
+      void addedContact( @Optional DomainEvent event, ContactValue newContact );
 
-      void updatedContact( DomainEvent event, int index, ContactValue contact );
+      void updatedContact( @Optional DomainEvent event, int index, ContactValue contact );
 
-      void deletedContact( DomainEvent event, int index );
+      void deletedContact( @Optional DomainEvent event, int index );
    }
 
    abstract class Mixin
@@ -65,14 +66,14 @@ public interface Contacts
 
       public void addContact( ContactValue newContact )
       {
-         addedContact( DomainEvent.CREATE, newContact );
+         addedContact( null, newContact );
       }
 
       public void updateContact( int index, ContactValue contact )
       {
          if (contacts().get().size() > index)
          {
-            updatedContact( DomainEvent.CREATE, index, contact );
+            updatedContact( null, index, contact );
          }
       }
 
@@ -80,7 +81,7 @@ public interface Contacts
       {
          if (contacts().get().size() > index)
          {
-            deletedContact( DomainEvent.CREATE, index );
+            deletedContact( null, index );
          }
       }
 
