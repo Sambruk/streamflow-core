@@ -178,24 +178,23 @@ public interface
                   Query<UserEntity> users = module.queryBuilderFactory()
                         .newNamedQuery( UserEntity.class, uow, "solrquery" ).setVariable( "query", creatorQueryBuilder.toString() );
 
-                  if (users.iterator().hasNext())
+                  int count = 0;
+                  for (UserEntity user : users)
                   {
-                     queryBuilder.append( " createdBy:(" );
-                     int count = 0;
-                     for (UserEntity user : users)
+                     if (count == 0)
                      {
-                        if (count == 0)
-                        {
-                           queryBuilder.append( user.identity().get() );
-                        } else
-                        {
-                           queryBuilder.append( " OR " ).append( user.identity().get() );
-                        }
-
-                        count++;
+                        queryBuilder.append( " createdBy:(" ).append( user.identity().get() );
+                     } else
+                     {
+                        queryBuilder.append( " OR " ).append( user.identity().get() );
                      }
+
+                     count++;
+                  }
+
+                  if (count > 0)
                      queryBuilder.append( ")" );
-                  } else
+                  else
                   {
                      // dismiss search - no user/s for given name exists. Return empty search
                      return module.queryBuilderFactory().newQueryBuilder( Case.class ).newQuery( Collections.<Case>emptyList() );
@@ -210,8 +209,35 @@ public interface
                   buildDateQuery( queryBuilder, search );
                } else if (search.hasName( "assignedTo" ))
                {
+
+                  StringBuilder creatorQueryBuilder = new StringBuilder( "type:se.streamsource.streamflow.web.domain.entity.user.UserEntity" );
                   String userName = user.userName().get();
-                  queryBuilder.append( " " ).append( search.getName() ).append( ":" ).append( getUserInSearch( search, userName ) );
+                  creatorQueryBuilder.append( " (id:" ).append( getUserInSearch( search, userName ) ).append(" OR ").append( " description:" ).append( getUserInSearch( search, userName ) ).append( ")" );
+
+                  Query<UserEntity> users = module.queryBuilderFactory()
+                        .newNamedQuery( UserEntity.class, uow, "solrquery" ).setVariable( "query", creatorQueryBuilder.toString() );
+
+                  int count = 0;
+                  for (UserEntity user : users)
+                  {
+                     if (count == 0)
+                     {
+                        queryBuilder.append( " assignedTo:(" ).append( user.identity().get() );
+                     } else
+                     {
+                        queryBuilder.append( " OR " ).append( user.identity().get() );
+                     }
+
+                     count++;
+                  }
+
+                  if (count > 0)
+                     queryBuilder.append( ")" );
+                  else
+                  {
+                     // dismiss search - no user/s for given name exists. Return empty search
+                     return module.queryBuilderFactory().newQueryBuilder( Case.class ).newQuery( Collections.<Case>emptyList() );
+                  }
                } else
                {
                   if (queryBuilder.length() > 0)
