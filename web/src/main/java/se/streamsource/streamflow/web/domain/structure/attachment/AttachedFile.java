@@ -86,6 +86,6 @@ public interface AttachedFile
       void changedMimeType( @Optional DomainEvent event, String newMimeType);
       void changedUri( @Optional DomainEvent event, String newMimeType);
       void changedModificationDate( @Optional DomainEvent event, Date newModificationDate);
-      void changedSize(DomainEvent event, long size);
+      void changedSize(@Optional DomainEvent event, long size);
    }
 }

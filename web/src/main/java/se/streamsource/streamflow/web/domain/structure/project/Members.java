@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.web.domain.structure.project;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
@@ -45,9 +46,9 @@ public interface Members
    {
       ManyAssociation<Member> members();
 
-      void addedMember( DomainEvent event, Member member );
+      void addedMember( @Optional DomainEvent event, Member member );
 
-      void removedMember( DomainEvent event, Member member );
+      void removedMember( @Optional DomainEvent event, Member member );
    }
 
    class Mixin

@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.web.domain.interaction.profile;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
@@ -42,7 +43,7 @@ public interface MessageRecipient
       @UseDefaults
       Property<MessageDeliveryTypes> delivery();
 
-      public void changedMessageDeliveryType(DomainEvent event, MessageDeliveryTypes deliveryType);
+      public void changedMessageDeliveryType(@Optional DomainEvent event, MessageDeliveryTypes deliveryType);
    }
    
    abstract class Mixin implements MessageRecipient, Data 

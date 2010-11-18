@@ -46,7 +46,7 @@ public @interface ServiceAvailable
       public boolean isValid( ServiceAvailable serviceAvailable, RoleMap roleMap )
       {
          ServiceReference ref = finder.findService( serviceAvailable.value() );
-         return ref != null && ref.isActive();
+         return ref != null && ref.isAvailable();
       }
    }
 }

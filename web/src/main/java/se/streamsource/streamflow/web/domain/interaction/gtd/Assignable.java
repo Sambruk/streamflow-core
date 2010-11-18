@@ -50,7 +50,7 @@ public interface Assignable
 
       void assignedTo( @Optional DomainEvent event, Assignee assignee );
 
-      void unassigned( DomainEvent event );
+      void unassigned( @Optional DomainEvent event );
    }
 
    public abstract class Mixin

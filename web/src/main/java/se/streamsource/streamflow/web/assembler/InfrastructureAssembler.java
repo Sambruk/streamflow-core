@@ -57,6 +57,7 @@ import se.streamsource.streamflow.web.infrastructure.database.LiquibaseService;
 import se.streamsource.streamflow.web.infrastructure.database.ServiceInstanceImporter;
 import se.streamsource.streamflow.web.infrastructure.event.JdbmApplicationEventStoreService;
 import se.streamsource.streamflow.web.infrastructure.event.JdbmEventStoreService;
+import se.streamsource.streamflow.web.infrastructure.event.MemoryApplicationEventStoreService;
 import se.streamsource.streamflow.web.infrastructure.event.MemoryEventStoreService;
 import se.streamsource.streamflow.web.infrastructure.index.EmbeddedSolrService;
 import se.streamsource.streamflow.web.infrastructure.index.SolrQueryService;
@@ -148,7 +149,7 @@ public class InfrastructureAssembler
       } else
       {
          module.addServices( MemoryEventStoreService.class ).identifiedBy( "eventstore" ).visibleIn( Visibility.application );
-         module.addServices( MemoryEventStoreService.class ).identifiedBy( "applicationeventstore" ).visibleIn( Visibility.application );
+         module.addServices( MemoryApplicationEventStoreService.class ).identifiedBy( "applicationeventstore" ).visibleIn( Visibility.application );
       }
    }
 

@@ -65,7 +65,7 @@ public interface CaseTypes
 
       void removedCaseType( @Optional DomainEvent event, CaseType caseType );
 
-      void addedCaseType(DomainEvent event, CaseType caseType);
+      void addedCaseType(@Optional DomainEvent event, CaseType caseType);
    }
 
    abstract class Mixin
