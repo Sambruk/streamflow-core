@@ -210,7 +210,7 @@ public abstract class CaseSubmittedFormAbstractView
 
    protected DefaultFormBuilder builder(JPanel aPanel )
    {
-      FormLayout formLayout = new FormLayout("70dlu, 5dlu, 150dlu:grow","");
+      FormLayout formLayout = new FormLayout("150dlu:grow","");
       return new DefaultFormBuilder( formLayout, aPanel );
    }
 }

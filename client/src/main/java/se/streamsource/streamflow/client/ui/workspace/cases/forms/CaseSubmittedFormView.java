@@ -19,7 +19,6 @@ package se.streamsource.streamflow.client.ui.workspace.cases.forms;
 import ca.odell.glazedlists.event.ListEvent;
 import ca.odell.glazedlists.event.ListEventListener;
 import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
@@ -34,10 +33,7 @@ import se.streamsource.streamflow.client.util.RefreshWhenVisible;
 import se.streamsource.streamflow.resource.caze.FieldDTO;
 import se.streamsource.streamflow.resource.roles.IntegerDTO;
 
-import javax.swing.BorderFactory;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.SwingConstants;
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 
 /**
@@ -70,10 +66,12 @@ public class CaseSubmittedFormView
       safeRead( model.getEventList(), new EventCallback<FieldDTO>() {
          public void iterate( FieldDTO field )
          {
-            JLabel label = new JLabel( field.field().get() + ":", SwingConstants.RIGHT );
+            JLabel label = new JLabel( field.field().get(), SwingConstants.LEFT);
             JComponent component = getComponent( field.value().get(), field.fieldType().get() );
 
-            builder.append( label, component );
+            builder.append( label );
+            builder.nextLine();
+            builder.append( component );
             builder.nextLine();
          }
       });
