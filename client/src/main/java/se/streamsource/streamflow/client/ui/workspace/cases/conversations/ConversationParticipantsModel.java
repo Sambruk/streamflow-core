@@ -18,6 +18,7 @@ package se.streamsource.streamflow.client.ui.workspace.cases.conversations;
 
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.TransactionList;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
@@ -34,7 +35,7 @@ public class ConversationParticipantsModel
    @Uses
    CommandQueryClient client;
 
-   BasicEventList<LinkValue> participants = new BasicEventList<LinkValue>();
+   EventList<LinkValue> participants = new TransactionList<LinkValue>( new BasicEventList<LinkValue>() );
 
    public EventList<LinkValue> participants()
    {

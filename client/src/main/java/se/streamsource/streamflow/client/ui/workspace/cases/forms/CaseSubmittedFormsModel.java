@@ -18,6 +18,7 @@ package se.streamsource.streamflow.client.ui.workspace.cases.forms;
 
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.TransactionList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
@@ -34,16 +35,10 @@ import se.streamsource.streamflow.resource.caze.SubmittedFormsListDTO;
 public class CaseSubmittedFormsModel
       implements Refreshable
 {
-   @Structure
-   ObjectBuilderFactory obf;
-
-   @Structure
-   ValueBuilderFactory vbf;
-
    @Uses
    CommandQueryClient client;
 
-   BasicEventList<SubmittedFormListDTO> submittedForms = new BasicEventList<SubmittedFormListDTO>( );
+   EventList<SubmittedFormListDTO> submittedForms = new TransactionList<SubmittedFormListDTO>( new BasicEventList<SubmittedFormListDTO>( ) );
 
    public void refresh()
    {

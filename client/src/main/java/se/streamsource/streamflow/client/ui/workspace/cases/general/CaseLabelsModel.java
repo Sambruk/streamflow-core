@@ -18,6 +18,7 @@ package se.streamsource.streamflow.client.ui.workspace.cases.general;
 
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.TransactionList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilderFactory;
@@ -39,10 +40,7 @@ public class CaseLabelsModel
    @Uses
    CommandQueryClient client;
 
-   @Structure
-   ValueBuilderFactory vbf;
-
-   BasicEventList<LinkValue> labels = new BasicEventList<LinkValue>();
+   EventList<LinkValue> labels = new TransactionList<LinkValue>( new BasicEventList<LinkValue>() );
 
    public EventList<LinkValue> getLabels()
    {

@@ -18,6 +18,7 @@ package se.streamsource.streamflow.client.ui.workspace.cases.forms;
 
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.TransactionList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilder;
@@ -44,7 +45,7 @@ public class CaseEffectiveFieldsValueModel
    @Structure
    ValueBuilderFactory vbf;
 
-   EventList<EffectiveFieldDTO> eventList = new BasicEventList<EffectiveFieldDTO>( );
+   EventList<EffectiveFieldDTO> eventList = new TransactionList<EffectiveFieldDTO>( new BasicEventList<EffectiveFieldDTO>( ) );
 
    public void refresh()
    {

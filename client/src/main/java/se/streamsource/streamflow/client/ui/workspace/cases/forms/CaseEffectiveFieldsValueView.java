@@ -19,7 +19,6 @@ package se.streamsource.streamflow.client.ui.workspace.cases.forms;
 import ca.odell.glazedlists.event.ListEvent;
 import ca.odell.glazedlists.event.ListEventListener;
 import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
@@ -40,9 +39,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import java.awt.event.ActionEvent;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
