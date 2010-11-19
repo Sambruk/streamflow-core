@@ -492,7 +492,7 @@ public class CommandQueryResource
 
          // Check if this is a request to show the form for this interaction
          if ((request.getMethod().isSafe() && contextMethod.getParameterTypes().length != 0 && request.getResourceRef().getQuery() == null) ||
-               (!request.getMethod().isSafe() && contextMethod.getParameterTypes().length != 0 && !(request.getEntity().isAvailable() || request.getResourceRef().getQuery() != null)))
+               (!request.getMethod().isSafe() && contextMethod.getParameterTypes().length != 0 && !(request.getEntity().isAvailable() || request.getResourceRef().getQuery() != null || contextMethod.getParameterTypes()[0].equals(Response.class))))
          {
             // Show form
             try
