@@ -16,7 +16,6 @@
 
 package se.streamsource.streamflow.web.context.workspace.cases.form;
 
-import com.sun.jdi.IntegerValue;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
