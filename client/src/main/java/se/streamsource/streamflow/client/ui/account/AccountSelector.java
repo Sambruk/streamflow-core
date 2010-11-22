@@ -29,8 +29,8 @@ import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import se.streamsource.streamflow.application.error.ErrorResources;
 import se.streamsource.streamflow.client.StreamflowApplication;
-import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.ListItemListCellRenderer;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.i18n;
 
 import javax.swing.JList;
@@ -43,6 +43,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.text.MessageFormat;
+import java.util.Locale;
 import java.util.Properties;
 
 /**
@@ -118,7 +119,13 @@ public class AccountSelector
                while ((str = reader.readLine()) != null)
                {
                   str = str.trim();
-                  if (str.startsWith( "Version:" ))
+                  if (str.startsWith( "Variant:" ))
+                  {
+                     if( Locale.getDefault().equals( new Locale( "sv", "SE") ) )
+                     {
+                        Locale.setDefault( new Locale( "sv", "SE", str.substring( str.indexOf( ":" ) + 1, str.length() ).trim()) );  
+                     }
+                  } else if (str.startsWith( "Version:" ))
                   {
                      int toIndex = str.indexOf( '-' ) != -1 ? str.indexOf( '-' ) : str.lastIndexOf( '.' );
 
