@@ -27,6 +27,7 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.util.Specifications;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.LinkValue;
@@ -38,12 +39,15 @@ import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.SelectLinksDialog;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
+import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
+import static org.qi4j.api.util.Specifications.or;
 import static se.streamsource.streamflow.client.util.i18n.text;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 
 public class OrganizationUsersView
       extends JPanel
@@ -142,6 +146,7 @@ public class OrganizationUsersView
 
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
    {
-      model.notifyTransactions( transactions );
+      if (matches( Events.withNames( "joinedOrganization", "leftOrganization" ), transactions ))
+         model.refresh();
    }
 }
