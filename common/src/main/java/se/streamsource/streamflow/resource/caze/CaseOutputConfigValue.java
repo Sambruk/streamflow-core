@@ -24,7 +24,7 @@ import org.qi4j.api.value.ValueComposite;
 /**
  * The configuration for a case visitor.
  */
-public interface CaseVisitorConfigValue
+public interface CaseOutputConfigValue
    extends ValueComposite
 {
    @UseDefaults

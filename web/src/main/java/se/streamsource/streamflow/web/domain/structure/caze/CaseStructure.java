@@ -19,7 +19,8 @@ package se.streamsource.streamflow.web.domain.structure.caze;
 
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
-import se.streamsource.streamflow.web.domain.entity.caze.CaseVisitor;
+import se.streamsource.streamflow.web.domain.entity.caze.CaseDescriptor;
+import se.streamsource.streamflow.web.domain.entity.caze.CaseOutput;
 
 /**
  * Provides the means to send a visitor to the case_
@@ -27,7 +28,7 @@ import se.streamsource.streamflow.web.domain.entity.caze.CaseVisitor;
 @Mixins(CaseStructure.Mixin.class)
 public interface CaseStructure
 {
-   public void visitCase( CaseVisitor visitor ) throws Throwable;
+   public void outputCase( CaseOutput output ) throws Throwable;
 
    class Mixin
       implements CaseStructure
@@ -35,9 +36,9 @@ public interface CaseStructure
       @This
       Case caze;
 
-      public void visitCase( CaseVisitor visitor ) throws Throwable
+      public void outputCase( CaseOutput output ) throws Throwable
       {
-         visitor.visitCase( caze );
+         output.outputCase( new CaseDescriptor(caze) );
       }
    }
 }

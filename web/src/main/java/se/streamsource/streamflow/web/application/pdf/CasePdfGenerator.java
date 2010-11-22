@@ -25,6 +25,7 @@ import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.io.*;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.domain.contact.ContactValue;
@@ -32,54 +33,40 @@ import se.streamsource.streamflow.domain.form.AttachmentFieldSubmission;
 import se.streamsource.streamflow.domain.form.AttachmentFieldValue;
 import se.streamsource.streamflow.domain.form.EffectiveFieldValue;
 import se.streamsource.streamflow.domain.structure.Describable;
-import se.streamsource.streamflow.resource.caze.CaseVisitorConfigValue;
+import se.streamsource.streamflow.resource.caze.CaseOutputConfigValue;
 import se.streamsource.streamflow.util.Strings;
-import se.streamsource.streamflow.web.domain.entity.caze.CaseVisitor;
+import se.streamsource.streamflow.web.domain.entity.caze.CaseDescriptor;
+import se.streamsource.streamflow.web.domain.entity.caze.CaseOutput;
 import se.streamsource.streamflow.web.domain.entity.form.FieldEntity;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
-import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
+import se.streamsource.streamflow.web.domain.interaction.gtd.*;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
-import se.streamsource.streamflow.web.domain.structure.attachment.Attachments;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
-import se.streamsource.streamflow.web.domain.structure.caze.Contacts;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversation;
-import se.streamsource.streamflow.web.domain.structure.conversation.Conversations;
 import se.streamsource.streamflow.web.domain.structure.conversation.Message;
 import se.streamsource.streamflow.web.domain.structure.conversation.Messages;
 import se.streamsource.streamflow.web.domain.structure.created.Creator;
-import se.streamsource.streamflow.web.domain.structure.form.SubmittedForms;
 import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
 
 import javax.swing.text.MutableAttributeSet;
 import javax.swing.text.html.HTML;
 import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.parser.ParserDelegator;
-import java.awt.Color;
+import java.awt.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.net.URI;
 import java.text.DateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.ResourceBundle;
 
 /**
- * A specialisation of CaseVisitor that is responsible for exporting a case in PDF format;
+ * A specialisation of CaseOutput that is responsible for exporting a case in PDF format;
  * The provided configuration tells what parts of the case are included in the export.
  */
 public class CasePdfGenerator
-      extends CaseVisitor
+      implements CaseOutput
 {
    @Structure
    UnitOfWorkFactory uowf;
@@ -92,6 +79,7 @@ public class CasePdfGenerator
 
    private PdfDocument document;
    private ResourceBundle bundle;
+   private final CaseOutputConfigValue config;
    private Locale locale;
    private String templateUri;
 
@@ -103,9 +91,9 @@ public class CasePdfGenerator
    private String caseId = "";
    private String printedOn = "";
 
-   public CasePdfGenerator( @Uses CaseVisitorConfigValue config, @Optional @Uses String templateUri, @Uses Locale locale )
+   public CasePdfGenerator( @Uses CaseOutputConfigValue config, @Optional @Uses String templateUri, @Uses Locale locale )
    {
-      super( config );
+      this.config = config;
       this.locale = locale;
       this.templateUri = templateUri;
       bundle = ResourceBundle.getBundle( CasePdfGenerator.class.getName(), locale );
@@ -113,9 +101,10 @@ public class CasePdfGenerator
       document.init();
    }
 
-   @Override
-   public boolean visitCase( Case caze ) throws IOException
+   public void outputCase( CaseDescriptor cazeDescriptor ) throws Throwable
    {
+      Case caze = cazeDescriptor.getCase();
+
       caseId = ((CaseId.Data) caze).caseId().get();
       printedOn = DateFormat.getDateTimeInstance( DateFormat.SHORT, DateFormat.SHORT, locale ).format( new Date() );
 
@@ -164,138 +153,148 @@ public class CasePdfGenerator
       // traverse structure
       if (config.contacts().get())
       {
-         visitContacts( caze );
+         generateContacts( cazeDescriptor.contacts() );
       }
 
       if (config.effectiveFields().get())
       {
-         visitEffectiveFields( caze );
+         generateEffectiveFields( cazeDescriptor.effectiveFields() );
       }
 
       if (config.conversations().get())
       {
-         visitConversations( caze );
-      }
-
-      if (config.submittedForms().get())
-      {
-         visitSubmittedForms( caze );
+         generateConversations( cazeDescriptor.conversations() );
       }
 
       if (config.attachments().get())
       {
-         visitAttachments( caze );
+         generateAttachments( cazeDescriptor.attachments() );
       }
-
-      return true;
    }
 
-   @Override
-   public boolean visitContacts( Contacts contacts ) throws IOException
+   private void generateContacts( Input<ContactValue, RuntimeException> contacts ) throws IOException
    {
-      if (contacts.hasContacts())
+      final Transforms.Counter<ContactValue> counter = new Transforms.Counter<ContactValue>();
+      contacts.transferTo( Transforms.map( counter, new Output<ContactValue, IOException>()
       {
-         int count = 1;
-         List<ContactValue> contactList = ((Contacts.Data) contacts).contacts().get();
-
-         for (ContactValue value : contactList)
+         public <SenderThrowableType extends Throwable> void receiveFrom( Sender<ContactValue, SenderThrowableType> sender ) throws IOException, SenderThrowableType
          {
-            Map<String, String> nameValuePairs = new HashMap<String, String>( 10 );
-            if (Strings.notEmpty( value.name().get() ))
-               nameValuePairs.put( bundle.getString( "name" ), value.name().get() );
-
-            if (!value.phoneNumbers().get().isEmpty() && Strings.notEmpty( value.phoneNumbers().get().get( 0 ).phoneNumber().get() ))
-               nameValuePairs.put( bundle.getString( "phoneNumber" ), value.phoneNumbers().get().get( 0 ).phoneNumber().get() );
-
-            if (!value.addresses().get().isEmpty() && Strings.notEmpty( value.addresses().get().get( 0 ).address().get() ))
-               nameValuePairs.put( bundle.getString( "address" ), value.addresses().get().get( 0 ).address().get() );
-
-            if (!value.emailAddresses().get().isEmpty() && Strings.notEmpty( value.emailAddresses().get().get( 0 ).emailAddress().get() ))
-               nameValuePairs.put( bundle.getString( "email" ), value.emailAddresses().get().get( 0 ).emailAddress().get() );
-
-            if (Strings.notEmpty( value.company().get() ))
-               nameValuePairs.put( bundle.getString( "company" ), value.company().get() );
-
-            if (Strings.notEmpty( value.note().get() ))
-               nameValuePairs.put( bundle.getString( "note" ), value.note().get() );
-
-            float tabStop = document.calculateTabStop( valueFontBold, nameValuePairs.keySet()
-                  .toArray( new String[nameValuePairs.keySet().size()] ) );
-
-            document.changeColor( Color.BLUE );
-            document.println( bundle.getString( "contact" ) + (count == 1 ? "" : " " + count), valueFontBold );
-            document.print( "", valueFont );
-            document.changeColor( Color.BLACK );
-
-            for (Map.Entry<String, String> stringEntry : nameValuePairs.entrySet())
+            sender.sendTo( new Receiver<ContactValue, IOException>()
             {
-               document.printLabelAndText( stringEntry.getKey() + ":", valueFontBold, stringEntry.getValue(), valueFont, tabStop );
-            }
-
-            count++;
-         }
-      }
-      return true;
-   }
-
-   @Override
-   public boolean visitConversations( Conversations conversations ) throws IOException
-   {
-      if (conversations.hasConversations())
-      {
-         document.changeColor( Color.BLUE ).println( bundle.getString( "conversations" ), valueFontBold )
-               .changeColor( Color.BLACK );
-
-         List<Conversation> conversationList = ((Conversations.Data) conversations).conversations().toList();
-         for (Conversation conversation : conversationList)
-         {
-            List<Message> messages = ((Messages.Data) conversation).messages().toList();
-            if (!messages.isEmpty())
-            {
-               document.println( conversation.getDescription(), valueFontBold ).underLine( conversation.getDescription(), valueFontBold );
-
-               for (Message message : messages)
+               public void receive( ContactValue value ) throws IOException
                {
-                  Message.Data data = ((Message.Data) message);
-                  String label = data.sender().get().getDescription() + ", "
-                        + DateFormat.getDateTimeInstance( DateFormat.SHORT, DateFormat.SHORT, locale ).format( data.createdOn().get() )
-                        + ": ";
+                  Map<String, String> nameValuePairs = new HashMap<String, String>( 10 );
+                  if (Strings.notEmpty( value.name().get() ))
+                     nameValuePairs.put( bundle.getString( "name" ), value.name().get() );
 
-                  document.print( label, valueFontBold ).print( extractBody( data.body().get() ), valueFont )
-                        .print( "", valueFont );
+                  if (!value.phoneNumbers().get().isEmpty() && Strings.notEmpty( value.phoneNumbers().get().get( 0 ).phoneNumber().get() ))
+                     nameValuePairs.put( bundle.getString( "phoneNumber" ), value.phoneNumbers().get().get( 0 ).phoneNumber().get() );
+
+                  if (!value.addresses().get().isEmpty() && Strings.notEmpty( value.addresses().get().get( 0 ).address().get() ))
+                     nameValuePairs.put( bundle.getString( "address" ), value.addresses().get().get( 0 ).address().get() );
+
+                  if (!value.emailAddresses().get().isEmpty() && Strings.notEmpty( value.emailAddresses().get().get( 0 ).emailAddress().get() ))
+                     nameValuePairs.put( bundle.getString( "email" ), value.emailAddresses().get().get( 0 ).emailAddress().get() );
+
+                  if (Strings.notEmpty( value.company().get() ))
+                     nameValuePairs.put( bundle.getString( "company" ), value.company().get() );
+
+                  if (Strings.notEmpty( value.note().get() ))
+                     nameValuePairs.put( bundle.getString( "note" ), value.note().get() );
+
+                  float tabStop = document.calculateTabStop( valueFontBold, nameValuePairs.keySet()
+                        .toArray( new String[nameValuePairs.keySet().size()] ) );
+
+                  document.changeColor( Color.BLUE );
+                  document.println( bundle.getString( "contact" ) + (counter.getCount() == 1 ? "" : " " + counter.getCount()), valueFontBold );
+                  document.print( "", valueFont );
+                  document.changeColor( Color.BLACK );
+
+                  for (Map.Entry<String, String> stringEntry : nameValuePairs.entrySet())
+                  {
+                     document.printLabelAndText( stringEntry.getKey() + ":", valueFontBold, stringEntry.getValue(), valueFont, tabStop );
+                  }
                }
-            }
+            } );
          }
-      }
-      return true;
+      } ));
    }
 
-   @Override
-   public boolean visitEffectiveFields( SubmittedForms effectiveFields ) throws IOException
+   public void generateConversations( Input<Conversation, RuntimeException> conversations ) throws IOException
    {
-      if (effectiveFields.hasSubmittedForms())
+      final Transforms.Counter<Conversation> counter = new Transforms.Counter<Conversation>();
+      Output<Conversation, IOException> output = Transforms.map( counter, new Output<Conversation, IOException>()
       {
+         public <SenderThrowableType extends Throwable> void receiveFrom( Sender<Conversation, SenderThrowableType> sender ) throws IOException, SenderThrowableType
+         {
+            sender.sendTo( new Receiver<Conversation, IOException>()
+            {
+               public void receive( Conversation conversation ) throws IOException
+               {
+                  if (counter.getCount() == 1)
+                  {
+                     document.changeColor( Color.BLUE ).println( bundle.getString( "conversations" ), valueFontBold )
+                           .changeColor( Color.BLACK );
+                  }
+
+
+                  List<Message> messages = ((Messages.Data) conversation).messages().toList();
+                  if (!messages.isEmpty())
+                  {
+                     document.println( conversation.getDescription(), valueFontBold ).underLine( conversation.getDescription(), valueFontBold );
+
+                     for (Message message : messages)
+                     {
+                        Message.Data data = ((Message.Data) message);
+                        String label = data.sender().get().getDescription() + ", "
+                              + DateFormat.getDateTimeInstance( DateFormat.SHORT, DateFormat.SHORT, locale ).format( data.createdOn().get() )
+                              + ": ";
+
+                        document.print( label, valueFontBold ).print( extractBody( data.body().get() ), valueFont )
+                              .print( "", valueFont );
+                     }
+                  }
+               }
+            } );
+         }
+      } );
+      conversations.transferTo( output );
+   }
+
+   public void generateEffectiveFields( Input<EffectiveFieldValue, RuntimeException> effectiveFields ) throws IOException
+   {
+      final Map<EntityReference, List<EffectiveFieldValue>> forms = new LinkedHashMap<EntityReference, List<EffectiveFieldValue>>( 10 );
+
+      effectiveFields.transferTo( new Output<EffectiveFieldValue, IOException>()
+      {
+         public <SenderThrowableType extends Throwable> void receiveFrom( Sender<EffectiveFieldValue, SenderThrowableType> sender ) throws IOException, SenderThrowableType
+         {
+            sender.sendTo( new Receiver<EffectiveFieldValue, IOException>()
+            {
+               public void receive( EffectiveFieldValue field ) throws IOException
+               {
+
+                  // sort effective fields per form
+                  if (!forms.containsKey( field.form().get() ))
+                  {
+                     List<EffectiveFieldValue> formFields = new ArrayList<EffectiveFieldValue>();
+                     formFields.add( field );
+                     forms.put( field.form().get(), formFields );
+                  } else
+                  {
+                     forms.get( field.form().get() ).add( field );
+                  }
+               }
+            } );
+         }
+      } );
+
+      if (!forms.isEmpty())
+      {
+         // Heading
          document.changeColor( Color.BLUE );
          document.println( bundle.getString( "submittedForms" ) + ":", valueFontBold );
          document.changeColor( Color.BLACK );
-
-         List<EffectiveFieldValue> fields = ((SubmittedForms.Data) effectiveFields).effectiveFieldValues().get().fields().get();
-
-         Map<EntityReference, List<EffectiveFieldValue>> forms = new LinkedHashMap<EntityReference, List<EffectiveFieldValue>>( 10 );
-
-         // sort effective fields per form
-         for (EffectiveFieldValue field : fields)
-         {
-            if (!forms.containsKey( field.form().get() ))
-            {
-               List<EffectiveFieldValue> formFields = new ArrayList<EffectiveFieldValue>();
-               formFields.add( field );
-               forms.put( field.form().get(), formFields );
-            } else
-            {
-               forms.get( field.form().get() ).add( field );
-            }
-         }
 
          Date lastSubmittedOn = null;
          String lastSubmittedBy = "";
@@ -314,7 +313,7 @@ public class CasePdfGenerator
                Describable fieldName = uowf.currentUnitOfWork().get( Describable.class, field.field().get().identity() );
 
                // convert JSON String if field type AttachmentFieldValue
-               if (uowf.currentUnitOfWork().get( FieldEntity.class, field.field().get().identity() ).fieldValue().get() instanceof AttachmentFieldValue )
+               if (uowf.currentUnitOfWork().get( FieldEntity.class, field.field().get().identity() ).fieldValue().get() instanceof AttachmentFieldValue)
                {
                   AttachmentFieldSubmission attachment = vbf.newValueFromJSON( AttachmentFieldSubmission.class, field.value().get() );
                   fieldKeyValues.put( fieldName.getDescription(), attachment.name().get() );
@@ -343,37 +342,35 @@ public class CasePdfGenerator
 
             for (Map.Entry<String, String> entry : fieldKeyValues.entrySet())
             {
-               if( Strings.notEmpty( entry.getValue() ))
+               if (Strings.notEmpty( entry.getValue() ))
                   document.printLabelAndText( entry.getKey() + ":", valueFontBold, entry.getValue(), valueFont, tabStop );
             }
-
          }
-
       }
-      return true;
    }
 
-   @Override
-   public boolean visitSubmittedForms( SubmittedForms submittedForms ) throws IOException
+   public void generateAttachments( Input<Attachment, RuntimeException> attachments ) throws IOException
    {
-      return true;
-   }
-
-   @Override
-   public boolean visitAttachments( Attachments attachments ) throws IOException
-   {
-      if (attachments.hasAttachments())
+      final Transforms.Counter<Attachment> counter = new Transforms.Counter<Attachment>();
+      attachments.transferTo( Transforms.map(counter, new Output<Attachment, IOException>()
       {
-         document.changeColor( Color.BLUE ).print( bundle.getString( "attachments" ) + ":", valueFontBold )
-               .changeColor( Color.BLACK );
-
-         List<Attachment> attachmentList = ((Attachments.Data) attachments).attachments().toList();
-         for (Attachment attachment : attachmentList)
+         public <SenderThrowableType extends Throwable> void receiveFrom( Sender<Attachment, SenderThrowableType> sender ) throws IOException, SenderThrowableType
          {
-            document.print( ((AttachedFile.Data) attachment).name().get(), valueFont );
+            sender.sendTo( new Receiver<Attachment, IOException>()
+            {
+               public void receive( Attachment attachment ) throws IOException
+               {
+                  if (counter.getCount() == 1)
+                  {
+                     document.changeColor( Color.BLUE ).print( bundle.getString( "attachments" ) + ":", valueFontBold )
+                           .changeColor( Color.BLACK );
+                  }
+
+                  document.print( ((AttachedFile.Data) attachment).name().get(), valueFont );
+               }
+            });
          }
-      }
-      return true;
+      }));
    }
 
    public PDDocument getPdf() throws IOException

@@ -46,7 +46,7 @@ import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
 import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
-import se.streamsource.streamflow.resource.caze.CaseVisitorConfigValue;
+import se.streamsource.streamflow.resource.caze.CaseOutputConfigValue;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -303,8 +303,8 @@ public class CaseActionsView extends JPanel
    @Action
    public Task print()
    {
-      //TODO create a dialog to give the user the oportunity to choose the contents of CaseVisitorConfigValue
-      final ValueBuilder<CaseVisitorConfigValue> config = vbf.newValueBuilder( CaseVisitorConfigValue.class );
+      //TODO create a dialog to give the user the oportunity to choose the contents of CaseOutputConfigValue
+      final ValueBuilder<CaseOutputConfigValue> config = vbf.newValueBuilder( CaseOutputConfigValue.class );
       config.prototype().contacts().set( true );
       config.prototype().conversations().set( true );
       config.prototype().effectiveFields().set( true );
@@ -328,9 +328,9 @@ public class CaseActionsView extends JPanel
 
     private class PrintCaseTask extends Task<File, Void>
    {
-      private CaseVisitorConfigValue config;
+      private CaseOutputConfigValue config;
 
-      public PrintCaseTask( CaseVisitorConfigValue config)
+      public PrintCaseTask( CaseOutputConfigValue config)
       {
          super( Application.getInstance() );
          this.config = config;

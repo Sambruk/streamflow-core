@@ -37,7 +37,7 @@ import se.streamsource.streamflow.domain.interaction.gtd.Actions;
 import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
 import se.streamsource.streamflow.domain.structure.Removable;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.resource.caze.CaseVisitorConfigValue;
+import se.streamsource.streamflow.resource.caze.CaseOutputConfigValue;
 import se.streamsource.streamflow.web.application.pdf.CasePdfGenerator;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseTypeQueries;
@@ -126,7 +126,7 @@ public interface CaseActionsContext
 
    public void delete();
 
-   public OutputRepresentation exportpdf( CaseVisitorConfigValue config ) throws Throwable;
+   public OutputRepresentation exportpdf( CaseOutputConfigValue config ) throws Throwable;
 
    abstract class Mixin
          implements CaseActionsContext
@@ -276,7 +276,7 @@ public interface CaseActionsContext
          caze.deleteEntity();
       }
 
-      public OutputRepresentation exportpdf( CaseVisitorConfigValue config ) throws Throwable
+      public OutputRepresentation exportpdf( CaseOutputConfigValue config ) throws Throwable
       {
          Locale locale = role( Locale.class );
 
@@ -301,7 +301,7 @@ public interface CaseActionsContext
 
          CasePdfGenerator exporter = module.objectBuilderFactory().newObjectBuilder( CasePdfGenerator.class ).use( config, uri, locale ).newInstance();//new CasePdfGenerator( config, "", locale );
 
-         ((CaseStructure)caze).visitCase( exporter );
+         ((CaseStructure)caze).outputCase( exporter );
 
          final PDDocument pdf = exporter.getPdf();
 
