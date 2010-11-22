@@ -314,8 +314,7 @@ public class CasePdfGenerator
                Describable fieldName = uowf.currentUnitOfWork().get( Describable.class, field.field().get().identity() );
 
                // convert JSON String if field type AttachmentFieldValue
-               if (AttachmentFieldValue.class.getName().equals(
-                     uowf.currentUnitOfWork().get( FieldEntity.class, field.field().get().identity() ).fieldValue().get().type().getName() ))
+               if (uowf.currentUnitOfWork().get( FieldEntity.class, field.field().get().identity() ).fieldValue().get() instanceof AttachmentFieldValue )
                {
                   AttachmentFieldSubmission attachment = vbf.newValueFromJSON( AttachmentFieldSubmission.class, field.value().get() );
                   fieldKeyValues.put( fieldName.getDescription(), attachment.name().get() );

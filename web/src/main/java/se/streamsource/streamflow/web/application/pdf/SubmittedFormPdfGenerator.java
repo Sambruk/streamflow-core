@@ -17,6 +17,25 @@
 
 package se.streamsource.streamflow.web.application.pdf;
 
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.service.ServiceComposite;
+import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.value.ValueBuilderFactory;
+import se.streamsource.streamflow.domain.form.AttachmentFieldSubmission;
+import se.streamsource.streamflow.domain.form.AttachmentFieldValue;
+import se.streamsource.streamflow.domain.form.DateFieldValue;
+import se.streamsource.streamflow.domain.form.SubmittedFieldValue;
+import se.streamsource.streamflow.domain.form.SubmittedFormValue;
+import se.streamsource.streamflow.web.domain.entity.form.FieldEntity;
+import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
+import se.streamsource.streamflow.web.domain.structure.form.Form;
+import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -28,23 +47,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.ResourceBundle;
-
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.font.PDType1Font;
-import org.qi4j.api.common.Optional;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.service.ServiceComposite;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-
-import se.streamsource.streamflow.domain.form.DateFieldValue;
-import se.streamsource.streamflow.domain.form.SubmittedFieldValue;
-import se.streamsource.streamflow.domain.form.SubmittedFormValue;
-import se.streamsource.streamflow.web.domain.entity.form.FieldEntity;
-import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
-import se.streamsource.streamflow.web.domain.structure.form.Form;
-import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
 
 
 @Mixins(SubmittedFormPdfGenerator.Mixin.class)
@@ -58,6 +60,9 @@ public interface SubmittedFormPdfGenerator extends ServiceComposite
 
       @Structure
       UnitOfWorkFactory uowFactory;
+
+      @Structure
+      ValueBuilderFactory vbf;
 
       @Service
       AttachmentStore store;
@@ -101,6 +106,11 @@ public interface SubmittedFormPdfGenerator extends ServiceComposite
                {
                   document.println( "N/A", valueFont );
                }
+
+            } else if( field.fieldValue().get() instanceof AttachmentFieldValue )
+            {
+               AttachmentFieldSubmission attachment = vbf.newValueFromJSON( AttachmentFieldSubmission.class, submittedFieldValue.value().get() );
+               document.println( attachment.name().get(), valueFont );
 
             } else
             {
