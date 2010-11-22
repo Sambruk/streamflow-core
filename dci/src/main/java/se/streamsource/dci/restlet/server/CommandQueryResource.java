@@ -22,6 +22,7 @@ import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.QualifiedName;
 import org.qi4j.api.composite.TransientComposite;
 import org.qi4j.api.constraint.Name;
+import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Service;
@@ -39,6 +40,7 @@ import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.api.value.ValueComposite;
 import org.qi4j.spi.Qi4jSPI;
+import org.qi4j.spi.entity.EntityState;
 import org.qi4j.spi.property.PropertyType;
 import org.qi4j.spi.structure.ModuleSPI;
 import org.qi4j.spi.value.ValueDescriptor;
@@ -61,10 +63,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -507,6 +506,23 @@ public class CommandQueryResource
             }
          } else
          {
+            // Check timestamps
+            Date modificationDate = request.getConditions().getUnmodifiedSince();
+            try
+            {
+               EntityComposite entity = RoleMap.role( EntityComposite.class );
+               EntityState state = spi.getEntityState( entity );
+               Date lastModified = new Date( (state.lastModified()/1000)*1000); // Cut off milliseconds
+               if (lastModified.after( modificationDate ))
+               {
+                  response.setStatus( Status.CLIENT_ERROR_CONFLICT );
+                  return;
+               }
+            } catch (Exception e)
+            {
+               // Ignore
+            }
+
 
             // We have input data - do either command or query
             try

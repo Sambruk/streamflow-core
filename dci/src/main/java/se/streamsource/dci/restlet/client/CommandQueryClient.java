@@ -366,6 +366,7 @@ public class CommandQueryClient
       ClientInfo info = new ClientInfo();
       info.setAcceptedMediaTypes( Collections.singletonList( new Preference<MediaType>( MediaType.APPLICATION_JSON ) ) );
       info.setAcceptedLanguages( Collections.singletonList( new Preference<Language>(new Language( Locale.getDefault().toString()) )));
+      request.getConditions().setUnmodifiedSince( lastModified );
       request.setClientInfo( info );
 
       int tries = 3;
