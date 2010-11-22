@@ -26,14 +26,21 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.domain.contact.ContactValue;
+import se.streamsource.streamflow.domain.form.AttachmentFieldSubmission;
+import se.streamsource.streamflow.domain.form.AttachmentFieldValue;
 import se.streamsource.streamflow.domain.form.EffectiveFieldValue;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.resource.caze.CaseVisitorConfigValue;
 import se.streamsource.streamflow.util.Strings;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseVisitor;
-import se.streamsource.streamflow.web.domain.interaction.gtd.*;
+import se.streamsource.streamflow.web.domain.entity.form.FieldEntity;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
 import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachments;
@@ -61,6 +68,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -75,6 +83,9 @@ public class CasePdfGenerator
 {
    @Structure
    UnitOfWorkFactory uowf;
+
+   @Structure
+   ValueBuilderFactory vbf;
 
    @Service
    AttachmentStore store;
@@ -270,25 +281,26 @@ public class CasePdfGenerator
 
          List<EffectiveFieldValue> fields = ((SubmittedForms.Data) effectiveFields).effectiveFieldValues().get().fields().get();
 
-         Map<EntityReference, List<EffectiveFieldValue>> sortedForms = new HashMap<EntityReference, List<EffectiveFieldValue>>( 10 );
+         Map<EntityReference, List<EffectiveFieldValue>> forms = new LinkedHashMap<EntityReference, List<EffectiveFieldValue>>( 10 );
 
-         // sort
+         // sort effective fields per form
          for (EffectiveFieldValue field : fields)
          {
-            if (!sortedForms.containsKey( field.form().get() ))
+            if (!forms.containsKey( field.form().get() ))
             {
                List<EffectiveFieldValue> formFields = new ArrayList<EffectiveFieldValue>();
                formFields.add( field );
-               sortedForms.put( field.form().get(), formFields );
+               forms.put( field.form().get(), formFields );
             } else
             {
-               sortedForms.get( field.form().get() ).add( field );
+               forms.get( field.form().get() ).add( field );
             }
          }
 
          Date lastSubmittedOn = null;
          String lastSubmittedBy = "";
-         for (Map.Entry<EntityReference, List<EffectiveFieldValue>> entityReferenceListEntry : sortedForms.entrySet())
+
+         for (Map.Entry<EntityReference, List<EffectiveFieldValue>> entityReferenceListEntry : forms.entrySet())
          {
             Describable form = uowf.currentUnitOfWork().get( Describable.class, entityReferenceListEntry.getKey().identity() );
 
@@ -296,12 +308,24 @@ public class CasePdfGenerator
             document.underLine( form.getDescription(), valueFontBold );
             document.println( "", valueFont );
 
-            Map<String, String> fieldKeyValues = new HashMap<String, String>();
+            Map<String, String> fieldKeyValues = new LinkedHashMap<String, String>();
             for (EffectiveFieldValue field : entityReferenceListEntry.getValue())
             {
                Describable fieldName = uowf.currentUnitOfWork().get( Describable.class, field.field().get().identity() );
-               fieldKeyValues.put( fieldName.getDescription(), field.value().get() );
 
+               // convert JSON String if field type AttachmentFieldValue
+               if (AttachmentFieldValue.class.getName().equals(
+                     uowf.currentUnitOfWork().get( FieldEntity.class, field.field().get().identity() ).fieldValue().get().type().getName() ))
+               {
+                  AttachmentFieldSubmission attachment = vbf.newValueFromJSON( AttachmentFieldSubmission.class, field.value().get() );
+                  fieldKeyValues.put( fieldName.getDescription(), attachment.name().get() );
+
+               } else
+               {
+                  fieldKeyValues.put( fieldName.getDescription(), field.value().get() );
+               }
+
+               // keep track of last submitter and submission date
                if (lastSubmittedOn == null || lastSubmittedOn.before( field.submissionDate().get() ))
                {
                   lastSubmittedOn = field.submissionDate().get();
@@ -318,9 +342,10 @@ public class CasePdfGenerator
 
             tabStop = document.calculateTabStop( valueFontBold, fieldKeyValues.keySet().toArray( new String[fieldKeyValues.keySet().size()] ) );
 
-            for (Map.Entry<String, String> stringStringEntry : fieldKeyValues.entrySet())
+            for (Map.Entry<String, String> entry : fieldKeyValues.entrySet())
             {
-               document.printLabelAndText( stringStringEntry.getKey() + ":", valueFontBold, stringStringEntry.getValue(), valueFont, tabStop );
+               if( Strings.notEmpty( entry.getValue() ))
+                  document.printLabelAndText( entry.getKey() + ":", valueFontBold, entry.getValue(), valueFont, tabStop );
             }
 
          }
