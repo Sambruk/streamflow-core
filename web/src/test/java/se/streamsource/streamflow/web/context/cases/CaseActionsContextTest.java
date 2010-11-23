@@ -24,7 +24,14 @@ import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.util.Iterables;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.web.context.ContextTest;
-import se.streamsource.streamflow.web.context.administration.*;
+import se.streamsource.streamflow.web.context.administration.CaseTypesContext;
+import se.streamsource.streamflow.web.context.administration.MembersContext;
+import se.streamsource.streamflow.web.context.administration.OrganizationalUnitsContext;
+import se.streamsource.streamflow.web.context.administration.OrganizationsContext;
+import se.streamsource.streamflow.web.context.administration.ProjectsContext;
+import se.streamsource.streamflow.web.context.administration.ResolutionsContext;
+import se.streamsource.streamflow.web.context.administration.SelectedCaseTypesContext;
+import se.streamsource.streamflow.web.context.administration.SelectedResolutionsContext;
 import se.streamsource.streamflow.web.context.administration.labels.LabelsContext;
 import se.streamsource.streamflow.web.context.administration.labels.SelectedLabelsContext;
 import se.streamsource.streamflow.web.context.organizations.OrganizationalUnitsContextTest;
@@ -45,10 +52,10 @@ import se.streamsource.streamflow.web.domain.structure.user.User;
 
 import java.util.List;
 
-import static java.util.Arrays.asList;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.assertThat;
-import static org.qi4j.api.util.Iterables.first;
+import static java.util.Arrays.*;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+import static org.qi4j.api.util.Iterables.*;
 
 /**
  * Check lifecycle of a case
@@ -219,7 +226,7 @@ public class CaseActionsContextTest
 
       // Check open actions
       {
-         checkActions( caze, "assign", "sendto", "close", "delete", "print" );
+         checkActions( caze, "assign", "sendto", "close", "delete", "export" );
       }
 
       // Assign case
@@ -240,7 +247,7 @@ public class CaseActionsContextTest
 
       // Check assigned actions
       {
-         checkActions( caze, "sendto", "unassign", "onhold", "close", "delete", "print" );
+         checkActions( caze, "sendto", "unassign", "onhold", "close", "delete", "export" );
       }
 
       // Resolve case
@@ -264,7 +271,7 @@ public class CaseActionsContextTest
 
       // Check resolved actions
       {
-         checkActions( caze, "reopen", "print" );
+         checkActions( caze, "reopen", "export" );
       }
 
       // Reopen case
@@ -282,7 +289,7 @@ public class CaseActionsContextTest
 
       // Check reopened actions
       {
-         checkActions( caze, "sendto", "unassign", "onhold", "close", "delete", "print" );
+         checkActions( caze, "sendto", "unassign", "onhold", "close", "delete", "export" );
       }
 
       // Close
@@ -300,7 +307,7 @@ public class CaseActionsContextTest
 
       // Check closed actions
       {
-         checkActions( caze, "reopen", "print" );
+         checkActions( caze, "reopen", "export" );
       }
    }
 
