@@ -52,6 +52,8 @@ public interface FormDraft
 
    void changeFieldAttachmentValue( AttachmentFieldDTO fieldAttachment );
 
+   FieldSubmissionValue getFieldValue( EntityReference fieldId );
+
    interface Data
    {
       Property<FormDraftValue> formDraftValue();
@@ -250,6 +252,11 @@ public interface FormDraft
             }
          }
          return null;
+      }
+
+      public FieldSubmissionValue getFieldValue( EntityReference fieldId )
+      {
+         return findField( formDraftValue().get(), fieldId );
       }
 
       public void changedFormDraft( DomainEvent event, FormDraftValue formDraftValue )

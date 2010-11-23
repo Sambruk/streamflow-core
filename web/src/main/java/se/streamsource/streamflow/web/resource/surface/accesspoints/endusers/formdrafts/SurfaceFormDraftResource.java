@@ -21,6 +21,7 @@ import se.streamsource.dci.restlet.server.SubResource;
 import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.formdrafts.SurfaceFormDraftContext;
 import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.formdrafts.signature.SurfaceSignatureContext;
 import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.formdrafts.summary.SurfaceSummaryContext;
+import se.streamsource.streamflow.web.resource.workspace.cases.AttachmentsResource;
 
 /**
  * JAVADOC
@@ -43,5 +44,11 @@ public class SurfaceFormDraftResource
    public void signature()
    {
       subResourceContexts( SurfaceSignatureContext.class );
+   }
+
+   @SubResource
+   public void attachments()
+   {
+      subResource( AttachmentsResource.class );
    }
 }

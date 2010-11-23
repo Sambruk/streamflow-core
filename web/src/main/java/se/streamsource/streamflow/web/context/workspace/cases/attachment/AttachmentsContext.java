@@ -33,6 +33,7 @@ import org.restlet.data.Status;
 import org.restlet.ext.fileupload.RestletFileUpload;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
+import org.restlet.service.MetadataService;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.LinksValue;
@@ -64,6 +65,9 @@ public class AttachmentsContext
 
    @Service
    FileItemFactory factory;
+
+   @Service
+   MetadataService metadata;
 
    public LinksValue index()
    {
@@ -137,7 +141,8 @@ public class AttachmentsContext
                   attachment.changeSize( fi.getSize() );
 
                   // Try to set mimetype
-                  MediaType mediaType = RoleMap.role( Application.class ).getMetadataService().getMediaType( fi.getName().split( "\\." )[1] );
+                  //MediaType mediaType = RoleMap.role( Application.class ).getMetadataService().getMediaType( fi.getName().split( "\\." )[1] );
+                  MediaType mediaType = metadata.getMediaType( fi.getName().split( "\\." )[1] );
                   if (mediaType != null)
                      attachment.changeMimeType( mediaType.getName() );
                }

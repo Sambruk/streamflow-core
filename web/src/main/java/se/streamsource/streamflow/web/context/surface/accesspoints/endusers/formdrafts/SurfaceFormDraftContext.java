@@ -18,8 +18,15 @@
 package se.streamsource.streamflow.web.context.surface.accesspoints.endusers.formdrafts;
 
 import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.value.ValueBuilder;
+import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
+import se.streamsource.streamflow.domain.form.AttachmentFieldDTO;
+import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
+import se.streamsource.streamflow.domain.form.FieldValue;
+import se.streamsource.streamflow.domain.form.FieldValueDTO;
 import se.streamsource.streamflow.domain.form.FormDraftValue;
 import se.streamsource.streamflow.domain.form.FormSignatureValue;
 import se.streamsource.streamflow.resource.caze.FieldDTO;
@@ -28,6 +35,7 @@ import se.streamsource.streamflow.web.domain.structure.form.EndUserCases;
 import se.streamsource.streamflow.web.domain.structure.form.FormDraft;
 import se.streamsource.streamflow.web.domain.structure.form.FormDrafts;
 
+import se.streamsource.dci.value.StringValue;
 import static se.streamsource.dci.api.RoleMap.role;
 
 /**
@@ -36,6 +44,9 @@ import static se.streamsource.dci.api.RoleMap.role;
 public class SurfaceFormDraftContext
       implements IndexContext<FormDraftValue>
 {
+   @Structure
+   ValueBuilderFactory vbf;
+
    public FormDraftValue index()
    {
       return RoleMap.role( FormDraftValue.class );
@@ -44,9 +55,26 @@ public class SurfaceFormDraftContext
    public void updatefield( FieldDTO field )
    {
       FormDraft formDraft = RoleMap.role( FormDraft.class );
-
       formDraft.changeFieldValue( EntityReference.parseEntityReference( field.field().get() ), field.value().get() );
    }
+
+   public void updateattachmentfield( AttachmentFieldDTO fieldAttachment )
+   {
+      FormDraft formDraft = role( FormDraft.class);
+      formDraft.changeFieldAttachmentValue( fieldAttachment );
+   }
+
+   public FieldValueDTO fieldvalue( StringValue fieldId )
+   {
+      FormDraft formDraft = RoleMap.role( FormDraft.class );
+      FieldSubmissionValue value = formDraft.getFieldValue( EntityReference.parseEntityReference( fieldId.string().get() ) );
+
+      ValueBuilder<FieldValueDTO> builder = vbf.newValueBuilder( FieldValueDTO.class );
+      builder.prototype().field().set( value.field().get().field().get() );
+      builder.prototype().value().set( value.value().get() );
+      return builder.newInstance();
+   }
+
 
    public void addsignature( FormSignatureValue signature )
    {
