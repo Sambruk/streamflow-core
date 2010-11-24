@@ -29,7 +29,6 @@ import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.WriterRepresentation;
 import org.restlet.resource.ResourceException;
-import se.streamsource.dci.restlet.server.ResultWriter;
 import se.streamsource.dci.restlet.server.velocity.ValueCompositeContext;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.LinksValue;
@@ -43,7 +42,7 @@ import java.util.List;
  * JAVADOC
  */
 public class LinksResultWriter
-   implements ResultWriter
+   extends AbstractResultWriter
 {
    private static final List<MediaType> supportedLinkMediaTypes = Arrays.asList( MediaType.APPLICATION_JSON);
    private static final List<MediaType> supportedLinksMediaTypes = Arrays.asList( MediaType.APPLICATION_JSON, MediaType.TEXT_HTML, MediaType.APPLICATION_ATOM );
@@ -60,7 +59,7 @@ public class LinksResultWriter
    {
       if (result instanceof LinkValue)
       {
-         MediaType type = response.getRequest().getClientInfo().getPreferredMediaType( supportedLinkMediaTypes );
+         MediaType type = getVariant( response.getRequest(), ENGLISH, supportedLinkMediaTypes ).getMediaType();
          if (MediaType.APPLICATION_JSON.equals(type))
          {
             response.setEntity( new StringRepresentation(((LinkValue) result).toJSON(), MediaType.APPLICATION_JSON));
@@ -76,7 +75,7 @@ public class LinksResultWriter
          }
       } else if (result instanceof LinksValue)
       {
-         MediaType type = response.getRequest().getClientInfo().getPreferredMediaType( supportedLinksMediaTypes );
+         MediaType type = getVariant( response.getRequest(), ENGLISH, supportedLinksMediaTypes ).getMediaType();
          if (MediaType.APPLICATION_JSON.equals( type ))
          {
             response.setEntity( new StringRepresentation(((LinksValue) result).toJSON(), MediaType.APPLICATION_JSON));

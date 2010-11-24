@@ -27,7 +27,7 @@ import se.streamsource.streamflow.web.resource.surface.SurfaceResource;
 import se.streamsource.streamflow.web.resource.workspace.WorkspaceResource;
 
 /**
- * JAVADOC
+ * Root of Streamflow REST API
  */
 public class RootResource
       extends CommandQueryResource

@@ -30,7 +30,6 @@ import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.WriterRepresentation;
 import org.restlet.resource.ResourceException;
-import se.streamsource.dci.restlet.server.ResultWriter;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -41,7 +40,7 @@ import java.util.List;
  * JAVADOC
  */
 public class ValueDescriptorResultWriter
-      implements ResultWriter
+      extends AbstractResultWriter
 {
    private static final List<MediaType> supportedMediaTypes = Arrays.asList( MediaType.APPLICATION_JSON, MediaType.TEXT_HTML );
 
@@ -56,7 +55,7 @@ public class ValueDescriptorResultWriter
    {
       if (result instanceof ValueDescriptor)
       {
-         MediaType type = response.getRequest().getClientInfo().getPreferredMediaType( supportedMediaTypes );
+         MediaType type = getVariant( response.getRequest(), ENGLISH, supportedMediaTypes).getMediaType();
          if (type.equals( MediaType.APPLICATION_JSON ))
          {
             JSONObject json = new JSONObject();

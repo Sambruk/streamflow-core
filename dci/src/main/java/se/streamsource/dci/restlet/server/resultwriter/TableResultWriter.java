@@ -30,7 +30,6 @@ import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 import org.restlet.representation.WriterRepresentation;
 import org.restlet.resource.ResourceException;
-import se.streamsource.dci.restlet.server.ResultWriter;
 import se.streamsource.dci.restlet.server.velocity.ValueCompositeContext;
 import se.streamsource.dci.value.CellValue;
 import se.streamsource.dci.value.ColumnValue;
@@ -46,7 +45,7 @@ import java.util.List;
  * JAVADOC
  */
 public class TableResultWriter
-      implements ResultWriter
+      extends AbstractResultWriter
 {
    private static final List<MediaType> supportedMediaTypes = Arrays.asList( MediaType.APPLICATION_JSON, MediaType.TEXT_HTML );
    private Template htmlTemplate;
@@ -60,7 +59,7 @@ public class TableResultWriter
    {
       if (result instanceof TableValue)
       {
-         MediaType type = response.getRequest().getClientInfo().getPreferredMediaType( supportedMediaTypes );
+         MediaType type = getVariant(response.getRequest(), ENGLISH, supportedMediaTypes).getMediaType();
          if (type.equals( MediaType.APPLICATION_JSON ))
          {
             try

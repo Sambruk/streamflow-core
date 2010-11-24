@@ -27,7 +27,6 @@ import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.WriterRepresentation;
 import org.restlet.resource.ResourceException;
-import se.streamsource.dci.restlet.server.ResultWriter;
 import se.streamsource.dci.restlet.server.velocity.ValueCompositeContext;
 import se.streamsource.dci.value.ResourceValue;
 
@@ -40,7 +39,7 @@ import java.util.List;
  * JAVADOC
  */
 public class ResourceResultWriter
-   implements ResultWriter
+   extends AbstractResultWriter
 {
    private static final List<MediaType> supportedMediaTypes = Arrays.asList( MediaType.APPLICATION_JSON, MediaType.TEXT_HTML, MediaType.APPLICATION_ATOM );
    private Template htmlTemplate;
@@ -54,12 +53,12 @@ public class ResourceResultWriter
    {
       if (result instanceof ResourceValue)
       {
-         MediaType type = response.getRequest().getClientInfo().getPreferredMediaType( supportedMediaTypes );
-         if (type.equals( MediaType.APPLICATION_JSON ))
+         MediaType type = getVariant( response.getRequest(), ENGLISH, supportedMediaTypes ).getMediaType();
+         if (MediaType.APPLICATION_JSON.equals(type))
          {
             response.setEntity( new StringRepresentation(((ResourceValue) result).toJSON(), MediaType.APPLICATION_JSON));
             return true;
-         } else if (type.equals( MediaType.TEXT_HTML ))
+         } else if (MediaType.TEXT_HTML.equals(type))
          {
             Representation rep = new WriterRepresentation( MediaType.TEXT_HTML )
             {

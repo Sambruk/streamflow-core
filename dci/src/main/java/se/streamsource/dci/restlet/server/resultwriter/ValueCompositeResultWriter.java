@@ -28,7 +28,6 @@ import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.WriterRepresentation;
 import org.restlet.resource.ResourceException;
-import se.streamsource.dci.restlet.server.ResultWriter;
 import se.streamsource.dci.restlet.server.velocity.ValueCompositeContext;
 
 import java.io.IOException;
@@ -40,7 +39,7 @@ import java.util.List;
  * JAVADOC
  */
 public class ValueCompositeResultWriter
-      implements ResultWriter
+      extends AbstractResultWriter
 {
    private static final List<MediaType> supportedMediaTypes = Arrays.asList( MediaType.APPLICATION_JSON, MediaType.TEXT_HTML );
    private Template valueHtmlTemplate;
@@ -56,7 +55,7 @@ public class ValueCompositeResultWriter
    {
       if (result instanceof Value)
       {
-         MediaType type = response.getRequest().getClientInfo().getPreferredMediaType( supportedMediaTypes );
+         MediaType type = getVariant( response.getRequest(), ENGLISH, supportedMediaTypes ).getMediaType();
          if (type.equals( MediaType.APPLICATION_JSON ))
          {
             StringRepresentation representation = new StringRepresentation( ((Value) result).toJSON(),

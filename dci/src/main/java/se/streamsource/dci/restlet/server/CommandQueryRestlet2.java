@@ -37,13 +37,11 @@ import org.restlet.Uniform;
 import org.restlet.data.*;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
-import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import se.streamsource.dci.api.RoleMap;
 
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -272,25 +270,5 @@ public abstract class CommandQueryRestlet2
          response.setEntity( new StringRepresentation( e.getMessage() ) );
          response.setStatus( Status.SERVER_ERROR_INTERNAL );
       }
-   }
-
-   private Variant getVariant( Request request )
-   {
-      List<Language> possibleLanguages = Arrays.asList( Language.ENGLISH );
-      Language language = request.getClientInfo().getPreferredLanguage( possibleLanguages );
-
-      if (language == null)
-         language = Language.ENGLISH;
-
-      List<MediaType> possibleMediaTypes = Arrays.asList( MediaType.TEXT_HTML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM );
-      MediaType responseType = request.getClientInfo().getPreferredMediaType( possibleMediaTypes );
-
-      if (responseType == null)
-         responseType = MediaType.TEXT_HTML;
-
-      Variant variant = new Variant( responseType, language );
-      variant.setCharacterSet( CharacterSet.UTF_8 );
-
-      return variant;
    }
 }
