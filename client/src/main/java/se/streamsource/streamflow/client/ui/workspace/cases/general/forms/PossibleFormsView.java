@@ -29,26 +29,23 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.client.StreamflowApplication;
+import se.streamsource.streamflow.client.util.CommandTask;
+import se.streamsource.streamflow.client.util.LinkValueListModel;
 import se.streamsource.streamflow.client.util.RefreshWhenVisible;
 import se.streamsource.streamflow.client.util.Refreshable;
-import se.streamsource.streamflow.client.util.LinkValueListModel;
 import se.streamsource.streamflow.domain.form.FormDraftValue;
 import se.streamsource.streamflow.domain.form.PageSubmissionValue;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 
-import javax.swing.BorderFactory;
-import javax.swing.JPanel;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.GridLayout;
-import java.awt.Point;
-import java.awt.Rectangle;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Map;
 
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.matches;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withNames;
 
 public class PossibleFormsView extends JPanel
       implements ActionListener, Refreshable, TransactionListener
@@ -144,13 +141,28 @@ public class PossibleFormsView extends JPanel
          {
             public Object finish( Map map ) throws WizardException
             {
-               formDraftClient.putCommand( "submit" );
+               new CommandTask()
+               {
+                  @Override
+                  protected void command() throws Exception
+                  {
+                     formDraftClient.putCommand( "submit" );
+                  }
+               }.execute();
                return null;
             }
 
             public boolean cancel( Map map )
             {
-               formDraftClient.delete();
+               new CommandTask()
+               {
+                  @Override
+                  public void command()
+                     throws Exception
+                  {
+                     formDraftClient.delete();
+                  }
+               }.execute();
                return true;
             }
          } );
