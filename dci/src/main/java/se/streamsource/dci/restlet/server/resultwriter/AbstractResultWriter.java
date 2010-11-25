@@ -43,8 +43,8 @@ public abstract class AbstractResultWriter
 
       MediaType responseType = request.getClientInfo().getPreferredMediaType( possibleMediaTypes );
 
-      if (responseType == null)
-         responseType = possibleMediaTypes.get( 0 );
+//      if (responseType == null)
+//         responseType = possibleMediaTypes.get( 0 );
 
       Variant variant = new Variant( responseType, language );
       variant.setCharacterSet( CharacterSet.UTF_8 );
