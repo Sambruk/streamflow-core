@@ -28,7 +28,6 @@ import org.restlet.representation.Representation;
 import org.restlet.representation.WriterRepresentation;
 import org.restlet.resource.ResourceException;
 import org.restlet.service.MetadataService;
-import se.streamsource.dci.restlet.server.ResultWriter;
 import se.streamsource.dci.restlet.server.velocity.ValueCompositeContext;
 
 import java.io.IOException;
@@ -40,7 +39,7 @@ import java.util.List;
  * JAVADOC
  */
 public class ResourceTemplateResultWriter
-      implements ResultWriter
+      extends AbstractResultWriter
 {
    private static final List<MediaType> supportedMediaTypes = Arrays.asList( MediaType.TEXT_HTML, MediaType.APPLICATION_ATOM );
 
@@ -50,7 +49,7 @@ public class ResourceTemplateResultWriter
 
    public boolean write( final Object result, final Response response ) throws ResourceException
    {
-      MediaType type = response.getRequest().getClientInfo().getPreferredMediaType( supportedMediaTypes );
+      MediaType type = getVariant( response.getRequest(), ENGLISH, supportedMediaTypes ).getMediaType();
       if (type != null)
       {
          // Try to find template for this specific resource
