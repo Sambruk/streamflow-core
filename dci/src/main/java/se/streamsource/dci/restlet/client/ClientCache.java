@@ -68,7 +68,7 @@ public class ClientCache
 
             pathToIdentity.put( path, value.getEntity() );
 
-            LoggerFactory.getLogger( ClientCache.class ).debug( "Update:"+value.getEntity()+" ("+path+") -> "+value.getLastModified() );
+            LoggerFactory.getLogger( ClientCache.class ).info( "Update:"+value.getEntity()+" ("+ref.toString()+") -> "+value.getLastModified() );
          }
       }
    }
@@ -81,7 +81,7 @@ public class ClientCache
          CacheInfo cacheInfo = identityToTimestamp.get( identity );
          if (cacheInfo != null)
          {
-            LoggerFactory.getLogger( ClientCache.class ).debug( "Send:"+cacheInfo.getEntity()+" ("+getIdentityPath( request.getResourceRef() )+") -> "+cacheInfo.getLastModified() );
+            LoggerFactory.getLogger( ClientCache.class ).info( "Send:  "+cacheInfo.getEntity()+" ("+request.getMethod().getName()+":"+request.getResourceRef()+") -> "+cacheInfo.getLastModified() );
             request.getConditions().setUnmodifiedSince( cacheInfo.getLastModified() );
          }
       }

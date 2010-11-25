@@ -53,12 +53,12 @@ public class CommandQueryClient
       return reference;
    }
 
-   public <T extends ValueComposite> T query( String operation, Class<T> queryResult ) throws ResourceException
+   public synchronized <T extends ValueComposite> T query( String operation, Class<T> queryResult ) throws ResourceException
    {
       return query( operation, null, queryResult );
    }
 
-   public <T extends ValueComposite> T query( String operation, ValueComposite queryValue, Class<T> queryResult ) throws ResourceException
+   public synchronized <T extends ValueComposite> T query( String operation, ValueComposite queryValue, Class<T> queryResult ) throws ResourceException
    {
       Response response = invokeQuery( operation, queryValue );
 
@@ -77,7 +77,7 @@ public class CommandQueryClient
       }
    }
 
-   public Representation queryRepresentation( String query, ValueComposite queryValue )
+   public synchronized Representation queryRepresentation( String query, ValueComposite queryValue )
    {
       Response response = invokeQuery( query, queryValue );
 
@@ -115,17 +115,17 @@ public class CommandQueryClient
       } );
    }
 
-   public void postLink( LinkValue link ) throws ResourceException
+   public synchronized void postLink( LinkValue link ) throws ResourceException
    {
       postCommand( link.href().get(), new EmptyRepresentation() );
    }
 
-   public void postCommand( String operation ) throws ResourceException
+   public synchronized void postCommand( String operation ) throws ResourceException
    {
       postCommand( operation, new EmptyRepresentation() );
    }
 
-   public void postCommand( String operation, ValueComposite command ) throws ResourceException
+   public synchronized void postCommand( String operation, ValueComposite command ) throws ResourceException
    {
       Representation commandRepresentation;
       commandRepresentation = new StringRepresentation( command.toJSON(), MediaType.APPLICATION_JSON, null, CharacterSet.UTF_8 );
@@ -133,13 +133,13 @@ public class CommandQueryClient
       postCommand( operation, commandRepresentation );
    }
 
-   public void postCommand( String operation, Representation commandRepresentation )
+   public synchronized void postCommand( String operation, Representation commandRepresentation )
          throws ResourceException
    {
       postCommand( operation, commandRepresentation, cqcFactory.getHandler() );
    }
 
-   public void postCommand( String operation, Representation commandRepresentation, ResponseHandler responseHandler )
+   public synchronized void postCommand( String operation, Representation commandRepresentation, ResponseHandler responseHandler )
          throws ResourceException
    {
       Reference ref = new Reference( reference.toUri().toString() + operation );
@@ -226,22 +226,22 @@ public class CommandQueryClient
       return response;
    }
 
-   public void create() throws ResourceException
+   public synchronized void create() throws ResourceException
    {
       putCommand( null );
    }
 
-   public void putCommand( String operation ) throws ResourceException
+   public synchronized void putCommand( String operation ) throws ResourceException
    {
       putCommand( operation, null, cqcFactory.getHandler() );
    }
 
-   public void putCommand( String operation, ValueComposite command ) throws ResourceException
+   public synchronized void putCommand( String operation, ValueComposite command ) throws ResourceException
    {
       putCommand( operation, command, cqcFactory.getHandler() );
    }
 
-   public void putCommand( String operation, ValueComposite command, ResponseHandler responseHandler) throws ResourceException
+   public synchronized void putCommand( String operation, ValueComposite command, ResponseHandler responseHandler) throws ResourceException
    {
       Representation commandRepresentation;
       if (command != null)
@@ -311,12 +311,12 @@ public class CommandQueryClient
       }
    }
 
-   public void delete() throws ResourceException
+   public synchronized void delete() throws ResourceException
    {
       delete(cqcFactory.getHandler());
    }
 
-   public void delete(ResponseHandler responseHandler) throws ResourceException
+   public synchronized void delete(ResponseHandler responseHandler) throws ResourceException
    {
       Request request = new Request( Method.DELETE, new Reference( reference.toUri() ).toString() );
       ClientInfo info = new ClientInfo();
@@ -371,13 +371,13 @@ public class CommandQueryClient
       }
    }
 
-   public CommandQueryClient getSubClient( String pathSegment )
+   public synchronized CommandQueryClient getSubClient( String pathSegment )
    {
       Reference subReference = reference.clone().addSegment( pathSegment ).addSegment( "" );
       return cqcFactory.newClient(subReference);
    }
 
-   public CommandQueryClient getClient( String relativePath )
+   public synchronized CommandQueryClient getClient( String relativePath )
    {
       Reference reference = this.reference.clone();
       if (relativePath.startsWith( "/" ))
@@ -391,7 +391,7 @@ public class CommandQueryClient
       return cqcFactory.newClient( reference );
    }
 
-   public CommandQueryClient getClient( LinkValue link )
+   public synchronized CommandQueryClient getClient( LinkValue link )
    {
       return getClient( link.href().get() );
    }

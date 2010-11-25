@@ -202,9 +202,12 @@ public class WorkspaceView
                   setContextString( contextItem );
                }
 
-               popup.setVisible( false );
-               popup.dispose();
-               popup = null;
+               if (popup != null)
+               {
+                  popup.setVisible( false );
+                  popup.dispose();
+                  popup = null;
+               }
             }
          }
       } );
@@ -288,7 +291,7 @@ public class WorkspaceView
       int selectedContext = contextView.getWorkspaceContextList().getSelectedIndex();
       if (selectedContext != -1)
       {
-         contextView.getWorkspaceContextList().setSelectedIndex( -1 );
+         contextView.getWorkspaceContextList().clearSelection();
          contextView.getWorkspaceContextList().setSelectedIndex( selectedContext );
       }
 
