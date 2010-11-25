@@ -57,6 +57,10 @@
             <groupId>se.streamsource.streamflow</groupId>
             <artifactId>streamflow-dci</artifactId>
         </dependency>
+        <dependency>
+            <groupId>se.streamsource.streamflow</groupId>
+            <artifactId>streamflow-fileconfig</artifactId>
+        </dependency>
 
 
         <!-- Help contents -->

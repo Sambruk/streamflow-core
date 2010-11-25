@@ -94,6 +94,11 @@
             <artifactId>streamflow-infrastructure</artifactId>
             <version>1.2-SNAPSHOT</version>
         </dependency>
+        
+        <dependency>
+            <groupId>se.streamsource.streamflow</groupId>
+            <artifactId>streamflow-fileconfig</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>se.streamsource.streamflow</groupId>
