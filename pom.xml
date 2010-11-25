@@ -33,6 +33,7 @@
     <modules>
         <module>common</module>
         <module>infrastructure</module>
+        <module>fileconfig</module>
         <module>dci</module>
         <module>client</module>
         <module>serverplugin</module>
@@ -427,6 +428,11 @@
                 <artifactId>streamflow-infrastructure</artifactId>
                 <version>${project.version}</version>
             </dependency>
+	            <dependency>
+	                <groupId>se.streamsource.streamflow</groupId>
+	                <artifactId>streamflow-fileconfig</artifactId>
+	                <version>${project.version}</version>
+	            </dependency>
             <dependency>
                 <groupId>se.streamsource.streamflow</groupId>
                 <artifactId>streamflow-dci</artifactId>
