@@ -136,7 +136,7 @@ public class ProxyUsersView
    {
       final ResetPasswordDialog dialog = resetPwdDialogs.iterator().next();
 
-      final ProxyUserDTO proxyUser = tableModel.getElementAt( proxyUsersTable.getSelectedRow() );
+      final ProxyUserDTO proxyUser = tableModel.getElementAt( proxyUsersTable.convertRowIndexToModel( proxyUsersTable.getSelectedRow()) );
 
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.reset_password_title ) + ": " + proxyUser.description().get() );
 
@@ -159,7 +159,7 @@ public class ProxyUsersView
    public Task remove()
    {
       ConfirmationDialog dialog = confirmationDialog.iterator().next();
-      final ProxyUserDTO proxyUser = tableModel.getElementAt( proxyUsersTable.getSelectedRow() );
+      final ProxyUserDTO proxyUser = tableModel.getElementAt( proxyUsersTable.convertRowIndexToView( proxyUsersTable.getSelectedRow()) );
       dialog.setRemovalMessage( proxyUser.description().get() );
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.remove_proxyuser_title ) );
 

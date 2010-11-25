@@ -157,7 +157,8 @@ public class UsersAdministrationView
    public Task resetPassword()
    {
       final ResetPasswordDialog dialog = resetPwdDialogs.iterator().next();
-      dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.reset_password_title ) + ": " + tableModel.getElementAt( usersTable.getSelectedRow()).text().get() );
+      final UserEntityValue userLink = tableModel.getElementAt( usersTable.convertRowIndexToModel( usersTable.getSelectedRow() ) );
+      dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.reset_password_title ) + ": " + userLink.text().get() );
 
       if (dialog.password() != null)
       {
@@ -167,7 +168,7 @@ public class UsersAdministrationView
             public void command()
                throws Exception
             {
-               model.resetPassword( tableModel.getElementAt( usersTable.getSelectedRow()), dialog.password() );
+               model.resetPassword( userLink, dialog.password() );
             }
          };
       } else
