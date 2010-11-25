@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.web.context.administration;
 
+import org.qi4j.api.entity.Identity;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.structure.Module;
@@ -74,5 +75,7 @@ public class CaseTypeContext
       CaseTypes toCaseTypes = module.unitOfWorkFactory().currentUnitOfWork().get( CaseTypes.class, to.entity().get() );
       CaseType caseType = RoleMap.role( CaseType.class );
       RoleMap.role( CaseTypes.class ).moveCaseType( caseType, toCaseTypes );
+
+      RoleMap.current().set( RoleMap.role( CaseTypes.class ), Identity.class );
    }
 }

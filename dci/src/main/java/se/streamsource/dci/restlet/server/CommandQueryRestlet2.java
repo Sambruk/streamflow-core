@@ -155,15 +155,25 @@ public abstract class CommandQueryRestlet2
                   try
                   {
                      EntityComposite entity = RoleMap.role( EntityComposite.class );
-                     EntityState state = spi.getEntityState( entity );
-                     lastModified = new Date( state.lastModified());
-                     tag = new Tag(state.identity().identity()+"/"+state.version());
+
+                     uow.complete();
+
+                     UnitOfWork lastModifiedUoW = uowf.newUnitOfWork(  );
+                     try
+                     {
+                        entity = lastModifiedUoW.get( entity );
+                        EntityState state = spi.getEntityState( entity );
+                        lastModified = new Date( state.lastModified());
+                        tag = new Tag(state.identity().identity()+"/"+state.version());
+                     } finally
+                     {
+                        lastModifiedUoW.discard();
+                     }
                   } catch (IllegalArgumentException e)
                   {
                      // Ignore
+                     uow.complete();
                   }
-
-                  uow.complete();
 
                   Object result = commandResult.getResult();
                   if (result != null)

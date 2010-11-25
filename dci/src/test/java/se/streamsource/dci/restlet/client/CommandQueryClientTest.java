@@ -99,7 +99,7 @@ public class CommandQueryClientTest
    {
       module.addObjects( RootContext.class, SubContext.class, SubContext2.class, RootResource.class, SubResource1.class );
 
-      module.addObjects( CommandQueryClient.class );
+      module.addObjects( CommandQueryClientFactory.class, CommandQueryClient.class );
 
 
       module.addValues( TestQuery.class, TestResult.class, TestCommand.class );
@@ -134,7 +134,7 @@ public class CommandQueryClientTest
 
       Client client = new Client( Protocol.HTTP );
       Reference ref = new Reference( "http://localhost:8888/" );
-      cqc = objectBuilderFactory.newObjectBuilder( CommandQueryClient.class ).use( ref, client, new NullResponseHandler() ).newInstance();
+      cqc = objectBuilderFactory.newObjectBuilder( CommandQueryClientFactory.class ).use(client, new NullResponseHandler() ).newInstance().newClient( ref );
    }
 
    @After

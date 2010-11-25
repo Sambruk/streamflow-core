@@ -18,19 +18,13 @@
 package se.streamsource.dci.restlet.client;
 
 import org.qi4j.api.common.QualifiedName;
-import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.property.StateHolder;
-import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.api.value.ValueComposite;
-import org.qi4j.spi.Qi4jSPI;
 import org.qi4j.spi.property.PropertyTypeDescriptor;
 import org.qi4j.spi.value.ValueDescriptor;
-import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
-import org.restlet.Uniform;
 import org.restlet.data.*;
 import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.ObjectRepresentation;
@@ -38,38 +32,21 @@ import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.value.LinkValue;
-import se.streamsource.dci.value.ResourceValue;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Collections;
+import java.util.Locale;
 
 /**
  * Base class for client-side Command/Query resources
  */
 public class CommandQueryClient
 {
-   private static final Set<Tag> validTags = new HashSet<Tag>();
-
-   @Structure
-   private ValueBuilderFactory vbf;
-
-   @Structure
-   private ObjectBuilderFactory obf;
-
-   @Structure
-   private Qi4jSPI spi;
-
    @Uses
-   protected ResponseHandler responseHandler;
-
-   @Uses
-   private Uniform client;
+   private CommandQueryClientFactory cqcFactory;
 
    @Uses
    private Reference reference;
-
-   private Date lastModified; // Keep track of last-modified on queries, and send it on commands
-   private Tag tag; // Keep track of E-Tag, to detect when someone else has issued a command to the same resource
 
    public Reference getReference()
    {
@@ -87,38 +64,16 @@ public class CommandQueryClient
 
       if (response.getStatus().isSuccess())
       {
-         saveTagTimeStamp( response );
+         cqcFactory.getCache().updateCache( response );
 
          String jsonValue = response.getEntityAsText();
 
-         T returnValue = vbf.newValueFromJSON( queryResult, jsonValue );
-         return returnValue;
+         return cqcFactory.newValue(queryResult, jsonValue );
       } else
       {
          // This will throw an exception
          handleError( response );
          return null;
-      }
-   }
-
-   private void checkTag()
-   {
-      // Check if we need to refresh first
-      if (!validTags.contains( tag ))
-      {
-         // This will update the lastModified timestamp + tag before issuing the command
-         query( "", ResourceValue.class );
-      }
-   }
-
-   private void saveTagTimeStamp( Response response )
-   {
-      Tag tag = response.getEntity().getTag();
-      if (tag != null)
-      {
-         lastModified = response.getEntity().getModificationDate();
-         this.tag = tag;
-         validTags.add( tag );
       }
    }
 
@@ -140,8 +95,8 @@ public class CommandQueryClient
    private void setQueryParameters( final Reference ref, ValueComposite queryValue )
    {
       // Value as parameter
-      StateHolder holder = spi.getState( queryValue );
-      final ValueDescriptor descriptor = spi.getValueDescriptor( queryValue );
+      StateHolder holder = cqcFactory.getSPI().getState( queryValue );
+      final ValueDescriptor descriptor = cqcFactory.getSPI().getValueDescriptor( queryValue );
 
       ref.setQuery( null );
 
@@ -181,14 +136,12 @@ public class CommandQueryClient
    public void postCommand( String operation, Representation commandRepresentation )
          throws ResourceException
    {
-      postCommand( operation, commandRepresentation, responseHandler );
+      postCommand( operation, commandRepresentation, cqcFactory.getHandler() );
    }
 
    public void postCommand( String operation, Representation commandRepresentation, ResponseHandler responseHandler )
          throws ResourceException
    {
-      checkTag();
-
       Reference ref = new Reference( reference.toUri().toString() + operation );
       Request request = new Request( Method.POST, ref, commandRepresentation );
       ClientInfo info = new ClientInfo();
@@ -196,19 +149,18 @@ public class CommandQueryClient
       info.setAcceptedMediaTypes( Collections.singletonList( new Preference<MediaType>( MediaType.APPLICATION_JSON ) ) );
       info.setAcceptedLanguages( Collections.singletonList( new Preference<Language>(new Language( Locale.getDefault().toString()) )));
       request.setClientInfo( info );
-      request.getConditions().setUnmodifiedSince( lastModified );
+
+      cqcFactory.getCache().updateCommandConditions( request );
 
       Response response = new Response( request );
-      client.handle( request, response );
+      cqcFactory.getClient().handle( request, response );
 
       try
       {
          if (response.getStatus().isSuccess())
          {
-            if (tag != null)
-               validTags.remove( tag );
+            cqcFactory.getCache().updateCache( response );
 
-            saveTagTimeStamp( response );
             responseHandler.handleResponse( response );
          } else
          {
@@ -269,7 +221,7 @@ public class CommandQueryClient
 
       Response response = new Response( request );
 
-      client.handle( request, response );
+      cqcFactory.getClient().handle( request, response );
 
       return response;
    }
@@ -281,13 +233,16 @@ public class CommandQueryClient
 
    public void putCommand( String operation ) throws ResourceException
    {
-      putCommand( operation, null );
+      putCommand( operation, null, cqcFactory.getHandler() );
    }
 
    public void putCommand( String operation, ValueComposite command ) throws ResourceException
    {
-      checkTag();
+      putCommand( operation, command, cqcFactory.getHandler() );
+   }
 
+   public void putCommand( String operation, ValueComposite command, ResponseHandler responseHandler) throws ResourceException
+   {
       Representation commandRepresentation;
       if (command != null)
          commandRepresentation = new StringRepresentation( command.toJSON(), MediaType.APPLICATION_JSON, null, CharacterSet.UTF_8 );
@@ -306,7 +261,9 @@ public class CommandQueryClient
       info.setAcceptedMediaTypes( Collections.singletonList( new Preference<MediaType>( MediaType.APPLICATION_JSON ) ) );
       info.setAcceptedLanguages( Collections.singletonList( new Preference<Language>(new Language( Locale.getDefault().toString()) )));
       request.setClientInfo( info );
-      request.getConditions().setUnmodifiedSince( lastModified );
+
+      cqcFactory.getCache().updateCommandConditions( request );
+
       request.setEntity( commandRepresentation );
       int tries = 3;
       while (true)
@@ -314,17 +271,13 @@ public class CommandQueryClient
          try
          {
             Response response = new Response( request );
-            client.handle( request, response );
+            cqcFactory.getClient().handle( request, response );
 
             try
             {
                if (response.getStatus().isSuccess())
                {
-                  if (tag != null)
-                     validTags.remove( tag );
-
-                  // Reset modification date
-                  saveTagTimeStamp( response );
+                  cqcFactory.getCache().updateCache( response );
 
                   responseHandler.handleResponse( response );
                } else
@@ -360,13 +313,18 @@ public class CommandQueryClient
 
    public void delete() throws ResourceException
    {
-      checkTag();
+      delete(cqcFactory.getHandler());
+   }
 
+   public void delete(ResponseHandler responseHandler) throws ResourceException
+   {
       Request request = new Request( Method.DELETE, new Reference( reference.toUri() ).toString() );
       ClientInfo info = new ClientInfo();
       info.setAcceptedMediaTypes( Collections.singletonList( new Preference<MediaType>( MediaType.APPLICATION_JSON ) ) );
       info.setAcceptedLanguages( Collections.singletonList( new Preference<Language>(new Language( Locale.getDefault().toString()) )));
-      request.getConditions().setUnmodifiedSince( lastModified );
+
+      cqcFactory.getCache().updateCommandConditions( request );
+
       request.setClientInfo( info );
 
       int tries = 3;
@@ -375,19 +333,14 @@ public class CommandQueryClient
          Response response = new Response( request );
          try
          {
-            client.handle( request, response );
+            cqcFactory.getClient().handle( request, response );
             if (!response.getStatus().isSuccess())
             {
                handleError( response );
             } else
             {
                // Reset modification date
-               if (tag != null)
-               {
-                  lastModified = null;
-                  validTags.remove( tag );
-                  tag = null;
-               }
+               cqcFactory.getCache().updateCache( response );
 
                responseHandler.handleResponse( response );
             }
@@ -421,7 +374,7 @@ public class CommandQueryClient
    public CommandQueryClient getSubClient( String pathSegment )
    {
       Reference subReference = reference.clone().addSegment( pathSegment ).addSegment( "" );
-      return obf.newObjectBuilder( getClass() ).use( client, new Context(), subReference, responseHandler ).newInstance();
+      return cqcFactory.newClient(subReference);
    }
 
    public CommandQueryClient getClient( String relativePath )
@@ -435,7 +388,7 @@ public class CommandQueryClient
          reference = reference.normalize();
       }
 
-      return obf.newObjectBuilder( getClass() ).use( client, new Context(), reference, responseHandler ).newInstance();
+      return cqcFactory.newClient( reference );
    }
 
    public CommandQueryClient getClient( LinkValue link )
