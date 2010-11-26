@@ -25,7 +25,23 @@ import org.qi4j.api.property.Property;
 import org.qi4j.api.util.DateFunctions;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.domain.form.*;
+import se.streamsource.streamflow.domain.form.AttachmentFieldDTO;
+import se.streamsource.streamflow.domain.form.AttachmentFieldSubmission;
+import se.streamsource.streamflow.domain.form.CheckboxesFieldValue;
+import se.streamsource.streamflow.domain.form.ComboBoxFieldValue;
+import se.streamsource.streamflow.domain.form.CommentFieldValue;
+import se.streamsource.streamflow.domain.form.DateFieldValue;
+import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
+import se.streamsource.streamflow.domain.form.FieldValue;
+import se.streamsource.streamflow.domain.form.FormDraftValue;
+import se.streamsource.streamflow.domain.form.FormSignatureValue;
+import se.streamsource.streamflow.domain.form.ListBoxFieldValue;
+import se.streamsource.streamflow.domain.form.NumberFieldValue;
+import se.streamsource.streamflow.domain.form.OpenSelectionFieldValue;
+import se.streamsource.streamflow.domain.form.OptionButtonsFieldValue;
+import se.streamsource.streamflow.domain.form.PageSubmissionValue;
+import se.streamsource.streamflow.domain.form.TextAreaFieldValue;
+import se.streamsource.streamflow.domain.form.TextFieldValue;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.util.Strings;
 
@@ -48,7 +64,7 @@ public interface FormDraft
 
    void addFormSignatureValue( FormSignatureValue formSignatureValue );
 
-   void removeFormSignatures( );
+   void removeFormSignatures();
 
    void changeFieldAttachmentValue( AttachmentFieldDTO fieldAttachment );
 
@@ -58,13 +74,15 @@ public interface FormDraft
    {
       Property<FormDraftValue> formDraftValue();
 
-      void changedFormDraft( @Optional DomainEvent event, FormDraftValue formDraftValue);
+      void changedFormDraft( @Optional DomainEvent event, FormDraftValue formDraftValue );
 
       void changedFieldValue( @Optional DomainEvent event, EntityReference fieldId, String fieldValue );
 
-      void addedFormSignatureValue( @Optional DomainEvent event, FormSignatureValue formSignatureValue);
+      void addedFormSignatureValue( @Optional DomainEvent event, FormSignatureValue formSignatureValue );
 
       void removedFormSignatures( @Optional DomainEvent event );
+
+      void changedFieldAttachmentValue( @Optional DomainEvent event, AttachmentFieldDTO fieldAttachment );
    }
 
    abstract class Mixin
@@ -97,39 +115,39 @@ public interface FormDraft
          } // Skip update - same value
 
          FieldValue value = field.field().get().fieldValue().get();
-         if ( value instanceof CheckboxesFieldValue )
+         if (value instanceof CheckboxesFieldValue)
          {
             update = validate( (CheckboxesFieldValue) value, newValue );
-         } else if ( value instanceof ComboBoxFieldValue)
+         } else if (value instanceof ComboBoxFieldValue)
          {
             update = validate( (ComboBoxFieldValue) value, newValue );
-         } else if ( value instanceof CommentFieldValue)
+         } else if (value instanceof CommentFieldValue)
          {
             update = validate( (CommentFieldValue) value, newValue );
-         } else if ( value instanceof DateFieldValue)
+         } else if (value instanceof DateFieldValue)
          {
             update = validate( (DateFieldValue) value, newValue );
-         } else if ( value instanceof ListBoxFieldValue)
+         } else if (value instanceof ListBoxFieldValue)
          {
             update = validate( (ListBoxFieldValue) value, newValue );
-         } else if ( value instanceof NumberFieldValue)
+         } else if (value instanceof NumberFieldValue)
          {
             update = validate( (NumberFieldValue) value, newValue );
-         } else if ( value instanceof OptionButtonsFieldValue)
+         } else if (value instanceof OptionButtonsFieldValue)
          {
             update = validate( (OptionButtonsFieldValue) value, newValue );
-         } else if ( value instanceof OpenSelectionFieldValue)
+         } else if (value instanceof OpenSelectionFieldValue)
          {
             update = validate( (OpenSelectionFieldValue) value, newValue );
-         } else if ( value instanceof TextAreaFieldValue)
+         } else if (value instanceof TextAreaFieldValue)
          {
             update = validate( (TextAreaFieldValue) value, newValue );
-         } else if ( value instanceof TextFieldValue)
+         } else if (value instanceof TextFieldValue)
          {
             update = validate( (TextFieldValue) value, newValue );
          }
 
-         if ( update )
+         if (update)
          {
             changedFieldValue( null, fieldId, newValue );
          }
@@ -154,14 +172,14 @@ public interface FormDraft
 
       private boolean validate( CheckboxesFieldValue definition, String value )
       {
-         if ( "".equals( value )) return true;
+         if ("".equals( value )) return true;
          return validateMultiple( definition.values().get(), value );
       }
 
       private boolean validateMultiple( List<String> values, String value )
       {
          String[] selections = value.split( ", " );
-         for (String selection : selections )
+         for (String selection : selections)
          {
             if (!values.contains( selection ))
                return false;
@@ -193,13 +211,13 @@ public interface FormDraft
 
       private boolean validate( ListBoxFieldValue definition, String value )
       {
-         if ( "".equals( value )) return true;
+         if ("".equals( value )) return true;
          return validateMultiple( definition.values().get(), value );
       }
 
       private boolean validate( NumberFieldValue definition, String value )
       {
-         if ( "".equals( value )) return true;
+         if ("".equals( value )) return true;
          try
          {
             // quick fix to make it accept ,
@@ -226,7 +244,7 @@ public interface FormDraft
       {
          if (Strings.notEmpty( definition.regularExpression().get() ))
          {
-            if ( value != null )
+            if (value != null)
             {
                Pattern pattern = Pattern.compile( definition.regularExpression().get() );
                Matcher matcher = pattern.matcher( value );
@@ -245,7 +263,7 @@ public interface FormDraft
          {
             for (FieldSubmissionValue field : pageSubmissionValue.fields().get())
             {
-               if (field.field().get().field().get().equals(fieldRef) )
+               if (field.field().get().field().get().equals( fieldRef ))
                {
                   return field;
                }
@@ -293,7 +311,9 @@ public interface FormDraft
       {
          ValueBuilder<FormDraftValue> builder = formDraftValue().get().buildWith();
 
-         if ( findField( builder.prototype(), fieldAttachment.field().get() ) != null ) {
+         FieldSubmissionValue field = findField( builder.prototype(), fieldAttachment.field().get() );
+         if (field != null)
+         {
             changedFieldAttachmentValue( null, fieldAttachment );
          }
       }

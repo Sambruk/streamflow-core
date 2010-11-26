@@ -25,10 +25,22 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
+import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.domain.form.*;
+import se.streamsource.streamflow.domain.form.AttachmentFieldSubmission;
+import se.streamsource.streamflow.domain.form.AttachmentFieldValue;
+import se.streamsource.streamflow.domain.form.CommentFieldValue;
+import se.streamsource.streamflow.domain.form.EffectiveFieldValue;
+import se.streamsource.streamflow.domain.form.EffectiveFormFieldsValue;
+import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
+import se.streamsource.streamflow.domain.form.FormDraftValue;
+import se.streamsource.streamflow.domain.form.PageSubmissionValue;
+import se.streamsource.streamflow.domain.form.SubmittedFieldValue;
+import se.streamsource.streamflow.domain.form.SubmittedFormValue;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.web.domain.entity.attachment.AttachmentEntity;
+import se.streamsource.streamflow.web.domain.structure.attachment.FormAttachments;
 
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -63,11 +75,17 @@ public interface SubmittedForms
       @Structure
       ValueBuilderFactory vbf;
 
+      @Structure
+      UnitOfWorkFactory uowf;
+
       @This
       Data state;
 
       @This
       FormDrafts submissions;
+
+      @This
+      FormAttachments formAttachments;
 
       public void submitForm( FormDraft formSubmission, Submitter submitter )
       {
@@ -109,6 +127,14 @@ public interface SubmittedForms
                   } else
                   {
                      fieldBuilder.prototype().value().set( field.value().get() );
+                  }
+
+                  // move current attachment from draft to case
+                  if( field.field().get().fieldValue().get() instanceof AttachmentFieldValue )
+                  {
+                      AttachmentFieldSubmission currentFormDraftAttachmentField = vbf.newValueFromJSON( AttachmentFieldSubmission.class, field.value().get() );
+                      AttachmentEntity attachment = uowf.currentUnitOfWork().get( AttachmentEntity.class, currentFormDraftAttachmentField.attachment().get().identity() );
+                      ((FormAttachments)formSubmission).moveAttachment( formAttachments, attachment );
                   }
 
                   // update effective field

@@ -20,9 +20,13 @@ package se.streamsource.streamflow.web.domain.structure.caze;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.domain.structure.Notable;
 import se.streamsource.streamflow.domain.structure.Removable;
-import se.streamsource.streamflow.web.domain.interaction.gtd.*;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
+import se.streamsource.streamflow.web.domain.interaction.gtd.DueOn;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachments;
+import se.streamsource.streamflow.web.domain.structure.attachment.FormAttachments;
 import se.streamsource.streamflow.web.domain.structure.casetype.Resolvable;
 import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationOwner;
@@ -46,6 +50,7 @@ public interface Case
       Status,
       CreatedOn,
       Attachments,
+      FormAttachments,
       Contacts,
       Conversations,
       ConversationOwner,

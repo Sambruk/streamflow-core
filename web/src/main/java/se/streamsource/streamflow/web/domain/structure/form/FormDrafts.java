@@ -29,8 +29,16 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.domain.form.*;
+import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
+import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
+import se.streamsource.streamflow.domain.form.FieldValue;
+import se.streamsource.streamflow.domain.form.FormDraftValue;
+import se.streamsource.streamflow.domain.form.PageSubmissionValue;
+import se.streamsource.streamflow.domain.form.SubmittedFieldValue;
+import se.streamsource.streamflow.domain.form.SubmittedFormValue;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
+import se.streamsource.streamflow.web.domain.structure.attachment.FormAttachments;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
 
@@ -196,6 +204,10 @@ public interface FormDrafts
       {
          if (formDrafts().contains( formDraft ))
          {
+            for( Attachment attachment : ((FormAttachments.Data)formDraft).formAttachments().toList() )
+            {
+               ((FormAttachments)formDraft).removeFormAttachment( attachment );
+            }
             discardedFormDraft( null, formDraft );
          }
       }

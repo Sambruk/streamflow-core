@@ -31,6 +31,7 @@ import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.dci.value.ResourceValue;
 import se.streamsource.streamflow.domain.attachment.UpdateAttachmentValue;
 import se.streamsource.streamflow.domain.form.AttachmentFieldDTO;
 import se.streamsource.streamflow.domain.form.FieldValueDTO;
@@ -47,8 +48,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
 
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 import static org.qi4j.api.util.Iterables.*;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 
 public class FormSubmissionWizardPageModel
 {
@@ -85,7 +86,7 @@ public class FormSubmissionWizardPageModel
       {
          public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
          {
-            for (DomainEvent domainEvent : filter( withNames("createdAttachment" ), Events.events( transactions )))
+            for (DomainEvent domainEvent : filter( withNames("createdFormAttachment" ), Events.events( transactions )))
             {
                ValueBuilder<UpdateAttachmentValue> builder = vbf.newValueBuilder( UpdateAttachmentValue.class );
                builder.prototype().name().set( file.getName() );
@@ -97,13 +98,15 @@ public class FormSubmissionWizardPageModel
                builder.prototype().mimeType().set( mimeType.toString() );
 
                String attachmentId = EventParameters.getParameter( domainEvent, "param1" );
-               client.getClient( "attachments/" + attachmentId +"/" ).postCommand( "update", builder.newInstance() );
+               client.getClient( "formattachments/" + attachmentId +"/" ).postCommand( "update", builder.newInstance() );
 
                ValueBuilder<AttachmentFieldDTO> valueBuilder = vbf.newValueBuilder( AttachmentFieldDTO.class );
                valueBuilder.prototype().field().set( field );
                valueBuilder.prototype().name().set( file.getName() );
                valueBuilder.prototype().attachment().set( EntityReference.parseEntityReference( attachmentId ) );
 
+               // must update lastModified before new update
+               client.query( "", ResourceValue.class );
                client.putCommand( "updateattachmentfield",  valueBuilder.newInstance() );
             }
          }
@@ -112,7 +115,7 @@ public class FormSubmissionWizardPageModel
 
       try
       {
-         client.getClient( "attachments/" ).postCommand( "createattachment", input);
+         client.getClient( "formattachments/" ).postCommand( "createformattachment", input);
       } finally
       {
          eventStream.unregisterListener( updateListener );

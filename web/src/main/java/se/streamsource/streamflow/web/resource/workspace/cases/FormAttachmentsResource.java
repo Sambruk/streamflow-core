@@ -16,24 +16,30 @@
 
 package se.streamsource.streamflow.web.resource.workspace.cases;
 
+import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
-import se.streamsource.dci.restlet.server.SubResource;
-import se.streamsource.streamflow.web.context.workspace.cases.general.CaseFormDraftContext;
+import se.streamsource.dci.restlet.server.SubResources;
+import se.streamsource.streamflow.web.context.workspace.cases.attachment.FormAttachmentContext;
+import se.streamsource.streamflow.web.context.workspace.cases.attachment.FormAttachmentsContext;
+import se.streamsource.streamflow.web.domain.structure.attachment.FormAttachments;
+
+import static se.streamsource.dci.api.RoleMap.*;
 
 /**
  * JAVADOC
  */
-public class CaseFormDraftResource
+public class FormAttachmentsResource
       extends CommandQueryResource
+      implements SubResources
 {
-   public CaseFormDraftResource()
+   public FormAttachmentsResource()
    {
-      super( CaseFormDraftContext.class );
+      super( FormAttachmentsContext.class );
    }
 
-   @SubResource
-   public void formattachments()
+   public void resource( String segment ) throws ResourceException
    {
-      subResource(FormAttachmentsResource.class );
+      findManyAssociation( role( FormAttachments.Data.class ).formAttachments(), segment );
+      subResourceContexts( FormAttachmentContext.class );
    }
 }

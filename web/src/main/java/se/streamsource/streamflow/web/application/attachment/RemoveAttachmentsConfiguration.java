@@ -1,4 +1,5 @@
-/*
+/**
+ *
  * Copyright 2009-2010 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,26 +15,14 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.resource.workspace.cases;
+package se.streamsource.streamflow.web.application.attachment;
 
-import se.streamsource.dci.restlet.server.CommandQueryResource;
-import se.streamsource.dci.restlet.server.SubResource;
-import se.streamsource.streamflow.web.context.workspace.cases.general.CaseFormDraftContext;
+import se.streamsource.streamflow.infrastructure.event.domain.source.helper.TransactionTrackerConfiguration;
 
 /**
- * JAVADOC
+ * Configuration for the RemoveAttachmentsService
  */
-public class CaseFormDraftResource
-      extends CommandQueryResource
+public interface RemoveAttachmentsConfiguration
+   extends TransactionTrackerConfiguration
 {
-   public CaseFormDraftResource()
-   {
-      super( CaseFormDraftContext.class );
-   }
-
-   @SubResource
-   public void formattachments()
-   {
-      subResource(FormAttachmentsResource.class );
-   }
 }

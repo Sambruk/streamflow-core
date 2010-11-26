@@ -23,6 +23,7 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.ConcurrentEntityModificationException;
+import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.usecase.Usecase;
@@ -34,7 +35,12 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.Uniform;
-import org.restlet.data.*;
+import org.restlet.data.CharacterSet;
+import org.restlet.data.Language;
+import org.restlet.data.Method;
+import org.restlet.data.Reference;
+import org.restlet.data.Status;
+import org.restlet.data.Tag;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ResourceException;
@@ -89,21 +95,21 @@ public abstract class CommandQueryRestlet2
             List<String> segments = ref.getScheme().equals( "riap" ) ? ref.getRelativeRef( new Reference( "riap://application/" ) ).getSegments() : ref.getRelativeRef().getSegments();
 
             // Handle conversion of verbs into standard interactions
-            if (segments.get( segments.size()-1 ).equals(""))
+            if (segments.get( segments.size() - 1 ).equals( "" ))
             {
                if (request.getMethod().equals( Method.DELETE ))
                {
                   // Translate DELETE into command "delete"
-                  segments.set( segments.size()-1, "delete" );
+                  segments.set( segments.size() - 1, "delete" );
                } else if (request.getMethod().equals( Method.PUT ))
                {
                   // Translate PUT into command "update"
-                  segments.set( segments.size()-1, "update" );
+                  segments.set( segments.size() - 1, "update" );
                }
             }
 
             request.getAttributes().put( "segments", segments );
-            request.getAttributes().put( "template", new StringBuilder("/rest/") );
+            request.getAttributes().put( "template", new StringBuilder( "/rest/" ) );
 
             Usecase usecase = UsecaseBuilder.buildUsecase( getUsecaseName( request ) ).with( request.getMethod().isSafe() ? CacheOptions.ALWAYS : CacheOptions.NEVER ).newUsecase();
             UnitOfWork uow = uowf.newUnitOfWork( usecase );
@@ -112,8 +118,8 @@ public abstract class CommandQueryRestlet2
             try
             {
                // Start handling the build-up for the context
-               Uniform resource = createRoot(request, response);
-               resource.handle(request, response);
+               Uniform resource = createRoot( request, response );
+               resource.handle( request, response );
 
                if (response.getEntity() != null)
                {
@@ -123,8 +129,8 @@ public abstract class CommandQueryRestlet2
                      {
                         EntityComposite entity = RoleMap.role( EntityComposite.class );
                         EntityState state = spi.getEntityState( entity );
-                        Date lastModified = new Date( state.lastModified());
-                        Tag tag = new Tag(state.identity().identity()+"/"+state.version());
+                        Date lastModified = new Date( state.lastModified() );
+                        Tag tag = new Tag( state.identity().identity() + "/" + state.version() );
                         response.getEntity().setModificationDate( lastModified );
                         response.getEntity().setTag( tag );
                      } catch (IllegalArgumentException e)
@@ -136,7 +142,7 @@ public abstract class CommandQueryRestlet2
                   // Check if characterset is set
                   if (response.getEntity().getCharacterSet() == null)
                   {
-                     response.getEntity().setCharacterSet( CharacterSet.UTF_8);
+                     response.getEntity().setCharacterSet( CharacterSet.UTF_8 );
                   }
 
                   // Check if language is set
@@ -146,8 +152,7 @@ public abstract class CommandQueryRestlet2
                   }
 
                   uow.discard();
-               }
-               else
+               } else
                {
                   // Check if last modified and tag is set
                   Date lastModified = null;
@@ -158,13 +163,18 @@ public abstract class CommandQueryRestlet2
 
                      uow.complete();
 
-                     UnitOfWork lastModifiedUoW = uowf.newUnitOfWork(  );
+                     UnitOfWork lastModifiedUoW = uowf.newUnitOfWork();
                      try
                      {
-                        entity = lastModifiedUoW.get( entity );
-                        EntityState state = spi.getEntityState( entity );
-                        lastModified = new Date( state.lastModified());
-                        tag = new Tag(state.identity().identity()+"/"+state.version());
+                        try
+                        {
+                           entity = lastModifiedUoW.get( entity );
+                           EntityState state = spi.getEntityState( entity );
+                           lastModified = new Date( state.lastModified() );
+                           tag = new Tag( state.identity().identity() + "/" + state.version() );
+                        } catch (NoSuchEntityException ne)
+                        { // do nothing - entity is deleted
+                        }
                      } finally
                      {
                         lastModifiedUoW.discard();
@@ -179,11 +189,11 @@ public abstract class CommandQueryRestlet2
                   if (result != null)
                   {
                      if (result instanceof Representation)
-                        response.setEntity( (Representation) result);
+                        response.setEntity( (Representation) result );
                      else
                      {
                         if (!responseWriter.write( result, response ))
-                           throw new ResourceException(Status.SERVER_ERROR_INTERNAL, "Could not write result of type "+result.getClass().getName());
+                           throw new ResourceException( Status.SERVER_ERROR_INTERNAL, "Could not write result of type " + result.getClass().getName() );
                      }
 
                      if (response.getEntity() != null)
@@ -191,7 +201,7 @@ public abstract class CommandQueryRestlet2
                         // Check if characterset is set
                         if (response.getEntity().getCharacterSet() == null)
                         {
-                           response.getEntity().setCharacterSet( CharacterSet.UTF_8);
+                           response.getEntity().setCharacterSet( CharacterSet.UTF_8 );
                         }
 
                         // Check if language is set
@@ -244,7 +254,7 @@ public abstract class CommandQueryRestlet2
          return request.getResourceRef().getLastSegment();
    }
 
-   private void handleException(Response response, Throwable ex)
+   private void handleException( Response response, Throwable ex )
    {
       try
       {

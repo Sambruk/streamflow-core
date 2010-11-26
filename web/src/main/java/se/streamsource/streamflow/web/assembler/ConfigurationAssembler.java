@@ -30,6 +30,7 @@ import org.qi4j.index.reindexer.ReindexerConfiguration;
 import org.qi4j.library.rdf.repository.NativeConfiguration;
 import org.qi4j.migration.MigrationConfiguration;
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
+import se.streamsource.streamflow.web.application.attachment.RemoveAttachmentsConfiguration;
 import se.streamsource.streamflow.web.application.mail.ReceiveMailConfiguration;
 import se.streamsource.streamflow.web.application.mail.SendMailConfiguration;
 import se.streamsource.streamflow.web.application.management.jmxconnector.JmxConnectorConfiguration;
@@ -76,6 +77,7 @@ public class ConfigurationAssembler
       module.addEntities( MigrationConfiguration.class ).visibleIn( Visibility.application );
       module.addEntities( SendMailConfiguration.class ).visibleIn( Visibility.application );
       module.addEntities( ReceiveMailConfiguration.class ).visibleIn( Visibility.application );
+      module.addEntities( RemoveAttachmentsConfiguration.class ).visibleIn( Visibility.application );
 
       // Plugin configurations
       module.addEntities( PluginConfiguration.class ).visibleIn( Visibility.application );
@@ -86,6 +88,7 @@ public class ConfigurationAssembler
       module.forMixin( LiquibaseConfiguration.class ).declareDefaults().changeLog().set("changelog.xml");
       module.forMixin( NotificationConfiguration.class ).declareDefaults().enabled().set( true );
       module.forMixin( ConversationResponseConfiguration.class ).declareDefaults().enabled().set( true );
+      module.forMixin( RemoveAttachmentsConfiguration.class ).declareDefaults().enabled().set( true );
 
       // Configuration store
       Application.Mode mode = module.layerAssembly().applicationAssembly().mode();

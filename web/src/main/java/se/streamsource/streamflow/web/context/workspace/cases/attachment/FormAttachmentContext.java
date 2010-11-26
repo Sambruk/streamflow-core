@@ -31,7 +31,7 @@ import se.streamsource.dci.api.UpdateContext;
 import se.streamsource.streamflow.domain.attachment.UpdateAttachmentValue;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
-import se.streamsource.streamflow.web.domain.structure.attachment.Attachments;
+import se.streamsource.streamflow.web.domain.structure.attachment.FormAttachments;
 import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
 
 import java.io.IOException;
@@ -44,10 +44,10 @@ import static se.streamsource.streamflow.util.Strings.*;
 /**
  * JAVADOC
  */
-public class AttachmentContext
+public class FormAttachmentContext
       implements UpdateContext<UpdateAttachmentValue>, DeleteContext
 {
-   @Structure
+      @Structure
    ValueBuilderFactory vbf;
 
    @Service
@@ -55,10 +55,10 @@ public class AttachmentContext
 
    public void delete() //throws IOException
    {
-      Attachments attachments = role( Attachments.class );
+      FormAttachments attachments = role( FormAttachments.class );
       Attachment attachment = role( Attachment.class );
 
-      attachments.removeAttachment( attachment );
+      attachments.removeFormAttachment( attachment );
    }
 
    public void update( UpdateAttachmentValue updateValue )

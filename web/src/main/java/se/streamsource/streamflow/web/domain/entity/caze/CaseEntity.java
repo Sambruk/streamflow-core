@@ -17,6 +17,9 @@
 
 package se.streamsource.streamflow.web.domain.entity.caze;
 
+import org.qi4j.api.concern.ConcernOf;
+import org.qi4j.api.concern.Concerns;
+import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.sideeffect.SideEffects;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.domain.structure.Notable;
@@ -29,7 +32,9 @@ import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
 import se.streamsource.streamflow.web.domain.interaction.gtd.DueOn;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
+import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachments;
+import se.streamsource.streamflow.web.domain.structure.attachment.FormAttachments;
 import se.streamsource.streamflow.web.domain.structure.casetype.Resolvable;
 import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
@@ -44,6 +49,7 @@ import se.streamsource.streamflow.web.domain.structure.label.Labelable;
  * This represents a single Case in the system
  */
 @SideEffects({AssignIdSideEffect.class, StatusClosedSideEffect.class})
+@Concerns(CaseEntity.RemovableConcern.class)
 public interface CaseEntity
       extends Case,
 
@@ -61,6 +67,7 @@ public interface CaseEntity
       // Structure
       Closed,
       Attachments.Data,
+      FormAttachments.Data,
       Contacts.Data,
       Labelable.Data,
       Removable.Data,
@@ -75,4 +82,40 @@ public interface CaseEntity
 
       DomainEntity
 {
+   abstract class RemovableConcern
+         extends ConcernOf<Removable>
+         implements Removable
+   {
+
+      @This
+      Attachments.Data attachmentsData;
+
+      @This
+      Attachments attachments;
+
+      @This
+      FormAttachments formAttachments;
+
+      @This
+      FormAttachments.Data formAttachmentsData;
+
+      @This
+      SubmittedForms.Data submittedForms;
+
+      public void deleteEntity()
+      {
+         for (Attachment attachment : attachmentsData.attachments().toList())
+         {
+            attachments.removeAttachment( attachment );
+         }
+
+         for( Attachment attachment : formAttachmentsData.formAttachments().toList() )
+         {
+            formAttachments.removeFormAttachment( attachment );
+         }
+
+         next.deleteEntity();
+
+      }
+   }
 }

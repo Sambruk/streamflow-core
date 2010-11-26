@@ -36,8 +36,26 @@ import org.qi4j.spi.entity.EntityDescriptor;
 import org.qi4j.spi.property.PropertyType;
 import org.qi4j.spi.service.ServiceDescriptor;
 import org.qi4j.spi.structure.ModuleSPI;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import javax.management.*;
+import javax.management.Attribute;
+import javax.management.AttributeList;
+import javax.management.AttributeNotFoundException;
+import javax.management.DynamicMBean;
+import javax.management.InstanceAlreadyExistsException;
+import javax.management.InvalidAttributeValueException;
+import javax.management.MBeanAttributeInfo;
+import javax.management.MBeanException;
+import javax.management.MBeanInfo;
+import javax.management.MBeanOperationInfo;
+import javax.management.MBeanParameterInfo;
+import javax.management.MBeanRegistrationException;
+import javax.management.MBeanServer;
+import javax.management.MalformedObjectNameException;
+import javax.management.NotCompliantMBeanException;
+import javax.management.ObjectName;
+import javax.management.ReflectionException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -53,6 +71,8 @@ public interface ConfigurationManagerService
    class Mixin
          implements Activatable
    {
+      final Logger logger = LoggerFactory.getLogger( ConfigurationManagerService.class );
+
       @Structure
       UnitOfWorkFactory uowf;
 
@@ -81,7 +101,13 @@ public interface ConfigurationManagerService
             String name = configurableService.identity();
             ServiceDescriptor serviceDescriptor = spi.getServiceDescriptor( configurableService );
             ModuleSPI module = (ModuleSPI) spi.getModule( configurableService );
-            EntityDescriptor descriptor = module.entityDescriptor( serviceDescriptor.configurationType().getName() );
+            Class<Object> configType = serviceDescriptor.configurationType();
+            if( configType == null )
+            {
+               logger.warn( "Service " + name + " has unknown configuration type!" );
+               continue;
+            }
+            EntityDescriptor descriptor = module.entityDescriptor( configType.getName() );
             List<MBeanAttributeInfo> attributes = new ArrayList<MBeanAttributeInfo>();
             Map<String, QualifiedName> properties = new HashMap<String, QualifiedName>();
             for (PropertyType propertyType : descriptor.entityType().properties())

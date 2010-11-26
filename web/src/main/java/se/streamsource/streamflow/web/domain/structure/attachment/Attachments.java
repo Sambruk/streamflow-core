@@ -45,7 +45,7 @@ public interface Attachments
 
    void addAttachment( Attachment attachment );
 
-   void deleteAttachment( Attachment attachment );
+   void removeAttachment( Attachment attachment );
 
    boolean hasAttachments();
 
@@ -101,7 +101,7 @@ public interface Attachments
          addedAttachment( null, attachment );
       }
 
-      public void deleteAttachment( Attachment attachment )
+      public void removeAttachment( Attachment attachment )
       {
          // Delete the attachment entity
          removedAttachment( null, attachment );

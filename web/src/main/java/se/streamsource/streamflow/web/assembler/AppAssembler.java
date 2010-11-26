@@ -33,6 +33,7 @@ import se.streamsource.streamflow.infrastructure.ConfigurationManagerService;
 import se.streamsource.streamflow.infrastructure.event.application.replay.ApplicationEventPlayerService;
 import se.streamsource.streamflow.infrastructure.event.domain.replay.DomainEventPlayerService;
 import se.streamsource.streamflow.server.plugin.authentication.UserDetailsValue;
+import se.streamsource.streamflow.web.application.attachment.RemoveAttachmentsService;
 import se.streamsource.streamflow.web.application.console.ConsoleResultValue;
 import se.streamsource.streamflow.web.application.console.ConsoleScriptValue;
 import se.streamsource.streamflow.web.application.console.ConsoleService;
@@ -40,7 +41,14 @@ import se.streamsource.streamflow.web.application.contact.StreamflowContactLooku
 import se.streamsource.streamflow.web.application.mail.EmailValue;
 import se.streamsource.streamflow.web.application.mail.ReceiveMailService;
 import se.streamsource.streamflow.web.application.mail.SendMailService;
-import se.streamsource.streamflow.web.application.management.*;
+import se.streamsource.streamflow.web.application.management.CompositeMBean;
+import se.streamsource.streamflow.web.application.management.DatasourceConfigurationManagerService;
+import se.streamsource.streamflow.web.application.management.ErrorLogService;
+import se.streamsource.streamflow.web.application.management.EventManagerService;
+import se.streamsource.streamflow.web.application.management.LoggingService;
+import se.streamsource.streamflow.web.application.management.ManagerComposite;
+import se.streamsource.streamflow.web.application.management.ManagerService;
+import se.streamsource.streamflow.web.application.management.ReindexOnStartupService;
 import se.streamsource.streamflow.web.application.management.jmxconnector.JmxConnectorService;
 import se.streamsource.streamflow.web.application.migration.StartupMigrationService;
 import se.streamsource.streamflow.web.application.notification.ConversationResponseService;
@@ -49,13 +57,17 @@ import se.streamsource.streamflow.web.application.organization.BootstrapAssemble
 import se.streamsource.streamflow.web.application.pdf.CasePdfGenerator;
 import se.streamsource.streamflow.web.application.pdf.SubmittedFormPdfGenerator;
 import se.streamsource.streamflow.web.application.security.AuthenticationFilterService;
-import se.streamsource.streamflow.web.application.statistics.*;
+import se.streamsource.streamflow.web.application.statistics.CaseStatisticsService;
+import se.streamsource.streamflow.web.application.statistics.CaseStatisticsValue;
+import se.streamsource.streamflow.web.application.statistics.FormFieldStatisticsValue;
+import se.streamsource.streamflow.web.application.statistics.JdbcStatisticsStore;
+import se.streamsource.streamflow.web.application.statistics.LoggingStatisticsStore;
+import se.streamsource.streamflow.web.application.statistics.RelatedStatisticsValue;
 import se.streamsource.streamflow.web.infrastructure.index.NamedSolrDescriptor;
 
 import javax.management.MBeanServer;
 
-import static org.qi4j.api.common.Visibility.application;
-import static org.qi4j.api.common.Visibility.layer;
+import static org.qi4j.api.common.Visibility.*;
 
 /**
  * JAVADOC
@@ -68,13 +80,6 @@ public class AppAssembler
       console( layer.moduleAssembly( "Console" ) );
       migration( layer.moduleAssembly( "Migration" ) );
 
-      if (layer.applicationAssembly().mode().equals( Application.Mode.production ))
-      {
-         management( layer.moduleAssembly( "Management" ) );
-         notification( layer.moduleAssembly( "Notification" ) );
-         mail( layer.moduleAssembly( "Mail" ) );
-      }
-
       security( layer.moduleAssembly( "Security" ) );
 
       new BootstrapAssembler().assemble( layer.moduleAssembly( "Bootstrap" ) );
@@ -84,6 +89,20 @@ public class AppAssembler
       contactLookup( layer.moduleAssembly( "Contact lookup" ) );
 
       pdf( layer.moduleAssembly( "Pdf" ) );
+
+      attachment( layer.moduleAssembly( "Attachment" ));
+
+      if (layer.applicationAssembly().mode().equals( Application.Mode.production ))
+      {
+         management( layer.moduleAssembly( "Management" ) );
+         notification( layer.moduleAssembly( "Notification" ) );
+         mail( layer.moduleAssembly( "Mail" ) );
+      }
+   }
+
+   private void attachment( ModuleAssembly moduleAssembly ) throws AssemblyException
+   {
+      moduleAssembly.addServices( RemoveAttachmentsService.class ).visibleIn( application ).instantiateOnStartup();
    }
 
    private void pdf( ModuleAssembly moduleAssembly ) throws AssemblyException

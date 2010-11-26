@@ -19,7 +19,7 @@ package se.streamsource.streamflow.web.domain.entity.form;
 
 import se.streamsource.streamflow.domain.structure.Removable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
-import se.streamsource.streamflow.web.domain.structure.attachment.Attachments;
+import se.streamsource.streamflow.web.domain.structure.attachment.FormAttachments;
 import se.streamsource.streamflow.web.domain.structure.form.FormDraft;
 
 /**
@@ -27,8 +27,8 @@ import se.streamsource.streamflow.web.domain.structure.form.FormDraft;
  */
 public interface FormDraftEntity
       extends
-      Attachments,
-      Attachments.Data,
+      FormAttachments,
+      FormAttachments.Data,
       FormDraft,
       FormDraft.Data,
       Removable,

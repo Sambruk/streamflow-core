@@ -112,11 +112,6 @@ public interface AttachmentEntity
 
          return removed;
       }
-
-      public void deleteEntity()
-      {
-         next.deleteEntity();
-      }
    }
 }
 
