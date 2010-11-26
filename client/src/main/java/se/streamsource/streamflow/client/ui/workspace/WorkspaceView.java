@@ -174,8 +174,14 @@ public class WorkspaceView
             {
                JList list = (JList) e.getSource();
 
-               if (!(list.getSelectedValue() instanceof ContextItem))
-                  return;
+               try
+               {
+                  if (!(list.getSelectedValue() instanceof ContextItem))
+                     return;
+               } catch (IndexOutOfBoundsException e1)
+               {
+                  return; // Can get this if filtering with selection
+               }
 
                ContextItem contextItem = (ContextItem) list.getSelectedValue();
                if (contextItem != null)

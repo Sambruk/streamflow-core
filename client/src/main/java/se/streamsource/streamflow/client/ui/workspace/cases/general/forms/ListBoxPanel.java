@@ -49,7 +49,7 @@ public class ListBoxPanel
       super( field );
 
       FormLayout formLayout = new FormLayout(
-            "80dlu, 30dlu, 80dlu",
+            "80dlu, 40dlu, 80dlu",
             "20dlu, 20dlu, 20dlu, 20dlu" );
 
       DefaultFormBuilder formBuilder = new DefaultFormBuilder( formLayout, this );
