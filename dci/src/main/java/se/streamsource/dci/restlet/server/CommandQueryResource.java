@@ -704,7 +704,10 @@ public class CommandQueryResource
                {
                   String json = request.getEntityAsText();
                   if (json == null)
+                  {
+                     LoggerFactory.getLogger( getClass() ).error( "Restlet bugg http://restlet.tigris.org/issues/show_bug.cgi?id=843 detected. Notify developers!" );
                      throw new ResourceException( Status.SERVER_ERROR_INTERNAL, "Bug in Tomcat encountered; notify developers!" );
+                  }
 
                   Object command = vbf.newValueFromJSON( commandType, json );
                   args[0] = command;
@@ -713,7 +716,10 @@ public class CommandQueryResource
                {
                   String text = request.getEntityAsText();
                   if (text == null)
+                  {
+                     LoggerFactory.getLogger( getClass() ).error( "Restlet bugg http://restlet.tigris.org/issues/show_bug.cgi?id=843 detected. Notify developers!" );
                      throw new ResourceException( Status.SERVER_ERROR_INTERNAL, "Bug in Tomcat encountered; notify developers!" );
+                  }
                   args[0] = text;
                   return args;
                } else if (type.equals( (MediaType.APPLICATION_WWW_FORM) ))
