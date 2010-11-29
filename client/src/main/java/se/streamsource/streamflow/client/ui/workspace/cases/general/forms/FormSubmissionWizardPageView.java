@@ -145,6 +145,7 @@ public class FormSubmissionWizardPageView
             commentPane.setOpaque( false );
             commentPane.setBorder( null );
             commentPane.setEditable( false );
+            commentPane.setFocusable( false );
             commentPane.addHyperlinkListener( new HyperlinkListener()
             {
                public void hyperlinkUpdate( HyperlinkEvent e )
@@ -179,17 +180,35 @@ public class FormSubmissionWizardPageView
       final JScrollPane scroll = new JScrollPane( panel );
       add( scroll, BorderLayout.CENTER );
 
+      createFocusListenerForComponents( panel, panel );
+   }
+
+   private void createFocusListenerForComponents( final JPanel main, final JPanel panel )
+   {
       for (Component component : panel.getComponents())
       {
-         component.addFocusListener( new FocusAdapter()
+         if (component instanceof JPanel)
          {
+            createFocusListenerForComponents( main, (JPanel) component );
 
-            @Override
-            public void focusGained( FocusEvent e )
+         } else
+         {
+            component.addFocusListener( new FocusAdapter()
             {
-               panel.scrollRectToVisible( e.getComponent().getBounds() );
-            }
-         } );
+
+               @Override
+               public void focusGained( FocusEvent e )
+               {
+                  if( main.equals( panel.getParent() ))
+                  {
+                     main.scrollRectToVisible( e.getComponent().getParent().getBounds() );
+                  } else
+                  {
+                     main.scrollRectToVisible( e.getComponent().getParent().getParent().getBounds() );
+                  }
+               }
+            } );
+         }
       }
    }
 
@@ -275,7 +294,7 @@ public class FormSubmissionWizardPageView
                      @Override
                      protected void command() throws Exception
                      {
-                        model.createAttachment( fieldBinders.get( observable ), (File)property.get(), fin );
+                        model.createAttachment( fieldBinders.get( observable ), (File) property.get(), fin );
                      }
                   }.execute();
                } catch (Exception e)
@@ -304,7 +323,7 @@ public class FormSubmissionWizardPageView
    {
       AbstractFieldPanel panel = componentFieldMap.get( fieldId );
       String value = panel.getValue();
-      if ( fieldValue != null && !fieldValue.equals( value )  )
+      if (fieldValue != null && !fieldValue.equals( value ))
       {
          panel.setValue( fieldValue );
       }
@@ -321,7 +340,7 @@ public class FormSubmissionWizardPageView
    {
       if (Events.matches( Events.withNames( "changedFieldAttachmentValue" ), transactions ))
       {
-         String value = EventParameters.getParameter( first( filter( Events.withNames("changedFieldAttachmentValue" ), events(transactions ) )), "param1" );
+         String value = EventParameters.getParameter( first( filter( Events.withNames( "changedFieldAttachmentValue" ), events( transactions ) ) ), "param1" );
          AttachmentFieldDTO dto = vbf.newValueFromJSON( AttachmentFieldDTO.class, value );
 
          ValueBuilder<AttachmentFieldSubmission> builder = vbf.newValueBuilder( AttachmentFieldSubmission.class );
