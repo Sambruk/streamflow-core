@@ -95,7 +95,7 @@ public class PossibleFormsView extends JPanel
          add( formView, Component.LEFT_ALIGNMENT );
       }
 
-      this.invalidate();
+      this.revalidate();
       this.repaint();
    }
 
