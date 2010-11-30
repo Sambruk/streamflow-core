@@ -165,4 +165,9 @@ public class CaseInfoView extends JPanel
 
       this.repaint();
    }
+
+   public String getCaseStatus()
+   {
+      return model.getInfo().status().get().name();
+   }
 }

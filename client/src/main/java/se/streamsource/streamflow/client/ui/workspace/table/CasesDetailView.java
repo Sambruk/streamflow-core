@@ -18,6 +18,7 @@ package se.streamsource.streamflow.client.ui.workspace.table;
 
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.util.Specifications;
 import org.restlet.data.Reference;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
@@ -25,19 +26,21 @@ import se.streamsource.streamflow.client.ui.workspace.cases.CaseDetailView;
 import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
+import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
 
 import javax.swing.*;
 import java.awt.*;
 
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.matches;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withNames;
+import static org.qi4j.api.util.Specifications.*;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
+
 
 /**
  * JAVADOC
  */
 public class CasesDetailView
       extends JPanel
-   implements TransactionListener
+      implements TransactionListener
 {
    private CaseDetailView current = null;
 
@@ -45,11 +48,11 @@ public class CasesDetailView
    ObjectBuilderFactory obf;
 
    private CardLayout layout = new CardLayout();
-   private JPanel casePanel = new JPanel(new BorderLayout());
+   private JPanel casePanel = new JPanel( new BorderLayout() );
 
    private Reference currentCase;
 
-   public CasesDetailView( )
+   public CasesDetailView()
    {
       setLayout( layout );
       setBorder( BorderFactory.createEmptyBorder() );
@@ -62,7 +65,7 @@ public class CasesDetailView
       setPreferredSize( new Dimension( getWidth(), 500 ) );
    }
 
-   public void show( CommandQueryClient client)
+   public void show( CommandQueryClient client )
    {
       if (currentCase == null || !currentCase.equals( client.getReference() ))
       {
@@ -78,10 +81,10 @@ public class CasesDetailView
          } else
          {
             currentCase = client.getReference();
-            casePanel.add(current = obf.newObjectBuilder( CaseDetailView.class ).use( client ).newInstance());
+            casePanel.add( current = obf.newObjectBuilder( CaseDetailView.class ).use( client ).newInstance() );
             layout.show( this, "detail" );
          }
-         
+
          current.requestFocusInWindow();
       }
    }
@@ -116,18 +119,20 @@ public class CasesDetailView
 
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
    {
-      if (matches( withNames("deletedEntity", "createdCase" ), transactions ))
-         clear();
-/*
-      else if (matches( withNames("changedOwner" ), transactions ))
+      if (matches( withNames( "deletedEntity", "createdCase" ), transactions ))
       {
-         if (current != null)
-         {
-            current
-         }
-
          clear();
       }
-*/
+      // only clear detail if it is not a draft
+      else if (matches( withNames( "changedOwner" ), transactions )
+            && !"DRAFT".equals( current.getCaseStatus() ))
+      {
+         clear();
+      }
+      // clear detail if status changed from draft to open
+      else if( matches( withUsecases( "open" ), transactions) )
+      {
+         clear();
+      }
    }
 }

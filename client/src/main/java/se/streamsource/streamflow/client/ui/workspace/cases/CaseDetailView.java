@@ -49,6 +49,7 @@ public class CaseDetailView
       extends JPanel
 {
    private JTabbedPane tabs = new JTabbedPane( JTabbedPane.BOTTOM );
+   private CaseInfoView caseInfo;
 
    public CaseDetailView( @Service ApplicationContext appContext,
                           @Uses CommandQueryClient client,
@@ -58,7 +59,7 @@ public class CaseDetailView
       this.setBorder( BorderFactory.createEtchedBorder() );
       tabs.setFocusable( true );
 
-      add( obf.newObjectBuilder( CaseInfoView.class ).use( client ).newInstance(), BorderLayout.NORTH );
+      add( caseInfo = obf.newObjectBuilder( CaseInfoView.class ).use( client ).newInstance(), BorderLayout.NORTH );
       add( obf.newObjectBuilder( CaseActionsView.class ).use( client ).newInstance(), BorderLayout.EAST );
 
       tabs.addTab( text( WorkspaceResources.general_tab ), icon( Icons.general ), obf.newObjectBuilder( CaseGeneralView.class ).use( client.getSubClient("general" )).newInstance(), text( WorkspaceResources.general_tab ) );
@@ -100,5 +101,10 @@ public class CaseDetailView
    public int getSelectedTab()
    {
       return tabs.getSelectedIndex();
+   }
+
+   public String getCaseStatus()
+   {
+      return caseInfo.getCaseStatus();
    }
 }
