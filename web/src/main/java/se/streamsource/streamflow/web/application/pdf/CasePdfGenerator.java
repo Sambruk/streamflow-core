@@ -41,11 +41,15 @@ import se.streamsource.streamflow.web.domain.entity.form.FieldEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.*;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
+import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
+import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversation;
 import se.streamsource.streamflow.web.domain.structure.conversation.Message;
 import se.streamsource.streamflow.web.domain.structure.conversation.Messages;
 import se.streamsource.streamflow.web.domain.structure.created.Creator;
+import se.streamsource.streamflow.web.domain.structure.label.*;
+import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
 
 import javax.swing.text.MutableAttributeSet;
@@ -116,7 +120,7 @@ public class CasePdfGenerator
 
       float tabStop = document.calculateTabStop( valueFontBold, bundle.getString( "title" ),
             bundle.getString( "createdOn" ), bundle.getString( "createdBy" ), bundle.getString( "owner" ),
-            bundle.getString( "assignedTo" ) );
+            bundle.getString( "assignedTo" ), bundle.getString( "caseType" ), bundle.getString( "labels" ) );
 
       document.printLabelAndText( bundle.getString( "title" ) + ": ", valueFontBold, caze.getDescription(), valueFont, tabStop );
       document.printLabelAndText( bundle.getString( "createdOn" ) + ": ", valueFontBold,
@@ -138,6 +142,27 @@ public class CasePdfGenerator
       if (assignee != null)
       {
          document.printLabelAndText( bundle.getString( "assignedTo" ) + ": ", valueFontBold, ((Describable) assignee).getDescription(), valueFont, tabStop );
+      }
+
+      CaseType caseType = ((TypedCase.Data)caze).caseType().get();
+
+      if( caseType != null )
+      {
+         document.printLabelAndText( bundle.getString( "caseType" ) + ": ", valueFontBold, ((Describable)caseType).getDescription(), valueFont, tabStop );
+      }
+
+      List<Label> labels = ((Labelable.Data)caze).labels().toList();
+      if( !labels.isEmpty() )
+      {
+         String allLabels = "";
+         int count = 0;
+         for( Label label : labels )
+         {
+            count ++;
+            allLabels += label.getDescription() + (count == labels.size() ? "" : ", ");
+         }
+
+         document.printLabelAndText( bundle.getString( "labels" ) + ": ", valueFontBold, allLabels, valueFont, tabStop );
       }
 
       String note = caze.getNote();
