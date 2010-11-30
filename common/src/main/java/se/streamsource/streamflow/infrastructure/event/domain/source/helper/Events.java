@@ -21,7 +21,7 @@ import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.usecase.Usecase;
 import org.qi4j.api.util.Function;
 import org.qi4j.api.util.Iterables;
-import org.qi4j.api.util.Specification;
+import org.qi4j.api.specification.Specification;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
@@ -94,7 +94,7 @@ public class Events
    {
       return new Specification<DomainEvent>()
       {
-         public boolean test( DomainEvent event )
+         public boolean satisfiedBy( DomainEvent event )
          {
             for (String name : names)
             {
@@ -110,7 +110,7 @@ public class Events
    {
       return new Specification<DomainEvent>()
       {
-         public boolean test( DomainEvent event )
+         public boolean satisfiedBy( DomainEvent event )
          {
             for (String name : names)
             {
@@ -137,7 +137,7 @@ public class Events
    {
       return new Specification<DomainEvent>()
       {
-         public boolean test( DomainEvent event )
+         public boolean satisfiedBy( DomainEvent event )
          {
             return event.on().get().after( afterDate );
          }
@@ -148,7 +148,7 @@ public class Events
    {
       return new Specification<DomainEvent>()
       {
-         public boolean test( DomainEvent event )
+         public boolean satisfiedBy( DomainEvent event )
          {
             return event.on().get().before( beforeDate );
          }
@@ -159,7 +159,7 @@ public class Events
    {
       return new Specification<DomainEvent>()
       {
-         public boolean test( DomainEvent event )
+         public boolean satisfiedBy( DomainEvent event )
          {
             for (String name : names)
             {
@@ -175,7 +175,7 @@ public class Events
    {
       return new Specification<DomainEvent>()
       {
-         public boolean test( DomainEvent event )
+         public boolean satisfiedBy( DomainEvent event )
          {
             for (String entity : entities)
             {
@@ -191,7 +191,7 @@ public class Events
    {
       return new Specification<DomainEvent>()
       {
-         public boolean test( DomainEvent event )
+         public boolean satisfiedBy( DomainEvent event )
          {
             for (LinkValue link : links)
             {
@@ -207,7 +207,7 @@ public class Events
    {
       return new Specification<DomainEvent>()
       {
-         public boolean test( DomainEvent event )
+         public boolean satisfiedBy( DomainEvent event )
          {
             for (String entityType : entityTypes)
             {
@@ -223,7 +223,7 @@ public class Events
    {
       return new Specification<DomainEvent>()
       {
-         public boolean test( DomainEvent event )
+         public boolean satisfiedBy( DomainEvent event )
          {
             for (String user : by)
             {
@@ -239,7 +239,7 @@ public class Events
    {
       return new Specification<DomainEvent>()
       {
-         public boolean test( DomainEvent event )
+         public boolean satisfiedBy( DomainEvent event )
          {
             return EventParameters.getParameter( event, name ).equals( value );
          }

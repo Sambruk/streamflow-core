@@ -33,7 +33,7 @@ import se.streamsource.streamflow.infrastructure.event.domain.source.Transaction
 import se.streamsource.streamflow.resource.conversation.ConversationDTO;
 
 import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
-import static org.qi4j.api.util.Specifications.*;
+import static org.qi4j.api.specification.Specifications.*;
 
 public class ConversationsModel
    implements Refreshable, TransactionListener

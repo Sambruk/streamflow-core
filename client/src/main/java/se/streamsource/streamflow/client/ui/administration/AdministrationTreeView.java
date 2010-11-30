@@ -70,7 +70,7 @@ import java.util.List;
 
 import static se.streamsource.streamflow.client.util.i18n.*;
 import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
-import static org.qi4j.api.util.Specifications.*;
+import static org.qi4j.api.specification.Specifications.*;
 
 /**
  * JAVADOC

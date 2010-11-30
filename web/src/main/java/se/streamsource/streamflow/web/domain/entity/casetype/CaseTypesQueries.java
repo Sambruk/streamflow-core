@@ -26,7 +26,7 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.QueryBuilder;
 import org.qi4j.api.query.QueryBuilderFactory;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.util.Specification;
+import org.qi4j.api.specification.Specification;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.domain.structure.Removable;
@@ -97,7 +97,7 @@ public interface CaseTypesQueries
             CaseTypes.Data caseTypes = (CaseTypes.Data) organizationalUnit;
             for (CaseType caseType : caseTypes.caseTypes())
             {
-               if (specification.test( caseType ))
+               if (specification.satisfiedBy( caseType ))
                   builder.addDescribable( caseType, organizationalUnit );
             }
          }
@@ -108,7 +108,7 @@ public interface CaseTypesQueries
             CaseTypes.Data caseTypes = (CaseTypes.Data) project;
             for (CaseType caseType : caseTypes.caseTypes())
             {
-               if (specification.test( caseType ))
+               if (specification.satisfiedBy( caseType ))
                   builder.addDescribable( caseType, project );
             }
          }

@@ -21,7 +21,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.QueryBuilder;
-import org.qi4j.api.util.Specification;
+import org.qi4j.api.specification.Specification;
 import org.qi4j.spi.structure.ModuleSPI;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.structure.casetype.*;
@@ -80,32 +80,32 @@ public interface OrganizationQueries
 
       public void visitOrganization( OrganizationVisitor visitor, Specification<Class> typeSpecification)
       {
-         if (typeSpecification.test( Organization.class ) && !visitor.visitOrganization( org ))
+         if (typeSpecification.satisfiedBy( Organization.class ) && !visitor.visitOrganization( org ))
             return;
 
          // Visit items on Organization
-         if (typeSpecification.test( Labels.class ))
+         if (typeSpecification.satisfiedBy( Labels.class ))
             for (Label label : ((Labels.Data) org).labels())
             {
                if (!visitor.visitLabel( label ))
                   return;
             }
 
-         if (typeSpecification.test( Forms.class ))
+         if (typeSpecification.satisfiedBy( Forms.class ))
             for (Form form : ((Forms.Data)org).forms())
             {
                if (!visitor.visitForm( form ))
                   return;
             }
 
-         if (typeSpecification.test( CaseTypes.class ))
+         if (typeSpecification.satisfiedBy( CaseTypes.class ))
             for (CaseType caseType : ((CaseTypes.Data)org).caseTypes())
             {
                if (!visitCaseType( caseType, visitor, typeSpecification ))
                   return;
             }
 
-         if (typeSpecification.test( OrganizationalUnits.class ))
+         if (typeSpecification.satisfiedBy( OrganizationalUnits.class ))
             for (OrganizationalUnit organizationalUnit : ((OrganizationalUnits.Data) org).organizationalUnits())
             {
                if (!visitOu(organizationalUnit, visitor, typeSpecification))
@@ -115,38 +115,38 @@ public interface OrganizationQueries
 
       private boolean visitOu( OrganizationalUnit organizationalUnit, OrganizationVisitor visitor, Specification<Class> typeSpecification )
       {
-         if (typeSpecification.test( OrganizationalUnit.class ) && !visitor.visitOrganizationalUnit( organizationalUnit ))
+         if (typeSpecification.satisfiedBy( OrganizationalUnit.class ) && !visitor.visitOrganizationalUnit( organizationalUnit ))
             return false;
 
-         if (typeSpecification.test( Labels.class ))
+         if (typeSpecification.satisfiedBy( Labels.class ))
             for (Label label : ((Labels.Data) organizationalUnit).labels())
             {
                if (!visitor.visitLabel( label ))
                   return false;
             }
 
-         if (typeSpecification.test( Forms.class ))
+         if (typeSpecification.satisfiedBy( Forms.class ))
             for (Form form : ((Forms.Data)organizationalUnit).forms())
             {
                if (!visitor.visitForm( form ))
                   return false;
             }
 
-         if (typeSpecification.test( CaseTypes.class ))
+         if (typeSpecification.satisfiedBy( CaseTypes.class ))
             for (CaseType caseType : ((CaseTypes.Data)organizationalUnit).caseTypes())
             {
                if (!visitCaseType( caseType, visitor, typeSpecification ))
                   return false;
             }
 
-         if (typeSpecification.test( Groups.class ))
+         if (typeSpecification.satisfiedBy( Groups.class ))
             for (Group group : ((Groups.Data) organizationalUnit).groups())
             {
                if (!visitor.visitGroup( group ))
                   return false;
             }
 
-         if (typeSpecification.test( Projects.class ))
+         if (typeSpecification.satisfiedBy( Projects.class ))
             for (Project project : ((Projects.Data) organizationalUnit).projects())
             {
                if (!visitProject(project, visitor, typeSpecification))
@@ -164,32 +164,32 @@ public interface OrganizationQueries
 
       private boolean visitProject( Project project, OrganizationVisitor visitor, Specification<Class> typeSpecification)
       {
-         if (typeSpecification.test( Project.class ))
+         if (typeSpecification.satisfiedBy( Project.class ))
             if (!visitor.visitProject( project ))
                return false;
 
-         if (typeSpecification.test( Labels.class ))
+         if (typeSpecification.satisfiedBy( Labels.class ))
             for (Label label : ((Labels.Data) project).labels())
             {
                if (!visitor.visitLabel( label ))
                   return false;
             }
 
-         if (typeSpecification.test( Forms.class ))
+         if (typeSpecification.satisfiedBy( Forms.class ))
             for (Form form : ((Forms.Data)project).forms())
             {
                if (!visitor.visitForm( form ))
                   return false;
             }
 
-         if (typeSpecification.test( CaseTypes.class ))
+         if (typeSpecification.satisfiedBy( CaseTypes.class ))
             for (CaseType caseType : ((CaseTypes.Data)project).caseTypes())
             {
                if (!visitCaseType( caseType, visitor, typeSpecification ))
                   return false;
             }
 
-         if (typeSpecification.test( SelectedCaseTypes.class ))
+         if (typeSpecification.satisfiedBy( SelectedCaseTypes.class ))
             for (CaseType caseType : ((SelectedCaseTypes.Data)project).selectedCaseTypes())
             {
                if (!visitor.visitSelectedCaseType( caseType ))
@@ -201,45 +201,45 @@ public interface OrganizationQueries
 
       private boolean visitCaseType( CaseType caseType, OrganizationVisitor visitor, Specification<Class> typeSpecification )
       {
-         if (typeSpecification.test( CaseType.class ) && !visitor.visitCaseType( caseType ))
+         if (typeSpecification.satisfiedBy( CaseType.class ) && !visitor.visitCaseType( caseType ))
             return false;
 
-         if (typeSpecification.test( Labels.class ))
+         if (typeSpecification.satisfiedBy( Labels.class ))
             for (Label label : ((Labels.Data) caseType).labels())
             {
                if (!visitor.visitLabel( label ))
                   return false;
             }
 
-         if (typeSpecification.test( SelectedLabels.class ))
+         if (typeSpecification.satisfiedBy( SelectedLabels.class ))
             for (Label label : ((SelectedLabels.Data) caseType).selectedLabels())
             {
                if (!visitor.visitSelectedLabel( label ))
                   return false;
             }
 
-         if (typeSpecification.test( Forms.class ))
+         if (typeSpecification.satisfiedBy( Forms.class ))
             for (Form form : ((Forms.Data)caseType).forms())
             {
                if (!visitor.visitForm( form ))
                   return false;
             }
 
-         if (typeSpecification.test( SelectedForms.class ))
+         if (typeSpecification.satisfiedBy( SelectedForms.class ))
             for (Form form : ((SelectedForms.Data)caseType).selectedForms())
             {
                if (!visitor.visitSelectedForm( form ))
                   return false;
             }
 
-         if (typeSpecification.test( Resolutions.class ))
+         if (typeSpecification.satisfiedBy( Resolutions.class ))
             for (Resolution resolution : ((Resolutions.Data)caseType).resolutions())
             {
                if (!visitor.visitResolution( resolution ))
                   return false;
             }
 
-         if (typeSpecification.test( SelectedResolutions.class ))
+         if (typeSpecification.satisfiedBy( SelectedResolutions.class ))
             for (Resolution resolution : ((SelectedResolutions.Data)caseType).selectedResolutions())
             {
                if (!visitor.visitSelectedResolution( resolution ))
@@ -260,7 +260,7 @@ public interface OrganizationQueries
          this.classes = classes;
       }
 
-      public boolean test( Class instance )
+      public boolean satisfiedBy( Class instance )
       {
          for (int i = 0; i < classes.length; i++)
          {

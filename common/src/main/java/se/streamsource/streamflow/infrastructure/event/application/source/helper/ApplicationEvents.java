@@ -21,7 +21,7 @@ import org.qi4j.api.io.Receiver;
 import org.qi4j.api.io.Sender;
 import org.qi4j.api.util.Function;
 import org.qi4j.api.util.Iterables;
-import org.qi4j.api.util.Specification;
+import org.qi4j.api.specification.Specification;
 import se.streamsource.streamflow.infrastructure.event.application.ApplicationEvent;
 import se.streamsource.streamflow.infrastructure.event.application.TransactionApplicationEvents;
 import se.streamsource.streamflow.infrastructure.event.application.replay.ApplicationEventPlayer;
@@ -74,7 +74,7 @@ public class ApplicationEvents
    {
       return new Specification<ApplicationEvent>()
       {
-         public boolean test( ApplicationEvent event )
+         public boolean satisfiedBy( ApplicationEvent event )
          {
             for (String name : names)
             {
@@ -90,7 +90,7 @@ public class ApplicationEvents
    {
       return new Specification<ApplicationEvent>()
       {
-         public boolean test( ApplicationEvent event )
+         public boolean satisfiedBy( ApplicationEvent event )
          {
             for (String name : names)
             {
@@ -117,7 +117,7 @@ public class ApplicationEvents
    {
       return new Specification<ApplicationEvent>()
       {
-         public boolean test( ApplicationEvent event )
+         public boolean satisfiedBy( ApplicationEvent event )
          {
             return event.on().get().after( afterDate );
          }
@@ -128,7 +128,7 @@ public class ApplicationEvents
    {
       return new Specification<ApplicationEvent>()
       {
-         public boolean test( ApplicationEvent event )
+         public boolean satisfiedBy( ApplicationEvent event )
          {
             return event.on().get().before( beforeDate );
          }
@@ -139,7 +139,7 @@ public class ApplicationEvents
    {
       return new Specification<ApplicationEvent>()
       {
-         public boolean test( ApplicationEvent event )
+         public boolean satisfiedBy( ApplicationEvent event )
          {
             for (String name : names)
             {
@@ -155,7 +155,7 @@ public class ApplicationEvents
    {
       return new Specification<ApplicationEvent>()
       {
-         public boolean test( ApplicationEvent event )
+         public boolean satisfiedBy( ApplicationEvent event )
          {
             return ApplicationEventParameters.getParameter( event, name ).equals( value );
          }
@@ -176,7 +176,7 @@ public class ApplicationEvents
                {
                   for (ApplicationEvent applicationEvent : events( item ))
                   {
-                     if (specification.test( applicationEvent ))
+                     if (specification.satisfiedBy( applicationEvent ))
                         player.playEvent(applicationEvent, eventHandler);
                   }
                }

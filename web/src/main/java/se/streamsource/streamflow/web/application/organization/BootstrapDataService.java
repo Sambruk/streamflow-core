@@ -23,10 +23,10 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
+import org.qi4j.api.specification.Specifications;
 import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.util.Specification;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.slf4j.Logger;
@@ -222,13 +222,7 @@ public interface BootstrapDataService
                      }
                   }
 
-               }, new Specification<Class>()
-               {
-                  public boolean test( Class instance )
-                  {
-                     return true;
-                  }
-               });
+               }, Specifications.<Class>TRUE());
             }
 
             uow.complete();

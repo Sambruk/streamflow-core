@@ -20,7 +20,7 @@ package se.streamsource.streamflow.web.context.administration;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.util.Specification;
+import org.qi4j.api.specification.Specification;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.LinksValue;
@@ -54,7 +54,7 @@ public class SelectedCaseTypesContext
       LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() ).command( "addcasetype" );
       caseTypes.caseTypes( builder, new Specification<CaseType>()
       {
-         public boolean test( CaseType instance )
+         public boolean satisfiedBy( CaseType instance )
          {
             return !selectedLabels.selectedCaseTypes().contains( instance );
          }

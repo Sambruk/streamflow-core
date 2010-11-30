@@ -22,7 +22,7 @@ import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.SortedList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.util.Specifications;
+import org.qi4j.api.specification.Specifications;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
@@ -35,7 +35,7 @@ import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainE
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
 
-import static org.qi4j.api.util.Specifications.or;
+import static org.qi4j.api.specification.Specifications.or;
 import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.matches;
 import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.onEntities;
 

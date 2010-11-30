@@ -17,7 +17,7 @@
 
 package se.streamsource.streamflow.infrastructure.event.domain.source.helper;
 
-import org.qi4j.api.util.Specification;
+import org.qi4j.api.specification.Specification;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.domain.source.EventVisitor;
 
@@ -54,7 +54,7 @@ public class EventRouter
    {
       for (Specification<DomainEvent> specification : routes.keySet())
       {
-         if (specification.test( event ))
+         if (specification.satisfiedBy( event ))
          {
             EventVisitor eventVisitor = routes.get( specification );
             return eventVisitor.visit( event );

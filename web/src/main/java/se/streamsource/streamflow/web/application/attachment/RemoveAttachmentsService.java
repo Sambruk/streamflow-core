@@ -27,7 +27,7 @@ import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.usecase.UsecaseBuilder;
-import org.qi4j.api.util.Specifications;
+import org.qi4j.api.specification.Specifications;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

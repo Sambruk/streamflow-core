@@ -49,7 +49,7 @@ import java.util.Set;
 
 import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.matches;
 import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withNames;
-import static org.qi4j.api.util.Specifications.not;
+import static org.qi4j.api.specification.Specifications.not;
 
 /**
  * JAVADOC
