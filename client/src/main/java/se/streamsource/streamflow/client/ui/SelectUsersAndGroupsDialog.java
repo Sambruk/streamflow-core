@@ -34,6 +34,7 @@ import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.administration.UsersAndGroupsModel;
 
+import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import java.awt.GridLayout;
@@ -70,15 +71,17 @@ public class SelectUsersAndGroupsDialog
 
       groupList = new GroupedFilteredList();
       groupList.setEventList( groups );
+      groupList.setBorder( BorderFactory.createTitledBorder( i18n.text( AdministrationResources.group_title ) ));
 
-      add( new JScrollPane( groupList ));
+      add( groupList );
 
-      userList = new GroupedFilteredList();
       EventList<TitledLinkValue> users = model.getPossibleUsers();
 
+      userList = new GroupedFilteredList();
       userList.setEventList(users);
+      userList.setBorder( BorderFactory.createTitledBorder( i18n.text( AdministrationResources.user_title ) ));
 
-      add( new JScrollPane( userList ));
+      add( userList );
    }
 
    public Set<LinkValue> getSelectedEntities()
