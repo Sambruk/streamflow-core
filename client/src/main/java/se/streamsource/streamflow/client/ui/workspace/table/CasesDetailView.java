@@ -96,6 +96,7 @@ public class CasesDetailView
       casePanel.removeAll();
       casePanel.revalidate();
       current = null;
+      currentCase = null;
    }
 
    @Override

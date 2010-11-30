@@ -176,6 +176,12 @@ public class WorkspaceView
 
                try
                {
+                  if (list.getSelectedValue() == null)
+                  {
+                     casesView.clearCase();
+                     return;
+                  }
+
                   if (!(list.getSelectedValue() instanceof ContextItem))
                      return;
                } catch (IndexOutOfBoundsException e1)

@@ -39,28 +39,16 @@ import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
-import se.streamsource.streamflow.resource.caze.CaseValue;
 
-import javax.swing.ActionMap;
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
-import javax.swing.SwingConstants;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.FlowLayout;
-import java.awt.KeyboardFocusManager;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withNames;
 
 /**
  * Base class for all views of case lists.
@@ -187,15 +175,6 @@ public class CaseTableView
    public CasesTableModel getModel()
    {
       return model;
-   }
-
-   public CaseValue getSelectedCase()
-   {
-      int selectedRow = getCaseTable().getSelectedRow();
-      if (selectedRow == -1)
-         return null;
-      else
-         return model.getEventList().get( getCaseTable().convertRowIndexToModel( selectedRow ) );
    }
 
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
