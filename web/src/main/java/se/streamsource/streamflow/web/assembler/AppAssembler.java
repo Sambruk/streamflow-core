@@ -102,7 +102,8 @@ public class AppAssembler
 
    private void attachment( ModuleAssembly moduleAssembly ) throws AssemblyException
    {
-      moduleAssembly.addServices( RemoveAttachmentsService.class ).visibleIn( application ).instantiateOnStartup();
+      moduleAssembly.addServices( RemoveAttachmentsService.class )
+            .identifiedBy( "removeattachments" ).visibleIn( application ).instantiateOnStartup();
    }
 
    private void pdf( ModuleAssembly moduleAssembly ) throws AssemblyException

@@ -144,21 +144,21 @@ public class CasePdfGenerator
          document.printLabelAndText( bundle.getString( "assignedTo" ) + ": ", valueFontBold, ((Describable) assignee).getDescription(), valueFont, tabStop );
       }
 
-      CaseType caseType = ((TypedCase.Data)caze).caseType().get();
+      CaseType caseType = ((TypedCase.Data) caze).caseType().get();
 
-      if( caseType != null )
+      if (caseType != null)
       {
-         document.printLabelAndText( bundle.getString( "caseType" ) + ": ", valueFontBold, ((Describable)caseType).getDescription(), valueFont, tabStop );
+         document.printLabelAndText( bundle.getString( "caseType" ) + ": ", valueFontBold, ((Describable) caseType).getDescription(), valueFont, tabStop );
       }
 
-      List<Label> labels = ((Labelable.Data)caze).labels().toList();
-      if( !labels.isEmpty() )
+      List<Label> labels = ((Labelable.Data) caze).labels().toList();
+      if (!labels.isEmpty())
       {
          String allLabels = "";
          int count = 0;
-         for( Label label : labels )
+         for (Label label : labels)
          {
-            count ++;
+            count++;
             allLabels += label.getDescription() + (count == labels.size() ? "" : ", ");
          }
 
@@ -230,11 +230,14 @@ public class CasePdfGenerator
                   float tabStop = document.calculateTabStop( valueFontBold, nameValuePairs.keySet()
                         .toArray( new String[nameValuePairs.keySet().size()] ) );
 
-                  document.changeColor( Color.BLUE );
-                  document.println( bundle.getString( "contact" ) + (counter.getCount() == 1 ? "" : " " + counter.getCount()), valueFontBold );
-                  document.print( "", valueFont );
-                  document.changeColor( Color.BLACK );
-
+                  if (!nameValuePairs.entrySet().isEmpty())
+                  {
+                     document.changeColor( Color.BLUE );
+                     document.println( bundle.getString( "contact" ) + (counter.getCount() == 1 ? "" : " " + counter.getCount()), valueFontBold );
+                     document.print( "", valueFont );
+                     document.changeColor( Color.BLACK );
+                  }
+                  
                   for (Map.Entry<String, String> stringEntry : nameValuePairs.entrySet())
                   {
                      document.printLabelAndText( stringEntry.getKey() + ":", valueFontBold, stringEntry.getValue(), valueFont, tabStop );
@@ -242,7 +245,7 @@ public class CasePdfGenerator
                }
             } );
          }
-      } ));
+      } ) );
    }
 
    public void generateConversations( Input<Conversation, RuntimeException> conversations ) throws IOException
@@ -377,7 +380,7 @@ public class CasePdfGenerator
    public void generateAttachments( Input<Attachment, RuntimeException> attachments ) throws IOException
    {
       final Transforms.Counter<Attachment> counter = new Transforms.Counter<Attachment>();
-      attachments.transferTo( Transforms.map(counter, new Output<Attachment, IOException>()
+      attachments.transferTo( Transforms.map( counter, new Output<Attachment, IOException>()
       {
          public <SenderThrowableType extends Throwable> void receiveFrom( Sender<Attachment, SenderThrowableType> sender ) throws IOException, SenderThrowableType
          {
@@ -393,9 +396,9 @@ public class CasePdfGenerator
 
                   document.print( ((AttachedFile.Data) attachment).name().get(), valueFont );
                }
-            });
+            } );
          }
-      }));
+      } ) );
    }
 
    public PDDocument getPdf() throws IOException

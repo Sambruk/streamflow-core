@@ -54,6 +54,8 @@ public class ConfigurationAssembler
          throws AssemblyException
    {
       configuration(layer.moduleAssembly( "Configuration" ));
+      configurationWithDefaults( layer.moduleAssembly( "DefaultConfiguration" ) );
+      entityStoreConfiguration( layer.moduleAssembly( "EntityStoreConfiguration" ) );
    }
 
    private void configuration( ModuleAssembly module ) throws AssemblyException
@@ -66,21 +68,26 @@ public class ConfigurationAssembler
 //      module.addEntities( EhCacheConfiguration.class ).visibleIn( Visibility.application );
       module.addEntities( JdbmConfiguration.class ).visibleIn( Visibility.application );
       module.addEntities( NativeConfiguration.class ).visibleIn( Visibility.application );
-      module.addEntities( ReindexerConfiguration.class ).visibleIn( Visibility.application );
       module.addEntities( StatisticsConfiguration.class ).visibleIn( Visibility.application );
-      module.addEntities( NotificationConfiguration.class ).visibleIn( Visibility.application );
-      module.addEntities( ConversationResponseConfiguration.class ).visibleIn( Visibility.application );
-      module.addEntities( DataSourceConfiguration.class ).visibleIn( Visibility.application );
-      module.addEntities( LiquibaseConfiguration.class ).visibleIn( Visibility.application );
       module.addEntities( StartupMigrationConfiguration.class ).visibleIn( Visibility.application );
       module.addEntities( JmxConnectorConfiguration.class ).visibleIn( Visibility.application );
       module.addEntities( MigrationConfiguration.class ).visibleIn( Visibility.application );
       module.addEntities( SendMailConfiguration.class ).visibleIn( Visibility.application );
       module.addEntities( ReceiveMailConfiguration.class ).visibleIn( Visibility.application );
-      module.addEntities( RemoveAttachmentsConfiguration.class ).visibleIn( Visibility.application );
+
 
       // Plugin configurations
       module.addEntities( PluginConfiguration.class ).visibleIn( Visibility.application );
+   }
+
+   private void configurationWithDefaults( ModuleAssembly module ) throws AssemblyException
+   {
+      module.addEntities( ReindexerConfiguration.class ).visibleIn( Visibility.application );
+      module.addEntities( DataSourceConfiguration.class ).visibleIn( Visibility.application );
+      module.addEntities( LiquibaseConfiguration.class ).visibleIn( Visibility.application );
+      module.addEntities( NotificationConfiguration.class ).visibleIn( Visibility.application );
+      module.addEntities( ConversationResponseConfiguration.class ).visibleIn( Visibility.application );
+      module.addEntities( RemoveAttachmentsConfiguration.class ).visibleIn( Visibility.application );
 
       module.forMixin( ReindexerConfiguration.class ).declareDefaults().loadValue().set( 50 );
       module.forMixin( DataSourceConfiguration.class ).declareDefaults().properties().set("");
@@ -89,7 +96,10 @@ public class ConfigurationAssembler
       module.forMixin( NotificationConfiguration.class ).declareDefaults().enabled().set( true );
       module.forMixin( ConversationResponseConfiguration.class ).declareDefaults().enabled().set( true );
       module.forMixin( RemoveAttachmentsConfiguration.class ).declareDefaults().enabled().set( true );
+   }
 
+   private void entityStoreConfiguration( ModuleAssembly module ) throws AssemblyException
+   {
       // Configuration store
       Application.Mode mode = module.layerAssembly().applicationAssembly().mode();
       if (mode.equals( Application.Mode.development ))
