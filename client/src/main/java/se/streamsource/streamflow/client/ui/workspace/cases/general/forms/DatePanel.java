@@ -40,7 +40,7 @@ public class DatePanel
       setLayout( new BorderLayout( ) );
 
       datePicker = new JXDatePicker();
-      datePicker.setFormats( DateFormat.getDateInstance( DateFormat.MEDIUM, Locale.getDefault() ) );
+      datePicker.setFormats( DateFormat.getDateInstance( DateFormat.SHORT ) );
 
       add( datePicker, BorderLayout.WEST );
    }

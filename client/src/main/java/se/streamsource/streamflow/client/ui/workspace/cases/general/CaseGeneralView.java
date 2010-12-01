@@ -214,7 +214,7 @@ public class CaseGeneralView extends JScrollPane implements Observer, Transactio
       rightBuilder.nextColumn();
       rightBuilder.add( caseBinder.bind( dueOnField = (JXDatePicker) DATEPICKER.newField(), template.dueOn() ),
             new CellConstraints( 3, 5, 1, 1, CellConstraints.LEFT, CellConstraints.BOTTOM, new Insets( 4, 2, 0, 0 ) ) );
-      dueOnField.setFormats( DateFormat.getDateInstance( DateFormat.MEDIUM, Locale.getDefault() ) );
+      dueOnField.setFormats( DateFormat.getDateInstance( DateFormat.SHORT ) );
       rightBuilder.nextLine();
 
       // Forms
