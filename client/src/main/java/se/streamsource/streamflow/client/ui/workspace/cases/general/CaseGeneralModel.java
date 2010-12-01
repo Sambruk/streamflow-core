@@ -152,40 +152,17 @@ public class CaseGeneralModel extends Observable implements Refreshable
 
    public void changeCaseType( LinkValue selected )
    {
-      try
-      {
-         client.postLink( selected );
-
-      } catch (ResourceException e)
-      {
-         throw new OperationException(
-               WorkspaceResources.could_not_perform_operation, e );
-      }
+      client.postLink( selected );
    }
 
    public void removeCaseType( )
    {
-      try
-      {
-         client.postCommand( "casetype", vbf.newValue( EntityValue.class ));
-
-      } catch (ResourceException e)
-      {
-         throw new OperationException(
-               WorkspaceResources.could_not_perform_operation, e );
-      }
+      client.postCommand( "casetype", vbf.newValue( EntityValue.class ));
    }
 
    public Actions actions()
    {
-      try
-      {
-         return client.query( "actions", Actions.class );
-      } catch (ResourceException e)
-      {
-         throw new OperationException(
-               WorkspaceResources.could_not_perform_operation, e );
-      }
+      return client.query( "actions", Actions.class );
    }
 
    public boolean getCommandEnabled( String commandName )

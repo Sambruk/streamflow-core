@@ -24,7 +24,6 @@ public enum StreamflowResources
 {
    startup_error,
    operation_not_permitted,
-   connection_refused,
    export_data_file_with_open_option,
    export_completed,
    excel_file,

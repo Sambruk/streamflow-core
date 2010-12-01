@@ -20,12 +20,9 @@ package se.streamsource.streamflow.client.util;
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import org.qi4j.api.injection.scope.Uses;
-import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.dci.value.LinksValue;
-import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 
 import java.util.List;
 
@@ -45,14 +42,8 @@ public class LinksListModel
 
    public void refresh()
    {
-      try
-      {
-         List<LinkValue> links = client.query(query, LinksValue.class).links().get();
-         EventListSynch.synchronize( links, eventList );
-      } catch (ResourceException e)
-      {
-         throw new OperationException( AdministrationResources.could_not_refresh, e );
-      }
+      List<LinkValue> links = client.query(query, LinksValue.class).links().get();
+      EventListSynch.synchronize( links, eventList );
    }
 
    public CommandQueryClient getClient()

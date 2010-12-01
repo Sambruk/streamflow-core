@@ -30,13 +30,11 @@ import org.restlet.data.Disposition;
 import org.restlet.data.Form;
 import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.Representation;
-import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.util.EventListSynch;
 import se.streamsource.streamflow.client.util.Refreshable;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.domain.attachment.AttachmentValue;
 import se.streamsource.streamflow.domain.attachment.UpdateAttachmentValue;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
@@ -52,8 +50,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
 
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
-import static org.qi4j.api.util.Iterables.*;
+import static org.qi4j.api.util.Iterables.filter;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withNames;
 
 /**
  * JAVADOC
@@ -121,14 +119,8 @@ public class AttachmentsModel
 
    public void refresh() throws OperationException
    {
-      try
-      {
-         final LinksValue newRoot = client.query( "index", LinksValue.class );
-         EventListSynch.synchronize( newRoot.links().get(), eventList );
-      } catch (ResourceException e)
-      {
-         throw new OperationException( WorkspaceResources.could_not_perform_operation, e );
-      }
+      final LinksValue newRoot = client.query( "index", LinksValue.class );
+      EventListSynch.synchronize( newRoot.links().get(), eventList );
    }
 
    public void removeAttachment( AttachmentValue attachment )

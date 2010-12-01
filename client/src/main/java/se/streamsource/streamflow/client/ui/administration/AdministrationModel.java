@@ -104,15 +104,9 @@ public class AdministrationModel
       DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) node;
       ContextItem contextItem = (ContextItem) treeNode.getUserObject();
 
-      try
-      {
-         ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
-         builder.prototype().string().set( name );
-         contextItem.getClient().postCommand( "createorganizationalunit", builder.newInstance() );
-      } catch (ResourceException e)
-      {
-         throw new OperationException( AdministrationResources.could_not_create_new_organization, e );
-      }
+      ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
+      builder.prototype().string().set( name );
+      contextItem.getClient().postCommand( "createorganizationalunit", builder.newInstance() );
    }
 
    public void removeOrganizationalUnit( Object node )
@@ -128,11 +122,7 @@ public class AdministrationModel
          {
             throw new OperationException( AdministrationResources.could_not_remove_organisation_with_open_projects, e );
 
-         } else
-         {
-            throw new OperationException( AdministrationResources.could_not_remove_organization, e );
          }
-
       }
    }
 

@@ -80,13 +80,7 @@ public class SelectionElementsModel
    {
       ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
       builder.prototype().string().set( name );
-      try
-      {
-         client.postCommand( "addselectionelement", builder.newInstance() );
-      } catch (ResourceException e)
-      {
-         throw new OperationException( AdministrationResources.could_not_add_field, e );
-      }
+      client.postCommand( "addselectionelement", builder.newInstance() );
    }
 
    public void removeElement( int index )
@@ -94,13 +88,7 @@ public class SelectionElementsModel
       ValueBuilder<IntegerDTO> builder = vbf.newValueBuilder( IntegerDTO.class );
       builder.prototype().integer().set( index );
 
-      try
-      {
-         client.postCommand( "removeselectionelement", builder.newInstance() );
-      } catch (ResourceException e)
-      {
-         throw new OperationException( AdministrationResources.could_not_remove_field, e );
-      }
+      client.postCommand( "removeselectionelement", builder.newInstance() );
    }
 
    public void moveElement( String direction, int index )
@@ -108,13 +96,7 @@ public class SelectionElementsModel
       ValueBuilder<NamedIndexDTO> builder = vbf.newValueBuilder( NamedIndexDTO.class );
       builder.prototype().index().set( index );
       builder.prototype().name().set( direction );
-      try
-      {
-         client.postCommand( "moveselectionelement", builder.newInstance() );
-      } catch (ResourceException e)
-      {
-         throw new OperationException( AdministrationResources.could_not_remove_field, e );
-      }
+      client.postCommand( "moveselectionelement", builder.newInstance() );
    }
 
    public void changeElementName( String newName, int index )
@@ -122,12 +104,6 @@ public class SelectionElementsModel
       ValueBuilder<NamedIndexDTO> builder = vbf.newValueBuilder( NamedIndexDTO.class );
       builder.prototype().name().set( newName );
       builder.prototype().index().set( index );
-      try
-      {
-         client.postCommand( "changeselectionelementname", builder.newInstance() );
-      } catch (ResourceException e)
-      {
-         throw new OperationException( AdministrationResources.could_not_add_field, e );
-      }
+      client.postCommand( "changeselectionelementname", builder.newInstance() );
    }
 }

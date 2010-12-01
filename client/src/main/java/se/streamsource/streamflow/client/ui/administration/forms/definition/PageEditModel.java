@@ -24,9 +24,7 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.StringValue;
-import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.util.Refreshable;
-import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.domain.form.PageDefinitionValue;
 
 /**
@@ -45,13 +43,7 @@ public class PageEditModel
 
    public void refresh()
    {
-      try
-      {
-         page = (PageDefinitionValue) client.query( "index", PageDefinitionValue.class ).buildWith().prototype();
-      } catch (ResourceException e)
-      {
-         throw new OperationException( AdministrationResources.could_not_refresh_list_of_form_pages_and_fields, e );
-      }
+      page = (PageDefinitionValue) client.query( "index", PageDefinitionValue.class ).buildWith().prototype();
    }
 
    public void changeDescription( String pageName ) throws ResourceException
