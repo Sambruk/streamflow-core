@@ -30,12 +30,15 @@ import se.streamsource.streamflow.infrastructure.event.application.source.Applic
 import se.streamsource.streamflow.infrastructure.event.application.source.ApplicationEventStream;
 import se.streamsource.streamflow.infrastructure.event.application.source.helper.ApplicationEvents;
 import se.streamsource.streamflow.infrastructure.event.application.source.helper.ApplicationTransactionTracker;
+import se.streamsource.streamflow.web.infrastructure.circuitbreaker.CircuitBreaker;
 
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.util.Map;
 import java.util.Properties;
+
+import static se.streamsource.streamflow.web.infrastructure.circuitbreaker.CircuitBreaker.withBreaker;
 
 /**
  * Send emails. This service
@@ -67,12 +70,18 @@ public interface SendMailService
       Authenticator authenticator;
 
       ApplicationTransactionTracker<ApplicationEventReplayException> tracker;
+      private CircuitBreaker circuitBreaker;
 
       public void activate() throws Exception
       {
          logger = LoggerFactory.getLogger( SendMailService.class );
 
-         tracker = new ApplicationTransactionTracker<ApplicationEventReplayException>( stream, source, config, ApplicationEvents.playEvents( player, new SendMails() ) );
+         circuitBreaker = new CircuitBreaker();
+         tracker = new ApplicationTransactionTracker<ApplicationEventReplayException>( stream,
+               source,
+               config,
+               withBreaker( circuitBreaker,
+                     ApplicationEvents.playEvents( player, new SendMails() ) ));
 
          if (config.configuration().enabled().get())
          {

@@ -60,7 +60,7 @@ public class TransactionTracker
       logger = LoggerFactory.getLogger( visitor.getClass() );
    }
 
-   public void start()
+   public synchronized void start()
    {
       started = true;
 
@@ -70,7 +70,7 @@ public class TransactionTracker
       stream.registerListener( this );
    }
 
-   public void stop()
+   public synchronized void stop()
    {
       if (started)
       {

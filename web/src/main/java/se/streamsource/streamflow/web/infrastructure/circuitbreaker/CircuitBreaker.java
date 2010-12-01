@@ -17,89 +17,203 @@
 
 package se.streamsource.streamflow.web.infrastructure.circuitbreaker;
 
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
-import java.beans.PropertyVetoException;
-import java.beans.VetoableChangeListener;
-import java.beans.VetoableChangeSupport;
+import org.qi4j.api.io.Output;
+import org.qi4j.api.io.Receiver;
+import org.qi4j.api.io.Sender;
+
+import java.beans.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
- * JAVADOC
+ * Implementation of CircuitBreaker pattern
  */
 public class CircuitBreaker
 {
-   enum Status
+   public static <Item, ReceiverThrowable extends Throwable> Output<Item, ReceiverThrowable> withBreaker( final CircuitBreaker breaker, final Output<Item, ReceiverThrowable> output)
+   {
+      return new Output<Item, ReceiverThrowable>()
+      {
+         public <SenderThrowableType extends Throwable> void receiveFrom( final Sender<Item, SenderThrowableType> sender ) throws ReceiverThrowable, SenderThrowableType
+         {
+            output.receiveFrom( new Sender<Item, SenderThrowableType>()
+            {
+               public <ReceiverThrowableType extends Throwable> void sendTo( final Receiver<Item, ReceiverThrowableType> receiver ) throws ReceiverThrowableType, SenderThrowableType
+               {
+                  // Check breaker first
+                  if (!breaker.isOn())
+                     throw (ReceiverThrowableType) breaker.getLastThrowable();
+
+                  sender.sendTo( new Receiver<Item, ReceiverThrowableType>()
+                  {
+                     public void receive( Item item ) throws ReceiverThrowableType
+                     {
+                        try
+                        {
+                           receiver.receive( item );
+
+                           // Notify breaker that it went well
+                           breaker.success();
+                        } catch (Throwable receiverThrowableType)
+                        {
+                           // Notify breaker of trouble
+                           breaker.throwable( receiverThrowableType );
+
+                           throw (ReceiverThrowableType) receiverThrowableType;
+                        }
+                     }
+                  });
+               }
+            });
+         }
+      };
+   }
+
+   public enum Status
    {
       off,
       on
    }
 
-   private boolean enabled;
-   private String name;
+   private int threshold;
+   private long timeout;
+   private Set<Class<? extends Exception>> allowedExceptions = new HashSet<Class<? extends Exception>>();
 
+   private int countDown;
+   private long trippedOn;
+   private long enableOn;
 
-   private Status status = Status.off;
-   private String errorMessage;
+   private Status status = Status.on;
 
-   PropertyChangeSupport pcs;
-   VetoableChangeSupport vcs;
+   private Throwable lastThrowable;
 
-   public CircuitBreaker( String name)
+   PropertyChangeSupport pcs = new PropertyChangeSupport(this);
+   VetoableChangeSupport vcs = new VetoableChangeSupport(this);
+
+   public CircuitBreaker( int threshold, long timeout, Class<? extends Exception>... allowedExceptions)
    {
-      this.name = name;
+      this.threshold = threshold;
+      this.countDown = threshold;
+      this.timeout = timeout;
+      Collections.addAll( this.allowedExceptions, allowedExceptions );
    }
 
-   public boolean isEnabled()
+   public CircuitBreaker(Class<? extends Exception>... allowedExceptions)
    {
-      return enabled;
+      this(1, 1000*60*5); // 5 minute timeout as default
    }
 
-   public void setEnabled(boolean newEnabled)
+   public synchronized void trip()
    {
-      if (this.enabled != enabled)
+      if (status == Status.on)
       {
-         boolean oldEnabled = enabled;
-         enabled = newEnabled;
-         pcs.firePropertyChange( "enabled", oldEnabled, newEnabled );
+         status = Status.off;
+         pcs.firePropertyChange( "status", Status.on, Status.off );
+
+         trippedOn = System.currentTimeMillis();
+         enableOn = trippedOn+timeout;
       }
    }
 
-   public String getName()
+   public synchronized void turnOn() throws PropertyVetoException
    {
-      return name;
+      if (status == Status.off)
+      {
+         try
+         {
+            vcs.fireVetoableChange( "status", Status.off, Status.on );
+            status = Status.on;
+            countDown = threshold;
+            enableOn = 0;
+
+            pcs.firePropertyChange( "status", Status.off, Status.on );
+         } catch (PropertyVetoException e)
+         {
+            // Reset timeout
+            enableOn = enableOn+timeout;
+
+            if (e.getCause() != null)
+               lastThrowable = e.getCause();
+            throw e;
+         }
+      }
    }
 
-
-   public void setStatus(Status newStatus) throws PropertyVetoException
+   public synchronized Throwable getLastThrowable()
    {
-      if (newStatus != status)
+      return lastThrowable;
+   }
+
+   public synchronized double getServiceLevel()
+   {
+      return countDown/((double)threshold);
+   }
+
+   public synchronized Status getStatus()
+   {
+      if (status == Status.off)
       {
-         if (newStatus == Status.on)
+         if (System.currentTimeMillis() > enableOn)
          {
             try
             {
-               vcs.fireVetoableChange( "status", Status.off, Status.on );
+               turnOn();
             } catch (PropertyVetoException e)
             {
-               errorMessage = e.getMessage();
-               throw e;
+               if (e.getCause() != null)
+                  lastThrowable = e.getCause();
+            }
+         }
+      }
+
+      return status;
+   }
+
+   public boolean isOn()
+   {
+      return getStatus().equals( Status.on );
+   }
+
+   public synchronized void throwable(Throwable throwable)
+   {
+      Class<? extends Throwable> exceptionClass = throwable.getClass();
+      if ( status == Status.on && !allowedExceptions.contains( exceptionClass ))
+      {
+         // Check if exception is subclass of allowed exception, and if so, add it to list
+         if (Exception.class.isAssignableFrom( exceptionClass))
+         {
+            for (Class<? extends Exception> allowedException : allowedExceptions)
+            {
+               if (allowedException.isAssignableFrom( exceptionClass ));
+               {
+                  allowedExceptions.add( (Class<Exception>) exceptionClass );
+                  return;
+               }
             }
          }
 
-         Status oldStatus = status;
-         status = newStatus;
-         pcs.firePropertyChange( "status", oldStatus, newStatus );
+         countDown--;
+
+         lastThrowable = throwable;
+
+         pcs.firePropertyChange( "serviceLevel", (countDown+1)/((double)threshold), countDown/((double)threshold) );
+
+         if (countDown == 0)
+         {
+            trip();
+         }
       }
    }
 
-   public String getErrorMessage()
+   public synchronized void success()
    {
-      return errorMessage;
-   }
+      if (status == Status.on && countDown < threshold)
+      {
+         countDown++;
 
-   public Status getStatus()
-   {
-      return status;
+         pcs.firePropertyChange( "serviceLevel", (countDown-1)/((double)threshold), countDown/((double)threshold) );
+      }
    }
 
    public void addVetoableChangeListener( VetoableChangeListener vcl)

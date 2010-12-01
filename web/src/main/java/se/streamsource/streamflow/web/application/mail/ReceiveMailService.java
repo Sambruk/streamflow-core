@@ -32,10 +32,13 @@ import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import se.streamsource.streamflow.web.infrastructure.circuitbreaker.CircuitBreaker;
 
 import javax.mail.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyVetoException;
+import java.beans.VetoableChangeListener;
 import java.util.Enumeration;
-import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -74,6 +77,8 @@ public interface ReceiveMailService
       private Properties props;
       private URLName url;
 
+      private CircuitBreaker circuitBreaker;
+
       public void activate() throws Exception
       {
          logger = LoggerFactory.getLogger( ReceiveMailService.class );
@@ -81,6 +86,29 @@ public interface ReceiveMailService
 
          if (config.configuration().enabled().get())
          {
+            circuitBreaker = new CircuitBreaker(3, 1000*60*5);
+
+            circuitBreaker.addVetoableChangeListener( new VetoableChangeListener()
+            {
+               public void vetoableChange( PropertyChangeEvent evt ) throws PropertyVetoException
+               {
+                  // Test connection to mail server
+                  Session session = javax.mail.Session.getInstance( props, authenticator );
+                  session.setDebug( config.configuration().debug().get() );
+                  try
+                  {
+                     Store store = session.getStore( url );
+                     store.connect();
+                     store.close();
+                  } catch (MessagingException e)
+                  {
+                     // Failed - don't allow to turn on circuit breaker
+                     throw new PropertyVetoException(e.getMessage(), evt);
+                  }
+
+               }
+            });
+
             // Authenticator
             authenticator = new javax.mail.Authenticator()
             {
@@ -131,13 +159,8 @@ public interface ReceiveMailService
       {
          logger.info( "Running mail receiver." );
 
-         if (config.configuration().debug().get())
-         {
-            for (Map.Entry prop : props.entrySet())
-            {
-               logger.info( prop.getKey() + "=" + prop.getValue() );
-            }
-         }
+         if (circuitBreaker.isOn())
+            return; // Don't try - circuit breaker is off
 
          Session session = javax.mail.Session.getInstance( props, authenticator );
          session.setDebug( config.configuration().debug().get() );
@@ -203,8 +226,11 @@ public interface ReceiveMailService
             inbox.close( false );
             store.close();
 
-         } catch (Exception e)
+            circuitBreaker.success();
+         } catch (Throwable e)
          {
+            circuitBreaker.throwable( e );
+
             try
             {
                inbox.close( false );
