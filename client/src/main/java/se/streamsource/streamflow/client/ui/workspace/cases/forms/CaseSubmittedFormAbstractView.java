@@ -47,6 +47,7 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import java.awt.Color;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -78,6 +79,7 @@ public abstract class CaseSubmittedFormAbstractView
    public CaseSubmittedFormAbstractView()
    {
       panel = new JPanel();
+      panel.setBackground( Color.WHITE );
       panel.setLayout( new BoxLayout( panel, BoxLayout.Y_AXIS ) );
       setViewportView( panel );
 
@@ -87,7 +89,7 @@ public abstract class CaseSubmittedFormAbstractView
 
    private Map<JButton, AttachmentFieldSubmission> buttons = new HashMap<JButton, AttachmentFieldSubmission>();
 
-   private SimpleDateFormat formatter = new SimpleDateFormat( i18n.text( WorkspaceResources.date_time_format ) );
+   private SimpleDateFormat formatter = new SimpleDateFormat( i18n.text( WorkspaceResources.date_format ) );
 
    abstract protected FormAttachmentDownload getModel();
 
@@ -104,6 +106,7 @@ public abstract class CaseSubmittedFormAbstractView
       {
          final AttachmentFieldSubmission attachment = vbf.newValueFromJSON( AttachmentFieldSubmission.class, fieldValue );
          JPanel panel = new JPanel( new FlowLayout( FlowLayout.LEFT ) );
+         panel.setBackground( Color.WHITE );
          panel.add( new JLabel(attachment.name().get()) );
          JButton button = new JButton( context.getActionMap(this).get( "open" ) );
          buttons.put( button, attachment );

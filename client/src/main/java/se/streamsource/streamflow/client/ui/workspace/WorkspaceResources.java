@@ -82,5 +82,5 @@ public enum WorkspaceResources
    created_by,
    choose_template,
    could_not_print,
-   could_not_open_file
+   date_format, could_not_open_file
 }

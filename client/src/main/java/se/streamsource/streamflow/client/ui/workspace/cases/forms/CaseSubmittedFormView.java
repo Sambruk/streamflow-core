@@ -34,6 +34,7 @@ import se.streamsource.streamflow.resource.caze.FieldDTO;
 import se.streamsource.streamflow.resource.roles.IntegerDTO;
 
 import javax.swing.*;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 
 /**
@@ -67,6 +68,7 @@ public class CaseSubmittedFormView
          public void iterate( FieldDTO field )
          {
             JLabel label = new JLabel( field.field().get(), SwingConstants.LEFT);
+            label.setFont(  label. getFont().deriveFont( Font.BOLD ) );
             JComponent component = getComponent( field.value().get(), field.fieldType().get() );
 
             builder.append( label );

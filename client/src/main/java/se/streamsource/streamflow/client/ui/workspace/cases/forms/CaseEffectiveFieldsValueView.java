@@ -33,6 +33,8 @@ import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.resource.caze.EffectiveFieldDTO;
 
 import javax.swing.*;
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.text.SimpleDateFormat;
 import java.util.LinkedHashMap;
@@ -73,13 +75,16 @@ public class CaseEffectiveFieldsValueView
             if ( !formBuilder.containsKey( formName ))
             {
                JPanel formPanel = new JPanel();
+               formPanel.setBackground( Color.WHITE );
                formPanel.setBorder( BorderFactory.createTitledBorder( formName ));
                formBuilder.put( formName, builder( formPanel ) );
             }
 
             JLabel label = new JLabel( effectiveFieldDTO.fieldName().get(), SwingConstants.LEFT );
+            label.setFont( label.getFont().deriveFont( Font.BOLD ) );
 
             JComponent component = getComponent( effectiveFieldDTO.fieldValue().get(), effectiveFieldDTO.fieldType().get() );
+            component.setBackground( Color.WHITE );
             component.setToolTipText( effectiveFieldDTO.submitter().get()+", "+formatter.format( effectiveFieldDTO.submissionDate().get() ) );
 
             DefaultFormBuilder builder = formBuilder.get( formName );
