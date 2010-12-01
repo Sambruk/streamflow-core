@@ -16,15 +16,14 @@ package syncbundles;
  * limitations under the License.
  */
 
-import org.qi4j.api.io.Inputs;
-import org.qi4j.api.io.Outputs;
-import org.qi4j.api.io.Transforms;
+import org.qi4j.api.io.*;
 import org.qi4j.api.specification.Specification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 /**
  * When executed, this tool will find all properties files that are ResourceBundles and try to locate
@@ -91,7 +90,7 @@ public class SyncEnumBundles
                logger.info("Checking bundle at:"+file.getName()+", classname:"+enumName);
 
                File output = File.createTempFile( "fixed", ".properties" );
-               Inputs.text( file ).transferTo( Transforms.filter(new Specification<String>()
+               textInput( file ).transferTo( Transforms.filter(new Specification<String>()
                {
                   public boolean satisfiedBy( String item )
                   {
@@ -112,7 +111,7 @@ public class SyncEnumBundles
                         return false;
                      }
                   }
-               }, Outputs.text( output )));
+               }, text( output )));
 
                if (fix)
                {
@@ -129,4 +128,80 @@ public class SyncEnumBundles
          }
       }
    }
+
+   public static Output<String, IOException> text( final File file )
+   {
+       return new Output<String, IOException>()
+       {
+           public <SenderThrowableType extends Throwable> void receiveFrom( final Sender<String, SenderThrowableType> sender ) throws IOException, SenderThrowableType
+           {
+               OutputStream stream = new FileOutputStream( file );
+
+               // If file should be gzipped, do that automatically
+               if (file.getName().endsWith( ".gz" ))
+                   stream = new GZIPOutputStream( stream );
+
+               final BufferedWriter writer = new BufferedWriter( new OutputStreamWriter( stream, "ISO-8859-1" ) );
+
+               try
+               {
+                   sender.sendTo( new Receiver<String, IOException>()
+                   {
+                       public void receive( String item ) throws IOException
+                       {
+                           writer.append( item ).append( '\n' );
+                       }
+                   } );
+                   writer.close();
+               } catch (IOException e)
+               {
+                   // We failed writing - close and delete
+                   writer.close();
+                   file.delete();
+               } catch (Throwable senderThrowableType)
+               {
+                   // We failed writing - close and delete
+                   writer.close();
+                   file.delete();
+
+                   throw (SenderThrowableType) senderThrowableType;
+               }
+           }
+       };
+   }
+
+    public static Input<String, IOException> textInput( final File source )
+    {
+        return new Input<String, IOException>()
+        {
+            public <ReceiverThrowableType extends Throwable> void transferTo( Output<String, ReceiverThrowableType> output ) throws IOException, ReceiverThrowableType
+            {
+                InputStream stream = new FileInputStream( source );
+
+                // If file is gzipped, unzip it automatically
+                if (source.getName().endsWith( ".gz" ))
+                    stream = new GZIPInputStream(stream);
+
+                final BufferedReader reader = new BufferedReader( new InputStreamReader( stream, "ISO-8859-1" ) );
+
+                try
+                {
+                    output.receiveFrom( new Sender<String, IOException>()
+                    {
+                        public <ReceiverThrowableType extends Throwable> void sendTo( Receiver<String, ReceiverThrowableType> receiver ) throws ReceiverThrowableType, IOException
+                        {
+                            String line;
+                            while ((line = reader.readLine()) != null)
+                            {
+                                receiver.receive( line );
+                            }
+                        }
+                    } );
+                } finally
+                {
+                    reader.close();
+                }
+            }
+        };
+    }
 }
