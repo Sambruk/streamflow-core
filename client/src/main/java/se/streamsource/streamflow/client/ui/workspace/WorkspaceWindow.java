@@ -46,6 +46,8 @@ public class WorkspaceWindow
 {
    public CardLayout cardLayout;
 
+   private WorkspaceView currentWorkspace;
+
    public WorkspaceWindow( @Service Application application,
                            @Service JavaHelp javaHelp,
                            @Uses WorkspaceMenuBar menu,
@@ -89,7 +91,12 @@ public class WorkspaceWindow
                   {
                      public void run()
                      {
-                        frame.getContentPane().add( obf.newObjectBuilder( WorkspaceView.class ).use( accountModel.serverResource().getSubClient("workspace" )).newInstance(), "workspace");
+                        if( currentWorkspace != null )
+                        {
+                           currentWorkspace.killPopup();   
+                        }
+                        currentWorkspace = obf.newObjectBuilder( WorkspaceView.class ).use( accountModel.serverResource().getSubClient( "workspace" ) ).newInstance();
+                        frame.getContentPane().add( currentWorkspace, "workspace");
                         cardLayout.show( frame.getContentPane(), "workspace" );
                      }
                   });

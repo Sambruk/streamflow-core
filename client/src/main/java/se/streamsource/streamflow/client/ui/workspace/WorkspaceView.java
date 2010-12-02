@@ -214,12 +214,7 @@ public class WorkspaceView
                   setContextString( contextItem );
                }
 
-               if (popup != null)
-               {
-                  popup.setVisible( false );
-                  popup.dispose();
-                  popup = null;
-               }
+               killPopup();
             }
          }
       } );
@@ -276,9 +271,7 @@ public class WorkspaceView
          popup.setVisible( true );
       } else
       {
-         popup.setVisible(false);
-         popup.dispose();
-         popup = null;
+         killPopup();
       }
    }
 
@@ -344,39 +337,6 @@ public class WorkspaceView
          };
       } else
          return null;
-
-/*
-      TreePath path = workspaceTree.getSelectionPath();
-      if (path != null)
-      {
-         Object node = path.getLastPathComponent();
-
-         if (node instanceof CaseCreationNode)
-         {
-            // TODO very odd hack - how to solve state binder update issue during use of accelerator keys.
-            Component focusOwner = WindowUtils.findWindow( this ).getFocusOwner();
-            focusOwner.transferFocus();
-
-            ((CaseCreationNode) node).createDraft();
-            refresh();
-            CasesView currentCases = (CasesView) currentSelection;
-            JXTable caseTable = currentCases.getCaseTableView().getCaseTable();
-            caseTable.getSelectionModel().setSelectionInterval( caseTable.getRowCount() - 1, caseTable.getRowCount() - 1 );
-            caseTable.scrollRowToVisible( caseTable.getSelectedRow() );
-
-            final CaseDetailView caseDetail = currentCases.getCurrentCaseView();
-            SwingUtilities.invokeLater( new Runnable()
-            {
-               public void run()
-               {
-                  caseDetail.setSelectedTab( 0 );
-                  caseDetail.requestFocusInWindow();
-               }
-            } );
-         }
-      }
-
-*/
    }
 
    @Action
@@ -387,6 +347,16 @@ public class WorkspaceView
 
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
    {
+   }
+
+   public void killPopup()
+   {
+      if( popup != null )
+      {
+         popup.setVisible(false);
+         popup.dispose();
+         popup = null;
+      }
    }
 
    class CaseSelectionListener
