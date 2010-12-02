@@ -17,6 +17,8 @@
 package se.streamsource.streamflow.client.ui.workspace.cases.general.forms;
 
 import ca.odell.glazedlists.EventList;
+import org.jdesktop.application.Application;
+import org.jdesktop.swingx.util.WindowUtils;
 import org.netbeans.api.wizard.WizardDisplayer;
 import org.netbeans.spi.wizard.Wizard;
 import org.netbeans.spi.wizard.WizardException;
@@ -127,7 +129,7 @@ public class PossibleFormsView extends JPanel
          FormDraftValue formDraftValue = (FormDraftValue) formDraftClient.query( "index", FormDraftValue.class )
                .buildWith().prototype();
 
-         WizardPage[] wizardPages = new WizardPage[ formDraftValue.pages().get().size() ];
+         final WizardPage[] wizardPages = new WizardPage[ formDraftValue.pages().get().size() ];
          for (int i = 0; i < formDraftValue.pages().get().size(); i++)
          {
             PageSubmissionValue page = formDraftValue.pages().get().get( i );
@@ -141,6 +143,10 @@ public class PossibleFormsView extends JPanel
          {
             public Object finish( Map map ) throws WizardException
             {
+               // Force focus move before submit
+               Component focusOwner = WindowUtils.findWindow( wizardPages[ wizardPages.length - 1 ]  ).getFocusOwner();
+               focusOwner.transferFocus();
+
                new CommandTask()
                {
                   @Override

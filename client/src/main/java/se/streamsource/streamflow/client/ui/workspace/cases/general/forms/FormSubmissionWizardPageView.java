@@ -322,8 +322,8 @@ public class FormSubmissionWizardPageView
    public void updateFieldPanel( String fieldId, String fieldValue )
    {
       AbstractFieldPanel panel = componentFieldMap.get( fieldId );
-      String value = panel.getValue();
-      if (fieldValue != null && !fieldValue.equals( value ))
+
+      if ( panel != null && fieldValue != null && !fieldValue.equals( panel.getValue() ))
       {
          panel.setValue( fieldValue );
       }
