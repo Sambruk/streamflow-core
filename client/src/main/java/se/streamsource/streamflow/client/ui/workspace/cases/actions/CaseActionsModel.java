@@ -42,7 +42,7 @@ import java.util.Collection;
  * JAVADOC
  */
 public class CaseActionsModel
-   implements Refreshable
+      implements Refreshable
 {
    @Structure
    ValueBuilderFactory vbf;
@@ -50,7 +50,7 @@ public class CaseActionsModel
    @Uses
    private CommandQueryClient client;
 
-   private TransactionList<String> actionList = new TransactionList<String>(new BasicEventList<String>( ));
+   private TransactionList<String> actionList = new TransactionList<String>( new BasicEventList<String>() );
 
    public void refresh()
    {
@@ -85,6 +85,7 @@ public class CaseActionsModel
    }
 
    // Actions
+
    public void open()
    {
       client.postCommand( "open" );
@@ -106,7 +107,7 @@ public class CaseActionsModel
    }
 
 
-   public void sendTo( LinkValue linkValue)
+   public void sendTo( LinkValue linkValue )
    {
       client.postLink( linkValue );
    }
@@ -138,11 +139,13 @@ public class CaseActionsModel
 
    public File print( CaseOutputConfigValue config ) throws IOException
    {
-      Representation representation = client.queryRepresentation("exportpdf", config);
+      Representation representation = client.queryRepresentation( "exportpdf", config );
 
-      File file = new File(representation.getDisposition().getFilename());
+      String name = representation.getDisposition().getFilename();
+      String[] fileNameParts = name.split( "\\." );
+      File file = File.createTempFile( fileNameParts[0] + "_", "." + fileNameParts[1] );
 
-      Inputs.byteBuffer( representation.getStream(), 1024 ).transferTo( Outputs.byteBuffer(file) );
+      Inputs.byteBuffer( representation.getStream(), 1024 ).transferTo( Outputs.byteBuffer( file ) );
 
       return file;
    }
