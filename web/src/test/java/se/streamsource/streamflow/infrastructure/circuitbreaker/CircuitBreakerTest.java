@@ -158,6 +158,6 @@ public class CircuitBreakerTest
       }
 
       Assert.assertThat( cb.getStatus(), CoreMatchers.equalTo(CircuitBreaker.Status.off ));
-      //Assert.assertThat( cb.getErrorMessage(), CoreMatchers.equalTo("Service is down"));
+      Assert.assertThat( cb.getLastThrowable().getMessage(), CoreMatchers.equalTo("Service is down"));
    }
 }

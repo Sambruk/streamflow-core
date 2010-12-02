@@ -135,6 +135,8 @@ public class CircuitBreaker
 
             if (e.getCause() != null)
                lastThrowable = e.getCause();
+            else
+               lastThrowable = e;
             throw e;
          }
       }
@@ -163,6 +165,8 @@ public class CircuitBreaker
             {
                if (e.getCause() != null)
                   lastThrowable = e.getCause();
+               else
+                  lastThrowable = e;
             }
          }
       }
