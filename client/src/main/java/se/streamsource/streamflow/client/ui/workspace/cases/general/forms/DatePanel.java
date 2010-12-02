@@ -25,6 +25,10 @@ import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -37,7 +41,7 @@ public class DatePanel
    public DatePanel( @Uses FieldSubmissionValue field )
    {
       super( field );
-      setLayout( new BorderLayout( ) );
+      setLayout( new BorderLayout() );
 
       datePicker = new JXDatePicker();
       datePicker.setFormats( DateFormat.getDateInstance( DateFormat.SHORT ) );
@@ -49,13 +53,13 @@ public class DatePanel
    public String getValue()
    {
       Date date = datePicker.getDate();
-      return date==null ? "" : DateFunctions.toUtcString( date );
+      return date == null ? "" : DateFunctions.toUtcString( date );
    }
 
    @Override
    public void setValue( String newValue )
    {
-      if ( !( newValue.isEmpty() ) )
+      if (!(newValue.isEmpty()))
       {
          datePicker.setDate( DateFunctions.fromString( newValue ) );
       }
@@ -70,11 +74,14 @@ public class DatePanel
    @Override
    public void setBinding( final StateBinder.Binding binding )
    {
-      datePicker.addActionListener( new ActionListener()
+      datePicker.addPropertyChangeListener( new PropertyChangeListener()
       {
-         public void actionPerformed( ActionEvent e )
+         public void propertyChange( PropertyChangeEvent e )
          {
-            binding.updateProperty( getValue() );
+            if ("date".equals( e.getPropertyName() ) )
+            {
+               binding.updateProperty( getValue() );
+            }
          }
       });
    }
