@@ -194,5 +194,11 @@ public class CaseTableView
          caseTable.getSelectionModel().setSelectionInterval( caseTable.getRowCount()-1, caseTable.getRowCount()-1 );
          caseTable.scrollRowToVisible( caseTable.getRowCount()-1 );
       }
+
+      if( Events.matches( withNames( "changedStatus",
+            "changedOwner", "assignedTo", "unassigned", "deletedEntity" ), transactions ) )
+      {
+         caseTable.getSelectionModel().clearSelection();   
+      }
    }
 }
