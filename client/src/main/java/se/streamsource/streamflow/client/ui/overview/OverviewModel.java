@@ -32,8 +32,8 @@ import se.streamsource.streamflow.resource.overview.ProjectSummaryValue;
 import java.util.ArrayList;
 import java.util.List;
 
+import static se.streamsource.streamflow.client.ui.overview.OverviewResources.assignments_node;
 import static se.streamsource.streamflow.client.util.i18n.*;
-import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
 
 /**
  * JAVADOC

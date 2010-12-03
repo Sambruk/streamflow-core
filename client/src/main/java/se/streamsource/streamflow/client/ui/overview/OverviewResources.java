@@ -29,4 +29,5 @@ public enum OverviewResources
    assigned_column_header,
    could_not_refresh,
    total_column_header,
+   assignments_node
 }
