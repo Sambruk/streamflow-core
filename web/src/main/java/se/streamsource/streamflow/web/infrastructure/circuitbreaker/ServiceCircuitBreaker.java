@@ -17,10 +17,10 @@
 package se.streamsource.streamflow.web.infrastructure.circuitbreaker;
 
 /**
- * JAVADOC
+ * Services that have CircuitBreakers can implement this. The CB will
+ * then be exposable in JMX by CircuitBreakerManagement.
  */
-public interface HasCircuitBreaker
+public interface ServiceCircuitBreaker
 {
    CircuitBreaker getCircuitBreaker();
-   String getCircuitBreakerName();
 }

@@ -20,6 +20,8 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
+import org.qi4j.api.service.ServiceReference;
+import org.qi4j.api.util.Iterables;
 import org.slf4j.LoggerFactory;
 
 import javax.management.*;
@@ -44,13 +46,13 @@ public interface CircuitBreakerManagement
       MBeanServer server;
 
       @Service
-      Iterable<HasCircuitBreaker> circuitBreakers;
+      Iterable<ServiceReference<ServiceCircuitBreaker>> circuitBreakers;
 
       public void activate() throws Exception
       {
-         for (HasCircuitBreaker circuitBreaker : circuitBreakers)
+         for (ServiceReference<ServiceCircuitBreaker> circuitBreaker : circuitBreakers)
          {
-            registerCircuitBreaker( circuitBreaker.getCircuitBreaker(), circuitBreaker.getCircuitBreakerName() );
+            registerCircuitBreaker( circuitBreaker.get().getCircuitBreaker(), circuitBreaker.identity() );
          }
       }
 
@@ -66,15 +68,23 @@ public interface CircuitBreakerManagement
       public void registerCircuitBreaker( final CircuitBreaker circuitBreaker, final String name ) throws JMException
       {
          ObjectName mbeanObjectName = null;
-         String domain = "CircuitBreaker";
 
-         try
+         ObjectName serviceName = Iterables.first( server.queryNames( new ObjectName("*:*,service="+name), null));
+         if (serviceName != null)
          {
-            mbeanObjectName = new ObjectName(
-                  domain + ":name=" + name );
-         } catch (MalformedObjectNameException e)
+            mbeanObjectName = new ObjectName(serviceName.toString()+",name=Circuit breaker");
+         } else
          {
-            throw new IllegalArgumentException("Illegal name:"+name);
+            String domain = "CircuitBreaker";
+
+            try
+            {
+               mbeanObjectName = new ObjectName(
+                     domain + ":name=" + name );
+            } catch (MalformedObjectNameException e)
+            {
+               throw new IllegalArgumentException("Illegal name:"+name);
+            }
          }
 
          CircuitBreakerJMX bean = new CircuitBreakerJMX(circuitBreaker);

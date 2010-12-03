@@ -36,7 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.streamsource.streamflow.infrastructure.NamedThreadFactory;
 import se.streamsource.streamflow.web.infrastructure.circuitbreaker.CircuitBreaker;
-import se.streamsource.streamflow.web.infrastructure.circuitbreaker.HasCircuitBreaker;
+import se.streamsource.streamflow.web.infrastructure.circuitbreaker.ServiceCircuitBreaker;
 
 import javax.mail.*;
 import java.beans.PropertyChangeEvent;
@@ -56,10 +56,10 @@ import java.util.concurrent.TimeUnit;
  */
 @Mixins(ReceiveMailService.Mixin.class)
 public interface ReceiveMailService
-      extends Configuration, Activatable, ServiceComposite, HasCircuitBreaker
+      extends Configuration, Activatable, ServiceComposite, ServiceCircuitBreaker
 {
    abstract class Mixin
-         implements Activatable, ReceiveMailService, Runnable, HasCircuitBreaker, VetoableChangeListener
+         implements Activatable, ReceiveMailService, Runnable, ServiceCircuitBreaker, VetoableChangeListener
    {
       @Structure
       UnitOfWorkFactory uowf;
@@ -147,11 +147,6 @@ public interface ReceiveMailService
       public CircuitBreaker getCircuitBreaker()
       {
          return circuitBreaker;
-      }
-
-      public String getCircuitBreakerName()
-      {
-         return descriptor.identity();
       }
 
       public void vetoableChange( PropertyChangeEvent evt ) throws PropertyVetoException

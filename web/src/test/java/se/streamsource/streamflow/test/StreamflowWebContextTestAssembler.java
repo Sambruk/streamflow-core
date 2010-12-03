@@ -70,4 +70,9 @@ public class StreamflowWebContextTestAssembler
    protected void assembleWebLayer( LayerAssembly webLayer ) throws AssemblyException
    {
    }
+
+   @Override
+   protected void assembleManagementLayer( LayerAssembly managementLayer ) throws AssemblyException
+   {
+   }
 }

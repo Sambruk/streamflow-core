@@ -53,7 +53,11 @@ public class ConfigurationAssembler
    {
       System.setProperty( "application", "StreamFlowServer" );
 
-      module.addServices( FileConfiguration.class, ServiceConfiguration.class ).visibleIn( Visibility.application ).instantiateOnStartup();
+      module.addServices( FileConfiguration.class).visibleIn( Visibility.application ).instantiateOnStartup();
+
+      Application.Mode mode = module.layerAssembly().applicationAssembly().mode();
+      if (mode.equals( Application.Mode.production ))
+         module.addServices( ServiceConfiguration.class ).visibleIn( Visibility.application ).instantiateOnStartup();
 
       // Configuration entities are registered in this module by using AbstractLayerAssembler.configuration()
 

@@ -73,9 +73,14 @@ public class StreamflowWebAssembler
       new DomainAssembler().assemble( domainLayer );
       new InfrastructureAssembler().assemble( domainInfrastructureLayer );
       new ConfigurationAssembler().assemble( configurationLayer );
-      new ManagementAssembler().assemble( managementLayer );
+      assembleManagementLayer(managementLayer);
 
       return assembly;
+   }
+
+   protected void assembleManagementLayer( LayerAssembly managementLayer ) throws AssemblyException
+   {
+      new ManagementAssembler().assemble( managementLayer );
    }
 
    protected void assembleApplicationLayer( LayerAssembly appLayer ) throws AssemblyException
