@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.application.management;
+package se.streamsource.streamflow.web.infrastructure.logging;
 
 import org.apache.log4j.DailyRollingFileAppender;
 import org.apache.log4j.Logger;

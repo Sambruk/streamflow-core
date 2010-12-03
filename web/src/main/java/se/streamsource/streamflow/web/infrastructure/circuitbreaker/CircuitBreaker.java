@@ -23,6 +23,7 @@ import org.qi4j.api.io.Sender;
 
 import java.beans.*;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -81,8 +82,8 @@ public class CircuitBreaker
    private Set<Class<? extends Exception>> allowedExceptions = new HashSet<Class<? extends Exception>>();
 
    private int countDown;
-   private long trippedOn;
-   private long enableOn;
+   private long trippedOn = -1;
+   private long enableOn = -1;
 
    private Status status = Status.on;
 
@@ -108,6 +109,14 @@ public class CircuitBreaker
    {
       if (status == Status.on)
       {
+         if (countDown != 0)
+         {
+            // If this was invoked manually, then set countDown to zero automatically
+            int oldCountDown = countDown;
+            countDown = 0;
+            pcs.firePropertyChange( "serviceLevel", (oldCountDown)/((double)threshold), countDown/((double)threshold) );
+         }
+
          status = Status.off;
          pcs.firePropertyChange( "status", Status.on, Status.off );
 
@@ -125,13 +134,15 @@ public class CircuitBreaker
             vcs.fireVetoableChange( "status", Status.off, Status.on );
             status = Status.on;
             countDown = threshold;
-            enableOn = 0;
+            trippedOn = -1;
+            enableOn = -1;
+            lastThrowable = null;
 
             pcs.firePropertyChange( "status", Status.off, Status.on );
          } catch (PropertyVetoException e)
          {
             // Reset timeout
-            enableOn = enableOn+timeout;
+            enableOn = System.currentTimeMillis()+timeout;
 
             if (e.getCause() != null)
                lastThrowable = e.getCause();
@@ -140,6 +151,11 @@ public class CircuitBreaker
             throw e;
          }
       }
+   }
+
+   public int getThreshold()
+   {
+      return threshold;
    }
 
    public synchronized Throwable getLastThrowable()
@@ -172,6 +188,16 @@ public class CircuitBreaker
       }
 
       return status;
+   }
+
+   public Date getTrippedOn()
+   {
+      return trippedOn == -1 ? null : new Date(trippedOn);
+   }
+
+   public Date getEnableOn()
+   {
+      return enableOn == -1 ? null : new Date(enableOn);
    }
 
    public boolean isOn()

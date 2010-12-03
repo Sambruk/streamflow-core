@@ -23,13 +23,10 @@ import org.qi4j.api.structure.Application;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
-import org.qi4j.index.reindexer.ReindexerService;
-import org.qi4j.rest.MBeanServerImporter;
 import org.qi4j.spi.query.NamedEntityFinder;
 import org.qi4j.spi.query.NamedQueries;
 import org.qi4j.spi.query.NamedQueryDescriptor;
 import org.qi4j.spi.service.importer.ServiceSelectorImporter;
-import se.streamsource.streamflow.infrastructure.ConfigurationManagerService;
 import se.streamsource.streamflow.infrastructure.event.application.replay.ApplicationEventPlayerService;
 import se.streamsource.streamflow.infrastructure.event.domain.replay.DomainEventPlayerService;
 import se.streamsource.streamflow.server.plugin.authentication.UserDetailsValue;
@@ -38,18 +35,8 @@ import se.streamsource.streamflow.web.application.console.ConsoleResultValue;
 import se.streamsource.streamflow.web.application.console.ConsoleScriptValue;
 import se.streamsource.streamflow.web.application.console.ConsoleService;
 import se.streamsource.streamflow.web.application.contact.StreamflowContactLookupService;
-import se.streamsource.streamflow.web.application.mail.EmailValue;
-import se.streamsource.streamflow.web.application.mail.ReceiveMailService;
-import se.streamsource.streamflow.web.application.mail.SendMailService;
-import se.streamsource.streamflow.web.application.management.CompositeMBean;
-import se.streamsource.streamflow.web.application.management.DatasourceConfigurationManagerService;
-import se.streamsource.streamflow.web.application.management.ErrorLogService;
-import se.streamsource.streamflow.web.application.management.EventManagerService;
-import se.streamsource.streamflow.web.application.management.LoggingService;
-import se.streamsource.streamflow.web.application.management.ManagerComposite;
-import se.streamsource.streamflow.web.application.management.ManagerService;
-import se.streamsource.streamflow.web.application.management.ReindexOnStartupService;
-import se.streamsource.streamflow.web.application.management.jmxconnector.JmxConnectorService;
+import se.streamsource.streamflow.web.application.mail.*;
+import se.streamsource.streamflow.web.application.migration.StartupMigrationConfiguration;
 import se.streamsource.streamflow.web.application.migration.StartupMigrationService;
 import se.streamsource.streamflow.web.application.notification.ConversationResponseService;
 import se.streamsource.streamflow.web.application.notification.NotificationService;
@@ -57,26 +44,26 @@ import se.streamsource.streamflow.web.application.organization.BootstrapAssemble
 import se.streamsource.streamflow.web.application.pdf.CasePdfGenerator;
 import se.streamsource.streamflow.web.application.pdf.SubmittedFormPdfGenerator;
 import se.streamsource.streamflow.web.application.security.AuthenticationFilterService;
-import se.streamsource.streamflow.web.application.statistics.CaseStatisticsService;
-import se.streamsource.streamflow.web.application.statistics.CaseStatisticsValue;
-import se.streamsource.streamflow.web.application.statistics.FormFieldStatisticsValue;
-import se.streamsource.streamflow.web.application.statistics.JdbcStatisticsStore;
-import se.streamsource.streamflow.web.application.statistics.LoggingStatisticsStore;
-import se.streamsource.streamflow.web.application.statistics.RelatedStatisticsValue;
+import se.streamsource.streamflow.web.application.statistics.*;
+import se.streamsource.streamflow.web.infrastructure.circuitbreaker.CircuitBreaker;
 import se.streamsource.streamflow.web.infrastructure.index.NamedSolrDescriptor;
 
-import javax.management.MBeanServer;
-
-import static org.qi4j.api.common.Visibility.*;
+import static org.qi4j.api.common.Visibility.application;
+import static org.qi4j.api.common.Visibility.layer;
 
 /**
  * JAVADOC
  */
 public class AppAssembler
+   extends AbstractLayerAssembler
 {
    public void assemble( LayerAssembly layer )
          throws AssemblyException
    {
+      super.assemble( layer );
+
+      replay(layer.moduleAssembly("Replay"));
+
       console( layer.moduleAssembly( "Console" ) );
       migration( layer.moduleAssembly( "Migration" ) );
 
@@ -94,10 +81,14 @@ public class AppAssembler
 
       if (layer.applicationAssembly().mode().equals( Application.Mode.production ))
       {
-         management( layer.moduleAssembly( "Management" ) );
          notification( layer.moduleAssembly( "Notification" ) );
          mail( layer.moduleAssembly( "Mail" ) );
       }
+   }
+
+   private void replay( ModuleAssembly module ) throws AssemblyException
+   {
+      module.addServices( DomainEventPlayerService.class, ApplicationEventPlayerService.class ).visibleIn( Visibility.application );
    }
 
    private void attachment( ModuleAssembly moduleAssembly ) throws AssemblyException
@@ -130,8 +121,16 @@ public class AppAssembler
    {
       module.addValues( EmailValue.class ).visibleIn( Visibility.application );
       
-      module.addServices( ReceiveMailService.class ).identifiedBy( "receivemail" ).instantiateOnStartup().visibleIn( Visibility.application );
+      module.addServices( ReceiveMailService.class ).
+            identifiedBy( "receivemail" ).
+            instantiateOnStartup().
+            visibleIn( Visibility.application ).
+            setMetaInfo( new CircuitBreaker(3, 1000*60*5) );
+      
       module.addServices( SendMailService.class ).identifiedBy( "sendmail" ).instantiateOnStartup().visibleIn( Visibility.application );
+
+      configuration().addEntities( SendMailConfiguration.class ).visibleIn( Visibility.application );
+      configuration().addEntities( ReceiveMailConfiguration.class ).visibleIn( Visibility.application );
    }
 
    private void notification( ModuleAssembly module ) throws AssemblyException
@@ -154,7 +153,9 @@ public class AppAssembler
          module.addServices( CaseStatisticsService.class ).
                identifiedBy( "statistics" ).
                instantiateOnStartup().
-               visibleIn( layer );
+               visibleIn( application );
+         configuration().addEntities( StatisticsConfiguration.class ).visibleIn( Visibility.application );
+
          module.addServices( LoggingStatisticsStore.class ).
                identifiedBy( "logstatisticsstore" ).
                instantiateOnStartup().
@@ -177,29 +178,6 @@ public class AppAssembler
             .visibleIn( application );
    }
 
-   private void management( ModuleAssembly module ) throws AssemblyException
-   {
-      module.addObjects( CompositeMBean.class );
-      module.addTransients( ManagerComposite.class );
-
-      module.importServices( MBeanServer.class ).importedBy( MBeanServerImporter.class );
-      module.addServices( ManagerService.class ).visibleIn( application ).instantiateOnStartup();
-
-      module.addServices( ConfigurationManagerService.class ).instantiateOnStartup();
-      module.addServices( DatasourceConfigurationManagerService.class ).instantiateOnStartup();
-
-      module.addServices( JmxConnectorService.class ).identifiedBy( "jmxconnector" ).instantiateOnStartup();
-
-      module.addServices( ReindexerService.class ).identifiedBy( "reindexer" ).visibleIn( layer );
-      module.addServices( ReindexOnStartupService.class ).instantiateOnStartup();
-
-      module.addServices( DomainEventPlayerService.class, ApplicationEventPlayerService.class ).visibleIn( Visibility.layer );
-      module.addServices( EventManagerService.class).instantiateOnStartup();
-      module.addServices( ErrorLogService.class ).instantiateOnStartup();
-
-      module.addServices( LoggingService.class ).instantiateOnStartup();
-   }
-
    private void migration( ModuleAssembly module ) throws AssemblyException
    {
       Application.Mode mode = module.layerAssembly().applicationAssembly().mode();
@@ -210,6 +188,7 @@ public class AppAssembler
                visibleIn( application ).
                identifiedBy( "startupmigration" ).
                instantiateOnStartup();
+         configuration().addEntities( StartupMigrationConfiguration.class ).visibleIn( Visibility.application );
       }
    }
 

@@ -17,30 +17,18 @@
 
 package se.streamsource.streamflow.server.plugin.restlet;
 
-import java.util.prefs.Preferences;
-
-import javax.management.MBeanServer;
-
 import org.qi4j.api.common.Visibility;
-import org.qi4j.bootstrap.ApplicationAssembler;
-import org.qi4j.bootstrap.ApplicationAssembly;
-import org.qi4j.bootstrap.ApplicationAssemblyFactory;
-import org.qi4j.bootstrap.Assembler;
-import org.qi4j.bootstrap.AssemblyException;
-import org.qi4j.bootstrap.LayerAssembly;
-import org.qi4j.bootstrap.ModuleAssembly;
+import org.qi4j.bootstrap.*;
 import org.qi4j.entitystore.prefs.PreferencesEntityStoreInfo;
 import org.qi4j.entitystore.prefs.PreferencesEntityStoreService;
-import org.qi4j.rest.MBeanServerImporter;
-
+import org.qi4j.library.jmx.MBeanServerImporter;
 import se.streamsource.streamflow.infrastructure.ConfigurationManagerService;
 import se.streamsource.streamflow.server.plugin.authentication.UserDetailsValue;
 import se.streamsource.streamflow.server.plugin.authentication.UserIdentityValue;
-import se.streamsource.streamflow.server.plugin.contact.ContactAddressValue;
-import se.streamsource.streamflow.server.plugin.contact.ContactEmailValue;
-import se.streamsource.streamflow.server.plugin.contact.ContactList;
-import se.streamsource.streamflow.server.plugin.contact.ContactPhoneValue;
-import se.streamsource.streamflow.server.plugin.contact.ContactValue;
+import se.streamsource.streamflow.server.plugin.contact.*;
+
+import javax.management.MBeanServer;
+import java.util.prefs.Preferences;
 
 /**
  * Assembler for the plugin application

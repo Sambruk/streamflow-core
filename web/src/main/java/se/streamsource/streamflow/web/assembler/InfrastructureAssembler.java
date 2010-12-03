@@ -25,6 +25,7 @@ import org.qi4j.api.structure.Application;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
+import org.qi4j.entitystore.jdbm.JdbmConfiguration;
 import org.qi4j.entitystore.jdbm.JdbmEntityStoreService;
 import org.qi4j.entitystore.map.StateStore;
 import org.qi4j.entitystore.memory.MemoryEntityStoreService;
@@ -33,7 +34,9 @@ import org.qi4j.index.rdf.query.RdfQueryParserFactory;
 import org.qi4j.library.rdf.entity.EntityStateSerializer;
 import org.qi4j.library.rdf.entity.EntityTypeSerializer;
 import org.qi4j.library.rdf.repository.MemoryRepositoryService;
+import org.qi4j.library.rdf.repository.NativeConfiguration;
 import org.qi4j.library.rdf.repository.NativeRepositoryService;
+import org.qi4j.migration.MigrationConfiguration;
 import org.qi4j.migration.MigrationEventLogger;
 import org.qi4j.migration.MigrationService;
 import org.qi4j.migration.Migrator;
@@ -54,6 +57,7 @@ import se.streamsource.streamflow.server.plugin.contact.*;
 import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStoreService;
 import se.streamsource.streamflow.web.infrastructure.caching.CachingServiceComposite;
 import se.streamsource.streamflow.web.infrastructure.database.DataSourceService;
+import se.streamsource.streamflow.web.infrastructure.database.LiquibaseConfiguration;
 import se.streamsource.streamflow.web.infrastructure.database.LiquibaseService;
 import se.streamsource.streamflow.web.infrastructure.database.ServiceInstanceImporter;
 import se.streamsource.streamflow.web.infrastructure.event.JdbmApplicationEventStoreService;
@@ -62,6 +66,7 @@ import se.streamsource.streamflow.web.infrastructure.event.MemoryApplicationEven
 import se.streamsource.streamflow.web.infrastructure.event.MemoryEventStoreService;
 import se.streamsource.streamflow.web.infrastructure.index.EmbeddedSolrService;
 import se.streamsource.streamflow.web.infrastructure.index.SolrQueryService;
+import se.streamsource.streamflow.web.infrastructure.logging.LoggingService;
 import se.streamsource.streamflow.web.infrastructure.plugin.contact.ContactLookupService;
 import se.streamsource.streamflow.web.resource.EventsCommandResult;
 
@@ -74,10 +79,14 @@ import static org.qi4j.bootstrap.ImportedServiceDeclaration.NEW_OBJECT;
  * JAVADOC
  */
 public class InfrastructureAssembler
+   extends AbstractLayerAssembler
 {
    public void assemble( LayerAssembly layer )
          throws AssemblyException
    {
+      super.assemble( layer );
+
+      logging (layer.moduleAssembly("Logging"));
       caching( layer.moduleAssembly( "Caching" ) );
       database( layer.moduleAssembly( "Database" ) );
       entityStore( layer.moduleAssembly( "Entity store" ) );
@@ -86,6 +95,11 @@ public class InfrastructureAssembler
       searchEngine( layer.moduleAssembly( "Search engine" ) );
       attachments( layer.moduleAssembly( "Attachments store" ) );
       plugins( layer.moduleAssembly( "Plugins" ) );
+   }
+
+   private void logging( ModuleAssembly module ) throws AssemblyException
+   {
+      module.addServices( LoggingService.class ).instantiateOnStartup();
    }
 
    private void plugins( ModuleAssembly moduleAssembly ) throws AssemblyException
@@ -165,6 +179,7 @@ public class InfrastructureAssembler
       {
          // Native storage
          module.addServices( NativeRepositoryService.class ).visibleIn( Visibility.application ).instantiateOnStartup().identifiedBy( "rdf-repository" );
+         configuration().addEntities( NativeConfiguration.class ).visibleIn( Visibility.application );
       }
 
       module.addObjects( EntityStateSerializer.class, EntityTypeSerializer.class );
@@ -190,6 +205,8 @@ public class InfrastructureAssembler
          module.addServices( JdbmEntityStoreService.class ).identifiedBy( "data" ).visibleIn( Visibility.application );
 //               withConcerns( EntityStorePerformanceCheck.class );
          module.addServices( UuidIdentityGeneratorService.class ).visibleIn( Visibility.application );
+
+         configuration().addEntities( JdbmConfiguration.class ).visibleIn( Visibility.application );
 
          // Migration service
          // Enter all migration rules here
@@ -544,6 +561,8 @@ public class InfrastructureAssembler
                end();
 
          module.addServices( MigrationService.class ).setMetaInfo( migrationBuilder );
+         configuration().addEntities( MigrationConfiguration.class ).visibleIn( Visibility.application );
+
          module.addObjects( MigrationEventLogger.class );
          module.importServices( MigrationEventLogger.class ).importedBy( NEW_OBJECT );
       }
@@ -562,6 +581,10 @@ public class InfrastructureAssembler
       {
          // Liquibase migration
          module.addServices( LiquibaseService.class ).instantiateOnStartup();
+         ModuleAssembly config = module.layerAssembly().applicationAssembly().layerAssembly( "Configuration" ).moduleAssembly( "DefaultConfiguration" );
+         config.addEntities( LiquibaseConfiguration.class ).visibleIn( Visibility.application );
+         config.forMixin( LiquibaseConfiguration.class ).declareDefaults().enabled().set(true);
+         config.forMixin( LiquibaseConfiguration.class ).declareDefaults().changeLog().set("changelog.xml");
       }
    }
 

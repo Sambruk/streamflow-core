@@ -1,5 +1,4 @@
-/**
- *
+/*
  * Copyright 2009-2010 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,22 +14,27 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.infrastructure.database;
+package se.streamsource.streamflow.web.assembler;
 
-import org.qi4j.api.common.UseDefaults;
-import org.qi4j.api.configuration.ConfigurationComposite;
-import org.qi4j.api.configuration.Enabled;
-import org.qi4j.api.property.Property;
+import org.qi4j.bootstrap.AssemblyException;
+import org.qi4j.bootstrap.LayerAssembly;
+import org.qi4j.bootstrap.ModuleAssembly;
 
 /**
- * Configuration for Liquibase
+ * JAVADOC
  */
-public interface LiquibaseConfiguration
-      extends ConfigurationComposite, Enabled
+public class AbstractLayerAssembler
 {
-   @UseDefaults
-   Property<String> contexts();
+   private LayerAssembly layerAssembly;
 
-   @UseDefaults
-   Property<String> changeLog();
+   public void assemble( LayerAssembly layer )
+         throws AssemblyException
+   {
+      this.layerAssembly = layer;
+   }
+
+   protected ModuleAssembly configuration()
+   {
+      return layerAssembly.applicationAssembly().layerAssembly( "Configuration" ).moduleAssembly( "Configuration" );
+   }
 }

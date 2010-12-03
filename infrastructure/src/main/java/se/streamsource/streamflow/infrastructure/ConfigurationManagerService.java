@@ -128,7 +128,7 @@ public interface ConfigurationManagerService
             List<MBeanOperationInfo> operations = new ArrayList<MBeanOperationInfo>();
             if (configurableService instanceof Activatable)
             {
-               operations.add( new MBeanOperationInfo( "restart", "Restart service", new MBeanParameterInfo[0], "void", MBeanOperationInfo.ACTION_INFO ) );
+               operations.add( new MBeanOperationInfo( "restart", "Restart service", new MBeanParameterInfo[0], String.class.getName(), MBeanOperationInfo.ACTION_INFO ) );
             }
 
             MBeanInfo mbeanInfo = new MBeanInfo( serviceClass, name, attributes.toArray( new MBeanAttributeInfo[attributes.size()] ), null, operations.toArray( new MBeanOperationInfo[operations.size()] ), null );

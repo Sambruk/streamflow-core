@@ -44,7 +44,7 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * DataSource service. Sets up and exposes a DataSource that can be used in the application.
+ * DataSource service implemented as a ServiceImporter. Sets up and exposes DataSources that can be used in the application.
  */
 @Mixins(DataSourceService.Mixin.class)
 public interface DataSourceService
@@ -140,7 +140,8 @@ public interface DataSourceService
                logger.info( "Database for DataSource is up!" );
             } catch (SQLException e)
             {
-               logger.warn("Database for DataSource is not currently available");
+               logger.warn("Database for DataSource "+importedServiceDescriptor.identity()+" is not currently available");
+               throw new ServiceImporterException("Database for DataSource "+importedServiceDescriptor.identity()+" is not currently available", e);
             } finally
             {
                Thread.currentThread().setContextClassLoader( cl );

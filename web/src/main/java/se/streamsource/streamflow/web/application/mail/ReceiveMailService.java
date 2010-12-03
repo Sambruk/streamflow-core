@@ -20,6 +20,7 @@ package se.streamsource.streamflow.web.application.mail;
 import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
@@ -30,9 +31,12 @@ import org.qi4j.api.usecase.UsecaseBuilder;
 import org.qi4j.api.util.Iterables;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
+import org.qi4j.spi.service.ServiceDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import se.streamsource.streamflow.infrastructure.NamedThreadFactory;
 import se.streamsource.streamflow.web.infrastructure.circuitbreaker.CircuitBreaker;
+import se.streamsource.streamflow.web.infrastructure.circuitbreaker.HasCircuitBreaker;
 
 import javax.mail.*;
 import java.beans.PropertyChangeEvent;
@@ -52,10 +56,10 @@ import java.util.concurrent.TimeUnit;
  */
 @Mixins(ReceiveMailService.Mixin.class)
 public interface ReceiveMailService
-      extends Configuration, Activatable, ServiceComposite
+      extends Configuration, Activatable, ServiceComposite, HasCircuitBreaker
 {
    abstract class Mixin
-         implements Activatable, ReceiveMailService, Runnable
+         implements Activatable, ReceiveMailService, Runnable, HasCircuitBreaker, VetoableChangeListener
    {
       @Structure
       UnitOfWorkFactory uowf;
@@ -69,6 +73,9 @@ public interface ReceiveMailService
       @This
       MailReceiver mailReceiver;
 
+      @Uses
+      ServiceDescriptor descriptor;
+
       public Logger logger;
 
       private ScheduledExecutorService receiverExecutor;
@@ -81,34 +88,12 @@ public interface ReceiveMailService
 
       public void activate() throws Exception
       {
+         circuitBreaker = descriptor.metaInfo( CircuitBreaker.class );
+
          logger = LoggerFactory.getLogger( ReceiveMailService.class );
-         logger.info( "Initializing ..." );
 
          if (config.configuration().enabled().get())
          {
-            circuitBreaker = new CircuitBreaker(3, 1000*60*5);
-
-            circuitBreaker.addVetoableChangeListener( new VetoableChangeListener()
-            {
-               public void vetoableChange( PropertyChangeEvent evt ) throws PropertyVetoException
-               {
-                  // Test connection to mail server
-                  Session session = javax.mail.Session.getInstance( props, authenticator );
-                  session.setDebug( config.configuration().debug().get() );
-                  try
-                  {
-                     Store store = session.getStore( url );
-                     store.connect();
-                     store.close();
-                  } catch (MessagingException e)
-                  {
-                     // Failed - don't allow to turn on circuit breaker
-                     throw new PropertyVetoException(e.getMessage(), evt);
-                  }
-
-               }
-            });
-
             // Authenticator
             authenticator = new javax.mail.Authenticator()
             {
@@ -138,29 +123,63 @@ public interface ReceiveMailService
             url = new URLName( protocol, config.configuration().host().get(), config.configuration().port().get(), "",
                   config.configuration().user().get(), config.configuration().password().get() );
 
+
+            circuitBreaker.addVetoableChangeListener( this);
+            circuitBreaker.turnOn();
+
             long sleep = config.configuration().sleepPeriod().get();
             logger.info( "Starting scheduled mail receiver thread. Checking every: "
                   + (sleep == 0 ? 10 : sleep) + " min" );
-            receiverExecutor = Executors.newSingleThreadScheduledExecutor();
+            receiverExecutor = Executors.newSingleThreadScheduledExecutor( new NamedThreadFactory("ReceiveMail"));
             receiverExecutor.scheduleAtFixedRate( this, sleep, (sleep == 0 ? 10 : sleep), TimeUnit.MINUTES );
-
-            logger.info( "Done" );
          }
       }
 
       public void passivate() throws Exception
       {
+         circuitBreaker.removeVetoableChangeListener( this );
+
          receiverExecutor.shutdown();
          receiverExecutor.awaitTermination( 30, TimeUnit.SECONDS );
          logger.info( "Mail service shutdown" );
       }
 
+      public CircuitBreaker getCircuitBreaker()
+      {
+         return circuitBreaker;
+      }
+
+      public String getCircuitBreakerName()
+      {
+         return descriptor.identity();
+      }
+
+      public void vetoableChange( PropertyChangeEvent evt ) throws PropertyVetoException
+      {
+         // Test connection to mail server
+         if (evt.getNewValue() == CircuitBreaker.Status.on)
+         {
+            Session session = javax.mail.Session.getInstance( props, authenticator );
+            session.setDebug( config.configuration().debug().get() );
+            try
+            {
+               Store store = session.getStore( url );
+               store.connect();
+               store.close();
+            } catch (MessagingException e)
+            {
+               // Failed - don't allow to turn on circuit breaker
+               throw new PropertyVetoException(e.getMessage(), evt);
+            }
+         }
+      }
+
       public void run()
       {
-         logger.info( "Running mail receiver." );
-
-         if (circuitBreaker.isOn())
+         if (!circuitBreaker.isOn())
             return; // Don't try - circuit breaker is off
+
+         logger.info( "Running mail receiver." );
 
          Session session = javax.mail.Session.getInstance( props, authenticator );
          session.setDebug( config.configuration().debug().get() );
@@ -233,9 +252,12 @@ public interface ReceiveMailService
 
             try
             {
-               inbox.close( false );
-               store.close();
-            } catch (MessagingException e1)
+               if (inbox != null && inbox.isOpen())
+                  inbox.close( false );
+
+               if (store != null && store.isConnected())
+                  store.close();
+            } catch (Throwable e1)
             {
                logger.error( "Could not close inbox", e1 );
             }

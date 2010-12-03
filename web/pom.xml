@@ -137,6 +137,12 @@
         </dependency>
 
         <dependency>
+            <groupId>org.qi4j.library</groupId>
+            <artifactId>qi4j-lib-jmx</artifactId>
+            <version>${version.qi4j-lib}</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.apache.pdfbox</groupId>
             <artifactId>pdfbox</artifactId>
         </dependency>

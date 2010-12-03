@@ -1,5 +1,4 @@
-/**
- *
+/*
  * Copyright 2009-2010 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,22 +14,21 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.infrastructure.database;
-
-import org.qi4j.api.common.UseDefaults;
-import org.qi4j.api.configuration.ConfigurationComposite;
-import org.qi4j.api.configuration.Enabled;
-import org.qi4j.api.property.Property;
+package se.streamsource.streamflow.web.infrastructure.circuitbreaker;
 
 /**
- * Configuration for Liquibase
- */
-public interface LiquibaseConfiguration
-      extends ConfigurationComposite, Enabled
+* JAVADOC
+*/
+public interface CircuitBreakerJMXMBean
 {
-   @UseDefaults
-   Property<String> contexts();
+   public String getStatus();
+   public int getThreshold();
+   public double getServiceLevel();
+   public String getLastErrorMessage();
+   public String getTrippedOn();
+   public String getEnableOn();
 
-   @UseDefaults
-   Property<String> changeLog();
+   public String turnOn();
+
+   public void trip();
 }
