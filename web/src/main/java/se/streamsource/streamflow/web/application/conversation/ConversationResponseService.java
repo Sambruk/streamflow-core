@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.application.notification;
+package se.streamsource.streamflow.web.application.conversation;
 
 import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.injection.scope.Service;
@@ -82,7 +82,7 @@ public interface ConversationResponseService
          tracker.stop();
       }
 
-      class ReceiveEmails
+      public class ReceiveEmails
             implements MailReceiver
       {
          public void receivedEmail( ApplicationEvent event, EmailValue email )
@@ -91,19 +91,24 @@ public interface ConversationResponseService
 
             try
             {
-               String subject = email.subject().get();
+               String references = email.headers().get().get( "References" );
+               String lastRef = references.substring( references.lastIndexOf(' ' )+2); // Remove " <" from last message-id
 
-               String idString = subject.substring( subject.indexOf( '(' ) + 1, subject.indexOf( ')' ) );
-               String[] ids = idString.split( ":" );
-
-               String conversationId = ids[0];
-               String participantId = ids[1];
-
-               if (!"".equals( conversationId ) && !"".equals( participantId ))
+               String[] ids = lastRef.split( "/" );
+               if (ids.length == 2)
                {
-                  Conversation conversation = uow.get( Conversation.class, conversationId );
-                  conversation.createMessage( email.content().get(), uow.get( ConversationParticipant.class, participantId ) );
+                  String conversationId = ids[0];
+                  String participantId = ids[1].split("@")[0];
 
+                  if (!"".equals( conversationId ) && !"".equals( participantId ))
+                  {
+                     ConversationParticipant from = uow.get( ConversationParticipant.class, participantId );
+                     Conversation conversation = uow.get( Conversation.class, conversationId );
+
+                     String content = email.content().get();
+
+                     conversation.createMessage( content, from );
+                  }
                }
 
                uow.complete();

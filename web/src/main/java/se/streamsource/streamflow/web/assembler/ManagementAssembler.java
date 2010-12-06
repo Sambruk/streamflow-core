@@ -21,15 +21,11 @@ import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.index.reindexer.ReindexerService;
-import org.qi4j.library.jmx.ApplicationManagerService;
-import org.qi4j.library.jmx.MBeanServerImporter;
-import se.streamsource.streamflow.infrastructure.ConfigurationManagerService;
+import org.qi4j.library.jmx.JMXAssembler;
 import se.streamsource.streamflow.web.application.management.*;
 import se.streamsource.streamflow.web.application.management.jmxconnector.JmxConnectorConfiguration;
 import se.streamsource.streamflow.web.application.management.jmxconnector.JmxConnectorService;
-import se.streamsource.streamflow.web.infrastructure.circuitbreaker.CircuitBreakerManagement;
-
-import javax.management.MBeanServer;
+import se.streamsource.infrastructure.circuitbreaker.CircuitBreakerManagement;
 
 import static org.qi4j.api.common.Visibility.application;
 import static org.qi4j.api.common.Visibility.layer;
@@ -44,20 +40,18 @@ public class ManagementAssembler
          throws AssemblyException
    {
       super.assemble( layer );
-      management( layer.moduleAssembly( "Management" ) );
+      jmx( layer.moduleAssembly( "JMX" ) );
    }
 
-   private void management( ModuleAssembly module ) throws AssemblyException
+   private void jmx( ModuleAssembly module ) throws AssemblyException
    {
+      new JMXAssembler().assemble( module );
+
       module.addObjects( CompositeMBean.class );
       module.addTransients( ManagerComposite.class );
 
-      module.importServices( MBeanServer.class ).importedBy( MBeanServerImporter.class );
-
       module.addServices(
-            ApplicationManagerService.class,
             ManagerService.class,
-            ConfigurationManagerService.class,
             DatasourceConfigurationManagerService.class,
             ReindexOnStartupService.class,
             EventManagerService.class,

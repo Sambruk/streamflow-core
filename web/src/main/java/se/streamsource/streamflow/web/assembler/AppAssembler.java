@@ -38,14 +38,14 @@ import se.streamsource.streamflow.web.application.contact.StreamflowContactLooku
 import se.streamsource.streamflow.web.application.mail.*;
 import se.streamsource.streamflow.web.application.migration.StartupMigrationConfiguration;
 import se.streamsource.streamflow.web.application.migration.StartupMigrationService;
-import se.streamsource.streamflow.web.application.notification.ConversationResponseService;
-import se.streamsource.streamflow.web.application.notification.NotificationService;
+import se.streamsource.streamflow.web.application.conversation.ConversationResponseService;
+import se.streamsource.streamflow.web.application.conversation.NotificationService;
 import se.streamsource.streamflow.web.application.organization.BootstrapAssembler;
 import se.streamsource.streamflow.web.application.pdf.CasePdfGenerator;
 import se.streamsource.streamflow.web.application.pdf.SubmittedFormPdfGenerator;
 import se.streamsource.streamflow.web.application.security.AuthenticationFilterService;
 import se.streamsource.streamflow.web.application.statistics.*;
-import se.streamsource.streamflow.web.infrastructure.circuitbreaker.CircuitBreaker;
+import se.streamsource.infrastructure.circuitbreaker.CircuitBreaker;
 import se.streamsource.streamflow.web.infrastructure.index.NamedSolrDescriptor;
 
 import static org.qi4j.api.common.Visibility.application;
@@ -79,9 +79,10 @@ public class AppAssembler
 
       attachment( layer.moduleAssembly( "Attachment" ));
 
+      conversation( layer.moduleAssembly( "Conversation" ) );
+
       if (layer.applicationAssembly().mode().equals( Application.Mode.production ))
       {
-         notification( layer.moduleAssembly( "Notification" ) );
          mail( layer.moduleAssembly( "Mail" ) );
       }
    }
@@ -127,23 +128,27 @@ public class AppAssembler
             visibleIn( Visibility.application ).
             setMetaInfo( new CircuitBreaker(3, 1000*60*5) );
       
-      module.addServices( SendMailService.class ).identifiedBy( "sendmail" ).instantiateOnStartup().visibleIn( Visibility.application );
+      module.addServices( SendMailService.class ).
+            identifiedBy( "sendmail" ).
+            instantiateOnStartup().
+            visibleIn( Visibility.application ).
+            setMetaInfo( new CircuitBreaker(3, 1000*60*5) );
 
       configuration().addEntities( SendMailConfiguration.class ).visibleIn( Visibility.application );
       configuration().addEntities( ReceiveMailConfiguration.class ).visibleIn( Visibility.application );
    }
 
-   private void notification( ModuleAssembly module ) throws AssemblyException
+   private void conversation( ModuleAssembly module ) throws AssemblyException
    {
       module.addServices( NotificationService.class )
             .identifiedBy( "notification" )
             .instantiateOnStartup()
-            .visibleIn( layer );
+            .visibleIn( application );
 
       module.addServices( ConversationResponseService.class )
             .identifiedBy( "conversationresponse" )
             .instantiateOnStartup()
-            .visibleIn( layer );
+            .visibleIn( application );
    }
 
    private void statistics( ModuleAssembly module ) throws AssemblyException

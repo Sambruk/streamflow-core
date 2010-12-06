@@ -29,12 +29,14 @@ import java.util.Map;
 public interface EmailValue
    extends ValueComposite
 {
+   @Optional Property<String> fromName();
    @Optional Property<String> from();
    @Optional Property<String> replyTo();
    Property<String> to();
    Property<String> subject();
    Property<String> content();
    Property<String> contentType();
+   Property<String> messageId();
 
    @UseDefaults
    Property<Map<String,String>> headers();

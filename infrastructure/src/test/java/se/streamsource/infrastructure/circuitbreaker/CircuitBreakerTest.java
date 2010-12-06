@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.infrastructure.circuitbreaker;
+package se.streamsource.infrastructure.circuitbreaker;
 
 import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import se.streamsource.streamflow.web.infrastructure.circuitbreaker.CircuitBreaker;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;

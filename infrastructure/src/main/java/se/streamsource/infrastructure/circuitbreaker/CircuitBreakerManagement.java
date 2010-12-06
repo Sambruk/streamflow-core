@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.infrastructure.circuitbreaker;
+package se.streamsource.infrastructure.circuitbreaker;
 
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.service.ServiceReference;
-import org.qi4j.api.util.Iterables;
+import org.qi4j.api.structure.Application;
+import org.qi4j.library.jmx.Qi4jMBeans;
 import org.slf4j.LoggerFactory;
 
 import javax.management.*;
@@ -31,7 +33,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * JAVADOC
+ * JMX service that exposes CircuitBreakers as MBeans.
  */
 @Mixins(CircuitBreakerManagement.Mixin.class)
 public interface CircuitBreakerManagement
@@ -41,6 +43,9 @@ public interface CircuitBreakerManagement
          implements Activatable
    {
       Map<CircuitBreaker, ObjectName> registeredCircuitBreakers = new HashMap<CircuitBreaker, ObjectName>( );
+
+      @Structure
+      Application application;
 
       @Service
       MBeanServer server;
@@ -69,18 +74,15 @@ public interface CircuitBreakerManagement
       {
          ObjectName mbeanObjectName = null;
 
-         ObjectName serviceName = Iterables.first( server.queryNames( new ObjectName("*:*,service="+name), null));
+         ObjectName serviceName = Qi4jMBeans.findServiceName(server, application.name(), name);
          if (serviceName != null)
          {
             mbeanObjectName = new ObjectName(serviceName.toString()+",name=Circuit breaker");
          } else
          {
-            String domain = "CircuitBreaker";
-
             try
             {
-               mbeanObjectName = new ObjectName(
-                     domain + ":name=" + name );
+               mbeanObjectName = new ObjectName("CircuitBreaker:name=" + name );
             } catch (MalformedObjectNameException e)
             {
                throw new IllegalArgumentException("Illegal name:"+name);

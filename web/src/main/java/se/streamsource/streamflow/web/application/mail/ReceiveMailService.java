@@ -34,9 +34,10 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.spi.service.ServiceDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import se.streamsource.streamflow.infrastructure.NamedThreadFactory;
-import se.streamsource.streamflow.web.infrastructure.circuitbreaker.CircuitBreaker;
-import se.streamsource.streamflow.web.infrastructure.circuitbreaker.ServiceCircuitBreaker;
+import se.streamsource.infrastructure.NamedThreadFactory;
+import se.streamsource.infrastructure.circuitbreaker.AbstractEnabledCircuitBreakerAvailability;
+import se.streamsource.infrastructure.circuitbreaker.CircuitBreaker;
+import se.streamsource.infrastructure.circuitbreaker.ServiceCircuitBreaker;
 
 import javax.mail.*;
 import java.beans.PropertyChangeEvent;
@@ -54,9 +55,9 @@ import java.util.concurrent.TimeUnit;
  * a mail to the provided recipient. Furthermore a mail receiver is started that
  * polls the mail inbox for new replies which can be added to conversations.
  */
-@Mixins(ReceiveMailService.Mixin.class)
+@Mixins({ReceiveMailService.Mixin.class, AbstractEnabledCircuitBreakerAvailability.class})
 public interface ReceiveMailService
-      extends Configuration, Activatable, ServiceComposite, ServiceCircuitBreaker
+      extends Configuration, Activatable, MailReceiver, ServiceComposite, ServiceCircuitBreaker, AbstractEnabledCircuitBreakerAvailability
 {
    abstract class Mixin
          implements Activatable, ReceiveMailService, Runnable, ServiceCircuitBreaker, VetoableChangeListener
@@ -139,8 +140,12 @@ public interface ReceiveMailService
       {
          circuitBreaker.removeVetoableChangeListener( this );
 
-         receiverExecutor.shutdown();
-         receiverExecutor.awaitTermination( 30, TimeUnit.SECONDS );
+         if (receiverExecutor != null)
+         {
+            receiverExecutor.shutdown();
+            receiverExecutor.awaitTermination( 30, TimeUnit.SECONDS );
+         }
+         
          logger.info( "Mail service shutdown" );
       }
 
@@ -214,7 +219,7 @@ public interface ReceiveMailService
                   {
                      body = content.toString();
                      builder.prototype().content().set( body );
-                     builder.prototype().contentType().set( "text/plain" );
+                     builder.prototype().contentType().set( message.getContentType() );
                   } else if (content instanceof Multipart)
                   {
                      BodyPart part = ((Multipart) content).getBodyPart( 0 );
@@ -227,6 +232,8 @@ public interface ReceiveMailService
                   {
                      builder.prototype().headers().get().put( header.getName(), header.getValue() );
                   }
+
+                  builder.prototype().messageId().set( message.getHeader("Message-ID" )[0]);
 
                   mailReceiver.receivedEmail( null, builder.newInstance() );
 

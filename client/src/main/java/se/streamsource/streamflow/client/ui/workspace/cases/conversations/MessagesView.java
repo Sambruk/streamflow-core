@@ -115,7 +115,7 @@ public class MessagesView extends JPanel
                      .text( WorkspaceResources.date_time_format ) ).format( messageDTO
                      .createdOn().get() ) );
                buf.append( "</p></td><td width='" ).append( getMessageTableLastColSize() ).append( "' style=''>" );
-               buf.append( messageDTO.text().get() );
+               buf.append( messageDTO.text().get().replace("\n","<br>" ));
                buf
                      .append( "<hr width='100%' style='border:1px solid #cccccc; padding-top: 15px;'>" );
                buf.append( "</td>" );
@@ -152,7 +152,7 @@ public class MessagesView extends JPanel
       JScrollPane messageScroll = new JScrollPane();
 
       newMessage = new JTextPane();
-      newMessage.setContentType( "text/html" );
+      newMessage.setContentType( "text/plain" );
       newMessage.setEditable( true );
       messageScroll.getViewport().add( newMessage );
 

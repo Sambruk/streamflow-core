@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.infrastructure;
+package se.streamsource.infrastructure;
 
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;

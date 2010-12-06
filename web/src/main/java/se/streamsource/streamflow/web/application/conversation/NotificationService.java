@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.application.notification;
+package se.streamsource.streamflow.web.application.conversation;
 
 import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.configuration.Configuration;
+import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
@@ -47,10 +48,7 @@ import se.streamsource.streamflow.web.application.mail.MailSender;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
 import se.streamsource.streamflow.web.domain.interaction.profile.MessageRecipient;
-import se.streamsource.streamflow.web.domain.structure.conversation.Conversation;
-import se.streamsource.streamflow.web.domain.structure.conversation.ConversationOwner;
-import se.streamsource.streamflow.web.domain.structure.conversation.Message;
-import se.streamsource.streamflow.web.domain.structure.conversation.MessageReceiver;
+import se.streamsource.streamflow.web.domain.structure.conversation.*;
 
 /**
  * Send and receive notifications. This service
@@ -116,6 +114,7 @@ public interface NotificationService
             Message.Data messageData = (Message.Data) message;
 
             Conversation conversation = messageData.conversation().get();
+
             ConversationOwner owner = conversation.conversationOwner().get();
 
             String sender = ((Contactable.Data) messageData.sender().get()).contact().get().name().get();
@@ -128,28 +127,42 @@ public interface NotificationService
 
             if (user.delivery().get().equals( MessageRecipient.MessageDeliveryTypes.email ))
             {
-               String subject = "[" + caseId + "]" + conversation.getDescription()
-                     + "(" + messageData.conversation().get().toString() + ":" + event.entity().get() + ")";
+               String subject = "[" + caseId + "] " + conversation.getDescription();
 
                String formattedMsg = messageData.body().get();
                if (formattedMsg.contains( "<body>" ))
                {
                   formattedMsg = formattedMsg.replace( "<body>", "<body><b>" + sender + ":</b><br/><br/>" );
-               } else
-               {
-                  formattedMsg = sender + ":\r\n\r\n" + formattedMsg;
                }
 
                ContactEmailValue recipientEmail = user.contact().get().defaultEmail();
                if (recipientEmail != null)
                {
                   ValueBuilder<EmailValue> builder = vbf.newValueBuilder( EmailValue.class );
+                  builder.prototype().fromName().set( sender );
    //                  builder.prototype().from().set( );
-                  builder.prototype().replyTo();
+   //               builder.prototype().replyTo();
                   builder.prototype().to().set( recipientEmail.emailAddress().get() );
                   builder.prototype().subject().set( subject );
                   builder.prototype().content().set( formattedMsg );
-                  builder.prototype().contentType().set( "text/html" );
+                  builder.prototype().contentType().set( "text/plain" );
+
+                  // Threading headers
+                  builder.prototype().messageId().set( "<"+conversation.toString()+"/"+user.toString()+"@Streamflow>" );
+                  ManyAssociation<Message> messages = ((Messages.Data)conversation).messages();
+                  StringBuilder references = new StringBuilder();
+                  String inReplyTo = null;
+                  for (Message previousMessage : messages)
+                  {
+                     if (references.length() > 0)
+                        references.append( " " );
+
+                     inReplyTo = "<"+previousMessage.toString()+"@Streamflow>";
+                     references.append( inReplyTo );
+                  }
+                  builder.prototype().headers().get().put( "References", references.toString() );
+                  if (inReplyTo != null)
+                     builder.prototype().headers().get().put( "In-Reply-To", inReplyTo );
 
                   EmailValue emailValue = builder.newInstance();
 

@@ -60,7 +60,7 @@ public class TableResultWriter
       if (result instanceof TableValue)
       {
          MediaType type = getVariant(response.getRequest(), ENGLISH, supportedMediaTypes).getMediaType();
-         if (type.equals( MediaType.APPLICATION_JSON ))
+         if (MediaType.APPLICATION_JSON.equals(type))
          {
             try
             {
@@ -144,7 +144,7 @@ public class TableResultWriter
             {
                throw new ResourceException(Status.SERVER_ERROR_INTERNAL, "Could not serialize table to JSON");
             }
-         } else if (type.equals( MediaType.TEXT_HTML ))
+         } else if (MediaType.TEXT_HTML.equals(type))
          {
             Representation rep = new WriterRepresentation( MediaType.TEXT_HTML )
             {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.infrastructure.circuitbreaker;
+package se.streamsource.infrastructure.circuitbreaker;
 
 import java.beans.PropertyVetoException;
 import java.text.DateFormat;

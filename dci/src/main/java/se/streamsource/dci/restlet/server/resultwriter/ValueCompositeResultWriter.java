@@ -56,14 +56,14 @@ public class ValueCompositeResultWriter
       if (result instanceof Value)
       {
          MediaType type = getVariant( response.getRequest(), ENGLISH, supportedMediaTypes ).getMediaType();
-         if (type.equals( MediaType.APPLICATION_JSON ))
+         if (MediaType.APPLICATION_JSON.equals(type))
          {
             StringRepresentation representation = new StringRepresentation( ((Value) result).toJSON(),
                   MediaType.APPLICATION_JSON );
 
             response.setEntity( representation );
             return true;
-         } else if (type.equals( MediaType.TEXT_HTML ))
+         } else if (MediaType.TEXT_HTML.equals(type))
          {
             // Look for type specific template
             Template template;

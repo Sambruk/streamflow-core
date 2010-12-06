@@ -1,5 +1,4 @@
-/**
- *
+/*
  * Copyright 2009-2010 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,20 +14,14 @@
  * limitations under the License.
  */
 
-package se.streamsource.dci.api;
+package se.streamsource.streamflow.web.application.conversation;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import se.streamsource.streamflow.infrastructure.event.domain.source.helper.TransactionTrackerConfiguration;
 
 /**
- * Mark methods that creates new sub-contexts with this annotation
+ * Configuration for the ConversationResponseService.
  */
-@Retention( RetentionPolicy.RUNTIME )
-@Target( { ElementType.METHOD } )
-@Documented
-public @interface SubContext
+public interface ConversationResponseConfiguration
+      extends TransactionTrackerConfiguration
 {
 }

@@ -83,12 +83,12 @@ public class CaseStatisticsServiceTest
 
       module.addServices( MemoryEntityStoreService.class );
 
-      module.addServices( CaseStatisticsService.class ).instantiateOnStartup();
-      module.addServices( MemoryEventStoreService.class );
-      module.addServices( UuidIdentityGeneratorService.class );
+      module.addServices( CaseStatisticsService.class,
+            MemoryEventStoreService.class,
+            UuidIdentityGeneratorService.class,
+            LoggingStatisticsStore.class).instantiateOnStartup();
       module.importServices( TimeService.class ).importedBy( ImportedServiceDeclaration.NEW_OBJECT );
-      module.addServices( LoggingStatisticsStore.class );
-      module.addServices( DomainEventFactoryService.class );
+      module.addServices( DomainEventFactoryService.class ).instantiateOnStartup();
 
       module.addEntities( StatisticsConfiguration.class );
       module.forMixin( TransactionTrackerConfiguration.class ).declareDefaults().enabled().set( true );

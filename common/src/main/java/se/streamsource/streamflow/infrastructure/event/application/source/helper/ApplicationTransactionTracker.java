@@ -27,8 +27,6 @@ import se.streamsource.streamflow.infrastructure.event.application.source.Applic
 import se.streamsource.streamflow.infrastructure.event.application.source.ApplicationEventStream;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.TransactionTrackerConfiguration;
 
-import java.io.IOException;
-
 /**
  * Helper that enables a service to easily track transactions. Upon startup
  * the tracker will get all the transactions from the store since the last
@@ -111,7 +109,7 @@ public class ApplicationTransactionTracker<ReceiverThrowableType extends Throwab
                try
                {
                   source.transactionsAfter( configuration.configuration().lastEventDate().get(), Long.MAX_VALUE).transferTo( trackerOutput );
-               } catch (IOException e)
+               } catch (Throwable e)
                {
                   upToSpeed = false;
                   throw (SenderThrowableType)e;

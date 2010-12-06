@@ -21,13 +21,11 @@ import org.qi4j.api.common.Visibility;
 import org.qi4j.bootstrap.*;
 import org.qi4j.entitystore.prefs.PreferencesEntityStoreInfo;
 import org.qi4j.entitystore.prefs.PreferencesEntityStoreService;
-import org.qi4j.library.jmx.MBeanServerImporter;
-import se.streamsource.streamflow.infrastructure.ConfigurationManagerService;
+import org.qi4j.library.jmx.JMXAssembler;
 import se.streamsource.streamflow.server.plugin.authentication.UserDetailsValue;
 import se.streamsource.streamflow.server.plugin.authentication.UserIdentityValue;
 import se.streamsource.streamflow.server.plugin.contact.*;
 
-import javax.management.MBeanServer;
 import java.util.prefs.Preferences;
 
 /**
@@ -50,38 +48,28 @@ public class PluginApplicationAssembler
       ApplicationAssembly app = applicationFactory.newApplicationAssembly();
 
       LayerAssembly webLayer = app.layerAssembly( "Web" );
+      assembleWebLayer(webLayer);
 
-      ModuleAssembly rest = webLayer.moduleAssembly( "REST" );
-
-      // Plugin wrappers
-      rest.addObjects( ContactLookupRestlet.class,
-            AuthenticationRestlet.class );
-
-      // Plugins goes here
       LayerAssembly pluginLayer = app.layerAssembly( "Plugins" );
+      assemblePluginLayer(pluginLayer);
 
-      ModuleAssembly moduleAssembly = pluginLayer.moduleAssembly( "Plugin" );
+      LayerAssembly managementLayer = app.layerAssembly("Management");
+      assembleManagementLayer(managementLayer);
 
-      moduleAssembly.addValues( ContactList.class,
-            ContactValue.class,
-            ContactAddressValue.class,
-            ContactEmailValue.class,
-            ContactPhoneValue.class,
-            UserIdentityValue.class,
-            UserDetailsValue.class ).visibleIn( Visibility.application );
+      LayerAssembly configurationLayer = app.layerAssembly( "Configuration" );
+      assembleConfigurationLayer(configurationLayer);
 
-      pluginAssembler.assemble( moduleAssembly );
+      managementLayer.uses(pluginLayer);
+      webLayer.uses( pluginLayer );
+      pluginLayer.uses( configurationLayer );
 
+      return app;
+   }
 
-      LayerAssembly adminLayer = app.layerAssembly("Admins");
-      ModuleAssembly adminAssembly = adminLayer.moduleAssembly("Admin");
-      adminAssembly.importServices( MBeanServer.class ).importedBy( MBeanServerImporter.class );
-      adminAssembly.addServices( ConfigurationManagerService.class ).instantiateOnStartup();
-
-      LayerAssembly configurationLayer = app.layerAssembly( "Configurations" );
+   private void assembleConfigurationLayer( LayerAssembly configurationLayer ) throws AssemblyException
+   {
       ModuleAssembly configurationModuleAssembly = configurationLayer.moduleAssembly( "Configuration" );
 
-      
       // Preferences storage
       ClassLoader cl = Thread.currentThread().getContextClassLoader();
       Thread.currentThread().setContextClassLoader( null );
@@ -95,11 +83,38 @@ public class PluginApplicationAssembler
       }
 
       configurationModuleAssembly.addServices( PreferencesEntityStoreService.class ).setMetaInfo( new PreferencesEntityStoreInfo( node ) ).visibleIn( Visibility.application );
+   }
 
-      adminLayer.uses(pluginLayer);
-      webLayer.uses( pluginLayer );
-      pluginLayer.uses( configurationLayer );
+   private void assembleManagementLayer( LayerAssembly managementLayer ) throws AssemblyException
+   {
+      ModuleAssembly adminAssembly = managementLayer.moduleAssembly("JMX");
+      new JMXAssembler().assemble( adminAssembly );
+   }
 
-      return app;
+   private void assemblePluginLayer( LayerAssembly pluginLayer ) throws AssemblyException
+   {
+      // Plugins goes here
+      ModuleAssembly moduleAssembly = pluginLayer.moduleAssembly( "Plugin" );
+
+      moduleAssembly.addValues( ContactList.class,
+            ContactValue.class,
+            ContactAddressValue.class,
+            ContactEmailValue.class,
+            ContactPhoneValue.class,
+            UserIdentityValue.class,
+            UserDetailsValue.class ).visibleIn( Visibility.application );
+
+      pluginAssembler.assemble( moduleAssembly );
+   }
+
+   private void assembleWebLayer( LayerAssembly webLayer ) throws AssemblyException
+   {
+
+      ModuleAssembly rest = webLayer.moduleAssembly( "REST" );
+
+      // Plugin wrappers
+      rest.addObjects( ContactLookupRestlet.class,
+            AuthenticationRestlet.class );
+
    }
 }

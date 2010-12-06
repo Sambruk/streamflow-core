@@ -56,7 +56,7 @@ public class ValueDescriptorResultWriter
       if (result instanceof ValueDescriptor)
       {
          MediaType type = getVariant( response.getRequest(), ENGLISH, supportedMediaTypes).getMediaType();
-         if (type.equals( MediaType.APPLICATION_JSON ))
+         if (MediaType.APPLICATION_JSON.equals(type))
          {
             JSONObject json = new JSONObject();
 
@@ -83,7 +83,7 @@ public class ValueDescriptorResultWriter
             response.setEntity( representation );
 
             return true;
-         } else if (type.equals( MediaType.TEXT_HTML ))
+         } else if (MediaType.TEXT_HTML.equals(type))
          {
             Representation rep = new WriterRepresentation( MediaType.TEXT_HTML )
             {

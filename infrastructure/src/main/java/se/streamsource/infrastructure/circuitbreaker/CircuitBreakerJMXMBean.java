@@ -1,5 +1,4 @@
-/**
- *
+/*
  * Copyright 2009-2010 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,14 +14,21 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.application.notification;
-
-import se.streamsource.streamflow.infrastructure.event.domain.source.helper.TransactionTrackerConfiguration;
+package se.streamsource.infrastructure.circuitbreaker;
 
 /**
- * Configuration for the NotificationService.
- */
-public interface NotificationConfiguration
-      extends TransactionTrackerConfiguration
+* JAVADOC
+*/
+public interface CircuitBreakerJMXMBean
 {
+   public String getStatus();
+   public int getThreshold();
+   public double getServiceLevel();
+   public String getLastErrorMessage();
+   public String getTrippedOn();
+   public String getEnableOn();
+
+   public String turnOn();
+
+   public void trip();
 }

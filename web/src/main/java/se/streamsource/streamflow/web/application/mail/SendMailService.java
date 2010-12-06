@@ -18,11 +18,15 @@ package se.streamsource.streamflow.web.application.mail;
 
 import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
+import org.qi4j.spi.service.ServiceDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import se.streamsource.infrastructure.circuitbreaker.CircuitBreaker;
+import se.streamsource.infrastructure.circuitbreaker.ServiceCircuitBreaker;
 import se.streamsource.streamflow.infrastructure.event.application.ApplicationEvent;
 import se.streamsource.streamflow.infrastructure.event.application.replay.ApplicationEventPlayer;
 import se.streamsource.streamflow.infrastructure.event.application.replay.ApplicationEventReplayException;
@@ -30,7 +34,6 @@ import se.streamsource.streamflow.infrastructure.event.application.source.Applic
 import se.streamsource.streamflow.infrastructure.event.application.source.ApplicationEventStream;
 import se.streamsource.streamflow.infrastructure.event.application.source.helper.ApplicationEvents;
 import se.streamsource.streamflow.infrastructure.event.application.source.helper.ApplicationTransactionTracker;
-import se.streamsource.streamflow.web.infrastructure.circuitbreaker.CircuitBreaker;
 
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
@@ -38,7 +41,7 @@ import javax.mail.internet.MimeMessage;
 import java.util.Map;
 import java.util.Properties;
 
-import static se.streamsource.streamflow.web.infrastructure.circuitbreaker.CircuitBreaker.withBreaker;
+import static se.streamsource.infrastructure.circuitbreaker.CircuitBreakers.withBreaker;
 
 /**
  * Send emails. This service
@@ -47,10 +50,10 @@ import static se.streamsource.streamflow.web.infrastructure.circuitbreaker.Circu
  */
 @Mixins(SendMailService.Mixin.class)
 public interface SendMailService
-      extends Configuration, Activatable, ServiceComposite
+      extends Configuration, ServiceCircuitBreaker, Activatable, ServiceComposite
 {
    abstract class Mixin
-         implements Activatable
+         implements ServiceCircuitBreaker, Activatable
    {
       @org.qi4j.api.injection.scope.Service
       ApplicationEventSource source;
@@ -64,6 +67,9 @@ public interface SendMailService
       @This
       Configuration<SendMailConfiguration> config;
 
+      @Uses
+      ServiceDescriptor descriptor;
+
       public Logger logger;
 
       Properties props;
@@ -76,7 +82,7 @@ public interface SendMailService
       {
          logger = LoggerFactory.getLogger( SendMailService.class );
 
-         circuitBreaker = new CircuitBreaker();
+         circuitBreaker = descriptor.metaInfo( CircuitBreaker.class );
          tracker = new ApplicationTransactionTracker<ApplicationEventReplayException>( stream,
                source,
                config,
@@ -131,7 +137,12 @@ public interface SendMailService
          tracker.stop();
       }
 
-      class SendMails
+      public CircuitBreaker getCircuitBreaker()
+      {
+         return circuitBreaker;
+      }
+
+      public class SendMails
             implements MailSender
       {
          public void sentEmail( ApplicationEvent event, EmailValue email )
@@ -142,11 +153,19 @@ public interface SendMailService
 
                session.setDebug( config.configuration().debug().get() );
 
-               MimeMessage msg = new MimeMessage( session );
-               msg.setSender( new InternetAddress( config.configuration().from().get() ) );
+               SendMimeMessage msg = new SendMimeMessage( session, email );
+
+               if (email.fromName().get() == null)
+                  msg.setFrom( new InternetAddress( config.configuration().from().get() ) );
+               else
+                  msg.setFrom( new InternetAddress( config.configuration().from().get(), email.fromName().get() ) );
+
                msg.setRecipient( javax.mail.Message.RecipientType.TO, new InternetAddress( email.to().get() ) );
                msg.setSubject( email.subject().get() );
-               msg.setContent( email.content().get(), email.contentType().get() );
+               if (email.contentType().get().equals("text/plain"))
+                  msg.setText( email.content().get(), "UTF-8" );
+               else
+                  msg.setContent( email.content().get(), email.contentType().get() );
                for (Map.Entry<String, String> header : email.headers().get().entrySet())
                {
                   msg.setHeader( header.getKey(), header.getValue() );
@@ -155,10 +174,38 @@ public interface SendMailService
                Transport.send( msg );
 
                logger.debug( "Sent mail to " + email.to().get() );
-            } catch (MessagingException e)
+            } catch (Throwable e)
             {
                throw new ApplicationEventReplayException( event, e );
             }
+         }
+      }
+
+      public static class SendMimeMessage
+         extends MimeMessage
+      {
+         private final EmailValue email;
+
+         public SendMimeMessage( Session session, EmailValue email )
+         {
+            super( session );
+            this.email = email;
+         }
+
+         @Override
+         protected void updateMessageID() throws MessagingException
+         {
+            String messageId = email.messageId().get();
+            if (messageId != null)
+               setHeader( "Message-ID", messageId );
+            else
+               super.updateMessageID();
+         }
+
+         @Override
+         protected void updateHeaders() throws MessagingException
+         {
+            super.updateHeaders();
          }
       }
    }

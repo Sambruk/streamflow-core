@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.application.notification;
-
-import se.streamsource.streamflow.infrastructure.event.domain.source.helper.TransactionTrackerConfiguration;
+package se.streamsource.infrastructure.circuitbreaker;
 
 /**
- * Configuration for the ConversationResponseService.
+ * Services that have CircuitBreakers can implement this. The CB will
+ * then be exposable in JMX by CircuitBreakerManagement.
+ *
  */
-public interface ConversationResponseConfiguration
-      extends TransactionTrackerConfiguration
+public interface ServiceCircuitBreaker
 {
+   CircuitBreaker getCircuitBreaker();
 }
