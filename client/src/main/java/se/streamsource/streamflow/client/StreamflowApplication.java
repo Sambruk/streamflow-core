@@ -28,8 +28,6 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilder;
 import org.qi4j.api.object.ObjectBuilderFactory;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.bootstrap.Energy4Java;
 import org.qi4j.spi.property.ValueType;
 import org.qi4j.spi.structure.ApplicationSPI;
@@ -43,7 +41,6 @@ import org.restlet.routing.Filter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.streamsource.streamflow.client.assembler.StreamflowClientAssembler;
-import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
 import se.streamsource.streamflow.client.ui.DebugWindow;
 import se.streamsource.streamflow.client.ui.account.*;
 import se.streamsource.streamflow.client.ui.administration.AdministrationWindow;
@@ -88,12 +85,6 @@ public class StreamflowApplication
    ObjectBuilderFactory obf;
 
    @Structure
-   ValueBuilderFactory vbf;
-
-   @Structure
-   UnitOfWorkFactory uowf;
-
-   @Structure
    ModuleSPI module;
 
    @Service
@@ -103,23 +94,16 @@ public class StreamflowApplication
    EventStream stream;
 
    @Service
-   IndividualRepository individualRepo;
-
-   @Service
    JavaHelp javaHelp;
 
    AccountsModel accountsModel;
 
-   JLabel label;
-
    private AccountSelector accountSelector;
+
    WorkspaceWindow workspaceWindow;
-
    OverviewWindow overviewWindow;
-
-   DebugWindow debugWindow;
-
    AdministrationWindow administrationWindow;
+   DebugWindow debugWindow;
 
    public ApplicationSPI app;
 
@@ -273,11 +257,9 @@ public class StreamflowApplication
       if (administrationWindow.getFrame().isVisible())
       {
          administrationWindow.getFrame().setVisible( false );
+         overviewWindow.getFrame().setVisible( false );
       }
    }
-
-   @Uses
-   private ObjectBuilder<ProfileView> profixleDialogs;
 
    @Action
    public void myProfile()

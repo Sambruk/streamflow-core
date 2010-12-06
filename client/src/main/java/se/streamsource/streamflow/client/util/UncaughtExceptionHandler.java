@@ -17,20 +17,6 @@
 
 package se.streamsource.streamflow.client.util;
 
-import static se.streamsource.streamflow.client.util.i18n.text;
-
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.EventQueue;
-import java.awt.Frame;
-import java.lang.reflect.InvocationTargetException;
-import java.util.Collections;
-import java.util.logging.Level;
-
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
-
 import org.jdesktop.swingx.JXDialog;
 import org.jdesktop.swingx.JXErrorPane;
 import org.jdesktop.swingx.error.ErrorInfo;
@@ -38,13 +24,19 @@ import org.qi4j.api.common.ConstructionException;
 import org.qi4j.api.injection.scope.Service;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
-
-import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.application.error.ErrorResources;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.StreamflowApplication;
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
+
+import javax.swing.*;
+import java.awt.*;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Collections;
+import java.util.logging.Level;
+
+import static se.streamsource.streamflow.client.util.i18n.text;
 
 /**
  * JAVADOC
@@ -117,7 +109,8 @@ public class UncaughtExceptionHandler implements Thread.UncaughtExceptionHandler
                         return;
                      } else if (re.getStatus().equals(Status.CONNECTOR_ERROR_COMMUNICATION))
                      {
-                        showErrorDialog(ex, frame, text(ErrorResources.unauthorized_access));
+                        showErrorDialog(ex, frame, text(ErrorResources.communication_error));
+                        main.selectAccount();
                         return;
                      } else
                      {

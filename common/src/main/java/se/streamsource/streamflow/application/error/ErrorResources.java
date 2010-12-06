@@ -22,10 +22,12 @@ package se.streamsource.streamflow.application.error;
  */
 public enum ErrorResources
 {
-   search_string_malformed,
    username_password_violation,
    unauthorized_access,
    concurrent_change,
+   communication_error,
+
+   search_string_malformed,
    error,
    user_already_exists,
    description_cannot_be_more_than_50
