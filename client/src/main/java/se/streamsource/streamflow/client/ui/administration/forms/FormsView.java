@@ -36,15 +36,19 @@ import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.NameDialog;
 import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
+import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
+import se.streamsource.streamflow.infrastructure.event.domain.source.helper.EventParameters;
 import se.streamsource.streamflow.util.Strings;
 
 import javax.swing.*;
 import java.awt.Component;
 import java.awt.Dimension;
 
+import static org.qi4j.api.util.Iterables.*;
 import static se.streamsource.streamflow.client.util.i18n.*;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 
 /**
  * JAVADOC
@@ -179,5 +183,19 @@ public class FormsView
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
    {
       model.notifyTransactions( transactions );
+
+      DomainEvent event = first( filter( withNames("createdForm"), events(transactions ) ));
+      if (event != null)
+      {
+         String id = EventParameters.getParameter( event, 1 );
+         for (LinkValue link : model.getUnsortedList())
+         {
+            if (link.href().get().endsWith( id+"/" ))
+            {
+               list.setSelectedValue( link, true );
+               break;
+            }
+         }
+      }
    }
 }
