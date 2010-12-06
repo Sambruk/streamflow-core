@@ -17,11 +17,18 @@
 package se.streamsource.streamflow.client.ui.workspace.cases.general.forms;
 
 import org.jdesktop.swingx.JXDatePicker;
+import org.jdesktop.swingx.calendar.DatePickerFormatter;
+import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.util.DateFunctions;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.util.StateBinder;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
 
+import javax.swing.JFormattedTextField;
+import javax.swing.text.DefaultFormatterFactory;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -29,13 +36,23 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.beans.PropertyVetoException;
+import java.beans.VetoableChangeListener;
 import java.text.DateFormat;
+import java.text.Format;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+
+import static se.streamsource.streamflow.client.util.i18n.*;
 
 public class DatePanel
       extends AbstractFieldPanel
 {
+   @Service
+   DialogService dialogs;
+
    private JXDatePicker datePicker;
 
    public DatePanel( @Uses FieldSubmissionValue field )
@@ -44,7 +61,27 @@ public class DatePanel
       setLayout( new BorderLayout() );
 
       datePicker = new JXDatePicker();
-      datePicker.setFormats( DateFormat.getDateInstance( DateFormat.SHORT ) );
+      final DateFormat dateFormat =  DateFormat.getDateInstance( DateFormat.SHORT );
+
+      datePicker.getEditor().setFormatterFactory( new DefaultFormatterFactory(new DatePickerFormatter( new DateFormat[]{dateFormat} ){
+
+         @Override
+         public Object stringToValue( String text ) throws ParseException
+         {
+            Object result;
+            try
+            {
+            result = super.stringToValue( text );
+            } catch( ParseException pe )
+            {
+               dialogs.showMessageDialog( DatePanel.this,
+                     text( WorkspaceResources.wrong_format_msg ) + " " + ((SimpleDateFormat)dateFormat).toPattern(),
+                     text( WorkspaceResources.wrong_format_title ) );
+               throw pe;
+            }
+            return result;
+         }
+      }));
 
       add( datePicker, BorderLayout.WEST );
    }

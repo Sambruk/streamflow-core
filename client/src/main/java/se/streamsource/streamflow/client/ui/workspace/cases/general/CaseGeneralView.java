@@ -26,6 +26,7 @@ import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
 import org.jdesktop.swingx.JXDatePicker;
+import org.jdesktop.swingx.calendar.DatePickerFormatter;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
@@ -62,6 +63,7 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.LayoutFocusTraversalPolicy;
 import javax.swing.SwingConstants;
+import javax.swing.text.DefaultFormatterFactory;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -71,6 +73,8 @@ import java.awt.KeyboardFocusManager;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -78,6 +82,7 @@ import java.util.Observable;
 import java.util.Observer;
 
 import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.*;
+import static se.streamsource.streamflow.client.util.i18n.text;
 import static se.streamsource.streamflow.domain.interaction.gtd.CaseStates.*;
 import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 
@@ -214,7 +219,6 @@ public class CaseGeneralView extends JScrollPane implements Observer, Transactio
       rightBuilder.nextColumn();
       rightBuilder.add( caseBinder.bind( dueOnField = (JXDatePicker) DATEPICKER.newField(), template.dueOn() ),
             new CellConstraints( 3, 5, 1, 1, CellConstraints.LEFT, CellConstraints.BOTTOM, new Insets( 4, 2, 0, 0 ) ) );
-      dueOnField.setFormats( DateFormat.getDateInstance( DateFormat.SHORT ) );
       rightBuilder.nextLine();
 
       // Forms
@@ -229,6 +233,28 @@ public class CaseGeneralView extends JScrollPane implements Observer, Transactio
       calendar.setTime( new Date() );
       calendar.add( Calendar.DAY_OF_MONTH, 1 );
       dueOnField.getMonthView().setLowerBound( calendar.getTime() );
+
+      final DateFormat dateFormat =  DateFormat.getDateInstance( DateFormat.SHORT );
+      dueOnField.getEditor().setFormatterFactory( new DefaultFormatterFactory(new DatePickerFormatter( new DateFormat[]{dateFormat} ){
+
+         @Override
+         public Object stringToValue( String text ) throws ParseException
+         {
+            Object result;
+            try
+            {
+            result = super.stringToValue( text );
+            } catch( ParseException pe )
+            {
+               dialogs.showMessageDialog( dueOnField,
+                     text( WorkspaceResources.wrong_format_msg ) + " " + ((SimpleDateFormat)dateFormat).toPattern(),
+                     text( WorkspaceResources.wrong_format_title ) );
+               throw pe;
+            }
+            return result;
+         }
+      }));
+
 
 
       // Layout and form for the bottom panel
