@@ -200,7 +200,10 @@ public class FormSubmissionWizardPageView
                   @Override
                   public void focusGained( FocusEvent e )
                   {
-                     main.scrollRectToVisible( component.getBounds() );
+                     // increase visible rectangle to cover title label too
+                     Rectangle rectangle = component.getBounds();
+                     rectangle.add( rectangle.getX(), rectangle.getY()-21 );
+                     main.scrollRectToVisible( rectangle );
                   }
                } );
             }
