@@ -22,7 +22,10 @@ import se.streamsource.streamflow.client.util.BindingFormBuilder;
 import se.streamsource.streamflow.client.util.StateBinder;
 import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
 
+import javax.swing.JComponent;
 import javax.swing.JPanel;
+import java.awt.Component;
+import java.awt.Container;
 
 /**
  * Abstract class that each field type must extend
@@ -84,6 +87,21 @@ public abstract class AbstractFieldPanel extends JPanel
       return componentName.toString();
    }
 
+   public Component firstFocusableComponent( Container container)
+   {
+      for( Component component : container.getComponents() )
+      {
+         if( component instanceof JPanel )
+         {
+            return firstFocusableComponent( (JPanel)component );
+         } else
+         {
+            if( component.isFocusable())
+               return component;
+         }
+      }
+      return null;
+   }
 
    abstract public void setBinding( StateBinder.Binding binding );
 }

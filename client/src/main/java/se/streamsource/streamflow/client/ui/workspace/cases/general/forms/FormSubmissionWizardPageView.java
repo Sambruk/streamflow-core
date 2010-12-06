@@ -24,6 +24,8 @@ import com.jgoodies.validation.ValidationResultModel;
 import com.jgoodies.validation.util.DefaultValidationResultModel;
 import com.jgoodies.validation.util.ValidationUtils;
 import com.jgoodies.validation.view.ValidationResultViewFactory;
+import org.jdesktop.swingx.JXPanel;
+import org.jdesktop.swingx.ScrollableSizeHint;
 import org.netbeans.spi.wizard.Wizard;
 import org.netbeans.spi.wizard.WizardPage;
 import org.netbeans.spi.wizard.WizardPanelNavResult;
@@ -111,7 +113,8 @@ public class FormSubmissionWizardPageView
       componentFieldMap = new HashMap<String, AbstractFieldPanel>();
       validationResultModel = new DefaultValidationResultModel();
       setLayout( new BorderLayout() );
-      final JPanel panel = new JPanel( new FormLayout() );
+      final JXPanel panel = new JXPanel( new FormLayout() );
+      panel.setScrollableHeightHint( ScrollableSizeHint.VERTICAL_STRETCH );
 
       fieldBinders = new HashMap<StateBinder, EntityReference>( page.fields().get().size() );
       FormLayout formLayout = new FormLayout( "200dlu", "" );
@@ -180,34 +183,42 @@ public class FormSubmissionWizardPageView
       final JScrollPane scroll = new JScrollPane( panel );
       add( scroll, BorderLayout.CENTER );
 
-      createFocusListenerForComponents( panel, panel );
+      createFocusListenerForComponents( panel, panel.getComponents() );
    }
 
-   private void createFocusListenerForComponents( final JPanel main, final JPanel panel )
+   private void createFocusListenerForComponents( final JXPanel main, Component[] components )
    {
-      for (Component component : panel.getComponents())
+      for (final Component component : components)
       {
-         if (component instanceof JPanel)
+         if (component instanceof AbstractFieldPanel)
          {
-            createFocusListenerForComponents( main, (JPanel) component );
-
+            Component firstFocusable = ((AbstractFieldPanel) component).firstFocusableComponent( (AbstractFieldPanel) component );
+            if (firstFocusable != null)
+            {
+               firstFocusable.addFocusListener( new FocusAdapter()
+               {
+                  @Override
+                  public void focusGained( FocusEvent e )
+                  {
+                     main.scrollRectToVisible( component.getBounds() );
+                  }
+               } );
+            }
          } else
          {
-            component.addFocusListener( new FocusAdapter()
-            {
 
-               @Override
-               public void focusGained( FocusEvent e )
+            if (component.isFocusable())
+            {
+               component.addFocusListener( new FocusAdapter()
                {
-                  if( main.equals( panel.getParent() ))
+
+                  @Override
+                  public void focusGained( FocusEvent e )
                   {
-                     main.scrollRectToVisible( e.getComponent().getParent().getBounds() );
-                  } else
-                  {
-                     main.scrollRectToVisible( e.getComponent().getParent().getParent().getBounds() );
+                     main.scrollRectToVisible( component.getBounds() );
                   }
-               }
-            } );
+               } );
+            }
          }
       }
    }
@@ -323,7 +334,7 @@ public class FormSubmissionWizardPageView
    {
       AbstractFieldPanel panel = componentFieldMap.get( fieldId );
 
-      if ( panel != null && fieldValue != null && !fieldValue.equals( panel.getValue() ))
+      if (panel != null && fieldValue != null && !fieldValue.equals( panel.getValue() ))
       {
          panel.setValue( fieldValue );
       }
