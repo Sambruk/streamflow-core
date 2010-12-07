@@ -52,7 +52,20 @@ public class CircuitBreakerJMX
 
    public String getLastErrorMessage()
    {
-      return circuitBreaker.getLastThrowable() == null ? "" : circuitBreaker.getLastThrowable().getMessage();
+      return circuitBreaker.getLastThrowable() == null ? "" : errorMessage(circuitBreaker.getLastThrowable());
+   }
+
+   private String errorMessage( Throwable throwable )
+   {
+      String message = throwable.getMessage();
+      if (message == null)
+         message = throwable.getClass().getSimpleName();
+
+      if (throwable.getCause() != null)
+      {
+         return message + ":" + errorMessage( throwable.getCause() );
+      } else
+         return message;
    }
 
    public String getTrippedOn()

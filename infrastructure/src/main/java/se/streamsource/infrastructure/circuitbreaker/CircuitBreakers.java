@@ -71,18 +71,38 @@ public class CircuitBreakers
     * @param throwables
     * @return
     */
-   public static Specification<Class<? extends Throwable>> any( final Class<? extends Throwable>... throwables)
+   public static Specification<Throwable> any( final Class<? extends Throwable>... throwables)
    {
-      return new Specification<Class<? extends Throwable>>()
+      return new Specification<Throwable>()
       {
-         public boolean satisfiedBy( Class<? extends Throwable> item )
+         public boolean satisfiedBy( Throwable item )
          {
+            Class<? extends Throwable> throwableClass = item.getClass();
             for (Class<? extends Throwable> throwable : throwables)
             {
-               if (throwable.isAssignableFrom( item ))
+               if (throwable.isAssignableFrom( throwableClass ))
                   return true;
             }
             return false;
+         }
+      };
+   }
+
+   public static Specification<Throwable> rootCause( final Specification<Throwable> specification)
+   {
+      return new Specification<Throwable>()
+      {
+         public boolean satisfiedBy( Throwable item )
+         {
+            return specification.satisfiedBy( unwrap(item) );
+         }
+
+         private Throwable unwrap(Throwable item)
+         {
+            if (item.getCause() != null)
+               return item.getCause();
+            else
+               return item;
          }
       };
    }

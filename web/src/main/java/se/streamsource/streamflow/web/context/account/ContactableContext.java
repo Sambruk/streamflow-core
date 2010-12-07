@@ -32,7 +32,7 @@ import se.streamsource.streamflow.domain.contact.ContactValue;
 import se.streamsource.streamflow.domain.contact.Contactable;
 import se.streamsource.streamflow.server.plugin.contact.ContactList;
 import se.streamsource.streamflow.web.application.contact.StreamflowContactLookupService;
-import se.streamsource.streamflow.web.context.ServiceAvailable;
+import se.streamsource.dci.api.ServiceAvailable;
 
 /**
  * JAVADOC

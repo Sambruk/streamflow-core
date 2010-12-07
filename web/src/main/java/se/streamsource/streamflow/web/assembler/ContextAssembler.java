@@ -31,7 +31,7 @@ import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.DCIAssembler;
 import se.streamsource.dci.restlet.server.ResultConverter;
 import se.streamsource.streamflow.web.context.RequiresPermission;
-import se.streamsource.streamflow.web.context.ServiceAvailable;
+import se.streamsource.dci.api.ServiceAvailable;
 import se.streamsource.streamflow.web.context.account.AccountContext;
 import se.streamsource.streamflow.web.context.account.ContactableContext;
 import se.streamsource.streamflow.web.context.account.ProfileContext;

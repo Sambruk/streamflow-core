@@ -15,21 +15,18 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.context;
+package se.streamsource.dci.api;
 
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.service.ServiceFinder;
 import org.qi4j.api.service.ServiceReference;
-import se.streamsource.dci.api.InteractionConstraint;
-import se.streamsource.dci.api.InteractionConstraintDeclaration;
-import se.streamsource.dci.api.RoleMap;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
  * Annotate interaction methods with ServiceAvailable. They will only be valid
- * if a service with the given type is available *and* is active.
+ * if a service with the given type is available.
  */
 @InteractionConstraintDeclaration(ServiceAvailable.ServiceAvailableConstraint.class)
 @Retention(RetentionPolicy.RUNTIME)

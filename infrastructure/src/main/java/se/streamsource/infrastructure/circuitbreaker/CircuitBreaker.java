@@ -38,7 +38,7 @@ public class CircuitBreaker
 
    private int threshold;
    private long timeout;
-   private Specification<Class<? extends Throwable>> allowedThrowables;
+   private Specification<Throwable> allowedThrowables;
 
    private int countDown;
    private long trippedOn = -1;
@@ -51,7 +51,7 @@ public class CircuitBreaker
    PropertyChangeSupport pcs = new PropertyChangeSupport(this);
    VetoableChangeSupport vcs = new VetoableChangeSupport(this);
 
-   public CircuitBreaker( int threshold, long timeout, Specification<Class<? extends Throwable>> allowedThrowables )
+   public CircuitBreaker( int threshold, long timeout, Specification<Throwable> allowedThrowables )
    {
       this.threshold = threshold;
       this.countDown = threshold;
@@ -61,12 +61,12 @@ public class CircuitBreaker
 
    public CircuitBreaker(int threshold, long timeout)
    {
-      this(threshold, timeout, not( Specifications.<Class<? extends Throwable>>TRUE())); // 5 minute timeout as default
+      this(threshold, timeout, not( Specifications.<Throwable>TRUE())); // Trip on all exceptions as default
    }
 
    public CircuitBreaker()
    {
-      this(1, 1000*60*5, not( Specifications.<Class<? extends Throwable>>TRUE())); // 5 minute timeout as default
+      this(1, 1000*60*5); // 5 minute timeout as default
    }
 
    public synchronized void trip()
@@ -171,10 +171,9 @@ public class CircuitBreaker
 
    public synchronized void throwable(Throwable throwable)
    {
-      Class<? extends Throwable> exceptionClass = throwable.getClass();
       if ( status == Status.on)
       {
-         if (allowedThrowables.satisfiedBy( exceptionClass ))
+         if (allowedThrowables.satisfiedBy( throwable ))
          {
             // Allowed throwable, so counts as success
             success();
