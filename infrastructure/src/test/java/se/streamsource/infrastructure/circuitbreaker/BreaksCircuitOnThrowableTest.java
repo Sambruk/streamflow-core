@@ -92,10 +92,8 @@ public class BreaksCircuitOnThrowableTest
    public interface TestService
       extends ServiceCircuitBreaker, AbstractBreakOnThrowable, ServiceComposite
    {
-      @BreaksCircuitOnThrowable
       int success();
 
-      @BreaksCircuitOnThrowable
       void throwable();
 
       abstract class Mixin
@@ -103,11 +101,13 @@ public class BreaksCircuitOnThrowableTest
       {
          int count = 0;
 
+         @BreaksCircuitOnThrowable
          public void throwable()
          {
             throw new IllegalArgumentException("Failed");
          }
 
+         @BreaksCircuitOnThrowable
          public int success()
          {
             return count++;
