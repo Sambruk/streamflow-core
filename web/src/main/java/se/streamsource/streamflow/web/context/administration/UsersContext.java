@@ -34,7 +34,6 @@ import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.resource.user.NewUserCommand;
 import se.streamsource.streamflow.util.Strings;
-import se.streamsource.streamflow.web.context.RequiresPermission;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.entity.user.UsersQueries;
 import se.streamsource.streamflow.web.domain.structure.user.User;
@@ -58,7 +57,6 @@ public class UsersContext
    @Structure
    Module module;
 
-   @RequiresPermission("administrator")
    public LinksValue index()
    {
       UsersQueries orgs = RoleMap.role( UsersQueries.class );
@@ -66,7 +64,6 @@ public class UsersContext
       return orgs.users();
    }
 
-   @RequiresPermission("administrator")
    public void createuser( NewUserCommand command )
    {
       UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
@@ -75,7 +72,6 @@ public class UsersContext
       User user = users.createUser( command.username().get(), command.password().get() );
    }
 
-   @RequiresPermission("administrator")
    public void importusers( Representation representation ) throws ResourceException
    {
       boolean badRequest = false;

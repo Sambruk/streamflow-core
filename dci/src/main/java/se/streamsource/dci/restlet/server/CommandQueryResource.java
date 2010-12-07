@@ -114,7 +114,15 @@ public class CommandQueryResource
 
    public final void handle( Request request, Response response )
    {
-      RoleMap.setCurrentRoleMap( new RoleMap( RoleMap.current() ) );
+      RoleMap roleMap = RoleMap.current();
+
+      // Check constraints for this resource
+      if (!constraints.isValid( getClass(), roleMap ))
+      {
+         throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN );
+      }
+
+      RoleMap.setCurrentRoleMap( new RoleMap( roleMap ) );
 
       this.request = request;
       this.response = response;

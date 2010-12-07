@@ -199,6 +199,7 @@ public interface AuthenticationFilterService extends ServiceComposite, Configura
                if (!authorized)
                {
                   response.setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
+                  response.getChallengeRequests().add(new ChallengeRequest(ChallengeScheme.HTTP_BASIC, "Streamflow"));
                   response.setEntity(Authenticator.error.authentication_bad_username_password.toString(),
                         MediaType.TEXT_PLAIN);
                   return Filter.STOP;

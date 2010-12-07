@@ -25,6 +25,5 @@ import java.lang.reflect.Method;
 public interface InteractionConstraints
 {
    public boolean isValid( Method method, RoleMap roleMap );
-
-   public boolean hasConstraints(Method method);
+   public boolean isValid( Class resourceClass, RoleMap roleMap );
 }

@@ -23,11 +23,9 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
 import org.qi4j.library.constraints.annotation.MaxLength;
 import se.streamsource.dci.api.Context;
-import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.StringValueMaxLength;
-import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnits;
 
 /**
@@ -36,7 +34,7 @@ import se.streamsource.streamflow.web.domain.structure.organization.Organization
 @Mixins(OrganizationalUnitsContext.Mixin.class)
 @Constraints(StringValueMaxLength.class)
 public interface OrganizationalUnitsContext
-      extends IndexContext<Iterable<OrganizationalUnit>>, Context
+      extends Context
 {
    public void createorganizationalunit( @MaxLength(50) StringValue value );
 
@@ -45,12 +43,6 @@ public interface OrganizationalUnitsContext
    {
       @Structure
       Module module;
-
-      public Iterable<OrganizationalUnit> index()
-      {
-         OrganizationalUnits.Data ous = RoleMap.role( OrganizationalUnits.Data.class );
-         return ous.organizationalUnits();
-      }
 
       public void createorganizationalunit( StringValue value )
       {

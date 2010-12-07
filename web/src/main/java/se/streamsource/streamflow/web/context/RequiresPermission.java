@@ -22,15 +22,18 @@ import se.streamsource.dci.api.InteractionConstraintDeclaration;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.web.domain.interaction.security.Authorization;
 
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.security.Principal;
 
 /**
- * JAVADOC
+ * Check if current principal has a given permission
  */
 @InteractionConstraintDeclaration(RequiresPermission.RequiresPermissionConstraint.class)
 @Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.METHOD, ElementType.TYPE})
 public @interface RequiresPermission
 {
    String value();
@@ -40,9 +43,13 @@ public @interface RequiresPermission
    {
       public boolean isValid( RequiresPermission requiresPermission, RoleMap roleMap )
       {
-         Authorization policy = roleMap.get( Authorization.class );
+         Principal principal = roleMap.get( Principal.class );
 
-         Principal principal = roleMap.role( Principal.class );
+         // Administrator has all permissions
+         if (principal.getName().equals("administrator"))
+            return true;
+
+         Authorization policy = roleMap.get( Authorization.class );
 
          return policy.hasPermission( principal.getName(), requiresPermission.value() );
       }
