@@ -28,6 +28,7 @@ import org.qi4j.api.object.ObjectBuilder;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.LinkValue;
+import se.streamsource.streamflow.client.MacOsUIWrapper;
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.RefreshWhenVisible;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
@@ -58,7 +59,9 @@ public class CaseLabelsView
    public CaseLabelsView(@Service ApplicationContext context, @Uses CommandQueryClient client, @Structure ObjectBuilderFactory obf)
    {
       setActionMap( context.getActionMap(this ));
-
+      MacOsUIWrapper.convertAccelerators( context.getActionMap(
+            CaseLabelsView.class, this ) );
+      
       model = obf.newObjectBuilder( CaseLabelsModel.class ).use( client ).newInstance();
       model.getLabels().addListEventListener( this );
 

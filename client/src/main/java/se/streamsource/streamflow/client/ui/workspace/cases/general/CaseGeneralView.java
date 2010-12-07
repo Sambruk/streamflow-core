@@ -70,6 +70,8 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.KeyboardFocusManager;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.text.DateFormat;
@@ -203,6 +205,14 @@ public class CaseGeneralView extends JScrollPane implements Observer, Transactio
             JComponent.WHEN_IN_FOCUSED_WINDOW );
 
       labelButton.setHorizontalAlignment( SwingConstants.LEFT );
+      labelButton.addActionListener( new ActionListener(){
+
+         public void actionPerformed( ActionEvent e )
+         {
+            labelButton.requestFocusInWindow();
+         }
+      });
+      
       rightBuilder.add( labelButton,
             new CellConstraints( 1, 4, 1, 1, CellConstraints.FILL, CellConstraints.TOP, new Insets( 5, 0, 0, 0 ) ) );
 
@@ -403,6 +413,8 @@ public class CaseGeneralView extends JScrollPane implements Observer, Transactio
             model.getPossibleCaseTypes() ).newInstance();
       dialogs.showOkCancelHelpDialog( caseTypeButton, dialog, i18n.text( WorkspaceResources.chose_casetype  ));
 
+      caseTypeButton.requestFocusInWindow();
+      
       if (dialog.getSelectedLink() != null)
       {
          return new CommandTask()
