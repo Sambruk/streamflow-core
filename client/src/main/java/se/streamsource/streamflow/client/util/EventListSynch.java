@@ -83,7 +83,7 @@ public class EventListSynch
 
          if (eventList instanceof TransactionList)
             ((TransactionList) eventList).commitEvent();
-      } catch (Exception e)
+      } finally
       {
          eventList.getReadWriteLock().writeLock().unlock();
       }

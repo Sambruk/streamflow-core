@@ -19,6 +19,8 @@ package se.streamsource.streamflow.client.util;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.Task;
 import org.qi4j.api.util.Iterables;
+import se.streamsource.streamflow.application.error.ErrorResources;
+import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.StreamflowApplication;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.EventStream;
@@ -87,6 +89,6 @@ public abstract class CommandTask
    @Override
    protected void failed( Throwable throwable )
    {
-      throw new Error( throwable );
+      throw new OperationException( ErrorResources.error, throwable );
    }
 }
