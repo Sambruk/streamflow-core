@@ -14,19 +14,21 @@
  * limitations under the License.
  */
 
-package se.streamsource.infrastructure.circuitbreaker;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+package se.streamsource.infrastructure.circuitbreaker.jmx;
 
 /**
- * Annotate methods which when they throw throwables should
- * cause circuit breakers to trip
- */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-public @interface BreaksCircuitOnThrowable
+* MBean interface for circuit breakers
+*/
+public interface CircuitBreakerJMXMBean
 {
+   public String getStatus();
+   public int getThreshold();
+   public double getServiceLevel();
+   public String getLastErrorMessage();
+   public String getTrippedOn();
+   public String getEnableOn();
+
+   public String turnOn();
+
+   public void trip();
 }

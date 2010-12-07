@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-package se.streamsource.infrastructure.circuitbreaker;
+package se.streamsource.infrastructure.circuitbreaker.service;
 
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.mixin.Initializable;
 import org.qi4j.api.mixin.InitializationException;
 import org.qi4j.spi.service.ServiceDescriptor;
+import se.streamsource.infrastructure.circuitbreaker.CircuitBreaker;
 
 /**
- * JAVADOC
+ * Helper implementation of ServiceCircuitBreaker. Fetches the CircuitBreaker from meta-info
+ * for the service.
  */
 public class ServiceCircuitBreakerMixin
    implements ServiceCircuitBreaker, Initializable

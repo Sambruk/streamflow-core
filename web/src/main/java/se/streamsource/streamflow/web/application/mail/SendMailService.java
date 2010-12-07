@@ -26,7 +26,7 @@ import org.qi4j.spi.service.ServiceDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.streamsource.infrastructure.circuitbreaker.CircuitBreaker;
-import se.streamsource.infrastructure.circuitbreaker.ServiceCircuitBreaker;
+import se.streamsource.infrastructure.circuitbreaker.service.ServiceCircuitBreaker;
 import se.streamsource.streamflow.infrastructure.event.application.ApplicationEvent;
 import se.streamsource.streamflow.infrastructure.event.application.replay.ApplicationEventPlayer;
 import se.streamsource.streamflow.infrastructure.event.application.replay.ApplicationEventReplayException;

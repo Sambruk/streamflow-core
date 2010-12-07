@@ -17,11 +17,13 @@
 
 package se.streamsource.infrastructure.circuitbreaker;
 
+import org.qi4j.api.specification.Specification;
+import org.qi4j.api.specification.Specifications;
+
 import java.beans.*;
-import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+
+import static org.qi4j.api.specification.Specifications.not;
 
 /**
  * Implementation of CircuitBreaker pattern
@@ -36,7 +38,7 @@ public class CircuitBreaker
 
    private int threshold;
    private long timeout;
-   private Set<Class<? extends Exception>> allowedExceptions = new HashSet<Class<? extends Exception>>();
+   private Specification<Class<? extends Throwable>> allowedThrowables;
 
    private int countDown;
    private long trippedOn = -1;
@@ -49,17 +51,22 @@ public class CircuitBreaker
    PropertyChangeSupport pcs = new PropertyChangeSupport(this);
    VetoableChangeSupport vcs = new VetoableChangeSupport(this);
 
-   public CircuitBreaker( int threshold, long timeout, Class<? extends Exception>... allowedExceptions)
+   public CircuitBreaker( int threshold, long timeout, Specification<Class<? extends Throwable>> allowedThrowables )
    {
       this.threshold = threshold;
       this.countDown = threshold;
       this.timeout = timeout;
-      Collections.addAll( this.allowedExceptions, allowedExceptions );
+      this.allowedThrowables = allowedThrowables;
    }
 
-   public CircuitBreaker(Class<? extends Exception>... allowedExceptions)
+   public CircuitBreaker(int threshold, long timeout)
    {
-      this(1, 1000*60*5); // 5 minute timeout as default
+      this(threshold, timeout, not( Specifications.<Class<? extends Throwable>>TRUE())); // 5 minute timeout as default
+   }
+
+   public CircuitBreaker()
+   {
+      this(1, 1000*60*5, not( Specifications.<Class<? extends Throwable>>TRUE())); // 5 minute timeout as default
    }
 
    public synchronized void trip()
@@ -165,30 +172,24 @@ public class CircuitBreaker
    public synchronized void throwable(Throwable throwable)
    {
       Class<? extends Throwable> exceptionClass = throwable.getClass();
-      if ( status == Status.on && !allowedExceptions.contains( exceptionClass ))
+      if ( status == Status.on)
       {
-         // Check if exception is subclass of allowed exception, and if so, add it to list
-         if (Exception.class.isAssignableFrom( exceptionClass))
+         if (allowedThrowables.satisfiedBy( exceptionClass ))
          {
-            for (Class<? extends Exception> allowedException : allowedExceptions)
+            // Allowed throwable, so counts as success
+            success();
+         } else
+         {
+            countDown--;
+
+            lastThrowable = throwable;
+
+            pcs.firePropertyChange( "serviceLevel", (countDown+1)/((double)threshold), countDown/((double)threshold) );
+
+            if (countDown == 0)
             {
-               if (allowedException.isAssignableFrom( exceptionClass ));
-               {
-                  allowedExceptions.add( (Class<Exception>) exceptionClass );
-                  return;
-               }
+               trip();
             }
-         }
-
-         countDown--;
-
-         lastThrowable = throwable;
-
-         pcs.firePropertyChange( "serviceLevel", (countDown+1)/((double)threshold), countDown/((double)threshold) );
-
-         if (countDown == 0)
-         {
-            trip();
          }
       }
    }

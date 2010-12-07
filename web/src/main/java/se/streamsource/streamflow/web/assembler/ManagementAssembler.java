@@ -25,7 +25,7 @@ import org.qi4j.library.jmx.JMXAssembler;
 import se.streamsource.streamflow.web.application.management.*;
 import se.streamsource.streamflow.web.application.management.jmxconnector.JmxConnectorConfiguration;
 import se.streamsource.streamflow.web.application.management.jmxconnector.JmxConnectorService;
-import se.streamsource.infrastructure.circuitbreaker.CircuitBreakerManagement;
+import se.streamsource.infrastructure.circuitbreaker.jmx.CircuitBreakerManagement;
 
 import static org.qi4j.api.common.Visibility.application;
 import static org.qi4j.api.common.Visibility.layer;

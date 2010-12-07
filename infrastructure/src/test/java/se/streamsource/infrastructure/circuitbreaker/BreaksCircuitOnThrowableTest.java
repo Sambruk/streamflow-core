@@ -24,6 +24,9 @@ import org.qi4j.api.service.ServiceReference;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.test.AbstractQi4jTest;
+import se.streamsource.infrastructure.circuitbreaker.service.AbstractBreakOnThrowable;
+import se.streamsource.infrastructure.circuitbreaker.service.BreaksCircuitOnThrowable;
+import se.streamsource.infrastructure.circuitbreaker.service.ServiceCircuitBreaker;
 
 import java.beans.PropertyVetoException;
 

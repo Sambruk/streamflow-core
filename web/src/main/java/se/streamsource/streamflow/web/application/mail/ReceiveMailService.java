@@ -35,9 +35,9 @@ import org.qi4j.spi.service.ServiceDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.streamsource.infrastructure.NamedThreadFactory;
-import se.streamsource.infrastructure.circuitbreaker.AbstractEnabledCircuitBreakerAvailability;
+import se.streamsource.infrastructure.circuitbreaker.service.AbstractEnabledCircuitBreakerAvailability;
 import se.streamsource.infrastructure.circuitbreaker.CircuitBreaker;
-import se.streamsource.infrastructure.circuitbreaker.ServiceCircuitBreaker;
+import se.streamsource.infrastructure.circuitbreaker.service.ServiceCircuitBreaker;
 
 import javax.mail.*;
 import java.beans.PropertyChangeEvent;

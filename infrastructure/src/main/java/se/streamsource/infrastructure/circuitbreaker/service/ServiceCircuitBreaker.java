@@ -14,18 +14,16 @@
  * limitations under the License.
  */
 
-package se.streamsource.infrastructure.circuitbreaker;
+package se.streamsource.infrastructure.circuitbreaker.service;
 
-import org.qi4j.api.concern.Concerns;
-import org.qi4j.api.mixin.Mixins;
+import se.streamsource.infrastructure.circuitbreaker.CircuitBreaker;
 
 /**
- * Abstract composite that enables the service to use the @BreakCircuitOnThrowable annotation
- * on methods.
+ * Services that have CircuitBreakers can implement this. The CB will
+ * then be exposable in JMX by CircuitBreakerManagement.
+ *
  */
-@Concerns(BreakCircuitConcern.class)
-@Mixins(ServiceCircuitBreakerMixin.class)
-public interface AbstractBreakOnThrowable
-   extends ServiceCircuitBreaker
+public interface ServiceCircuitBreaker
 {
+   CircuitBreaker getCircuitBreaker();
 }

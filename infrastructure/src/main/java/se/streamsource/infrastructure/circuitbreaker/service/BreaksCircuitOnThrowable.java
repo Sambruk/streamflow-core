@@ -14,14 +14,19 @@
  * limitations under the License.
  */
 
-package se.streamsource.infrastructure.circuitbreaker;
+package se.streamsource.infrastructure.circuitbreaker.service;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * Services that have CircuitBreakers can implement this. The CB will
- * then be exposable in JMX by CircuitBreakerManagement.
- *
+ * Annotate methods which when they throw throwables should
+ * cause circuit breakers to trip
  */
-public interface ServiceCircuitBreaker
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface BreaksCircuitOnThrowable
 {
-   CircuitBreaker getCircuitBreaker();
 }

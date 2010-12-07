@@ -37,7 +37,7 @@ public class CircuitBreakerTest
    @Before
    public void createCircuitBreaker()
    {
-      cb = new CircuitBreaker(3, 250);
+      cb = new CircuitBreaker(3, 250, CircuitBreakers.any( IllegalArgumentException.class ));
 
       cb.addPropertyChangeListener( new PropertyChangeListener()
       {
@@ -55,7 +55,7 @@ public class CircuitBreakerTest
 
       Assert.assertThat( cb.getStatus(), CoreMatchers.equalTo(CircuitBreaker.Status.on ));
 
-      // Service levels goes down and causes a trip
+      // Service levels goes down but does not cause a trip
       cb.throwable( new IOException() );
 
       Assert.assertThat( cb.getStatus(), CoreMatchers.equalTo(CircuitBreaker.Status.on ));
@@ -70,6 +70,21 @@ public class CircuitBreakerTest
       cb.turnOn();
 
       Assert.assertThat( cb.getStatus(), CoreMatchers.equalTo(CircuitBreaker.Status.on ));
+   }
+
+   @Test
+   public void GivenCBWhenAllowedExceptionsThenServiceLevelIsNormal() throws PropertyVetoException
+   {
+
+      Assert.assertThat( cb.getStatus(), CoreMatchers.equalTo(CircuitBreaker.Status.on ));
+
+      // Service level goes down
+      cb.throwable( new IOException() );
+
+      // Service levels goes up
+      cb.throwable( new IllegalArgumentException() );
+
+      Assert.assertThat( cb.getServiceLevel(), CoreMatchers.equalTo(1.0 ));
    }
 
    @Test

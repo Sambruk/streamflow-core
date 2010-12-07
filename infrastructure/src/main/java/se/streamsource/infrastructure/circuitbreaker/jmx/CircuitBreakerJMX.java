@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
-package se.streamsource.infrastructure.circuitbreaker;
+package se.streamsource.infrastructure.circuitbreaker.jmx;
+
+import se.streamsource.infrastructure.circuitbreaker.CircuitBreaker;
 
 import java.beans.PropertyVetoException;
 import java.text.DateFormat;
 import java.util.Date;
 
 /**
-* JAVADOC
+* MBean for circuit breakers
 */
 public class CircuitBreakerJMX
    implements CircuitBreakerJMXMBean

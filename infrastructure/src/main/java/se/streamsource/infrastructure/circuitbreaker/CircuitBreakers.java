@@ -19,6 +19,7 @@ package se.streamsource.infrastructure.circuitbreaker;
 import org.qi4j.api.io.Output;
 import org.qi4j.api.io.Receiver;
 import org.qi4j.api.io.Sender;
+import org.qi4j.api.specification.Specification;
 
 /**
  * CircuitBreaker helper methods.
@@ -60,6 +61,28 @@ public class CircuitBreakers
                   });
                }
             });
+         }
+      };
+   }
+
+   /**
+    * Allow all throwables that are equal to or subclasses of given list of throwables.
+    *
+    * @param throwables
+    * @return
+    */
+   public static Specification<Class<? extends Throwable>> any( final Class<? extends Throwable>... throwables)
+   {
+      return new Specification<Class<? extends Throwable>>()
+      {
+         public boolean satisfiedBy( Class<? extends Throwable> item )
+         {
+            for (Class<? extends Throwable> throwable : throwables)
+            {
+               if (throwable.isAssignableFrom( item ))
+                  return true;
+            }
+            return false;
          }
       };
    }

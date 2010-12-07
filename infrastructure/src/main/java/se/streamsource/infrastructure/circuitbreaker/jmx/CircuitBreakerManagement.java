@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package se.streamsource.infrastructure.circuitbreaker;
+package se.streamsource.infrastructure.circuitbreaker.jmx;
 
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
@@ -25,6 +25,8 @@ import org.qi4j.api.service.ServiceReference;
 import org.qi4j.api.structure.Application;
 import org.qi4j.library.jmx.Qi4jMBeans;
 import org.slf4j.LoggerFactory;
+import se.streamsource.infrastructure.circuitbreaker.CircuitBreaker;
+import se.streamsource.infrastructure.circuitbreaker.service.ServiceCircuitBreaker;
 
 import javax.management.*;
 import java.beans.PropertyChangeEvent;
@@ -33,7 +35,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * JMX service that exposes CircuitBreakers as MBeans.
+ * JMX service that exposes ServiceCircuitBreakers as MBeans.
  */
 @Mixins(CircuitBreakerManagement.Mixin.class)
 public interface CircuitBreakerManagement

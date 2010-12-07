@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package se.streamsource.infrastructure.circuitbreaker;
+package se.streamsource.infrastructure.circuitbreaker.service;
 
 import org.qi4j.api.common.AppliesTo;
 import org.qi4j.api.concern.GenericConcern;
 import org.qi4j.api.injection.scope.This;
+import se.streamsource.infrastructure.circuitbreaker.CircuitBreaker;
 
 import java.lang.reflect.Method;
 
