@@ -121,20 +121,23 @@ public class CasesDetailView
 
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
    {
-      if (matches( withNames( "deletedEntity", "createdCase" ), transactions ))
+      if (matches( onEntityTypes( "se.streamsource.streamflow.web.domain.entity.caze.CaseEntity" ), transactions ))
       {
-         clear();
-      }
-      // only clear detail if it is not a draft
-      else if (matches( withNames( "changedOwner" ), transactions )
-            && !"DRAFT".equals( current.getCaseStatus() ))
-      {
-         clear();
-      }
-      // clear detail if status changed from draft to open
-      else if( matches( withUsecases( "open" ), transactions) )
-      {
-         clear();
+         if (matches( withNames( "deletedEntity", "createdCase" ), transactions ))
+         {
+            clear();
+         }
+         // only clear detail if it is not a draft
+         else if (matches( withNames( "changedOwner" ), transactions )
+               && !"DRAFT".equals( current.getCaseStatus() ))
+         {
+            clear();
+         }
+         // clear detail if status changed from draft to open
+         else if (matches( withUsecases( "open" ), transactions ))
+         {
+            clear();
+         }
       }
    }
 }
