@@ -76,6 +76,17 @@
     </supplement>
     <supplement>
         <project>
+            <groupId>com.jhlabs</groupId>
+            <artifactId>filters</artifactId>
+            <name>JHLabs Image Processing Filters</name>
+            <organization>
+                <name>JHlabs</name>
+                <url>http://www.jhlabs.com/ip/index.html</url>
+            </organization>
+        </project>
+    </supplement>
+    <supplement>
+        <project>
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
             <name>Commons Codec</name>
@@ -475,7 +486,24 @@
             <licenses>
                 <license>
                     <name>The Apache Software License, Version 2.0</name>
-                    <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+                    <url>http://www.ehcache.org/license.html</url>
+                </license>
+            </licenses>
+        </project>
+    </supplement>
+    <supplement>
+        <project>
+            <groupId>net.sf.ehcache</groupId>
+            <artifactId>ehcache-terracotta</artifactId>
+            <name>Ehcache Terracotta</name>
+            <organization>
+                <name>Terracotta, Inc.</name>
+                <url>http://www.ehcache.org/</url>
+            </organization>
+            <licenses>
+                <license>
+                    <name>The Apache Software License, Version 2.0</name>
+                    <url>http://www.ehcache.org/license.html</url>
                 </license>
             </licenses>
         </project>
@@ -749,6 +777,17 @@
     <supplement>
         <project>
             <groupId>org.qi4j.library</groupId>
+            <artifactId>qi4j-lib-jmx</artifactId>
+            <name>Qi4j Library - JMX</name>
+            <organization>
+                <name>Qi4j</name>
+                <url>http://www.qi4j.org</url>
+            </organization>
+        </project>
+    </supplement>
+    <supplement>
+        <project>
+            <groupId>org.qi4j.library</groupId>
             <artifactId>qi4j-lib-locking</artifactId>
             <name>Qi4j Lib Locking</name>
             <organization>
@@ -773,6 +812,17 @@
             <groupId>org.qi4j.swing</groupId>
             <artifactId>qi4j-swing-envisage</artifactId>
             <name>Qi4j Swing Envisage</name>
+            <organization>
+                <name>Qi4j</name>
+                <url>http://www.qi4j.org</url>
+            </organization>
+        </project>
+    </supplement>
+    <supplement>
+        <project>
+            <groupId>org.qi4j</groupId>
+            <artifactId>qi4j-cache-ehcache</artifactId>
+            <name>Qi4j Extension - Ehcache Cache</name>
             <organization>
                 <name>Qi4j</name>
                 <url>http://www.qi4j.org</url>
@@ -852,6 +902,23 @@
             <groupId>org.restlet.jee</groupId>
             <artifactId>org.restlet.ext.servlet</artifactId>
             <name>Restlet Extension - Servlet</name>
+            <organization>
+                <name>Noelios Technologies</name>
+                <url>http://www.restlet.org</url>
+            </organization>
+            <licenses>
+                <license>
+                    <name>CDDL 1.0 license</name>
+                    <url>http://www.opensource.org/licenses/cddl1.php</url>
+                </license>
+            </licenses>
+        </project>
+    </supplement>
+     <supplement>
+        <project>
+            <groupId>org.restlet.jee</groupId>
+            <artifactId>org.restlet.ext.slf4j</artifactId>
+            <name>Restlet Extension - SLF4J</name>
             <organization>
                 <name>Noelios Technologies</name>
                 <url>http://www.restlet.org</url>
@@ -970,6 +1037,23 @@
                 <name>SubEtha SMTP</name>
                 <url>http://subethasmtp.googlecode.com</url>
             </organization>
+        </project>
+    </supplement>
+    <supplement>
+        <project>
+            <groupId>org.swinglabs</groupId>
+            <artifactId>swing-worker</artifactId>
+            <name>Swing Layout Extensions</name>
+            <organization>
+                <name>Swinglabs</name>
+                <url>https://swingx.dev.java.net/</url>
+            </organization>
+            <licenses>
+                <license>
+                    <name>LGPL</name>
+                    <url>http://www.gnu.org/copyleft/lesser.html</url>
+                </license>
+            </licenses>
         </project>
     </supplement>
     <supplement>
