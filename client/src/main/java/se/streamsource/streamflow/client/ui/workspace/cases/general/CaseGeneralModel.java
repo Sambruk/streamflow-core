@@ -20,42 +20,33 @@ import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.dci.value.EntityValue;
-import se.streamsource.dci.value.LinkValue;
-import se.streamsource.dci.value.LinksValue;
-import se.streamsource.dci.value.ResourceValue;
+import se.streamsource.dci.value.*;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.util.Refreshable;
-import se.streamsource.streamflow.client.ui.workspace.cases.CaseResources;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.client.util.Refreshable;
 import se.streamsource.streamflow.domain.interaction.gtd.Actions;
 import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
 import se.streamsource.streamflow.resource.caze.CaseGeneralDTO;
 import se.streamsource.streamflow.resource.roles.DateDTO;
 
 import java.util.Date;
-import java.util.Observable;
 
 /**
  * Model for the general info about a case.
  */
-public class CaseGeneralModel extends Observable implements Refreshable
+public class CaseGeneralModel implements Refreshable
 {
    @Structure
-   ValueBuilderFactory vbf;
-
-   @Structure
-   ObjectBuilderFactory obf;
+   private ValueBuilderFactory vbf;
 
    private CommandQueryClient client;
 
-   CaseGeneralDTO general;
+   private CaseGeneralDTO general;
 
    private ResourceValue resourceValue;
 
@@ -74,45 +65,37 @@ public class CaseGeneralModel extends Observable implements Refreshable
 
    public void changeDescription( String newDescription )
    {
-      try
-      {
-         ValueBuilder<StringValue> builder = vbf
-               .newValueBuilder( StringValue.class );
-         builder.prototype().string().set( newDescription );
-         client.postCommand( "changedescription", builder.newInstance() );
-      } catch (ResourceException e)
-      {
-         throw new OperationException(
-               CaseResources.could_not_change_description, e );
-      }
+      if (newDescription.equals(general.description().get()))
+         return; // No change
+
+      ValueBuilder<StringValue> builder = vbf
+            .newValueBuilder( StringValue.class );
+      builder.prototype().string().set( newDescription );
+      client.postCommand( "changedescription", builder.newInstance() );
+      general.description().set( newDescription );
    }
 
    public void changeNote( String newNote )
    {
-      try
-      {
-         ValueBuilder<StringValue> builder = vbf
-               .newValueBuilder( StringValue.class );
-         builder.prototype().string().set( newNote );
-         client.postCommand( "changenote", builder.newInstance() );
-      } catch (ResourceException e)
-      {
-         throw new OperationException( CaseResources.could_not_change_note, e );
-      }
+      if (newNote.equals(general.note().get()))
+         return; // No change
+
+      ValueBuilder<StringValue> builder = vbf
+            .newValueBuilder( StringValue.class );
+      builder.prototype().string().set( newNote );
+      client.postCommand( "changenote", builder.newInstance() );
+      general.note().set( newNote );
    }
 
    public void changeDueOn( Date newDueOn )
    {
-      try
-      {
-         ValueBuilder<DateDTO> builder = vbf.newValueBuilder( DateDTO.class );
-         builder.prototype().date().set( newDueOn );
-         client.putCommand( "changedueon", builder.newInstance() );
-      } catch (ResourceException e)
-      {
-         throw new OperationException( CaseResources.could_not_change_due_on,
-               e );
-      }
+      if (newDueOn.equals(general.dueOn().get()))
+         return; // No change
+
+      ValueBuilder<DateDTO> builder = vbf.newValueBuilder( DateDTO.class );
+      builder.prototype().date().set( newDueOn );
+      client.putCommand( "changedueon", builder.newInstance() );
+      general.dueOn().set( newDueOn );
    }
 
    public EventList<LinkValue> getPossibleCaseTypes()
@@ -135,19 +118,8 @@ public class CaseGeneralModel extends Observable implements Refreshable
 
    public void refresh()
    {
-      try
-      {
-         resourceValue = client.query( "", ResourceValue.class );
-
-         general = (CaseGeneralDTO) resourceValue.index().get().buildWith().prototype();
-
-         setChanged();
-         notifyObservers();
-
-      } catch (Exception e)
-      {
-         throw new OperationException( CaseResources.could_not_refresh, e );
-      }
+      resourceValue = client.query( "", ResourceValue.class );
+      general = (CaseGeneralDTO) resourceValue.index().get().buildWith().prototype();
    }
 
    public void changeCaseType( LinkValue selected )

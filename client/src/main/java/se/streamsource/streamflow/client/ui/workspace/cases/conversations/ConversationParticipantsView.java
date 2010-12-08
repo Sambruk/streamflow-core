@@ -92,7 +92,7 @@ public class ConversationParticipantsView
       {
          LinkValue link = model.participants().get( i );
          RemovableLabel label = new RemovableLabel( link, RemovableLabel.LEFT );
-         label.addActionListener( getActionMap().get("removeParticipant" ));
+         label.getButton().addActionListener( getActionMap().get("removeParticipant" ));
          participants.add( label );
       }
 

@@ -92,7 +92,7 @@ public class CaseLabelsView
          LinkValue linkValue = model.getLabels().get( i );
          RemovableLabel label = new RemovableLabel( linkValue, useBorders );
          label.setToolTipText( linkValue.text().get() );
-         label.addActionListener( getActionMap().get("remove" ));
+         label.getButton().addActionListener( getActionMap().get("remove" ));
 
          add( label );
       }

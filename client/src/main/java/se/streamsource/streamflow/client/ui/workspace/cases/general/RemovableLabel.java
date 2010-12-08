@@ -22,24 +22,14 @@ import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.util.Strings;
 
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
 
 public class RemovableLabel extends JPanel
       implements FocusListener, KeyListener, MouseListener
 {
-   JButton button;
+   private JButton button;
    private LinkValue link;
    private JXLabel label;
    private boolean useBorder = false;
@@ -137,9 +127,14 @@ public class RemovableLabel extends JPanel
       return link;
    }
 
-   public void addActionListener( ActionListener listener )
+   public JButton getButton()
    {
-      button.addActionListener( listener );
+      return button;
+   }
+
+   public JXLabel getLabel()
+   {
+      return label;
    }
 
    public void focusGained( FocusEvent e )

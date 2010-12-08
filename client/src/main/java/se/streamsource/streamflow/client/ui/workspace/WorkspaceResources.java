@@ -27,6 +27,7 @@ public enum WorkspaceResources
    created_column_header,
    case_status_header,
 
+   description_label,
    note_label,
    name_label,
    contact_id_label,

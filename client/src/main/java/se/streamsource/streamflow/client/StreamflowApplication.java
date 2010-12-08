@@ -20,6 +20,7 @@ package se.streamsource.streamflow.client;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ProxyActions;
 import org.jdesktop.application.SingleFrameApplication;
+import org.jdesktop.application.TaskService;
 import org.jdesktop.swingx.JXErrorPane;
 import org.jdesktop.swingx.error.ErrorInfo;
 import org.jdesktop.swingx.util.WindowUtils;
@@ -63,6 +64,7 @@ import java.awt.event.ActionEvent;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EventObject;
+import java.util.concurrent.Executors;
 
 import static se.streamsource.streamflow.client.util.i18n.text;
 
@@ -110,6 +112,11 @@ public class StreamflowApplication
    public StreamflowApplication()
    {
       super();
+
+      // We have to ensure that calls to the server are done in the order they were executed,
+      // so make it single threaded
+      getContext().removeTaskService( getContext().getTaskService() );
+      getContext().addTaskService(new TaskService("default", Executors.newSingleThreadExecutor()));
 
       getContext().getResourceManager().setApplicationBundleNames( Arrays.asList( "se.streamsource.streamflow.client.resources.StreamflowApplication" ) );
    }
