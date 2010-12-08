@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.web.domain.structure.form;
 
+import org.qi4j.api.common.ConstructionException;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.entity.EntityReference;
@@ -132,9 +133,15 @@ public interface SubmittedForms
                   // move current attachment from draft to case
                   if( field.field().get().fieldValue().get() instanceof AttachmentFieldValue )
                   {
-                      AttachmentFieldSubmission currentFormDraftAttachmentField = vbf.newValueFromJSON( AttachmentFieldSubmission.class, field.value().get() );
-                      AttachmentEntity attachment = uowf.currentUnitOfWork().get( AttachmentEntity.class, currentFormDraftAttachmentField.attachment().get().identity() );
-                      ((FormAttachments)formSubmission).moveAttachment( formAttachments, attachment );
+                     try
+                     { 
+                        AttachmentFieldSubmission currentFormDraftAttachmentField = vbf.newValueFromJSON( AttachmentFieldSubmission.class, fieldBuilder.prototype().value().get() );
+                        AttachmentEntity attachment = uowf.currentUnitOfWork().get( AttachmentEntity.class, currentFormDraftAttachmentField.attachment().get().identity() );
+                        ((FormAttachments)formSubmission).moveAttachment( formAttachments, attachment );
+                     } catch (ConstructionException e)
+                     {
+                        // ignore
+                     }
                   }
 
                   // update effective field
