@@ -77,7 +77,7 @@ public class FormSignaturesView
       this.model = obf.newObjectBuilder( FormSignaturesModel.class ).use( client ).newInstance();
       ActionMap am = context.getActionMap( this );
 
-      initMaster( new EventListModel<LinkValue>( model.getList() ), am.get( "create" ), new javax.swing.Action[]{am.get( "remove" )},
+      initMaster( new EventListModel<LinkValue>( model.getList() ), am.get( "add" ), new javax.swing.Action[]{am.get( "remove" )},
             new DetailFactory()
             {
                public Component createDetail( LinkValue detailLink )
@@ -90,7 +90,7 @@ public class FormSignaturesView
    }
 
    @Action
-   public Task create()
+   public Task add()
    {
       final NameDialog dialog = nameDialog.iterator().next();
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( AdministrationResources.add_signature_title ) );
