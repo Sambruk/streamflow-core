@@ -24,9 +24,7 @@ import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
-import org.qi4j.api.unitofwork.ConcurrentEntityModificationException;
 import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.usecase.UsecaseBuilder;
 import org.slf4j.Logger;
@@ -35,11 +33,7 @@ import se.streamsource.streamflow.web.domain.interaction.security.Authentication
 import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
 
 import javax.management.MBeanServer;
-import javax.management.remote.JMXAuthenticator;
-import javax.management.remote.JMXConnectorServer;
-import javax.management.remote.JMXConnectorServerFactory;
-import javax.management.remote.JMXPrincipal;
-import javax.management.remote.JMXServiceURL;
+import javax.management.remote.*;
 import javax.security.auth.Subject;
 import java.net.InetAddress;
 import java.rmi.registry.LocateRegistry;
@@ -175,11 +169,7 @@ public interface JmxConnectorService
 
                unitOfWork.complete();
 
-            } catch (ConcurrentEntityModificationException e)
-            {
-               unitOfWork.discard();
-
-            } catch (UnitOfWorkCompletionException e)
+            } catch (Throwable e)
             {
                unitOfWork.discard();
             }
