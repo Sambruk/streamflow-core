@@ -42,7 +42,7 @@ import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.ui.ContextItem;
 import se.streamsource.streamflow.client.ui.OptionsAction;
 import se.streamsource.streamflow.client.util.CommandTask;
-import se.streamsource.streamflow.client.util.RefreshWhenVisible;
+import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.SelectionActionEnabler;
 import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
@@ -156,7 +156,7 @@ public class AdministrationTreeView
 
       add( actions, BorderLayout.SOUTH );
 
-      new RefreshWhenVisible( this, model );
+      new RefreshWhenShowing( this, model );
 
       tree.getSelectionModel().addTreeSelectionListener( new SelectionActionEnabler(
             am.get( "changeDescription" ),

@@ -17,7 +17,6 @@
 package se.streamsource.streamflow.client.ui.workspace.cases.general.forms;
 
 import ca.odell.glazedlists.EventList;
-import org.jdesktop.application.Application;
 import org.jdesktop.swingx.util.WindowUtils;
 import org.netbeans.api.wizard.WizardDisplayer;
 import org.netbeans.spi.wizard.Wizard;
@@ -33,7 +32,7 @@ import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.client.StreamflowApplication;
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.LinkValueListModel;
-import se.streamsource.streamflow.client.util.RefreshWhenVisible;
+import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.Refreshable;
 import se.streamsource.streamflow.domain.form.FormDraftValue;
 import se.streamsource.streamflow.domain.form.PageSubmissionValue;
@@ -75,7 +74,7 @@ public class PossibleFormsView extends JPanel
 
       modelForms = obf.newObjectBuilder( PossibleFormsModel.class ).use( client ).newInstance();
 
-      new RefreshWhenVisible(this, this);
+      new RefreshWhenShowing(this, this);
    }
 
    public void refresh()

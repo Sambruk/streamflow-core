@@ -28,7 +28,7 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
-import se.streamsource.streamflow.client.util.RefreshWhenVisible;
+import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.util.CommandTask;
@@ -77,7 +77,7 @@ public class MessagesView extends JPanel
       ((HTMLEditorKit) messages.getEditorKit()).setAutoFormSubmission( false );
       messages.setEditable( false );
 
-      new RefreshWhenVisible(this, model);
+      new RefreshWhenShowing(this, model);
 
       initWriteMessage();
 

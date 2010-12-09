@@ -33,7 +33,7 @@ import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.StreamflowApplication;
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.util.FileNameExtensionFilter;
-import se.streamsource.streamflow.client.util.RefreshWhenVisible;
+import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.resource.overview.ProjectSummaryValue;
@@ -135,7 +135,7 @@ public class OverviewSummaryView extends JPanel
          }
       } );
 
-      new RefreshWhenVisible(this, model);
+      new RefreshWhenShowing(this, model);
    }
    protected Action addToolbarButton( JPanel toolbar, String name )
    {

@@ -283,13 +283,13 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
       notePane.getViewport().getView().setFocusTraversalKeys( KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, null );
       notePane.getViewport().getView().setFocusTraversalKeys( KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, null );
 
-      new RefreshWhenVisible( this, this );
+      new RefreshWhenShowing( this, this );
    }
 
    public void refresh()
    {
       model.refresh();
-      labels.getModel().refresh();
+//      labels.getModel().refresh();
 
       dueOnField.setEnabled( model.getCommandEnabled( "changedueon" ) );
       descriptionField.setEnabled( model.getCommandEnabled( "changedescription" ) );

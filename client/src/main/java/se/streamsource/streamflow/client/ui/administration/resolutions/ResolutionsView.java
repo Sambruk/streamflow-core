@@ -95,7 +95,7 @@ public class ResolutionsView
 
       list.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "remove" ), am.get( "rename" ), am.get( "showUsages" ) ) );
 
-      new RefreshWhenVisible( this, model );
+      new RefreshWhenShowing( this, model );
    }
 
    @Action

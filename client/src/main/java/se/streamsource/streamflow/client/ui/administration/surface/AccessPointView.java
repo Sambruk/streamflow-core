@@ -39,7 +39,7 @@ import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.CaseLabelsView;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.RemovableLabel;
 import se.streamsource.streamflow.client.util.CommandTask;
-import se.streamsource.streamflow.client.util.RefreshWhenVisible;
+import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.StateBinder;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
@@ -242,7 +242,7 @@ public class AccessPointView
 
       accessPointBinder.updateWith( model.getAccessPointValue() );
 
-      new RefreshWhenVisible( this, model );
+      new RefreshWhenShowing( this, model );
    }
 
    @Action

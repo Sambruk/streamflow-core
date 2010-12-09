@@ -17,49 +17,35 @@
 
 package se.streamsource.streamflow.client.util;
 
-import javax.swing.JComponent;
-import javax.swing.SwingUtilities;
-import javax.swing.event.AncestorEvent;
-import javax.swing.event.AncestorListener;
+import javax.swing.*;
+import java.awt.event.HierarchyEvent;
+import java.awt.event.HierarchyListener;
 
 /**
- * Refresh a Refreshable when a component becomes visible.
+ * Refresh a Refreshable when a component becomes showing on screen.
  */
-public class RefreshWhenVisible
-      implements AncestorListener
+public class RefreshWhenShowing
+      implements HierarchyListener
 {
    private Refreshable refreshable;
    private JComponent component;
-   private boolean refreshed = false;
 
-   public RefreshWhenVisible( JComponent component, Refreshable refreshable )
+   public RefreshWhenShowing( JComponent component, Refreshable refreshable )
    {
       this.refreshable = refreshable;
       this.component = component;
 
-      component.addAncestorListener( this );
+      component.addHierarchyListener( this );
    }
 
-   public void ancestorAdded( AncestorEvent event )
+   public void hierarchyChanged( HierarchyEvent e )
    {
-      if (refreshable != null && component.isDisplayable() && !refreshed)
-      {
+      if ((e.getChangeFlags() & HierarchyEvent.SHOWING_CHANGED)>0 && component.isShowing())
          refresh();
-      }
-   }
-
-   public void ancestorRemoved( AncestorEvent event )
-   {
-      refreshed = false;
-   }
-
-   public void ancestorMoved( AncestorEvent event )
-   {
    }
 
    private void refresh()
    {
-      refreshed = true;
       SwingUtilities.invokeLater( new Runnable()
       {
          public void run()

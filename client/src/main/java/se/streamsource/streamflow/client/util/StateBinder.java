@@ -87,8 +87,9 @@ import java.util.ResourceBundle;
 import java.util.Set;
 
 /**
- * JAVADOC
+ * Use ActionBinder+ValueBinder instead
  */
+@Deprecated
 public class StateBinder
       extends Observable
 {
@@ -535,7 +536,21 @@ public class StateBinder
                }
             } );
             return binding;
+         } else if (component instanceof RemovableLabel)
+         {
+            final RemovableLabel removableLabel = (RemovableLabel) component;
+            removableLabel.getButton().addActionListener( new ActionListener()
+            {
+
+               public void actionPerformed( ActionEvent e )
+               {
+                  //removableLabel.setListItemValue( null );
+                  binding.updateProperty( null );
          }
+            } );
+            return binding;
+         }
+
 
          throw new IllegalArgumentException( "Could not bind to component of type " + component.getClass().getName() );
       }

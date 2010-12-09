@@ -31,7 +31,7 @@ import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseResources;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.RemovableLabel;
 import se.streamsource.streamflow.client.util.CommandTask;
-import se.streamsource.streamflow.client.util.RefreshWhenVisible;
+import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
 import se.streamsource.streamflow.client.util.i18n;
@@ -81,7 +81,7 @@ public class ConversationParticipantsView
 
       add(addParticipants, BorderLayout.EAST);
 
-      new RefreshWhenVisible(this, model);
+      new RefreshWhenShowing(this, model);
    }
 
    private void initComponents()

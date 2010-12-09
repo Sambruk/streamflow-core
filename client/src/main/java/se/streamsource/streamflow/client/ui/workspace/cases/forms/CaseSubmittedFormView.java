@@ -29,7 +29,7 @@ import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.streamflow.client.util.RefreshWhenVisible;
+import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.resource.caze.FieldDTO;
 import se.streamsource.streamflow.resource.roles.IntegerDTO;
 
@@ -56,7 +56,7 @@ public class CaseSubmittedFormView
 
       setActionMap( context.getActionMap( this ) );
 
-      new RefreshWhenVisible( this, model );
+      new RefreshWhenShowing( this, model );
    }
 
    public void listChanged( ListEvent<FieldDTO> listEvent )

@@ -29,8 +29,8 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
+import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
-import se.streamsource.streamflow.client.util.RefreshWhenVisible;
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseResources;
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.dialog.NameDialog;
@@ -131,7 +131,7 @@ public class ConversationsView
       setLeftComponent( left );
       this.setDividerLocation( -1 );
 
-      new RefreshWhenVisible( this, model );
+      new RefreshWhenShowing( this, model );
    }
 
    @Action

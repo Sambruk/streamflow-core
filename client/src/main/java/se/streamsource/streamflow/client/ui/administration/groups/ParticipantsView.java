@@ -36,7 +36,7 @@ import se.streamsource.streamflow.client.ui.administration.AdministrationResourc
 import se.streamsource.streamflow.client.ui.administration.UsersAndGroupsModel;
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.LinkListCellRenderer;
-import se.streamsource.streamflow.client.util.RefreshWhenVisible;
+import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.i18n;
@@ -98,7 +98,7 @@ public class ParticipantsView
       toolbar.add( new JButton( am.get( "remove" ) ) );
       add( toolbar, BorderLayout.SOUTH );
 
-      new RefreshWhenVisible(this, model);
+      new RefreshWhenShowing(this, model);
    }
 
    @Action

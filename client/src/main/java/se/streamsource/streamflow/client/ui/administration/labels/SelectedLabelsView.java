@@ -32,7 +32,7 @@ import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.LinkListCellRenderer;
-import se.streamsource.streamflow.client.util.RefreshWhenVisible;
+import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.SelectionActionEnabler;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.NameDialog;
@@ -88,7 +88,7 @@ public class SelectedLabelsView
       add( toolbar, BorderLayout.SOUTH );
       labelList.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "remove" ) ) );
 
-      new RefreshWhenVisible( this, modelSelected );
+      new RefreshWhenShowing( this, modelSelected );
    }
 
    @Action

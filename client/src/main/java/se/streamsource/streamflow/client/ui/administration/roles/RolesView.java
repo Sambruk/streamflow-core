@@ -28,7 +28,7 @@ import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.ListItemListCellRenderer;
-import se.streamsource.streamflow.client.util.RefreshWhenVisible;
+import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.NameDialog;
@@ -79,7 +79,7 @@ public class RolesView
       toolbar.add( new JButton( getActionMap().get( "remove" ) ) );
       add( toolbar, BorderLayout.SOUTH );
 
-      new RefreshWhenVisible( this, model );
+      new RefreshWhenShowing( this, model );
    }
 
    @Action

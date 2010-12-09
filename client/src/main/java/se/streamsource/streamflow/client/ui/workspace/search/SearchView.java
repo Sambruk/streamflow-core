@@ -36,7 +36,7 @@ import se.streamsource.dci.value.TitledLinkValue;
 import se.streamsource.streamflow.client.ui.OptionsAction;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.util.CommandTask;
-import se.streamsource.streamflow.client.util.RefreshWhenVisible;
+import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.SavedSearchListCellRenderer;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
@@ -93,7 +93,7 @@ public class SearchView
       add( searches, BorderLayout.CENTER );
       add( new JButton( new OptionsAction( options ) ), BorderLayout.EAST );
 
-      new RefreshWhenVisible( this, model);
+      new RefreshWhenShowing( this, model);
    }
 
    public JTextField getTextField()

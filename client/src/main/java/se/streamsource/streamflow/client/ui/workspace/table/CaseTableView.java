@@ -33,7 +33,8 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
-import se.streamsource.streamflow.client.util.RefreshWhenVisible;
+import se.streamsource.streamflow.client.util.CommandTask;
+import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
@@ -59,12 +60,14 @@ public class CaseTableView
 {
    protected JXTable caseTable;
    protected CasesTableModel model;
+   private ApplicationContext context;
 
    public void init( @Service ApplicationContext context,
                      @Uses CasesTableModel casesTableModel,
                      @Structure ObjectBuilderFactory obf,
                      @Uses TableFormat tableFormat )
    {
+      this.context = context;
       setLayout( new BorderLayout() );
       this.model = casesTableModel;
       setLayout( new BorderLayout() );
@@ -164,7 +167,7 @@ public class CaseTableView
          }
       } );
 
-      new RefreshWhenVisible(this, model);
+      new RefreshWhenShowing(this, model);
    }
 
    public JXTable getCaseTable()
@@ -177,28 +180,49 @@ public class CaseTableView
       return model;
    }
 
-   public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
+   public void notifyTransactions( final Iterable<TransactionDomainEvents> transactions )
    {
-      if (Events.matches( withNames("addedLabel", "removedLabel",
+
+      if (Events.matches( withNames("createdCase" ), transactions ))
+      {
+         context.getTaskService().execute( new CommandTask()
+         {
+            @Override
+            protected void command() throws Exception
+            {
+               model.refresh();
+            }
+
+            @Override
+            protected void succeeded( Iterable<TransactionDomainEvents> transactionEventsIterable )
+            {
+               super.succeeded( transactionEventsIterable );
+
+               caseTable.getSelectionModel().setSelectionInterval( caseTable.getRowCount()-1, caseTable.getRowCount()-1 );
+               caseTable.scrollRowToVisible( caseTable.getRowCount()-1 );
+            }
+         });
+      } else if (Events.matches( withNames("addedLabel", "removedLabel",
             "changedDescription", "changedCaseType", "changedStatus",
             "changedOwner", "assignedTo", "unassigned", "deletedEntity",
             "updatedContact", "addedContact", "deletedContact",
             "createdConversation", "submittedForm", "createdAttachment",
             "removedAttachment" ), transactions ))
       {
-         model.refresh();
-      }
+         context.getTaskService().execute( new CommandTask()
+         {
+            @Override
+            protected void command() throws Exception
+            {
+               model.refresh();
 
-      if (Events.matches( withNames("createdCase" ), transactions ))
-      {
-         caseTable.getSelectionModel().setSelectionInterval( caseTable.getRowCount()-1, caseTable.getRowCount()-1 );
-         caseTable.scrollRowToVisible( caseTable.getRowCount()-1 );
-      }
-
-      if( Events.matches( withNames( "changedStatus",
-            "changedOwner", "assignedTo", "unassigned", "deletedEntity" ), transactions ) )
-      {
-         caseTable.getSelectionModel().clearSelection();   
+               if( Events.matches( withNames( "changedStatus",
+                     "changedOwner", "assignedTo", "unassigned", "deletedEntity" ), transactions ) )
+               {
+                  caseTable.getSelectionModel().clearSelection();
+               }
+            }
+         });
       }
    }
 }

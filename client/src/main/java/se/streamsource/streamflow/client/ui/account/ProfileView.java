@@ -30,7 +30,7 @@ import org.qi4j.api.property.Property;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.util.RefreshWhenVisible;
+import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.Refreshable;
 import se.streamsource.streamflow.client.util.StateBinder;
 import se.streamsource.streamflow.client.util.i18n;
@@ -151,7 +151,7 @@ public class ProfileView
       emailBinder.addObserver(this);
       setViewportView(panel);
 
-      new RefreshWhenVisible(this, model);
+      new RefreshWhenShowing(this, model);
    }
 
    @Action

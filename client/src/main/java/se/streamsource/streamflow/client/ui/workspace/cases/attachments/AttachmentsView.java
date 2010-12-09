@@ -35,7 +35,7 @@ import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.util.CommandTask;
-import se.streamsource.streamflow.client.util.RefreshWhenVisible;
+import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.SelectionActionEnabler;
 import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
@@ -138,7 +138,7 @@ public class AttachmentsView
       add( attachmentsScrollPane, BorderLayout.CENTER );
       add( toolbar, BorderLayout.SOUTH );
 
-      new RefreshWhenVisible( this, attachmentsModel );
+      new RefreshWhenShowing( this, attachmentsModel );
    }
 
    @Action(block = Task.BlockingScope.APPLICATION)

@@ -89,7 +89,7 @@ public class MembersView
       membersList.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( getActionMap().get( "remove" ) ) );
 
 
-      new RefreshWhenVisible( this, membersModel );
+      new RefreshWhenShowing( this, membersModel );
    }
 
 

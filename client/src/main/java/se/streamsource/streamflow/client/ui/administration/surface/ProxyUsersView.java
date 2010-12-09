@@ -32,8 +32,8 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
-import se.streamsource.streamflow.client.util.RefreshWhenVisible;
 import se.streamsource.streamflow.client.util.SelectionActionEnabler;
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
@@ -106,7 +106,7 @@ public class ProxyUsersView
       super.add( toolbar, BorderLayout.SOUTH );
 
       proxyUsersTable.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "resetPassword" ), am.get( "remove") ) );
-      new RefreshWhenVisible(this, model);
+      new RefreshWhenShowing(this, model);
    }
 
 

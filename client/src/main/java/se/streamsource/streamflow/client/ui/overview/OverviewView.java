@@ -32,7 +32,7 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.Icons;
-import se.streamsource.streamflow.client.util.RefreshWhenVisible;
+import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.SeparatorContextItemListCellRenderer;
 import se.streamsource.streamflow.client.ui.ContextItem;
 import se.streamsource.streamflow.client.ui.ContextItemGroupComparator;
@@ -172,6 +172,6 @@ public class OverviewView
          }
       } );
 
-      new RefreshWhenVisible(this, model);
+      new RefreshWhenShowing(this, model);
    }
 }

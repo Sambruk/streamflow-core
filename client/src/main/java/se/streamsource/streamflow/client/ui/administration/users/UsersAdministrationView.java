@@ -36,7 +36,7 @@ import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.FileNameExtensionFilter;
-import se.streamsource.streamflow.client.util.RefreshWhenVisible;
+import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.SelectionActionEnabler;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
@@ -97,7 +97,7 @@ public class UsersAdministrationView
       toolbar.add( new JButton( am.get( "importUserList" ) ) );
       super.add( toolbar, BorderLayout.SOUTH );
 
-      new RefreshWhenVisible(this, model);
+      new RefreshWhenShowing(this, model);
    }
 
 

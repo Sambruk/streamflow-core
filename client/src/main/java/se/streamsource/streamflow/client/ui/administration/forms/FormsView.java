@@ -88,7 +88,7 @@ public class FormsView
          }
       });
 
-      new RefreshWhenVisible(this, model);
+      new RefreshWhenShowing(this, model);
    }
 
    @Action

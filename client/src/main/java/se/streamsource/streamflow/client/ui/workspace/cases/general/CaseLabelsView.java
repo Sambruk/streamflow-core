@@ -30,7 +30,7 @@ import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.LinkValue;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
 import se.streamsource.streamflow.client.util.CommandTask;
-import se.streamsource.streamflow.client.util.RefreshWhenVisible;
+import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
@@ -67,7 +67,7 @@ public class CaseLabelsView
 
       setLayout( new FlowLayout( FlowLayout.LEFT ) );
       //setBorder( BorderFactory.createLineBorder( Color.BLUE, 1));
-      new RefreshWhenVisible( this, model );
+      new RefreshWhenShowing( this, model );
    }
 
    public CaseLabelsModel getModel()

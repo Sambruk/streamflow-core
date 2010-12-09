@@ -27,7 +27,6 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
-import org.qi4j.api.specification.Specifications;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.LinkValue;
@@ -45,7 +44,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
-import static org.qi4j.api.specification.Specifications.or;
 import static se.streamsource.streamflow.client.util.i18n.text;
 import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 
@@ -92,7 +90,7 @@ public class OrganizationUsersView
 
       participantList.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "remove" ) ) );
 
-      new RefreshWhenVisible( this, model );
+      new RefreshWhenShowing( this, model );
    }
 
    @org.jdesktop.application.Action

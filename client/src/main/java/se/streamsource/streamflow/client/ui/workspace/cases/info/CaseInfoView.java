@@ -27,7 +27,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.streamflow.client.util.RefreshWhenVisible;
+import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.Refreshable;
 import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.client.ui.workspace.table.CaseStatusTableCellRenderer;
@@ -121,7 +121,7 @@ public class CaseInfoView extends JPanel
       builder.add( createdBy, "5,2,left,center" );
       builder.add( assignedTo, "6,2,left,center" );
 
-      new RefreshWhenVisible(this, this);
+      new RefreshWhenShowing(this, this);
    }
 
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
