@@ -26,7 +26,10 @@ import org.qi4j.api.service.ServiceReference;
 
 /**
  * Use a registered service that implements ServiceImporter to do the actual
- * import.
+ * import. The service id of the service that this importer should delegate to must
+ * be set as meta-info on this service. Example:
+ * module.addServices(MyServiceImporterService.class).identifiedBy("someid");
+ * module.importServices(OtherService.class).importedBy(ServiceInstanceImporter.class).setMetaInfo("someid");
  */
 public class ServiceInstanceImporter
    implements ServiceImporter

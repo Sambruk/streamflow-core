@@ -41,7 +41,7 @@ import java.util.List;
 public class ResourceResultWriter
    extends AbstractResultWriter
 {
-   private static final List<MediaType> supportedMediaTypes = Arrays.asList( MediaType.APPLICATION_JSON, MediaType.TEXT_HTML, MediaType.APPLICATION_ATOM );
+   private static final List<MediaType> supportedMediaTypes = Arrays.asList( MediaType.TEXT_HTML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM );
    private Template htmlTemplate;
 
    public ResourceResultWriter(@Service VelocityEngine velocity) throws Exception

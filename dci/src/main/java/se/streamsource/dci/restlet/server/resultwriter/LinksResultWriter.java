@@ -45,7 +45,7 @@ public class LinksResultWriter
    extends AbstractResultWriter
 {
    private static final List<MediaType> supportedLinkMediaTypes = Arrays.asList( MediaType.APPLICATION_JSON);
-   private static final List<MediaType> supportedLinksMediaTypes = Arrays.asList( MediaType.APPLICATION_JSON, MediaType.TEXT_HTML, MediaType.APPLICATION_ATOM );
+   private static final List<MediaType> supportedLinksMediaTypes = Arrays.asList( MediaType.TEXT_HTML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM );
    private Template linksHtmlTemplate;
    private Template linksAtomTemplate;
 

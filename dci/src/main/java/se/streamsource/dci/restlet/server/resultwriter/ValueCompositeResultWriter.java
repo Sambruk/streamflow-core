@@ -41,7 +41,7 @@ import java.util.List;
 public class ValueCompositeResultWriter
       extends AbstractResultWriter
 {
-   private static final List<MediaType> supportedMediaTypes = Arrays.asList( MediaType.APPLICATION_JSON, MediaType.TEXT_HTML );
+   private static final List<MediaType> supportedMediaTypes = Arrays.asList( MediaType.TEXT_HTML, MediaType.APPLICATION_JSON );
    private Template valueHtmlTemplate;
    private final VelocityEngine velocity;
 
