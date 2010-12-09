@@ -45,6 +45,8 @@ public interface Labels
 
    void removeLabel( Label label );
 
+   void moveLabel( Label label, Labels toLabels );
+
    void mergeLabels( Labels to );
 
    Query<SelectedLabels> usages( Label label );
@@ -95,6 +97,16 @@ public interface Labels
          {
             removedLabel( null, label );
             label.removeEntity();
+         }
+      }
+
+      public void moveLabel( Label label, Labels toLabels )
+      {
+         if (data.labels().contains( label ))
+         {
+            toLabels.addLabel( label );
+
+            removedLabel( null, label );
          }
       }
 

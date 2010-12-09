@@ -22,16 +22,12 @@ import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
-import org.qi4j.api.query.QueryBuilderFactory;
-import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypesQueries;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationQueries;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationVisitor;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
@@ -42,21 +38,11 @@ import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
 import se.streamsource.streamflow.web.domain.structure.created.Creator;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
-import se.streamsource.streamflow.web.domain.structure.organization.Organization;
-import se.streamsource.streamflow.web.domain.structure.organization.OrganizationParticipations;
-import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
-import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnits;
-import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganization;
-import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganizationalUnit;
+import se.streamsource.streamflow.web.domain.structure.organization.*;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.project.Projects;
-import se.streamsource.streamflow.web.domain.structure.user.User;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * JAVADOC
@@ -73,12 +59,6 @@ public interface CaseTypeQueries
          implements CaseTypeQueries
    {
       @Structure
-      ValueBuilderFactory vbf;
-
-      @Structure
-      QueryBuilderFactory qbf;
-
-      @Structure
       UnitOfWorkFactory uowf;
 
       @This
@@ -89,9 +69,6 @@ public interface CaseTypeQueries
 
       @This
       TypedCase.Data typedCase;
-
-      @This
-      Assignable assignable;
 
       public void possibleCaseTypes( final LinksBuilder builder )
       {

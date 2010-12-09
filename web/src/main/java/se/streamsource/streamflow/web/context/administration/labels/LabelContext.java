@@ -17,13 +17,21 @@
 
 package se.streamsource.streamflow.web.context.administration.labels;
 
+import org.qi4j.api.entity.Identity;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.query.Query;
+import org.qi4j.api.specification.Specification;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.util.Iterables;
 import se.streamsource.dci.api.DeleteContext;
+import se.streamsource.dci.api.RoleMap;
+import se.streamsource.dci.value.EntityValue;
+import se.streamsource.streamflow.web.domain.structure.casetype.CaseTypes;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.label.Labels;
 import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
 
-import static se.streamsource.dci.api.RoleMap.*;
+import static se.streamsource.dci.api.RoleMap.role;
 
 /**
  * JAVADOC
@@ -31,6 +39,9 @@ import static se.streamsource.dci.api.RoleMap.*;
 public class LabelContext
       implements DeleteContext
 {
+   @Structure
+   Module module;
+
    public Query<SelectedLabels> usages()
    {
       return role( Labels.class ).usages( role( Label.class ) );
@@ -49,4 +60,27 @@ public class LabelContext
 
       labels.removeLabel( label );
    }
+
+   public Iterable<Labels> possiblemoveto()
+   {
+      final Labels thisLabels = role(Labels.class);
+
+      return Iterables.filter( new Specification<Labels>()
+      {
+         public boolean satisfiedBy( Labels item )
+         {
+            return !item.equals(thisLabels);
+         }
+      }, module.queryBuilderFactory().newQueryBuilder( Labels.class ).newQuery( module.unitOfWorkFactory().currentUnitOfWork() ));
+   }
+
+   public void move( EntityValue to )
+   {
+      Labels toLabels = module.unitOfWorkFactory().currentUnitOfWork().get( Labels.class, to.entity().get() );
+      Label label = RoleMap.role( Label.class );
+      RoleMap.role( Labels.class ).moveLabel(label, toLabels );
+
+      RoleMap.current().set( RoleMap.role( CaseTypes.class ), Identity.class );
+   }
+
 }

@@ -37,7 +37,7 @@ public class CircuitBreakerTest
    @Before
    public void createCircuitBreaker()
    {
-      cb = new CircuitBreaker(3, 250, CircuitBreakers.any( IllegalArgumentException.class ));
+      cb = new CircuitBreaker(3, 250, CircuitBreakers.in( IllegalArgumentException.class ));
 
       cb.addPropertyChangeListener( new PropertyChangeListener()
       {

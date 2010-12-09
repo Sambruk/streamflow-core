@@ -71,7 +71,7 @@ public class CircuitBreakers
     * @param throwables
     * @return
     */
-   public static Specification<Throwable> any( final Class<? extends Throwable>... throwables)
+   public static Specification<Throwable> in( final Class<? extends Throwable>... throwables)
    {
       return new Specification<Throwable>()
       {

@@ -23,9 +23,6 @@ import se.streamsource.streamflow.web.context.administration.OrganizationalUnits
 import se.streamsource.streamflow.web.context.structure.DescribableContext;
 import se.streamsource.streamflow.web.resource.administration.ProxyUsersResource;
 import se.streamsource.streamflow.web.resource.organizations.forms.FormsResource;
-import se.streamsource.streamflow.web.resource.structure.SelectedTemplatesResource;
-import se.streamsource.streamflow.web.resource.structure.labels.LabelsResource;
-import se.streamsource.streamflow.web.resource.structure.labels.SelectedLabelsResource;
 import se.streamsource.streamflow.web.resource.surface.administration.organizations.accesspoints.AccessPointsAdministrationResource;
 import se.streamsource.streamflow.web.resource.workspace.cases.AttachmentsResource;
 

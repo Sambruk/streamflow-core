@@ -26,6 +26,7 @@ import org.jdesktop.application.Task;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilder;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.LinkValue;
@@ -36,6 +37,7 @@ import se.streamsource.streamflow.client.util.*;
 import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.NameDialog;
+import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.util.Strings;
@@ -63,7 +65,10 @@ public class LabelsView
    @Uses
    Iterable<ConfirmationDialog> confirmationDialog;
 
-   public JList labelList;
+   @Uses
+   ObjectBuilder<SelectLinkDialog> possibleMoveToDialogs;
+
+   public JList list;
 
    public LabelsView( @Service ApplicationContext context,
                               @Uses final CommandQueryClient client,
@@ -78,14 +83,15 @@ public class LabelsView
 
       JPopupMenu options = new JPopupMenu();
       options.add( am.get( "rename" ) );
+      options.add( am.get( "move" ) );
       options.add( am.get( "showUsages" ) );
       options.add( am.get( "remove" ) );
 
       JScrollPane scrollPane = new JScrollPane();
       EventList<LinkValue> itemValueEventList = model.getList();
-      labelList = new JList( new EventListModel<LinkValue>( itemValueEventList ) );
-      labelList.setCellRenderer( new LinkListCellRenderer() );
-      scrollPane.setViewportView( labelList );
+      list = new JList( new EventListModel<LinkValue>( itemValueEventList ) );
+      list.setCellRenderer( new LinkListCellRenderer() );
+      scrollPane.setViewportView( list );
       add( scrollPane, BorderLayout.CENTER );
 
       JPanel toolbar = new JPanel();
@@ -93,7 +99,7 @@ public class LabelsView
       toolbar.add( new JButton( new OptionsAction(options) ) );
       add( toolbar, BorderLayout.SOUTH );
 
-      labelList.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "remove" ), am.get( "rename" ), am.get( "showUsages" ) ) );
+      list.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "remove" ), am.get( "rename" ), am.get( "move" ), am.get( "showUsages" ) ) );
 
       new RefreshWhenShowing( this, model );
    }
@@ -123,7 +129,7 @@ public class LabelsView
    @Action
    public Task remove()
    {
-      final LinkValue selected = (LinkValue) labelList.getSelectedValue();
+      final LinkValue selected = (LinkValue) list.getSelectedValue();
 
       ConfirmationDialog dialog = confirmationDialog.iterator().next();
       dialog.setRemovalMessage( selected.text().get() );
@@ -144,9 +150,33 @@ public class LabelsView
    }
 
    @Action
+   public Task move()
+   {
+      final LinkValue selected = (LinkValue) list.getSelectedValue();
+      final SelectLinkDialog dialog = possibleMoveToDialogs.use(model.getPossibleMoveTo(selected)).newInstance();
+      dialog.setPreferredSize( new Dimension(200,300) );
+
+      dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.choose_move_to ) );
+
+      if (dialog.getSelectedLink() != null)
+      {
+         return new CommandTask()
+         {
+            @Override
+            public void command()
+               throws Exception
+            {
+               model.moveForm(selected, dialog.getSelectedLink());
+            }
+         };
+      } else
+         return null;
+   }
+
+   @Action
    public void showUsages()
    {
-      LinkValue item = (LinkValue) labelList.getSelectedValue();
+      LinkValue item = (LinkValue) list.getSelectedValue();
       EventList<LinkValue> usageList = model.usages( item );
 
       JList list = new JList();
@@ -161,7 +191,7 @@ public class LabelsView
    @Action
    public Task rename()
    {
-      final LinkValue selected = (LinkValue) labelList.getSelectedValue();
+      final LinkValue selected = (LinkValue) list.getSelectedValue();
 
       final NameDialog dialog = nameDialogs.iterator().next();
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.rename_label_title ) );

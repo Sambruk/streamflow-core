@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.resource.structure;
+package se.streamsource.streamflow.web.resource.organizations;
 
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.value.LinksBuilder;

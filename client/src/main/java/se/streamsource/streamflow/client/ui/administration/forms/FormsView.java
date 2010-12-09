@@ -78,7 +78,7 @@ public class FormsView
       ActionMap am = context.getActionMap( this );
       setActionMap( am );
 
-      initMaster( new EventListModel<LinkValue>( model.getList()), am.get("add"), new javax.swing.Action[]{am.get( "move" ), am.get("remove")}, new DetailFactory()
+      initMaster( new EventListModel<LinkValue>( model.getList()), am.get("add"), new javax.swing.Action[]{am.get("move"), am.get("showUsages"), am.get( "remove" )}, new DetailFactory()
       {
          public Component createDetail( LinkValue detailLink )
          {
@@ -145,7 +145,7 @@ public class FormsView
    public Task move()
    {
       final LinkValue selected = (LinkValue) list.getSelectedValue();
-      final SelectLinkDialog dialog = possibleMoveToDialogs.use(model.getPossibleMoveTo()).newInstance();
+      final SelectLinkDialog dialog = possibleMoveToDialogs.use(model.getPossibleMoveTo(selected)).newInstance();
       dialog.setPreferredSize( new Dimension(200,300) );
 
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.choose_move_to ) );

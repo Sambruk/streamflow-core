@@ -53,10 +53,6 @@ public interface CaseTypesQueries
 
    void caseTypes( LinksBuilder builder, Specification<CaseType> specification );
 
-   void possibleMoveCaseTypeTo( LinksBuilder builder);
-
-   CaseType getCaseTypeByName( String name );
-
    abstract class Mixin
          implements CaseTypesQueries, CaseTypes.Data
    {
@@ -118,27 +114,6 @@ public interface CaseTypesQueries
          {
             caseTypesforOU( builder, specification, ou );
          }
-      }
-
-      public void possibleMoveCaseTypeTo( LinksBuilder builder)
-      {
-         builder.addDescribable( describable );
-
-         for (OrganizationalUnit organizationalUnit : ous.organizationalUnits())
-         {
-            builder.addDescribable( organizationalUnit );
-
-            Projects.Data projects = (Projects.Data)organizationalUnit;
-            for (Project project : projects.projects())
-            {
-               builder.addDescribable( project );
-            }
-         }
-      }
-
-      public CaseType getCaseTypeByName( String name )
-      {
-         return Describable.Mixin.getDescribable( caseTypes(), name );
       }
 
       public QueryBuilder<Project> possibleProjects( CaseType caseType )

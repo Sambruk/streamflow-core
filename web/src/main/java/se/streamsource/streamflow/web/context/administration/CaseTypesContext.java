@@ -39,8 +39,6 @@ import se.streamsource.streamflow.web.domain.structure.casetype.CaseTypes;
 public interface CaseTypesContext
       extends IndexContext<LinksValue>, Context
 {
-   public Iterable<CaseTypes> possiblemoveto();
-
    public void createcasetype( @MaxLength(50) StringValue name );
 
    abstract class Mixin
@@ -53,11 +51,6 @@ public interface CaseTypesContext
       {
          CaseTypes.Data caseTypes = RoleMap.role( CaseTypes.Data.class );
          return new LinksBuilder( module.valueBuilderFactory() ).rel( "casetype" ).addDescribables( caseTypes.caseTypes() ).newLinks();
-      }
-
-      public Iterable<CaseTypes> possiblemoveto()
-      {
-         return module.queryBuilderFactory().newQueryBuilder( CaseTypes.class ).newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
       }
 
       public void createcasetype( StringValue name )

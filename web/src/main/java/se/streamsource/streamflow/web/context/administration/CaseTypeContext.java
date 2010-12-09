@@ -17,7 +17,6 @@
 
 package se.streamsource.streamflow.web.context.administration;
 
-import org.qi4j.api.entity.Identity;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.structure.Module;
@@ -27,7 +26,6 @@ import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypesQueries;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseTypes;
 import se.streamsource.streamflow.web.domain.structure.casetype.SelectedCaseTypes;
@@ -44,7 +42,7 @@ public class CaseTypeContext
    public LinksValue usages()
    {
       Query<SelectedCaseTypes> usageQuery = RoleMap.role( CaseTypes.class ).usages( RoleMap.role( CaseType.class ) );
-      LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() ); // TODO What to use for path here?
+      LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() );
       for (SelectedCaseTypes selectedCaseTypes : usageQuery)
       {
          builder.addDescribable( (Describable) selectedCaseTypes );
@@ -62,12 +60,9 @@ public class CaseTypeContext
       caseTypes.removeCaseType( caseType );
    }
 
-   public LinksValue possiblemoveto()
+   public Iterable<CaseTypes> possiblemoveto()
    {
-      LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() );
-      builder.command( "move" );
-      RoleMap.role( CaseTypesQueries.class ).possibleMoveCaseTypeTo( builder );
-      return builder.newLinks();
+      return module.queryBuilderFactory().newQueryBuilder( CaseTypes.class ).newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
    }
 
    public void move( EntityValue to )
@@ -75,7 +70,5 @@ public class CaseTypeContext
       CaseTypes toCaseTypes = module.unitOfWorkFactory().currentUnitOfWork().get( CaseTypes.class, to.entity().get() );
       CaseType caseType = RoleMap.role( CaseType.class );
       RoleMap.role( CaseTypes.class ).moveCaseType( caseType, toCaseTypes );
-
-      RoleMap.current().set( RoleMap.role( CaseTypes.class ), Identity.class );
    }
 }

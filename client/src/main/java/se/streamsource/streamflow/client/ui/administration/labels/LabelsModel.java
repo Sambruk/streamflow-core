@@ -17,6 +17,10 @@
 
 package se.streamsource.streamflow.client.ui.administration.labels;
 
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
+import se.streamsource.dci.value.LinkValue;
+import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.client.util.DefinitionListModel;
 
 /**
@@ -28,5 +32,17 @@ public class LabelsModel
    public LabelsModel( )
    {
       super( "createlabel" );
+   }
+
+   public EventList<LinkValue> getPossibleMoveTo(LinkValue selected)
+   {
+      BasicEventList<LinkValue> possibleLinks = new BasicEventList<LinkValue>();
+      possibleLinks.addAll( client.getClient(selected).query( "possiblemoveto", LinksValue.class ).links().get() );
+      return possibleLinks;
+   }
+
+   public void moveForm( LinkValue selected, LinkValue selectedLink )
+   {
+      client.getClient( selected ).postLink( selectedLink );
    }
 }

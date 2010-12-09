@@ -23,8 +23,6 @@ import se.streamsource.streamflow.web.context.administration.OrganizationalUnitC
 import se.streamsource.streamflow.web.context.administration.OrganizationalUnitsContext;
 import se.streamsource.streamflow.web.context.structure.DescribableContext;
 import se.streamsource.streamflow.web.resource.organizations.forms.FormsResource;
-import se.streamsource.streamflow.web.resource.structure.labels.LabelsResource;
-import se.streamsource.streamflow.web.resource.structure.labels.SelectedLabelsResource;
 
 /**
  * JAVADOC

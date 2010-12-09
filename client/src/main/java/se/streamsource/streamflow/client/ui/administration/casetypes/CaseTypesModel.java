@@ -34,10 +34,10 @@ public class CaseTypesModel
       super( "createcasetype" );
    }
 
-   public EventList<LinkValue> getPossibleMoveTo()
+   public EventList<LinkValue> getPossibleMoveTo(LinkValue selected)
    {
       BasicEventList<LinkValue> possibleLinks = new BasicEventList<LinkValue>();
-      possibleLinks.addAll( client.query( "possiblemoveto", LinksValue.class ).links().get() );
+      possibleLinks.addAll( client.getClient(selected).query( "possiblemoveto", LinksValue.class ).links().get() );
       return possibleLinks;
    }
 

@@ -14,33 +14,45 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.resource.administration;
+package se.streamsource.streamflow.web.resource.organizations;
 
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.SubResources;
-import se.streamsource.streamflow.web.context.administration.ResolutionContext;
+import se.streamsource.streamflow.domain.structure.Describable;
+import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
+import se.streamsource.streamflow.web.context.administration.labels.LabelContext;
+import se.streamsource.streamflow.web.context.administration.labels.SelectedLabelContext;
 import se.streamsource.streamflow.web.context.structure.DescribableContext;
-import se.streamsource.streamflow.web.context.administration.ResolutionsContext;
-import se.streamsource.streamflow.web.domain.structure.casetype.Resolutions;
-
-import static se.streamsource.dci.api.RoleMap.*;
+import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
 
 /**
  * JAVADOC
  */
-public class ResolutionsResource
+public class LabelResource
    extends CommandQueryResource
    implements SubResources
 {
-   public ResolutionsResource( )
+   public LabelResource()
    {
-      super( ResolutionsContext.class );
+      super( LabelContext.class, DescribableContext.class );
+   }
+
+   public void possiblemoveto() throws Throwable
+   {
+      Iterable<Describable> labels = (Iterable<Describable>) invoke();
+      LinksBuilder builder = new LinksBuilder(module.valueBuilderFactory());
+      builder.command( "move" );
+
+      builder.addDescribables( labels );
+
+      result(builder.newLinks());
+
    }
 
    public void resource( String segment ) throws ResourceException
    {
-      findManyAssociation( role(Resolutions.Data.class ).resolutions(), segment);
-      subResourceContexts( ResolutionContext.class, DescribableContext.class );
+      setRole( SelectedLabels.class, segment );
+      subResourceContexts( SelectedLabelContext.class );
    }
 }

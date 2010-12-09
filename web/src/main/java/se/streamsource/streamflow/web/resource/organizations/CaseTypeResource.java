@@ -18,14 +18,12 @@ package se.streamsource.streamflow.web.resource.organizations;
 
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.SubResource;
+import se.streamsource.streamflow.domain.structure.Describable;
+import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.web.context.administration.CaseTypeContext;
 import se.streamsource.streamflow.web.context.structure.DescribableContext;
-import se.streamsource.streamflow.web.resource.administration.ResolutionsResource;
 import se.streamsource.streamflow.web.resource.organizations.forms.FormsResource;
 import se.streamsource.streamflow.web.resource.organizations.forms.SelectedFormsResource;
-import se.streamsource.streamflow.web.resource.structure.labels.LabelsResource;
-import se.streamsource.streamflow.web.resource.structure.labels.SelectedLabelsResource;
-import se.streamsource.streamflow.web.resource.structure.resolutions.SelectedResolutionsResource;
 
 /**
  * JAVADOC
@@ -36,6 +34,18 @@ public class CaseTypeResource
    public CaseTypeResource()
    {
       super( CaseTypeContext.class, DescribableContext.class );
+   }
+
+   public void possiblemoveto() throws Throwable
+   {
+      Iterable<Describable> caseTypes = (Iterable<Describable>) invoke();
+      LinksBuilder builder = new LinksBuilder(module.valueBuilderFactory());
+      builder.command( "move" );
+
+      builder.addDescribables( caseTypes );
+
+      result(builder.newLinks());
+
    }
 
    @SubResource

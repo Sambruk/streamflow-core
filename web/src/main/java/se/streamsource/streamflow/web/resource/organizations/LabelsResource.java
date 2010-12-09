@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.resource.structure.labels;
+package se.streamsource.streamflow.web.resource.organizations;
 
 import se.streamsource.dci.api.ContextNotFoundException;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.SubResources;
-import se.streamsource.streamflow.web.context.structure.DescribableContext;
-import se.streamsource.streamflow.web.context.administration.labels.LabelContext;
 import se.streamsource.streamflow.web.context.administration.labels.LabelsContext;
 import se.streamsource.streamflow.web.domain.structure.label.Labels;
 
@@ -40,6 +38,6 @@ public class LabelsResource
    public void resource( String segment ) throws ContextNotFoundException
    {
       findManyAssociation(RoleMap.role( Labels.Data.class ).labels(), segment);
-      subResourceContexts( LabelContext.class, DescribableContext.class );
+      subResource( LabelResource.class );
    }
 }

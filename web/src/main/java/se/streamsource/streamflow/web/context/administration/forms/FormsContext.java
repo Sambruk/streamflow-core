@@ -40,8 +40,6 @@ import se.streamsource.streamflow.web.domain.structure.form.Forms;
 public interface FormsContext
       extends IndexContext<LinksValue>, Context
 {
-   Iterable<Forms> possiblemoveto();
-
    void createform( @MaxLength(50) StringValue formName );
 
    abstract class Mixin
@@ -55,11 +53,6 @@ public interface FormsContext
          Forms.Data forms = RoleMap.role( Forms.Data.class );
 
          return new LinksBuilder( module.valueBuilderFactory() ).rel( "form" ).addDescribables( forms.forms() ).newLinks();
-      }
-
-      public Iterable<Forms> possiblemoveto()
-      {
-         return module.queryBuilderFactory().newQueryBuilder( Forms.class ).newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
       }
 
       public void createform( StringValue formName )

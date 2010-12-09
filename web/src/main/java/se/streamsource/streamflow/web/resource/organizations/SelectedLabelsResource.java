@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.resource.structure.labels;
+package se.streamsource.streamflow.web.resource.organizations;
 
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.api.RoleMap;

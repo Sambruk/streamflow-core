@@ -19,19 +19,21 @@ package se.streamsource.streamflow.web.context.administration.forms;
 
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.specification.Specification;
 import org.qi4j.api.structure.Module;
+import org.qi4j.api.util.Iterables;
 import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.EntityValue;
-import se.streamsource.dci.value.LinksValue;
 import se.streamsource.streamflow.domain.form.FormValue;
-import se.streamsource.streamflow.domain.structure.Describable;
-import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.web.domain.entity.form.FormEntity;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
 import se.streamsource.streamflow.web.domain.structure.form.Forms;
+import se.streamsource.streamflow.web.domain.structure.form.SelectedForms;
+
+import static se.streamsource.dci.api.RoleMap.role;
 
 /**
  * JAVADOC
@@ -56,6 +58,19 @@ public class FormContext
       return builder.newInstance();
    }
 
+   public Iterable<Forms> possiblemoveto()
+   {
+      final Forms thisForms = role(Forms.class);
+
+      return Iterables.filter( new Specification<Forms>()
+      {
+         public boolean satisfiedBy( Forms item )
+         {
+            return !item.equals(thisForms);
+         }
+      }, module.queryBuilderFactory().newQueryBuilder( Forms.class ).newQuery( module.unitOfWorkFactory().currentUnitOfWork() ));
+   }
+
    public void move( EntityValue to )
    {
       Forms toForms = module.unitOfWorkFactory().currentUnitOfWork().get( Forms.class, to.entity().get() );
@@ -63,11 +78,13 @@ public class FormContext
       RoleMap.role( Forms.class ).moveForm( form, toForms );
    }
 
-   public LinksValue usages()
+   public Iterable<SelectedForms> usages()
    {
-      Iterable usageQuery = RoleMap.role( Forms.class ).usages( RoleMap.role( Form.class ) );
+      return RoleMap.role( Forms.class ).usages( RoleMap.role( Form.class ) );
+/*
       LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() );
       return builder.addDescribables( (Iterable<Describable>) usageQuery ).newLinks();
+*/
    }
 
    public void delete()

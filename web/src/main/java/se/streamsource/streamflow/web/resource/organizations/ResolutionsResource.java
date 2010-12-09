@@ -14,32 +14,33 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.resource.structure.labels;
+package se.streamsource.streamflow.web.resource.organizations;
 
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.SubResources;
-import se.streamsource.streamflow.web.context.workspace.cases.general.LabelableContext;
-import se.streamsource.streamflow.web.context.workspace.cases.general.LabeledContext;
-import se.streamsource.streamflow.web.domain.structure.label.Labelable;
+import se.streamsource.streamflow.web.context.administration.ResolutionContext;
+import se.streamsource.streamflow.web.context.structure.DescribableContext;
+import se.streamsource.streamflow.web.context.administration.ResolutionsContext;
+import se.streamsource.streamflow.web.domain.structure.casetype.Resolutions;
 
 import static se.streamsource.dci.api.RoleMap.*;
 
 /**
  * JAVADOC
  */
-public class LabelableResource
+public class ResolutionsResource
    extends CommandQueryResource
    implements SubResources
 {
-   public LabelableResource( )
+   public ResolutionsResource( )
    {
-      super( LabelableContext.class );
+      super( ResolutionsContext.class );
    }
 
    public void resource( String segment ) throws ResourceException
    {
-      findManyAssociation( role(Labelable.Data.class).labels(), segment );
-      subResourceContexts( LabeledContext.class );
+      findManyAssociation( role(Resolutions.Data.class ).resolutions(), segment);
+      subResourceContexts( ResolutionContext.class, DescribableContext.class );
    }
 }

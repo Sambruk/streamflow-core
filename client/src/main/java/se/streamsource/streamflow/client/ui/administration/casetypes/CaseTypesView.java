@@ -162,7 +162,7 @@ public class CaseTypesView
    public Task move()
    {
       final LinkValue selected = (LinkValue) list.getSelectedValue();
-      final SelectLinkDialog dialog = possibleMoveToDialogs.use(model.getPossibleMoveTo()).newInstance();
+      final SelectLinkDialog dialog = possibleMoveToDialogs.use(model.getPossibleMoveTo(selected)).newInstance();
       dialog.setPreferredSize( new Dimension(200,300) );
 
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.choose_move_to ) );
