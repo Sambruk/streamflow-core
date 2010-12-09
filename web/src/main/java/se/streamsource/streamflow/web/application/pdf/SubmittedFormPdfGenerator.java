@@ -85,7 +85,7 @@ public interface SubmittedFormPdfGenerator extends ServiceComposite
          Form form = uowFactory.currentUnitOfWork().get( Form.class, value.form().get().identity() );
 
          document.println( bundle.getString( "caseid") + ": " + id.caseId().get(), h1Font);
-         document.print( bundle.getString( "form") + ": " + form.getDescription(), h2Font );
+         document.print( form.getDescription(), h2Font );
          document.println( bundle.getString( "submission_date") + ": " + DateFormat.getDateInstance( DateFormat.MEDIUM, locale ).format( value.submissionDate().get() ), descFont );
 
          document.line();
