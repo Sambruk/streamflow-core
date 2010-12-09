@@ -19,6 +19,7 @@ package se.streamsource.streamflow.web.application.pdf;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.qi4j.api.common.ConstructionException;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
@@ -109,8 +110,14 @@ public interface SubmittedFormPdfGenerator extends ServiceComposite
 
             } else if( field.fieldValue().get() instanceof AttachmentFieldValue )
             {
-               AttachmentFieldSubmission attachment = vbf.newValueFromJSON( AttachmentFieldSubmission.class, submittedFieldValue.value().get() );
-               document.println( attachment.name().get(), valueFont );
+               try
+               {
+                  AttachmentFieldSubmission attachment = vbf.newValueFromJSON( AttachmentFieldSubmission.class, submittedFieldValue.value().get() );
+                  document.println( attachment.name().get(), valueFont );
+               } catch ( ConstructionException e )
+               {
+                  //ignore
+               }
 
             } else
             {
