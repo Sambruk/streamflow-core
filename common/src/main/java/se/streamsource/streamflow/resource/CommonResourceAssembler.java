@@ -92,8 +92,6 @@ public class CommonResourceAssembler
             ConversationDTO.class,
             MessageDTO.class,
             LinkTree.class,
-            VerifySignatureRequestValue.class,
-            VerifySignatureResponseValue.class,
             ProjectSummaryValue.class,
             FieldDTO.class,
             EffectiveFieldsDTO.class,
