@@ -102,7 +102,7 @@ public interface SubmittedFormPdfGenerator extends ServiceComposite
                {
 
                   Date date = (new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'" )).parse( submittedFieldValue.value().get() );
-                  document.println( DateFormat.getDateInstance( DateFormat.MEDIUM, Locale.getDefault() ).format( date ), valueFont );
+                  document.println( DateFormat.getDateInstance( DateFormat.MEDIUM, locale ).format( date ), valueFont );
                } catch (ParseException e)
                {
                   document.println( "N/A", valueFont );
