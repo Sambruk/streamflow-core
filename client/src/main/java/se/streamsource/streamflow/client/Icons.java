@@ -62,6 +62,9 @@ public enum Icons
    formMandatorySubmit,
    formSubmitted,
 
-   empty
+   empty,
+
+   // Logos
+   name_logo
 
 }

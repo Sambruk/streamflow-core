@@ -34,8 +34,6 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.dci.value.LinkValue;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.Locale;
 
 /**
  * Base class for client-side Command/Query resources
@@ -64,7 +62,7 @@ public class CommandQueryClient
 
       if (response.getStatus().isSuccess())
       {
-         cqcFactory.getCache().updateCache( response );
+         cqcFactory.updateCache( response );
 
          String jsonValue = response.getEntityAsText();
 
@@ -144,13 +142,8 @@ public class CommandQueryClient
    {
       Reference ref = new Reference( reference.toUri().toString() + operation );
       Request request = new Request( Method.POST, ref, commandRepresentation );
-      ClientInfo info = new ClientInfo();
-      info.setAgent( "Streamflow" ); // TODO Set versions correctly
-      info.setAcceptedMediaTypes( Collections.singletonList( new Preference<MediaType>( MediaType.APPLICATION_JSON ) ) );
-      info.setAcceptedLanguages( Collections.singletonList( new Preference<Language>(new Language( Locale.getDefault().toString()) )));
-      request.setClientInfo( info );
 
-      cqcFactory.getCache().updateCommandConditions( request );
+      cqcFactory.updateCommandRequest( request );
 
       Response response = new Response( request );
       cqcFactory.getClient().handle( request, response );
@@ -159,7 +152,7 @@ public class CommandQueryClient
       {
          if (response.getStatus().isSuccess())
          {
-            cqcFactory.getCache().updateCache( response );
+            cqcFactory.updateCache( response );
 
             responseHandler.handleResponse( response );
          } else
@@ -214,10 +207,7 @@ public class CommandQueryClient
          setQueryParameters( ref, queryValue );
 
       Request request = new Request( Method.GET, ref );
-      ClientInfo info = new ClientInfo();
-      info.setAcceptedMediaTypes( Collections.singletonList( new Preference<MediaType>( MediaType.APPLICATION_JSON ) ) );
-      info.setAcceptedLanguages( Collections.singletonList( new Preference<Language>(new Language( Locale.getDefault().toString()) )));
-      request.setClientInfo( info );
+      cqcFactory.updateQueryRequest( request );
 
       Response response = new Response( request );
 
@@ -257,12 +247,7 @@ public class CommandQueryClient
       }
 
       Request request = new Request( Method.PUT, ref );
-      ClientInfo info = new ClientInfo();
-      info.setAcceptedMediaTypes( Collections.singletonList( new Preference<MediaType>( MediaType.APPLICATION_JSON ) ) );
-      info.setAcceptedLanguages( Collections.singletonList( new Preference<Language>(new Language( Locale.getDefault().toString()) )));
-      request.setClientInfo( info );
-
-      cqcFactory.getCache().updateCommandConditions( request );
+      cqcFactory.updateCommandRequest( request );
 
       request.setEntity( commandRepresentation );
       int tries = 3;
@@ -277,7 +262,7 @@ public class CommandQueryClient
             {
                if (response.getStatus().isSuccess())
                {
-                  cqcFactory.getCache().updateCache( response );
+                  cqcFactory.updateCache( response );
 
                   responseHandler.handleResponse( response );
                } else
@@ -319,13 +304,7 @@ public class CommandQueryClient
    public synchronized void delete(ResponseHandler responseHandler) throws ResourceException
    {
       Request request = new Request( Method.DELETE, new Reference( reference.toUri() ).toString() );
-      ClientInfo info = new ClientInfo();
-      info.setAcceptedMediaTypes( Collections.singletonList( new Preference<MediaType>( MediaType.APPLICATION_JSON ) ) );
-      info.setAcceptedLanguages( Collections.singletonList( new Preference<Language>(new Language( Locale.getDefault().toString()) )));
-
-      cqcFactory.getCache().updateCommandConditions( request );
-
-      request.setClientInfo( info );
+      cqcFactory.updateCommandRequest( request );
 
       int tries = 3;
       while (true)
@@ -340,7 +319,7 @@ public class CommandQueryClient
             } else
             {
                // Reset modification date
-               cqcFactory.getCache().updateCache( response );
+               cqcFactory.updateCache( response );
 
                responseHandler.handleResponse( response );
             }

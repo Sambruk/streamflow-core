@@ -40,7 +40,7 @@ public class RoundedBorder implements Border
 
    public Insets getBorderInsets( Component c )
    {
-      return new Insets( 0, radius , 0 , radius );
+      return new Insets( 0, 0 , 0 , 0 );
    }
 
    public boolean isBorderOpaque()
@@ -59,7 +59,7 @@ public class RoundedBorder implements Border
       // Left side
       g.fillArc( x, y, radius*2, radius*2, 90, 90 );
       g.fillArc( x, y+height-(radius*2)-1, radius*2, radius*2, 180, 90 );
-      g.fillRect( x, y+radius, radius, height-2*radius );
+      g.fillRect( x, y+radius, radius+1, height-2*radius );
 
       // Right side
       g.fillArc( x+width-(radius*2)-1, y, radius*2, radius*2, 0, 90 );

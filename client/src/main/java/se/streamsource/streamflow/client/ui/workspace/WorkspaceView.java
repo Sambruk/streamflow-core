@@ -230,7 +230,6 @@ public class WorkspaceView
          selectedContext.setForeground( uiDefaults.getColor( "Menu.selectionForeground" ) );
          selectedContext.setBorder( new RoundedBorder( ) );
 
-
          String text = "";
          if (contextItem.getGroup().equals( "" ))
          {

@@ -20,9 +20,10 @@ package se.streamsource.streamflow.client.util;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 
-import javax.swing.ImageIcon;
-import java.awt.Image;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.text.MessageFormat;
 
 /**
  * JAVADOC
@@ -32,11 +33,19 @@ public class i18n
    public static final int ICON_16 = 16;
    public static final int ICON_24 = 24;
 
-   public static String text( Enum resource )
+   public static String text( Enum resource, Object... arguments )
    {
       String string = getResourceMap( resource ).getString( resource.name() );
       if (string == null)
          string = "#" + resource.name();
+
+      // Apply arguments, if any
+      if (arguments.length > 0)
+      {
+         MessageFormat format = new MessageFormat(string);
+         string = format.format( arguments );
+      }
+
       return string;
    }
 

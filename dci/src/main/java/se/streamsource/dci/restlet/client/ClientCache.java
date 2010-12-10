@@ -21,7 +21,6 @@ import org.restlet.Response;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.Tag;
-import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -29,7 +28,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 /**
- * JAVADOC
+ * Cache for the CommandQueryClient. This is primarily used to keep track of ETags and lastmodified timestamps for now.
  */
 public class ClientCache
 {
@@ -68,7 +67,7 @@ public class ClientCache
 
             pathToIdentity.put( path, value.getEntity() );
 
-            LoggerFactory.getLogger( ClientCache.class ).info( "Update:"+value.getEntity()+" ("+ref.toString()+") -> "+value.getLastModified() );
+//            LoggerFactory.getLogger( ClientCache.class ).info( "Update:"+value.getEntity()+" ("+ref.toString()+") -> "+value.getLastModified() );
          }
       }
    }
@@ -81,7 +80,7 @@ public class ClientCache
          CacheInfo cacheInfo = identityToTimestamp.get( identity );
          if (cacheInfo != null)
          {
-            LoggerFactory.getLogger( ClientCache.class ).info( "Send:  "+cacheInfo.getEntity()+" ("+request.getMethod().getName()+":"+request.getResourceRef()+") -> "+cacheInfo.getLastModified() );
+//            LoggerFactory.getLogger( ClientCache.class ).info( "Send:  "+cacheInfo.getEntity()+" ("+request.getMethod().getName()+":"+request.getResourceRef()+") -> "+cacheInfo.getLastModified() );
             request.getConditions().setUnmodifiedSince( cacheInfo.getLastModified() );
          }
       }

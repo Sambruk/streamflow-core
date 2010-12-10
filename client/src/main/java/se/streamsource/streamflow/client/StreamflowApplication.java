@@ -305,7 +305,7 @@ public class StreamflowApplication
 
    private void dispatchTransactions( Component component, Iterable<TransactionDomainEvents> transactionEventsIterable )
    {
-      if (!component.isVisible())
+      if (!component.isShowing())
          return;
 
       if (component instanceof TransactionListener)

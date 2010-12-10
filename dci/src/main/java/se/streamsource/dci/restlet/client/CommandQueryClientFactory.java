@@ -22,8 +22,13 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueComposite;
 import org.qi4j.spi.Qi4jSPI;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.Uniform;
-import org.restlet.data.Reference;
+import org.restlet.data.*;
+
+import java.util.Collections;
+import java.util.Locale;
 
 /**
  * Builder for CommandQueryClient
@@ -36,6 +41,7 @@ public class CommandQueryClientFactory
    @Structure
    private Module module;
 
+   @Uses @Optional
    private ClientCache cache ;
 
    @Uses
@@ -44,13 +50,6 @@ public class CommandQueryClientFactory
 
    @Uses
    private Uniform client;
-
-   public void setCache( @Uses @Optional ClientCache cache )
-   {
-      this.cache = cache;
-      if (cache == null)
-         this.cache = new ClientCache();
-   }
 
    public CommandQueryClient newClient( Reference reference )
    {
@@ -62,9 +61,30 @@ public class CommandQueryClientFactory
       return handler;
    }
 
-   ClientCache getCache()
+   void updateCommandRequest( Request request)
    {
-      return cache;
+      ClientInfo info = new ClientInfo();
+      info.setAgent( "Streamflow" ); // TODO Set versions correctly
+      info.setAcceptedMediaTypes( Collections.singletonList( new Preference<MediaType>( MediaType.APPLICATION_JSON ) ) );
+      info.setAcceptedLanguages( Collections.singletonList( new Preference<Language>(new Language( Locale.getDefault().getLanguage()) )));
+      request.setClientInfo( info );
+
+      if (cache != null)
+         cache.updateCommandConditions( request );
+   }
+
+   void updateQueryRequest( Request request)
+   {
+      ClientInfo info = new ClientInfo();
+      info.setAcceptedMediaTypes( Collections.singletonList( new Preference<MediaType>( MediaType.APPLICATION_JSON ) ) );
+      info.setAcceptedLanguages( Collections.singletonList( new Preference<Language>(new Language( Locale.getDefault().getLanguage()) )));
+      request.setClientInfo( info );
+   }
+
+   void updateCache( Response response)
+   {
+      if (cache != null)
+         cache.updateCache( response );
    }
 
    Uniform getClient()
