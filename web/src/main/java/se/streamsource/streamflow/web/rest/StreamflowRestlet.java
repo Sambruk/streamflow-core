@@ -75,7 +75,7 @@ public class StreamflowRestlet
 
       Language language = preferenceList
             .get( 0 ).getMetadata();
-      String[] localeStr = language.getName().split( "_" );
+      String[] localeStr = language.getName().split( "-" );
 
       Locale locale;
       switch (localeStr.length)
