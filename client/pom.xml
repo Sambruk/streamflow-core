@@ -33,6 +33,9 @@
                             <resources>
                                 <resource>
                                     <directory>${basedir}/../target/maven-shared-archive-resources</directory>
+                                    <excludes>
+                                        <exclude>PluginLicense</exclude>
+                                    </excludes>
                                 </resource>
                                 <resource>
                                     <directory>${basedir}/../dist/zip/src/main/resources/</directory>

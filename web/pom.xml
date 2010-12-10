@@ -34,6 +34,12 @@
                                 <resource>
                                     <directory>${basedir}/../web/src/main/resources</directory>
                                 </resource>
+                                <resource>
+                                    <directory>${basedir}/../target/maven-shared-archive-resources</directory>
+                                    <excludes>
+                                        <exclude>PluginLicense</exclude>
+                                    </excludes>
+                                </resource>
                             </resources>
                         </configuration>
                     </execution>
@@ -150,12 +156,6 @@
         <dependency>
             <groupId>org.qi4j.extension</groupId>
             <artifactId>qi4j-entitystore-jdbm</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.qi4j</groupId>
-            <artifactId>qi4j-cache-ehcache</artifactId>
-            <version>${version.qi4j-ext}</version>
         </dependency>
 
         <dependency>

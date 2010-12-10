@@ -9,14 +9,16 @@
 
     <!-- This POM is ONLY to initiate the modules to be built. -->
     <properties>
+
+        <version.qi4j-core>1.3-STREAMFLOW-53-g64c6625</version.qi4j-core>
+        <version.qi4j-lib>1.3-STREAMFLOW-1-g161f955</version.qi4j-lib>
+        <version.qi4j-ext>1.3-STREAMFLOW-1-g23cdf15</version.qi4j-ext>
+
         <!--
-                <version.qi4j-core>1.2-STREAMFLOW-24-gf02ccc3</version.qi4j-core>
-                <version.qi4j-lib>1.2-STREAMFLOW-2-g5e3ab35</version.qi4j-lib>
-                <version.qi4j-ext>1.2-STREAMFLOW-7-gb33726d</version.qi4j-ext>
-        -->
         <version.qi4j-core>1.3-SNAPSHOT</version.qi4j-core>
         <version.qi4j-lib>1.3-SNAPSHOT</version.qi4j-lib>
         <version.qi4j-ext>1.3-SNAPSHOT</version.qi4j-ext>
+        -->
         <version.qi4j-tools>1.0</version.qi4j-tools>
         <version.restlet>2.0.3</version.restlet>
         <version.slf4j>1.6.0</version.slf4j>
@@ -339,11 +341,11 @@
                             </properties>
                             <runOnlyAtExecutionRoot>true</runOnlyAtExecutionRoot>
                             <resourceBundles>
-                                <resourceBundle>se.streamsource.streamflow:streamflow-jar-resource-bundle:1.1
+                                <resourceBundle>se.streamsource.streamflow:streamflow-jar-resource-bundle:1.2
                                 </resourceBundle>
                             </resourceBundles>
                             <supplementalModelArtifacts>
-                                <supplementalModelArtifact>se.streamsource.streamflow:dependency-resource-supplement:1.1
+                                <supplementalModelArtifact>se.streamsource.streamflow:dependency-resource-supplement:1.2
                                 </supplementalModelArtifact>
                             </supplementalModelArtifacts>
                             <supplementalModels>
@@ -428,11 +430,11 @@
                 <artifactId>streamflow-infrastructure</artifactId>
                 <version>${project.version}</version>
             </dependency>
-	            <dependency>
-	                <groupId>se.streamsource.streamflow</groupId>
-	                <artifactId>streamflow-fileconfig</artifactId>
-	                <version>${project.version}</version>
-	            </dependency>
+            <dependency>
+                <groupId>se.streamsource.streamflow</groupId>
+                <artifactId>streamflow-fileconfig</artifactId>
+                <version>${project.version}</version>
+            </dependency>
             <dependency>
                 <groupId>se.streamsource.streamflow</groupId>
                 <artifactId>streamflow-dci</artifactId>
@@ -574,11 +576,11 @@
                 <artifactId>qi4j-entitystore-preferences</artifactId>
                 <version>${version.qi4j-ext}</version>
             </dependency>
-	        <dependency>
-	            <groupId>org.qi4j.extension</groupId>
-	            <artifactId>qi4j-entitystore-rest</artifactId>
-	            <version>${version.qi4j-ext}</version>
-	        </dependency>
+            <dependency>
+                <groupId>org.qi4j.extension</groupId>
+                <artifactId>qi4j-entitystore-rest</artifactId>
+                <version>${version.qi4j-ext}</version>
+            </dependency>
             <dependency>
                 <groupId>org.qi4j.extension</groupId>
                 <artifactId>qi4j-migration</artifactId>
