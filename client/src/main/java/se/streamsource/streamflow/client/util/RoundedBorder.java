@@ -40,7 +40,7 @@ public class RoundedBorder implements Border
 
    public Insets getBorderInsets( Component c )
    {
-      return new Insets( 0, 0 , 0 , 0 );
+      return new Insets( 0, radius , 0 , radius );
    }
 
    public boolean isBorderOpaque()
