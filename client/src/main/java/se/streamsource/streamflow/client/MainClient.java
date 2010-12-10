@@ -55,7 +55,7 @@ public class MainClient
       Locale locale = Locale.getDefault();
 
       if (locale.getLanguage().equals("sv"))
-         Locale.setDefault( new Locale( "sv", "SE" ) );
+         Locale.setDefault( new Locale( "sv", "SE", "gov" ) );
       else
          Locale.setDefault(Locale.ENGLISH);
 
