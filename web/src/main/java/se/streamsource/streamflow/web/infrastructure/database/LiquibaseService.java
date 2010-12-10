@@ -61,7 +61,7 @@ public interface LiquibaseService
          Logger log = LoggerFactory.getLogger( LiquibaseService.class.getName() );
 
          boolean enabled = config.configuration().enabled().get();
-         if (!enabled)
+         if (!enabled || !dataSource.isAvailable())
          {
             return;
          }

@@ -126,7 +126,7 @@ public class CaseActionsView extends JPanel
 
    // Case actions
 
-   @Action
+   @Action(block = Task.BlockingScope.COMPONENT)
    public Task open()
    {
       return new CommandTask()
@@ -140,7 +140,7 @@ public class CaseActionsView extends JPanel
       };
    }
 
-   @Action
+   @Action(block = Task.BlockingScope.COMPONENT)
    public Task assign()
    {
       return new CommandTask()
@@ -154,7 +154,7 @@ public class CaseActionsView extends JPanel
       };
    }
 
-   @Action
+   @Action(block = Task.BlockingScope.COMPONENT)
    public Task close()
    {
       // TODO very odd hack - how to solve state binder update issue during use of accelerator keys.
@@ -198,7 +198,7 @@ public class CaseActionsView extends JPanel
       }
    }
 
-   @Action
+   @Action(block = Task.BlockingScope.COMPONENT)
    public Task delete()
    {
       ConfirmationDialog dialog = confirmationDialog.newInstance();
@@ -219,7 +219,7 @@ public class CaseActionsView extends JPanel
          return null;
    }
 
-   @Action
+   @Action(block = Task.BlockingScope.COMPONENT)
    public Task sendto()
    {
       final SelectLinkDialog dialog = projectSelectionDialog.use(
@@ -241,7 +241,7 @@ public class CaseActionsView extends JPanel
          return null;
    }
 
-   @Action
+   @Action(block = Task.BlockingScope.COMPONENT)
    public Task onhold( ActionEvent event)
    {
       return new CommandTask()
@@ -255,7 +255,7 @@ public class CaseActionsView extends JPanel
       };
    }
 
-   @Action
+   @Action(block = Task.BlockingScope.COMPONENT)
    public Task reopen()
    {
       return new CommandTask()
@@ -269,7 +269,7 @@ public class CaseActionsView extends JPanel
       };
    }
 
-   @Action
+   @Action(block = Task.BlockingScope.COMPONENT)
    public Task resume()
    {
       return new CommandTask()
@@ -283,7 +283,7 @@ public class CaseActionsView extends JPanel
       };
    }
 
-   @Action
+   @Action(block = Task.BlockingScope.COMPONENT)
    public Task unassign()
    {
       return new CommandTask()
@@ -297,7 +297,7 @@ public class CaseActionsView extends JPanel
       };
    }
 
-   @Action
+   @Action(block = Task.BlockingScope.COMPONENT)
    public Task export()
    {
       //TODO create a dialog to give the user the oportunity to choose the contents of CaseOutputConfigValue

@@ -20,8 +20,6 @@ package se.streamsource.streamflow.client;
 import org.apache.log4j.Logger;
 
 import javax.swing.*;
-import java.awt.*;
-import java.awt.event.KeyEvent;
 import java.util.Locale;
 
 /**
@@ -36,16 +34,6 @@ public class MainClient
 
    public void start( String... args ) throws IllegalAccessException, UnsupportedLookAndFeelException, InstantiationException, ClassNotFoundException
    {
-      KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventPostProcessor( new KeyEventPostProcessor()
-      {
-         public boolean postProcessKeyEvent( KeyEvent e )
-         {
-            System.out.println(e.getKeyCode()+":"+e.toString());
-            
-            return false;
-         }
-      });
-
       // Set system properties
 //      UIManager.setLookAndFeel("com.jgoodies.looks.windows.WindowsLookAndFeel");
       System.setProperty( "com.apple.mrj.application.apple.menu.about.name", "Streamflow" );
