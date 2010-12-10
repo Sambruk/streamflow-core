@@ -38,6 +38,11 @@
     <logger name="monitor" additivity="false">
     </logger>
 
+    <!-- Ignore this one - fix for too much logging in DirectoryServerResource (remove this later) -->
+    <logger name="org.restlet.Component.StreamflowRestApplication.Directory">
+        <level value="WARN"/>
+    </logger>
+
     <!-- HTTP logging -->
 <!--    <logger name="org.restlet.Component.LogService" additivity="false">
     </logger> -->

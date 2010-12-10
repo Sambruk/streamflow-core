@@ -93,7 +93,6 @@ public class APIRouter
          attach( "/statistics/", dir );
       }
 
-
       // Version info
       Directory directory = new Directory( getContext(), "clap://thread/static/" );
       directory.setListingAllowed( true );
