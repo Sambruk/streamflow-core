@@ -54,7 +54,7 @@ import static se.streamsource.streamflow.infrastructure.event.domain.source.help
 /**
  * Base class for all views of case lists.
  */
-public class CaseTableView
+public class CasesTableView
       extends JPanel
    implements TransactionListener
 {
@@ -72,10 +72,10 @@ public class CaseTableView
       this.model = casesTableModel;
       setLayout( new BorderLayout() );
 
-      ActionMap am = context.getActionMap( CaseTableView.class, this );
+      ActionMap am = context.getActionMap( CasesTableView.class, this );
       setActionMap( am );
       MacOsUIWrapper.convertAccelerators( context.getActionMap(
-            CaseTableView.class, this ) );
+            CasesTableView.class, this ) );
 
       // Table
       EventJXTableModel tableModel = new EventJXTableModel( model.getEventList(), tableFormat );

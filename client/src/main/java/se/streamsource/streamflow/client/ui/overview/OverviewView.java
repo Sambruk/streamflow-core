@@ -37,7 +37,7 @@ import se.streamsource.streamflow.client.util.SeparatorContextItemListCellRender
 import se.streamsource.streamflow.client.ui.ContextItem;
 import se.streamsource.streamflow.client.ui.ContextItemGroupComparator;
 import se.streamsource.streamflow.client.ui.ContextItemListRenderer;
-import se.streamsource.streamflow.client.ui.workspace.table.CaseTableView;
+import se.streamsource.streamflow.client.ui.workspace.table.CasesTableView;
 import se.streamsource.streamflow.client.ui.workspace.table.InboxCaseTableFormatter;
 
 import javax.swing.AbstractAction;
@@ -146,11 +146,11 @@ public class OverviewView
                   {
                      tableFormat = new InboxCaseTableFormatter();
                   }
-                  CaseTableView caseTable = obf.newObjectBuilder( CaseTableView.class ).use( contextItem.getClient(), tableFormat ).newInstance();
+                  CasesTableView casesTable = obf.newObjectBuilder( CasesTableView.class ).use( contextItem.getClient(), tableFormat ).newInstance();
 
-//                  caseTable.getCaseTable().getSelectionModel().addListSelectionListener( new CaseSelectionListener() );
+//                  casesTable.getCaseTable().getSelectionModel().addListSelectionListener( new CaseSelectionListener() );
 
-                  pane.setRightComponent( caseTable );
+                  pane.setRightComponent( casesTable );
                } else
                {
                   // TODO Overview of all projects

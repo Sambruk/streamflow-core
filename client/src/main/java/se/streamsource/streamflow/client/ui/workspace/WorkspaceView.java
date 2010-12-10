@@ -36,7 +36,7 @@ import se.streamsource.streamflow.client.ui.workspace.context.WorkspaceContextVi
 import se.streamsource.streamflow.client.ui.workspace.search.SearchResultTableModel;
 import se.streamsource.streamflow.client.ui.workspace.search.SearchView;
 import se.streamsource.streamflow.client.ui.workspace.table.AssignmentsCaseTableFormatter;
-import se.streamsource.streamflow.client.ui.workspace.table.CaseTableView;
+import se.streamsource.streamflow.client.ui.workspace.table.CasesTableView;
 import se.streamsource.streamflow.client.ui.workspace.table.CasesView;
 import se.streamsource.streamflow.client.ui.workspace.table.InboxCaseTableFormatter;
 import se.streamsource.streamflow.client.util.CommandTask;
@@ -200,11 +200,11 @@ public class WorkspaceView
                   {
                      tableFormat = new InboxCaseTableFormatter();
                   }
-                  CaseTableView caseTable = obf.newObjectBuilder( CaseTableView.class ).use( contextItem.getClient(), tableFormat ).newInstance();
+                  CasesTableView casesTable = obf.newObjectBuilder( CasesTableView.class ).use( contextItem.getClient(), tableFormat ).newInstance();
 
-                  caseTable.getCaseTable().getSelectionModel().addListSelectionListener( new CaseSelectionListener() );
+                  casesTable.getCaseTable().getSelectionModel().addListSelectionListener( new CaseSelectionListener() );
 
-                  casesView.showTable( caseTable );
+                  casesView.showTable( casesTable );
 
                   setContextString( contextItem );
 
@@ -280,11 +280,11 @@ public class WorkspaceView
       topLayout.show( topPanel, "search" );
       searchField.requestFocusInWindow();
 
-      CaseTableView caseTable = obf.newObjectBuilder( CaseTableView.class ).
+      CasesTableView casesTable = obf.newObjectBuilder( CasesTableView.class ).
             use( searchResultTableModel, new InboxCaseTableFormatter()).newInstance();
-      caseTable.getCaseTable().getSelectionModel().addListSelectionListener( new CaseSelectionListener() );
+      casesTable.getCaseTable().getSelectionModel().addListSelectionListener( new CaseSelectionListener() );
 
-      casesView.showTable( caseTable );
+      casesView.showTable( casesTable );
    }
 
    @Action

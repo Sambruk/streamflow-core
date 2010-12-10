@@ -324,7 +324,7 @@ public class UIAssembler
 
       addDialogs( module, ContactLookupResultDialog.class );
 
-      addMV( module, CasesTableModel.class, CaseTableView.class );
+      addMV( module, CasesTableModel.class, CasesTableView.class );
 
       addMV( module, CaseInfoModel.class, CaseInfoView.class );
 

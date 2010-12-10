@@ -39,7 +39,7 @@ import static se.streamsource.streamflow.client.util.i18n.text;
 public class CasesView
       extends JPanel
 {
-   private CaseTableView caseTableView;
+   private CasesTableView casesTableView;
    private CasesDetailView detailsView;
    private JSplitPane splitPane;
    private CardLayout cardLayout = new CardLayout();
@@ -82,18 +82,18 @@ public class CasesView
       return welcomePanel;
    }
 
-   public void showTable( CaseTableView caseTableView )
+   public void showTable( CasesTableView casesTableView )
    {
       cardLayout.show( this, "cases" );
-      this.caseTableView = caseTableView;
-      splitPane.setTopComponent( caseTableView );
+      this.casesTableView = casesTableView;
+      splitPane.setTopComponent( casesTableView );
       clearCase();
    }
 
    public void clearTable()
    {
       cardLayout.show( this, "welcome" );
-      caseTableView = null;
+      casesTableView = null;
       splitPane.setTopComponent( new JPanel() );
       clearCase();
    }
@@ -108,9 +108,9 @@ public class CasesView
       detailsView.clear();
    }
 
-   public CaseTableView getCaseTableView()
+   public CasesTableView getCaseTableView()
    {
-      return caseTableView;
+      return casesTableView;
    }
 
    public CaseDetailView getCurrentCaseView()
@@ -120,8 +120,8 @@ public class CasesView
 
    public void refresh()
    {
-      if (caseTableView != null)
-         caseTableView.getModel().refresh();
+      if (casesTableView != null)
+         casesTableView.getModel().refresh();
       detailsView.refresh();
    }
 }
