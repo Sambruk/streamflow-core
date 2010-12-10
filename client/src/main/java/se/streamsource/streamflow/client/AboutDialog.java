@@ -24,9 +24,9 @@ import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.util.WindowUtils;
 import org.qi4j.api.injection.scope.Service;
 import org.restlet.engine.io.BioUtils;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.i18n;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 
 import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
@@ -98,7 +98,8 @@ public class AboutDialog
                "A copy of the License is available below and may also be obtained<br>" +
                "at http://www.apache.org/licenses/LICENSE-2.0 .<br>" +
                "Streamflow&#0153; contains software that is licensed by third parties to Streamsource AB<br>" +
-               "and protected by copyright.</body></html>"
+               "and protected by copyright.<br><br>" +
+               "Streamflow&#0153; PlugIns used with Streamflow&#0153; are licensed under their respective software license.</body></html>"
          );
          JPanel general = new JPanel();
          general.setBorder( BorderFactory.createTitledBorder( text( StreamflowResources.general_info ) ) );
