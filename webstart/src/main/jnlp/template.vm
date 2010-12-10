@@ -26,12 +26,12 @@
     <description kind="short">This is the ${project.organization.name} client</description>
     <description kind="tooltip">${project.organization.name}</description>
     <icon
-      width="48"
-      height="48"
-      href="images/database_48.png"/>
+      width="150"
+      height="150"
+      href="images/symbol_150.png"/>
     <icon
       kind="splash"
-      href="images/database_48.png"/>
+      href="images/Streamflow_cmyk_500px.png"/>
     <offline-allowed/>
   </information>
   <security>

@@ -65,6 +65,7 @@ public enum Icons
    empty,
 
    // Logos
-   name_logo
+   name_logo,
+   logo
 
 }

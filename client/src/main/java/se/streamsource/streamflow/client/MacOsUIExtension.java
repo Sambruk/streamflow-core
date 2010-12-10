@@ -17,13 +17,10 @@
 
 package se.streamsource.streamflow.client;
 
-import com.apple.eawt.Application;
-import com.apple.eawt.ApplicationAdapter;
-import com.apple.eawt.ApplicationEvent;
+import com.apple.eawt.*;
+import se.streamsource.streamflow.client.util.i18n;
 
-import javax.swing.Action;
-import javax.swing.ActionMap;
-import javax.swing.KeyStroke;
+import javax.swing.*;
 
 public class MacOsUIExtension
 {
@@ -37,24 +34,22 @@ public class MacOsUIExtension
    public void attachMacUIExtension()
    {
       Application macApp = Application.getApplication();
-      macApp.setEnabledAboutMenu( true );
-      macApp.addApplicationListener( new ApplicationAdapter()
+      macApp.setDockIconImage( i18n.icon(Icons.logo, 64 ).getImage());
+      macApp.setAboutHandler( new AboutHandler()
       {
-         @Override
-         public void handleAbout( ApplicationEvent applicationEvent )
+         public void handleAbout( AppEvent.AboutEvent aboutEvent )
          {
-            applicationEvent.setHandled( true );
             application.showAbout();
          }
-
-         @Override
-         public void handleQuit( ApplicationEvent applicationEvent )
+      });
+      macApp.setQuitHandler( new QuitHandler()
+      {
+         public void handleQuitRequestWith( AppEvent.QuitEvent quitEvent, QuitResponse quitResponse )
          {
-            applicationEvent.setHandled( true );
             application.shutdown();
-
+            quitResponse.performQuit();
          }
-      } );
+      });
    }
 
    /**
