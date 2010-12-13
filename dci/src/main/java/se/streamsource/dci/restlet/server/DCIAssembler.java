@@ -22,30 +22,56 @@ import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import org.restlet.service.MetadataService;
-import se.streamsource.dci.restlet.server.resultwriter.*;
-import se.streamsource.dci.value.*;
+import se.streamsource.dci.restlet.server.resultwriter.LinksResultWriter;
+import se.streamsource.dci.restlet.server.resultwriter.ResourceResultWriter;
+import se.streamsource.dci.restlet.server.resultwriter.ResourceTemplateResultWriter;
+import se.streamsource.dci.restlet.server.resultwriter.TableResultWriter;
+import se.streamsource.dci.restlet.server.resultwriter.ValueCompositeResultWriter;
+import se.streamsource.dci.restlet.server.resultwriter.ValueDescriptorResultWriter;
+import se.streamsource.dci.value.CellValue;
+import se.streamsource.dci.value.ColumnValue;
+import se.streamsource.dci.value.ContextValue;
+import se.streamsource.dci.value.EntityValue;
+import se.streamsource.dci.value.LinkValue;
+import se.streamsource.dci.value.LinksValue;
+import se.streamsource.dci.value.ResourceValue;
+import se.streamsource.dci.value.RowValue;
 import se.streamsource.dci.value.StringValue;
+import se.streamsource.dci.value.TableQuery;
+import se.streamsource.dci.value.TableValue;
 
-import static org.qi4j.bootstrap.ImportedServiceDeclaration.NEW_OBJECT;
+import java.util.Properties;
+
+import static org.qi4j.bootstrap.ImportedServiceDeclaration.*;
 
 /**
  * JAVADOC
  */
 public class DCIAssembler
-   implements Assembler
+      implements Assembler
 {
    public void assemble( ModuleAssembly module ) throws AssemblyException
    {
-      module.importServices( VelocityEngine.class,
-            ResponseWriterFactory.class).importedBy( NEW_OBJECT );
-      module.addObjects( VelocityEngine.class);
+      Properties props = new Properties();
+      try
+      {
+         props.load( getClass().getResourceAsStream( "/velocity.properties" ) );
 
+         VelocityEngine velocity = new VelocityEngine( props );
+
+         module.importServices( VelocityEngine.class )
+               .importedBy( INSTANCE ).setMetaInfo( velocity );
+
+      } catch (Exception e)
+      {
+         throw new AssemblyException( "Could not load velocity properties", e );
+      }
       module.addObjects( DefaultCommandQueryResource.class );
 
       module.importServices( MetadataService.class );
 
       module.importServices( ResultWriterDelegator.class ).importedBy( NEW_OBJECT );
-      module.addObjects( ResultWriterDelegator.class);
+      module.addObjects( ResultWriterDelegator.class );
 
       // Standard result writers
       module.addObjects( ResourceTemplateResultWriter.class,
@@ -53,7 +79,7 @@ public class DCIAssembler
             TableResultWriter.class,
             ResourceResultWriter.class,
             ValueCompositeResultWriter.class,
-            ValueDescriptorResultWriter.class);
+            ValueDescriptorResultWriter.class );
 
       module.addValues( ResourceValue.class,
             ContextValue.class,
@@ -66,6 +92,6 @@ public class DCIAssembler
             ColumnValue.class,
             RowValue.class,
             CellValue.class,
-            TableQuery.class);
+            TableQuery.class );
    }
 }
