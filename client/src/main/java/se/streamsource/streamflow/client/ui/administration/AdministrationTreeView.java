@@ -35,8 +35,7 @@ import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.dci.value.LinkValue;
-import se.streamsource.dci.value.ResourceValue;
+import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.ui.ContextItem;
@@ -53,24 +52,19 @@ import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainE
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.util.Strings;
 
-import javax.swing.ActionMap;
-import javax.swing.BorderFactory;
-import javax.swing.Icon;
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
-import javax.swing.JTree;
+import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.MutableTreeNode;
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static se.streamsource.streamflow.client.util.i18n.*;
+import static org.qi4j.api.specification.Specifications.and;
+import static org.qi4j.api.util.Iterables.addAll;
+import static org.qi4j.api.util.Iterables.map;
+import static se.streamsource.dci.value.link.Links.toRel;
+import static se.streamsource.streamflow.client.util.i18n.text;
 import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
-import static org.qi4j.api.specification.Specifications.*;
 
 /**
  * JAVADOC
@@ -173,7 +167,7 @@ public class AdministrationTreeView
             commands.clear();
             ContextItem contextItem = (ContextItem) ((DefaultMutableTreeNode) (tree.getSelectionPath().getLastPathComponent())).getUserObject();
             CommandQueryClient client = contextItem.getClient();
-            commands.addAll( client.query( "", ResourceValue.class ).commands().get() );
+            addAll( commands, map( toRel(), client.queryResource().commands().get() ) );
          }
 
          @Override

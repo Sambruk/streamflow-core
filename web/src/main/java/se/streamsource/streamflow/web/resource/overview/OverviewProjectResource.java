@@ -18,7 +18,7 @@
 package se.streamsource.streamflow.web.resource.overview;
 
 import se.streamsource.dci.restlet.server.CommandQueryResource;
-import se.streamsource.dci.restlet.server.SubResource;
+import se.streamsource.dci.restlet.server.api.SubResource;
 import se.streamsource.streamflow.web.context.overview.OverviewProjectAssignmentsContext;
 
 /**

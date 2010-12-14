@@ -29,9 +29,9 @@ import org.restlet.representation.Representation;
 import org.restlet.representation.WriterRepresentation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import se.streamsource.dci.value.TableBuilder;
-import se.streamsource.dci.value.TableQuery;
-import se.streamsource.dci.value.TableValue;
+import se.streamsource.dci.value.table.TableBuilder;
+import se.streamsource.dci.value.table.TableQuery;
+import se.streamsource.dci.value.table.TableValue;
 import se.streamsource.streamflow.web.infrastructure.database.Databases;
 
 import javax.sql.DataSource;

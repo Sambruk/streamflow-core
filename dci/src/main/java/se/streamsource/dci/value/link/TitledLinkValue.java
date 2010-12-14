@@ -1,4 +1,5 @@
-/*
+/**
+ *
  * Copyright 2009-2010 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,20 +15,15 @@
  * limitations under the License.
  */
 
-package se.streamsource.dci.value;
+package se.streamsource.dci.value.link;
 
-import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.property.Property;
-import org.qi4j.api.value.ValueComposite;
-
-import java.util.List;
 
 /**
- * A single row in a table.
+ * A single link that has an additional title.
  */
-public interface RowValue
-   extends ValueComposite
+public interface TitledLinkValue
+   extends LinkValue
 {
-   @UseDefaults
-   Property<List<CellValue>> cells();
+   Property<String> title();
 }

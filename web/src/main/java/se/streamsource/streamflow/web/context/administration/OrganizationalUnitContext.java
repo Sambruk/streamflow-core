@@ -25,7 +25,7 @@ import org.restlet.resource.ResourceException;
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.EntityValue;
-import se.streamsource.dci.value.LinksValue;
+import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.domain.organization.MergeOrganizationalUnitException;
 import se.streamsource.streamflow.domain.organization.MoveOrganizationalUnitException;
 import se.streamsource.streamflow.domain.organization.OpenProjectExistsException;

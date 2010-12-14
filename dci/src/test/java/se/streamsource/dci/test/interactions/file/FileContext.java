@@ -17,11 +17,9 @@
 
 package se.streamsource.dci.test.interactions.file;
 
-import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
-import org.restlet.Application;
 import org.restlet.data.MediaType;
 import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.Representation;
@@ -31,8 +29,8 @@ import se.streamsource.dci.api.CreateContext;
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
-import se.streamsource.dci.value.LinksBuilder;
-import se.streamsource.dci.value.LinksValue;
+import se.streamsource.dci.value.link.LinksBuilder;
+import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.dci.value.StringValue;
 
 import java.io.File;

@@ -117,6 +117,8 @@ public class ContactsView
       toolbar.add( new JButton( am.get( "remove" ) ) );
       add( toolbar, BorderLayout.SOUTH );
 
+      model.addObserver( new RefreshComponents().visibleOn( "add", toolbar ) );
+
       contacts.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "remove" ) ) );
 
 /*
@@ -203,5 +205,10 @@ public class ContactsView
             contacts.setSelectedIndex( contacts.getModel().getSize()-1 );
       }
 
+   }
+
+   public ContactsModel getModel()
+   {
+      return model;
    }
 }

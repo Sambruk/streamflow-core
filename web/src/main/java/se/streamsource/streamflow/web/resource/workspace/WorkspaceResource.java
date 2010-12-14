@@ -17,10 +17,11 @@
 package se.streamsource.streamflow.web.resource.workspace;
 
 import se.streamsource.dci.restlet.server.CommandQueryResource;
-import se.streamsource.dci.restlet.server.SubResource;
+import se.streamsource.dci.restlet.server.api.SubResource;
+import se.streamsource.streamflow.web.context.workspace.WorkspaceContext;
 import se.streamsource.streamflow.web.resource.workspace.cases.WorkspaceCasesResource;
 import se.streamsource.streamflow.web.resource.workspace.context.WorkspaceContextResource;
-import se.streamsource.streamflow.web.resource.workspace.search.WorkspaceSearchResource;
+import se.streamsource.streamflow.web.resource.workspace.savedsearch.SavedSearchesResource;
 
 /**
  * JAVADOC
@@ -28,6 +29,11 @@ import se.streamsource.streamflow.web.resource.workspace.search.WorkspaceSearchR
 public class WorkspaceResource
       extends CommandQueryResource
 {
+   public WorkspaceResource()
+   {
+      super( WorkspaceContext.class );
+   }
+
    @SubResource
    public void cases()
    {
@@ -41,8 +47,9 @@ public class WorkspaceResource
    }
 
    @SubResource
-   public void search()
+   public void savedSearches()
    {
-      subResource( WorkspaceSearchResource.class );
+      subResource( SavedSearchesResource.class );
    }
+
 }

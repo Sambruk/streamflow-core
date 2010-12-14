@@ -23,7 +23,7 @@ import org.qi4j.api.injection.scope.Uses;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.dci.value.LinksValue;
+import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.client.util.EventListSynch;
 import se.streamsource.streamflow.client.util.Refreshable;
 import se.streamsource.streamflow.resource.overview.ProjectSummaryValue;

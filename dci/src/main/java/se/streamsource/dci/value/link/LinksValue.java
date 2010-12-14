@@ -15,18 +15,20 @@
  * limitations under the License.
  */
 
-package se.streamsource.dci.restlet.server;
+package se.streamsource.dci.value.link;
 
-import org.restlet.representation.Variant;
-import se.streamsource.dci.api.RoleMap;
+import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueComposite;
 
 import java.util.List;
 
 /**
- * Factory for ResponseWriter.
+ * A list of links
  */
-public interface ResponseWriterFactory
+public interface LinksValue
+      extends ValueComposite
 {
-   public ResponseWriter createWriter( List<String> segments, Class resultType, RoleMap roleMap, Variant variant )
-         throws Exception;
+   @UseDefaults
+   Property<List<LinkValue>> links();
 }

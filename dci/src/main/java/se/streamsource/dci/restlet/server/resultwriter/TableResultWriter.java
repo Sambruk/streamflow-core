@@ -31,10 +31,10 @@ import org.restlet.representation.Representation;
 import org.restlet.representation.WriterRepresentation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.server.velocity.ValueCompositeContext;
-import se.streamsource.dci.value.CellValue;
-import se.streamsource.dci.value.ColumnValue;
-import se.streamsource.dci.value.RowValue;
-import se.streamsource.dci.value.TableValue;
+import se.streamsource.dci.value.table.CellValue;
+import se.streamsource.dci.value.table.ColumnValue;
+import se.streamsource.dci.value.table.RowValue;
+import se.streamsource.dci.value.table.TableValue;
 
 import java.io.IOException;
 import java.io.Writer;

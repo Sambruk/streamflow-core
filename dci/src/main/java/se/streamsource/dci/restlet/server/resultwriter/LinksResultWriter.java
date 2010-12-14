@@ -30,8 +30,8 @@ import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.WriterRepresentation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.server.velocity.ValueCompositeContext;
-import se.streamsource.dci.value.LinkValue;
-import se.streamsource.dci.value.LinksValue;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.dci.value.link.LinksValue;
 
 import java.io.IOException;
 import java.io.Writer;

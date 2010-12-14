@@ -22,7 +22,7 @@ import org.qi4j.api.value.ValueBuilder;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.api.RoleMap;
-import se.streamsource.dci.value.LinkValue;
+import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
 import se.streamsource.streamflow.web.domain.structure.form.FormDraft;
 import se.streamsource.streamflow.web.domain.structure.form.FormDrafts;

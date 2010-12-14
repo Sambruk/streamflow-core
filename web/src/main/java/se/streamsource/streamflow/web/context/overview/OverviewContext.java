@@ -23,7 +23,7 @@ import org.restlet.data.MediaType;
 import org.restlet.representation.OutputRepresentation;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
-import se.streamsource.dci.value.LinksValue;
+import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.web.domain.entity.user.OverviewQueries;
 
 import java.io.IOException;

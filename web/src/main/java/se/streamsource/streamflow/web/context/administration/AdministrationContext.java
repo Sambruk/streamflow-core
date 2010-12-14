@@ -21,7 +21,7 @@ import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
-import se.streamsource.dci.value.LinkValue;
+import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.infrastructure.application.LinkTree;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.structure.group.Participant;

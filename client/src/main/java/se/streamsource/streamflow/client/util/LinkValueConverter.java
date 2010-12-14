@@ -16,7 +16,7 @@
 
 package se.streamsource.streamflow.client.util;
 
-import se.streamsource.dci.value.LinkValue;
+import se.streamsource.dci.value.link.LinkValue;
 
 /**
  * JAVADOC

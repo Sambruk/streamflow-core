@@ -17,7 +17,7 @@
 package se.streamsource.streamflow.web.resource.crystal;
 
 import se.streamsource.dci.restlet.server.CommandQueryResource;
-import se.streamsource.dci.value.TableValue;
+import se.streamsource.dci.value.table.TableValue;
 import se.streamsource.streamflow.web.context.crystal.CrystalContext;
 
 /**

@@ -31,7 +31,8 @@ import org.restlet.representation.ObjectRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ResourceException;
-import se.streamsource.dci.value.LinkValue;
+import se.streamsource.dci.value.ResourceValue;
+import se.streamsource.dci.value.link.LinkValue;
 
 import java.io.IOException;
 
@@ -46,9 +47,21 @@ public class CommandQueryClient
    @Uses
    private Reference reference;
 
+   private ResourceValue resourceValue;
+
    public Reference getReference()
    {
       return reference;
+   }
+
+   public ResourceValue getResource()
+   {
+      return resourceValue;
+   }
+
+   public synchronized ResourceValue queryResource( ) throws ResourceException
+   {
+      return resourceValue = query( "", null, ResourceValue.class );
    }
 
    public synchronized <T extends ValueComposite> T query( String operation, Class<T> queryResult ) throws ResourceException

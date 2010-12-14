@@ -1,5 +1,4 @@
-/**
- *
+/*
  * Copyright 2009-2010 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,9 +14,8 @@
  * limitations under the License.
  */
 
-package se.streamsource.dci.value;
+package se.streamsource.dci.value.table;
 
-import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
@@ -25,21 +23,11 @@ import org.qi4j.api.value.ValueComposite;
 import java.util.List;
 
 /**
- * Value representing a whole context in a URL path. Allows listing of available
- * queries, commands, subcontexts and an index.
+ * A single row in a table.
  */
-public interface ContextValue
+public interface RowValue
    extends ValueComposite
 {
    @UseDefaults
-   Property<List<String>> queries();
-
-   @UseDefaults
-   Property<List<String>> commands();
-
-   @UseDefaults
-   Property<List<String>> contexts();
-   
-   @Optional
-   Property<ValueComposite> index();
+   Property<List<CellValue>> cells();
 }

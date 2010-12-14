@@ -19,7 +19,7 @@ package se.streamsource.dci.test.interactions;
 
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
-import se.streamsource.dci.restlet.server.SubResource;
+import se.streamsource.dci.restlet.server.api.SubResource;
 import se.streamsource.dci.test.interactions.file.FileResource;
 import se.streamsource.dci.test.interactions.jmx.JmxServerResource;
 

@@ -31,7 +31,8 @@ import org.restlet.data.Form;
 import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.Representation;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.dci.value.LinksValue;
+import se.streamsource.dci.value.ResourceValue;
+import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.util.EventListSynch;
 import se.streamsource.streamflow.client.util.Refreshable;
@@ -49,6 +50,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
+import java.util.Observable;
 
 import static org.qi4j.api.util.Iterables.filter;
 import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withNames;
@@ -57,6 +59,7 @@ import static se.streamsource.streamflow.infrastructure.event.domain.source.help
  * JAVADOC
  */
 public class AttachmentsModel
+   extends Observable
    implements Refreshable
 {
    @Service
@@ -119,8 +122,12 @@ public class AttachmentsModel
 
    public void refresh() throws OperationException
    {
-      final LinksValue newRoot = client.query( "index", LinksValue.class );
+      ResourceValue resource = client.queryResource();
+      final LinksValue newRoot = (LinksValue) resource.index();
       EventListSynch.synchronize( newRoot.links().get(), eventList );
+
+      setChanged();
+      notifyObservers(resource);
    }
 
    public void removeAttachment( AttachmentValue attachment )

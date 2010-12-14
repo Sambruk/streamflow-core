@@ -1,5 +1,4 @@
-/**
- *
+/*
  * Copyright 2009-2010 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,14 +14,18 @@
  * limitations under the License.
  */
 
-package se.streamsource.dci.restlet.server;
+package se.streamsource.dci.value.table;
 
-import se.streamsource.dci.api.RoleMap;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueComposite;
 
 /**
- * Factory for the root context corresponding to "/" in the path.
+ * JAVADOC
  */
-public interface RootContextFactory
+public interface ColumnValue
+   extends ValueComposite
 {
-   Object getRoot( RoleMap roleMap );
+   Property<String> id();
+   Property<String> label();
+   Property<String> columnType();
 }

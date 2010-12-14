@@ -27,8 +27,8 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.dci.value.LinkValue;
-import se.streamsource.dci.value.TitledLinkValue;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.dci.value.link.TitledLinkValue;
 import se.streamsource.streamflow.client.util.GroupedFilteredList;
 import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
@@ -36,7 +36,6 @@ import se.streamsource.streamflow.client.ui.administration.UsersAndGroupsModel;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import java.awt.GridLayout;
 import java.util.HashSet;
 import java.util.Set;

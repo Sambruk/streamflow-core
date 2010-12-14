@@ -18,7 +18,7 @@ package se.streamsource.streamflow.web.resource.workspace.cases;
 
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
-import se.streamsource.dci.restlet.server.SubResources;
+import se.streamsource.dci.restlet.server.api.SubResources;
 import se.streamsource.streamflow.web.context.workspace.cases.attachment.FormAttachmentContext;
 import se.streamsource.streamflow.web.context.workspace.cases.attachment.FormAttachmentsContext;
 import se.streamsource.streamflow.web.domain.structure.attachment.FormAttachments;

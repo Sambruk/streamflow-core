@@ -1,4 +1,5 @@
-/*
+/**
+ *
  * Copyright 2009-2010 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,18 +15,20 @@
  * limitations under the License.
  */
 
-package se.streamsource.dci.value;
+package se.streamsource.dci.restlet.server.api;
 
-import org.qi4j.api.property.Property;
-import org.qi4j.api.value.ValueComposite;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * JAVADOC
+ * Mark methods that creates new sub-resources with this annotation
  */
-public interface ColumnValue
-   extends ValueComposite
+@Retention( RetentionPolicy.RUNTIME )
+@Target( { ElementType.METHOD } )
+@Documented
+public @interface SubResource
 {
-   Property<String> id();
-   Property<String> label();
-   Property<String> columnType();
 }

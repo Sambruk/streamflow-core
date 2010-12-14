@@ -149,9 +149,9 @@ public class WorkspaceView
       searchButtons.add( new JButton( getActionMap().get( "hideSearch" ) ) );
       searchPanel.add( searchButtons, BorderLayout.EAST );
 
-      searchResultTableModel = obf.newObjectBuilder( SearchResultTableModel.class ).use( client.getSubClient( "search" ) ).newInstance();
+      searchResultTableModel = obf.newObjectBuilder( SearchResultTableModel.class ).use( client ).newInstance();
 
-      SearchView searchView = obf.newObjectBuilder( SearchView.class ).use(client.getSubClient( "search" ).getSubClient( "savedsearches" )).newInstance();
+      SearchView searchView = obf.newObjectBuilder( SearchView.class ).use(client.getSubClient( "savedsearches" )).newInstance();
       searchField = searchView.getTextField();
       searchField.setAction( getActionMap().get( "search" ) );
       searchPanel.add( searchView, BorderLayout.CENTER );
@@ -374,7 +374,7 @@ public class WorkspaceView
                   int selectedRow = caseTable.getSelectedRow();
                   if (selectedRow != -1)
                   {
-                     String id = (String) caseTable.getModel().getValueAt( selectedRow, 5 );
+                     String id = (String) caseTable.getModel().getValueAt( caseTable.convertRowIndexToModel(selectedRow), 5 );
                      casesView.showCase( client.getSubClient( "cases" ).getSubClient( id ) );
                   }
                }

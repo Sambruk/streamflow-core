@@ -17,7 +17,7 @@
 package se.streamsource.streamflow.web.resource.administration;
 
 import se.streamsource.dci.restlet.server.CommandQueryResource;
-import se.streamsource.dci.restlet.server.SubResource;
+import se.streamsource.dci.restlet.server.api.SubResource;
 import se.streamsource.streamflow.web.context.administration.AdministrationContext;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
 import se.streamsource.streamflow.web.resource.organizations.OrganizationalUnitsResource;

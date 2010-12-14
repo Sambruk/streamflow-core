@@ -19,7 +19,7 @@ package se.streamsource.streamflow.domain.attachment;
 
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.property.Property;
-import se.streamsource.dci.value.LinkValue;
+import se.streamsource.dci.value.link.LinkValue;
 
 import java.util.Date;
 

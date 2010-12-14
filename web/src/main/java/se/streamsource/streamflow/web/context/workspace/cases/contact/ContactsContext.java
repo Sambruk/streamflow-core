@@ -20,22 +20,28 @@ package se.streamsource.streamflow.web.context.workspace.cases.contact;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
+import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.domain.contact.ContactValue;
 import se.streamsource.streamflow.resource.caze.ContactsDTO;
+import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresStatus;
 import se.streamsource.streamflow.web.domain.structure.caze.Contacts;
 
 import java.util.List;
+
+import static se.streamsource.streamflow.domain.interaction.gtd.CaseStates.DRAFT;
+import static se.streamsource.streamflow.domain.interaction.gtd.CaseStates.OPEN;
 
 /**
  * JAVADOC
  */
 public class ContactsContext
+   implements IndexContext<ContactsDTO>
 {
    @Structure
    Module module;
 
-   public ContactsDTO contacts()
+   public ContactsDTO index()
    {
       ValueBuilder<ContactsDTO> builder = module.valueBuilderFactory().newValueBuilder( ContactsDTO.class );
       ValueBuilder<ContactValue> contactBuilder = module.valueBuilderFactory().newValueBuilder( ContactValue.class );
@@ -59,6 +65,7 @@ public class ContactsContext
       return builder.newInstance();
    }
 
+   @RequiresStatus({OPEN, DRAFT})
    public void add( ContactValue newContact )
    {
       Contacts contacts = RoleMap.role( Contacts.class );

@@ -17,7 +17,7 @@
 package se.streamsource.streamflow.web.resource.surface.accesspoints.endusers;
 
 import se.streamsource.dci.restlet.server.CommandQueryResource;
-import se.streamsource.dci.restlet.server.SubResource;
+import se.streamsource.dci.restlet.server.api.SubResource;
 import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.SurfaceCaseContext;
 import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.requiredforms.SurfaceRequiredFormsContext;
 import se.streamsource.streamflow.web.resource.surface.accesspoints.endusers.formdrafts.SurfaceFormDraftsResource;

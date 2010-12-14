@@ -23,7 +23,7 @@ import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.dci.api.Context;
 import se.streamsource.dci.api.IndexContext;
-import se.streamsource.dci.value.LinksValue;
+import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.domain.form.FormDraftValue;
 import se.streamsource.streamflow.domain.form.RequiredSignatureValue;
 import se.streamsource.streamflow.domain.form.RequiredSignaturesValue;

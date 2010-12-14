@@ -17,7 +17,7 @@
 
 package se.streamsource.streamflow.client.util;
 
-import se.streamsource.dci.value.TitledLinkValue;
+import se.streamsource.dci.value.link.TitledLinkValue;
 
 import java.util.Comparator;
 

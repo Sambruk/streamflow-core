@@ -19,14 +19,14 @@ package se.streamsource.streamflow.infrastructure.application;
 
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.dci.value.LinksValue;
+import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.domain.structure.Describable;
 
 /**
  * Builder for making it easier to create LinksValue/LinkValue in a Streamflow roleMap
  */
 public class LinksBuilder
-   extends se.streamsource.dci.value.LinksBuilder<LinksBuilder>
+   extends se.streamsource.dci.value.link.LinksBuilder<LinksBuilder>
 {
    public LinksBuilder( ValueBuilderFactory vbf )
    {

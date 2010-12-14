@@ -18,7 +18,7 @@
 package se.streamsource.streamflow.client.ui.administration.forms.definition;
 
 import org.qi4j.api.value.ValueBuilder;
-import se.streamsource.dci.value.LinkValue;
+import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.client.util.LinkValueListModel;
 import se.streamsource.streamflow.domain.form.CreateFieldDTO;

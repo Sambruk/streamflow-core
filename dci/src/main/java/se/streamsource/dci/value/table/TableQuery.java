@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package se.streamsource.dci.value;
+package se.streamsource.dci.value.table;
 
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;

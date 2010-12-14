@@ -16,12 +16,11 @@
 
 package se.streamsource.dci.test.interactions.jmx;
 
-import org.qi4j.api.injection.scope.Uses;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
-import se.streamsource.dci.restlet.server.SubResources;
+import se.streamsource.dci.restlet.server.api.SubResources;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;

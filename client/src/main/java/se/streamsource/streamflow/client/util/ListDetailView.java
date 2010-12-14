@@ -18,7 +18,7 @@ package se.streamsource.streamflow.client.util;
 
 import ca.odell.glazedlists.swing.EventListModel;
 import com.jgoodies.forms.factories.Borders;
-import se.streamsource.dci.value.LinkValue;
+import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.ui.OptionsAction;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 

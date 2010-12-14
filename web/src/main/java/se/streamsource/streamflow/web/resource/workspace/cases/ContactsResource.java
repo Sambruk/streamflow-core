@@ -19,7 +19,7 @@ package se.streamsource.streamflow.web.resource.workspace.cases;
 import se.streamsource.dci.api.ContextNotFoundException;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
-import se.streamsource.dci.restlet.server.SubResources;
+import se.streamsource.dci.restlet.server.api.SubResources;
 import se.streamsource.streamflow.web.context.workspace.cases.contact.ContactContext;
 import se.streamsource.streamflow.web.context.workspace.cases.contact.ContactsContext;
 import se.streamsource.streamflow.web.domain.structure.caze.Contacts;

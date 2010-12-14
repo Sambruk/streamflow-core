@@ -23,16 +23,20 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.dci.value.ResourceValue;
 import se.streamsource.streamflow.client.util.EventListSynch;
 import se.streamsource.streamflow.client.util.Refreshable;
 import se.streamsource.streamflow.domain.contact.ContactValue;
 import se.streamsource.streamflow.resource.caze.ContactsDTO;
 
+import java.util.Observable;
+
 /**
  * List of contacts for a case
  */
 public class ContactsModel
-      implements Refreshable
+   extends Observable
+   implements Refreshable
 {
    @Structure
    ValueBuilderFactory vbf;
@@ -44,8 +48,11 @@ public class ContactsModel
 
    public void refresh()
    {
-      ContactsDTO contactsDTO = (ContactsDTO) client.query( "contacts", ContactsDTO.class ).buildWith().prototype();
+      ResourceValue resource = client.queryResource();
+      ContactsDTO contactsDTO = (ContactsDTO) resource.index().get().buildWith().prototype();
       EventListSynch.synchronize( contactsDTO.contacts().get(), eventList );
+      setChanged();
+      notifyObservers( resource );
    }
 
    public EventList<ContactValue> getEventList()

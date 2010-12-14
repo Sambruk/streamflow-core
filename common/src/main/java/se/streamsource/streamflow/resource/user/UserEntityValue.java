@@ -17,10 +17,8 @@
 
 package se.streamsource.streamflow.resource.user;
 
-import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.property.Property;
-import org.qi4j.api.value.ValueComposite;
-import se.streamsource.dci.value.LinkValue;
+import se.streamsource.dci.value.link.LinkValue;
 
 /**
  * User information in the admin UI

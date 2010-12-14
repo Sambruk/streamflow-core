@@ -21,6 +21,7 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.streamflow.client.util.RefreshComponents;
 import se.streamsource.streamflow.domain.contact.ContactAddressValue;
 import se.streamsource.streamflow.domain.contact.ContactEmailValue;
 import se.streamsource.streamflow.domain.contact.ContactPhoneValue;
@@ -48,6 +49,8 @@ public class ContactsAdminView
 
       final ContactsView contactsView = obf.newObjectBuilder( ContactsView.class ).use( client ).newInstance();
       final ContactView contactView = obf.newObject( ContactView.class );
+
+      contactsView.getModel().addObserver( new RefreshComponents().enabledOn( "add", contactView ) );
 
       add( contactsView, BorderLayout.WEST );
       add( contactView, BorderLayout.CENTER );

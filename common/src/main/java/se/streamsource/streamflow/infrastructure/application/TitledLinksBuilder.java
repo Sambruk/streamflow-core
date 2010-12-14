@@ -18,7 +18,7 @@
 package se.streamsource.streamflow.infrastructure.application;
 
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.dci.value.TitledLinksValue;
+import se.streamsource.dci.value.link.TitledLinksValue;
 
 /**
  * An extension of LinksBuilder to make it handle TitledLinksValue

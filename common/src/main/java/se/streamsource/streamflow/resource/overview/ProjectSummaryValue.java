@@ -19,7 +19,7 @@ package se.streamsource.streamflow.resource.overview;
 
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.property.Property;
-import se.streamsource.dci.value.LinkValue;
+import se.streamsource.dci.value.link.LinkValue;
 
 public interface ProjectSummaryValue
       extends LinkValue

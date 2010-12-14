@@ -18,7 +18,7 @@ package se.streamsource.streamflow.web.resource.workspace.context;
 
 import se.streamsource.dci.api.ContextNotFoundException;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
-import se.streamsource.dci.restlet.server.SubResources;
+import se.streamsource.dci.restlet.server.api.SubResources;
 import se.streamsource.streamflow.web.context.workspace.table.WorkspaceProjectsContext;
 import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
 

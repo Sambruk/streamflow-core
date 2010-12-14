@@ -18,8 +18,8 @@
 package se.streamsource.streamflow.client.util;
 
 import ca.odell.glazedlists.TextFilterator;
-import se.streamsource.dci.value.LinkValue;
-import se.streamsource.dci.value.TitledLinkValue;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.dci.value.link.TitledLinkValue;
 
 import java.util.List;
 

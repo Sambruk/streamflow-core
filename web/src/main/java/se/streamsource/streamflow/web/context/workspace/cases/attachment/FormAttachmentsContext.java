@@ -35,7 +35,7 @@ import org.restlet.resource.ResourceException;
 import org.restlet.service.MetadataService;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
-import se.streamsource.dci.value.LinksValue;
+import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.domain.attachment.AttachmentValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;

@@ -22,27 +22,17 @@ import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import org.restlet.service.MetadataService;
-import se.streamsource.dci.restlet.server.resultwriter.LinksResultWriter;
-import se.streamsource.dci.restlet.server.resultwriter.ResourceResultWriter;
-import se.streamsource.dci.restlet.server.resultwriter.ResourceTemplateResultWriter;
-import se.streamsource.dci.restlet.server.resultwriter.TableResultWriter;
-import se.streamsource.dci.restlet.server.resultwriter.ValueCompositeResultWriter;
-import se.streamsource.dci.restlet.server.resultwriter.ValueDescriptorResultWriter;
-import se.streamsource.dci.value.CellValue;
-import se.streamsource.dci.value.ColumnValue;
-import se.streamsource.dci.value.ContextValue;
-import se.streamsource.dci.value.EntityValue;
-import se.streamsource.dci.value.LinkValue;
-import se.streamsource.dci.value.LinksValue;
-import se.streamsource.dci.value.ResourceValue;
-import se.streamsource.dci.value.RowValue;
+import se.streamsource.dci.restlet.server.resultwriter.*;
+import se.streamsource.dci.value.*;
 import se.streamsource.dci.value.StringValue;
-import se.streamsource.dci.value.TableQuery;
-import se.streamsource.dci.value.TableValue;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.dci.value.link.LinksValue;
+import se.streamsource.dci.value.table.*;
 
 import java.util.Properties;
 
-import static org.qi4j.bootstrap.ImportedServiceDeclaration.*;
+import static org.qi4j.bootstrap.ImportedServiceDeclaration.INSTANCE;
+import static org.qi4j.bootstrap.ImportedServiceDeclaration.NEW_OBJECT;
 
 /**
  * JAVADOC
@@ -82,7 +72,6 @@ public class DCIAssembler
             ValueDescriptorResultWriter.class );
 
       module.addValues( ResourceValue.class,
-            ContextValue.class,
             EntityValue.class,
             LinksValue.class,
             LinkValue.class,

@@ -20,8 +20,8 @@ import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import org.qi4j.api.value.ValueBuilder;
 import org.restlet.resource.ResourceException;
-import se.streamsource.dci.value.LinkValue;
-import se.streamsource.dci.value.LinksValue;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.dci.value.StringValue;
 
 /**

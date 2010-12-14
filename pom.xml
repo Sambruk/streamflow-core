@@ -8,11 +8,9 @@
 
     <!-- This POM is ONLY to initiate the modules to be built. -->
     <properties>
-
         <version.qi4j-core>1.3-STREAMFLOW-53-g64c6625</version.qi4j-core>
         <version.qi4j-lib>1.3-STREAMFLOW-1-g161f955</version.qi4j-lib>
         <version.qi4j-ext>1.3-STREAMFLOW-1-g23cdf15</version.qi4j-ext>
-
         <!--
         <version.qi4j-core>1.3-SNAPSHOT</version.qi4j-core>
         <version.qi4j-lib>1.3-SNAPSHOT</version.qi4j-lib>
@@ -322,6 +320,7 @@
                     </execution>
                 </executions>
             </plugin>
+            <!--
             <plugin>
                 <artifactId>maven-remote-resources-plugin</artifactId>
                 <version>1.1</version>
@@ -339,11 +338,11 @@
                             </properties>
                             <runOnlyAtExecutionRoot>true</runOnlyAtExecutionRoot>
                             <resourceBundles>
-                                <resourceBundle>se.streamsource.streamflow:streamflow-jar-resource-bundle:1.2
+                                <resourceBundle>se.streamsource.streamflow:streamflow-jar-resource-bundle:1.3-SNAPSHOT
                                 </resourceBundle>
                             </resourceBundles>
                             <supplementalModelArtifacts>
-                                <supplementalModelArtifact>se.streamsource.streamflow:dependency-resource-supplement:1.2
+                                <supplementalModelArtifact>se.streamsource.streamflow:dependency-resource-supplement:1.3-SNAPSHOT
                                 </supplementalModelArtifact>
                             </supplementalModelArtifacts>
                             <supplementalModels>
@@ -353,6 +352,7 @@
                     </execution>
                 </executions>
             </plugin>
+            -->
         </plugins>
         <resources>
             <resource>

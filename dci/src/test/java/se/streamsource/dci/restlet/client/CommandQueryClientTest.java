@@ -47,6 +47,8 @@ import org.restlet.service.MetadataService;
 import se.streamsource.dci.api.*;
 import se.streamsource.dci.qi4j.RoleInjectionProviderFactory;
 import se.streamsource.dci.restlet.server.*;
+import se.streamsource.dci.restlet.server.api.SubResource;
+import se.streamsource.dci.restlet.server.api.SubResources;
 import se.streamsource.dci.value.ResourceValue;
 import se.streamsource.dci.value.StringValue;
 
@@ -219,19 +221,18 @@ public class CommandQueryClientTest
    @Test
    public void testRootIndex()
    {
-      ResourceValue result = cqc.query( "", ResourceValue.class );
+      ResourceValue result = cqc.queryResource();
 
-      assertThat( result.toJSON(), equalTo( "{\"commands\":[\"delete\",\"commandwithvalue\",\"idempotentcommandwithvalue\"],\"index\":null,\"queries\":[\"querywithvalue\",\"querywithoutvalue\"],\"resources\":[]}"
- ) );
+      assertThat( result.toJSON(), equalTo( "{\"commands\":[{\"classes\":\"command\",\"href\":\"delete\",\"id\":\"delete\",\"rel\":\"delete\",\"text\":\"Delete\"},{\"classes\":\"command\",\"href\":\"commandwithvalue\",\"id\":\"commandwithvalue\",\"rel\":\"commandwithvalue\",\"text\":\"Command with value\"},{\"classes\":\"command\",\"href\":\"idempotentcommandwithvalue\",\"id\":\"idempotentcommandwithvalue\",\"rel\":\"idempotentcommandwithvalue\",\"text\":\"Idempotent command with value\"}],\"index\":null,\"queries\":[{\"classes\":\"query\",\"href\":\"querywithvalue\",\"id\":\"querywithvalue\",\"rel\":\"querywithvalue\",\"text\":\"Query with value\"},{\"classes\":\"query\",\"href\":\"querywithoutvalue\",\"id\":\"querywithoutvalue\",\"rel\":\"querywithoutvalue\",\"text\":\"Query without value\"}],\"resources\":[]}"));
    }
 
    @Test
    public void testSubResourceIndex()
    {
       CommandQueryClient cqc2 = cqc.getSubClient( "subresource" );
-      ResourceValue result = cqc2.query( "", ResourceValue.class );
+      ResourceValue result = cqc2.queryResource();
 
-      assertThat( result.toJSON(), equalTo( "{\"commands\":[\"commandwithrolerequirement\",\"changedescription\"],\"index\":null,\"queries\":[\"querywithvalue\",\"querywithrolerequirement\",\"genericquery\",\"description\"],\"resources\":[\"subresource1\",\"subresource2\"]}" ) );
+      assertThat( result.toJSON(), equalTo( "{\"commands\":[{\"classes\":\"command\",\"href\":\"commandwithrolerequirement\",\"id\":\"commandwithrolerequirement\",\"rel\":\"commandwithrolerequirement\",\"text\":\"Command with role requirement\"},{\"classes\":\"command\",\"href\":\"changedescription\",\"id\":\"changedescription\",\"rel\":\"changedescription\",\"text\":\"Change description\"}],\"index\":null,\"queries\":[{\"classes\":\"query\",\"href\":\"querywithvalue\",\"id\":\"querywithvalue\",\"rel\":\"querywithvalue\",\"text\":\"Query with value\"},{\"classes\":\"query\",\"href\":\"querywithrolerequirement\",\"id\":\"querywithrolerequirement\",\"rel\":\"querywithrolerequirement\",\"text\":\"Query with role requirement\"},{\"classes\":\"query\",\"href\":\"genericquery\",\"id\":\"genericquery\",\"rel\":\"genericquery\",\"text\":\"Generic query\"},{\"classes\":\"query\",\"href\":\"description\",\"id\":\"description\",\"rel\":\"description\",\"text\":\"Description\"}],\"resources\":[{\"classes\":\"resource\",\"href\":\"subresource1/\",\"id\":\"subresource1\",\"rel\":\"subresource1\",\"text\":\"Subresource 1\"},{\"classes\":\"resource\",\"href\":\"subresource2/\",\"id\":\"subresource2\",\"rel\":\"subresource2\",\"text\":\"Subresource 2\"}]}" ) );
    }
 
    @Test

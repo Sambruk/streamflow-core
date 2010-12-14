@@ -14,26 +14,21 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.resource.workspace.search;
+package se.streamsource.dci.value.table;
 
-import se.streamsource.dci.restlet.server.CommandQueryResource;
-import se.streamsource.dci.restlet.server.SubResource;
-import se.streamsource.streamflow.web.context.workspace.search.WorkspaceSearchContext;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueComposite;
 
 /**
  * JAVADOC
  */
-public class WorkspaceSearchResource
-      extends CommandQueryResource
+public interface CellValue
+   extends ValueComposite
 {
-   public WorkspaceSearchResource()
-   {
-      super( WorkspaceSearchContext.class );
-   }
+   @Optional
+   Property<Object> value();
 
-   @SubResource
-   public void savedsearches()
-   {
-      subResource( SavedSearchesResource.class );
-   }
+   @Optional
+   Property<String> formatted();  
 }

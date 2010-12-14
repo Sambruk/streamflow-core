@@ -18,7 +18,7 @@ package se.streamsource.streamflow.web.resource.organizations;
 
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
-import se.streamsource.dci.restlet.server.SubResources;
+import se.streamsource.dci.restlet.server.api.SubResources;
 import se.streamsource.streamflow.web.context.administration.SelectedCaseTypeContext;
 import se.streamsource.streamflow.web.context.administration.SelectedCaseTypesContext;
 import se.streamsource.streamflow.web.domain.structure.casetype.SelectedCaseTypes;

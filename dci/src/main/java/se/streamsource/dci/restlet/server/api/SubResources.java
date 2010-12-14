@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package se.streamsource.dci.restlet.server;
+package se.streamsource.dci.restlet.server.api;
 
 import org.restlet.resource.ResourceException;
 
 /**
- * Resources that have sub-resources should extends this interface.
+ * Resources that have a collection of sub-resources should extends this interface.
  */
 public interface SubResources
 {

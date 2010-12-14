@@ -20,15 +20,18 @@ import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.util.Iterables;
 import org.qi4j.api.value.ValueComposite;
 import org.restlet.Response;
 import org.restlet.data.MediaType;
+import org.restlet.data.Method;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.WriterRepresentation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.server.velocity.ValueCompositeContext;
 import se.streamsource.dci.value.ResourceValue;
+import se.streamsource.dci.value.link.Links;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -36,7 +39,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * JAVADOC
+ * ResultWriter for ResourceValues
  */
 public class ResourceResultWriter
    extends AbstractResultWriter
@@ -53,10 +56,20 @@ public class ResourceResultWriter
    {
       if (result instanceof ResourceValue)
       {
+         ResourceValue resourceValue = (ResourceValue) result;
+
+         // Allowed methods
+         response.getAllowedMethods().add( Method.GET );
+         if (Iterables.matchesAny( Links.withRel( "delete" ), resourceValue.commands().get() ))
+            response.getAllowedMethods().add( Method.DELETE );
+         if (Iterables.matchesAny( Links.withRel( "update" ), resourceValue.commands().get()))
+            response.getAllowedMethods().add( Method.PUT );
+
+         // Response according to what client accepts
          MediaType type = getVariant( response.getRequest(), ENGLISH, supportedMediaTypes ).getMediaType();
          if (MediaType.APPLICATION_JSON.equals(type))
          {
-            response.setEntity( new StringRepresentation(((ResourceValue) result).toJSON(), MediaType.APPLICATION_JSON));
+            response.setEntity( new StringRepresentation( resourceValue.toJSON(), MediaType.APPLICATION_JSON));
             return true;
          } else if (MediaType.TEXT_HTML.equals(type))
          {

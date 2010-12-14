@@ -18,7 +18,7 @@ package se.streamsource.streamflow.web.resource.surface.administration.organizat
 
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
-import se.streamsource.dci.restlet.server.SubResources;
+import se.streamsource.dci.restlet.server.api.SubResources;
 import se.streamsource.streamflow.web.context.administration.surface.accesspoints.AccessPointsAdministrationContext;
 import se.streamsource.streamflow.web.domain.structure.organization.AccessPoints;
 

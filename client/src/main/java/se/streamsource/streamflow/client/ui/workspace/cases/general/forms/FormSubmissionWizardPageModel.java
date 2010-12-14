@@ -31,7 +31,6 @@ import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.dci.value.ResourceValue;
 import se.streamsource.streamflow.domain.attachment.UpdateAttachmentValue;
 import se.streamsource.streamflow.domain.form.AttachmentFieldDTO;
 import se.streamsource.streamflow.domain.form.FieldValueDTO;
@@ -48,8 +47,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
 
-import static org.qi4j.api.util.Iterables.*;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
+import static org.qi4j.api.util.Iterables.filter;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withNames;
 
 public class FormSubmissionWizardPageModel
 {
@@ -106,7 +105,7 @@ public class FormSubmissionWizardPageModel
                valueBuilder.prototype().attachment().set( EntityReference.parseEntityReference( attachmentId ) );
 
                // must update lastModified before new update
-               client.query( "", ResourceValue.class );
+               client.queryResource();
                client.putCommand( "updateattachmentfield",  valueBuilder.newInstance() );
             }
          }

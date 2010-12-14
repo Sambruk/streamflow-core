@@ -25,7 +25,6 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
-import org.restlet.Application;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.MediaType;
@@ -36,9 +35,10 @@ import org.restlet.resource.ResourceException;
 import org.restlet.service.MetadataService;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
-import se.streamsource.dci.value.LinksValue;
+import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.domain.attachment.AttachmentValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
+import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresStatus;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachments;
@@ -50,6 +50,9 @@ import java.net.URISyntaxException;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+
+import static se.streamsource.streamflow.domain.interaction.gtd.CaseStates.DRAFT;
+import static se.streamsource.streamflow.domain.interaction.gtd.CaseStates.OPEN;
 
 /**
  * JAVADOC
@@ -91,6 +94,7 @@ public class AttachmentsContext
       return links.newLinks();
    }
 
+   @RequiresStatus({OPEN, DRAFT})
    public void createattachment( Response response ) throws IOException, URISyntaxException
    {
       Request request = response.getRequest();

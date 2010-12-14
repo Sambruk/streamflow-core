@@ -24,7 +24,7 @@ import org.qi4j.api.property.StateHolder;
 import org.qi4j.api.util.DateFunctions;
 import org.qi4j.api.value.ValueComposite;
 import org.qi4j.spi.Qi4jSPI;
-import se.streamsource.dci.value.LinkValue;
+import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.RemovableLabel;
 
 import javax.swing.*;

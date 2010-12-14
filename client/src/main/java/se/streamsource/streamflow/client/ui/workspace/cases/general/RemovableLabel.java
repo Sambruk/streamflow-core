@@ -17,7 +17,7 @@
 package se.streamsource.streamflow.client.ui.workspace.cases.general;
 
 import org.jdesktop.swingx.JXLabel;
-import se.streamsource.dci.value.LinkValue;
+import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.util.Strings;

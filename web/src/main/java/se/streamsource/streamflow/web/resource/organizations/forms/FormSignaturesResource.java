@@ -18,7 +18,7 @@ package se.streamsource.streamflow.web.resource.organizations.forms;
 
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
-import se.streamsource.dci.restlet.server.SubResources;
+import se.streamsource.dci.restlet.server.api.SubResources;
 import se.streamsource.streamflow.web.context.administration.forms.definition.FormSignatureContext;
 import se.streamsource.streamflow.web.context.administration.forms.definition.FormSignaturesContext;
 import se.streamsource.streamflow.web.domain.structure.form.RequiredSignatures;

@@ -18,37 +18,29 @@
 package se.streamsource.dci.restlet.server;
 
 import org.qi4j.api.cache.CacheOptions;
-import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.ConcurrentEntityModificationException;
-import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.usecase.Usecase;
 import org.qi4j.api.usecase.UsecaseBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.spi.Qi4jSPI;
-import org.qi4j.spi.entity.EntityState;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.Uniform;
-import org.restlet.data.CharacterSet;
-import org.restlet.data.Language;
-import org.restlet.data.Method;
-import org.restlet.data.Reference;
-import org.restlet.data.Status;
-import org.restlet.data.Tag;
+import org.restlet.data.*;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ResourceException;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import se.streamsource.dci.api.RoleMap;
+import se.streamsource.dci.restlet.server.api.ResourceValidity;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -125,14 +117,11 @@ public abstract class CommandQueryRestlet2
                {
                   if (response.getEntity().getModificationDate() == null)
                   {
+
                      try
                      {
-                        EntityComposite entity = RoleMap.role( EntityComposite.class );
-                        EntityState state = spi.getEntityState( entity );
-                        Date lastModified = new Date( state.lastModified() );
-                        Tag tag = new Tag( state.identity().identity() + "/" + state.version() );
-                        response.getEntity().setModificationDate( lastModified );
-                        response.getEntity().setTag( tag );
+                        ResourceValidity validity = RoleMap.role(ResourceValidity.class);
+                        validity.updateResponse( response );
                      } catch (IllegalArgumentException e)
                      {
                         // Ignore
@@ -155,35 +144,17 @@ public abstract class CommandQueryRestlet2
                } else
                {
                   // Check if last modified and tag is set
-                  Date lastModified = null;
-                  Tag tag = null;
+                  ResourceValidity validity = null;
+
                   try
                   {
-                     EntityComposite entity = RoleMap.role( EntityComposite.class );
-
-                     uow.complete();
-
-                     UnitOfWork lastModifiedUoW = uowf.newUnitOfWork();
-                     try
-                     {
-                        try
-                        {
-                           entity = lastModifiedUoW.get( entity );
-                           EntityState state = spi.getEntityState( entity );
-                           lastModified = new Date( state.lastModified() );
-                           tag = new Tag( state.identity().identity() + "/" + state.version() );
-                        } catch (NoSuchEntityException ne)
-                        { // do nothing - entity is deleted
-                        }
-                     } finally
-                     {
-                        lastModifiedUoW.discard();
-                     }
+                     validity = RoleMap.role(ResourceValidity.class);
                   } catch (IllegalArgumentException e)
                   {
                      // Ignore
-                     uow.complete();
                   }
+
+                  uow.complete();
 
                   Object result = commandResult.getResult();
                   if (result != null)
@@ -210,11 +181,20 @@ public abstract class CommandQueryRestlet2
                            response.getEntity().getLanguages().add( Language.ENGLISH );
                         }
 
-                        // Check if last modified and tag is set
-                        if (lastModified != null)
+                        // Check if last modified and tag should be set
+                        if (validity != null)
                         {
-                           response.getEntity().setModificationDate( lastModified );
-                           response.getEntity().setTag( tag );
+                           UnitOfWork lastModifiedUoW = uowf.newUnitOfWork();
+
+                           try
+                           {
+                              validity.updateEntity( lastModifiedUoW );
+
+                              validity.updateResponse( response );
+                           } finally
+                           {
+                              lastModifiedUoW.discard();
+                           }
                         }
                      }
 

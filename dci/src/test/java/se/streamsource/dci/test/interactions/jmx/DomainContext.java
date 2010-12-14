@@ -21,8 +21,8 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.structure.Module;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
-import se.streamsource.dci.value.LinksBuilder;
-import se.streamsource.dci.value.LinksValue;
+import se.streamsource.dci.value.link.LinksBuilder;
+import se.streamsource.dci.value.link.LinksValue;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;

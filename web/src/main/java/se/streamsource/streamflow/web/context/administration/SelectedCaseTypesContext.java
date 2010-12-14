@@ -23,7 +23,7 @@ import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.specification.Specification;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.value.EntityValue;
-import se.streamsource.dci.value.LinksValue;
+import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypesQueries;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;

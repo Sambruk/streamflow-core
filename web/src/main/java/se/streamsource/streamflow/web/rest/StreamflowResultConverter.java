@@ -24,7 +24,7 @@ import org.qi4j.api.value.ValueBuilder;
 import org.restlet.Request;
 import org.slf4j.LoggerFactory;
 import se.streamsource.dci.restlet.server.ResultConverter;
-import se.streamsource.dci.value.LinksValue;
+import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
 import se.streamsource.streamflow.domain.structure.Describable;

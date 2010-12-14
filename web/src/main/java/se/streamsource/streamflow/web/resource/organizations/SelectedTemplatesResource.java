@@ -18,7 +18,7 @@
 package se.streamsource.streamflow.web.resource.organizations;
 
 import se.streamsource.dci.restlet.server.CommandQueryResource;
-import se.streamsource.dci.value.LinksBuilder;
+import se.streamsource.dci.value.link.LinksBuilder;
 import se.streamsource.streamflow.web.context.administration.surface.SelectedTemplatesContext;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;

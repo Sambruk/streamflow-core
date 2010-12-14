@@ -32,7 +32,7 @@
 <ul>
 #foreach($query in $result.queries)
 <li>
-    <a rel="$query" href="$query">$query</a></li>
+    <a rel="$query.rel" href="$query.href">$query.text</a></li>
 #end
 </ul>
 </div>
@@ -40,16 +40,16 @@
 <div class="block">
 <h2>Commands</h2>
 #foreach($command in $result.commands)
-<form name="$command" action="$command" method="POST" ><input type="submit" value="$command"/> </form>
+<form name="$command.id" action="$command.href" method="POST" ><input type="submit" value="$command.text"/> </form>
 #end
 </div>
 
 <div class="block">
-<h2>Sub-resources</h2>
+<h2>Resources</h2>
 <ul>
 #foreach($resource in $result.resources)
 <li>
-    <a rel="$resource" href="${resource}/">$resource</a>
+    <a rel="$resource.rel" href="${resource.href}">$resource.text</a>
 </li>
 #end
 </ul>

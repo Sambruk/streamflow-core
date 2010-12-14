@@ -22,7 +22,7 @@ import org.qi4j.api.usecase.Usecase;
 import org.qi4j.api.util.Function;
 import org.qi4j.api.util.Iterables;
 import org.qi4j.api.specification.Specification;
-import se.streamsource.dci.value.LinkValue;
+import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.replay.DomainEventPlayer;

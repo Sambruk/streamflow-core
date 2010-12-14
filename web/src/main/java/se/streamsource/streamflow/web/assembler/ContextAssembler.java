@@ -99,6 +99,7 @@ import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.form
 import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.requiredforms.SurfaceRequiredFormsContext;
 import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.submittedforms.SurfaceSubmittedFormContext;
 import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.submittedforms.SurfaceSubmittedFormsContext;
+import se.streamsource.streamflow.web.context.workspace.WorkspaceContext;
 import se.streamsource.streamflow.web.context.workspace.cases.CaseActionsContext;
 import se.streamsource.streamflow.web.context.workspace.cases.CaseContext;
 import se.streamsource.streamflow.web.context.workspace.cases.attachment.AttachmentContext;
@@ -121,11 +122,9 @@ import se.streamsource.streamflow.web.context.workspace.cases.general.LabelableC
 import se.streamsource.streamflow.web.context.workspace.cases.general.LabeledContext;
 import se.streamsource.streamflow.web.context.workspace.context.AssignmentsContext;
 import se.streamsource.streamflow.web.context.workspace.context.InboxContext;
-import se.streamsource.streamflow.web.context.workspace.search.SavedSearchContext;
-import se.streamsource.streamflow.web.context.workspace.search.SavedSearchesContext;
-import se.streamsource.streamflow.web.context.workspace.search.WorkspaceSearchContext;
+import se.streamsource.streamflow.web.context.workspace.savedsearch.SavedSearchContext;
+import se.streamsource.streamflow.web.context.workspace.savedsearch.SavedSearchesContext;
 import se.streamsource.streamflow.web.context.workspace.table.DraftsContext;
-import se.streamsource.streamflow.web.context.workspace.table.WorkspaceContext;
 import se.streamsource.streamflow.web.context.workspace.table.WorkspaceProjectsContext;
 import se.streamsource.streamflow.web.resource.RootResource;
 import se.streamsource.streamflow.web.resource.account.AccountResource;
@@ -178,8 +177,7 @@ import se.streamsource.streamflow.web.resource.workspace.context.WorkspaceContex
 import se.streamsource.streamflow.web.resource.workspace.context.WorkspaceDraftsResource;
 import se.streamsource.streamflow.web.resource.workspace.context.WorkspaceProjectResource;
 import se.streamsource.streamflow.web.resource.workspace.context.WorkspaceProjectsResource;
-import se.streamsource.streamflow.web.resource.workspace.search.SavedSearchesResource;
-import se.streamsource.streamflow.web.resource.workspace.search.WorkspaceSearchResource;
+import se.streamsource.streamflow.web.resource.workspace.savedsearch.SavedSearchesResource;
 import se.streamsource.streamflow.web.rest.StreamflowRestlet;
 import se.streamsource.streamflow.web.rest.StreamflowResultConverter;
 
@@ -331,15 +329,14 @@ public class ContextAssembler
             // Workspace
             WorkspaceResource.class,
 
-            WorkspaceContext.class,
+            se.streamsource.streamflow.web.context.workspace.table.WorkspaceContext.class,
             WorkspaceContextResource.class,
             WorkspaceDraftsResource.class,
             WorkspaceProjectsContext.class,
             WorkspaceProjectsResource.class,
             WorkspaceProjectResource.class,
 
-            WorkspaceSearchContext.class,
-            WorkspaceSearchResource.class,
+            WorkspaceContext.class,
             SavedSearchesContext.class,
             SavedSearchesResource.class,
             SavedSearchContext.class,

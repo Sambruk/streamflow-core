@@ -18,7 +18,7 @@ package se.streamsource.streamflow.web.resource.organizations;
 
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
-import se.streamsource.dci.restlet.server.SubResource;
+import se.streamsource.dci.restlet.server.api.SubResource;
 import se.streamsource.streamflow.web.context.administration.GroupContext;
 import se.streamsource.streamflow.web.context.structure.DescribableContext;
 

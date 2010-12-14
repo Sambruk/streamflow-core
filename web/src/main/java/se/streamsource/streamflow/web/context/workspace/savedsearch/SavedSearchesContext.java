@@ -15,32 +15,34 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.context.workspace.search;
+package se.streamsource.streamflow.web.context.workspace.savedsearch;
 
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.query.Query;
-import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.structure.Module;
+import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
-import se.streamsource.dci.value.StringValue;
-import se.streamsource.streamflow.domain.structure.Describable;
-import se.streamsource.streamflow.web.domain.entity.user.SearchCaseQueries;
-import se.streamsource.streamflow.web.domain.structure.caze.Case;
+import se.streamsource.streamflow.resource.user.profile.SearchValue;
+import se.streamsource.streamflow.web.domain.interaction.profile.SavedSearches;
+import se.streamsource.streamflow.web.domain.structure.user.profile.SavedSearch;
 
 /**
  * JAVADOC
  */
-public class WorkspaceSearchContext
+public class SavedSearchesContext
+      implements IndexContext<Iterable<SavedSearch>>
 {
    @Structure
    Module module;
 
-   public Query<Case> search( StringValue query )
+   public Iterable<SavedSearch> index()
    {
-      SearchCaseQueries caseQueries = RoleMap.role( SearchCaseQueries.class );
-      Query<Case> caseQuery = caseQueries.search( query );
-      caseQuery.orderBy( QueryExpressions.orderBy( QueryExpressions.templateFor( Describable.Data.class ).description() ) );
+      SavedSearches.Data searches = RoleMap.role( SavedSearches.Data.class );
+      return searches.searches();
+   }
 
-      return caseQuery;
+   public void createSearch( SearchValue search )
+   {
+      SavedSearches searches = RoleMap.role( SavedSearches.class );
+      searches.createSavedSearch( search );
    }
 }

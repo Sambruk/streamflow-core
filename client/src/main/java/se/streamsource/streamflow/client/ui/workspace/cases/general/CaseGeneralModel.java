@@ -24,8 +24,11 @@ import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.dci.value.*;
+import se.streamsource.dci.value.EntityValue;
+import se.streamsource.dci.value.ResourceValue;
 import se.streamsource.dci.value.StringValue;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.util.Refreshable;
@@ -35,11 +38,17 @@ import se.streamsource.streamflow.resource.caze.CaseGeneralDTO;
 import se.streamsource.streamflow.resource.roles.DateDTO;
 
 import java.util.Date;
+import java.util.Observable;
+
+import static org.qi4j.api.util.Iterables.matchesAny;
+import static se.streamsource.dci.value.link.Links.withRel;
 
 /**
  * Model for the general info about a case.
  */
-public class CaseGeneralModel implements Refreshable
+public class CaseGeneralModel
+      extends Observable
+      implements Refreshable
 {
    @Structure
    private ValueBuilderFactory vbf;
@@ -118,8 +127,11 @@ public class CaseGeneralModel implements Refreshable
 
    public void refresh()
    {
-      resourceValue = client.query( "", ResourceValue.class );
+      resourceValue = client.queryResource();
       general = (CaseGeneralDTO) resourceValue.index().get().buildWith().prototype();
+
+      setChanged();
+      notifyObservers( resourceValue );
    }
 
    public void changeCaseType( LinkValue selected )
@@ -139,11 +151,7 @@ public class CaseGeneralModel implements Refreshable
 
    public boolean getCommandEnabled( String commandName )
    {
-      for (String command : resourceValue.commands().get())
-      {
-         if (command.equals( commandName )) return true;
-      }
-      return false;
+      return matchesAny( withRel( commandName ), resourceValue.commands().get() );
    }
 
    public CaseStates getCaseStatus()

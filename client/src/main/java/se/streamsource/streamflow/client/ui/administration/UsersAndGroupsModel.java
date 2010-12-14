@@ -22,8 +22,8 @@ import ca.odell.glazedlists.EventList;
 import org.qi4j.api.injection.scope.Uses;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.dci.value.LinksValue;
-import se.streamsource.dci.value.TitledLinkValue;
+import se.streamsource.dci.value.link.LinksValue;
+import se.streamsource.dci.value.link.TitledLinkValue;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 

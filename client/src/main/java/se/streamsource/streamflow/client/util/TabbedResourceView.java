@@ -22,14 +22,15 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.ResourceValue;
+import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypesView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.SelectedCaseTypesView;
+import se.streamsource.streamflow.client.ui.administration.forms.FormsView;
+import se.streamsource.streamflow.client.ui.administration.forms.SelectedFormsView;
 import se.streamsource.streamflow.client.ui.administration.forms.definition.FormEditView;
 import se.streamsource.streamflow.client.ui.administration.forms.definition.FormElementsView;
 import se.streamsource.streamflow.client.ui.administration.forms.definition.FormSignaturesView;
-import se.streamsource.streamflow.client.ui.administration.forms.FormsView;
-import se.streamsource.streamflow.client.ui.administration.forms.SelectedFormsView;
 import se.streamsource.streamflow.client.ui.administration.groups.GroupsView;
 import se.streamsource.streamflow.client.ui.administration.labels.LabelsView;
 import se.streamsource.streamflow.client.ui.administration.labels.SelectedLabelsView;
@@ -44,18 +45,19 @@ import se.streamsource.streamflow.client.ui.administration.surface.ProxyUsersVie
 import se.streamsource.streamflow.client.ui.administration.templates.TemplatesView;
 import se.streamsource.streamflow.client.ui.administration.users.UsersAdministrationView;
 
-import javax.swing.JComponent;
-import javax.swing.JTabbedPane;
+import javax.swing.*;
 import java.awt.event.KeyEvent;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static se.streamsource.streamflow.client.util.i18n.*;
+import static org.qi4j.api.util.Iterables.matchesAny;
+import static se.streamsource.dci.value.link.Links.withRel;
+import static se.streamsource.streamflow.client.util.i18n.text;
 
 /**
  * Show a REST resource as a tabbed view. To determine tabs, do a query to the resources directory URL ("/") to get
- * a ContextValue. Then iterate through the registered views and check if they are in ContextValue.contexts(). By using
+ * a ResourceValue. Then iterate through the registered views and check if they are in ResourceValue.resources(). By using
  * the order of the registered views we ensure that the UI order of the tabs is always the same, regardless of the order
  * returned from the server.
  */
@@ -105,12 +107,12 @@ public class TabbedResourceView
 
    public TabbedResourceView( @Uses CommandQueryClient client, @Structure ObjectBuilderFactory obf )
    {
-      ResourceValue resource = client.query( "", ResourceValue.class );
-      List<String> resources = resource.resources().get();
+      ResourceValue resource = client.queryResource();
+      List<LinkValue> resources = resource.resources().get();
       int index = 0;
       for (Map.Entry<String, Class<? extends JComponent>> stringClassEntry : views.entrySet())
       {
-         if (resources.contains( stringClassEntry.getKey() ))
+         if (matchesAny( withRel( stringClassEntry.getKey() ), resources ))
          {
             String tabNameText = text( tabNames.get( stringClassEntry.getKey() ) );
             Class<? extends JComponent> tabClass = stringClassEntry.getValue();

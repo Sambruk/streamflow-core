@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.context.workspace.search;
+package se.streamsource.streamflow.web.context.workspace.savedsearch;
 
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.api.DeleteContext;
@@ -37,7 +37,7 @@ public class SavedSearchContext
       role( SavedSearches.class ).removeSavedSearch( RoleMap.role( SavedSearch.class ) );
    }
 
-   public void changequery( StringValue query )
+   public void changeQuery( StringValue query )
    {
       SavedSearch savedSearch = role( SavedSearch.class );
       savedSearch.changeQuery( query.string().get() );

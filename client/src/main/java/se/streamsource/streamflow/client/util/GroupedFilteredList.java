@@ -24,8 +24,8 @@ import ca.odell.glazedlists.SortedList;
 import ca.odell.glazedlists.matchers.MatcherEditor;
 import ca.odell.glazedlists.swing.EventListModel;
 import ca.odell.glazedlists.swing.TextComponentMatcherEditor;
-import se.streamsource.dci.value.LinkValue;
-import se.streamsource.dci.value.TitledLinkValue;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.dci.value.link.TitledLinkValue;
 
 import javax.swing.JList;
 import javax.swing.JPanel;

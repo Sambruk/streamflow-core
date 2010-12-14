@@ -40,7 +40,6 @@ import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.api.value.ValueComposite;
 import org.qi4j.spi.Qi4jSPI;
-import org.qi4j.spi.entity.EntityState;
 import org.qi4j.spi.property.PropertyType;
 import org.qi4j.spi.structure.ModuleSPI;
 import org.qi4j.spi.value.ValueDescriptor;
@@ -56,14 +55,21 @@ import org.restlet.resource.ResourceException;
 import org.slf4j.LoggerFactory;
 import se.streamsource.dci.api.InteractionConstraints;
 import se.streamsource.dci.api.RoleMap;
+import se.streamsource.dci.restlet.server.api.ResourceValidity;
+import se.streamsource.dci.restlet.server.api.SubResource;
+import se.streamsource.dci.restlet.server.api.SubResources;
 import se.streamsource.dci.value.ResourceValue;
+import se.streamsource.dci.value.link.LinkValue;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URLDecoder;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -180,7 +186,7 @@ public class CommandQueryResource
    {
       for (Method method : getClass().getMethods())
       {
-         if (method.getName().equals( resourceName ) && method.getAnnotation( SubResource.class ) != null)
+         if (method.getName().equalsIgnoreCase( resourceName ) && method.getAnnotation( SubResource.class ) != null)
             return method;
       }
 
@@ -243,31 +249,48 @@ public class CommandQueryResource
          }
 
          ValueBuilder<ResourceValue> builder = vbf.newValueBuilder( ResourceValue.class );
+         ValueBuilder<LinkValue> linkBuilder = vbf.newValueBuilder( LinkValue.class );
+         LinkValue prototype = linkBuilder.prototype();
 
          if (queries.size() > 0)
          {
-            List<String> queriesProperty = builder.prototype().queries().get();
+            List<LinkValue> queriesProperty = builder.prototype().queries().get();
+            prototype.classes().set( "query" );
             for (Method query : queries)
             {
-               queriesProperty.add( query.getName().toLowerCase() );
+               prototype.text().set( humanReadable( query.getName() ) );
+               prototype.href().set( query.getName().toLowerCase() );
+               prototype.rel().set( query.getName().toLowerCase() );
+               prototype.id().set( query.getName().toLowerCase() );
+               queriesProperty.add( linkBuilder.newInstance());
             }
          }
 
          if (commands.size() > 0)
          {
-            List<String> commandsProperty = builder.prototype().commands().get();
+            List<LinkValue> commandsProperty = builder.prototype().commands().get();
+            prototype.classes().set( "command" );
             for (Method command : commands)
             {
-               commandsProperty.add( command.getName().toLowerCase() );
+               prototype.text().set( humanReadable( command.getName() ) );
+               prototype.href().set( command.getName().toLowerCase() );
+               prototype.rel().set( command.getName().toLowerCase() );
+               prototype.id().set( command.getName().toLowerCase() );
+               commandsProperty.add( linkBuilder.newInstance());
             }
          }
 
          if (subResources.size() > 0)
          {
-            List<String> resourcesProperty = builder.prototype().resources().get();
+            List<LinkValue> resourcesProperty = builder.prototype().resources().get();
+            prototype.classes().set( "resource" );
             for (Method subResource : subResources)
             {
-               resourcesProperty.add( subResource.getName().toLowerCase() );
+               prototype.text().set( humanReadable( subResource.getName() ) );
+               prototype.href().set( subResource.getName().toLowerCase() + "/" );
+               prototype.rel().set( subResource.getName().toLowerCase() );
+               prototype.id().set( subResource.getName().toLowerCase() );
+               resourcesProperty.add( linkBuilder.newInstance() );
             }
          }
 
@@ -288,6 +311,45 @@ public class CommandQueryResource
          response.setStatus( Status.CLIENT_ERROR_METHOD_NOT_ALLOWED );
       }
 
+   }
+
+   protected void setResourceValidity(EntityComposite entity)
+   {
+      ResourceValidity validity = new ResourceValidity( entity, spi );
+      RoleMap.current().set( validity );
+   }
+
+   /**
+    * Transform a Java name to a human readable string by replacing uppercase characters
+    * with space+toLowerCase(char)
+    * Example:
+    * changeDescription -> Change description
+    * doStuffNow -> Do stuff now
+    *
+    * @param name
+    * @return
+    */
+   private String humanReadable( String name )
+   {
+      StringBuilder humanReadableString = new StringBuilder();
+
+      for (int i = 0; i < name.length(); i++)
+      {
+         char character = name.charAt( i );
+         if (i == 0)
+         {
+            // Capitalize first character
+            humanReadableString.append( Character.toUpperCase( character ) );
+         } else if (Character.isLowerCase( character ))
+         {
+            humanReadableString.append( character );
+         } else
+         {
+            humanReadableString.append( ' ' ).append( Character.toLowerCase( character ) );
+         }
+      }
+
+      return humanReadableString.toString();
    }
 
    protected Object createContext( String queryName )
@@ -514,23 +576,15 @@ public class CommandQueryResource
             }
          } else
          {
-            // Check timestamps
-            Date modificationDate = request.getConditions().getUnmodifiedSince();
             try
             {
-               EntityComposite entity = RoleMap.role( EntityComposite.class );
-               EntityState state = spi.getEntityState( entity );
-               Date lastModified = new Date( (state.lastModified()/1000)*1000); // Cut off milliseconds
-               if (lastModified.after( modificationDate ))
-               {
-                  response.setStatus( Status.CLIENT_ERROR_CONFLICT );
-                  return;
-               }
-            } catch (Exception e)
+               // Check timestamps
+               ResourceValidity validity = RoleMap.role(ResourceValidity.class);
+               validity.checkRequest( request );
+            } catch (IllegalArgumentException e)
             {
                // Ignore
             }
-
 
             // We have input data - do either command or query
             try

@@ -21,6 +21,7 @@ import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
+import se.streamsource.dci.value.link.LinkValue;
 
 import java.util.List;
 
@@ -32,13 +33,13 @@ public interface ResourceValue
    extends ValueComposite
 {
    @UseDefaults
-   Property<List<String>> queries();
+   Property<List<LinkValue>> queries();
 
    @UseDefaults
-   Property<List<String>> commands();
+   Property<List<LinkValue>> commands();
 
    @UseDefaults
-   Property<List<String>> resources();
+   Property<List<LinkValue>> resources();
    
    @Optional
    Property<ValueComposite> index();

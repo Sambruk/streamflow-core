@@ -18,10 +18,12 @@ package se.streamsource.streamflow.client.ui.workspace.cases.contacts;
 
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.util.Iterables;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.dci.value.link.Links;
 import se.streamsource.dci.value.ResourceValue;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.domain.contact.ContactAddressValue;
@@ -116,8 +118,8 @@ public class ContactModel
 
    public boolean isContactLookupEnabled()
    {
-      ResourceValue resource = client.query( "", ResourceValue.class );
-      return resource.queries().get().contains( "searchcontacts" );
+      ResourceValue resource = client.queryResource();
+      return Iterables.matchesAny( Links.withRel( "searchcontacts" ), resource.queries().get() );
    }
 
    public ContactsDTO searchContacts( ContactValue query ) throws ResourceException

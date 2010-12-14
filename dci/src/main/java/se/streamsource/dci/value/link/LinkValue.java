@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package se.streamsource.dci.value;
+package se.streamsource.dci.value.link;
 
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.property.Property;
