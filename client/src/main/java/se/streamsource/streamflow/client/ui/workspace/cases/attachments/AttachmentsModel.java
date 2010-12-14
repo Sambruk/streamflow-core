@@ -123,7 +123,7 @@ public class AttachmentsModel
    public void refresh() throws OperationException
    {
       ResourceValue resource = client.queryResource();
-      final LinksValue newRoot = (LinksValue) resource.index();
+      final LinksValue newRoot = (LinksValue) resource.index().get();
       EventListSynch.synchronize( newRoot.links().get(), eventList );
 
       setChanged();

@@ -105,11 +105,13 @@ public class AttachmentsView
       attachments.setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
 
       JPanel toolbar = new JPanel();
-      toolbar.add( new JButton( am.get( "add" ) ) );
-      toolbar.add( new JButton( am.get( "remove" ) ) );
+      JButton addButton = new JButton( am.get( "add" ) );
+      toolbar.add( addButton );
+      JButton removeButton = new JButton( am.get( "remove" ) );
+      toolbar.add( removeButton );
       toolbar.add( new JButton( am.get( "open" ) ) );
       attachments.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "remove" ), am.get( "open" ) ) );
-      attachmentsModel.addObserver(new RefreshComponents().visibleOn( "createattachment", toolbar ));
+      attachmentsModel.addObserver(new RefreshComponents().visibleOn( "createattachment", addButton, removeButton ));
 
       attachments.getInputMap().put( KeyStroke.getKeyStroke( KeyEvent.VK_ENTER, 0 ), "open" );
       attachments.getInputMap().put( KeyStroke.getKeyStroke( KeyEvent.VK_DELETE, 0 ), "remove" );
@@ -208,7 +210,7 @@ public class AttachmentsView
 
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
    {
-      if (Events.matches( Events.withNames("addedAttachment", "removedAttachment" ), transactions ))
+      if (Events.matches( Events.withNames("changedStatus", "addedAttachment", "removedAttachment" ), transactions ))
          attachmentsModel.refresh();
    }
 

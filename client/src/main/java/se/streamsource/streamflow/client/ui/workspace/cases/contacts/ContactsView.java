@@ -197,7 +197,7 @@ public class ContactsView
 
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
    {
-      if (Events.matches( Events.withNames("addedContact", "deletedContact", "updatedContact" ), transactions ))
+      if (Events.matches( Events.withNames("changedStatus", "addedContact", "deletedContact", "updatedContact" ), transactions ))
       {
          model.refresh();
 
