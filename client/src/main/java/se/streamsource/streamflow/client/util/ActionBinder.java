@@ -27,6 +27,8 @@ import se.streamsource.streamflow.client.ui.administration.AdministrationResourc
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.*;
 import java.util.List;
 
@@ -129,7 +131,17 @@ public class ActionBinder
          } else if (component instanceof JXDatePicker)
          {
             final JXDatePicker datePicker = (JXDatePicker) component;
-            datePicker.setInputVerifier( new ActionInputVerifier( action ) );
+            datePicker.addPropertyChangeListener( new PropertyChangeListener()
+            {
+               public void propertyChange( PropertyChangeEvent e )
+               {
+                  if ("date".equals( e.getPropertyName() ))
+                  {
+                     action.actionPerformed( new ActionEvent(datePicker, ActionEvent.ACTION_PERFORMED, action.getValue( Action.NAME ).toString()) );
+                  }
+               }
+            } );
+
          } else if (component instanceof JComboBox)
          {
             final JComboBox comboBox = (JComboBox) component;
