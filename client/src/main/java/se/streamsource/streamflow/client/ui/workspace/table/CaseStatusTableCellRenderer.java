@@ -16,15 +16,12 @@
 
 package se.streamsource.streamflow.client.ui.workspace.table;
 
-import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseResources;
-import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
+import se.streamsource.streamflow.client.util.i18n;
 
-import javax.swing.JLabel;
-import javax.swing.JTable;
-import javax.swing.SwingConstants;
+import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
-import java.awt.Component;
+import java.awt.*;
 
 public class CaseStatusTableCellRenderer extends DefaultTableCellRenderer
 {
@@ -40,31 +37,11 @@ public class CaseStatusTableCellRenderer extends DefaultTableCellRenderer
             row, column );
       renderedComponent.setHorizontalAlignment( SwingConstants.CENTER );
       setText( null );
-      if (value.equals( CaseStates.OPEN ))
-      {
-         setIcon( i18n.icon( CaseResources.case_status_open_icon,
-               i18n.ICON_16 ) );
-         setName( i18n.text( CaseResources.case_status_open_text ) );
-         setToolTipText( i18n.text( CaseResources.case_status_draft_text ) );
-      } else if (value.equals( CaseStates.DRAFT ))
-      {
-         setIcon( i18n.icon( CaseResources.case_status_draft_icon,
-               i18n.ICON_16 ) );
-         setName( i18n.text( CaseResources.case_status_draft_text ) );
-         setToolTipText( i18n.text( CaseResources.case_status_draft_text ) );
-      } else if (value.equals( CaseStates.CLOSED ))
-      {
-         setIcon( i18n.icon( CaseResources.case_status_closed_icon,
-               i18n.ICON_16 ) );
-         setName( i18n.text( CaseResources.case_status_closed_text ) );
-         setToolTipText( i18n.text( CaseResources.case_status_closed_text ) );
-      } else if (value.equals( CaseStates.ON_HOLD ))
-      {
-         setIcon( i18n.icon( CaseResources.case_status_on_hold_icon,
-               i18n.ICON_16 ) );
-         setName( i18n.text( CaseResources.case_status_on_hold_text ) );
-         setToolTipText( i18n.text( CaseResources.case_status_on_hold_text ) );
-      }
+
+      setIcon( i18n.icon( CaseResources.valueOf("case_status_"+value.toString().toLowerCase()+"_icon"),
+            i18n.ICON_16 ) );
+      setName( i18n.text( CaseResources.valueOf("case_status_"+value.toString().toLowerCase()+"_text" ) ));
+      setToolTipText( i18n.text( CaseResources.valueOf("case_status_"+value.toString().toLowerCase()+"_text" ) ) );
 
       return this;
    }

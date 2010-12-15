@@ -24,13 +24,16 @@ import org.qi4j.api.value.ValueBuilder;
 import org.restlet.Request;
 import org.slf4j.LoggerFactory;
 import se.streamsource.dci.restlet.server.ResultConverter;
-import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.dci.value.StringValue;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.resource.caze.CaseValue;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
+import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 
@@ -129,6 +132,33 @@ public class StreamflowResultConverter
          labelsBuilder.addDescribable( label );
       }
       prototype.labels().set( labelsBuilder.newLinks() );
+
+      // Subcases
+      LinksBuilder subcasesBuilder = new LinksBuilder(module.valueBuilderFactory());
+      subcasesBuilder.path( ".." );
+      try
+      {
+         for (Case subCase : aCase.subCases())
+         {
+            subcasesBuilder.classes( ((Status.Data)subCase).status().get().name());
+            subcasesBuilder.addDescribable( subCase );
+         }
+      } catch (Exception e)
+      {
+         e.printStackTrace();
+      }
+      prototype.subcases().set( subcasesBuilder.newLinks() );
+
+      Case parentCase = aCase.parent().get();
+      if (parentCase != null)
+      {
+         ValueBuilder<LinkValue> linkBuilder = module.valueBuilderFactory().newValueBuilder( LinkValue.class );
+         linkBuilder.prototype().id().set( parentCase.toString() );
+         linkBuilder.prototype().rel().set( "parent" );
+         linkBuilder.prototype().href().set( "../"+parentCase.toString()+"/" );
+         linkBuilder.prototype().text().set( ((CaseId.Data)parentCase).caseId().get());
+         prototype.parentCase().set(linkBuilder.newInstance());
+      }
 
       return builder.newInstance();
    }

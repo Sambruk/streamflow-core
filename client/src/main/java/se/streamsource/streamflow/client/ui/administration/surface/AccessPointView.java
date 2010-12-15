@@ -269,7 +269,7 @@ public class AccessPointView
    public Task casetype()
    {
       final SelectLinkDialog dialog = caseTypeDialog.use(
-            i18n.text( WorkspaceResources.chose_casetype ),
+            i18n.text( WorkspaceResources.choose_casetype ),
             model.getPossibleCaseTypes() ).newInstance();
       dialogs.showOkCancelHelpDialog( caseTypeButton, dialog );
 

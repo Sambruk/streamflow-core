@@ -17,8 +17,10 @@
 
 package se.streamsource.streamflow.web.domain.entity.caze;
 
+import org.qi4j.api.Qi4j;
 import org.qi4j.api.concern.ConcernOf;
 import org.qi4j.api.concern.Concerns;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.sideeffect.SideEffects;
 import se.streamsource.streamflow.domain.structure.Describable;
@@ -26,20 +28,13 @@ import se.streamsource.streamflow.domain.structure.Notable;
 import se.streamsource.streamflow.domain.structure.Removable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
 import se.streamsource.streamflow.web.domain.entity.form.SubmittedFormsQueries;
-import se.streamsource.streamflow.web.domain.interaction.gtd.AssignIdSideEffect;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
-import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
-import se.streamsource.streamflow.web.domain.interaction.gtd.DueOn;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
+import se.streamsource.streamflow.web.domain.interaction.gtd.*;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachments;
 import se.streamsource.streamflow.web.domain.structure.attachment.FormAttachments;
 import se.streamsource.streamflow.web.domain.structure.casetype.Resolvable;
 import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
-import se.streamsource.streamflow.web.domain.structure.caze.Case;
-import se.streamsource.streamflow.web.domain.structure.caze.Closed;
-import se.streamsource.streamflow.web.domain.structure.caze.Contacts;
+import se.streamsource.streamflow.web.domain.structure.caze.*;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversations;
 import se.streamsource.streamflow.web.domain.structure.form.FormDrafts;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedForms;
@@ -75,6 +70,8 @@ public interface CaseEntity
       FormDrafts.Data,
       SubmittedForms.Data,
       TypedCase.Data,
+      SubCases.Data,
+      SubCase.Data,
 
       // Queries
       SubmittedFormsQueries,
@@ -100,7 +97,16 @@ public interface CaseEntity
       FormAttachments.Data formAttachmentsData;
 
       @This
-      SubmittedForms.Data submittedForms;
+      SubCase.Data subCase;
+
+      @This
+      SubCases.Data subCases;
+
+      @This
+      Case caze;
+
+      @Structure
+      Qi4j api;
 
       public void deleteEntity()
       {
@@ -114,8 +120,16 @@ public interface CaseEntity
             formAttachments.removeFormAttachment( attachment );
          }
 
-         next.deleteEntity();
+         if (subCase.parent().get() != null)
+            subCase.parent().get().removeSubCase( api.dereference( caze ) );
 
+         for (Case childCase : subCases.subCases().toList())
+         {
+            caze.removeSubCase( childCase );
+            childCase.deleteEntity();
+         }
+
+         next.deleteEntity();
       }
    }
 }

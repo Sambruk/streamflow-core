@@ -23,24 +23,23 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.Icons;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.ui.workspace.cases.actions.CaseActionsView;
 import se.streamsource.streamflow.client.ui.workspace.cases.attachments.AttachmentsView;
 import se.streamsource.streamflow.client.ui.workspace.cases.contacts.ContactsAdminView;
 import se.streamsource.streamflow.client.ui.workspace.cases.conversations.ConversationsView;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
-import se.streamsource.streamflow.client.ui.workspace.cases.general.CaseGeneralView;
 import se.streamsource.streamflow.client.ui.workspace.cases.forms.FormsAdminView;
+import se.streamsource.streamflow.client.ui.workspace.cases.general.CaseGeneralView;
 import se.streamsource.streamflow.client.ui.workspace.cases.info.CaseInfoView;
 
-import javax.swing.BorderFactory;
-import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
-import java.awt.BorderLayout;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 
-import static se.streamsource.streamflow.client.util.i18n.*;
+import static se.streamsource.streamflow.client.util.i18n.icon;
+import static se.streamsource.streamflow.client.util.i18n.text;
 
 /**
  * JAVADOC
@@ -50,6 +49,7 @@ public class CaseDetailView
 {
    private JTabbedPane tabs = new JTabbedPane( JTabbedPane.BOTTOM );
    private CaseInfoView caseInfo;
+   private CaseActionsView caseActions;
 
    public CaseDetailView( @Service ApplicationContext appContext,
                           @Uses CommandQueryClient client,
@@ -60,7 +60,7 @@ public class CaseDetailView
       tabs.setFocusable( true );
 
       add( caseInfo = obf.newObjectBuilder( CaseInfoView.class ).use( client ).newInstance(), BorderLayout.NORTH );
-      add( obf.newObjectBuilder( CaseActionsView.class ).use( client ).newInstance(), BorderLayout.EAST );
+      add( caseActions = obf.newObjectBuilder( CaseActionsView.class ).use( client ).newInstance(), BorderLayout.EAST );
 
       tabs.addTab( text( WorkspaceResources.general_tab ), icon( Icons.general ), obf.newObjectBuilder( CaseGeneralView.class ).use( client.getSubClient("general" )).newInstance(), text( WorkspaceResources.general_tab ) );
       tabs.addTab( text( WorkspaceResources.contacts_tab ), icon( Icons.projects ), obf.newObjectBuilder( ContactsAdminView.class ).use( client.getSubClient("contacts" )).newInstance(), text( WorkspaceResources.contacts_tab ) );
@@ -89,6 +89,7 @@ public class CaseDetailView
          }
       } );
 
+
       add( tabs, BorderLayout.CENTER );
    }
 
@@ -106,5 +107,10 @@ public class CaseDetailView
    public String getCaseStatus()
    {
       return caseInfo.getCaseStatus();
+   }
+
+   public CaseInfoView getCaseInfo()
+   {
+      return caseInfo;
    }
 }

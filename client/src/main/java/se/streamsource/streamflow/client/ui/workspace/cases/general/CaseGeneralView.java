@@ -361,7 +361,7 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
    {
       final SelectLinkDialog dialog = caseTypeDialog.use(
             model.getPossibleCaseTypes() ).newInstance();
-      dialogs.showOkCancelHelpDialog( caseTypeButton, dialog, i18n.text( WorkspaceResources.chose_casetype ) );
+      dialogs.showOkCancelHelpDialog( caseTypeButton, dialog, i18n.text( WorkspaceResources.choose_casetype ) );
 
       caseTypeButton.requestFocusInWindow();
       

@@ -40,8 +40,9 @@ import java.text.DateFormat;
 import java.util.Locale;
 
 /**
- * JAVADOC
+ * Deprected: Use BindingFormBuilder2 instead.
  */
+@Deprecated
 public class BindingFormBuilder
 {
    // Field types

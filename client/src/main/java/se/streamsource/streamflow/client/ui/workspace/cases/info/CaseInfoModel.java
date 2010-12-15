@@ -21,10 +21,13 @@ import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.util.Refreshable;
 import se.streamsource.streamflow.resource.caze.CaseValue;
 
+import java.util.Observable;
+
 /**
  * Model for the quick info about a case.
  */
 public class CaseInfoModel
+   extends Observable
       implements Refreshable
 {
    private CommandQueryClient client;
@@ -44,5 +47,18 @@ public class CaseInfoModel
    public void refresh()
    {
       caseValue = client.query( "info", CaseValue.class );
+
+      setChanged();
+      notifyObservers( caseValue );
+   }
+
+   public void createSubCase()
+   {
+      client.postCommand( "createsubcase" );
+   }
+
+   public CommandQueryClient getClient()
+   {
+      return client;
    }
 }

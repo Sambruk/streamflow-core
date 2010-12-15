@@ -37,6 +37,7 @@ public class LinksBuilder<T extends LinksBuilder>
 
    private String path;
    private String rel;
+   private String classes;
    private String command;
 
    public LinksBuilder( ValueBuilderFactory vbf )
@@ -66,6 +67,13 @@ public class LinksBuilder<T extends LinksBuilder>
       return (T) this;
    }
 
+   public T classes( String classes )
+   {
+      this.classes = classes;
+
+      return (T) this;
+   }
+
    public T command( String commandName )
    {
       this.command = commandName;
@@ -90,6 +98,7 @@ public class LinksBuilder<T extends LinksBuilder>
          else
             linkBuilder.prototype().href().set( (path == null ? "" : path + "/") + URLEncoder.encode( id, "UTF-8" ) + "/" );
          linkBuilder.prototype().rel().set( rel );
+         linkBuilder.prototype().classes().set( classes );
 
          addLink( linkBuilder.newInstance() );
 

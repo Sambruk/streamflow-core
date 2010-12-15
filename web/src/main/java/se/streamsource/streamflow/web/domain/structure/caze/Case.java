@@ -60,6 +60,8 @@ public interface Case
       SubmittedForms,
       FormDrafts,
       TypedCase,
-      CaseStructure
+      CaseStructure,
+      SubCases,
+      SubCase
 {
 }

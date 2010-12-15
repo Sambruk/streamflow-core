@@ -68,5 +68,8 @@ public interface CaseValue
    @UseDefaults
    Property<Boolean> hasAttachments();
 
+   Property<LinksValue> subcases();
 
+   @Optional
+   Property<LinkValue> parentCase();
 }

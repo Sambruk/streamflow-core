@@ -16,22 +16,25 @@
 
 package se.streamsource.streamflow.client.ui.workspace.table;
 
+import org.jdesktop.application.Action;
+import org.jdesktop.application.ApplicationContext;
+import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.restlet.data.Reference;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseDetailView;
+import se.streamsource.streamflow.client.ui.workspace.cases.SubCasesView;
 import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 
-import javax.swing.BorderFactory;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import java.awt.Dimension;
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.awt.*;
 
 import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 
@@ -44,19 +47,28 @@ public class CasesDetailView
       implements TransactionListener
 {
    private CaseDetailView current = null;
+   private SubCasesView subCasesView = null;
 
    @Structure
    ObjectBuilderFactory obf;
 
    private CardLayout layout = new CardLayout();
-   private JPanel casePanel = new JPanel( new BorderLayout() );
+   private JSplitPane casePanel = new JSplitPane();
 
    private Reference currentCase;
+   private CommandQueryClient currentMainCase;
 
-   public CasesDetailView()
+   public CasesDetailView(@Service ApplicationContext context)
    {
       setLayout( layout );
       setBorder( BorderFactory.createEmptyBorder() );
+
+      setActionMap( context.getActionMap(this) );
+
+      casePanel.setOneTouchExpandable( true );
+      casePanel.setDividerSize( 10 );
+      casePanel.setDividerLocation( 0.0 );
+      casePanel.setLastDividerLocation( 150 );
 
       add( new JLabel( i18n.text( WorkspaceResources.choose_case ), JLabel.CENTER ), "blank" );
       add( casePanel, "detail" );
@@ -66,7 +78,12 @@ public class CasesDetailView
       setPreferredSize( new Dimension( getWidth(), 500 ) );
    }
 
-   public void show( CommandQueryClient client )
+   public void show( final CommandQueryClient client )
+   {
+      show(client, false);
+   }
+
+   public void show( final CommandQueryClient client, boolean isSubCase )
    {
       if (currentCase == null || !currentCase.equals( client.getReference() ))
       {
@@ -74,16 +91,57 @@ public class CasesDetailView
          {
             int tab = current.getSelectedTab();
             currentCase = client.getReference();
-            casePanel.removeAll();
             current = obf.newObjectBuilder( CaseDetailView.class ).use( client ).newInstance();
             current.setSelectedTab( tab );
-            casePanel.add( current );
-            casePanel.revalidate();
+            casePanel.setRightComponent( current );
+
+            if (!isSubCase)
+            {
+               subCasesView = obf.newObjectBuilder( SubCasesView.class ).use( client ).newInstance();
+               casePanel.setLeftComponent( subCasesView );
+               casePanel.setDividerLocation( 0.0 );
+               casePanel.setLastDividerLocation( 150 );
+               casePanel.revalidate();
+               currentMainCase = client;
+            }
          } else
          {
             currentCase = client.getReference();
-            casePanel.add( current = obf.newObjectBuilder( CaseDetailView.class ).use( client ).newInstance() );
+            current = obf.newObjectBuilder( CaseDetailView.class ).use( client ).newInstance();
+            casePanel.setRightComponent( current );
+
+            if (!isSubCase)
+            {
+               subCasesView = obf.newObjectBuilder( SubCasesView.class ).use( client ).newInstance();
+               casePanel.setLeftComponent( subCasesView );
+               casePanel.setDividerLocation( 0.0 );
+               casePanel.setLastDividerLocation( 150 );
+               casePanel.revalidate();
+               currentMainCase = client;
+            }
             layout.show( this, "detail" );
+         }
+
+         if (!isSubCase)
+         {
+            subCasesView.getList().addListSelectionListener( new ListSelectionListener()
+            {
+               public void valueChanged( ListSelectionEvent e )
+               {
+                  if (!e.getValueIsAdjusting())
+                  {
+                     LinkValue link = (LinkValue) subCasesView.getList().getSelectedValue();
+
+                     if (link != null)
+                     {
+                        show(client.getClient( link ), true);
+                     }
+                  }
+               }
+            } );
+            subCasesView.getCaseButton().addActionListener( getActionMap().get( "showMainCase" ));
+            subCasesView.getParentCaseButton().addActionListener( getActionMap().get("showParentCase"));
+            subCasesView.setModel( current.getCaseInfo().getModel() );
          }
 
          current.requestFocusInWindow();
@@ -93,10 +151,22 @@ public class CasesDetailView
    public void clear()
    {
       layout.show( this, "blank" );
-      casePanel.removeAll();
-      casePanel.revalidate();
+      casePanel.setLeftComponent( null );
+      casePanel.setRightComponent( null );
       current = null;
       currentCase = null;
+   }
+
+   @Action
+   public void showMainCase()
+   {
+      show(currentMainCase);
+   }
+
+   @Action
+   public void showParentCase()
+   {
+      show(currentMainCase.getClient( subCasesView.getModel().getInfo().parentCase().get()));
    }
 
    @Override
@@ -125,7 +195,10 @@ public class CasesDetailView
       {
          if (matches( withNames( "deletedEntity", "createdCase" ), transactions ))
          {
-            clear();
+            if (currentMainCase.getReference().equals(currentCase))
+               clear();
+            else
+               show(currentMainCase);
          }
          // only clear detail if it is not a draft
          else if (matches( withNames( "changedOwner" ), transactions )
@@ -133,8 +206,8 @@ public class CasesDetailView
          {
             clear();
          }
-         // clear detail if status changed from draft to open
-         else if (matches( withUsecases( "open" ), transactions ))
+         // clear detail if status changed from draft to open and it's not a subcase
+         else if (matches( withUsecases( "open" ), transactions ) && currentMainCase.getReference().equals(currentCase))
          {
             clear();
          }

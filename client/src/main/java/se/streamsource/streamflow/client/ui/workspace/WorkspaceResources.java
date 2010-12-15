@@ -56,7 +56,7 @@ public enum WorkspaceResources
    date_time_format,
    forms_label,
    could_not_refresh,
-   chose_casetype,
+   choose_casetype,
    mandatory_field_missing,
    owner,
    choose_case,

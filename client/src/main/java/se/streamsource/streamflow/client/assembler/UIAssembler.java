@@ -73,6 +73,7 @@ import se.streamsource.streamflow.client.ui.overview.*;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceView;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceWindow;
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseDetailView;
+import se.streamsource.streamflow.client.ui.workspace.cases.SubCasesView;
 import se.streamsource.streamflow.client.ui.workspace.cases.actions.CaseActionsModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.actions.CaseActionsView;
 import se.streamsource.streamflow.client.ui.workspace.cases.attachments.AttachmentsModel;
@@ -332,6 +333,8 @@ public class UIAssembler
 
       addViews( module,
             CaseDetailView.class );
+
+      addViews( module, SubCasesView.class );
 
       addMV( module,
             ContactsModel.class,
