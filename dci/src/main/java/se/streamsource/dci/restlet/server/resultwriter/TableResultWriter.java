@@ -59,15 +59,15 @@ public class TableResultWriter
    {
       if (result instanceof TableValue)
       {
-         MediaType type = getVariant(response.getRequest(), ENGLISH, supportedMediaTypes).getMediaType();
-         if (MediaType.APPLICATION_JSON.equals(type))
+         MediaType type = getVariant( response.getRequest(), ENGLISH, supportedMediaTypes ).getMediaType();
+         if (MediaType.APPLICATION_JSON.equals( type ))
          {
             try
             {
                TableValue tableValue = (TableValue) result;
 
                // Parse parameters
-               String tqx = response.getRequest().getResourceRef().getQueryAsForm(  ).getFirstValue( "tqx" );
+               String tqx = response.getRequest().getResourceRef().getQueryAsForm().getFirstValue( "tqx" );
                String reqId = null;
                if (tqx != null)
                {
@@ -78,7 +78,7 @@ public class TableResultWriter
                      String key = p[0];
                      String value = p[1];
 
-                     if (key.equals("reqId"))
+                     if (key.equals( "reqId" ))
                         reqId = value;
                   }
                }
@@ -86,13 +86,13 @@ public class TableResultWriter
                final JSONObject responseJson = new JSONObject();
                responseJson.put( "version", "0.6" );
                if (reqId != null)
-                  responseJson.put("reqId", reqId);
+                  responseJson.put( "reqId", reqId );
                responseJson.put( "status", "ok" );
 
                JSONObject dataTable = new JSONObject();
 
                JSONArray cols = new JSONArray();
-               List<ColumnValue> columnList = tableValue.columns().get();
+               List<ColumnValue> columnList = tableValue.cols().get();
                for (ColumnValue columnValue : columnList)
                {
                   JSONObject column = new JSONObject();
@@ -109,13 +109,13 @@ public class TableResultWriter
                   JSONObject row = new JSONObject();
                   JSONArray cells = new JSONArray();
                   int idx = 0;
-                  for (CellValue cellValue : rowValue.cells().get())
+                  for (CellValue cellValue : rowValue.c().get())
                   {
                      JSONObject cell = new JSONObject();
-                     cell.putOpt( "v", cellValue.value().get() );
-                     cell.putOpt( "f", cellValue.formatted().get() );
+                     cell.putOpt( "v", cellValue.v().get() );
+                     cell.putOpt( "f", cellValue.f().get() );
                      cells.put( cell );
-                     
+
                      idx++;
                   }
                   row.put( "c", cells );
@@ -142,9 +142,9 @@ public class TableResultWriter
                return true;
             } catch (JSONException e)
             {
-               throw new ResourceException(Status.SERVER_ERROR_INTERNAL, "Could not serialize table to JSON");
+               throw new ResourceException( Status.SERVER_ERROR_INTERNAL, "Could not serialize table to JSON" );
             }
-         } else if (MediaType.TEXT_HTML.equals(type))
+         } else if (MediaType.TEXT_HTML.equals( type ))
          {
             Representation rep = new WriterRepresentation( MediaType.TEXT_HTML )
             {

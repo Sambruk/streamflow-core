@@ -86,7 +86,7 @@ public class GroupsView
       NameDialog dialog = nameDialogs.iterator().next();
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.add_group_title ) );
       final String name = dialog.name();
-      if (Strings.notEmpty( name ))
+      if (!Strings.empty( name ))
       {
          return new CommandTask()
          {
@@ -132,7 +132,7 @@ public class GroupsView
       final NameDialog dialog = nameDialogs.iterator().next();
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.rename_group_title ) );
 
-      if (Strings.notEmpty( dialog.name() ) )
+      if (!Strings.empty( dialog.name() ) )
       {
          return new CommandTask()
          {

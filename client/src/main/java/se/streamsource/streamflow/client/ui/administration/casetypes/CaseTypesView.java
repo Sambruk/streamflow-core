@@ -97,7 +97,7 @@ public class CaseTypesView
 
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.add_casetype_title ) );
 
-      if (Strings.notEmpty( dialog.name() ))
+      if (!Strings.empty( dialog.name() ))
       {
          return new CommandTask()
          {
@@ -142,7 +142,7 @@ public class CaseTypesView
       final NameDialog dialog = nameDialogs.iterator().next();
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.rename_casetype_title ) );
 
-      if (Strings.notEmpty( dialog.name() ))
+      if (!Strings.empty( dialog.name() ))
       {
          final LinkValue item = (LinkValue) list.getSelectedValue();
          return new CommandTask()

@@ -26,6 +26,7 @@ import se.streamsource.dci.test.interactions.RootResource;
 import se.streamsource.dci.test.interactions.file.FileContext;
 import se.streamsource.dci.test.interactions.file.FileResource;
 import se.streamsource.dci.test.interactions.jmx.*;
+import se.streamsource.dci.value.ValueAssembler;
 
 import static org.qi4j.bootstrap.ImportedServiceDeclaration.NEW_OBJECT;
 
@@ -47,6 +48,8 @@ public class TestAssembler
       ApplicationAssembly assembly = applicationFactory.newApplicationAssembly();
       ModuleAssembly assembly1 = assembly.layerAssembly( "Web" ).moduleAssembly( "REST" );
       assemble( assembly1 );
+
+      new ValueAssembler().assemble( assembly1 );
       new DCIAssembler().assemble( assembly1 );
       assembly1.importServices(CommandResult.class).importedBy( NEW_OBJECT );
 

@@ -166,7 +166,7 @@ public class CasePdfGenerator
       }
 
       String note = caze.getNote();
-      if (Strings.notEmpty( note ))
+      if (!Strings.empty( note ))
       {
          document.changeColor( Color.BLUE );
          document.println( bundle.getString( "note" ), valueFontBold );
@@ -209,22 +209,22 @@ public class CasePdfGenerator
                public void receive( ContactValue value ) throws IOException
                {
                   Map<String, String> nameValuePairs = new HashMap<String, String>( 10 );
-                  if (Strings.notEmpty( value.name().get() ))
+                  if (!Strings.empty( value.name().get() ))
                      nameValuePairs.put( bundle.getString( "name" ), value.name().get() );
 
-                  if (!value.phoneNumbers().get().isEmpty() && Strings.notEmpty( value.phoneNumbers().get().get( 0 ).phoneNumber().get() ))
+                  if (!value.phoneNumbers().get().isEmpty() && !Strings.empty( value.phoneNumbers().get().get( 0 ).phoneNumber().get() ))
                      nameValuePairs.put( bundle.getString( "phoneNumber" ), value.phoneNumbers().get().get( 0 ).phoneNumber().get() );
 
-                  if (!value.addresses().get().isEmpty() && Strings.notEmpty( value.addresses().get().get( 0 ).address().get() ))
+                  if (!value.addresses().get().isEmpty() && !Strings.empty( value.addresses().get().get( 0 ).address().get() ))
                      nameValuePairs.put( bundle.getString( "address" ), value.addresses().get().get( 0 ).address().get() );
 
-                  if (!value.emailAddresses().get().isEmpty() && Strings.notEmpty( value.emailAddresses().get().get( 0 ).emailAddress().get() ))
+                  if (!value.emailAddresses().get().isEmpty() && !Strings.empty( value.emailAddresses().get().get( 0 ).emailAddress().get() ))
                      nameValuePairs.put( bundle.getString( "email" ), value.emailAddresses().get().get( 0 ).emailAddress().get() );
 
-                  if (Strings.notEmpty( value.company().get() ))
+                  if (!Strings.empty( value.company().get() ))
                      nameValuePairs.put( bundle.getString( "company" ), value.company().get() );
 
-                  if (Strings.notEmpty( value.note().get() ))
+                  if (!Strings.empty( value.note().get() ))
                      nameValuePairs.put( bundle.getString( "note" ), value.note().get() );
 
                   float tabStop = document.calculateTabStop( valueFontBold, nameValuePairs.keySet()
@@ -370,7 +370,7 @@ public class CasePdfGenerator
 
             for (Map.Entry<String, String> entry : fieldKeyValues.entrySet())
             {
-               if (Strings.notEmpty( entry.getValue() ))
+               if (!Strings.empty( entry.getValue() ))
                   document.printLabelAndText( entry.getKey() + ":", valueFontBold, entry.getValue(), valueFont, tabStop );
             }
          }

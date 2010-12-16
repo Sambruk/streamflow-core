@@ -108,7 +108,7 @@ public class RemovableLabel extends JPanel
       addKeyListener( this );
       addMouseListener( this );
 
-      if (!Strings.notEmpty( label.getText() ))
+      if (!!Strings.empty( label.getText() ))
       {
          this.setVisible( false );
       }

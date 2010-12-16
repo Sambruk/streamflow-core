@@ -17,11 +17,15 @@
 package se.streamsource.dci.restlet.client;
 
 import org.qi4j.api.common.Optional;
+import org.qi4j.api.common.QualifiedName;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.property.StateHolder;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueComposite;
 import org.qi4j.spi.Qi4jSPI;
+import org.qi4j.spi.property.PropertyTypeDescriptor;
+import org.qi4j.spi.value.ValueDescriptor;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Uniform;
@@ -47,6 +51,9 @@ public class CommandQueryClientFactory
    @Uses
    @Optional
    private ResponseHandler handler = new NullResponseHandler();
+
+   @Uses
+   private ResponseReaderDelegator readerDelegator;
 
    @Uses
    private Uniform client;
@@ -77,7 +84,7 @@ public class CommandQueryClientFactory
    {
       ClientInfo info = new ClientInfo();
       info.setAcceptedMediaTypes( Collections.singletonList( new Preference<MediaType>( MediaType.APPLICATION_JSON ) ) );
-      info.setAcceptedLanguages( Collections.singletonList( new Preference<Language>(new Language( Locale.getDefault().getLanguage()) )));
+      info.setAcceptedLanguages( Collections.singletonList( new Preference<Language>( new Language( Locale.getDefault().getLanguage() ) ) ) );
       request.setClientInfo( info );
    }
 
@@ -92,13 +99,41 @@ public class CommandQueryClientFactory
       return client;
    }
 
-   <T extends ValueComposite> T newValue( Class<T> queryResult, String jsonValue )
+   <T> T readResponse( Response response, Class<T> queryResult)
    {
+      readerDelegator.readResponse( response, queryResult );
+      String jsonValue = response.getEntityAsText();
+
       return module.valueBuilderFactory().newValueFromJSON( queryResult, jsonValue);
    }
 
-   Qi4jSPI getSPI()
+   public void writeRequest( Request request, Object queryRequest )
    {
-      return spi;
+      if (queryRequest != null)
+         setQueryParameters( request.getResourceRef(), (ValueComposite) queryRequest );
    }
+
+   private void setQueryParameters( final Reference ref, ValueComposite queryValue )
+   {
+      // Value as parameter
+      StateHolder holder = spi.getState( queryValue );
+      final ValueDescriptor descriptor = spi.getValueDescriptor( queryValue );
+
+      ref.setQuery( null );
+
+      holder.visitProperties( new StateHolder.StateVisitor<RuntimeException>()
+      {
+         public void visitProperty( QualifiedName
+               name, Object value )
+         {
+            if (value != null)
+            {
+               PropertyTypeDescriptor propertyDesc = descriptor.state().getPropertyByQualifiedName( name );
+               String queryParam = propertyDesc.propertyType().type().toQueryParameter( value );
+               ref.addQueryParameter( name.name(), queryParam );
+            }
+         }
+      } );
+   }
+
 }

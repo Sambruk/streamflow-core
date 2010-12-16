@@ -22,17 +22,12 @@ import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import se.streamsource.dci.value.EntityValue;
-import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.dci.value.link.LinksValue;
-import se.streamsource.dci.value.ResourceValue;
 import se.streamsource.dci.value.StringValue;
-import se.streamsource.dci.value.link.TitledLinkValue;
-import se.streamsource.dci.value.link.TitledLinksValue;
+import se.streamsource.dci.value.ValueAssembler;
 import se.streamsource.streamflow.infrastructure.application.AccessPointValue;
 import se.streamsource.streamflow.infrastructure.application.LinkTree;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
 import se.streamsource.streamflow.resource.caze.*;
-import se.streamsource.streamflow.resource.caze.CaseOutputConfigValue;
 import se.streamsource.streamflow.resource.conversation.ConversationDTO;
 import se.streamsource.streamflow.resource.conversation.MessageDTO;
 import se.streamsource.streamflow.resource.organization.SelectedTemplatesValue;
@@ -41,14 +36,7 @@ import se.streamsource.streamflow.resource.roles.BooleanDTO;
 import se.streamsource.streamflow.resource.roles.DateDTO;
 import se.streamsource.streamflow.resource.roles.IntegerDTO;
 import se.streamsource.streamflow.resource.roles.NamedIndexDTO;
-import se.streamsource.streamflow.resource.user.ChangePasswordCommand;
-import se.streamsource.streamflow.resource.user.NewProxyUserCommand;
-import se.streamsource.streamflow.resource.user.NewUserCommand;
-import se.streamsource.streamflow.resource.user.ProxyUserDTO;
-import se.streamsource.streamflow.resource.user.ProxyUserListDTO;
-import se.streamsource.streamflow.resource.user.RegisterUserCommand;
-import se.streamsource.streamflow.resource.user.ResetPasswordCommand;
-import se.streamsource.streamflow.resource.user.UserEntityValue;
+import se.streamsource.streamflow.resource.user.*;
 import se.streamsource.streamflow.resource.user.profile.SearchValue;
 
 /**
@@ -75,14 +63,11 @@ public class CommonResourceAssembler
       // Queries
       module.addValues( CasesQuery.class ).visibleIn( Visibility.application );
 
+      new ValueAssembler().assemble( module );
+
       // Result values
       module.addValues(
             AccessPointValue.class,
-            ResourceValue.class,
-            LinkValue.class,
-            LinksValue.class,
-            TitledLinkValue.class,
-            TitledLinksValue.class,
             ListItemValue.class,
             CaseValue.class,
             CaseGeneralDTO.class,

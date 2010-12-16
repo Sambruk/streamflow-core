@@ -193,7 +193,7 @@ public class FormElementsView
       final FieldCreationDialog dialog = fieldCreationDialog.iterator().next();
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( AdministrationResources.add_field_to_form ) );
 
-      if ( Strings.notEmpty( dialog.name() ) )
+      if ( !Strings.empty( dialog.name() ) )
       {
          final LinkValue page = findSelectedPage(  getSelectedValue() );
          list.clearSelection();
@@ -234,7 +234,7 @@ public class FormElementsView
       final NameDialog dialog = pageCreationDialog.iterator().next();
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( AdministrationResources.add_page_title ) );
 
-      if (Strings.notEmpty( dialog.name() ))
+      if (!Strings.empty( dialog.name() ))
       {
          list.clearSelection();
          return new CommandTask()

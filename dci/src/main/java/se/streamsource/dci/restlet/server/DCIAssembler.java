@@ -23,11 +23,7 @@ import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import org.restlet.service.MetadataService;
 import se.streamsource.dci.restlet.server.resultwriter.*;
-import se.streamsource.dci.value.*;
-import se.streamsource.dci.value.StringValue;
-import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.dci.value.link.LinksValue;
-import se.streamsource.dci.value.table.*;
+import se.streamsource.dci.value.ValueAssembler;
 
 import java.util.Properties;
 
@@ -70,17 +66,5 @@ public class DCIAssembler
             ResourceResultWriter.class,
             ValueCompositeResultWriter.class,
             ValueDescriptorResultWriter.class );
-
-      module.addValues( ResourceValue.class,
-            EntityValue.class,
-            LinksValue.class,
-            LinkValue.class,
-            StringValue.class,
-
-            TableValue.class,
-            ColumnValue.class,
-            RowValue.class,
-            CellValue.class,
-            TableQuery.class );
    }
 }

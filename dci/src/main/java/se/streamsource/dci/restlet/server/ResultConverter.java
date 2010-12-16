@@ -16,7 +16,6 @@
 
 package se.streamsource.dci.restlet.server;
 
-import org.qi4j.api.value.Value;
 import org.restlet.Request;
 
 /**
@@ -24,5 +23,5 @@ import org.restlet.Request;
  */
 public interface ResultConverter
 {
-   Object convert(Object result, Request request);
+   Object convert( Object result, Request request, Object[] arguments );
 }

@@ -88,7 +88,7 @@ public class RolesView
       NameDialog dialog = nameDialogs.iterator().next();
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.add_role_title ) );
       final String name = dialog.name();
-      if ( Strings.notEmpty( name ) )
+      if ( !Strings.empty( name ) )
       {
          return new CommandTask()
          {

@@ -140,7 +140,7 @@ public class SelectionElementsView
 
       dialogs.showOkCancelHelpDialog( this, dialog , i18n.text( AdministrationResources.name_label ));
 
-      if ( Strings.notEmpty( dialog.name() ) )
+      if ( !Strings.empty( dialog.name() ) )
       {
          return new CommandTask()
          {
@@ -228,7 +228,7 @@ public class SelectionElementsView
 
       dialogs.showOkCancelHelpDialog( this, dialog , i18n.text( AdministrationResources.rename ));
 
-      if ( Strings.notEmpty( dialog.name() ))
+      if ( !Strings.empty( dialog.name() ))
       {
          return new CommandTask()
          {

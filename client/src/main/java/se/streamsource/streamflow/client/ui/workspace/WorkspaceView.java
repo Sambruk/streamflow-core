@@ -35,10 +35,7 @@ import se.streamsource.streamflow.client.ui.workspace.cases.CaseResources;
 import se.streamsource.streamflow.client.ui.workspace.context.WorkspaceContextView2;
 import se.streamsource.streamflow.client.ui.workspace.search.SearchResultTableModel;
 import se.streamsource.streamflow.client.ui.workspace.search.SearchView;
-import se.streamsource.streamflow.client.ui.workspace.table.AssignmentsCaseTableFormatter;
-import se.streamsource.streamflow.client.ui.workspace.table.CasesTableView;
-import se.streamsource.streamflow.client.ui.workspace.table.CasesView;
-import se.streamsource.streamflow.client.ui.workspace.table.InboxCaseTableFormatter;
+import se.streamsource.streamflow.client.ui.workspace.table.*;
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.RoundedBorder;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
@@ -193,14 +190,15 @@ public class WorkspaceView
                if (contextItem != null)
                {
                   TableFormat tableFormat;
+                  CasesTableView casesTable;
                   if (contextItem.getRelation().equals(Icons.assign.name()) )
                   {
                      tableFormat = new AssignmentsCaseTableFormatter();
+                     casesTable = obf.newObjectBuilder( CasesTableView.class ).use( contextItem.getClient(), tableFormat ).newInstance();
                   } else
                   {
-                     tableFormat = new InboxCaseTableFormatter();
+                     casesTable = obf.newObjectBuilder( CasesGoogleTableView.class ).use( contextItem.getClient() ).newInstance();
                   }
-                  CasesTableView casesTable = obf.newObjectBuilder( CasesTableView.class ).use( contextItem.getClient(), tableFormat ).newInstance();
 
                   casesTable.getCaseTable().getSelectionModel().addListSelectionListener( new CaseSelectionListener() );
 

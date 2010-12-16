@@ -194,7 +194,7 @@ public class AdministrationTreeView
 
       NameDialog dialog = nameDialogs.iterator().next();
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.change_ou_title ) );
-      if (Strings.notEmpty( dialog.name() ))
+      if (!Strings.empty( dialog.name() ))
       {
          if (node instanceof MutableTreeNode)
          {
@@ -224,7 +224,7 @@ public class AdministrationTreeView
 
       final NameDialog dialog = nameDialogs.iterator().next();
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.create_ou_title ) );
-      if (Strings.notEmpty( dialog.name() ))
+      if (!Strings.empty( dialog.name() ))
       {
          return new CommandTask()
          {

@@ -105,7 +105,7 @@ public class ResolutionsView
 
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.add_resolution_title ) );
 
-      if (Strings.notEmpty( dialog.name() ))
+      if (!Strings.empty( dialog.name() ))
       {
          return new CommandTask()
          {
@@ -164,7 +164,7 @@ public class ResolutionsView
       final NameDialog dialog = nameDialogs.iterator().next();
       dialogs.showOkCancelHelpDialog( this, dialog );
 
-      if (Strings.notEmpty( dialog.name() ))
+      if (!Strings.empty( dialog.name() ))
       {
          return new CommandTask()
          {
