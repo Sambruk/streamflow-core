@@ -61,7 +61,6 @@ public interface CaseEntity
       DueOn.Data,
       Notable.Data,
       Ownable.Data,
-      PossibleActions,
       CaseId.Data,
       Status.Data,
       Conversations.Data,

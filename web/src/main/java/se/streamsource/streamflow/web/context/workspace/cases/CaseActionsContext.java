@@ -25,7 +25,6 @@ import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
-import org.qi4j.api.value.ValueBuilder;
 import org.restlet.data.Disposition;
 import org.restlet.data.MediaType;
 import org.restlet.representation.OutputRepresentation;
@@ -34,7 +33,6 @@ import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.link.LinksValue;
-import se.streamsource.streamflow.domain.interaction.gtd.Actions;
 import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
 import se.streamsource.streamflow.domain.structure.Removable;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
@@ -43,7 +41,6 @@ import se.streamsource.streamflow.web.application.pdf.CasePdfGenerator;
 import se.streamsource.streamflow.web.context.RequiresPermission;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseTypeQueries;
-import se.streamsource.streamflow.web.domain.entity.caze.PossibleActions;
 import se.streamsource.streamflow.web.domain.interaction.gtd.*;
 import se.streamsource.streamflow.web.domain.interaction.security.PermissionType;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
@@ -79,8 +76,6 @@ public interface CaseActionsContext
       extends DeleteContext, Context
 {
    // List possible actions
-
-   public Actions actions();
 
    public LinksValue possiblesendto();
 
@@ -151,20 +146,6 @@ public interface CaseActionsContext
       Module module;
 
       // List possible actions
-
-      public Actions actions()
-      {
-         ValueBuilder<Actions> builder = module.valueBuilderFactory().newValueBuilder( se.streamsource.streamflow.domain.interaction.gtd.Actions.class );
-         List<String> actions = builder.prototype().actions().get();
-
-         PossibleActions possibleActions = RoleMap.role( PossibleActions.class );
-         Actor actor = RoleMap.role( Actor.class );
-
-         possibleActions.addActions( actor, actions );
-
-         return builder.newInstance();
-      }
-
       public LinksValue possiblesendto()
       {
          LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() ).command( "sendto" );
