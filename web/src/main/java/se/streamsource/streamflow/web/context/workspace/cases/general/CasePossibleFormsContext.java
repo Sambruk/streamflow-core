@@ -17,6 +17,8 @@
 package se.streamsource.streamflow.web.context.workspace.cases.general;
 
 import se.streamsource.dci.api.IndexContext;
+import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
@@ -25,7 +27,7 @@ import se.streamsource.streamflow.web.domain.structure.form.SelectedForms;
 import java.util.Collections;
 import java.util.List;
 
-import static se.streamsource.dci.api.RoleMap.*;
+import static se.streamsource.dci.api.RoleMap.role;
 
 /**
  * JAVADOC
@@ -37,7 +39,7 @@ public class CasePossibleFormsContext
    {
       CaseType caseType = role( TypedCase.Data.class ).caseType().get();
 
-      if (caseType != null)
+      if (caseType != null && (role(Status.class).isStatus( CaseStates.DRAFT ) || role(Status.class).isStatus( CaseStates.OPEN )))
       {
          return ((SelectedForms.Data) caseType).selectedForms().toList();
       } else {
