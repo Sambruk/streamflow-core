@@ -45,7 +45,7 @@ public interface SavedSearches
       @Aggregated
       ManyAssociation<SavedSearch> searches();
 
-      SavedSearch createdSavedSearch( @Optional DomainEvent event, String id );
+      SavedSearch createdSavedSearch( @Optional DomainEvent event, String id, String query );
 
       void removedSavedSearch( @Optional DomainEvent event, SavedSearch search );
    }
@@ -65,7 +65,7 @@ public interface SavedSearches
       public void createSavedSearch( SearchValue search )
       {
          String id = idgen.generate( Identity.class );
-         SavedSearch newSearch = createdSavedSearch( null, id );
+         SavedSearch newSearch = createdSavedSearch( null, id, search.query().get() );
          newSearch.changeDescription( search.name().get() );
       }
 
