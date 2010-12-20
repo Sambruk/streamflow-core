@@ -20,6 +20,7 @@ package se.streamsource.dci.restlet.client;
 import org.qi4j.api.common.QualifiedName;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.property.StateHolder;
+import org.qi4j.api.util.Iterables;
 import org.qi4j.api.value.ValueComposite;
 import org.qi4j.spi.property.PropertyTypeDescriptor;
 import org.qi4j.spi.value.ValueDescriptor;
@@ -33,6 +34,7 @@ import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.value.ResourceValue;
 import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.dci.value.link.Links;
 
 import java.io.IOException;
 
@@ -129,6 +131,20 @@ public class CommandQueryClient
    public synchronized void postLink( LinkValue link ) throws ResourceException
    {
       postCommand( link.href().get(), new EmptyRepresentation() );
+   }
+
+   public synchronized void command(String relation)
+      throws ResourceException
+   {
+      LinkValue link = Iterables.first( Iterables.filter( Links.withRel( relation ), resourceValue.commands().get()));
+      if (link == null)
+         throw new ResourceException( Status.CLIENT_ERROR_NOT_FOUND );
+
+      // Check if we should do POST or PUT
+      if (Links.withClass( "idempotent" ).satisfiedBy( link ))
+         putCommand( link.href().get() );
+      else
+         postLink( link );
    }
 
    public synchronized void postCommand( String operation ) throws ResourceException

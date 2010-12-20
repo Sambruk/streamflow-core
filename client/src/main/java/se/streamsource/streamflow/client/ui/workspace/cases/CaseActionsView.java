@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.client.ui.workspace.cases.actions;
+package se.streamsource.streamflow.client.ui.workspace.cases;
 
 import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.event.ListEvent;
-import ca.odell.glazedlists.event.ListEventListener;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ApplicationContext;
@@ -29,16 +27,16 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilder;
 import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.util.Iterables;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.TitledLinkValue;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
 import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.util.CommandTask;
-import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
@@ -53,6 +51,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
+import java.util.Observable;
+import java.util.Observer;
 
 import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.matches;
 import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withUsecases;
@@ -61,7 +61,7 @@ import static se.streamsource.streamflow.infrastructure.event.domain.source.help
  * JAVADOC
  */
 public class CaseActionsView extends JPanel
-   implements TransactionListener, ListEventListener<String>
+   implements TransactionListener, Observer
 {
    @Uses
    protected ObjectBuilder<SelectLinkDialog> projectSelectionDialog;
@@ -78,15 +78,15 @@ public class CaseActionsView extends JPanel
    @Structure
    ValueBuilderFactory vbf;
 
-   private CaseActionsModel model;
+   private CaseModel model;
 
    private JPanel actionsPanel = new JPanel();
 
-   public CaseActionsView( @Service ApplicationContext context, @Uses CommandQueryClient client, @Structure ObjectBuilderFactory obf )
+   public CaseActionsView( @Service ApplicationContext context, @Uses CaseModel model)
    {
-      model = obf.newObjectBuilder( CaseActionsModel.class ).use(client).newInstance();
+      this.model = model;
 
-      model.getActionList().addListEventListener( this );
+      model.addObserver( this );
 
       setLayout( new BorderLayout() );
       setBorder( new EmptyBorder( 5, 5, 5, 5 ) );
@@ -95,36 +95,22 @@ public class CaseActionsView extends JPanel
       setActionMap( context.getActionMap( this ) );
       MacOsUIWrapper.convertAccelerators( context.getActionMap(
             CaseActionsView.class, this ) );
-
-      new RefreshWhenShowing(this, model);
-   }
-
-   public void refresh()
-   {
-      actionsPanel.removeAll();
-
-      ActionMap am = getActionMap();
-
-      for (String action : model.getActionList())
-      {
-         javax.swing.Action action1 = am.get( action );
-         if (action1 != null)
-         {
-            JButton button = new JButton( action1 );
-            button.registerKeyboardAction( action1, (KeyStroke) action1
-                  .getValue( javax.swing.Action.ACCELERATOR_KEY ),
-                  JComponent.WHEN_IN_FOCUSED_WINDOW );
-            button.setHorizontalAlignment( SwingConstants.LEFT );
-            actionsPanel.add( button );
-//				NotificationGlassPane.registerButton(button);
-         }
-      }
-
-      revalidate();
-      repaint();
    }
 
    // Case actions
+   @Action
+   public Task createsubcase()
+   {
+      return new CommandTask()
+      {
+         @Override
+         public void command()
+            throws Exception
+         {
+            model.createSubCase();
+         }
+      };
+   }
 
    @Action(block = Task.BlockingScope.COMPONENT)
    public Task open()
@@ -223,7 +209,7 @@ public class CaseActionsView extends JPanel
    public Task sendto()
    {
       final SelectLinkDialog dialog = projectSelectionDialog.use(
-            model.getPossibleProjects() ).newInstance();
+            model.getPossibleSendTo() ).newInstance();
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( WorkspaceResources.choose_owner_title ) );
 
       if (dialog.getSelectedLink() != null)
@@ -298,7 +284,7 @@ public class CaseActionsView extends JPanel
    }
 
    @Action(block = Task.BlockingScope.COMPONENT)
-   public Task export()
+   public Task exportpdf()
    {
       //TODO create a dialog to give the user the oportunity to choose the contents of CaseOutputConfigValue
       final ValueBuilder<CaseOutputConfigValue> config = vbf.newValueBuilder( CaseOutputConfigValue.class );
@@ -318,9 +304,30 @@ public class CaseActionsView extends JPanel
       }
    }
 
-   public void listChanged( ListEvent<String> stringListEvent )
+   public void update( Observable o, Object arg )
    {
-      refresh();
+      // Update list of action buttons
+      actionsPanel.removeAll();
+
+      ActionMap am = getActionMap();
+
+      for (LinkValue commandLink : Iterables.flatten( model.getCommands(), model.getQueries() ))
+      {
+         javax.swing.Action action1 = am.get( commandLink.rel().get() );
+         if (action1 != null)
+         {
+            JButton button = new JButton( action1 );
+            button.registerKeyboardAction( action1, (KeyStroke) action1
+                  .getValue( javax.swing.Action.ACCELERATOR_KEY ),
+                  JComponent.WHEN_IN_FOCUSED_WINDOW );
+            button.setHorizontalAlignment( SwingConstants.LEFT );
+            actionsPanel.add( button );
+//				NotificationGlassPane.registerButton(button);
+         }
+      }
+
+      revalidate();
+      repaint();
    }
 
     private class PrintCaseTask extends Task<File, Void>

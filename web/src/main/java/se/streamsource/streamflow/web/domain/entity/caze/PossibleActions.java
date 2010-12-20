@@ -20,7 +20,6 @@ package se.streamsource.streamflow.web.domain.entity.caze;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Actor;
-import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.project.Member;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 
@@ -52,14 +51,10 @@ public interface PossibleActions
                   if (aCase.owner().get() != null)
                   {
                      actions.add( "open" );
-                     actions.add( "sendto" );
-
-                  } else
-                  {
-
-                     actions.add( "sendto" );
                   }
+                  actions.add( "sendto" );
                   actions.add( "delete" );
+                  actions.add( "createsubcase" );
                }
 
                return;
@@ -73,19 +68,18 @@ public interface PossibleActions
                {
                   if (aCase.isAssigned())
                   {
-                     actions.add( "sendto" );
                      actions.add( "unassign" );
                      actions.add( "onhold" );
                   } else
                   {
                      actions.add( "assign" );
-                     actions.add( "sendto" );
                   }
 
-                  CaseType caseType = aCase.caseType().get();
+                  actions.add( "sendto" );
                   actions.add( "close" );
                   actions.add( "delete" );
                   actions.add( "export" );
+                  actions.add( "createsubcase" );
                }
 
                return;

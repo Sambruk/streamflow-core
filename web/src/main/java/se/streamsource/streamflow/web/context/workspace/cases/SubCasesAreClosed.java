@@ -15,44 +15,45 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.context;
+package se.streamsource.streamflow.web.context.workspace.cases;
 
 import se.streamsource.dci.api.InteractionConstraint;
 import se.streamsource.dci.api.InteractionConstraintDeclaration;
 import se.streamsource.dci.api.RoleMap;
-import se.streamsource.streamflow.web.domain.interaction.security.Authorization;
-import se.streamsource.streamflow.web.domain.interaction.security.PermissionType;
+import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
+import se.streamsource.streamflow.web.domain.structure.caze.Case;
+import se.streamsource.streamflow.web.domain.structure.caze.SubCases;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.security.Principal;
 
 /**
- * Check if current principal has a given permission
+ * Check if current case has only closed subcases (recursively)
  */
-@InteractionConstraintDeclaration(RequiresPermission.RequiresPermissionConstraint.class)
+@InteractionConstraintDeclaration(SubCasesAreClosed.SubCasesAreClosedConstraint.class)
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD, ElementType.TYPE})
-public @interface RequiresPermission
+public @interface SubCasesAreClosed
 {
-   PermissionType value();
-
-   class RequiresPermissionConstraint
-         implements InteractionConstraint<RequiresPermission>
+   class SubCasesAreClosedConstraint
+         implements InteractionConstraint<SubCasesAreClosed>
    {
-      public boolean isValid( RequiresPermission requiresPermission, RoleMap roleMap )
+      public boolean isValid( SubCasesAreClosed hasResolutions, RoleMap roleMap )
       {
-         Principal principal = roleMap.get( Principal.class );
+         return checkClosedSubcases( RoleMap.role( SubCases.Data.class ) );
+      }
 
-         // Administrator has all permissions
-         if (principal.getName().equals("administrator"))
-            return true;
+      private boolean checkClosedSubcases( SubCases.Data subcases )
+      {
+         for (Case aCase : subcases.subCases())
+         {
+            if (!aCase.isStatus( CaseStates.CLOSED ) || !checkClosedSubcases( (SubCases.Data) aCase ))
+               return false;
+         }
 
-         Authorization policy = roleMap.get( Authorization.class );
-
-         return policy.hasPermission( principal.getName(), requiresPermission.value().name() );
+         return true;
       }
    }
 }

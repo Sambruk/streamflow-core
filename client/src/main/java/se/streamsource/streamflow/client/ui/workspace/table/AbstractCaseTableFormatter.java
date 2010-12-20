@@ -88,6 +88,7 @@ public abstract class AbstractCaseTableFormatter
          case 1:
             ArrayList<String> icons = new ArrayList<String>();
 
+            icons.add( caseValue.parentCase().get() != null ? Icons.subcase.toString() : "empty" );
             icons.add( caseValue.hasContacts().get() ? Icons.projects.toString() : "empty" );
             icons.add( caseValue.hasConversations().get() ? Icons.conversations.toString() : "empty" );
             icons.add( caseValue.hasSubmittedForms().get() ? Icons.forms.toString() : "empty" );

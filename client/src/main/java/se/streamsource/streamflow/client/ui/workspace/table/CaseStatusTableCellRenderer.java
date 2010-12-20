@@ -38,7 +38,7 @@ public class CaseStatusTableCellRenderer extends DefaultTableCellRenderer
       renderedComponent.setHorizontalAlignment( SwingConstants.CENTER );
       setText( null );
 
-      setIcon( i18n.icon( CaseResources.valueOf("case_status_"+value.toString().toLowerCase()+"_icon"),
+      setIcon( i18n.icon( CaseResources.valueOf( "case_status_" + value.toString().toLowerCase() + "_icon" ),
             i18n.ICON_16 ) );
       setName( i18n.text( CaseResources.valueOf("case_status_"+value.toString().toLowerCase()+"_text" ) ));
       setToolTipText( i18n.text( CaseResources.valueOf("case_status_"+value.toString().toLowerCase()+"_text" ) ) );

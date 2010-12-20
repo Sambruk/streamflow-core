@@ -17,21 +17,20 @@
 
 package se.streamsource.streamflow.web.context.cases;
 
+import org.apache.commons.collections.ArrayStack;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
+import org.qi4j.api.util.Function;
 import org.qi4j.api.util.Iterables;
+import se.streamsource.dci.api.Contexts;
+import se.streamsource.dci.api.InteractionConstraints;
 import se.streamsource.dci.api.RoleMap;
+import se.streamsource.streamflow.web.application.security.UserPrincipal;
 import se.streamsource.streamflow.web.context.ContextTest;
-import se.streamsource.streamflow.web.context.administration.CaseTypesContext;
-import se.streamsource.streamflow.web.context.administration.MembersContext;
-import se.streamsource.streamflow.web.context.administration.OrganizationalUnitsContext;
-import se.streamsource.streamflow.web.context.administration.OrganizationsContext;
-import se.streamsource.streamflow.web.context.administration.ProjectsContext;
-import se.streamsource.streamflow.web.context.administration.ResolutionsContext;
-import se.streamsource.streamflow.web.context.administration.SelectedCaseTypesContext;
-import se.streamsource.streamflow.web.context.administration.SelectedResolutionsContext;
+import se.streamsource.streamflow.web.context.administration.*;
 import se.streamsource.streamflow.web.context.administration.labels.LabelsContext;
 import se.streamsource.streamflow.web.context.administration.labels.SelectedLabelsContext;
 import se.streamsource.streamflow.web.context.organizations.OrganizationalUnitsContextTest;
@@ -50,12 +49,13 @@ import se.streamsource.streamflow.web.domain.structure.organization.Organization
 import se.streamsource.streamflow.web.domain.structure.project.Project;
 import se.streamsource.streamflow.web.domain.structure.user.User;
 
+import java.lang.reflect.Method;
 import java.util.List;
 
-import static java.util.Arrays.*;
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
-import static org.qi4j.api.util.Iterables.*;
+import static java.util.Arrays.asList;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertThat;
+import static org.qi4j.api.util.Iterables.first;
 
 /**
  * Check lifecycle of a case
@@ -63,6 +63,8 @@ import static org.qi4j.api.util.Iterables.*;
 public class CaseActionsContextTest
       extends ContextTest
 {
+   InteractionConstraints constraints;
+
    @BeforeClass
    public static void before() throws UnitOfWorkCompletionException
    {
@@ -125,6 +127,12 @@ public class CaseActionsContextTest
       clearEvents();
    }
 
+   @Before
+   public void services()
+   {
+      constraints = serviceLocator.<InteractionConstraints>findService( InteractionConstraints.class ).get();
+   }
+
    @Test
    public void testCaseActions() throws UnitOfWorkCompletionException
    {
@@ -133,6 +141,7 @@ public class CaseActionsContextTest
          UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
          RoleMap.newCurrentRoleMap();
          playRole( User.class, "test" );
+         RoleMap.current().set( new UserPrincipal("test") );
          DraftsContext drafts = context( DraftsContext.class );
          drafts.createcase();
          uow.complete();
@@ -145,6 +154,7 @@ public class CaseActionsContextTest
          UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
          RoleMap.newCurrentRoleMap();
          playRole( User.class, "test" );
+         RoleMap.current().set( new UserPrincipal("test") );
 
          DraftsContext drafts = context( DraftsContext.class );
          Iterable<Case> caseList = drafts.index();
@@ -157,6 +167,8 @@ public class CaseActionsContextTest
       {
          UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
          RoleMap.newCurrentRoleMap();
+         playRole( User.class, "test" );
+         RoleMap.current().set( new UserPrincipal("test") );
          playRole( caze );
 
          context( CaseGeneralContext.class ).changedescription( stringValue( "Case1" ) );
@@ -166,13 +178,15 @@ public class CaseActionsContextTest
 
       // Check actions for new draft
       {
-         checkActions( caze, "sendto", "delete" );
+         checkActions( caze, "delete","sendto", "createSubCase" );
       }
 
       // Send to project
       {
          UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
          RoleMap.newCurrentRoleMap();
+         playRole( User.class, "test" );
+         RoleMap.current().set( new UserPrincipal("test") );
          playRole( caze );
 
          CaseActionsContext context = context( CaseActionsContext.class );
@@ -183,13 +197,15 @@ public class CaseActionsContextTest
 
       // Check actions for draft sent to project
       {
-         checkActions( caze, "open", "sendto", "delete" );
+         checkActions( caze, "delete", "open", "sendto", "createSubCase" );
       }
 
       // Select casetype
       {
          UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
          RoleMap.newCurrentRoleMap();
+         playRole( User.class, "test" );
+         RoleMap.current().set( new UserPrincipal("test") );
          playRole( caze );
 
          CaseGeneralContext context = context( CaseGeneralContext.class );
@@ -203,6 +219,8 @@ public class CaseActionsContextTest
       {
          UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
          RoleMap.newCurrentRoleMap();
+         playRole( User.class, "test" );
+         RoleMap.current().set( new UserPrincipal("test") );
          playRole( caze );
 
          LabelableContext context = context( LabelableContext.class );
@@ -216,6 +234,8 @@ public class CaseActionsContextTest
       {
          UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
          RoleMap.newCurrentRoleMap();
+         playRole( User.class, "test" );
+         RoleMap.current().set( new UserPrincipal("test") );
          playRole( caze );
 
          context( CaseActionsContext.class ).open();
@@ -226,7 +246,7 @@ public class CaseActionsContextTest
 
       // Check open actions
       {
-         checkActions( caze, "assign", "sendto", "close", "delete", "export" );
+         checkActions( caze, "delete", "resolve", "sendto", "createSubCase", "assign" );
       }
 
       // Assign case
@@ -234,6 +254,7 @@ public class CaseActionsContextTest
          UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
          RoleMap.newCurrentRoleMap();
          playRole( User.class, "test" );
+         RoleMap.current().set( new UserPrincipal("test") );
 
          playRole( Project.class, findLink( context( WorkspaceProjectsContext.class ).index(), "Project1" ) );
 // TODO This is random!         playRole( first( context( InboxContext.class ).index() ) );
@@ -247,7 +268,7 @@ public class CaseActionsContextTest
 
       // Check assigned actions
       {
-         checkActions( caze, "sendto", "unassign", "onhold", "close", "delete", "export" );
+         checkActions( caze, "delete", "resolve", "sendto", "createSubCase", "unassign", "onhold");
       }
 
       // Resolve case
@@ -255,6 +276,7 @@ public class CaseActionsContextTest
          UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
          RoleMap.newCurrentRoleMap();
          playRole( User.class, "test" );
+         RoleMap.current().set( new UserPrincipal("test") );
 
          playRole( Project.class, findLink( context( WorkspaceProjectsContext.class ).index(), "Project1" ) );
 //         playRole( first( context( AssignmentsContext.class ).index() ) );
@@ -271,7 +293,7 @@ public class CaseActionsContextTest
 
       // Check resolved actions
       {
-         checkActions( caze, "reopen", "export" );
+         checkActions( caze, "delete", "reopen" );
       }
 
       // Reopen case
@@ -279,6 +301,7 @@ public class CaseActionsContextTest
          UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
          RoleMap.newCurrentRoleMap();
          playRole( User.class, "test" );
+         RoleMap.current().set( new UserPrincipal("test") );
          playRole( caze );
 
          context( CaseActionsContext.class ).reopen();
@@ -289,7 +312,7 @@ public class CaseActionsContextTest
 
       // Check reopened actions
       {
-         checkActions( caze, "sendto", "unassign", "onhold", "close", "delete", "export" );
+         checkActions( caze, "delete", "resolve", "sendto", "createSubCase", "unassign", "onhold" );
       }
 
       // Close
@@ -297,6 +320,7 @@ public class CaseActionsContextTest
          UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
          RoleMap.newCurrentRoleMap();
          playRole( User.class, "test" );
+         RoleMap.current().set( new UserPrincipal("test") );
          playRole( caze );
 
          context( CaseActionsContext.class ).close();
@@ -307,7 +331,7 @@ public class CaseActionsContextTest
 
       // Check closed actions
       {
-         checkActions( caze, "reopen", "export" );
+         checkActions( caze, "delete", "reopen" );
       }
    }
 
@@ -315,10 +339,20 @@ public class CaseActionsContextTest
    {
       UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
       RoleMap.newCurrentRoleMap();
+      RoleMap.current().set( new UserPrincipal( "test" ) );
       playRole( caze );
       playRole( User.class, "test" );
-      CaseActionsContext cazeActions = context( CaseActionsContext.class );
-      List<String> actions = cazeActions.actions().actions().get();
+      RoleMap.current().set( new UserPrincipal("test") );
+
+      List<String> actions = new ArrayStack(  );
+      Iterables.addAll( actions, Iterables.map( new Function<Method, String>()
+      {
+         public String map( Method method )
+         {
+            return method.getName();
+         }
+      },Contexts.commands( CaseActionsContext.class, constraints,  RoleMap.current()) ));
+
       assertThat( actions, equalTo( asList( allowedActions ) ) );
       uow.discard();
    }
