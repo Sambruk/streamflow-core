@@ -21,8 +21,7 @@ import org.qi4j.api.common.Visibility;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.dci.restlet.client.CommandQueryClientFactory;
+import se.streamsource.dci.restlet.client.ClientAssembler;
 import se.streamsource.streamflow.client.domain.individual.AccountEntity;
 import se.streamsource.streamflow.client.domain.individual.AccountSettingsValue;
 import se.streamsource.streamflow.client.domain.individual.IndividualEntity;
@@ -54,9 +53,6 @@ public class DomainAssembler
    private void restDomainModel( ModuleAssembly module ) throws AssemblyException
    {
       new CommonResourceAssembler().assemble( module );
-
-      // /users
-      module.addObjects( CommandQueryClientFactory.class, CommandQueryClient.class
-      ).visibleIn( Visibility.application );
+      new ClientAssembler().assemble( module );
    }
 }

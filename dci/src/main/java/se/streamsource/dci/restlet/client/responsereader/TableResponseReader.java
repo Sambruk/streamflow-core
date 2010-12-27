@@ -1,15 +1,18 @@
-/*
- * Copyright (c) 2010, Rickard Öberg. All Rights Reserved.
+/**
+ *
+ * Copyright 2009-2010 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package se.streamsource.dci.restlet.client.responsereader;
@@ -40,9 +43,9 @@ public class TableResponseReader
    {
       if (response.getEntity().getMediaType().equals( MediaType.APPLICATION_JSON) && TableValue.class.isAssignableFrom( resultType ))
       {
+         String jsonValue = response.getEntityAsText();
          try
          {
-            String jsonValue = response.getEntityAsText();
             JSONObject jsonObject = new JSONObject(jsonValue);
 
             JSONObject table = jsonObject.getJSONObject( "table" );
@@ -64,10 +67,11 @@ public class TableResponseReader
                for (int j = 0; j < cells.length(); j++)
                {
                   JSONObject cell = cells.getJSONObject( j );
-                  Object value = cell.get( "v" );
+                  Object value = cell.opt( "v" );
                   String formatted = cell.optString("f");
                   builder.cell( value, formatted );
                }
+               builder.endRow();
             }
 
             return (T) builder.newTable();

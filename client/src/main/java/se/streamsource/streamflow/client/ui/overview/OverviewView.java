@@ -17,11 +17,7 @@
 
 package se.streamsource.streamflow.client.ui.overview;
 
-import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.FilterList;
-import ca.odell.glazedlists.SeparatorList;
-import ca.odell.glazedlists.SortedList;
-import ca.odell.glazedlists.TextFilterator;
+import ca.odell.glazedlists.*;
 import ca.odell.glazedlists.gui.TableFormat;
 import ca.odell.glazedlists.swing.EventListModel;
 import ca.odell.glazedlists.swing.TextComponentMatcherEditor;
@@ -32,26 +28,21 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.Icons;
-import se.streamsource.streamflow.client.util.RefreshWhenShowing;
-import se.streamsource.streamflow.client.util.SeparatorContextItemListCellRenderer;
+import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.ui.ContextItem;
 import se.streamsource.streamflow.client.ui.ContextItemGroupComparator;
 import se.streamsource.streamflow.client.ui.ContextItemListRenderer;
+import se.streamsource.streamflow.client.ui.workspace.cases.CaseResources;
+import se.streamsource.streamflow.client.ui.workspace.table.CasesTableFormatter;
 import se.streamsource.streamflow.client.ui.workspace.table.CasesTableView;
-import se.streamsource.streamflow.client.ui.workspace.table.InboxCaseTableFormatter;
+import se.streamsource.streamflow.client.ui.workspace.table.CasesView;
+import se.streamsource.streamflow.client.util.RefreshWhenShowing;
+import se.streamsource.streamflow.client.util.SeparatorContextItemListCellRenderer;
 
-import javax.swing.AbstractAction;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTextField;
-import javax.swing.KeyStroke;
-import javax.swing.ListSelectionModel;
+import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.util.Comparator;
@@ -65,15 +56,19 @@ public class OverviewView
 {
    private JList overviewList;
    private JSplitPane pane;
+   private CasesView casesView;
    private OverviewModel model;
+   private final CommandQueryClient client;
 
    public OverviewView( final @Service ApplicationContext context,
                         final @Uses CommandQueryClient client,
                         final @Structure ObjectBuilderFactory obf )
    {
       super( new BorderLayout() );
+      this.client = client;
 
       overviewList = new JList();
+      casesView = obf.newObject( CasesView.class );
 
       model = obf.newObjectBuilder( OverviewModel.class ).use( client ).newInstance();
 
@@ -120,7 +115,7 @@ public class OverviewView
       overviewOutline.setMinimumSize( new Dimension( 150, 300 ) );
 
       pane.setLeftComponent( overviewOutline );
-      pane.setRightComponent( new JPanel() );
+      pane.setRightComponent( casesView );
 
       add( pane, BorderLayout.CENTER );
 
@@ -144,13 +139,12 @@ public class OverviewView
                      tableFormat = new OverviewAssignmentsCaseTableFormatter();
                   } else
                   {
-                     tableFormat = new InboxCaseTableFormatter();
+                     tableFormat = new CasesTableFormatter();
                   }
                   CasesTableView casesTable = obf.newObjectBuilder( CasesTableView.class ).use( contextItem.getClient(), tableFormat ).newInstance();
+                  casesTable.getCaseTable().getSelectionModel().addListSelectionListener( new CaseSelectionListener() );
 
-//                  casesTable.getCaseTable().getSelectionModel().addListSelectionListener( new CaseSelectionListener() );
-
-                  pane.setRightComponent( casesTable );
+                  casesView.showTable( casesTable );
                } else
                {
                   // TODO Overview of all projects
@@ -173,5 +167,33 @@ public class OverviewView
       } );
 
       new RefreshWhenShowing(this, model);
+   }
+
+   class CaseSelectionListener
+         implements ListSelectionListener
+   {
+      public void valueChanged( ListSelectionEvent e )
+      {
+         if (!e.getValueIsAdjusting())
+         {
+            JTable caseTable = casesView.getCaseTableView().getCaseTable();
+
+            try
+            {
+               if (!caseTable.getSelectionModel().isSelectionEmpty())
+               {
+                  int selectedRow = caseTable.getSelectedRow();
+                  if (selectedRow != -1)
+                  {
+                     String id = (String) caseTable.getModel().getValueAt( caseTable.convertRowIndexToModel(selectedRow), 5 );
+                     casesView.showCase( client.getClient( "../workspace/cases/" ).getSubClient( id ) );
+                  }
+               }
+            } catch (Exception e1)
+            {
+               throw new OperationException( CaseResources.could_not_view_details, e1 );
+            }
+         }
+      }
    }
 }

@@ -26,6 +26,7 @@ import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseDetailView;
+import se.streamsource.streamflow.client.ui.workspace.cases.CaseModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.SubCasesView;
 import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
@@ -57,6 +58,7 @@ public class CasesDetailView
 
    private Reference currentCase;
    private CommandQueryClient currentMainCase;
+   private CaseModel model;
 
    public CasesDetailView(@Service ApplicationContext context)
    {
@@ -87,17 +89,19 @@ public class CasesDetailView
    {
       if (currentCase == null || !currentCase.equals( client.getReference() ))
       {
+         model = obf.newObjectBuilder( CaseModel.class ).use( client ).newInstance();
+
          if (current != null)
          {
             int tab = current.getSelectedTab();
             currentCase = client.getReference();
-            current = obf.newObjectBuilder( CaseDetailView.class ).use( client ).newInstance();
+            current = obf.newObjectBuilder( CaseDetailView.class ).use( client, model ).newInstance();
             current.setSelectedTab( tab );
             casePanel.setRightComponent( current );
 
             if (!isSubCase)
             {
-               subCasesView = obf.newObjectBuilder( SubCasesView.class ).use( client ).newInstance();
+               subCasesView = obf.newObjectBuilder( SubCasesView.class ).use( client, model ).newInstance();
                casePanel.setLeftComponent( subCasesView );
                casePanel.setDividerLocation( 0.0 );
                casePanel.setLastDividerLocation( 150 );
@@ -107,12 +111,12 @@ public class CasesDetailView
          } else
          {
             currentCase = client.getReference();
-            current = obf.newObjectBuilder( CaseDetailView.class ).use( client ).newInstance();
+            current = obf.newObjectBuilder( CaseDetailView.class ).use( client, model ).newInstance();
             casePanel.setRightComponent( current );
 
             if (!isSubCase)
             {
-               subCasesView = obf.newObjectBuilder( SubCasesView.class ).use( client ).newInstance();
+               subCasesView = obf.newObjectBuilder( SubCasesView.class ).use( client, model ).newInstance();
                casePanel.setLeftComponent( subCasesView );
                casePanel.setDividerLocation( 0.0 );
                casePanel.setLastDividerLocation( 150 );
@@ -134,14 +138,13 @@ public class CasesDetailView
 
                      if (link != null)
                      {
-                        show(client.getClient( link ), true);
+                        show( client.getClient( link ), true );
                      }
                   }
                }
             } );
             subCasesView.getCaseButton().addActionListener( getActionMap().get( "showMainCase" ));
-            subCasesView.getParentCaseButton().addActionListener( getActionMap().get("showParentCase"));
-            subCasesView.setModel( current.getCaseInfo().getModel() );
+            subCasesView.getParentCaseButton().addActionListener( getActionMap().get( "showParentCase" ) );
          }
 
          current.requestFocusInWindow();
@@ -166,7 +169,7 @@ public class CasesDetailView
    @Action
    public void showParentCase()
    {
-      show(currentMainCase.getClient( subCasesView.getModel().getInfo().parentCase().get()));
+      show(currentMainCase.getClient( subCasesView.getModel().getIndex().parentCase().get()));
    }
 
    @Override
@@ -191,25 +194,30 @@ public class CasesDetailView
 
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
    {
-      if (matches( onEntityTypes( "se.streamsource.streamflow.web.domain.entity.caze.CaseEntity" ), transactions ))
+      if (currentCase != null)
       {
-         if (matches( withNames( "deletedEntity", "createdCase" ), transactions ))
+         if (matches( onEntityTypes( "se.streamsource.streamflow.web.domain.entity.caze.CaseEntity" ), transactions ))
          {
-            if (currentMainCase.getReference().equals(currentCase))
+            if (matches( withNames( "deletedEntity", "createdCase" ), transactions ))
+            {
+               if (currentMainCase.getReference().equals(currentCase))
+                  clear();
+               else
+                  show(currentMainCase);
+            } else if (matches(withUsecases( "createsubcase" ), transactions ))
+            {
+               // Do nothing
+            } // only clear detail if it is not a draft
+            else if (matches( withNames( "changedOwner" ), transactions )
+                  && !"DRAFT".equals( model.getIndex().status().get().name() ))
+            {
                clear();
-            else
-               show(currentMainCase);
-         }
-         // only clear detail if it is not a draft
-         else if (matches( withNames( "changedOwner" ), transactions )
-               && !"DRAFT".equals( current.getCaseStatus() ))
-         {
-            clear();
-         }
-         // clear detail if status changed from draft to open and it's not a subcase
-         else if (matches( withUsecases( "open" ), transactions ) && currentMainCase.getReference().equals(currentCase))
-         {
-            clear();
+            }
+            // clear detail if status changed from draft to open and it's not a subcase
+            else if (matches( withUsecases( "open" ), transactions ) && currentMainCase.getReference().equals(currentCase))
+            {
+               clear();
+            }
          }
       }
    }

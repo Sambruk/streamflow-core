@@ -20,6 +20,7 @@ import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResource;
 import se.streamsource.streamflow.web.context.RequiresPermission;
 import se.streamsource.streamflow.web.domain.entity.user.UsersEntity;
+import se.streamsource.streamflow.web.domain.interaction.security.PermissionType;
 import se.streamsource.streamflow.web.resource.account.AccountResource;
 import se.streamsource.streamflow.web.resource.administration.AdministrationResource;
 import se.streamsource.streamflow.web.resource.crystal.CrystalResource;
@@ -65,7 +66,7 @@ public class RootResource
       subResource( SurfaceResource.class );
    }
 
-   @RequiresPermission("administrator")
+   @RequiresPermission(PermissionType.administrator)
    @SubResource
    public void crystal()
    {

@@ -1,4 +1,5 @@
-/*
+/**
+ *
  * Copyright 2009-2010 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,34 +17,28 @@
 
 package se.streamsource.streamflow.client.ui.workspace.table;
 
+import se.streamsource.streamflow.client.ui.workspace.cases.CaseResources;
+import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
 
-import java.util.ArrayList;
-import java.util.Date;
-
-import static se.streamsource.streamflow.client.util.i18n.*;
-import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
+import javax.swing.*;
 
 /**
  * JAVADOC
  */
-public class InboxCaseTableFormatter
-   extends AbstractCaseTableFormatter
+public class CaseStatusLabel
+   extends JLabel
 {
-   public InboxCaseTableFormatter()
+   public CaseStatusLabel()
    {
-      columnNames = new String[]{
-         text( title_column_header ),
-            "", // placeholder for icons
-         text( casetype_column_header ),
-         text( created_column_header ),
-         text( case_status_header )};
-      columnClasses = new Class[] {
-            String.class,
-            ArrayList.class,
-            String.class,
-            Date.class,
-            CaseStates.class
-            };
+      setHorizontalAlignment( SwingConstants.CENTER );
+   }
+
+   public void setStatus(CaseStates status)
+   {
+      setIcon( i18n.icon( CaseResources.valueOf( "case_status_" + status.toString().toLowerCase() + "_icon" ),
+            i18n.ICON_16 ) );
+      setName( i18n.text( CaseResources.valueOf("case_status_"+status.toString().toLowerCase()+"_text" ) ));
+      setToolTipText( i18n.text( CaseResources.valueOf("case_status_"+status.toString().toLowerCase()+"_text" ) ) );
    }
 }

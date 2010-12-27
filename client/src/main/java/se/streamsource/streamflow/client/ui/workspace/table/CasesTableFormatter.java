@@ -17,25 +17,46 @@
 package se.streamsource.streamflow.client.ui.workspace.table;
 
 import ca.odell.glazedlists.gui.AdvancedTableFormat;
-import ca.odell.glazedlists.gui.WritableTableFormat;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.Icons;
-import se.streamsource.streamflow.resource.caze.CaseValue;
+import se.streamsource.streamflow.client.ui.workspace.cases.CaseTableValue;
+import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
+
+import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
+import static se.streamsource.streamflow.client.util.i18n.text;
 
 /**
  * JAVADOC
  */
-public abstract class AbstractCaseTableFormatter
-      implements WritableTableFormat<CaseValue>, AdvancedTableFormat<CaseValue>
+public class CasesTableFormatter
+      implements AdvancedTableFormat<CaseTableValue>
 {
    protected String[] columnNames;
    protected Class[] columnClasses;
 
    StringBuilder description = new StringBuilder();
+
+   public CasesTableFormatter()
+   {
+      columnNames = new String[]{
+            text( title_column_header ),
+            "",
+            text( casetype_column_header ),
+            text( created_column_header ),
+            text( case_status_header )};
+      columnClasses = new Class[]{
+            String.class,
+            ArrayList.class,
+            String.class,
+            Date.class,
+            CaseStates.class
+      };
+   }
 
    public int getColumnCount()
    {
@@ -57,7 +78,7 @@ public abstract class AbstractCaseTableFormatter
       return null;
    }
 
-   public Object getColumnValue( CaseValue caseValue, int i )
+   public Object getColumnValue( CaseTableValue caseValue, int i )
    {
       switch (i)
       {
@@ -88,6 +109,7 @@ public abstract class AbstractCaseTableFormatter
          case 1:
             ArrayList<String> icons = new ArrayList<String>();
 
+            icons.add( caseValue.parentCase().get() != null ? Icons.subcase.toString() : "empty" );
             icons.add( caseValue.hasContacts().get() ? Icons.projects.toString() : "empty" );
             icons.add( caseValue.hasConversations().get() ? Icons.conversations.toString() : "empty" );
             icons.add( caseValue.hasSubmittedForms().get() ? Icons.forms.toString() : "empty" );
@@ -105,18 +127,6 @@ public abstract class AbstractCaseTableFormatter
          case 5:
             return caseValue.id().get();
       }
-
-      return null;
-   }
-
-   public boolean isEditable( CaseValue caseValue, int i )
-   {
-      return false;
-   }
-
-   public CaseValue setColumnValue( CaseValue caseValue, Object o, int i )
-   {
-
 
       return null;
    }

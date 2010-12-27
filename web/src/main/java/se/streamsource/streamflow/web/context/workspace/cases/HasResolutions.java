@@ -15,44 +15,44 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.context;
+package se.streamsource.streamflow.web.context.workspace.cases;
 
 import se.streamsource.dci.api.InteractionConstraint;
 import se.streamsource.dci.api.InteractionConstraintDeclaration;
 import se.streamsource.dci.api.RoleMap;
-import se.streamsource.streamflow.web.domain.interaction.security.Authorization;
-import se.streamsource.streamflow.web.domain.interaction.security.PermissionType;
+import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
+import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.security.Principal;
+
+import static org.qi4j.api.util.Iterables.first;
 
 /**
- * Check if current principal has a given permission
+ * Check if current case has any possible resolutions
  */
-@InteractionConstraintDeclaration(RequiresPermission.RequiresPermissionConstraint.class)
+@InteractionConstraintDeclaration(HasResolutions.HasResolutionsConstraint.class)
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD, ElementType.TYPE})
-public @interface RequiresPermission
+public @interface HasResolutions
 {
-   PermissionType value();
+   boolean value() default true; // True -> resolution should exist
 
-   class RequiresPermissionConstraint
-         implements InteractionConstraint<RequiresPermission>
+   class HasResolutionsConstraint
+         implements InteractionConstraint<HasResolutions>
    {
-      public boolean isValid( RequiresPermission requiresPermission, RoleMap roleMap )
+      public boolean isValid( HasResolutions hasResolutions, RoleMap roleMap )
       {
-         Principal principal = roleMap.get( Principal.class );
-
-         // Administrator has all permissions
-         if (principal.getName().equals("administrator"))
-            return true;
-
-         Authorization policy = roleMap.get( Authorization.class );
-
-         return policy.hasPermission( principal.getName(), requiresPermission.value().name() );
+         CaseType type = RoleMap.role( TypedCase.Data.class ).caseType().get();
+         if (hasResolutions.value())
+         {
+            return type != null && first( type.getSelectedResolutions() ) != null;
+         } else
+         {
+            return type == null || first( type.getSelectedResolutions() ) == null;
+         }
       }
    }
 }

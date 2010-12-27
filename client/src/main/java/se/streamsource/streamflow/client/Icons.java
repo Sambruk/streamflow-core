@@ -49,6 +49,8 @@ public enum Icons
    forms,
    attachments,
 
+   subcase,
+
    // Admin
    server,
    organization,
@@ -67,5 +69,4 @@ public enum Icons
    // Logos
    name_logo,
    logo
-
 }

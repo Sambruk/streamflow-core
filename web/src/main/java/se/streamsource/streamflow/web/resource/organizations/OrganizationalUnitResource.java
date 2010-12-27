@@ -22,12 +22,13 @@ import se.streamsource.streamflow.web.context.RequiresPermission;
 import se.streamsource.streamflow.web.context.administration.OrganizationalUnitContext;
 import se.streamsource.streamflow.web.context.administration.OrganizationalUnitsContext;
 import se.streamsource.streamflow.web.context.structure.DescribableContext;
+import se.streamsource.streamflow.web.domain.interaction.security.PermissionType;
 import se.streamsource.streamflow.web.resource.organizations.forms.FormsResource;
 
 /**
  * JAVADOC
  */
-@RequiresPermission("administrator")
+@RequiresPermission(PermissionType.administrator)
 public class OrganizationalUnitResource
       extends CommandQueryResource
 {

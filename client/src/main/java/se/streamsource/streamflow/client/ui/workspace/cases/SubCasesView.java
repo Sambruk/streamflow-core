@@ -16,21 +16,13 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases;
 
-import ca.odell.glazedlists.BasicEventList;
-import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.swing.EventListModel;
-import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
-import org.jdesktop.application.Task;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.streamflow.client.ui.workspace.cases.info.CaseInfoModel;
-import se.streamsource.streamflow.client.util.CommandTask;
-import se.streamsource.streamflow.client.util.EventListSynch;
 import se.streamsource.streamflow.client.util.LinkListCellRenderer;
 import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
@@ -52,23 +44,23 @@ public class SubCasesView
    implements TransactionListener
 {
    private JList subCaseList;
-   private JButton createSubCase;
-   private CaseInfoModel model;
+   private CaseModel model;
    private JButton caseButton = new JButton();
    private JButton parentCaseButton = new JButton();
-   private EventList<LinkValue> eventList = new BasicEventList<LinkValue>(  );
    private JLabel parentLabel;
    private JLabel subcasesLabel;
    private JScrollPane subCaseListScroll;
 
-   public SubCasesView(@Uses CommandQueryClient client, @Service ApplicationContext context, @Structure ObjectBuilderFactory obf)
+   public SubCasesView(@Service ApplicationContext context, @Uses final CaseModel model, @Structure ObjectBuilderFactory obf)
    {
+      this.model = model;
       setLayout( new BoxLayout( this, BoxLayout.Y_AXIS ) );
 
       setPreferredSize( new Dimension(150,0) );
       setMaximumSize( new Dimension(150,1000) );
+      setMinimumSize( new Dimension(150, 0) );
 
-      subCaseList = new JList(new EventListModel<LinkValue>(eventList));
+      subCaseList = new JList(new EventListModel<LinkValue>(model.getSubcases()));
       subCaseList.setCellRenderer( new LinkListCellRenderer(){
          @Override
          public Component getListCellRendererComponent( JList list, Object value, int index, boolean isSelected, boolean cellHasFocus )
@@ -100,8 +92,6 @@ public class SubCasesView
       add(parentLabel);
       add(parentCaseButton);
 
-      createSubCase = new JButton(getActionMap().get( "createSubCase" ));
-
       JLabel caseLabel = new JLabel( "Case", JLabel.RIGHT );
       caseLabel.setForeground( Color.GRAY );
       caseLabel.setLabelFor( caseButton );
@@ -113,24 +103,18 @@ public class SubCasesView
       add( subcasesLabel );
       subCaseListScroll = new JScrollPane( subCaseList );
       add( subCaseListScroll );
-      add( createSubCase);
-   }
 
-   public void setModel(CaseInfoModel model)
-   {
-      this.model = model;
       model.addObserver( new Observer()
       {
          public void update( Observable o, Object arg )
          {
-            CaseValue caseValue = (CaseValue) arg;
+            CaseValue caseValue = model.getIndex();
             if (caseValue.subcases().get().links().get().isEmpty())
             {
                subcasesLabel.setVisible( false );
                subCaseListScroll.setVisible( false );
             } else
             {
-               EventListSynch.synchronize( caseValue.subcases().get().links().get(), eventList );
                subcasesLabel.setVisible( true );
                subCaseListScroll.setVisible( true );
             }
@@ -160,20 +144,6 @@ public class SubCasesView
       } );
    }
 
-   @Action
-   public Task createSubCase()
-   {
-      return new CommandTask()
-      {
-         @Override
-         public void command()
-            throws Exception
-         {
-            model.createSubCase();
-         }
-      };
-   }
-
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
    {
       if (Events.matches( Events.withNames( "createdSubCase", "removedSubCase", "changedStatus", "changedDescription" ), transactions ))
@@ -195,7 +165,7 @@ public class SubCasesView
       return parentCaseButton;
    }
 
-   public CaseInfoModel getModel()
+   public CaseModel getModel()
    {
       return model;
    }

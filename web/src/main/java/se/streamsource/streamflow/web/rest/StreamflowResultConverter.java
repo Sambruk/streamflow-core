@@ -239,7 +239,7 @@ public class StreamflowResultConverter
                 }
                 else if (column.equals( "status" ))
                 {
-                    table.cell( caseEntity.status().get(), Strings.humanReadable( caseEntity.status().get().name() ));
+                    table.cell( caseEntity.status().get().name(), Strings.humanReadable( caseEntity.status().get().name() ));
                 }
                 else if (column.equals( "casetype" ))
                 {

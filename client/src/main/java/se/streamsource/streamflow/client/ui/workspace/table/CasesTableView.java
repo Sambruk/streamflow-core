@@ -28,9 +28,7 @@ import org.jdesktop.swingx.painter.PinstripePainter;
 import org.jdesktop.swingx.renderer.DefaultTableRenderer;
 import org.jdesktop.swingx.renderer.StringValue;
 import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
 import se.streamsource.streamflow.client.util.CommandTask;
@@ -48,6 +46,8 @@ import java.awt.event.FocusEvent;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Observable;
+import java.util.Observer;
 
 import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withNames;
 
@@ -56,7 +56,7 @@ import static se.streamsource.streamflow.infrastructure.event.domain.source.help
  */
 public class CasesTableView
       extends JPanel
-   implements TransactionListener
+   implements TransactionListener, Observer
 {
    protected JXTable caseTable;
    protected CasesTableModel model;
@@ -64,11 +64,9 @@ public class CasesTableView
 
    public void init( @Service ApplicationContext context,
                      @Uses CasesTableModel casesTableModel,
-                     @Structure ObjectBuilderFactory obf,
                      @Uses TableFormat tableFormat )
    {
       this.context = context;
-      setLayout( new BorderLayout() );
       this.model = casesTableModel;
       setLayout( new BorderLayout() );
 
@@ -178,6 +176,11 @@ public class CasesTableView
    public CasesTableModel getModel()
    {
       return model;
+   }
+
+   public void update( Observable o, Object arg )
+   {
+
    }
 
    public void notifyTransactions( final Iterable<TransactionDomainEvents> transactions )

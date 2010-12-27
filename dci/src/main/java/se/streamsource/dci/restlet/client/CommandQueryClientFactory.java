@@ -101,10 +101,7 @@ public class CommandQueryClientFactory
 
    <T> T readResponse( Response response, Class<T> queryResult)
    {
-      readerDelegator.readResponse( response, queryResult );
-      String jsonValue = response.getEntityAsText();
-
-      return module.valueBuilderFactory().newValueFromJSON( queryResult, jsonValue);
+      return readerDelegator.readResponse( response, queryResult );
    }
 
    public void writeRequest( Request request, Object queryRequest )

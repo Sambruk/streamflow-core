@@ -24,21 +24,19 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Check that an owner has a specific type
+ * Check that an owner is specified
  */
 @ConstraintDeclaration
 @Retention(RetentionPolicy.RUNTIME)
 @Constraints(RequiresOwner.Constraint.class)
 public @interface RequiresOwner
 {
-   public Class value();
-
    public class Constraint
          implements org.qi4j.api.constraint.Constraint<RequiresOwner, Ownable.Data>
    {
       public boolean isValid( RequiresOwner owner, Ownable.Data value )
       {
-         return owner.value().isInstance(value.owner().get());
+         return value.owner().get() != null;
       }
    }
 }

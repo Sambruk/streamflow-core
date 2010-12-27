@@ -15,20 +15,14 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.context.workspace.cases;
-
-import se.streamsource.dci.api.IndexContext;
-import se.streamsource.dci.api.RoleMap;
-import se.streamsource.streamflow.web.domain.structure.caze.Case;
+package se.streamsource.streamflow.web.domain.interaction.security;
 
 /**
  * JAVADOC
  */
-public class CaseContext
-   implements IndexContext<Case>
+public enum PermissionType
 {
-   public Case index()
-   {
-      return RoleMap.role( Case.class );
-   }
+   administrator,
+   read,
+   write
 }

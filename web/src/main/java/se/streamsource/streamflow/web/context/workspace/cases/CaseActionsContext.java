@@ -21,10 +21,10 @@ import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.pdfwriter.COSWriter;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.qi4j.api.concern.Concerns;
+import org.qi4j.api.entity.association.ManyAssociation;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
-import org.qi4j.api.value.ValueBuilder;
 import org.restlet.data.Disposition;
 import org.restlet.data.MediaType;
 import org.restlet.representation.OutputRepresentation;
@@ -33,16 +33,16 @@ import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.link.LinksValue;
-import se.streamsource.streamflow.domain.interaction.gtd.Actions;
 import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
 import se.streamsource.streamflow.domain.structure.Removable;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.resource.caze.CaseOutputConfigValue;
 import se.streamsource.streamflow.web.application.pdf.CasePdfGenerator;
+import se.streamsource.streamflow.web.context.RequiresPermission;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseTypeQueries;
-import se.streamsource.streamflow.web.domain.entity.caze.PossibleActions;
 import se.streamsource.streamflow.web.domain.interaction.gtd.*;
+import se.streamsource.streamflow.web.domain.interaction.security.PermissionType;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
 import se.streamsource.streamflow.web.domain.structure.attachment.CasePdfTemplate;
 import se.streamsource.streamflow.web.domain.structure.attachment.DefaultPdfTemplate;
@@ -50,7 +50,9 @@ import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.Resolution;
 import se.streamsource.streamflow.web.domain.structure.casetype.Resolvable;
 import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
+import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.caze.CaseStructure;
+import se.streamsource.streamflow.web.domain.structure.caze.SubCases;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganization;
 import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganizationalUnit;
@@ -69,22 +71,24 @@ import static se.streamsource.streamflow.domain.interaction.gtd.CaseStates.*;
  */
 @Concerns(UpdateCaseCountCacheConcern.class)
 @Mixins(CaseActionsContext.Mixin.class)
+@RequiresPermission(PermissionType.write)
 public interface CaseActionsContext
-      extends DeleteContext, Context // , InteractionConstraints
+      extends DeleteContext, Context
 {
    // List possible actions
-
-   public Actions actions();
 
    public LinksValue possiblesendto();
 
    public LinksValue possibleresolutions();
 
    // Commands
+   @RequiresStatus({OPEN, DRAFT})
+   public void createSubCase();
 
    /**
     * Assign the case to the user invoking the method
     */
+   @RequiresStatus( OPEN )
    @RequiresAssigned(false)
    public void assign();
 
@@ -92,36 +96,43 @@ public interface CaseActionsContext
     * Mark the draft case as open
     */
    @RequiresStatus({DRAFT})
+   @RequiresOwner
    public void open();
 
    /**
     * Mark the case as closed
     */
-   @RequiresStatus({OPEN})
+   @RequiresStatus( OPEN )
+   @HasResolutions(false)
+   @SubCasesAreClosed
    public void close();
-
 
    /**
     * Mark the case as resolved and closed
     */
-   @RequiresStatus({OPEN})
+   @RequiresStatus( OPEN )
+   @HasResolutions(true)
+   @SubCasesAreClosed
    public void resolve( EntityValue resolution );
 
    /**
     * Mark the case as on-hold
     */
-   @RequiresStatus({OPEN})
+   @RequiresAssigned
+   @RequiresStatus(OPEN)
    public void onhold();
 
+   @RequiresStatus({DRAFT,OPEN})
    public void sendto( EntityValue entity );
 
    @RequiresStatus({CLOSED})
    public void reopen();
 
-   @RequiresStatus({CaseStates.ON_HOLD})
+   @RequiresStatus(CaseStates.ON_HOLD)
    public void resume();
 
-   @RequiresAssigned(true)
+   @RequiresAssigned()
+   @RequiresStatus(CaseStates.OPEN)
    public void unassign();
 
    public void delete();
@@ -135,20 +146,6 @@ public interface CaseActionsContext
       Module module;
 
       // List possible actions
-
-      public Actions actions()
-      {
-         ValueBuilder<Actions> builder = module.valueBuilderFactory().newValueBuilder( se.streamsource.streamflow.domain.interaction.gtd.Actions.class );
-         List<String> actions = builder.prototype().actions().get();
-
-         PossibleActions possibleActions = RoleMap.role( PossibleActions.class );
-         Actor actor = RoleMap.role( Actor.class );
-
-         possibleActions.addActions( actor, actions );
-
-         return builder.newInstance();
-      }
-
       public LinksValue possiblesendto()
       {
          LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() ).command( "sendto" );
@@ -179,7 +176,6 @@ public interface CaseActionsContext
       }
 
       // Commands
-
       public void assign()
       {
          Assignable assignable = RoleMap.role( Assignable.class );
@@ -276,6 +272,26 @@ public interface CaseActionsContext
          caze.deleteEntity();
       }
 
+      public void createSubCase()
+      {
+         RoleMap.role( SubCases.class ).createSubCase();
+
+         Assignable assignable = RoleMap.role( Assignable.class );
+         if (assignable.isAssigned())
+         {
+            // Set to same owner as current case
+            ManyAssociation<Case> caseManyAssociation = RoleMap.role( SubCases.Data.class ).subCases();
+            Case createdCase = caseManyAssociation.get(caseManyAssociation.count()-1);
+            createdCase.changeOwner( RoleMap.role( Ownable.Data.class).owner().get() );
+
+            // Open the case
+            createdCase.open();
+
+            // Assign to same user
+            createdCase.assignTo( RoleMap.role(Assignable.Data.class).assignedTo().get() );
+         }
+      }
+
       public OutputRepresentation exportpdf( CaseOutputConfigValue config ) throws Throwable
       {
          Locale locale = role( Locale.class );
@@ -288,7 +304,7 @@ public interface CaseActionsContext
 
          AttachedFile.Data template = (AttachedFile.Data) ((CasePdfTemplate.Data) org).casePdfTemplate().get();
 
-         if(template == null)
+         if (template == null)
          {
             template = (AttachedFile.Data) ((DefaultPdfTemplate.Data) org).defaultPdfTemplate().get();
          }
@@ -301,7 +317,7 @@ public interface CaseActionsContext
 
          CasePdfGenerator exporter = module.objectBuilderFactory().newObjectBuilder( CasePdfGenerator.class ).use( config, uri, locale ).newInstance();//new CasePdfGenerator( config, "", locale );
 
-         ((CaseStructure)caze).outputCase( exporter );
+         ((CaseStructure) caze).outputCase( exporter );
 
          final PDDocument pdf = exporter.getPdf();
 
@@ -334,7 +350,7 @@ public interface CaseActionsContext
          };
 
          Disposition disposition = new Disposition();
-         disposition.setFilename( ((CaseId.Data)caze).caseId().get() + ".pdf" );
+         disposition.setFilename( ((CaseId.Data) caze).caseId().get() + ".pdf" );
          disposition.setType( Disposition.TYPE_ATTACHMENT );
          representation.setDisposition( disposition );
 

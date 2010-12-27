@@ -18,6 +18,7 @@
 package se.streamsource.streamflow.client.assembler;
 
 import org.jdesktop.application.ApplicationContext;
+import org.qi4j.api.common.Visibility;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
@@ -72,10 +73,8 @@ import se.streamsource.streamflow.client.ui.menu.*;
 import se.streamsource.streamflow.client.ui.overview.*;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceView;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceWindow;
-import se.streamsource.streamflow.client.ui.workspace.cases.CaseDetailView;
-import se.streamsource.streamflow.client.ui.workspace.cases.SubCasesView;
+import se.streamsource.streamflow.client.ui.workspace.cases.*;
 import se.streamsource.streamflow.client.ui.workspace.cases.actions.CaseActionsModel;
-import se.streamsource.streamflow.client.ui.workspace.cases.actions.CaseActionsView;
 import se.streamsource.streamflow.client.ui.workspace.cases.attachments.AttachmentsModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.attachments.AttachmentsView;
 import se.streamsource.streamflow.client.ui.workspace.cases.contacts.*;
@@ -86,8 +85,6 @@ import se.streamsource.streamflow.client.ui.workspace.cases.general.CaseGeneralV
 import se.streamsource.streamflow.client.ui.workspace.cases.general.CaseLabelsModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.CaseLabelsView;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.*;
-import se.streamsource.streamflow.client.ui.workspace.cases.info.CaseInfoModel;
-import se.streamsource.streamflow.client.ui.workspace.cases.info.CaseInfoView;
 import se.streamsource.streamflow.client.ui.workspace.context.WorkspaceContextModel2;
 import se.streamsource.streamflow.client.ui.workspace.context.WorkspaceContextView2;
 import se.streamsource.streamflow.client.ui.workspace.search.*;
@@ -326,9 +323,8 @@ public class UIAssembler
       addDialogs( module, ContactLookupResultDialog.class );
 
       addMV( module, CasesTableModel.class, CasesTableView.class );
-      addMV( module, CasesGoogleTableModel.class, CasesGoogleTableView.class );
 
-      addMV( module, CaseInfoModel.class, CaseInfoView.class );
+      addMV( module, CaseModel.class, CaseInfoView.class );
 
       addModels( module, CasesModel.class );
 
@@ -416,6 +412,8 @@ public class UIAssembler
       addDialogs( module, SelectLinkDialog.class,
             SaveSearchDialog.class,
             HandleSearchesDialog.class );
+
+      module.addValues( CaseTableValue.class ).visibleIn( Visibility.application );
    }
 
    private void menu( ModuleAssembly module ) throws AssemblyException

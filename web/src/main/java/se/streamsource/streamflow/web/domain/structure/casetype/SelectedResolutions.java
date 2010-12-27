@@ -34,7 +34,7 @@ public interface SelectedResolutions
 
    boolean hasSelectedResolutions( );
 
-   Iterable getSelectedResolutions();
+   Iterable<Resolution> getSelectedResolutions();
 
    interface Data
    {
@@ -63,7 +63,7 @@ public interface SelectedResolutions
          return selectedResolutions().count() > 0;
       }
 
-      public Iterable getSelectedResolutions()
+      public Iterable<Resolution> getSelectedResolutions()
       {
          return selectedResolutions();
       }

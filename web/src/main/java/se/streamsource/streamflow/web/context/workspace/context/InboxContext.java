@@ -38,7 +38,7 @@ public class InboxContext
    @Structure
    Module module;
 
-   public Query<Case> inbox(TableQuery tableQuery)
+   public Query<Case> cases(TableQuery tableQuery)
    {
       InboxQueries inbox = RoleMap.role( InboxQueries.class );
 

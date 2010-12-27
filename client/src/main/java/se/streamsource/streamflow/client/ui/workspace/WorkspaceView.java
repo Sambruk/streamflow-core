@@ -191,14 +191,8 @@ public class WorkspaceView
                {
                   TableFormat tableFormat;
                   CasesTableView casesTable;
-                  if (contextItem.getRelation().equals(Icons.assign.name()) )
-                  {
-                     tableFormat = new AssignmentsCaseTableFormatter();
-                     casesTable = obf.newObjectBuilder( CasesTableView.class ).use( contextItem.getClient(), tableFormat ).newInstance();
-                  } else
-                  {
-                     casesTable = obf.newObjectBuilder( CasesGoogleTableView.class ).use( contextItem.getClient() ).newInstance();
-                  }
+                  tableFormat = new CasesTableFormatter();
+                  casesTable = obf.newObjectBuilder( CasesTableView.class ).use( contextItem.getClient(), tableFormat ).newInstance();
 
                   casesTable.getCaseTable().getSelectionModel().addListSelectionListener( new CaseSelectionListener() );
 
@@ -279,7 +273,7 @@ public class WorkspaceView
       searchField.requestFocusInWindow();
 
       CasesTableView casesTable = obf.newObjectBuilder( CasesTableView.class ).
-            use( searchResultTableModel, new InboxCaseTableFormatter()).newInstance();
+            use( searchResultTableModel, new CasesTableFormatter()).newInstance();
       casesTable.getCaseTable().getSelectionModel().addListSelectionListener( new CaseSelectionListener() );
 
       casesView.showTable( casesTable );

@@ -21,6 +21,7 @@ import se.streamsource.dci.restlet.server.api.SubResource;
 import se.streamsource.streamflow.web.context.RequiresPermission;
 import se.streamsource.streamflow.web.context.administration.OrganizationalUnitsContext;
 import se.streamsource.streamflow.web.context.structure.DescribableContext;
+import se.streamsource.streamflow.web.domain.interaction.security.PermissionType;
 import se.streamsource.streamflow.web.resource.administration.ProxyUsersResource;
 import se.streamsource.streamflow.web.resource.organizations.forms.FormsResource;
 import se.streamsource.streamflow.web.resource.surface.administration.organizations.accesspoints.AccessPointsAdministrationResource;
@@ -29,7 +30,7 @@ import se.streamsource.streamflow.web.resource.workspace.cases.AttachmentsResour
 /**
  * JAVADOC
  */
-@RequiresPermission("administrator")
+@RequiresPermission(PermissionType.administrator)
 public class OrganizationResource
       extends CommandQueryResource
 {
