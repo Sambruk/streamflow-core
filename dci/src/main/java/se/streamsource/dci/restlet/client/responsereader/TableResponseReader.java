@@ -21,6 +21,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.util.DateFunctions;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.Response;
 import org.restlet.data.MediaType;
@@ -69,6 +70,10 @@ public class TableResponseReader
                   JSONObject cell = cells.getJSONObject( j );
                   Object value = cell.opt( "v" );
                   String formatted = cell.optString("f");
+
+                  if (cols.getJSONObject( j ).getString( "type" ).equals("date") && value != null)
+                     value = DateFunctions.fromString( value.toString() );
+
                   builder.cell( value, formatted );
                }
                builder.endRow();

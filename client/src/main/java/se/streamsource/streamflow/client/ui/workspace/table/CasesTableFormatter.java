@@ -89,7 +89,7 @@ public class CasesTableFormatter
             if (caseValue.caseId().get() != null)
                description.append( "#" ).append( caseValue.caseId() ).append( " " );
 
-            description.append( caseValue.text().get() );
+            description.append( caseValue.description().get() );
 
             List<LinkValue> labels = caseValue.labels().get().links().get();
             if (labels.size() > 0)
@@ -125,7 +125,7 @@ public class CasesTableFormatter
          case 4:
             return caseValue.status().get();
          case 5:
-            return caseValue.id().get();
+            return caseValue.href().get();
       }
 
       return null;

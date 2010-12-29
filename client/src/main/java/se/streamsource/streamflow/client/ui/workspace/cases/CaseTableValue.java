@@ -20,6 +20,7 @@ package se.streamsource.streamflow.client.ui.workspace.cases;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueComposite;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
@@ -30,7 +31,7 @@ import java.util.Date;
  * JAVADOC
  */
 public interface CaseTableValue
-      extends LinkValue
+      extends ValueComposite
 {
    Property<String> description();
 
@@ -74,4 +75,6 @@ public interface CaseTableValue
 
    @Optional
    Property<LinkValue> parentCase();
+
+   Property<String> href();
 }

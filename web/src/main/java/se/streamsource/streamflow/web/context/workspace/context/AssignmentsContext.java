@@ -18,13 +18,11 @@
 package se.streamsource.streamflow.web.context.workspace.context;
 
 import org.qi4j.api.concern.Concerns;
-import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
-import org.qi4j.api.structure.Module;
 import se.streamsource.dci.api.Context;
-import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
+import se.streamsource.dci.value.table.TableQuery;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.entity.gtd.AssignmentsQueries;
 import se.streamsource.streamflow.web.domain.entity.gtd.Drafts;
@@ -33,7 +31,8 @@ import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
 
-import static org.qi4j.api.query.QueryExpressions.*;
+import static org.qi4j.api.query.QueryExpressions.orderBy;
+import static org.qi4j.api.query.QueryExpressions.templateFor;
 
 /**
  * JAVADOC
@@ -41,17 +40,16 @@ import static org.qi4j.api.query.QueryExpressions.*;
 @Concerns(UpdateCaseCountAssignmentsConcern.class)
 @Mixins(AssignmentsContext.Mixin.class)
 public interface AssignmentsContext
-   extends Context, IndexContext<Query<Case>>
+   extends Context
 {
+   public Query<Case> cases(TableQuery tableQuery);
+
    public void createcase();
 
    abstract class Mixin
       implements AssignmentsContext
    {
-      @Structure
-      Module module;
-
-      public Query<Case> index( )
+      public Query<Case> cases(TableQuery tableQuery)
       {
          AssignmentsQueries assignments = RoleMap.role( AssignmentsQueries.class);
 

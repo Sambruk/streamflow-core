@@ -98,7 +98,7 @@ public class CasesTableModel
             }
             else if (columnValue.id().get().equals("owner"))
                prototype.owner().set(cell.f().get());
-            else if (columnValue.id().get().equals("parent"))
+            else if (columnValue.id().get().equals("parent") && cell.v().get() != null)
                prototype.parentCase().set(vbf.newValueFromJSON( LinkValue.class, cell.v().get().toString()));
             else if (columnValue.id().get().equals("resolution"))
                prototype.resolution().set(cell.f().get());
@@ -107,7 +107,8 @@ public class CasesTableModel
             else if (columnValue.id().get().equals("subcases"))
             {
                prototype.subcases().set( vbf.newValueFromJSON( LinksValue.class, cell.v().get().toString() ) );
-            }
+            } else if (columnValue.id().get().equals( "href" ))
+               prototype.href().set( cell.f().get().toString() );
          }
          caseTableValues.add(caseBuilder.newInstance());
       }

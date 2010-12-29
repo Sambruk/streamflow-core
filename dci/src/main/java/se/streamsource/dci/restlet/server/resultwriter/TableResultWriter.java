@@ -23,6 +23,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.util.DateFunctions;
 import org.qi4j.api.value.ValueComposite;
 import org.restlet.Response;
 import org.restlet.data.MediaType;
@@ -39,6 +40,7 @@ import se.streamsource.dci.value.table.TableValue;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -112,7 +114,12 @@ public class TableResultWriter
                   for (CellValue cellValue : rowValue.c().get())
                   {
                      JSONObject cell = new JSONObject();
-                     cell.putOpt( "v", cellValue.v().get() );
+                     Object value = cellValue.v().get();
+                     if (cols.getJSONObject( idx ).getString( "type" ).equals("date") && value != null)
+                     {
+                        value = DateFunctions.toUtcString( (Date) value);
+                     }
+                     cell.putOpt( "v", value );
                      cell.putOpt( "f", cellValue.f().get() );
                      cells.put( cell );
 

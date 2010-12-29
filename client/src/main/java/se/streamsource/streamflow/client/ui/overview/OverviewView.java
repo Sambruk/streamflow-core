@@ -69,6 +69,7 @@ public class OverviewView
 
       overviewList = new JList();
       casesView = obf.newObject( CasesView.class );
+      casesView.setBlankPanel(new JPanel());
 
       model = obf.newObjectBuilder( OverviewModel.class ).use( client ).newInstance();
 
@@ -185,8 +186,8 @@ public class OverviewView
                   int selectedRow = caseTable.getSelectedRow();
                   if (selectedRow != -1)
                   {
-                     String id = (String) caseTable.getModel().getValueAt( caseTable.convertRowIndexToModel(selectedRow), 5 );
-                     casesView.showCase( client.getClient( "../workspace/cases/" ).getSubClient( id ) );
+                     String href = (String) caseTable.getModel().getValueAt( caseTable.convertRowIndexToModel(selectedRow), 5 );
+                     casesView.showCase( client.getClient( href) );
                   }
                }
             } catch (Exception e1)

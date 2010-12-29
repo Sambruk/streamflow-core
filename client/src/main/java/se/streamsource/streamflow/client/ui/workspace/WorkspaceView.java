@@ -366,8 +366,8 @@ public class WorkspaceView
                   int selectedRow = caseTable.getSelectedRow();
                   if (selectedRow != -1)
                   {
-                     String id = (String) caseTable.getModel().getValueAt( caseTable.convertRowIndexToModel(selectedRow), 5 );
-                     casesView.showCase( client.getSubClient( "cases" ).getSubClient( id ) );
+                     String href = (String) caseTable.getModel().getValueAt( caseTable.convertRowIndexToModel(selectedRow), 5 );
+                     casesView.showCase( client.getClient( href ));
                   }
                }
             } catch (Exception e1)

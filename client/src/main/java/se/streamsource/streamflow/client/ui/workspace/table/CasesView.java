@@ -43,6 +43,7 @@ public class CasesView
    private CasesDetailView detailsView;
    private JSplitPane splitPane;
    private CardLayout cardLayout = new CardLayout();
+   private JComponent blank;
 
    public CasesView( @Structure ObjectBuilderFactory obf, @Service ApplicationContext context )
    {
@@ -52,7 +53,6 @@ public class CasesView
 
       setLayout( cardLayout );
 
-      JPanel welcomePanel = createWelcomePanel();
       this.detailsView = obf.newObjectBuilder( CasesDetailView.class ).newInstance();
 
       splitPane = new JSplitPane( JSplitPane.VERTICAL_SPLIT );
@@ -67,19 +67,19 @@ public class CasesView
       splitPane.setBorder( BorderFactory.createEmptyBorder() );
 
 
-      add( welcomePanel, "welcome" );
+      add( blank = createBlankPanel(), "blank" );
       add( splitPane, "cases" );
 
-      cardLayout.show( this, "welcome" );
+      cardLayout.show( this, "blank" );
    }
 
-   private JPanel createWelcomePanel()
+   protected JPanel createBlankPanel()
    {
-      JPanel welcomePanel = new JPanel( new BorderLayout() );
+      JPanel blankPanel = new JPanel( new BorderLayout() );
       URL logoURL = getClass().getResource( i18n.text( Icons.name_logo ) );
-      JEditorPane welcomePane = new HtmlPanel(text( WorkspaceResources.welcome, logoURL.toExternalForm() ) );
-      welcomePanel.add( welcomePane, BorderLayout.CENTER );
-      return welcomePanel;
+      JEditorPane blankPane = new HtmlPanel(text( WorkspaceResources.welcome, logoURL.toExternalForm() ) );
+      blankPanel.add( blankPane, BorderLayout.CENTER );
+      return blankPanel;
    }
 
    public void showTable( CasesTableView casesTableView )
@@ -92,7 +92,7 @@ public class CasesView
 
    public void clearTable()
    {
-      cardLayout.show( this, "welcome" );
+      cardLayout.show( this, "blank" );
       casesTableView = null;
       splitPane.setTopComponent( new JPanel() );
       clearCase();
@@ -123,6 +123,12 @@ public class CasesView
       if (casesTableView != null)
          casesTableView.getModel().refresh();
       detailsView.refresh();
+   }
+
+   public void setBlankPanel( JComponent blankPanel )
+   {
+      remove(blank);
+      add( blank = blankPanel, "blank" );
    }
 }
 
