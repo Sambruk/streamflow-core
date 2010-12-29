@@ -22,6 +22,7 @@ import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
@@ -30,6 +31,7 @@ import org.qi4j.api.usecase.Usecase;
 import org.qi4j.api.usecase.UsecaseBuilder;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
+import org.qi4j.spi.service.ServiceDescriptor;
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
@@ -41,6 +43,8 @@ import org.restlet.routing.Filter;
 import org.restlet.security.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import se.streamsource.infrastructure.circuitbreaker.CircuitBreaker;
+import se.streamsource.infrastructure.circuitbreaker.service.ServiceCircuitBreaker;
 import se.streamsource.streamflow.domain.contact.ContactEmailValue;
 import se.streamsource.streamflow.domain.contact.ContactPhoneValue;
 import se.streamsource.streamflow.domain.contact.ContactValue;
@@ -58,7 +62,7 @@ import se.streamsource.streamflow.web.infrastructure.plugin.PluginConfiguration;
 import java.io.IOException;
 
 @Mixins(AuthenticationFilterService.Mixin.class)
-public interface AuthenticationFilterService extends ServiceComposite, Configuration, Activatable
+public interface AuthenticationFilterService extends ServiceComposite, Configuration, Activatable, ServiceCircuitBreaker
 {
    public int beforeHandle(Request request, Response response, Context context);
    
@@ -71,6 +75,9 @@ public interface AuthenticationFilterService extends ServiceComposite, Configura
       private static Usecase verifyUsecase = UsecaseBuilder.newUsecase("Verify password");
       private static Usecase addUsecase = UsecaseBuilder.newUsecase("Add new user");
       private static Usecase updateUsecase = UsecaseBuilder.newUsecase("Update user");
+
+      @Uses
+      ServiceDescriptor descriptor;
 
       @This
       Configuration<PluginConfiguration> config;
@@ -86,14 +93,23 @@ public interface AuthenticationFilterService extends ServiceComposite, Configura
       @Structure
       ValueBuilderFactory vbf;
 
+      CircuitBreaker circuitBreaker;
+
       public void activate() throws Exception
       {
+         circuitBreaker = descriptor.metaInfo( CircuitBreaker.class );
+
          config.configuration();
          caching = new Caching( cachingService, Caches.VERIFIEDUSERS );
       }
 
       public void passivate() throws Exception
       {
+      }
+
+      public CircuitBreaker getCircuitBreaker()
+      {
+         return circuitBreaker;
       }
 
       public int beforeHandle(Request request, Response response, Context context)
@@ -134,7 +150,7 @@ public interface AuthenticationFilterService extends ServiceComposite, Configura
 
                boolean authorized = false;
 
-               if (!UserEntity.ADMINISTRATOR_USERNAME.equals(username) && config.configuration().enabled().get())
+               if (!UserEntity.ADMINISTRATOR_USERNAME.equals(username) && config.configuration().enabled().get() && circuitBreaker.isOn())
                {
                   ClientResource clientResource = new ClientResource(config.configuration().url().get());
 
@@ -169,16 +185,24 @@ public interface AuthenticationFilterService extends ServiceComposite, Configura
                      setUserCredentials(request, context, username);
                      authorized = true;
                      logger.debug("User: " + username + " - successfully authenticated agains external system");
+                     circuitBreaker.success();
 
                   } catch (ResourceException e)
                   {
                      if (Status.CLIENT_ERROR_UNAUTHORIZED.equals(clientResource.getResponse().getStatus()))
                      {
+                        circuitBreaker.success();
+
+                        // Authentication failed
                         response.setStatus(clientResource.getResponse().getStatus());
                         response.getChallengeRequests()
                               .add(new ChallengeRequest(ChallengeScheme.HTTP_BASIC, "Streamflow"));
                         return Filter.STOP;
 
+                     } else
+                     {
+                        // Send this to CircuitBreaker
+                        circuitBreaker.throwable( e );
                      }
 
                      if (localUser != null && localUser.login(password))

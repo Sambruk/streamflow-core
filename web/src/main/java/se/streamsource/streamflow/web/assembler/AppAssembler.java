@@ -180,6 +180,7 @@ public class AppAssembler
       module.addServices( AuthenticationFilterService.class )
             .identifiedBy( "authentication" )
             .instantiateOnStartup()
+            .setMetaInfo( new CircuitBreaker(10, 1000*60*5) )
             .visibleIn( application );
    }
 
