@@ -1152,4 +1152,21 @@
             </licenses>
         </project>
     </supplement>
+    <supplement>
+        <project>
+            <groupId>se.nexus.multiid</groupId>
+            <artifactId>osif</artifactId>
+            <name>eID Plugin API</name>
+            <organization>
+                <name>Streamflow AB</name>
+                <url>N/A</url>
+            </organization>
+            <licenses>
+                <license>
+                    <name>The Apache Software License, Version 2.0</name>
+                    <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+                </license>
+            </licenses>
+        </project>
+    </supplement>
 </supplementalDataModels>
