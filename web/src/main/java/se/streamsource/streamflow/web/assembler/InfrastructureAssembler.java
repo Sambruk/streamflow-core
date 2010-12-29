@@ -44,8 +44,7 @@ import org.qi4j.migration.assembly.EntityMigrationOperation;
 import org.qi4j.migration.assembly.MigrationBuilder;
 import org.qi4j.spi.service.importer.NewObjectImporter;
 import org.qi4j.spi.uuid.UuidIdentityGeneratorService;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.dci.restlet.client.CommandQueryClientFactory;
+import se.streamsource.dci.restlet.client.ClientAssembler;
 import se.streamsource.streamflow.infrastructure.event.application.ApplicationEvent;
 import se.streamsource.streamflow.infrastructure.event.application.TransactionApplicationEvents;
 import se.streamsource.streamflow.infrastructure.event.application.factory.ApplicationEventFactoryService;
@@ -104,9 +103,7 @@ public class InfrastructureAssembler
 
    private void plugins( ModuleAssembly moduleAssembly ) throws AssemblyException
    {
-
-      moduleAssembly.addObjects( CommandQueryClientFactory.class, CommandQueryClient.class
-      ).visibleIn( Visibility.module );
+      new ClientAssembler().assemble( moduleAssembly );
 
       moduleAssembly.addServices( ContactLookupService.class ).
             identifiedBy( "contactlookup" ).

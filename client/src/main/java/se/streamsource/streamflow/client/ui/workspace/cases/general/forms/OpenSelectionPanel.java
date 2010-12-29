@@ -112,7 +112,7 @@ public class OpenSelectionPanel
       }
       // if we reach here it must be the "other" option that is selected
       // unless it is the empty string
-      if ( Strings.notEmpty( newValue ) )
+      if ( !Strings.empty( newValue ) )
       {
          openButton.setSelected( true );
          openSelectionTextField.setText( newValue );

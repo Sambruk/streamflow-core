@@ -140,7 +140,7 @@ public class ConversationsView
       final NameDialog dialog = topicDialogs.iterator().next();
       dialogs.showOkCancelHelpDialog( this, dialog, text( CaseResources.new_conversation_topic ) );
 
-      if ( Strings.notEmpty( dialog.name() ) )
+      if ( !Strings.empty( dialog.name() ) )
       {
          return new CommandTask()
          {

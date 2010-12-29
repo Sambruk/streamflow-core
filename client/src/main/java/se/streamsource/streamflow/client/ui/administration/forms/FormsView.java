@@ -99,7 +99,7 @@ public class FormsView
       dialogs.showOkCancelHelpDialog( this, formDialog, i18n.text( AdministrationResources.create_new_form ) );
 
       final String name = formDialog.name();
-      if (Strings.notEmpty( name ) )
+      if (!Strings.empty( name ) )
       {
          return new CommandTask()
          {

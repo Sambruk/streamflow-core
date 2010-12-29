@@ -17,13 +17,9 @@
 
 package se.streamsource.dci.restlet.client;
 
-import org.qi4j.api.common.QualifiedName;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.property.StateHolder;
 import org.qi4j.api.util.Iterables;
 import org.qi4j.api.value.ValueComposite;
-import org.qi4j.spi.property.PropertyTypeDescriptor;
-import org.qi4j.spi.value.ValueDescriptor;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.*;
@@ -66,22 +62,20 @@ public class CommandQueryClient
       return resourceValue = query( "", null, ResourceValue.class );
    }
 
-   public synchronized <T extends ValueComposite> T query( String operation, Class<T> queryResult ) throws ResourceException
+   public synchronized <T> T query( String operation, Class<T> queryResult ) throws ResourceException
    {
       return query( operation, null, queryResult );
    }
 
-   public synchronized <T extends ValueComposite> T query( String operation, ValueComposite queryValue, Class<T> queryResult ) throws ResourceException
+   public synchronized <T> T query( String operation, Object queryRequest, Class<T> queryResult ) throws ResourceException
    {
-      Response response = invokeQuery( operation, queryValue );
+      Response response = invokeQuery( operation, queryRequest );
 
       if (response.getStatus().isSuccess())
       {
          cqcFactory.updateCache( response );
 
-         String jsonValue = response.getEntityAsText();
-
-         return cqcFactory.newValue(queryResult, jsonValue );
+         return cqcFactory.readResponse( response, queryResult );
       } else
       {
          // This will throw an exception
@@ -90,7 +84,7 @@ public class CommandQueryClient
       }
    }
 
-   public synchronized Representation queryRepresentation( String query, ValueComposite queryValue )
+   public synchronized Representation queryRepresentation( String query, Object queryValue )
    {
       Response response = invokeQuery( query, queryValue );
 
@@ -103,29 +97,6 @@ public class CommandQueryClient
          handleError( response );
          return null;
       }
-   }
-
-   private void setQueryParameters( final Reference ref, ValueComposite queryValue )
-   {
-      // Value as parameter
-      StateHolder holder = cqcFactory.getSPI().getState( queryValue );
-      final ValueDescriptor descriptor = cqcFactory.getSPI().getValueDescriptor( queryValue );
-
-      ref.setQuery( null );
-
-      holder.visitProperties( new StateHolder.StateVisitor<RuntimeException>()
-      {
-         public void visitProperty( QualifiedName
-               name, Object value )
-         {
-            if (value != null)
-            {
-               PropertyTypeDescriptor propertyDesc = descriptor.state().getPropertyByQualifiedName( name );
-               String queryParam = propertyDesc.propertyType().type().toQueryParameter( value );
-               ref.addQueryParameter( name.name(), queryParam );
-            }
-         }
-      } );
    }
 
    public synchronized void postLink( LinkValue link ) throws ResourceException
@@ -228,14 +199,15 @@ public class CommandQueryClient
       }
    }
 
-   private Response invokeQuery( String operation, ValueComposite queryValue )
+   private Response invokeQuery( String operation, Object queryRequest )
          throws ResourceException
    {
       Reference ref = new Reference( reference.toUri().toString() + operation );
-      if (queryValue != null)
-         setQueryParameters( ref, queryValue );
-
       Request request = new Request( Method.GET, ref );
+
+      if (queryRequest != null)
+         cqcFactory.writeRequest(request, queryRequest);
+
       cqcFactory.updateQueryRequest( request );
 
       Response response = new Response( request );

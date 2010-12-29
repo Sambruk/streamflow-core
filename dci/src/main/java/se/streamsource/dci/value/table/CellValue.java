@@ -27,8 +27,8 @@ public interface CellValue
    extends ValueComposite
 {
    @Optional
-   Property<Object> value();
+   Property<Object> v();
 
    @Optional
-   Property<String> formatted();  
+   Property<String> f();
 }

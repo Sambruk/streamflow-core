@@ -110,7 +110,7 @@ public class CaseSubmittedFormsContext
          {
             if ( fieldDTO.fieldType().get().equals( AttachmentFieldValue.class.getName() ) )
             {
-               if ( Strings.notEmpty( fieldDTO.value().get() ) )
+               if ( !Strings.empty( fieldDTO.value().get() ) )
                {
                   AttachmentFieldSubmission submission = vbf.newValueFromJSON( AttachmentFieldSubmission.class, fieldDTO.value().get() );
                   if ( submission.attachment().get().identity().equals( id )) return submission;

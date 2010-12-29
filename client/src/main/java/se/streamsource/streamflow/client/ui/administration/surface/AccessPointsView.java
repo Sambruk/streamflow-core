@@ -85,7 +85,7 @@ public class AccessPointsView
 
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.add_accesspoint_title ) );
 
-      if (Strings.notEmpty( dialog.name() ))
+      if (!Strings.empty( dialog.name() ))
       {
          return new CommandTask()
          {
@@ -129,7 +129,7 @@ public class AccessPointsView
       final NameDialog dialog = nameDialogs.iterator().next();
       dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.change_accesspoint_title ) );
 
-      if (Strings.notEmpty( dialog.name() ))
+      if (!Strings.empty( dialog.name() ))
       {
          return new CommandTask()
          {

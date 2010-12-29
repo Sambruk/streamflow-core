@@ -81,8 +81,8 @@ public class TextFieldPanel
          @Override
          public boolean verify( JComponent input )
          {
-            if (Strings.notEmpty( fieldValue.regularExpression().get() )
-                  && Strings.notEmpty( ((JTextComponent) input).getText() ))
+            if (!Strings.empty( fieldValue.regularExpression().get() )
+                  && !Strings.empty( ((JTextComponent) input).getText() ))
             {
                try
                {
@@ -105,7 +105,7 @@ public class TextFieldPanel
    {
       StringBuilder componentName = new StringBuilder( "<html>" );
       componentName.append( title() );
-      if (Strings.notEmpty( fieldValue.hint().get() ))
+      if (!Strings.empty( fieldValue.hint().get() ))
       {
          componentName.append( " <font color='#778899'>(" ).append( fieldValue.hint().get() ).append( ")</font>" );
       }

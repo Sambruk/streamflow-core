@@ -112,8 +112,9 @@ public class CommandQueryResource
    protected Response response;
 
    private Class[] contextClasses;
+    private Object[] arguments;
 
-   public CommandQueryResource( @Uses Class... contextClasses )
+    public CommandQueryResource( @Uses Class... contextClasses )
    {
       this.contextClasses = contextClasses;
    }
@@ -401,7 +402,7 @@ public class CommandQueryResource
          // Command
 
          // Create argument
-         Object[] arguments = getCommandArguments( method );
+          arguments = getCommandArguments( method );
 
          // Invoke method
          try
@@ -423,7 +424,6 @@ public class CommandQueryResource
          // Query
 
          // Create argument
-         Object[] arguments;
          if (method.getParameterTypes().length > 0)
          {
             try
@@ -650,7 +650,7 @@ public class CommandQueryResource
    private Object convert( Object result )
    {
       if (converter != null)
-         result = converter.convert( result, request );
+         result = converter.convert( result, request, arguments );
 
       return result;
    }

@@ -21,14 +21,14 @@ import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
 import java.util.ArrayList;
 import java.util.Date;
 
-import static se.streamsource.streamflow.client.util.i18n.*;
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
+import static se.streamsource.streamflow.client.util.i18n.text;
 
 /**
  * JAVADOC
  */
 public class AssignmentsCaseTableFormatter
-      extends AbstractCaseTableFormatter
+      extends CasesTableFormatter
 {
    public AssignmentsCaseTableFormatter()
    {
@@ -38,12 +38,12 @@ public class AssignmentsCaseTableFormatter
             text( casetype_column_header ),
             text( created_column_header ),
             text( case_status_header )};
-      columnClasses = new Class[] {
+      columnClasses = new Class[]{
             String.class,
             ArrayList.class,
             String.class,
             Date.class,
             CaseStates.class
-            };
+      };
    }
 }

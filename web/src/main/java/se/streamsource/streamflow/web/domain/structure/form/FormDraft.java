@@ -242,7 +242,7 @@ public interface FormDraft
 
       private boolean validate( TextFieldValue definition, String value )
       {
-         if (Strings.notEmpty( definition.regularExpression().get() ))
+         if (!Strings.empty( definition.regularExpression().get() ))
          {
             if (value != null)
             {

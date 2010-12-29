@@ -67,11 +67,11 @@ public class FormAttachmentContext
       AttachedFile file = role( AttachedFile.class );
 
       String name = updateValue.name().get();
-      if (notEmpty( name ) && !fileData.name().get().equals( name ))
+      if (!empty( name ) && !fileData.name().get().equals( name ))
          file.changeName( name );
 
       String mimeType = updateValue.mimeType().get();
-      if (notEmpty( mimeType ) && !fileData.mimeType().get().equals( mimeType ))
+      if (!empty( mimeType ) && !fileData.mimeType().get().equals( mimeType ))
          file.changeMimeType( mimeType );
 
       Long size = updateValue.size().get();
@@ -79,7 +79,7 @@ public class FormAttachmentContext
          file.changeSize( size );
 
       String uri = updateValue.uri().get();
-      if (notEmpty( uri ) && !fileData.uri().get().equals( uri ))
+      if (!empty( uri ) && !fileData.uri().get().equals( uri ))
          file.changeUri( uri );
    }
 

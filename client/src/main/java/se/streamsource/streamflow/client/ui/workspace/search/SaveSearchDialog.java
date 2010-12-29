@@ -92,7 +92,7 @@ public class SaveSearchDialog
    @Action
    public void execute()
    {
-      if (Strings.notEmpty( name.getText() ) && Strings.notEmpty( query.getText() ))
+      if (!Strings.empty( name.getText() ) && !Strings.empty( query.getText() ))
       {
          ValueBuilder<SearchValue> builder = vbf.newValueBuilder( SearchValue.class );
          builder.prototype().name().set( name.getText() );

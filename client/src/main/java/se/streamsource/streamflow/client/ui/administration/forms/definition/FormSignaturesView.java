@@ -95,7 +95,7 @@ public class FormSignaturesView
       final NameDialog dialog = nameDialog.iterator().next();
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( AdministrationResources.add_signature_title ) );
 
-      if (Strings.notEmpty( dialog.name() ))
+      if (!Strings.empty( dialog.name() ))
       {
          list.clearSelection();
          final ValueBuilder<RequiredSignatureValue> builder = vbf.newValueBuilder( RequiredSignatureValue.class );

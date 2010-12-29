@@ -29,5 +29,5 @@ public interface RowValue
    extends ValueComposite
 {
    @UseDefaults
-   Property<List<CellValue>> cells();
+   Property<List<CellValue>> c();
 }

@@ -51,6 +51,7 @@ import se.streamsource.dci.restlet.server.api.SubResource;
 import se.streamsource.dci.restlet.server.api.SubResources;
 import se.streamsource.dci.value.ResourceValue;
 import se.streamsource.dci.value.StringValue;
+import se.streamsource.dci.value.ValueAssembler;
 
 import javax.security.auth.Subject;
 import java.io.File;
@@ -101,12 +102,13 @@ public class CommandQueryClientTest
    {
       module.addObjects( RootContext.class, SubContext.class, SubContext2.class, RootResource.class, SubResource1.class );
 
-      module.addObjects( CommandQueryClientFactory.class, CommandQueryClient.class );
-
+      new ClientAssembler().assemble( module );
 
       module.addValues( TestQuery.class, TestResult.class, TestCommand.class );
       module.forMixin( TestQuery.class ).declareDefaults().abc().set( "def" );
 
+
+      new ValueAssembler().assemble( module );
       new DCIAssembler().assemble( module );
 
       module.addObjects(NullCommandResult.class );

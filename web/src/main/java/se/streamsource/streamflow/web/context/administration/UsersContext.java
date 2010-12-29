@@ -113,7 +113,7 @@ public class UsersContext
             String line = null;
             while ((line = bufReader.readLine()) != null)
             {
-               if( Strings.notEmpty( line ))
+               if( !Strings.empty( line ))
                   users.add( line );
             }
          } else

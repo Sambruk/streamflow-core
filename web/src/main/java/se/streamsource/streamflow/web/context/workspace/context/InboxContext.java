@@ -21,24 +21,24 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
 import org.qi4j.api.structure.Module;
-import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
+import se.streamsource.dci.value.table.TableQuery;
 import se.streamsource.streamflow.web.domain.entity.gtd.InboxQueries;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
 
-import static org.qi4j.api.query.QueryExpressions.*;
+import static org.qi4j.api.query.QueryExpressions.orderBy;
+import static org.qi4j.api.query.QueryExpressions.templateFor;
 
 /**
  * JAVADOC
  */
 public class InboxContext
-   implements IndexContext<Query<Case>>
 {
    @Structure
    Module module;
 
-   public Query<Case> index()
+   public Query<Case> cases(TableQuery tableQuery)
    {
       InboxQueries inbox = RoleMap.role( InboxQueries.class );
 

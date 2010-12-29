@@ -33,7 +33,9 @@ import se.streamsource.dci.restlet.server.velocity.ValueCompositeContext;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * JAVADOC
@@ -46,6 +48,8 @@ public class ResourceTemplateResultWriter
    @Service VelocityEngine velocity;
 
    @Service MetadataService metadataService;
+
+   Set<String> skip = new HashSet<String>(  );
 
    public boolean write( final Object result, final Response response ) throws ResourceException
    {
@@ -62,6 +66,9 @@ public class ResourceTemplateResultWriter
          final String extension = metadataService.getExtension( type );
          templateName += "."+extension;
 
+         // Have we failed on this one before, then don't try again
+         if (skip.contains( templateName ))
+            return false;
 
          try
          {
@@ -90,6 +97,7 @@ public class ResourceTemplateResultWriter
 
          } catch (Exception e)
          {
+            skip.add( templateName );
             // Ignore
          }
       }
