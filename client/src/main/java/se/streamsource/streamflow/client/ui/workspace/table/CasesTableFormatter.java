@@ -16,6 +16,7 @@
 
 package se.streamsource.streamflow.client.ui.workspace.table;
 
+import ca.odell.glazedlists.SeparatorList;
 import ca.odell.glazedlists.gui.AdvancedTableFormat;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.Icons;
@@ -34,7 +35,7 @@ import static se.streamsource.streamflow.client.util.i18n.text;
  * JAVADOC
  */
 public class CasesTableFormatter
-      implements AdvancedTableFormat<CaseTableValue>
+      implements AdvancedTableFormat<Object>
 {
    protected String[] columnNames;
    protected Class[] columnClasses;
@@ -78,56 +79,64 @@ public class CasesTableFormatter
       return null;
    }
 
-   public Object getColumnValue( CaseTableValue caseValue, int i )
+   public Object getColumnValue( Object value, int i )
    {
-      switch (i)
+      if (value instanceof SeparatorList.Separator)
       {
-         case 0:
+         SeparatorList.Separator separator = (SeparatorList.Separator) value;
+         return separator;
+      } else
+      {
+         CaseTableValue caseValue = (CaseTableValue) value;
+         switch (i)
          {
-            description.setLength( 0 );
-
-            if (caseValue.caseId().get() != null)
-               description.append( "#" ).append( caseValue.caseId() ).append( " " );
-
-            description.append( caseValue.description().get() );
-
-            List<LinkValue> labels = caseValue.labels().get().links().get();
-            if (labels.size() > 0)
+            case 0:
             {
-               description.append( " (" );
-               String comma = "";
-               for (LinkValue label : labels)
+               description.setLength( 0 );
+
+               if (caseValue.caseId().get() != null)
+                  description.append( "#" ).append( caseValue.caseId() ).append( " " );
+
+               description.append( caseValue.description().get() );
+
+               List<LinkValue> labels = caseValue.labels().get().links().get();
+               if (labels.size() > 0)
                {
-                  description.append( comma ).append( label.text().get() );
-                  comma = ",";
+                  description.append( " (" );
+                  String comma = "";
+                  for (LinkValue label : labels)
+                  {
+                     description.append( comma ).append( label.text().get() );
+                     comma = ",";
+                  }
+                  description.append( ")" );
                }
-               description.append( ")" );
+               return description.toString();
             }
-            return description.toString();
+
+            case 1:
+               ArrayList<String> icons = new ArrayList<String>();
+
+               icons.add( caseValue.parentCase().get() != null ? Icons.subcase.toString() : "empty" );
+               icons.add( caseValue.hasContacts().get() ? Icons.projects.toString() : "empty" );
+               icons.add( caseValue.hasConversations().get() ? Icons.conversations.toString() : "empty" );
+               icons.add( caseValue.hasSubmittedForms().get() ? Icons.forms.toString() : "empty" );
+               icons.add( caseValue.hasAttachments().get() ? Icons.attachments.toString() : "empty" );
+
+               return icons;
+            case 2:
+               return caseValue.caseType().get() == null ? null : (caseValue.caseType().get() + (caseValue.resolution().get() == null ? "" : "(" + caseValue.resolution().get() + ")"));
+
+            case 3:
+               return caseValue.creationDate().get();
+
+            case 4:
+               return caseValue.status().get();
+            case 5:
+               return caseValue.href().get();
          }
 
-         case 1:
-            ArrayList<String> icons = new ArrayList<String>();
-
-            icons.add( caseValue.parentCase().get() != null ? Icons.subcase.toString() : "empty" );
-            icons.add( caseValue.hasContacts().get() ? Icons.projects.toString() : "empty" );
-            icons.add( caseValue.hasConversations().get() ? Icons.conversations.toString() : "empty" );
-            icons.add( caseValue.hasSubmittedForms().get() ? Icons.forms.toString() : "empty" );
-            icons.add( caseValue.hasAttachments().get() ? Icons.attachments.toString() : "empty" );
-
-            return icons;
-         case 2:
-            return caseValue.caseType().get() == null ? null : (caseValue.caseType().get() + (caseValue.resolution().get() == null ? "" : "(" + caseValue.resolution().get() + ")"));
-
-         case 3:
-            return caseValue.creationDate().get();
-
-         case 4:
-            return caseValue.status().get();
-         case 5:
-            return caseValue.href().get();
+         return null;
       }
-
-      return null;
    }
 }

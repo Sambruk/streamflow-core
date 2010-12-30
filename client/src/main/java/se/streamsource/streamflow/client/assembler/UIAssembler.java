@@ -326,8 +326,6 @@ public class UIAssembler
 
       addMV( module, CaseModel.class, CaseInfoView.class );
 
-      addModels( module, CasesModel.class );
-
       addViews( module,
             CaseDetailView.class );
 

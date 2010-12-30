@@ -20,26 +20,21 @@ package se.streamsource.streamflow.client.ui.workspace.search;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.Task;
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.dci.value.link.LinksValue;
-import se.streamsource.dci.value.StringValue;
-import se.streamsource.streamflow.client.util.EventListSynch;
-import se.streamsource.streamflow.client.ui.workspace.table.CasesModel;
+import se.streamsource.dci.value.table.TableQuery;
+import se.streamsource.dci.value.table.TableValue;
 import se.streamsource.streamflow.client.ui.workspace.table.CasesTableModel;
+import se.streamsource.streamflow.client.util.EventListSynch;
 
 /**
- * JAVADOC
+ * Model for search results
  */
 public class SearchResultTableModel
       extends CasesTableModel
 {
    @Structure
    ValueBuilderFactory vbf;
-
-   @Uses
-   CasesModel casesModel;
 
    private String searchString;
 
@@ -55,18 +50,18 @@ public class SearchResultTableModel
    {
       if (searchString != null)
       {
-         new Task<LinksValue, Void>( Application.getInstance(  ))
+         new Task<TableValue, Void>( Application.getInstance(  ))
          {
             @Override
-            protected LinksValue doInBackground() throws Exception
+            protected TableValue doInBackground() throws Exception
             {
                return performSearch();
             }
 
             @Override
-            protected void succeeded( LinksValue result )
+            protected void succeeded( TableValue result )
             {
-               EventListSynch.synchronize( result.links().get(), eventList );
+               EventListSynch.synchronize( caseTableValues( result ), eventList );
             }
 
             @Override
@@ -78,14 +73,14 @@ public class SearchResultTableModel
       }
    }
 
-   private LinksValue performSearch()
+   private TableValue performSearch()
    {
       String translatedQuery = SearchTerms.translate( searchString );
 
-      ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
-      builder.prototype().string().set( translatedQuery );
+      ValueBuilder<TableQuery> builder = vbf.newValueBuilder( TableQuery.class );
+      builder.prototype().tq().set( "select * where "+translatedQuery );
 
-      return client.query( "search", builder.newInstance(), LinksValue.class );
+      return client.query( "search", builder.newInstance(), TableValue.class );
    }
 
 }

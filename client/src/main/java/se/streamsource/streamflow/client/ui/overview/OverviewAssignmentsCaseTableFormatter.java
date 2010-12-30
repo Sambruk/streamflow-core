@@ -51,14 +51,14 @@ public class OverviewAssignmentsCaseTableFormatter
    }
 
    @Override
-   public Object getColumnValue( CaseTableValue caseValue, int i )
+   public Object getColumnValue( Object caseValue, int i )
    {
       switch (i)
       {
          case 0:
             return super.getColumnValue( caseValue, i );
          case 1:
-            return caseValue.assignedTo().get();
+            return ((CaseTableValue)caseValue).assignedTo().get();
          default:
             return super.getColumnValue( caseValue, i );
       }
