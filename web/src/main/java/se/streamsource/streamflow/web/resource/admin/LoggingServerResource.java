@@ -43,6 +43,8 @@ public class LoggingServerResource
    @Override
    protected Representation get() throws ResourceException
    {
+      getResponse().release();
+
       return new WriterRepresentation( MediaType.TEXT_PLAIN)
       {
          @Override
@@ -53,65 +55,7 @@ public class LoggingServerResource
             final Form params = getRequest().getResourceRef().getQueryAsForm();
             final Logger logger = Logger.getRootLogger();
 
-            AppenderSkeleton appender = new AppenderSkeleton()
-            {
-               private boolean closed = false;
-
-               @Override
-               protected void append( LoggingEvent event )
-               {
-                  try
-                  {
-                     if (!closed)
-                     {
-                        for (Parameter param : params)
-                        {
-                           if (param.getValue() != null)
-                           {
-                              String val = MDC.get( param.getName() );
-
-                              if (param.getName().equals("logger"))
-                              {
-                                 if (!event.getLoggerName().contains( param.getValue() ))
-                                    return;
-                              } else if (param.getName().equals("level"))
-                              {
-                                 if (!event.getLevel().isGreaterOrEqual( Level.toLevel( param.getValue() )))
-                                    return;
-                              }
-                              else if (val == null || !param.getValue().equals(val))
-                                 return;
-                           }
-                        }
-
-
-                        writer.write( layout.format(event ));
-                        writer.flush();
-                     }
-                  } catch (IOException e)
-                  {
-                     close();
-
-                  }
-               }
-
-               public void close()
-               {
-                  closed = true;
-
-                  logger.removeAppender( this );
-
-                  synchronized (this)
-                  {
-                     this.notifyAll();
-                  }
-               }
-
-               public boolean requiresLayout()
-               {
-                  return false;
-               }
-            };
+            AppenderSkeleton appender = new LoggingAppender( params, writer, logger );
             appender.setLayout( new PatternLayout("[%X{url}] %-5p %c{1} : %m%n") );
             logger.addAppender( appender );
 
@@ -124,7 +68,78 @@ public class LoggingServerResource
                {
                }
             }
+
+            logger.removeAppender( appender );
          }
       };
+   }
+
+   private class LoggingAppender extends AppenderSkeleton
+   {
+      private boolean closed;
+      private final Form params;
+      private final Writer writer;
+      private final Logger logger;
+
+      public LoggingAppender( Form params, Writer writer, Logger logger )
+      {
+         this.params = params;
+         this.writer = writer;
+         this.logger = logger;
+         closed = false;
+      }
+
+      @Override
+      protected void append( LoggingEvent event )
+      {
+         try
+         {
+            if (!closed)
+            {
+               for (Parameter param : params)
+               {
+                  if (param.getValue() != null)
+                  {
+                     String val = MDC.get( param.getName() );
+
+                     if (param.getName().equals("logger"))
+                     {
+                        if (!event.getLoggerName().contains( param.getValue() ))
+                           return;
+                     } else if (param.getName().equals("level"))
+                     {
+                        if (!event.getLevel().isGreaterOrEqual( Level.toLevel( param.getValue() )))
+                           return;
+                     }
+                     else if (val == null || !param.getValue().equals(val))
+                        return;
+                  }
+               }
+
+
+               writer.write( layout.format(event ));
+               writer.flush();
+            }
+         } catch (IOException e)
+         {
+            close();
+
+         }
+      }
+
+      public void close()
+      {
+         closed = true;
+
+         synchronized (this)
+         {
+            this.notifyAll();
+         }
+      }
+
+      public boolean requiresLayout()
+      {
+         return false;
+      }
    }
 }
