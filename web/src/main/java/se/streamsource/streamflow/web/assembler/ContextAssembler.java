@@ -69,7 +69,7 @@ import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.requ
 import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.submittedforms.SurfaceSubmittedFormContext;
 import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.submittedforms.SurfaceSubmittedFormsContext;
 import se.streamsource.streamflow.web.context.workspace.WorkspaceContext;
-import se.streamsource.streamflow.web.context.workspace.cases.CaseActionsContext;
+import se.streamsource.streamflow.web.context.workspace.cases.CaseCommandsContext;
 import se.streamsource.streamflow.web.context.workspace.cases.CaseContext;
 import se.streamsource.streamflow.web.context.workspace.cases.attachment.AttachmentContext;
 import se.streamsource.streamflow.web.context.workspace.cases.attachment.AttachmentsContext;
@@ -289,7 +289,7 @@ public class ContextAssembler
             ContactsContext.class,
             ContactsResource.class,
             CaseContext.class,
-            CaseActionsContext.class,
+            CaseCommandsContext.class,
             CaseResource.class,
             CaseSubmittedFormsContext.class,
             CaseFormDraftResource.class,
@@ -299,6 +299,7 @@ public class ContextAssembler
             CasePossibleFormsResource.class,
             CasePossibleFormContext.class,
             CaseGeneralContext.class,
+            CaseGeneralCommandsContext.class,
             CaseGeneralResource.class,
             WorkspaceCasesResource.class,
 

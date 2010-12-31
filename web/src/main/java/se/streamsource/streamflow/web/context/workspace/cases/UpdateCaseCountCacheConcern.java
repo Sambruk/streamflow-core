@@ -35,8 +35,8 @@ import se.streamsource.streamflow.web.infrastructure.caching.CachingService;
  * Updates the cache of casecounts.
  */
 public abstract class UpdateCaseCountCacheConcern
-   extends ConcernOf<CaseActionsContext>
-   implements CaseActionsContext
+   extends ConcernOf<CaseCommandsContext>
+   implements CaseCommandsContext
 {
    Caching caching;
 

@@ -27,24 +27,22 @@ import se.streamsource.dci.value.EntityValue;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
+import se.streamsource.streamflow.web.context.RequiresPermission;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
+import se.streamsource.streamflow.web.domain.interaction.security.PermissionType;
 import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
 import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
 import se.streamsource.streamflow.web.domain.structure.created.Creator;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.label.Labelable;
 import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
-import se.streamsource.streamflow.web.domain.structure.organization.Organization;
-import se.streamsource.streamflow.web.domain.structure.organization.OrganizationParticipations;
-import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
-import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganization;
-import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganizationalUnit;
+import se.streamsource.streamflow.web.domain.structure.organization.*;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static se.streamsource.dci.api.RoleMap.*;
+import static se.streamsource.dci.api.RoleMap.role;
 
 /**
  * JAVADOC
@@ -55,11 +53,13 @@ public class LabelableContext
    @Structure
    Module module;
 
+   @RequiresPermission( PermissionType.read )
    public LinksValue index()
    {
       return new LinksBuilder( module.valueBuilderFactory() ).addDescribables( role( Labelable.Data.class ).labels() ).newLinks();
    }
 
+   @RequiresPermission( PermissionType.write )
    public LinksValue possiblelabels()
    {
       LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() ).command( "addlabel" );
@@ -70,6 +70,7 @@ public class LabelableContext
       return builder.newLinks();
    }
 
+   @RequiresPermission( PermissionType.write )
    public void addlabel( EntityValue reference )
    {
       UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();

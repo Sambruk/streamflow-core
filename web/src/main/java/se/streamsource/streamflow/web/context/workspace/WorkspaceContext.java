@@ -17,11 +17,8 @@
 
 package se.streamsource.streamflow.web.context.workspace;
 
-import org.qi4j.api.query.Query;
-import org.qi4j.api.query.QueryExpressions;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.table.TableQuery;
-import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.web.domain.entity.user.SearchCaseQueries;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 
@@ -30,11 +27,10 @@ import se.streamsource.streamflow.web.domain.structure.caze.Case;
  */
 public class WorkspaceContext
 {
-   public Query<Case> search( TableQuery tableQuery)
+   public Iterable<Case> search( TableQuery tableQuery)
    {
       SearchCaseQueries caseQueries = RoleMap.role( SearchCaseQueries.class );
-      Query<Case> caseQuery = caseQueries.search( tableQuery.where() );
-      caseQuery.orderBy( QueryExpressions.orderBy( QueryExpressions.templateFor( Describable.Data.class ).description() ) );
+      Iterable<Case> caseQuery = caseQueries.search( tableQuery.where() );
 
       return caseQuery;
    }

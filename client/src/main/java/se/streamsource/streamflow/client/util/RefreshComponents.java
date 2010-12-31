@@ -31,7 +31,7 @@ import java.util.Observer;
 import static org.qi4j.api.util.Iterables.matchesAny;
 
 /**
- * Register components here that should be visible/invisble, enabled/disabled depending on available commands.
+ * Register components here that should be visible/invisible, enabled/disabled depending on available commands.
  */
 public class RefreshComponents
    implements Observer
@@ -81,7 +81,8 @@ public class RefreshComponents
 
          for (Component component : Components.components( Specifications.<Component>TRUE(), value ))
          {
-            component.setEnabled( resourceValue != null && matchesAny( en.getKey(), resourceValue.commands().get() ) );
+            boolean enabled = resourceValue != null && matchesAny( en.getKey(), resourceValue.commands().get() );
+            component.setEnabled( enabled );
          }
 
       }

@@ -18,6 +18,7 @@ package se.streamsource.streamflow.web.resource.workspace.cases;
 
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResource;
+import se.streamsource.streamflow.web.context.workspace.cases.general.CaseGeneralCommandsContext;
 import se.streamsource.streamflow.web.context.workspace.cases.general.CaseGeneralContext;
 import se.streamsource.streamflow.web.resource.organizations.LabelableResource;
 
@@ -29,7 +30,7 @@ public class CaseGeneralResource
 {
    public CaseGeneralResource()
    {
-      super( CaseGeneralContext.class );
+      super( CaseGeneralContext.class, CaseGeneralCommandsContext.class );
    }
 
    @SubResource

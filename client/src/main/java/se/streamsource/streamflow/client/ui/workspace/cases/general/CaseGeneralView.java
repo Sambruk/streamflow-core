@@ -93,7 +93,6 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
    private JButton caseTypeButton;
    private JButton labelButton;
    private final ApplicationContext appContext;
-   private RefreshComponents refreshComponents = new RefreshComponents();
 
    public CaseGeneralView( @Service ApplicationContext appContext,
                            @Uses CommandQueryClient client,
@@ -101,10 +100,16 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
    {
       this.appContext = appContext;
       this.model = obf.newObjectBuilder( CaseGeneralModel.class ).use( client ).newInstance();
+      RefreshComponents refreshComponents = new RefreshComponents();
       model.addObserver( refreshComponents );
 
       this.labels = obf.newObjectBuilder( CaseLabelsView.class ).use( client.getSubClient( "labels" ) ).newInstance();
+
+      RefreshComponents refreshLabelComponents = new RefreshComponents();
+      labels.getModel().addObserver( refreshLabelComponents );
+
       this.forms = obf.newObjectBuilder( PossibleFormsView.class ).use( client.getClient( "../possibleforms/" ) ).newInstance();
+      refreshComponents.visibleOn( "changedescription", forms );
       this.setBorder( BorderFactory.createEmptyBorder() );
       getVerticalScrollBar().setUnitIncrement( 30 );
 
@@ -175,6 +180,7 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
             labelButton.requestFocusInWindow();
          }
       });
+      refreshLabelComponents.enabledOn( "addlabel", labelButton, labels );
       
       rightBuilder.add( labelButton,
             new CellConstraints( 1, 4, 1, 1, CellConstraints.FILL, CellConstraints.TOP, new Insets( 5, 0, 0, 0 ) ) );
@@ -197,7 +203,9 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
 
 
       // Forms
-      rightBuilder.add( new JLabel( i18n.text( WorkspaceResources.forms_label ) ),
+      JLabel formsLabel = new JLabel( i18n.text( WorkspaceResources.forms_label ) );
+      refreshComponents.visibleOn( "changedescription", formsLabel);
+      rightBuilder.add( formsLabel,
             new CellConstraints( 1, 6, 1, 1, CellConstraints.LEFT, CellConstraints.TOP, new Insets( 5, 0, 0, 0 ) ) );
 
       rightBuilder.add( forms,

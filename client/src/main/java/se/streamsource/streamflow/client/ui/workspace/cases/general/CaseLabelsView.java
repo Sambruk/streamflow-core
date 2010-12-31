@@ -54,8 +54,6 @@ public class CaseLabelsView
 
    private CaseLabelsModel model;
 
-   private boolean useBorders;
-
    public CaseLabelsView(@Service ApplicationContext context, @Uses CommandQueryClient client, @Structure ObjectBuilderFactory obf)
    {
       setActionMap( context.getActionMap(this ));
@@ -77,6 +75,7 @@ public class CaseLabelsView
 
    public void setEnabled( boolean enabled )
    {
+      super.setEnabled( enabled );
       for (Component component : getComponents())
       {
          component.setEnabled( enabled );
@@ -90,10 +89,10 @@ public class CaseLabelsView
       for (int i = 0; i < model.getLabels().size(); i++)
       {
          LinkValue linkValue = model.getLabels().get( i );
-         RemovableLabel label = new RemovableLabel( linkValue, useBorders );
+         RemovableLabel label = new RemovableLabel( linkValue, false );
          label.setToolTipText( linkValue.text().get() );
          label.getButton().addActionListener( getActionMap().get("remove" ));
-
+         label.setEnabled( isEnabled() );
          add( label );
       }
 
@@ -136,11 +135,6 @@ public class CaseLabelsView
             model.removeLabel( label.link() );
          }
       };
-   }
-
-   public void useBorders( boolean useBorders )
-   {
-      this.useBorders = useBorders;
    }
 
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )

@@ -70,9 +70,9 @@ import static se.streamsource.streamflow.domain.interaction.gtd.CaseStates.*;
  * JAVADOC
  */
 @Concerns(UpdateCaseCountCacheConcern.class)
-@Mixins(CaseActionsContext.Mixin.class)
+@Mixins(CaseCommandsContext.Mixin.class)
 @RequiresPermission(PermissionType.write)
-public interface CaseActionsContext
+public interface CaseCommandsContext
       extends DeleteContext, Context
 {
    // List possible actions
@@ -140,7 +140,7 @@ public interface CaseActionsContext
    public OutputRepresentation exportpdf( CaseOutputConfigValue config ) throws Throwable;
 
    abstract class Mixin
-         implements CaseActionsContext
+         implements CaseCommandsContext
    {
       @Structure
       Module module;

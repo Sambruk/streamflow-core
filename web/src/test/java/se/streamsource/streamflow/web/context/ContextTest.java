@@ -22,6 +22,7 @@ import org.junit.*;
 import org.qi4j.api.Qi4j;
 import org.qi4j.api.composite.TransientBuilderFactory;
 import org.qi4j.api.composite.TransientComposite;
+import org.qi4j.api.entity.EntityComposite;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.query.QueryBuilderFactory;
 import org.qi4j.api.service.ServiceFinder;
@@ -238,6 +239,11 @@ public abstract class ContextTest
    protected static EntityValue entityValue( LinkValue link )
    {
       return value( EntityValue.class, "{'entity':'" + link.id().get() + "'}" );
+   }
+
+   protected static <T> T entity( LinkValue link )
+   {
+      return (T) unitOfWorkFactory.currentUnitOfWork().get( EntityComposite.class, link.id().get() );
    }
 
    protected static boolean valueContains( ValueComposite value, String jsonFragment )

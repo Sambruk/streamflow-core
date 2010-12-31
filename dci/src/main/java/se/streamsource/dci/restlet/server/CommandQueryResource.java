@@ -210,10 +210,11 @@ public class CommandQueryResource
          InteractionConstraints methodConstraints = constraints;
          for (Class contextClass : contextClasses)
          {
+            // Check context class constraints
+            if (!constraints.isValid( contextClass, roleMap ))
+               continue; // Skip this class entirely
 
             Method[] methods = contextClass.getMethods();
-            // TODO Handle custom constraints        if (context instanceof InteractionConstraints)
-            //            methodConstraints = (InteractionConstraints) context;
 
             for (Method method : methods)
             {

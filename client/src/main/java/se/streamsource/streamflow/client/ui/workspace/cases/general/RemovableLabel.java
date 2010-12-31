@@ -117,7 +117,7 @@ public class RemovableLabel extends JPanel
    @Override
    public void setEnabled( boolean enabled )
    {
-      button.setEnabled( enabled );
+      button.setVisible( enabled );
       label.setEnabled( enabled );
       super.setEnabled( enabled );
    }

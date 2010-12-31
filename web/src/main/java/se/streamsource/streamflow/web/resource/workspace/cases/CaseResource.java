@@ -18,20 +18,23 @@ package se.streamsource.streamflow.web.resource.workspace.cases;
 
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResource;
-import se.streamsource.streamflow.web.context.workspace.cases.CaseActionsContext;
+import se.streamsource.streamflow.web.context.RequiresPermission;
+import se.streamsource.streamflow.web.context.workspace.cases.CaseCommandsContext;
 import se.streamsource.streamflow.web.context.workspace.cases.CaseContext;
 import se.streamsource.streamflow.web.context.workspace.cases.form.CaseSubmittedFormsContext;
+import se.streamsource.streamflow.web.domain.interaction.security.PermissionType;
 import se.streamsource.streamflow.web.resource.workspace.cases.conversation.ConversationsResource;
 
 /**
  * JAVADOC
  */
+@RequiresPermission( PermissionType.read )
 public class CaseResource
       extends CommandQueryResource
 {
    public CaseResource()
    {
-      super( CaseContext.class, CaseActionsContext.class );
+      super( CaseContext.class, CaseCommandsContext.class );
    }
 
    @SubResource

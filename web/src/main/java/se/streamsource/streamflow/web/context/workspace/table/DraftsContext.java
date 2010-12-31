@@ -42,6 +42,8 @@ import static se.streamsource.dci.api.RoleMap.role;
 public interface DraftsContext
       extends Context
 {
+   Query<Case> cases(TableQuery tableQuery);
+
    void createcase();
 
    abstract class Mixin

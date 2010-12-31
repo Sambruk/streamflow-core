@@ -28,6 +28,7 @@ import org.qi4j.api.util.Iterables;
 import se.streamsource.dci.api.Contexts;
 import se.streamsource.dci.api.InteractionConstraints;
 import se.streamsource.dci.api.RoleMap;
+import se.streamsource.dci.value.table.TableQuery;
 import se.streamsource.streamflow.web.application.security.UserPrincipal;
 import se.streamsource.streamflow.web.context.ContextTest;
 import se.streamsource.streamflow.web.context.administration.*;
@@ -36,14 +37,15 @@ import se.streamsource.streamflow.web.context.administration.labels.SelectedLabe
 import se.streamsource.streamflow.web.context.organizations.OrganizationalUnitsContextTest;
 import se.streamsource.streamflow.web.context.organizations.ProjectsContextTest;
 import se.streamsource.streamflow.web.context.users.UsersContextTest;
-import se.streamsource.streamflow.web.context.workspace.cases.CaseActionsContext;
-import se.streamsource.streamflow.web.context.workspace.cases.general.CaseGeneralContext;
+import se.streamsource.streamflow.web.context.workspace.cases.CaseCommandsContext;
+import se.streamsource.streamflow.web.context.workspace.cases.general.CaseGeneralCommandsContext;
 import se.streamsource.streamflow.web.context.workspace.cases.general.LabelableContext;
 import se.streamsource.streamflow.web.context.workspace.table.DraftsContext;
 import se.streamsource.streamflow.web.context.workspace.table.WorkspaceProjectsContext;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
+import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
@@ -60,7 +62,7 @@ import static org.qi4j.api.util.Iterables.first;
 /**
  * Check lifecycle of a case
  */
-public class CaseActionsContextTest
+public class CaseCommandsContextTest
       extends ContextTest
 {
    InteractionConstraints constraints;
@@ -110,7 +112,7 @@ public class CaseActionsContextTest
          playRole( project1 );
          context( LabelsContext.class ).createlabel( stringValue( "Label1" ) );
          SelectedLabelsContext context = context( SelectedLabelsContext.class );
-         context.addlabel( entityValue( findLink( context.possiblelabels(), "Label1" ) ) );
+         context.addlabel( CaseCommandsContextTest.<Label>entity( findLink( context.possiblelabels(), "Label1" ) ) );
          uow.complete();
       }
 
@@ -157,7 +159,7 @@ public class CaseActionsContextTest
          RoleMap.current().set( new UserPrincipal("test") );
 
          DraftsContext drafts = context( DraftsContext.class );
-         Iterable<Case> caseList = drafts.index();
+         Iterable<Case> caseList = drafts.cases( valueBuilderFactory.newValueFromJSON( TableQuery.class, "{tq:'select *'}" ) );
          assertThat( Iterables.count( caseList ), equalTo( 1L ) );
          caze = first( caseList );
          uow.discard();
@@ -171,7 +173,7 @@ public class CaseActionsContextTest
          RoleMap.current().set( new UserPrincipal("test") );
          playRole( caze );
 
-         context( CaseGeneralContext.class ).changedescription( stringValue( "Case1" ) );
+         context( CaseGeneralCommandsContext.class ).changedescription( stringValue( "Case1" ) );
          uow.complete();
          eventsOccurred( "changedDescription" );
       }
@@ -189,7 +191,7 @@ public class CaseActionsContextTest
          RoleMap.current().set( new UserPrincipal("test") );
          playRole( caze );
 
-         CaseActionsContext context = context( CaseActionsContext.class );
+         CaseCommandsContext context = context( CaseCommandsContext.class );
          context.sendto( entityValue( findLink( context.possiblesendto(), "Project1" ) ) );
          uow.complete();
          eventsOccurred( "changedOwner", "changedDate", "setCounter", "assignedCaseId" );
@@ -208,7 +210,7 @@ public class CaseActionsContextTest
          RoleMap.current().set( new UserPrincipal("test") );
          playRole( caze );
 
-         CaseGeneralContext context = context( CaseGeneralContext.class );
+         CaseGeneralCommandsContext context = context( CaseGeneralCommandsContext.class );
          context.casetype( entityValue( findLink( context.possiblecasetypes(), "CaseType1" ) ) );
 
          uow.complete();
@@ -238,7 +240,7 @@ public class CaseActionsContextTest
          RoleMap.current().set( new UserPrincipal("test") );
          playRole( caze );
 
-         context( CaseActionsContext.class ).open();
+         context( CaseCommandsContext.class ).open();
 
          uow.complete();
          eventsOccurred( "changedStatus" );
@@ -260,7 +262,7 @@ public class CaseActionsContextTest
 // TODO This is random!         playRole( first( context( InboxContext.class ).index() ) );
          playRole( caze );
 
-         context( CaseActionsContext.class ).assign();
+         context( CaseCommandsContext.class ).assign();
 
          uow.complete();
          eventsOccurred( "assignedTo" );
@@ -284,7 +286,7 @@ public class CaseActionsContextTest
 
 //         uow.metaInfo().set( new UserPrincipal("test") );
 
-         CaseActionsContext context = context( CaseActionsContext.class );
+         CaseCommandsContext context = context( CaseCommandsContext.class );
          context.resolve( entityValue( findLink( context.possibleresolutions(), "Resolution1" ).id().get() ) );
 
          uow.complete();
@@ -304,7 +306,7 @@ public class CaseActionsContextTest
          RoleMap.current().set( new UserPrincipal("test") );
          playRole( caze );
 
-         context( CaseActionsContext.class ).reopen();
+         context( CaseCommandsContext.class ).reopen();
 
          uow.complete();
          eventsOccurred( "changedStatus", "unresolved" );
@@ -323,7 +325,7 @@ public class CaseActionsContextTest
          RoleMap.current().set( new UserPrincipal("test") );
          playRole( caze );
 
-         context( CaseActionsContext.class ).close();
+         context( CaseCommandsContext.class ).close();
 
          uow.complete();
          eventsOccurred( "changedStatus" );
@@ -351,7 +353,7 @@ public class CaseActionsContextTest
          {
             return method.getName();
          }
-      },Contexts.commands( CaseActionsContext.class, constraints,  RoleMap.current()) ));
+      },Contexts.commands( CaseCommandsContext.class, constraints,  RoleMap.current()) ));
 
       assertThat( actions, equalTo( asList( allowedActions ) ) );
       uow.discard();

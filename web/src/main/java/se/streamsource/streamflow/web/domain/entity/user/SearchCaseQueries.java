@@ -21,14 +21,17 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
+import org.qi4j.api.specification.Specification;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.util.DateFunctions;
+import org.qi4j.api.util.Iterables;
 import se.streamsource.streamflow.resource.organization.search.DateSearchKeyword;
 import se.streamsource.streamflow.resource.organization.search.UserSearchKeyword;
 import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity;
 import se.streamsource.streamflow.web.domain.entity.label.LabelEntity;
 import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
+import se.streamsource.streamflow.web.domain.interaction.security.PermissionType;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
 
@@ -246,7 +249,13 @@ public interface
                queryBuilder.append( " !status:DRAFT" );
                Query<Case> cases = module.queryBuilderFactory()
                      .newNamedQuery( Case.class, uow, "solrquery" ).setVariable( "query", queryBuilder.toString() );
-               return cases;
+               return module.queryBuilderFactory().newQueryBuilder( Case.class ).newQuery( Iterables.filter( new Specification<Case>()
+               {
+                  public boolean satisfiedBy( Case item )
+                  {
+                     return item.hasPermission( user.userName().get(), PermissionType.read.name() );
+                  }
+               }, cases) );
             }
          }
          return module.queryBuilderFactory().newQueryBuilder( Case.class ).newQuery( Collections.<Case>emptyList() );
