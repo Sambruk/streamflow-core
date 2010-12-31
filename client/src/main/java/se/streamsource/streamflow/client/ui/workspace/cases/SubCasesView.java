@@ -28,7 +28,7 @@ import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
-import se.streamsource.streamflow.resource.caze.CaseValue;
+import se.streamsource.streamflow.resource.caze.CaseDTO;
 
 import javax.swing.*;
 import java.awt.*;
@@ -108,8 +108,8 @@ public class SubCasesView
       {
          public void update( Observable o, Object arg )
          {
-            CaseValue caseValue = model.getIndex();
-            if (caseValue.subcases().get().links().get().isEmpty())
+            CaseDTO caseDTO = model.getIndex();
+            if (caseDTO.subcases().get().links().get().isEmpty())
             {
                subcasesLabel.setVisible( false );
                subCaseListScroll.setVisible( false );
@@ -119,11 +119,11 @@ public class SubCasesView
                subCaseListScroll.setVisible( true );
             }
 
-            caseButton.setText( caseValue.caseId().get() );
+            caseButton.setText( caseDTO.caseId().get() );
 
-            if (caseValue.parentCase().get() != null)
+            if (caseDTO.parentCase().get() != null)
             {
-               parentCaseButton.setText( caseValue.parentCase().get().text().get() );
+               parentCaseButton.setText( caseDTO.parentCase().get().text().get() );
             } else
             {
                parentLabel.setVisible( false );
@@ -131,7 +131,7 @@ public class SubCasesView
 
             }
 
-            if (caseValue.subcases().get().links().get().isEmpty() && caseValue.parentCase().get() == null)
+            if (caseDTO.subcases().get().links().get().isEmpty() && caseDTO.parentCase().get() == null)
             {
                JSplitPane parent = (JSplitPane) getParent();
                parent.setDividerLocation( 0.0 );

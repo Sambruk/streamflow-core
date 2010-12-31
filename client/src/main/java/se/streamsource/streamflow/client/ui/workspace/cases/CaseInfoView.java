@@ -24,7 +24,7 @@ import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.ui.workspace.table.CaseStatusLabel;
 import se.streamsource.streamflow.client.util.i18n;
-import se.streamsource.streamflow.resource.caze.CaseValue;
+import se.streamsource.streamflow.resource.caze.CaseDTO;
 
 import javax.swing.*;
 import java.awt.*;
@@ -105,7 +105,7 @@ public class CaseInfoView extends JPanel
 
    public void update( Observable o, Object arg )
    {
-      CaseValue aCase = model.getIndex();
+      CaseDTO aCase = model.getIndex();
 
       statusLabel.setStatus( aCase.status().get() );
 

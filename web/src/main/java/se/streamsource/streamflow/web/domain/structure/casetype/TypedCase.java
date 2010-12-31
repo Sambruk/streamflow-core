@@ -41,10 +41,15 @@ public interface TypedCase
    }
 
    abstract class Mixin
-         implements Data
+         implements Data, TypedCase
    {
       @This
       Labelable labelable;
+
+      public void changeCaseType( @Optional CaseType newCaseType )
+      {
+         changedCaseType( null, newCaseType );
+      }
 
       public void changedCaseType( @Optional DomainEvent event, @Optional CaseType caseType )
       {

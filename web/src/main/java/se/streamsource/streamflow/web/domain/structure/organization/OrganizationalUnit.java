@@ -37,6 +37,7 @@ public interface OrganizationalUnit
       Groups,
       Forms,
       OrganizationalUnitRefactoring,
+      OrganizationalUnitMembers,
       OrganizationalUnits,
       Owner,
       Ownable,

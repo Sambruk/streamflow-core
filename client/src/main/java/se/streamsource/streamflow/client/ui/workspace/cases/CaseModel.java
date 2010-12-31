@@ -27,8 +27,8 @@ import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.dci.value.link.TitledLinkValue;
 import se.streamsource.streamflow.client.ResourceModel;
 import se.streamsource.streamflow.client.util.EventListSynch;
+import se.streamsource.streamflow.resource.caze.CaseDTO;
 import se.streamsource.streamflow.resource.caze.CaseOutputConfigValue;
-import se.streamsource.streamflow.resource.caze.CaseValue;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,7 +38,7 @@ import java.util.Collection;
  * Model for the info and actions on a case.
  */
 public class CaseModel
-   extends ResourceModel<CaseValue>
+   extends ResourceModel<CaseDTO>
 {
    private TransactionList<LinkValue> subcases = new TransactionList<LinkValue>( new BasicEventList<LinkValue>() );
 
@@ -46,9 +46,9 @@ public class CaseModel
    {
       super.refresh();
 
-      CaseValue caseValue = getIndex();
+      CaseDTO caseDTO = getIndex();
 
-      EventListSynch.synchronize( caseValue.subcases().get().links().get(), subcases );
+      EventListSynch.synchronize( caseDTO.subcases().get().links().get(), subcases );
    }
 
    public TransactionList<LinkValue> getSubcases()

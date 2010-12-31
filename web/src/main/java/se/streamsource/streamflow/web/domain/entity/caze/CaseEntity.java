@@ -18,6 +18,7 @@
 package se.streamsource.streamflow.web.domain.entity.caze;
 
 import org.qi4j.api.Qi4j;
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.concern.ConcernOf;
 import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.injection.scope.Structure;
@@ -31,11 +32,11 @@ import se.streamsource.streamflow.domain.structure.Removable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
 import se.streamsource.streamflow.web.domain.entity.form.SubmittedFormsQueries;
 import se.streamsource.streamflow.web.domain.interaction.gtd.*;
-import se.streamsource.streamflow.web.domain.interaction.security.Authorization;
-import se.streamsource.streamflow.web.domain.interaction.security.PermissionType;
+import se.streamsource.streamflow.web.domain.interaction.security.*;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachments;
 import se.streamsource.streamflow.web.domain.structure.attachment.FormAttachments;
+import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.Resolvable;
 import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
 import se.streamsource.streamflow.web.domain.structure.caze.*;
@@ -43,14 +44,18 @@ import se.streamsource.streamflow.web.domain.structure.conversation.Conversation
 import se.streamsource.streamflow.web.domain.structure.form.FormDrafts;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedForms;
 import se.streamsource.streamflow.web.domain.structure.label.Labelable;
-import se.streamsource.streamflow.web.domain.structure.project.Member;
+import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
+import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganizationalUnit;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
+import se.streamsource.streamflow.web.domain.structure.user.User;
+
+import java.util.Map;
 
 /**
  * This represents a single Case in the system
  */
 @SideEffects({AssignIdSideEffect.class, StatusClosedSideEffect.class})
-@Concerns(CaseEntity.RemovableConcern.class)
+@Concerns({CaseEntity.RemovableConcern.class, CaseEntity.TypedCaseAccessConcern.class, CaseEntity.OwnableCaseAccessConcern.class})
 @Mixins(CaseEntity.AuthorizationMixin.class)
 public interface CaseEntity
       extends Case,
@@ -64,6 +69,7 @@ public interface CaseEntity
       CaseId.Data,
       Status.Data,
       Conversations.Data,
+      CaseAccess.Data,
 
       // Structure
       Closed,
@@ -96,32 +102,81 @@ public interface CaseEntity
 
       public boolean hasPermission( String userId, String permission )
       {
-         Actor actor = uowf.currentUnitOfWork().get( Actor.class, userId );
+         User actor = uowf.currentUnitOfWork().get( User.class, userId );
 
-         // TODO Update this for "read" when security is implemented
-         if (permission.equals( PermissionType.write.name()))
+         switch (aCase.status().get())
          {
-            switch (aCase.status().get())
+            case DRAFT:
             {
-               case DRAFT:
-               {
-                  // Creator has write permissions
-                  return aCase.createdBy().get().equals(actor);
-               }
-
-               case OPEN:
-               case CLOSED:
-               case ON_HOLD:
-               {
-                  Project project = (Project) aCase.owner().get();
-                  return (((Member) actor).isMember( project ));
-               }
+               // Creator has all permissions
+               return aCase.createdBy().get().equals(actor);
             }
 
-            return false; // Can never get here, but just in case
-         } else
+            case OPEN:
+            case CLOSED:
+            case ON_HOLD:
+            {
+               CaseAccessType accessType = aCase.getAccessType( PermissionType.valueOf( permission ) );
+
+               switch (accessType)
+               {
+                  case all:
+                     return true;
+
+                  case organization:
+                  {
+                     OwningOrganizationalUnit.Data owningOU = (OwningOrganizationalUnit.Data) aCase.owner().get();
+                     OrganizationalUnit ou = owningOU.organizationalUnit().get();
+
+                     return ou.isMemberOrParticipant( actor );
+                  }
+
+                  case project:
+                  {
+                     Project project = (Project) aCase.owner().get();
+
+                     return actor.isMember( project );
+                  }
+               }
+            }
+         }
+
+         return false; // Can never get here, but just in case
+      }
+   }
+
+   class TypedCaseAccessConcern
+      extends ConcernOf<TypedCase>
+      implements TypedCase
+   {
+      @This CaseAccess caseAccess;
+
+      public void changeCaseType( @Optional CaseType newCaseType )
+      {
+         next.changeCaseType( newCaseType );
+
+         // Transfer settings for security from new casetype to case
+         for (Map.Entry<PermissionType, CaseAccessType> entry : ((CaseAccessDefaults.Data)newCaseType).accessPermissionDefaults().get().entrySet())
          {
-            return true;
+            caseAccess.changeAccess( entry.getKey(), entry.getValue() );
+         }
+      }
+   }
+
+   abstract class OwnableCaseAccessConcern
+      extends ConcernOf<Ownable>
+      implements Ownable
+   {
+      @This CaseAccess caseAccess;
+
+      public void changeOwner( Owner owner )
+      {
+         next.changeOwner( owner );
+
+         // Transfer settings for security from new owner to case
+         for (Map.Entry<PermissionType, CaseAccessType> entry : ((CaseAccessDefaults.Data)owner).accessPermissionDefaults().get().entrySet())
+         {
+            caseAccess.changeAccess( entry.getKey(), entry.getValue() );
          }
       }
    }

@@ -60,16 +60,13 @@ public class CommonResourceAssembler
             NewProxyUserCommand.class,
             ResetPasswordCommand.class ).visibleIn( Visibility.application );
 
-      // Queries
-      module.addValues( CasesQuery.class ).visibleIn( Visibility.application );
-
       new ValueAssembler().assemble( module );
 
       // Result values
       module.addValues(
             AccessPointValue.class,
             ListItemValue.class,
-            CaseValue.class,
+            CaseDTO.class,
             CaseGeneralDTO.class,
             CaseFormDTO.class,
             ContactsDTO.class,

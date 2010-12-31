@@ -22,6 +22,7 @@ import se.streamsource.streamflow.domain.structure.Notable;
 import se.streamsource.streamflow.domain.structure.Removable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
+import se.streamsource.streamflow.web.domain.interaction.security.CaseAccessDefaults;
 import se.streamsource.streamflow.web.domain.structure.form.Forms;
 import se.streamsource.streamflow.web.domain.structure.form.SelectedForms;
 import se.streamsource.streamflow.web.domain.structure.label.Labels;
@@ -32,6 +33,7 @@ import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
  */
 public interface CaseType
    extends
+      CaseAccessDefaults,
       Describable,
       Forms,
       Labels,

@@ -15,34 +15,14 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.resource.caze;
-
-import org.qi4j.api.common.UseDefaults;
-import org.qi4j.api.property.Property;
-import org.qi4j.api.value.ValueComposite;
+package se.streamsource.streamflow.web.domain.interaction.security;
 
 /**
- * Query for Inbox.
+ * Types of access rights settings on a case.
  */
-public interface CasesQuery
-      extends ValueComposite
+public enum CaseAccessType
 {
-   public enum InboxSorting
-   {
-      CREATED_ON, DESCRIPTION
-   }
-
-   public enum InboxStatus
-   {
-      ACTIVE
-   }
-
-   @UseDefaults
-   Property<InboxSorting> sort();
-
-   @UseDefaults
-   Property<InboxStatus> status();
-
-   @UseDefaults
-   Property<Integer> start();
+   all, // All users can access - the default
+   organization, // All users in the OU of the function that owns the case can access
+   project // All users in the function that owns the case can access
 }

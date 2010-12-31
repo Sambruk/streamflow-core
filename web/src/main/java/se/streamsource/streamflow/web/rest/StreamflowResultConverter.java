@@ -35,7 +35,7 @@ import se.streamsource.dci.value.table.TableValue;
 import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.resource.caze.CaseValue;
+import se.streamsource.streamflow.resource.caze.CaseDTO;
 import se.streamsource.streamflow.util.Strings;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
@@ -110,11 +110,11 @@ public class StreamflowResultConverter
       return linksBuilder.newLinks();
    }
 
-   private CaseValue caseDTO( CaseEntity aCase, Module module, String basePath )
+   private CaseDTO caseDTO( CaseEntity aCase, Module module, String basePath )
    {
-      ValueBuilder<CaseValue> builder = module.valueBuilderFactory().newValueBuilder( CaseValue.class );
+      ValueBuilder<CaseDTO> builder = module.valueBuilderFactory().newValueBuilder( CaseDTO.class );
 
-      CaseValue prototype = builder.prototype();
+      CaseDTO prototype = builder.prototype();
 
       prototype.id().set( aCase.identity().get() );
       prototype.creationDate().set( aCase.createdOn().get() );

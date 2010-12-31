@@ -29,7 +29,7 @@ import java.util.Date;
 /**
  * JAVADOC
  */
-public interface CaseValue
+public interface CaseDTO
       extends LinkValue
 {
    Property<Date> creationDate();
