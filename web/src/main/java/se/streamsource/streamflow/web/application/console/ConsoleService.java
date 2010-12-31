@@ -107,7 +107,7 @@ public interface ConsoleService
 
          // Replace output streams
          ByteArrayOutputStream stream = new ByteArrayOutputStream();
-         PrintStream out = new PrintStream( stream );
+         PrintStream out = new PrintStream( stream, true, "UTF-8" );
 
          interpreter.setOut( out );
          interpreter.setErr( out );

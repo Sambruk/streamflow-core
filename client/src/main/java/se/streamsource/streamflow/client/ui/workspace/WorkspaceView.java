@@ -154,7 +154,7 @@ public class WorkspaceView
       searchPanel.add( searchView, BorderLayout.CENTER );
 
       topPanel = new JPanel( topLayout );
-      topPanel.setBorder( BorderFactory.createEmptyBorder( 0, 0, 5, 0 ) );
+      topPanel.setBorder( BorderFactory.createEtchedBorder() );
       topPanel.add( contextPanel, "context" );
       topPanel.add( searchPanel, "search" );
 
@@ -366,8 +366,12 @@ public class WorkspaceView
                   int selectedRow = caseTable.getSelectedRow();
                   if (selectedRow != -1)
                   {
-                     String href = (String) caseTable.getModel().getValueAt( caseTable.convertRowIndexToModel(selectedRow), 5 );
-                     casesView.showCase( client.getClient( href ));
+                     Object valueAt = caseTable.getModel().getValueAt( caseTable.convertRowIndexToModel( selectedRow ), 5 );
+                     if (valueAt instanceof String)
+                     {
+                        String href = (String) valueAt;
+                        casesView.showCase( client.getClient( href ));
+                     }
                   }
                }
             } catch (Exception e1)

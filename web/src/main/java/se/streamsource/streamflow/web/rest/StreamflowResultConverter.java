@@ -181,7 +181,7 @@ public class StreamflowResultConverter
       return builder.newInstance();
    }
 
-   private TableValue caseTable( Iterable<CaseEntity> aCase, Module module, Request request, Object[] arguments )
+   private TableValue caseTable( Iterable<CaseEntity> cases, Module module, Request request, Object[] arguments )
    {
       TableQuery query = (TableQuery) arguments[0];
       TableBuilder table = new TableBuilder( module.valueBuilderFactory() );
@@ -208,99 +208,107 @@ public class StreamflowResultConverter
       }
 
       // Data
-      for (CaseEntity caseEntity : aCase)
+      for (CaseEntity caseEntity : cases)
       {
-         table.row();
-// "description,created,creator,caseid,href,owner,status,casetype,assigned,hascontacts,hasconversations,hasattachments,hassubmittedforms,labels,subcases,parent"
-         for (String column : columns)
+         try
          {
-            if (column.equals( "description" ))
-               table.cell( caseEntity.identity().get(), caseEntity.description().get() );
-            else if (column.equals( "created" ))
-               table.cell( caseEntity.createdOn().get(), DateFunctions.toUtcString( caseEntity.createdOn().get() ) );
-            else if (column.equals( "creator" ))
+            table.row();
+// "description,created,creator,caseid,href,owner,status,casetype,assigned,hascontacts,hasconversations,hasattachments,hassubmittedforms,labels,subcases,parent"
+            for (String column : columns)
             {
-               Creator v = caseEntity.createdBy().get();
-               table.cell( v, v == null ? "" : ((Describable) v).getDescription() );
-            } else if (column.equals( "caseid" ))
-            {
-               table.cell( caseEntity.caseId().get(), caseEntity.caseId().get() );
-            } else if (column.equals( "href" ))
-            {
-               String href = request.getResourceRef().getBaseRef().getPath() + "/workspace/cases/" + caseEntity.identity().get() + "/";
-               table.cell( href, href );
-            } else if (column.equals( "owner" ))
-            {
-               Owner owner = caseEntity.owner().get();
-               table.cell( owner, owner == null ? null : ((Describable) owner).getDescription() );
-            } else if (column.equals( "status" ))
-            {
-               table.cell( caseEntity.status().get().name(), Strings.humanReadable( caseEntity.status().get().name() ) );
-            } else if (column.equals( "casetype" ))
-            {
-               CaseType caseType = caseEntity.caseType().get();
-               table.cell( caseType, caseType == null ? null : caseType.getDescription() );
-            } else if (column.equals( "assigned" ))
-            {
-               Assignee assignee = caseEntity.assignedTo().get();
-               table.cell( assignee, assignee == null ? null : ((Describable) assignee).getDescription() );
-            } else if (column.equals( "hascontacts" ))
-            {
-               table.cell( caseEntity.hasContacts(), Boolean.toString( caseEntity.hasContacts() ) );
-            } else if (column.equals( "hasconversations" ))
-            {
-               table.cell( caseEntity.hasConversations(), Boolean.toString( caseEntity.hasConversations() ) );
-            } else if (column.equals( "hassubmittedforms" ))
-            {
-               table.cell( caseEntity.hasSubmittedForms(), Boolean.toString( caseEntity.hasSubmittedForms() ) );
-            } else if (column.equals( "hasattachments" ))
-            {
-               table.cell( caseEntity.hasAttachments(), Boolean.toString( caseEntity.hasAttachments() ) );
-            } else if (column.equals( "labels" ))
-            {
-               LinksBuilder labelsBuilder = new LinksBuilder( module.valueBuilderFactory() ).command( "delete" );
-               for (Label label : caseEntity.labels())
+               if (column.equals( "description" ))
+                  table.cell( caseEntity.identity().get(), caseEntity.description().get() );
+               else if (column.equals( "created" ))
+                  table.cell( caseEntity.createdOn().get(), DateFunctions.toUtcString( caseEntity.createdOn().get() ) );
+               else if (column.equals( "creator" ))
                {
-                  labelsBuilder.addDescribable( label );
-               }
-               LinksValue linksValue = labelsBuilder.newLinks();
-               table.cell( linksValue, null );
-            } else if (column.equals( "subcases" ))
-            {
-               LinksBuilder subcasesBuilder = new LinksBuilder( module.valueBuilderFactory() );
-               subcasesBuilder.path( ".." );
-               try
+                  Creator v = caseEntity.createdBy().get();
+                  table.cell( v, v == null ? "" : ((Describable) v).getDescription() );
+               } else if (column.equals( "caseid" ))
                {
-                  for (Case subCase : caseEntity.subCases())
+                  table.cell( caseEntity.caseId().get(), caseEntity.caseId().get() );
+               } else if (column.equals( "href" ))
+               {
+                  String href = request.getResourceRef().getBaseRef().getPath() + "/workspace/cases/" + caseEntity.identity().get() + "/";
+                  table.cell( href, href );
+               } else if (column.equals( "owner" ))
+               {
+                  Owner owner = caseEntity.owner().get();
+                  table.cell( owner, owner == null ? null : ((Describable) owner).getDescription() );
+               } else if (column.equals( "status" ))
+               {
+                  table.cell( caseEntity.status().get().name(), Strings.humanReadable( caseEntity.status().get().name() ) );
+               } else if (column.equals( "casetype" ))
+               {
+                  CaseType caseType = caseEntity.caseType().get();
+                  table.cell( caseType, caseType == null ? null : caseType.getDescription() );
+               } else if (column.equals( "assigned" ))
+               {
+                  Assignee assignee = caseEntity.assignedTo().get();
+                  table.cell( assignee, assignee == null ? null : ((Describable) assignee).getDescription() );
+               } else if (column.equals( "hascontacts" ))
+               {
+                  table.cell( caseEntity.hasContacts(), Boolean.toString( caseEntity.hasContacts() ) );
+               } else if (column.equals( "hasconversations" ))
+               {
+                  table.cell( caseEntity.hasConversations(), Boolean.toString( caseEntity.hasConversations() ) );
+               } else if (column.equals( "hassubmittedforms" ))
+               {
+                  table.cell( caseEntity.hasSubmittedForms(), Boolean.toString( caseEntity.hasSubmittedForms() ) );
+               } else if (column.equals( "hasattachments" ))
+               {
+                  table.cell( caseEntity.hasAttachments(), Boolean.toString( caseEntity.hasAttachments() ) );
+               } else if (column.equals( "labels" ))
+               {
+                  LinksBuilder labelsBuilder = new LinksBuilder( module.valueBuilderFactory() ).command( "delete" );
+                  for (Label label : caseEntity.labels())
                   {
-                     subcasesBuilder.classes( ((Status.Data) subCase).status().get().name() );
-                     subcasesBuilder.addDescribable( subCase );
+                     labelsBuilder.addDescribable( label );
                   }
-               } catch (Exception e)
+                  LinksValue linksValue = labelsBuilder.newLinks();
+                  table.cell( linksValue, null );
+               } else if (column.equals( "subcases" ))
                {
-                  e.printStackTrace();
-               }
-               LinksValue linksValue = subcasesBuilder.newLinks();
-               table.cell( linksValue, null );
-            } else if (column.equals( "parent" ))
-            {
-               Case parentCase = caseEntity.parent().get();
-               if (parentCase != null)
+                  LinksBuilder subcasesBuilder = new LinksBuilder( module.valueBuilderFactory() );
+                  subcasesBuilder.path( ".." );
+                  try
+                  {
+                     for (Case subCase : caseEntity.subCases())
+                     {
+                        subcasesBuilder.classes( ((Status.Data) subCase).status().get().name() );
+                        subcasesBuilder.addDescribable( subCase );
+                     }
+                  } catch (Exception e)
+                  {
+                     e.printStackTrace();
+                  }
+                  LinksValue linksValue = subcasesBuilder.newLinks();
+                  table.cell( linksValue, null );
+               } else if (column.equals( "parent" ))
                {
-                  ValueBuilder<LinkValue> linkBuilder = module.valueBuilderFactory().newValueBuilder( LinkValue.class );
-                  linkBuilder.prototype().id().set( parentCase.toString() );
-                  linkBuilder.prototype().rel().set( "parent" );
-                  linkBuilder.prototype().href().set( "../" + parentCase.toString() + "/" );
-                  linkBuilder.prototype().text().set( ((CaseId.Data) parentCase).caseId().get() );
-                  table.cell( linkBuilder.newInstance(), null );
+                  Case parentCase = caseEntity.parent().get();
+                  if (parentCase != null)
+                  {
+                     ValueBuilder<LinkValue> linkBuilder = module.valueBuilderFactory().newValueBuilder( LinkValue.class );
+                     linkBuilder.prototype().id().set( parentCase.toString() );
+                     linkBuilder.prototype().rel().set( "parent" );
+                     linkBuilder.prototype().href().set( "../" + parentCase.toString() + "/" );
+                     linkBuilder.prototype().text().set( ((CaseId.Data) parentCase).caseId().get() );
+                     table.cell( linkBuilder.newInstance(), null );
+                  } else
+                  {
+                     table.cell( null, null );
+                  }
                } else
                {
-                  table.cell(null, null);
+                  throw new ResourceException( org.restlet.data.Status.SERVER_ERROR_INTERNAL, "Unhandled column name:" + column );
                }
-            } else
-            {
-               throw new ResourceException( org.restlet.data.Status.SERVER_ERROR_INTERNAL, "Unhandled column name:" + column );
             }
+         } catch(Exception ex)
+         {
+            // Could not create row for this case, for some reason
+            LoggerFactory.getLogger( getClass() ).error( "Could not create row for case:" + caseEntity.identity().get(), ex );
+            table.abortRow();
          }
       }
 

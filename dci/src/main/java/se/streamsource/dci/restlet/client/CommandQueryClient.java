@@ -161,7 +161,13 @@ public class CommandQueryClient
          }
       } finally
       {
-         response.release();
+         try
+         {
+            response.getEntity().exhaust();
+         } catch (Throwable e)
+         {
+            // Ignore
+         }
       }
    }
 
@@ -272,7 +278,13 @@ public class CommandQueryClient
                }
             } finally
             {
-               response.release();
+               try
+               {
+                  response.getEntity().exhaust();
+               } catch (Throwable e)
+               {
+                  // Ignore
+               }
             }
             break;
          } catch (ResourceException e)
@@ -346,7 +358,13 @@ public class CommandQueryClient
             }
          } finally
          {
-            response.release();
+            try
+            {
+               response.getEntity().exhaust();
+            } catch (Throwable e)
+            {
+               // Ignore
+            }
          }
       }
    }

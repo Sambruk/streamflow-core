@@ -79,4 +79,9 @@ public class TableBuilder<T extends TableBuilder>
 
       return tableBuilder.newInstance();
    }
+
+   public void abortRow()
+   {
+      rowBuilder = null;
+   }
 }

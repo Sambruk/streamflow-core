@@ -24,7 +24,6 @@ import org.qi4j.api.query.Query;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.util.DateFunctions;
-import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.resource.organization.search.DateSearchKeyword;
 import se.streamsource.streamflow.resource.organization.search.UserSearchKeyword;
 import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity;
@@ -35,12 +34,7 @@ import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -52,7 +46,7 @@ import java.util.regex.PatternSyntaxException;
 public interface
       SearchCaseQueries
 {
-   Query<Case> search( StringValue query );
+   Query<Case> search( String query );
 
    abstract class Mixin
          implements SearchCaseQueries
@@ -63,11 +57,11 @@ public interface
       @This
       UserAuthentication.Data user;
 
-      public Query<Case> search( StringValue query )
+      public Query<Case> search( String query )
       {
          UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
 
-         String queryString = query.string().get().trim();
+         String queryString = query.trim();
 
          if (queryString.length() > 0)
          {

@@ -60,8 +60,14 @@ public class CasesTableModel
       builder.prototype().tq().set( "select *" );
       TableQuery query = builder.newInstance();
 
-      List<CaseTableValue> caseTableValues = new ArrayList<CaseTableValue>(  );
       TableValue table = client.query( "cases", query, TableValue.class );
+      List<CaseTableValue> caseTableValues = caseTableValues( table );
+      EventListSynch.synchronize( caseTableValues, eventList );
+   }
+
+   protected List<CaseTableValue> caseTableValues( TableValue table )
+   {
+      List<CaseTableValue> caseTableValues = new ArrayList<CaseTableValue>(  );
       for(RowValue row : table.rows().get())
       {
          ValueBuilder<CaseTableValue> caseBuilder = vbf.newValueBuilder( CaseTableValue.class );
@@ -103,15 +109,15 @@ public class CasesTableModel
             else if (columnValue.id().get().equals("resolution"))
                prototype.resolution().set(cell.f().get());
             else if (columnValue.id().get().equals("status"))
-               prototype.status().set( CaseStates.valueOf( cell.v().get().toString()));
+               prototype.status().set( CaseStates.valueOf( cell.v().get().toString() ));
             else if (columnValue.id().get().equals("subcases"))
             {
                prototype.subcases().set( vbf.newValueFromJSON( LinksValue.class, cell.v().get().toString() ) );
             } else if (columnValue.id().get().equals( "href" ))
-               prototype.href().set( cell.f().get().toString() );
+               prototype.href().set( cell.f().get() );
          }
          caseTableValues.add(caseBuilder.newInstance());
       }
-      EventListSynch.synchronize( caseTableValues, eventList );
+      return caseTableValues;
    }
 }
