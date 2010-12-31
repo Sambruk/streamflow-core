@@ -22,6 +22,7 @@ import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseTableValue;
 import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
+import se.streamsource.streamflow.util.Strings;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -94,7 +95,7 @@ public class CasesTableFormatter
             {
                description.setLength( 0 );
 
-               if (caseValue.caseId().get() != null)
+               if (!Strings.empty( caseValue.caseId().get()))
                   description.append( "#" ).append( caseValue.caseId() ).append( " " );
 
                description.append( caseValue.description().get() );

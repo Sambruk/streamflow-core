@@ -20,6 +20,7 @@ import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResource;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
+import se.streamsource.streamflow.web.context.administration.CaseAccessDefaultsContext;
 import se.streamsource.streamflow.web.context.administration.CaseTypeContext;
 import se.streamsource.streamflow.web.context.structure.DescribableContext;
 import se.streamsource.streamflow.web.resource.organizations.forms.FormsResource;
@@ -82,5 +83,11 @@ public class CaseTypeResource
    public void selectedresolutions()
    {
       subResource( SelectedResolutionsResource.class );
+   }
+
+   @SubResource
+   public void caseaccessdefaults()
+   {
+      subResourceContexts( CaseAccessDefaultsContext.class );
    }
 }
