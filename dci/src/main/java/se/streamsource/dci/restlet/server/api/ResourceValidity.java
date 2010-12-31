@@ -70,6 +70,7 @@ public class ResourceValidity
    public void checkRequest(Request request)
          throws ResourceException
    {
+      // Check command rules
       Date modificationDate = request.getConditions().getUnmodifiedSince();
       if (modificationDate != null)
       {
@@ -78,6 +79,18 @@ public class ResourceValidity
          if (lastModified.after( modificationDate ))
          {
             throw new ResourceException(Status.CLIENT_ERROR_CONFLICT);
+         }
+      }
+
+      // Check query rules
+      modificationDate = request.getConditions().getModifiedSince();
+      if (modificationDate != null)
+      {
+         EntityState state = spi.getEntityState( entity );
+         Date lastModified = new Date( (state.lastModified()/1000)*1000); // Cut off milliseconds
+         if (!lastModified.after( modificationDate ))
+         {
+            throw new ResourceException(Status.REDIRECTION_NOT_MODIFIED);
          }
       }
    }

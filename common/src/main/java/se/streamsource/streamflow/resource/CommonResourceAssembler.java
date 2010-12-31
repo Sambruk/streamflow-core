@@ -21,8 +21,6 @@ import org.qi4j.api.common.Visibility;
 import org.qi4j.bootstrap.Assembler;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
-import se.streamsource.dci.value.EntityValue;
-import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.ValueAssembler;
 import se.streamsource.streamflow.infrastructure.application.AccessPointValue;
 import se.streamsource.streamflow.infrastructure.application.LinkTree;
@@ -51,14 +49,11 @@ public class CommonResourceAssembler
       module.addValues( RegisterUserCommand.class,
             ChangePasswordCommand.class,
             BooleanDTO.class,
-            StringValue.class,
             DateDTO.class,
             IntegerDTO.class,
             NamedIndexDTO.class,
-            EntityValue.class,
             NewUserCommand.class,
-            NewProxyUserCommand.class,
-            ResetPasswordCommand.class ).visibleIn( Visibility.application );
+            NewProxyUserCommand.class).visibleIn( Visibility.application );
 
       new ValueAssembler().assemble( module );
 

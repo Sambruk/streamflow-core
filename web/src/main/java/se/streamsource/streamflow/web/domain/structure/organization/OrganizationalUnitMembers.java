@@ -18,6 +18,7 @@
 package se.streamsource.streamflow.web.domain.structure.organization;
 
 import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.mixin.Mixins;
 import se.streamsource.streamflow.web.domain.structure.group.Group;
 import se.streamsource.streamflow.web.domain.structure.group.Groups;
 import se.streamsource.streamflow.web.domain.structure.project.Project;
@@ -27,6 +28,7 @@ import se.streamsource.streamflow.web.domain.structure.user.User;
 /**
  * JAVADOC
  */
+@Mixins(OrganizationalUnitMembers.Mixin.class)
 public interface OrganizationalUnitMembers
 {
    /**

@@ -24,14 +24,15 @@ import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
 import org.qi4j.api.structure.Module;
 import se.streamsource.dci.api.Context;
-import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.value.table.TableQuery;
 import se.streamsource.streamflow.web.domain.entity.gtd.Drafts;
 import se.streamsource.streamflow.web.domain.entity.gtd.DraftsQueries;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
 
-import static org.qi4j.api.query.QueryExpressions.*;
-import static se.streamsource.dci.api.RoleMap.*;
+import static org.qi4j.api.query.QueryExpressions.orderBy;
+import static org.qi4j.api.query.QueryExpressions.templateFor;
+import static se.streamsource.dci.api.RoleMap.role;
 
 /**
  * JAVADOC
@@ -39,7 +40,7 @@ import static se.streamsource.dci.api.RoleMap.*;
 @Concerns(UpdateCaseCountDraftsConcern.class)
 @Mixins(DraftsContext.Mixin.class)
 public interface DraftsContext
-      extends Context, IndexContext<Query<Case>>
+      extends Context
 {
    void createcase();
 
@@ -49,7 +50,7 @@ public interface DraftsContext
       @Structure
       Module module;
 
-      public Query<Case> index()
+      public Query<Case> cases(TableQuery tableQuery)
       {
          DraftsQueries inbox = role( DraftsQueries.class );
 

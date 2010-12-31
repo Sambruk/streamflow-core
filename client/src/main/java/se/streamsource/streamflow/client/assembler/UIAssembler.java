@@ -31,6 +31,8 @@ import se.streamsource.streamflow.client.ui.DummyDataService;
 import se.streamsource.streamflow.client.ui.SelectUsersAndGroupsDialog;
 import se.streamsource.streamflow.client.ui.account.*;
 import se.streamsource.streamflow.client.ui.administration.*;
+import se.streamsource.streamflow.client.ui.administration.caseaccessdefaults.CaseAccessDefaultsModel;
+import se.streamsource.streamflow.client.ui.administration.caseaccessdefaults.CaseAccessDefaultsView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypesModel;
 import se.streamsource.streamflow.client.ui.administration.casetypes.CaseTypesView;
 import se.streamsource.streamflow.client.ui.administration.casetypes.SelectedCaseTypesModel;
@@ -124,6 +126,12 @@ public class UIAssembler
       forms( layer.moduleAssembly( "Forms" ) );
       administratorAdministrator( layer.moduleAssembly( "Administrators" ) );
       surfaceAdministration( layer.moduleAssembly( "Surface" ) );
+      caseAccesDefaults(layer.moduleAssembly( "Case access defaults" ));
+   }
+
+   private void caseAccesDefaults( ModuleAssembly moduleAssembly ) throws AssemblyException
+   {
+      addMV( moduleAssembly, CaseAccessDefaultsModel.class, CaseAccessDefaultsView.class );
    }
 
    private void surfaceAdministration( ModuleAssembly module ) throws AssemblyException

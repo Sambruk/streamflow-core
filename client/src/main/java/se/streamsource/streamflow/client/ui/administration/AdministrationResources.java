@@ -129,5 +129,7 @@ public enum AdministrationResources
    add_signature_title,
    group_title,
    user_title,
+   choose_default_access_type,
+   caseaccessdefaults_tab,
    formsignatures_tab
 }

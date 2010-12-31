@@ -23,6 +23,7 @@ import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.DateFunctions;
 import org.qi4j.api.value.ValueBuilder;
 import org.restlet.Request;
+import org.restlet.data.Form;
 import org.restlet.resource.ResourceException;
 import org.slf4j.LoggerFactory;
 import se.streamsource.dci.restlet.server.ResultConverter;
@@ -65,9 +66,10 @@ public class StreamflowResultConverter
          ValueBuilder<StringValue> builder = module.valueBuilderFactory().newValueBuilder( StringValue.class );
          builder.prototype().string().set( (String) result );
          return builder.newInstance();
-      }
-
-      if (result instanceof Case)
+      } else if (result instanceof Form)
+      {
+         return result;
+      } else if (result instanceof Case)
       {
          if (arguments.length > 0 && arguments[0] instanceof TableQuery)
             return caseTable( Collections.singleton( (CaseEntity) result ), module, request, arguments );

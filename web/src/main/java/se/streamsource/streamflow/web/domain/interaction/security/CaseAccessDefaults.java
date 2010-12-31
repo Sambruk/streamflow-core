@@ -19,6 +19,7 @@ package se.streamsource.streamflow.web.domain.interaction.security;
 
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
@@ -27,6 +28,7 @@ import java.util.Map;
 /**
  * Management of default case access rules.
  */
+@Mixins(CaseAccessDefaults.Mixin.class)
 public interface CaseAccessDefaults
 {
    void changeAccessDefault( PermissionType permissionType, CaseAccessType accessType );
@@ -54,6 +56,8 @@ public interface CaseAccessDefaults
          Map<PermissionType, CaseAccessType> permissionAccess = accessPermissionDefaults().get();
 
          permissionAccess.put( permissionType, accessType );
+
+         accessPermissionDefaults().set( permissionAccess );
       }
 
       public CaseAccessType getAccessType( PermissionType permissionType )

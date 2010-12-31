@@ -23,7 +23,6 @@ import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
 import org.restlet.service.MetadataService;
 import se.streamsource.dci.restlet.server.resultwriter.*;
-import se.streamsource.dci.value.ValueAssembler;
 
 import java.util.Properties;
 
@@ -65,6 +64,6 @@ public class DCIAssembler
             TableResultWriter.class,
             ResourceResultWriter.class,
             ValueCompositeResultWriter.class,
-            ValueDescriptorResultWriter.class );
+            FormResultWriter.class );
    }
 }

@@ -99,6 +99,11 @@ public class CommandQueryClient
       }
    }
 
+   public synchronized  <T> T queryLink(LinkValue link, Class<T> queryResult)
+   {
+      return query( link.href().get(), queryResult );
+   }
+
    public synchronized void postLink( LinkValue link ) throws ResourceException
    {
       postCommand( link.href().get(), new EmptyRepresentation() );

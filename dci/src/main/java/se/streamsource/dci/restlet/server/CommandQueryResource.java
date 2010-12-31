@@ -33,13 +33,12 @@ import org.qi4j.api.property.StateHolder;
 import org.qi4j.api.unitofwork.EntityTypeNotFoundException;
 import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.util.Annotations;
-import org.qi4j.api.util.Iterables;
 import org.qi4j.api.value.Value;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.qi4j.api.value.ValueComposite;
 import org.qi4j.spi.Qi4jSPI;
+import org.qi4j.spi.property.PropertyDescriptor;
 import org.qi4j.spi.property.PropertyType;
 import org.qi4j.spi.structure.ModuleSPI;
 import org.qi4j.spi.value.ValueDescriptor;
@@ -71,6 +70,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static org.qi4j.api.util.Annotations.isType;
+import static org.qi4j.api.util.Iterables.*;
 
 /**
  * JAVADOC
@@ -112,9 +114,9 @@ public class CommandQueryResource
    protected Response response;
 
    private Class[] contextClasses;
-    private Object[] arguments;
+   private Object[] arguments;
 
-    public CommandQueryResource( @Uses Class... contextClasses )
+   public CommandQueryResource( @Uses Class... contextClasses )
    {
       this.contextClasses = contextClasses;
    }
@@ -126,7 +128,7 @@ public class CommandQueryResource
       // Check constraints for this resource
       if (!constraints.isValid( getClass(), roleMap ))
       {
-         throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN );
+         throw new ResourceException( Status.CLIENT_ERROR_FORBIDDEN );
       }
 
       RoleMap.setCurrentRoleMap( new RoleMap( roleMap ) );
@@ -143,22 +145,22 @@ public class CommandQueryResource
 
          if (segments.size() > 0)
          {
-            invokeResource( segment );
+            handleSubResource( segment );
          } else
          {
-            invokeCommandQuery( segment );
+            handleResource( segment );
          }
       }
    }
 
-   private void invokeResource( String segment )
+   private void handleSubResource( String segment )
    {
       if (this instanceof SubResources)
       {
          SubResources subResources = (SubResources) this;
          try
          {
-            StringBuilder template = (StringBuilder) request.getAttributes().get("template");
+            StringBuilder template = (StringBuilder) request.getAttributes().get( "template" );
             template.append( "resource/" );
             subResources.resource( URLDecoder.decode( segment, "UTF-8" ) );
          } catch (UnsupportedEncodingException e)
@@ -172,8 +174,8 @@ public class CommandQueryResource
          {
             Method method = getSubResourceMethod( segment );
 
-            StringBuilder template = (StringBuilder) request.getAttributes().get("template");
-            template.append( segment).append("/" );
+            StringBuilder template = (StringBuilder) request.getAttributes().get( "template" );
+            template.append( segment ).append( "/" );
 
             method.invoke( this );
          } catch (Throwable e)
@@ -217,7 +219,7 @@ public class CommandQueryResource
             {
                if (!method.isSynthetic() && !(method.getDeclaringClass().isAssignableFrom( TransientComposite.class )))
                   if (methodConstraints.isValid( method, roleMap ))
-                     if (method.getReturnType().equals( Void.TYPE ))
+                     if (isCommand( method ))
                      {
                         commands.add( method );
                      } else
@@ -263,7 +265,7 @@ public class CommandQueryResource
                prototype.href().set( query.getName().toLowerCase() );
                prototype.rel().set( query.getName().toLowerCase() );
                prototype.id().set( query.getName().toLowerCase() );
-               queriesProperty.add( linkBuilder.newInstance());
+               queriesProperty.add( linkBuilder.newInstance() );
             }
          }
 
@@ -277,7 +279,7 @@ public class CommandQueryResource
                prototype.href().set( command.getName().toLowerCase() );
                prototype.rel().set( command.getName().toLowerCase() );
                prototype.id().set( command.getName().toLowerCase() );
-               commandsProperty.add( linkBuilder.newInstance());
+               commandsProperty.add( linkBuilder.newInstance() );
             }
          }
 
@@ -314,10 +316,15 @@ public class CommandQueryResource
 
    }
 
-   protected void setResourceValidity(EntityComposite entity)
+   protected void setResourceValidity( EntityComposite entity )
    {
       ResourceValidity validity = new ResourceValidity( entity, spi );
       RoleMap.current().set( validity );
+   }
+
+   private boolean isCommand( Method method )
+   {
+      return method.getReturnType().equals( Void.TYPE );
    }
 
    /**
@@ -397,12 +404,12 @@ public class CommandQueryResource
 
       Method method = getInteractionMethod( interactionName );
 
-      if (method.getReturnType().equals( Void.TYPE ))
+      if (isCommand( method ))
       {
          // Command
 
          // Create argument
-          arguments = getCommandArguments( method );
+         arguments = getCommandArguments( method );
 
          // Invoke method
          try
@@ -433,16 +440,12 @@ public class CommandQueryResource
                if (arguments == null)
                {
                   // Show form
-                  Class valueType = method.getParameterTypes()[0];
-                  ValueDescriptor valueDescriptor = module.valueDescriptor( valueType.getName() );
-                  return valueDescriptor;
+                  return formForMethod( method );
                }
             } catch (IllegalArgumentException e)
             {
                // Still missing some values - show form
-               Class valueType = method.getParameterTypes()[0];
-               ValueDescriptor valueDescriptor = module.valueDescriptor( valueType.getName() );
-               return valueDescriptor;
+               return formForMethod(method);
             }
 
          } else
@@ -543,108 +546,220 @@ public class CommandQueryResource
 
    }
 
-   private void invokeCommandQuery( String segment )
+   private void handleResource( String segment )
    {
       if (segment.equals( "" ) || segment.equals( "." ))
       {
-         StringBuilder template = (StringBuilder) request.getAttributes().get("template");
-         template.append("resource" );
+         StringBuilder template = (StringBuilder) request.getAttributes().get( "template" );
+         template.append( "resource" );
 
          // Index for this resource
          resource();
       } else
       {
-         StringBuilder template = (StringBuilder) request.getAttributes().get("template");
-         template.append( segment);
+         StringBuilder template = (StringBuilder) request.getAttributes().get( "template" );
+         template.append( segment );
 
          Method contextMethod = getInteractionMethod( segment );
 
-         // Check if this is a request to show the form for this interaction
-         if ((request.getMethod().isSafe() && contextMethod.getParameterTypes().length != 0 && request.getResourceRef().getQuery() == null) ||
-               (!request.getMethod().isSafe() && contextMethod.getParameterTypes().length != 0 && !(request.getEntity().isAvailable() || request.getResourceRef().getQuery() != null || contextMethod.getParameterTypes()[0].equals(Response.class))))
+         if (isCommand( contextMethod ))
          {
-            // Show form
-            try
-            {
-               Class valueType = contextMethod.getParameterTypes()[0];
-               ValueDescriptor valueDescriptor = module.valueDescriptor( valueType.getName() );
-
-               result( valueDescriptor );
-            } catch (Throwable ex)
-            {
-               handleException( response, ex );
-            }
+            handleCommand( contextMethod );
          } else
          {
-            try
-            {
-               // Check timestamps
-               ResourceValidity validity = RoleMap.role(ResourceValidity.class);
-               validity.checkRequest( request );
-            } catch (IllegalArgumentException e)
-            {
-               // Ignore
-            }
-
-            // We have input data - do either command or query
-            try
-            {
-               Method method = getClass().getMethod( segment );
-
-               if (contextMethod.getReturnType().equals( Void.TYPE ))
-               {
-                  // Command
-                  try
-                  {
-                     method.invoke( this );
-                  } catch (IllegalArgumentException e)
-                  {
-                     response.setStatus( Status.SERVER_ERROR_INTERNAL );
-
-                  } catch (IllegalAccessException e)
-                  {
-                     response.setStatus( Status.CLIENT_ERROR_NOT_FOUND );
-
-                  } catch (InvocationTargetException e)
-                  {
-                     handleException( response, e );
-                  }
-               } else
-               {
-                  // Query
-                  try
-                  {
-                     method.invoke( this );
-                  } catch (IllegalAccessException e)
-                  {
-                     response.setStatus( Status.CLIENT_ERROR_NOT_FOUND );
-
-                  } catch (InvocationTargetException e)
-                  {
-                     handleException( response, e );
-                  }
-               }
-
-            } catch (NoSuchMethodException e)
-            {
-               try
-               {
-                  Object result = invoke( segment );
-                  if (result instanceof Representation)
-                  {
-                     response.setEntity( (Representation) result );
-                  } else
-                     result( convert( result ) );
-               } catch (Throwable throwable)
-               {
-                  handleException( response, throwable );
-               }
-            } catch (Exception ex)
-            {
-               handleException( response, ex );
-            }
+            handleQuery( contextMethod );
          }
       }
+   }
+
+   private void handleCommand( Method contextMethod )
+   {
+      // Check if this is a request to show the form for this command
+      if (request.getMethod().isSafe() ||
+            (!request.getMethod().isSafe() && contextMethod.getParameterTypes().length != 0 && !(request.getEntity().isAvailable() || request.getResourceRef().getQuery() != null || contextMethod.getParameterTypes()[0].equals( Response.class ))))
+      {
+         // Show form
+         request.setMethod(org.restlet.data.Method.POST);
+
+         try
+         {
+            result( formForMethod( contextMethod ) );
+         } catch (Exception e)
+         {
+            handleException( response, e );
+         }
+      } else
+      {
+         try
+         {
+            // Check timestamps
+            ResourceValidity validity = RoleMap.role( ResourceValidity.class );
+            validity.checkRequest( request );
+         } catch (IllegalArgumentException e)
+         {
+            // Ignore
+         }
+
+         // We have input data - do command
+         try
+         {
+            Method method = getClass().getMethod( contextMethod.getName().toLowerCase() );
+
+            // Command
+            try
+            {
+               method.invoke( this );
+            } catch (IllegalArgumentException e)
+            {
+               response.setStatus( Status.SERVER_ERROR_INTERNAL );
+
+            } catch (IllegalAccessException e)
+            {
+               response.setStatus( Status.CLIENT_ERROR_NOT_FOUND );
+
+            } catch (InvocationTargetException e)
+            {
+               handleException( response, e );
+            }
+         } catch (NoSuchMethodException e)
+         {
+            try
+            {
+               Object result = invoke( contextMethod.getName().toLowerCase() );
+               if (result instanceof Representation)
+               {
+                  response.setEntity( (Representation) result );
+               } else
+                  result( convert( result ) );
+            } catch (Throwable throwable)
+            {
+               handleException( response, throwable );
+            }
+         } catch (Exception ex)
+         {
+            handleException( response, ex );
+         }
+      }
+   }
+
+   private void handleQuery( Method contextMethod )
+   {
+      // Query
+      // Check if this is a request to show the form for this interaction
+      if ((request.getMethod().isSafe() && contextMethod.getParameterTypes().length != 0 && request.getResourceRef().getQuery() == null) ||
+            (!request.getMethod().isSafe() && contextMethod.getParameterTypes().length != 0 && !(request.getEntity().isAvailable() || request.getResourceRef().getQuery() != null || contextMethod.getParameterTypes()[0].equals( Response.class ))))
+      {
+         // Show form
+         try
+         {
+            result( formForMethod( contextMethod ) );
+         } catch (Exception e)
+         {
+            handleException( response, e );
+         }
+      } else
+      {
+         try
+         {
+            // Check timestamps
+            ResourceValidity validity = RoleMap.role( ResourceValidity.class );
+            validity.checkRequest( request );
+         } catch (IllegalArgumentException e)
+         {
+            // Ignore
+         }
+
+         // We have input data - do query
+         try
+         {
+            Method method = getClass().getMethod( contextMethod.getName().toLowerCase() );
+
+            // Query
+            try
+            {
+               method.invoke( this );
+            } catch (IllegalAccessException e)
+            {
+               response.setStatus( Status.CLIENT_ERROR_NOT_FOUND );
+
+            } catch (InvocationTargetException e)
+            {
+               handleException( response, e );
+            }
+         } catch (NoSuchMethodException e)
+         {
+            try
+            {
+               Object result = invoke( contextMethod.getName().toLowerCase() );
+               if (result instanceof Representation)
+               {
+                  response.setEntity( (Representation) result );
+               } else
+                  result( convert( result ) );
+            } catch (Throwable throwable)
+            {
+               handleException( response, throwable );
+            }
+         } catch (Exception ex)
+         {
+            handleException( response, ex );
+         }
+      }
+   }
+
+   private Form formForMethod( Method contextMethod )
+   {
+      Form form = new Form();
+
+      Form queryAsForm = request.getResourceRef().getQueryAsForm();
+      Form entityAsForm = null;
+      Representation representation = request.getEntity();
+      if (representation != null && !EmptyRepresentation.class.isInstance( representation ))
+      {
+         entityAsForm = new Form( representation );
+      } else
+         entityAsForm = new Form();
+
+      Class valueType = contextMethod.getParameterTypes()[0];
+      if (ValueComposite.class.isAssignableFrom( valueType))
+      {
+         ValueDescriptor valueDescriptor = module.valueDescriptor( valueType.getName() );
+
+         for (PropertyDescriptor propertyDescriptor : valueDescriptor.state().properties())
+         {
+            String value = getValue( propertyDescriptor.qualifiedName().name(), queryAsForm, entityAsForm );
+
+            if (value == null && propertyDescriptor.initialValue() != null)
+              value = propertyDescriptor.initialValue().toString();
+
+            form.add( propertyDescriptor.qualifiedName().name(), value );
+         }
+      } else
+      {
+         // Construct form out of individual parameters instead
+         int idx = 0;
+         for (Annotation[] annotations : contextMethod.getParameterAnnotations())
+         {
+            Name name = (Name) first( filter( isType( Name.class ), iterable( annotations ) ) );
+
+            String value = getValue( name.value(), queryAsForm, entityAsForm );
+
+            String paramName;
+            if (name != null)
+            {
+               paramName = name.value();
+            } else
+            {
+               paramName = "param"+idx;
+            }
+
+            form.add( paramName, value );
+
+            idx++;
+         }
+      }
+
+      return form;
    }
 
    private Object convert( Object result )
@@ -679,7 +794,6 @@ public class CommandQueryResource
          throws ResourceException
    {
       Object[] args = new Object[method.getParameterTypes().length];
-      int idx = 0;
 
       Form queryAsForm = request.getResourceRef().getQueryAsForm();
       Form entityAsForm = null;
@@ -703,29 +817,19 @@ public class CommandQueryResource
             Class<?> valueType = method.getParameterTypes()[0];
 
             args[0] = getValueFromForm( (Class<ValueComposite>) valueType, queryAsForm, entityAsForm );
+            return args;
          } else if (Form.class.equals( method.getParameterTypes()[0] ))
          {
             args[0] = queryAsForm.isEmpty() ? entityAsForm : queryAsForm;
+            return args;
          } else if (Response.class.equals( method.getParameterTypes()[0] ))
          {
             args[0] = response;
-         }
-      } else
-      {
-         for (Annotation[] annotations : method.getParameterAnnotations())
-         {
-            Name name = (Name) Iterables.first( Iterables.filter(Annotations.isType( Name.class ), Iterables.iterable(annotations )));
-            Object arg = getValue( name.value(), queryAsForm, entityAsForm );
-
-            // Parameter conversion
-            if (method.getParameterTypes()[idx].equals( EntityReference.class ))
-            {
-               arg = EntityReference.parseEntityReference( arg.toString() );
-            }
-
-            args[idx++] = arg;
+            return args;
          }
       }
+      parseMethodArguments( method, args, queryAsForm, entityAsForm );
+
 
       return args;
    }
@@ -747,7 +851,13 @@ public class CommandQueryResource
          if (type == null)
          {
             Form queryAsForm = request.getResourceRef().getQueryAsForm( CharacterSet.UTF_8 );
-            args[0] = getValueFromForm( commandType, queryAsForm, new Form() );
+            if (ValueComposite.class.isAssignableFrom( method.getParameterTypes()[0]))
+            {
+               args[0] = getValueFromForm( commandType, queryAsForm, new Form() );
+            } else
+            {
+               parseMethodArguments( method, args, queryAsForm, new Form() );
+            }
             return args;
          } else
          {
@@ -759,7 +869,7 @@ public class CommandQueryResource
             {
                // Command method takes Form as input
                return new Object[]{new Form( representation )};
-            } else
+            } else if (ValueComposite.class.isAssignableFrom( method.getParameterTypes()[0]))
             {
                // Need to parse input into ValueComposite
                if (type.equals( MediaType.APPLICATION_JSON ))
@@ -800,11 +910,57 @@ public class CommandQueryResource
                   return args;
                } else
                   throw new ResourceException( Status.CLIENT_ERROR_BAD_REQUEST, "Command has to be in JSON format" );
+            } else
+            {
+               Form queryAsForm = request.getResourceRef().getQueryAsForm();
+               Form entityAsForm;
+               if (representation != null && !EmptyRepresentation.class.isInstance( representation ) && representation.isAvailable())
+               {
+                  entityAsForm = new Form( representation );
+               } else
+                  entityAsForm = new Form();
+
+               parseMethodArguments( method, args,  queryAsForm, entityAsForm);
+
+               return args;
             }
          }
       } else
       {
          return new Object[0];
+      }
+   }
+
+   private void parseMethodArguments( Method method, Object[] args, Form queryAsForm, Form entityAsForm )
+   {
+      // Parse each argument separately using the @Name annotation as help
+      int idx = 0;
+      for (Annotation[] annotations : method.getParameterAnnotations())
+      {
+         Name name = (Name) first( filter( isType( Name.class ), iterable( annotations ) ) );
+         String argString = getValue( name.value(), queryAsForm, entityAsForm );
+
+         // Parameter conversion
+         Class<?> parameterType = method.getParameterTypes()[idx];
+         Object arg;
+         if (parameterType.equals( EntityReference.class ))
+         {
+            arg = EntityReference.parseEntityReference( argString );
+         } else if (parameterType.isEnum())
+         {
+            arg = Enum.valueOf( (Class<Enum>) parameterType, argString );
+         } else if (Integer.class.isAssignableFrom( parameterType ))
+         {
+            arg = Integer.valueOf( argString );
+         } else if (parameterType.isInterface())
+         {
+            arg = uowf.currentUnitOfWork().get( parameterType, argString );
+         } else
+         {
+            arg = argString;
+         }
+
+         args[idx++] = arg;
       }
    }
 

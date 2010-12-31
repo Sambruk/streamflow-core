@@ -29,7 +29,6 @@ import se.streamsource.streamflow.web.domain.interaction.security.CaseAccessType
 import se.streamsource.streamflow.web.domain.interaction.security.PermissionType;
 
 import java.util.Locale;
-import java.util.Map;
 import java.util.ResourceBundle;
 
 /**
@@ -43,12 +42,15 @@ public class CaseAccessDefaultsContext
 
    public LinksValue index()
    {
-      CaseAccessDefaults.Data defaults = RoleMap.role( CaseAccessDefaults.Data.class );
+      CaseAccessDefaults defaults = RoleMap.role( CaseAccessDefaults.class );
       LinksBuilder builder = new LinksBuilder(vbf);
       ResourceBundle bundle = ResourceBundle.getBundle( CaseAccessType.class.getName(), RoleMap.role( Locale.class ) );
-      for (Map.Entry<PermissionType, CaseAccessType> entry : defaults.accessPermissionDefaults().get().entrySet())
+      for (PermissionType permissionType : PermissionType.values())
       {
-         builder.addLink( entry.getKey().name() +":"+bundle.getString( entry.getValue().name() ), entry.getKey().name(), "possibledefaultaccess", "possibledefaultaccess?permission="+entry.getKey().name(), "" );
+         if (permissionType == PermissionType.read || permissionType == PermissionType.write)
+         {
+            builder.addLink( permissionType.name() +":"+bundle.getString( defaults.getAccessType( permissionType ).name() ), permissionType.name(), "possibledefaultaccess", "possibledefaultaccess?permission="+permissionType.name(), "" );
+         }
       }
 
       return builder.newLinks();
@@ -62,7 +64,7 @@ public class CaseAccessDefaultsContext
       for (CaseAccessType possibleType : CaseAccessType.values())
       {
          if (!possibleType.equals( defaults.getAccessType( permissionType ) ))
-            builder.addLink( bundle.getString( possibleType.name() ), possibleType.name(), "changedefaultaccess", "changedefaultaccess?permission="+possibleType+"&accesstype="+possibleType.name(), "" );
+            builder.addLink( bundle.getString( possibleType.name() ), possibleType.name(), "changedefaultaccess", "changedefaultaccess?permission="+permissionType.name()+"&accesstype="+possibleType.name(), "" );
       }
 
       return builder.newLinks();

@@ -75,6 +75,10 @@ public class SelectLinkDialog
          this.list = list.getList();
          this.filterField = list.getFilterField();
       }
+
+      // Skip filtering if short list
+      if (links.size() < 10)
+         filterField.setVisible( false );
    }
 
    public void setSelectionMode(int selectionMode)
