@@ -154,7 +154,6 @@ public class WorkspaceView
       searchPanel.add( searchView, BorderLayout.CENTER );
 
       topPanel = new JPanel( topLayout );
-      topPanel.setBorder( BorderFactory.createEtchedBorder() );
       topPanel.add( contextPanel, "context" );
       topPanel.add( searchPanel, "search" );
 

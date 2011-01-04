@@ -41,6 +41,9 @@ public interface CaseTableValue
    Property<String> createdBy();
 
    @Optional
+   Property<Date> dueOn();
+
+   @Optional
    Property<String> caseId();
 
    Property<CaseStates> status();

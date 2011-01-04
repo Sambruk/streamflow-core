@@ -41,7 +41,8 @@ public class SeparatorTable extends JXTable
       setColumnSelectionAllowed( false );
       setUI( new SeparatorTableUI( separatorClass ) );
       getTableHeader().setReorderingAllowed( false );
-      setCellSelectionEnabled( true );
+      setSortable( false );
+      setRowSorter( null );
       setSelectionMode( ListSelectionModel.SINGLE_INTERVAL_SELECTION );
    }
 
@@ -50,7 +51,7 @@ public class SeparatorTable extends JXTable
    {
       Rectangle sRect = super.getCellRect( row, column, includeSpacing );
       if ((row < 0) || (column < 0) ||
-            (getRowCount() <= row) || (getColumnCount() <= column))
+            (getModel().getRowCount() <= row) || (getModel().getColumnCount() <= column))
       {
          return sRect;
       }
@@ -98,7 +99,7 @@ public class SeparatorTable extends JXTable
    {
       int[] retValue = {-1, -1};
       int row = point.y / (rowHeight + rowMargin);
-      if ((row < 0) || (getRowCount() <= row)) return retValue;
+      if ((row < 0) || (getModel().getRowCount() <= row)) return retValue;
       int column = getColumnModel().getColumnIndexAtX( point.x );
 
       if (getModel().getRowCount() == 0)

@@ -83,5 +83,17 @@ public enum WorkspaceResources
    created_by,
    choose_template,
    could_not_print,
-   date_format, wrong_format_msg, wrong_format_title, grouping, status, label, could_not_open_file
+   date_format,
+   wrong_format_msg,
+   wrong_format_title,
+
+   all,
+   grouping,
+   status,
+   label,
+   assignee,
+   sorting,
+   could_not_open_file,
+   search,
+   filter
 }

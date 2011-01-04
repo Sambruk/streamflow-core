@@ -55,6 +55,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.*;
 import static se.streamsource.streamflow.client.util.i18n.text;
@@ -218,6 +219,7 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
       dueOnField.getMonthView().setLowerBound( calendar.getTime() );
 
       final DateFormat dateFormat = DateFormat.getDateInstance( DateFormat.SHORT );
+      dateFormat.setTimeZone( TimeZone.getTimeZone( "UTC" ) );
       dueOnField.getEditor().setFormatterFactory( new DefaultFormatterFactory( new DatePickerFormatter( new DateFormat[]{dateFormat} )
       {
 

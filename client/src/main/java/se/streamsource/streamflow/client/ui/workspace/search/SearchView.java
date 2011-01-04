@@ -18,7 +18,6 @@
 package se.streamsource.streamflow.client.ui.workspace.search;
 
 import ca.odell.glazedlists.swing.EventComboBoxModel;
-import com.jgoodies.forms.factories.Borders;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
@@ -39,6 +38,7 @@ import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.SavedSearchListCellRenderer;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
@@ -73,7 +73,7 @@ public class SearchView
    public SearchView( @Service ApplicationContext context, @Uses CommandQueryClient client, @Structure ObjectBuilderFactory obf )
    {
       super( new BorderLayout() );
-      setBorder( Borders.createEmptyBorder( "3dlu,2dlu,4dlu,4dlu" ) );
+      setBorder( BorderFactory.createTitledBorder( i18n.text(WorkspaceResources.search) ) );
 
       ActionMap am;
       setActionMap( am = context.getActionMap( this ) );
@@ -94,6 +94,7 @@ public class SearchView
       add( new JButton( new OptionsAction( options ) ), BorderLayout.EAST );
 
       new RefreshWhenShowing( this, model);
+
    }
 
    public JTextField getTextField()

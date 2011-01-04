@@ -23,21 +23,11 @@ import org.jdesktop.application.ResourceMap;
 import org.jdesktop.swingx.JXDatePicker;
 import org.qi4j.api.property.Property;
 
-import javax.swing.Action;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JFormattedTextField;
-import javax.swing.JLabel;
-import javax.swing.JPasswordField;
-import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.JToggleButton;
-import java.awt.Component;
+import javax.swing.*;
+import java.awt.*;
 import java.text.DateFormat;
 import java.util.Locale;
+import java.util.TimeZone;
 
 /**
  * Deprected: Use BindingFormBuilder2 instead.
@@ -114,7 +104,9 @@ public class BindingFormBuilder
             {
                public Component newField()
                {
-                  return new JXDatePicker( Locale.getDefault());
+                  JXDatePicker jxDatePicker = new JXDatePicker( Locale.getDefault() );
+                  jxDatePicker.setTimeZone( TimeZone.getTimeZone( "UTC" ) );
+                  return jxDatePicker;
                }
             };
 

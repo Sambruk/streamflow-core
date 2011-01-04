@@ -59,7 +59,7 @@ public class SeparatorTableUI extends BasicTableUI
       g.setClip( clipBounds );
 
       int firstIndex = table.rowAtPoint( new Point( 0, clipBounds.y ) );
-      int lastIndex = table.getRowCount() - 1;
+      int lastIndex = table.getModel().getRowCount() - 1;
 
       Rectangle rowRect = new Rectangle( 0, 0,
             tableWidth, table.getRowHeight() + table.getRowMargin() );
@@ -85,7 +85,7 @@ public class SeparatorTableUI extends BasicTableUI
       EventTableModel tableModel = (EventTableModel) table.getModel();
       int numColumns = table.getColumnCount();
 
-      if (separatorClass.isInstance( tableModel.getElementAt( row ) ))
+      if (tableModel.getRowCount()>row && separatorClass.isInstance( tableModel.getElementAt( row ) ))
       {
          Rectangle cellRect = table.getCellRect( row, 0, true );
          paintCell( g, cellRect, row, 0 );
@@ -126,7 +126,7 @@ public class SeparatorTableUI extends BasicTableUI
       } else
       {
          TableCellRenderer renderer;
-         if (separatorClass.isInstance( ((EventTableModel) table.getModel()).getElementAt( row ) ))
+         if (table.getModel().getRowCount()>row && separatorClass.isInstance( ((EventTableModel) table.getModel()).getElementAt( row ) ))
             renderer = table.getDefaultRenderer( separatorClass );
          else
             renderer = table.getCellRenderer( row, column );

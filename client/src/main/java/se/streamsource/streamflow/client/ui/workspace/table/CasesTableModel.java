@@ -87,6 +87,8 @@ public class CasesTableModel
                prototype.createdBy().set(cell.f().get());
             else if (columnValue.id().get().equals("created"))
                prototype.creationDate().set((Date) cell.v().get());
+            else if (columnValue.id().get().equals("due"))
+               prototype.dueOn().set((Date) cell.v().get());
             else if (columnValue.id().get().equals("description"))
                prototype.description().set(cell.f().get());
             else if (columnValue.id().get().equals("hasattachments"))

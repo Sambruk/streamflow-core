@@ -49,6 +49,7 @@ import se.streamsource.streamflow.web.domain.structure.created.Creator;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 
 import java.util.Collections;
+import java.util.Date;
 
 /**
  * JAVADOC
@@ -188,7 +189,7 @@ public class StreamflowResultConverter
       TableQuery query = (TableQuery) arguments[0];
       TableBuilder table = new TableBuilder( module.valueBuilderFactory() );
 
-      String select = query.select().equals( "*" ) ? "description,created,creator,caseid,href,owner,status,casetype,assigned,hascontacts,hasconversations,hasattachments,hassubmittedforms,labels,subcases,parent" : query.select();
+      String select = query.select().equals( "*" ) ? "description,created,creator,due,caseid,href,owner,status,casetype,assigned,hascontacts,hasconversations,hasattachments,hassubmittedforms,labels,subcases,parent" : query.select();
       String[] columns = select.split( "[, ]" );
 
       // Columns
@@ -196,6 +197,8 @@ public class StreamflowResultConverter
       {
          // TODO Make type setting smarter
          if ("created".equals( column ))
+            table.column( column, Strings.humanReadable( column ), "date" );
+         else if ("due".equals( column ))
             table.column( column, Strings.humanReadable( column ), "date" );
          else if ("hascontacts".equals( column ))
             table.column( column, Strings.humanReadable( column ), "boolean" );
@@ -222,6 +225,11 @@ public class StreamflowResultConverter
                   table.cell( caseEntity.identity().get(), caseEntity.description().get() );
                else if (column.equals( "created" ))
                   table.cell( caseEntity.createdOn().get(), DateFunctions.toUtcString( caseEntity.createdOn().get() ) );
+               else if (column.equals( "due" ))
+               {
+                  Date dueDate = caseEntity.dueOn().get();
+                  table.cell( dueDate, dueDate == null ? null : DateFunctions.toUtcString( dueDate ) );
+               }
                else if (column.equals( "creator" ))
                {
                   Creator v = caseEntity.createdBy().get();
