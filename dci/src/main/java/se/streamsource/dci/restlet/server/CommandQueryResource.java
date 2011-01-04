@@ -576,11 +576,10 @@ public class CommandQueryResource
    private void handleCommand( Method contextMethod )
    {
       // Check if this is a request to show the form for this command
-      if (request.getMethod().isSafe() ||
-            (!request.getMethod().isSafe() && contextMethod.getParameterTypes().length != 0 && !(request.getEntity().isAvailable() || request.getResourceRef().getQuery() != null || contextMethod.getParameterTypes()[0].equals( Response.class ))))
+      if (shouldShowCommandForm(contextMethod))
       {
          // Show form
-         request.setMethod(org.restlet.data.Method.POST);
+         request.setMethod( org.restlet.data.Method.POST );
 
          try
          {
@@ -641,6 +640,20 @@ public class CommandQueryResource
             handleException( response, ex );
          }
       }
+   }
+
+   private boolean shouldShowCommandForm(Method contextMethod)
+   {
+      // Show form on GET/HEAD
+      if (request.getMethod().isSafe())
+         return true;
+
+      if (contextMethod.getParameterTypes().length > 0)
+      {
+         return !(contextMethod.getParameterTypes()[0].equals( Response.class ) || request.getEntity().isAvailable() || request.getEntityAsText() != null || request.getResourceRef().getQuery() != null);
+      }
+
+      return false;
    }
 
    private void handleQuery( Method contextMethod )
