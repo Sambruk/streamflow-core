@@ -24,8 +24,11 @@ import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.dci.value.table.TableQuery;
 import se.streamsource.dci.value.table.TableValue;
+import se.streamsource.streamflow.client.ui.workspace.cases.CaseTableValue;
 import se.streamsource.streamflow.client.ui.workspace.table.CasesTableModel;
 import se.streamsource.streamflow.client.util.EventListSynch;
+
+import java.util.Collections;
 
 /**
  * Model for search results
@@ -61,6 +64,7 @@ public class SearchResultTableModel
             @Override
             protected void succeeded( TableValue result )
             {
+               EventListSynch.synchronize( Collections.<CaseTableValue>emptyList(), eventList );
                EventListSynch.synchronize( caseTableValues( result ), eventList );
             }
 

@@ -131,14 +131,17 @@ public class SubCasesView
 
             }
 
-            if (caseDTO.subcases().get().links().get().isEmpty() && caseDTO.parentCase().get() == null)
+            JSplitPane parent = (JSplitPane) getParent();
+            if (parent != null)
             {
-               JSplitPane parent = (JSplitPane) getParent();
-               parent.setDividerLocation( 0.0 );
-            } else
-            {
-               JSplitPane parent = (JSplitPane) getParent();
-               parent.resetToPreferredSizes();
+
+               if (caseDTO.subcases().get().links().get().isEmpty() && caseDTO.parentCase().get() == null)
+               {
+                  parent.setDividerLocation( 0.0 );
+               } else
+               {
+                  parent.resetToPreferredSizes();
+               }
             }
          }
       } );

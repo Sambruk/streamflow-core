@@ -35,11 +35,12 @@ import se.streamsource.streamflow.client.ui.workspace.cases.CaseResources;
 import se.streamsource.streamflow.client.ui.workspace.context.WorkspaceContextView2;
 import se.streamsource.streamflow.client.ui.workspace.search.SearchResultTableModel;
 import se.streamsource.streamflow.client.ui.workspace.search.SearchView;
-import se.streamsource.streamflow.client.ui.workspace.table.*;
+import se.streamsource.streamflow.client.ui.workspace.table.CasesTableFormatter;
+import se.streamsource.streamflow.client.ui.workspace.table.CasesTableView;
+import se.streamsource.streamflow.client.ui.workspace.table.CasesView;
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.RoundedBorder;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
-import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 
@@ -64,7 +65,6 @@ public class WorkspaceView
    private WorkspaceContextView2 contextView;
    private JLabel selectedContext;
    private JButton selectContextButton;
-   private JTextField searchField;
 
    private JDialog popup;
 
@@ -129,6 +129,7 @@ public class WorkspaceView
       contextToolbar.add( showSearchButton );
 
       JPanel contextPanel = new JPanel( new BorderLayout() );
+      contextPanel.setBorder( BorderFactory.createEtchedBorder() );
       JPanel leftContext = new JPanel( new FlowLayout( FlowLayout.LEFT, 0, 0 ) );
       leftContext.setBorder( BorderFactory.createEmptyBorder( 5, 0, 0, 0 ) );
       selectContextButton = new JButton( getActionMap().get( "selectContext" ) );
@@ -148,9 +149,7 @@ public class WorkspaceView
 
       searchResultTableModel = obf.newObjectBuilder( SearchResultTableModel.class ).use( client ).newInstance();
 
-      SearchView searchView = obf.newObjectBuilder( SearchView.class ).use(client.getSubClient( "savedsearches" )).newInstance();
-      searchField = searchView.getTextField();
-      searchField.setAction( getActionMap().get( "search" ) );
+      SearchView searchView = obf.newObjectBuilder( SearchView.class ).use(searchResultTableModel, client).newInstance();
       searchPanel.add( searchView, BorderLayout.CENTER );
 
       topPanel = new JPanel( topLayout );
@@ -269,7 +268,6 @@ public class WorkspaceView
    public void showSearch()
    {
       topLayout.show( topPanel, "search" );
-      searchField.requestFocusInWindow();
 
       CasesTableView casesTable = obf.newObjectBuilder( CasesTableView.class ).
             use( searchResultTableModel, new CasesTableFormatter()).newInstance();
@@ -292,21 +290,6 @@ public class WorkspaceView
 
       // request focus to enable accelerator keys for workspace buttons again
 //      this.requestFocus();
-   }
-
-   @Action
-   public void search()
-   {
-
-      final String searchString = searchField.getText();
-
-      if (searchString.length() > 500)
-      {
-         dialogs.showMessageDialog( this, i18n.text( WorkspaceResources.too_long_query), "" );
-      } else
-      {
-         searchResultTableModel.search( searchString );
-      }
    }
 
    @Action

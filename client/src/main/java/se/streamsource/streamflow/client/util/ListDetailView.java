@@ -100,14 +100,14 @@ public abstract class ListDetailView
                   if (getRightComponent() != null && getRightComponent() instanceof TabbedResourceView)
                   {
                      TabbedResourceView tab = (TabbedResourceView) getRightComponent();
-                     selectedIndex = tab.getSelectedIndex();
+//                     selectedIndex = tab.getSelectedIndex();
                   }
 
                   Component detailView = factory.createDetail( detailLink );
 
                   if (detailView instanceof TabbedResourceView)
                   {
-                     ((TabbedResourceView)detailView).setSelectedIndex( selectedIndex );
+//                     ((TabbedResourceView)detailView).setSelectedIndex( selectedIndex );
                   }
 
                   setRightComponent( detailView );

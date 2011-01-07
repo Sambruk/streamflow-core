@@ -95,5 +95,7 @@ public enum WorkspaceResources
    sorting,
    could_not_open_file,
    search,
-   filter
+   project,
+   filter,
+   created_on
 }

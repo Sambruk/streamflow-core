@@ -110,6 +110,8 @@ public class TabbedResourceView
 
    public TabbedResourceView( @Uses CommandQueryClient client, @Structure ObjectBuilderFactory obf )
    {
+      setTabLayoutPolicy( JTabbedPane.WRAP_TAB_LAYOUT );
+
       ResourceValue resource = client.queryResource();
       List<LinkValue> resources = resource.resources().get();
       int index = 0;

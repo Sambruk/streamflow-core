@@ -75,7 +75,10 @@ public interface
             {
                SubQuery search = searches.get( i );
 
-               if (search.hasName( "label" ))
+               if (search.hasName("status"))
+               {
+                  queryBuilder.append( " status:" ).append( search.getValue() );
+               } else if (search.hasName( "label" ))
                {
                   StringBuilder labelQueryBuilder = new StringBuilder( "type:se.streamsource.streamflow.web.domain.entity.label.LabelEntity" );
                   labelQueryBuilder.append( " description:" ).append( search.getQuotedValue() );

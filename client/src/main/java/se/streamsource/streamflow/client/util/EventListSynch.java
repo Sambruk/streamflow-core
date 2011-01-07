@@ -51,6 +51,10 @@ public class EventListSynch
 
          } else if (list.size() < eventList.size())
          {
+            eventList.clear();
+            eventList.addAll( (Collection<? extends P>) list );
+/*
+
             // New size is less than current
             int idx = 0;
             for (Object item : list)
@@ -64,6 +68,7 @@ public class EventListSynch
             idx = list.size();
             while (eventList.size() > list.size())
                eventList.remove( idx );
+*/
          } else
          {
             // New size is more than current

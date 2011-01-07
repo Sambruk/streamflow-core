@@ -22,18 +22,18 @@
 
 <table border="1">
     <tr>
-    #foreach($column in $result.columns)
+    #foreach($column in $result.cols)
     <th id="$column.id">$column.label</th>
     #end
     </tr>
     #foreach($row in $result.rows)
     <tr>
-        #foreach($cell in $row.cells)
+        #foreach($cell in $row.c)
         <td>
-            #if($cell.formatted)
-                $cell.formatted
+            #if($cell.f)
+                $cell.f
             #else
-                $!{cell.value}
+                $!{cell.v}
             #end
         </td>
         #end

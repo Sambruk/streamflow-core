@@ -18,6 +18,7 @@ package se.streamsource.streamflow.client.ui.workspace.table;
 
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.TransactionList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilder;
@@ -47,7 +48,7 @@ public class CasesTableModel
    @Uses
    protected CommandQueryClient client;
 
-   protected EventList<CaseTableValue> eventList = new BasicEventList<CaseTableValue>();
+   protected EventList<CaseTableValue> eventList = new TransactionList<CaseTableValue>(new BasicEventList<CaseTableValue>());
 
    public EventList<CaseTableValue> getEventList()
    {
@@ -107,7 +108,7 @@ public class CasesTableModel
             else if (columnValue.id().get().equals("owner"))
                prototype.owner().set(cell.f().get());
             else if (columnValue.id().get().equals("parent") && cell.v().get() != null)
-               prototype.parentCase().set(vbf.newValueFromJSON( LinkValue.class, cell.v().get().toString()));
+               prototype.parentCase().set(vbf.newValueFromJSON( LinkValue.class, cell.v().get().toString() ));
             else if (columnValue.id().get().equals("resolution"))
                prototype.resolution().set(cell.f().get());
             else if (columnValue.id().get().equals("status"))
