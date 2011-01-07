@@ -127,8 +127,14 @@ public class StreamflowResultConverter
          prototype.caseId().set( aCase.caseId().get() );
       prototype.href().set( basePath + "/workspace/cases/" + aCase.identity().get() + "/" );
       prototype.rel().set( "case" );
-      if (aCase.owner().get() != null)
-         prototype.owner().set( ((Describable) aCase.owner().get()).getDescription() );
+      try
+      {
+         if (aCase.owner().get() != null)
+            prototype.owner().set( ((Describable) aCase.owner().get()).getDescription() );
+      } catch (Exception e)
+      {
+         // Ignore
+      }
       prototype.status().set( aCase.status().get() );
       prototype.text().set( aCase.description().get() );
 

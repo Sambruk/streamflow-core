@@ -19,9 +19,9 @@
 -->
 
 <databaseChangeLog
-        xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9 http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+     xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
     <preConditions>
         <dbms type="mysql"/>
         <sqlCheck expectedResult="1">select 1</sqlCheck>
@@ -226,8 +226,6 @@
         </createView>
     </changeSet>
     <changeSet id="8" author="arvidhuss">
-        <modifyColumn tableName="fields">
-            <column name="value" type="varchar(500)"/>
-        </modifyColumn>
+        <modifyDataType tableName="fields" columnName="value" newDataType="varchar(500)"/>
     </changeSet>
 </databaseChangeLog>

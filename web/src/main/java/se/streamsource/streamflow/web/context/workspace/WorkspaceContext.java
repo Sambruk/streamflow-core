@@ -49,7 +49,13 @@ public class WorkspaceContext
       SearchCaseQueries caseQueries = RoleMap.role( SearchCaseQueries.class );
       Query<Case> caseQuery = caseQueries.search( tableQuery.where() );
 
-      return caseQuery.maxResults( 1000 );
+      // Paging
+      if (tableQuery.offset() != null)
+         caseQuery.firstResult( Integer.parseInt( tableQuery.offset()) );
+      if (tableQuery.limit() != null)
+         caseQuery.maxResults( Integer.parseInt( tableQuery.limit()) );
+
+      return caseQuery;
    }
 
    public Query<LabelEntity> possibleLabels()

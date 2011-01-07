@@ -25,6 +25,7 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.util.DateFunctions;
 import org.qi4j.api.value.ValueComposite;
 import org.restlet.Response;
+import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
 import org.restlet.representation.Representation;
 import org.restlet.representation.WriterRepresentation;
@@ -160,6 +161,7 @@ public class TableResultWriter
                   htmlTemplate.merge( context, writer );
                }
             };
+            rep.setCharacterSet( CharacterSet.UTF_8 );
             response.setEntity( rep );
             return true;
          }

@@ -111,9 +111,14 @@
 
         <!-- UI -->
         <dependency>
+            <groupId>org.jdesktop.bsaf</groupId>
+            <artifactId>bsaf</artifactId>
+            <version>1.9</version>
+<!--
             <groupId>org.jdesktop</groupId>
             <artifactId>appframework</artifactId>
             <version>1.0.3</version>
+-->
         </dependency>
         <dependency>
             <groupId>com.jgoodies</groupId>
@@ -132,8 +137,8 @@
         </dependency>
         <dependency>
             <groupId>org.swinglabs</groupId>
-            <artifactId>swingx</artifactId>
-            <version>1.6.1</version>
+            <artifactId>swingx-core</artifactId>
+            <version>1.6.2-2</version>
         </dependency>
 <!--
         <dependency>
@@ -155,12 +160,11 @@
         <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
-            <version>1.2.15</version>
         </dependency>
         <dependency>
             <groupId>info.aduna.commons</groupId>
             <artifactId>aduna-commons-io</artifactId>
-            <version>2.7.0</version>
+            <version>2.9.0</version>
         </dependency>
         <dependency>
             <groupId>eu.medsea.mimeutil</groupId>
@@ -172,7 +176,7 @@
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>
-            <version>3.6</version>
+            <version>3.7</version>
         </dependency>
 
         <!-- REST -->
@@ -204,7 +208,7 @@
         <dependency>
             <groupId>javax.help</groupId>
             <artifactId>javahelp</artifactId>
-            <version>2.0.02</version>
+            <version>2.0.05</version>
         </dependency>
 
         <!-- Build time dependency -->

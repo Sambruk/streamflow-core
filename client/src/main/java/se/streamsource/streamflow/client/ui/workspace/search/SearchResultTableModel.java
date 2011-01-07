@@ -82,7 +82,7 @@ public class SearchResultTableModel
       String translatedQuery = SearchTerms.translate( searchString );
 
       ValueBuilder<TableQuery> builder = vbf.newValueBuilder( TableQuery.class );
-      builder.prototype().tq().set( "select * where "+translatedQuery );
+      builder.prototype().tq().set( "select * limit 1000 where "+translatedQuery );
 
       return client.query( "search", builder.newInstance(), TableValue.class );
    }
