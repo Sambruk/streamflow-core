@@ -44,5 +44,12 @@
             <artifactId>qi4j-core-runtime</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <!-- Logging -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.6.1</version>
+        </dependency>
     </dependencies>
 </project>
