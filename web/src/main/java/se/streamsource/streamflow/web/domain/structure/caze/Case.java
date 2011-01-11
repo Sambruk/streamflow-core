@@ -62,6 +62,7 @@ public interface Case
       CaseStructure,
       SubCases,
       SubCase,
-      CaseAccess
+      CaseAccess,
+      History
 {
 }

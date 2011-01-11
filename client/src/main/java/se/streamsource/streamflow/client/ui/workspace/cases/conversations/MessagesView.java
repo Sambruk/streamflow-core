@@ -28,26 +28,17 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
-import se.streamsource.streamflow.client.util.RefreshWhenShowing;
-import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.util.CommandTask;
+import se.streamsource.streamflow.client.util.RefreshWhenShowing;
+import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
 import se.streamsource.streamflow.resource.conversation.MessageDTO;
 
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextPane;
-import javax.swing.KeyStroke;
-import javax.swing.text.html.HTMLEditorKit;
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
+import javax.swing.*;
+import java.awt.*;
 import java.text.SimpleDateFormat;
 
 public class MessagesView extends JPanel
@@ -56,10 +47,12 @@ public class MessagesView extends JPanel
    private MessagesModel model;
 
    private int lastSize = -1;
-   private JTextPane messages;
+   private Box messages;
    private JPanel writeMessagePanel;
    private JPanel sendPanel;
    private JTextPane newMessage;
+
+   private Color[] messageColors = new Color[]{Color.lightGray.brighter(), Color.yellow.brighter()};
 
    public MessagesView(@Service ApplicationContext context, @Uses CommandQueryClient client, @Structure ObjectBuilderFactory obf)
    {
@@ -72,17 +65,13 @@ public class MessagesView extends JPanel
 
       model.messages().addListEventListener( this );
 
-      messages = new JTextPane();
-      messages.setContentType( "text/html" );
-      ((HTMLEditorKit) messages.getEditorKit()).setAutoFormSubmission( false );
-      messages.setEditable( false );
+      messages = Box.createVerticalBox();
 
       new RefreshWhenShowing(this, model);
 
       initWriteMessage();
 
-      JScrollPane scrollMessages = new JScrollPane();
-      scrollMessages.getViewport().add( messages );
+      JScrollPane scrollMessages = new JScrollPane(messages);
 
       add(scrollMessages, BorderLayout.CENTER);
       add(writeMessagePanel, BorderLayout.SOUTH );
@@ -94,18 +83,29 @@ public class MessagesView extends JPanel
 
       if (list.size() > lastSize)
       {
-         StringBuffer buf = new StringBuffer();
-
-         buf.append( "<html><head></head><body>" );
+         messages.removeAll();
 
          int size = list.size();
          if (size > 0)
          {
-            buf.append( "<table border='NONE' cellpadding='10'>" );
-            for (int i = 0; i < size; i++)
+            SimpleDateFormat dateFormat = new SimpleDateFormat( i18n
+                  .text( WorkspaceResources.date_time_format ) );
+            int idx = 0;
+            for (MessageDTO messageDTO : list)
             {
-               MessageDTO messageDTO = list.get( i );
+               JLabel message = new JLabel( "<html>"+messageDTO.sender().get() + ", " + dateFormat.format( messageDTO.createdOn().get() )+":"+messageDTO.text().get().replace("\n","<br>" )+"</html>" );
+               message.setBackground( messageColors[idx%2] );
+               message.setOpaque( true );
+               idx++;
+/*
+               Box message = Box.createHorizontalBox();
+               message.setBorder( BorderFactory.createTitledBorder( ) );
+               message.add();
+               message.add(Box.createHorizontalGlue());
+*/
 
+               messages.add( message );
+/*
                buf.append( "<tr>" );
                buf.append( "<td width='150' align='left' valign='top'>" );
                buf.append( "<p>" );
@@ -120,12 +120,13 @@ public class MessagesView extends JPanel
                      .append( "<hr width='100%' style='border:1px solid #cccccc; padding-top: 15px;'>" );
                buf.append( "</td>" );
                buf.append( "</tr>" );
+*/
 
             }
-            buf.append( "</table>" );
+//            buf.append( "</table>" );
          }
-         buf.append( "</body></html>" );
-         messages.setText( buf.toString() );
+//         buf.append( "</body></html>" );
+         messages.revalidate();
          lastSize = list.size();
       }
    }

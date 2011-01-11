@@ -27,9 +27,9 @@ import se.streamsource.streamflow.web.domain.structure.conversation.Messages;
  * JAVADOC
  */
 public interface ConversationEntity
-   extends ConversationParticipants,
-      ConversationParticipants.Data,
+   extends
       Conversation,
+      ConversationParticipants.Data,
       Describable.Data,
       Messages.Data,
 

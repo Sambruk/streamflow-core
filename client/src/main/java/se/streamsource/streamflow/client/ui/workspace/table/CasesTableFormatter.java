@@ -43,19 +43,26 @@ public class CasesTableFormatter
 
    StringBuilder description = new StringBuilder();
 
+
    public CasesTableFormatter()
    {
       columnNames = new String[]{
             text( title_column_header ),
-            "",
+            text( info_column_header ),
             text( casetype_column_header ),
+            text( assignee_column_header ),
             text( created_column_header ),
+            text( duedate_column_header ),
+            text( project_column_header ),
             text( case_status_header )};
       columnClasses = new Class[]{
             String.class,
             ArrayList.class,
             String.class,
+            String.class,
             Date.class,
+            Date.class,
+            String.class,
             CaseStates.class
       };
    }
@@ -95,7 +102,7 @@ public class CasesTableFormatter
             {
                description.setLength( 0 );
 
-               if (!Strings.empty( caseValue.caseId().get()))
+               if (!Strings.empty( caseValue.caseId().get() ))
                   description.append( "#" ).append( caseValue.caseId() ).append( " " );
 
                description.append( caseValue.description().get() );
@@ -129,11 +136,21 @@ public class CasesTableFormatter
                return caseValue.caseType().get() == null ? null : (caseValue.caseType().get() + (caseValue.resolution().get() == null ? "" : "(" + caseValue.resolution().get() + ")"));
 
             case 3:
-               return caseValue.creationDate().get();
+               return caseValue.assignedTo().get();
 
             case 4:
-               return caseValue.status().get();
+               return caseValue.creationDate().get();
+
             case 5:
+               return caseValue.dueOn().get();
+
+            case 6:
+               return caseValue.owner().get();
+
+            case 7:
+               return caseValue.status().get();
+            
+            case 8:
                return caseValue.href().get();
          }
 

@@ -26,6 +26,7 @@ import org.qi4j.api.property.Property;
 import javax.swing.*;
 import java.awt.*;
 import java.text.DateFormat;
+import java.util.Calendar;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -106,6 +107,7 @@ public class BindingFormBuilder
                {
                   JXDatePicker jxDatePicker = new JXDatePicker( Locale.getDefault() );
                   jxDatePicker.setTimeZone( TimeZone.getTimeZone( "UTC" ) );
+                  jxDatePicker.getMonthView().setFirstDayOfWeek( Calendar.MONDAY );
                   return jxDatePicker;
                }
             };

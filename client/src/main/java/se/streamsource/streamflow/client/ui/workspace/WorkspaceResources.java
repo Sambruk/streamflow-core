@@ -22,11 +22,38 @@ package se.streamsource.streamflow.client.ui.workspace;
  */
 public enum WorkspaceResources
 {
+   could_not_open_file,
+   could_not_refresh,
+
+   window_name,
+   select_account,
+   welcome,
+   choose_case,
+
+   // Case table
    title_column_header,
+   info_column_header,
    casetype_column_header,
    created_column_header,
    case_status_header,
+   assignee_column_header,
+   duedate_column_header,
+   project_column_header,
 
+   // Case info
+   assigned_to_header,
+   owner,
+   created_by,
+
+   // Case details
+   general_tab,
+   forms_tab,
+   conversations_tab,
+   contacts_tab,
+   attachments_tab,
+
+   // General view
+   history,
    description_label,
    note_label,
    name_label,
@@ -36,36 +63,33 @@ public enum WorkspaceResources
    phone_label,
    email_label,
    address_label,
+   forms_label,
+   choose_casetype,
 
-   assigned_to_header,
+   // Form submission
+   mandatory_field_missing,
 
+   // Forms tab
+   submitted_forms_tab,
+   effective_fields_tab,
+
+   // Attachments tab
+   attachment,
+   attachment_name,
+   attachment_size,
+   create_attachment,
+   attachments,
+   could_not_open_attachment,
+
+   // Context selection
    inboxes_node,
    drafts_node,
 
    assignments_node,
 
-   general_tab,
-   forms_tab,
-   conversations_tab,
-   contacts_tab,
-
-   window_name,
-   select_account,
-   submitted_forms_tab,
-   effective_fields_tab,
    date_time_format,
-   forms_label,
-   could_not_refresh,
-   choose_casetype,
-   mandatory_field_missing,
-   owner,
-   choose_case,
    choose_owner_title,
    change_password_title,
-   welcome,
-   attachments_tab,
-   attachment_name,
-   attachment_size,
    choose_message_delivery_type,
    choose_project,
    choose_form,
@@ -73,29 +97,35 @@ public enum WorkspaceResources
    query_label,
    incomplete_data,
    handle_searches,
-   create_attachment,
    case_separator,
-   attachments,
    caze,
-   attachment,
-   could_not_open_attachment,
    too_long_query,
-   created_by,
    choose_template,
    could_not_print,
    date_format,
    wrong_format_msg,
    wrong_format_title,
 
-   all,
-   grouping,
+   // CasesTableView sorting and grouping
+   search,
    status,
+
+   filter,
+   grouping,
+
+   all,
    label,
    assignee,
    sorting,
-   could_not_open_file,
-   search,
    project,
-   filter,
-   created_on
+   created_on,
+
+   // Due date grouping
+   overdue,
+   duetoday,
+   duetomorrow,
+   duenextweek,
+   duenextmonth,
+   later,
+   noduedate
 }

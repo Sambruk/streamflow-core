@@ -151,7 +151,7 @@ public class InteractionConstraintsService
                try
                {
                   Constraint<Annotation, Object> constraint = (Constraint<Annotation, Object>) constraintClass.newInstance();
-                  Class roleClass = (Class) ((ParameterizedType)aClass.getGenericInterfaces()[0]).getActualTypeArguments()[1];
+                  Class roleClass = (Class) ((ParameterizedType)constraint.getClass().getGenericInterfaces()[0]).getActualTypeArguments()[1];
                   ConstraintBinding constraintBinding = new ConstraintBinding(constraint, annotation, roleClass);
                   classConstraintBindings.add( constraintBinding );
                } catch (InstantiationException e)

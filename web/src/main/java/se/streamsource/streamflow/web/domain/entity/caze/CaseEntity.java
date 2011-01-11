@@ -26,6 +26,7 @@ import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.sideeffect.SideEffects;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.domain.structure.Notable;
 import se.streamsource.streamflow.domain.structure.Removable;
@@ -37,9 +38,11 @@ import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachments;
 import se.streamsource.streamflow.web.domain.structure.attachment.FormAttachments;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
+import se.streamsource.streamflow.web.domain.structure.casetype.Resolution;
 import se.streamsource.streamflow.web.domain.structure.casetype.Resolvable;
 import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
 import se.streamsource.streamflow.web.domain.structure.caze.*;
+import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipant;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversations;
 import se.streamsource.streamflow.web.domain.structure.form.FormDrafts;
 import se.streamsource.streamflow.web.domain.structure.form.SubmittedForms;
@@ -54,7 +57,7 @@ import java.util.Map;
 /**
  * This represents a single Case in the system
  */
-@SideEffects({AssignIdSideEffect.class, StatusClosedSideEffect.class})
+@SideEffects({AssignIdSideEffect.class, StatusClosedSideEffect.class, CaseEntity.HistorySideEffect.class})
 @Concerns({CaseEntity.RemovableConcern.class, CaseEntity.TypedCaseAccessConcern.class, CaseEntity.OwnableCaseAccessConcern.class})
 @Mixins(CaseEntity.AuthorizationMixin.class)
 public interface CaseEntity
@@ -84,6 +87,7 @@ public interface CaseEntity
       TypedCase.Data,
       SubCases.Data,
       SubCase.Data,
+      History.Data,
 
       // Queries
       SubmittedFormsQueries,
@@ -232,6 +236,55 @@ public interface CaseEntity
          }
 
          next.deleteEntity();
+      }
+   }
+
+   abstract class HistorySideEffect
+      extends ConcernOf<CaseEntity>
+      implements CaseEntity
+   {
+      @This History history;
+
+      public void changeDescription( @Optional String newDescription )
+      {
+         history.getHistory().changeDescription( newDescription );
+      }
+
+      public void assignTo( Assignee assignee )
+      {
+         history.addHistoryComment( "Assigned to "+((Describable)assignee).getDescription(), RoleMap.role( ConversationParticipant.class ) );
+      }
+
+      public void unassign()
+      {
+      }
+
+      public void open()
+      {
+      }
+
+      public void close()
+      {
+      }
+
+      public void onHold()
+      {
+      }
+
+      public void reopen()
+      {
+      }
+
+      public void resume()
+      {
+      }
+
+      public void resolve( Resolution resolution )
+      {
+      }
+
+      public void changeCaseType( @Optional CaseType newCaseType )
+      {
       }
    }
 }

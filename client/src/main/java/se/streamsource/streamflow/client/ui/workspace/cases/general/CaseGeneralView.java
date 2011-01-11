@@ -36,6 +36,7 @@ import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.client.ui.workspace.cases.conversations.ConversationView;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.PossibleFormsView;
 import se.streamsource.streamflow.client.util.*;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
@@ -87,7 +88,7 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
    private JScrollPane notePane;
    private JXDatePicker dueOnField;
    private JPanel rightForm;
-   private JPanel leftForm;
+   private Box leftForm;
    private CaseLabelsView labels;
    private PossibleFormsView forms;
    private RemovableLabel selectedCaseType = new RemovableLabel();
@@ -124,7 +125,7 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
       actionBinder.setResourceMap( appContext.getResourceMap( getClass() ) );
 
       // Layout and form for the right panel
-      FormLayout rightLayout = new FormLayout( "70dlu, 2dlu, 200:grow", "pref, pref, pref, pref, 20dlu, pref, fill:pref:grow" );
+      FormLayout rightLayout = new FormLayout( "70dlu, 2dlu, 200:grow", "pref, pref, pref, pref, 20dlu, pref, pref" );
 
       rightForm = new JPanel( rightLayout );
       rightForm.setFocusable( false );
@@ -246,24 +247,22 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
       FormLayout leftLayout = new FormLayout( "200dlu:grow",
             "pref,fill:pref:grow" );
 
-      leftForm = new JPanel();
-      leftForm.setPreferredSize( new Dimension( 200, 100 ) );
-      leftForm.setFocusable( false );
-      DefaultFormBuilder leftBuilder = new DefaultFormBuilder( leftLayout,
-            leftForm );
-      leftBuilder.setBorder( Borders.createEmptyBorder( Sizes.DLUY2,
-            Sizes.DLUX2, Sizes.DLUY2, Sizes.DLUX2 ) );
+      leftForm = Box.createVerticalBox();
 
       notePane = (JScrollPane) TEXTAREA.newField();
       notePane.setMinimumSize( new Dimension( 10, 50 ) );
       refreshComponents.enabledOn( "changenote", notePane.getViewport().getView() );
 
-      BindingFormBuilder2 leftBindingBuilder = new BindingFormBuilder2(
-            leftBuilder, actionBinder, valueBinder, appContext.getResourceMap( getClass() ) );
-      leftBindingBuilder.appendWithLabel( WorkspaceResources.note_label,
-            notePane, "note", "changeNote" );
+      leftForm.add(new JLabel(i18n.text( WorkspaceResources.note_label ), JLabel.LEFT));
+      leftForm.add(notePane);
+      actionBinder.bind( "changeNote", notePane );
+      valueBinder.bind( "note", notePane );
 
-      JPanel formsContainer = new JPanel( new GridLayout( 1, 2 ) );
+      leftForm.add( new JLabel( i18n.text( WorkspaceResources.history ), JLabel.LEFT ) );
+      leftForm.add( obf.newObjectBuilder( ConversationView.class ).use( client.getSubClient( "history" ) ).newInstance() );
+
+      JPanel formsContainer = new JPanel();
+      formsContainer.setLayout( new BoxLayout(formsContainer, BoxLayout.X_AXIS) );
       formsContainer.setBorder( Borders.createEmptyBorder( "2dlu, 2dlu, 2dlu, 2dlu" ) );
       formsContainer.add( leftForm );
       formsContainer.add( rightForm );

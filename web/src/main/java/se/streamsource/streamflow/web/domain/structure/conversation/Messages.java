@@ -35,7 +35,7 @@ import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 @Mixins(Messages.Mixin.class)
 public interface Messages
 {
-   Message createMessage(String body, ConversationParticipant participant) throws IllegalArgumentException;
+   Message createMessage(String body, ConversationParticipant participant);
 
    interface Data
    {
@@ -61,17 +61,16 @@ public interface Messages
 
       public Message createMessage( String body, ConversationParticipant participant ) throws IllegalArgumentException
       {
-         if (participants.isParticipant(participant))
+         if (!participants.isParticipant(participant))
          {
-            Message message = createdMessage( null, idGen.generate( Identity.class ), body, participant);
-
-            participants.receiveMessage(message);
-
-            return message;
-         } else
-         {
-            throw new IllegalArgumentException("Participant is not a member of this conversation");
+            participants.addParticipant( participant );
          }
+
+         Message message = createdMessage( null, idGen.generate( Identity.class ), body, participant);
+
+         participants.receiveMessage(message);
+
+         return message;
       }
 
       public Message createdMessage( DomainEvent event, String id, String body, ConversationParticipant participant )

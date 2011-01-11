@@ -16,11 +16,14 @@
 
 package se.streamsource.streamflow.web.resource.workspace.cases;
 
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResource;
 import se.streamsource.streamflow.web.context.workspace.cases.general.CaseGeneralCommandsContext;
 import se.streamsource.streamflow.web.context.workspace.cases.general.CaseGeneralContext;
+import se.streamsource.streamflow.web.domain.structure.caze.History;
 import se.streamsource.streamflow.web.resource.organizations.LabelableResource;
+import se.streamsource.streamflow.web.resource.workspace.cases.conversation.ConversationResource;
 
 /**
  * JAVADOC
@@ -37,5 +40,12 @@ public class CaseGeneralResource
    public void labels(  )
    {
       subResource( LabelableResource.class );
+   }
+
+   @SubResource
+   public void history()
+   {
+      RoleMap.current().set( RoleMap.role( History.class ).getHistory() );
+      subResource( ConversationResource.class );
    }
 }

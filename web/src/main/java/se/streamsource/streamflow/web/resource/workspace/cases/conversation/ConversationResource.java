@@ -16,13 +16,16 @@
 
 package se.streamsource.streamflow.web.resource.workspace.cases.conversation;
 
+import se.streamsource.dci.api.RequiresRoles;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResource;
 import se.streamsource.streamflow.web.context.workspace.cases.conversation.MessagesContext;
+import se.streamsource.streamflow.web.domain.structure.conversation.Conversation;
 
 /**
  * JAVADOC
  */
+@RequiresRoles( Conversation.class )
 public class ConversationResource
       extends CommandQueryResource
 {

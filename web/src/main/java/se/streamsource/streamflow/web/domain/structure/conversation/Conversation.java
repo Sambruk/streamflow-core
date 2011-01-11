@@ -24,6 +24,6 @@ import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
  * JAVADOC
  */
 public interface Conversation
-   extends Describable, CreatedOn, Messages, ConversationOwnable
+   extends Describable, CreatedOn, Messages, ConversationOwnable, ConversationParticipants
 {
 }

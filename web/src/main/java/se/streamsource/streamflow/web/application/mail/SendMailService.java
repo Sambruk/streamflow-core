@@ -158,7 +158,7 @@ public interface SendMailService
                if (email.fromName().get() == null)
                   msg.setFrom( new InternetAddress( config.configuration().from().get() ) );
                else
-                  msg.setFrom( new InternetAddress( config.configuration().from().get(), email.fromName().get() ) );
+                  msg.setFrom( new InternetAddress( config.configuration().from().get(), email.fromName().get(), "ISO-8859-1" ) );
 
                msg.setRecipient( javax.mail.Message.RecipientType.TO, new InternetAddress( email.to().get() ) );
                msg.setSubject( email.subject().get() );

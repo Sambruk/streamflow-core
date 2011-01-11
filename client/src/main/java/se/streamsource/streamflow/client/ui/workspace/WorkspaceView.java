@@ -348,7 +348,7 @@ public class WorkspaceView
                   int selectedRow = caseTable.getSelectedRow();
                   if (selectedRow != -1)
                   {
-                     Object valueAt = caseTable.getModel().getValueAt( caseTable.convertRowIndexToModel( selectedRow ), 5 );
+                     Object valueAt = caseTable.getModel().getValueAt( caseTable.convertRowIndexToModel( selectedRow ), 8 );
                      if (valueAt instanceof String)
                      {
                         String href = (String) valueAt;
