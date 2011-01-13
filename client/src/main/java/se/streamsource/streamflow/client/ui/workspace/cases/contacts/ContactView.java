@@ -357,4 +357,9 @@ public class ContactView
       }
       return contactBuilder.newInstance();
    }
+
+   public void setFocusOnName()
+   {
+      defaultFocusField.requestFocusInWindow();
+   }
 }

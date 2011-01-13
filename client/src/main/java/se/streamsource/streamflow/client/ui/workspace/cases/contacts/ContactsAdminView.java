@@ -90,6 +90,8 @@ public class ContactsAdminView
 
                   ContactModel contactModel = obf.newObjectBuilder( ContactModel.class ).use( contactValue, client.getSubClient( ""+idx ) ).newInstance();
                   contactView.setModel( contactModel );
+
+                  contactView.setFocusOnName();
                } else
                {
                   contactView.setModel( null );
