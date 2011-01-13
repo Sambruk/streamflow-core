@@ -27,11 +27,14 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.io.*;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.util.DateFunctions;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.domain.contact.ContactValue;
 import se.streamsource.streamflow.domain.form.AttachmentFieldSubmission;
 import se.streamsource.streamflow.domain.form.AttachmentFieldValue;
+import se.streamsource.streamflow.domain.form.DateFieldValue;
 import se.streamsource.streamflow.domain.form.EffectiveFieldValue;
+import se.streamsource.streamflow.domain.form.FieldValue;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.resource.caze.CaseOutputConfigValue;
 import se.streamsource.streamflow.util.Strings;
@@ -62,6 +65,7 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.net.URI;
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
 
@@ -340,12 +344,17 @@ public class CasePdfGenerator
             {
                Describable fieldName = uowf.currentUnitOfWork().get( Describable.class, field.field().get().identity() );
 
+               FieldValue fieldValue = uowf.currentUnitOfWork().get( FieldEntity.class, field.field().get().identity() ).fieldValue().get();
                // convert JSON String if field type AttachmentFieldValue
-               if (uowf.currentUnitOfWork().get( FieldEntity.class, field.field().get().identity() ).fieldValue().get() instanceof AttachmentFieldValue)
+               if ( fieldValue instanceof AttachmentFieldValue)
                {
                   AttachmentFieldSubmission attachment = vbf.newValueFromJSON( AttachmentFieldSubmission.class, field.value().get() );
                   fieldKeyValues.put( fieldName.getDescription(), attachment.name().get() );
 
+               } else if ( fieldValue instanceof DateFieldValue)
+               {
+                 fieldKeyValues.put( fieldName.getDescription(), new SimpleDateFormat( bundle.getString("date_format" ))
+                       .format( DateFunctions.fromString( field.value().get() ) ) );
                } else
                {
                   fieldKeyValues.put( fieldName.getDescription(), field.value().get() );

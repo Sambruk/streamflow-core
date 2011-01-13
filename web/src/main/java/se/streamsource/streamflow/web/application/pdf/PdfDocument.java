@@ -157,7 +157,10 @@ public class PdfDocument
       contentStream.setFont( labelFont.font, labelFont.size );
       contentStream.drawString( label );
       contentStream.moveTextPositionByAmount( tabStop, font.height );
+      float oldMaxStringLength = maxStringLength;
+      maxStringLength = maxStringLength - tabStop;
       print( text, font );
+      maxStringLength = oldMaxStringLength;
       contentStream.moveTextPositionByAmount( -tabStop, -font.height );
 
       return this;
