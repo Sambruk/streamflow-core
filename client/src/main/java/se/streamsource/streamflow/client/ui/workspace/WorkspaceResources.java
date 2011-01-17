@@ -127,5 +127,12 @@ public enum WorkspaceResources
    duenextweek,
    duenextmonth,
    later,
-   noduedate
+   none,
+   case_type,
+   noduedate,
+
+   // CaseStates
+   OPEN,
+   ON_HOLD,
+   choose_date, CLOSED
 }
