@@ -131,5 +131,5 @@ public enum AdministrationResources
    user_title,
    choose_default_access_type,
    caseaccessdefaults_tab,
-   formsignatures_tab
+   choose_move_casetype_to, formsignatures_tab
 }
