@@ -165,7 +165,7 @@ public class CaseTypesView
       final SelectLinkDialog dialog = possibleMoveToDialogs.use(model.getPossibleMoveTo(selected)).newInstance();
       dialog.setPreferredSize( new Dimension(200,300) );
 
-      dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.choose_move_to ) );
+      dialogs.showOkCancelHelpDialog( this, dialog, text( AdministrationResources.choose_move_casetype_to ) );
 
       if (dialog.getSelectedLink() != null)
       {
