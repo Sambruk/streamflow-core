@@ -133,7 +133,8 @@ public class CasesTableFormatter
 
                return icons;
             case 2:
-               return caseValue.caseType().get() == null ? null : (caseValue.caseType().get() + (caseValue.resolution().get() == null ? "" : "(" + caseValue.resolution().get() + ")"));
+               return caseValue.caseType().get() == null ? null : (caseValue.caseType().get()
+                     + (Strings.empty( caseValue.resolution().get() ) ? "" : "(" + caseValue.resolution().get() + ")"));
 
             case 3:
                return caseValue.assignedTo().get();

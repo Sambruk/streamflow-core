@@ -45,6 +45,8 @@ import se.streamsource.streamflow.web.domain.interaction.gtd.*;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
+import se.streamsource.streamflow.web.domain.structure.casetype.Resolution;
+import se.streamsource.streamflow.web.domain.structure.casetype.Resolvable;
 import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversation;
@@ -124,7 +126,8 @@ public class CasePdfGenerator
 
       float tabStop = document.calculateTabStop( valueFontBold, bundle.getString( "title" ),
             bundle.getString( "createdOn" ), bundle.getString( "createdBy" ), bundle.getString( "owner" ),
-            bundle.getString( "assignedTo" ), bundle.getString( "caseType" ), bundle.getString( "labels" ) );
+            bundle.getString( "assignedTo" ), bundle.getString( "caseType" ), bundle.getString( "labels" ),
+            bundle.getString( "resolution" ) );
 
       document.printLabelAndText( bundle.getString( "title" ) + ": ", valueFontBold, caze.getDescription(), valueFont, tabStop );
       document.printLabelAndText( bundle.getString( "createdOn" ) + ": ", valueFontBold,
@@ -153,6 +156,13 @@ public class CasePdfGenerator
       if (caseType != null)
       {
          document.printLabelAndText( bundle.getString( "caseType" ) + ": ", valueFontBold, ((Describable) caseType).getDescription(), valueFont, tabStop );
+      }
+
+      Resolution resolution = ((Resolvable.Data) caze).resolution().get();
+
+      if( resolution != null )
+      {
+         document.printLabelAndText( bundle.getString( "resolution" ) + ":", valueFontBold, ((Describable)resolution).getDescription(), valueFont, tabStop );
       }
 
       List<Label> labels = ((Labelable.Data) caze).labels().toList();
