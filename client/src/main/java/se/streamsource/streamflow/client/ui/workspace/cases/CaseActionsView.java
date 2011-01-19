@@ -61,7 +61,7 @@ import static se.streamsource.streamflow.infrastructure.event.domain.source.help
  * JAVADOC
  */
 public class CaseActionsView extends JPanel
-   implements TransactionListener, Observer
+      implements TransactionListener, Observer
 {
    @Uses
    protected ObjectBuilder<SelectLinkDialog> projectSelectionDialog;
@@ -82,7 +82,7 @@ public class CaseActionsView extends JPanel
 
    private JPanel actionsPanel = new JPanel();
 
-   public CaseActionsView( @Service ApplicationContext context, @Uses CaseModel model)
+   public CaseActionsView( @Service ApplicationContext context, @Uses CaseModel model )
    {
       this.model = model;
 
@@ -105,7 +105,7 @@ public class CaseActionsView extends JPanel
       {
          @Override
          public void command()
-            throws Exception
+               throws Exception
          {
             model.createSubCase();
          }
@@ -119,7 +119,7 @@ public class CaseActionsView extends JPanel
       {
          @Override
          public void command()
-            throws Exception
+               throws Exception
          {
             model.open();
          }
@@ -133,7 +133,7 @@ public class CaseActionsView extends JPanel
       {
          @Override
          public void command()
-            throws Exception
+               throws Exception
          {
             model.assignToMe();
          }
@@ -145,43 +145,50 @@ public class CaseActionsView extends JPanel
    {
       // TODO very odd hack - how to solve state binder update issue during use of accelerator keys.
       Component focusOwner = WindowUtils.findWindow( this ).getFocusOwner();
-      focusOwner.transferFocus();
+      if( focusOwner != null )
+         focusOwner.transferFocus();
 
-      EventList<TitledLinkValue> resolutions = model.getPossibleResolutions();
-      if (resolutions.isEmpty())
+      return new CommandTask()
+      {
+         @Override
+         public void command()
+               throws Exception
+         {
+            model.close();
+         }
+      };
+   }
+
+
+   @Action(block = Task.BlockingScope.COMPONENT)
+   public Task resolve()
+   {
+      // TODO very odd hack - how to solve state binder update issue during use of accelerator keys.
+      Component focusOwner = WindowUtils.findWindow( this ).getFocusOwner();
+      if( focusOwner != null )
+         focusOwner.transferFocus();
+
+      final SelectLinkDialog dialog = obf.newObjectBuilder( SelectLinkDialog.class )
+            .use( model.getPossibleResolutions() ).newInstance();
+      dialogs.showOkCancelHelpDialog(
+            WindowUtils.findWindow( this ),
+            dialog,
+            i18n.text( AdministrationResources.resolve ) );
+
+      if (dialog.getSelectedLink() != null)
       {
          return new CommandTask()
          {
             @Override
             public void command()
-               throws Exception
+                  throws Exception
             {
-               model.close();
+               model.resolve( dialog.getSelectedLink() );
             }
          };
       } else
-      {
-         final SelectLinkDialog dialog = obf.newObjectBuilder( SelectLinkDialog.class )
-               .use( resolutions ).newInstance();
-         dialogs.showOkCancelHelpDialog(
-               WindowUtils.findWindow( this ),
-               dialog,
-               i18n.text( AdministrationResources.resolve ) );
+         return null;
 
-         if (dialog.getSelectedLink() != null)
-         {
-            return new CommandTask()
-            {
-               @Override
-               public void command()
-                  throws Exception
-               {
-                  model.resolve( dialog.getSelectedLink() );
-               }
-            };
-         } else
-            return null;
-      }
    }
 
    @Action(block = Task.BlockingScope.COMPONENT)
@@ -196,7 +203,7 @@ public class CaseActionsView extends JPanel
          {
             @Override
             public void command()
-               throws Exception
+                  throws Exception
             {
                model.delete();
             }
@@ -218,7 +225,7 @@ public class CaseActionsView extends JPanel
          {
             @Override
             public void command()
-               throws Exception
+                  throws Exception
             {
                model.sendTo( dialog.getSelectedLink() );
             }
@@ -228,13 +235,13 @@ public class CaseActionsView extends JPanel
    }
 
    @Action(block = Task.BlockingScope.COMPONENT)
-   public Task onhold( ActionEvent event)
+   public Task onhold( ActionEvent event )
    {
       return new CommandTask()
       {
          @Override
          public void command()
-            throws Exception
+               throws Exception
          {
             model.onHold();
          }
@@ -248,7 +255,7 @@ public class CaseActionsView extends JPanel
       {
          @Override
          public void command()
-            throws Exception
+               throws Exception
          {
             model.reopen();
          }
@@ -262,7 +269,7 @@ public class CaseActionsView extends JPanel
       {
          @Override
          public void command()
-            throws Exception
+               throws Exception
          {
             model.resume();
          }
@@ -276,7 +283,7 @@ public class CaseActionsView extends JPanel
       {
          @Override
          public void command()
-            throws Exception
+               throws Exception
          {
             model.unassign();
          }
@@ -298,7 +305,7 @@ public class CaseActionsView extends JPanel
 
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
    {
-      if (matches( withUsecases("sendto", "open", "assign", "close", "delete", "onhold", "reopen", "resume", "unassign"), transactions ))
+      if (matches( withUsecases( "sendto", "open", "assign", "close", "delete", "onhold", "reopen", "resume", "unassign", "resolved" ), transactions ))
       {
          model.refresh();
       }
@@ -330,11 +337,11 @@ public class CaseActionsView extends JPanel
       repaint();
    }
 
-    private class PrintCaseTask extends Task<File, Void>
+   private class PrintCaseTask extends Task<File, Void>
    {
       private CaseOutputConfigValue config;
 
-      public PrintCaseTask( CaseOutputConfigValue config)
+      public PrintCaseTask( CaseOutputConfigValue config )
       {
          super( Application.getInstance() );
          this.config = config;

@@ -107,7 +107,7 @@ public class CaseInfoView extends JPanel
    {
       CaseDTO aCase = model.getIndex();
 
-      statusLabel.setStatus( aCase.status().get() );
+      statusLabel.setStatus( aCase.status().get(), aCase.resolution().get() );
 
       String titleText = (aCase.caseId().get() != null ? "#" + aCase.caseId().get() + " " : "") + aCase.text().get();
       title.setText( titleText );

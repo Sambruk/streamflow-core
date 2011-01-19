@@ -39,6 +39,7 @@ import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.client.ui.workspace.cases.CaseResources;
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseTableValue;
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.EventListSynch;
@@ -50,6 +51,7 @@ import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
+import se.streamsource.streamflow.util.Strings;
 
 import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
@@ -97,7 +99,7 @@ public class CasesTableView
       extends JPanel
       implements TransactionListener
 {
-   public static final int MILLIS_IN_DAY = (1000*60*60*24);
+   public static final int MILLIS_IN_DAY = (1000 * 60 * 60 * 24);
    public static final WorkspaceResources[] dueGroups = {WorkspaceResources.overdue, WorkspaceResources.duetoday, WorkspaceResources.duetomorrow, WorkspaceResources.duenextweek, WorkspaceResources.duenextmonth, WorkspaceResources.later, WorkspaceResources.noduedate};
 
    private Matcher<CaseTableValue> labelMatcher = new Matcher<CaseTableValue>()
@@ -251,7 +253,7 @@ public class CasesTableView
 */
 
       filters = new JPanel( new WrapLayout( FlowLayout.LEFT ) );
-      filters.add( new JLabel( text( WorkspaceResources.filter ) ));
+      filters.add( new JLabel( text( WorkspaceResources.filter ) ) );
       filters.add( new JButton( am.get( "add" ) ) );
       filters.setBorder( BorderFactory.createEtchedBorder() );
       {
@@ -307,7 +309,7 @@ public class CasesTableView
                text( WorkspaceResources.none ),
                text( WorkspaceResources.created_on ),
                text( WorkspaceResources.description_label ),
-               text( WorkspaceResources.duedate_column_header ) } );
+               text( WorkspaceResources.duedate_column_header )} );
          sorting.addActionListener( am.get( "sorting" ) );
 
          Box sortingBox = Box.createHorizontalBox();
@@ -325,7 +327,7 @@ public class CasesTableView
                text( WorkspaceResources.case_type ),
                text( WorkspaceResources.assignee ),
                text( WorkspaceResources.project ),
-               text( WorkspaceResources.due_on_label) } );
+               text( WorkspaceResources.due_on_label )} );
          grouping.addActionListener( am.get( "grouping" ) );
 
          Box groupingBox = Box.createHorizontalBox();
@@ -403,7 +405,29 @@ public class CasesTableView
             return renderer;
          }
       } );
-      caseTable.setDefaultRenderer( CaseStates.class, new CaseStatusTableCellRenderer() );
+      caseTable.setDefaultRenderer( CaseStates.class, new DefaultTableCellRenderer()
+      {
+         @Override
+         public Component getTableCellRendererComponent( JTable table, Object value,
+                                                         boolean isSelected, boolean hasFocus, int row, int column )
+         {
+            boolean hasResolution = !Strings.empty( model.getEventList().get( ((JXTable) table).convertRowIndexToModel( row ) ).resolution().get() );
+            String iconName = hasResolution ? "case_status_withresolution_" + value.toString().toLowerCase() + "_icon"
+                  : "case_status_" + value.toString().toLowerCase() + "_icon";
+
+            JLabel renderedComponent = (JLabel) super.getTableCellRendererComponent( table, value, isSelected, hasFocus,
+                  row, column );
+            renderedComponent.setHorizontalAlignment( SwingConstants.CENTER );
+            setText( null );
+
+            setIcon( i18n.icon( CaseResources.valueOf( iconName ),
+                  i18n.ICON_16 ) );
+            setName( i18n.text( CaseResources.valueOf( "case_status_" + value.toString().toLowerCase() + "_text" ) ) );
+            setToolTipText( i18n.text( CaseResources.valueOf( "case_status_" + value.toString().toLowerCase() + "_text" ) ) );
+
+            return this;
+         }
+      } );
       caseTable.setDefaultRenderer( SeparatorList.Separator.class, new DefaultTableCellRenderer()
       {
          @Override
@@ -515,19 +539,19 @@ public class CasesTableView
 
       long currentTime = System.currentTimeMillis();
       currentTime = currentTime / MILLIS_IN_DAY;
-      currentTime*= MILLIS_IN_DAY;
-      Date today = new Date(currentTime);
-      Date lateToday = new Date(currentTime+MILLIS_IN_DAY-1);
+      currentTime *= MILLIS_IN_DAY;
+      Date today = new Date( currentTime );
+      Date lateToday = new Date( currentTime + MILLIS_IN_DAY - 1 );
 
-      Calendar month = Calendar.getInstance(TimeZone.getTimeZone( "UTC" ));
+      Calendar month = Calendar.getInstance( TimeZone.getTimeZone( "UTC" ) );
       month.setTime( today );
       month.add( Calendar.MONTH, 1 );
 
-      Calendar week = Calendar.getInstance(TimeZone.getTimeZone( "UTC" ));
+      Calendar week = Calendar.getInstance( TimeZone.getTimeZone( "UTC" ) );
       week.setTime( today );
       week.add( Calendar.WEEK_OF_YEAR, 1 );
 
-      Calendar tomorrow = Calendar.getInstance(TimeZone.getTimeZone( "UTC" ));
+      Calendar tomorrow = Calendar.getInstance( TimeZone.getTimeZone( "UTC" ) );
       tomorrow.setTime( lateToday );
       tomorrow.add( Calendar.DATE, 1 );
 
@@ -547,7 +571,7 @@ public class CasesTableView
       else
          group = 0;
 
-      System.out.println(date+"="+group);
+      System.out.println( date + "=" + group );
       return group;
    }
 

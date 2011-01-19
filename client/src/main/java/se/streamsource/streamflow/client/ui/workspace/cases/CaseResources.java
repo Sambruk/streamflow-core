@@ -37,6 +37,7 @@ public enum CaseResources
    case_status_open_icon,
    case_status_draft_icon,
    case_status_closed_icon,
+   case_status_withresolution_closed_icon,
    case_status_on_hold_icon,
    case_status_draft_text,
    case_status_open_text,
