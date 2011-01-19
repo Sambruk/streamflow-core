@@ -27,7 +27,7 @@ import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
 
 import javax.swing.text.DefaultFormatterFactory;
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.DateFormat;
@@ -36,7 +36,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
-import static se.streamsource.streamflow.client.util.i18n.text;
+import static se.streamsource.streamflow.client.util.i18n.*;
 
 public class DatePanel
       extends AbstractFieldPanel
@@ -52,6 +52,7 @@ public class DatePanel
       setLayout( new BorderLayout() );
 
       datePicker = new JXDatePicker();
+      datePicker.setTimeZone( TimeZone.getTimeZone( "UTC" ) );
       final DateFormat dateFormat =  DateFormat.getDateInstance( DateFormat.SHORT );
       dateFormat.setTimeZone( TimeZone.getTimeZone( "UTC" ) );
 
