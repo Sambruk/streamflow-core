@@ -267,6 +267,9 @@ public class WorkspaceView
    @Action
    public void showSearch()
    {
+      if( popup != null )
+         killPopup();
+
       topLayout.show( topPanel, "search" );
 
       CasesTableView casesTable = obf.newObjectBuilder( CasesTableView.class ).
@@ -289,7 +292,7 @@ public class WorkspaceView
       }
 
       // request focus to enable accelerator keys for workspace buttons again
-//      this.requestFocus();
+      this.requestFocus();
    }
 
    @Action
