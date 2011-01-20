@@ -48,6 +48,7 @@ import se.streamsource.streamflow.web.domain.entity.form.FieldEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
 import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
+import se.streamsource.streamflow.web.domain.interaction.gtd.DueOn;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
@@ -142,11 +143,16 @@ public class CasePdfGenerator
       float tabStop = document.calculateTabStop( valueFontBold, bundle.getString( "title" ),
             bundle.getString( "createdOn" ), bundle.getString( "createdBy" ), bundle.getString( "owner" ),
             bundle.getString( "assignedTo" ), bundle.getString( "caseType" ), bundle.getString( "labels" ),
-            bundle.getString( "resolution" ) );
+            bundle.getString( "resolution" ), bundle.getString( "dueOn") );
 
       document.printLabelAndText( bundle.getString( "title" ) + ": ", valueFontBold, caze.getDescription(), valueFont, tabStop );
       document.printLabelAndText( bundle.getString( "createdOn" ) + ": ", valueFontBold,
             DateFormat.getDateTimeInstance( DateFormat.SHORT, DateFormat.SHORT, locale ).format( caze.createdOn().get() ), valueFont, tabStop );
+
+      if( ((DueOn.Data)caze).dueOn().get() != null )
+      {
+         document.printLabelAndText( bundle.getString( "dueOn" ) + ": ", valueFontBold, new SimpleDateFormat( bundle.getString("date_format" )).format( ((DueOn.Data)caze).dueOn().get()), valueFont, tabStop );
+      }
 
       Creator creator = caze.createdBy().get();
       if (creator != null)
@@ -237,7 +243,7 @@ public class CasePdfGenerator
             {
                public void receive( ContactValue value ) throws IOException
                {
-                  Map<String, String> nameValuePairs = new HashMap<String, String>( 10 );
+                  Map<String, String> nameValuePairs = new LinkedHashMap<String, String>( 10 );
                   if (!Strings.empty( value.name().get() ))
                      nameValuePairs.put( bundle.getString( "name" ), value.name().get() );
 
@@ -249,6 +255,9 @@ public class CasePdfGenerator
 
                   if (!value.emailAddresses().get().isEmpty() && !Strings.empty( value.emailAddresses().get().get( 0 ).emailAddress().get() ))
                      nameValuePairs.put( bundle.getString( "email" ), value.emailAddresses().get().get( 0 ).emailAddress().get() );
+
+                  if (!Strings.empty( value.contactId().get() ) )
+                     nameValuePairs.put( bundle.getString( "contactID" ), value.contactId().get() );
 
                   if (!Strings.empty( value.company().get() ))
                      nameValuePairs.put( bundle.getString( "company" ), value.company().get() );
