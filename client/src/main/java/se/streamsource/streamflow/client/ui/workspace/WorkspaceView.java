@@ -48,7 +48,11 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 
 /**
  * JAVADOC
@@ -248,7 +252,7 @@ public class WorkspaceView
    {
       if (popup == null)
       {
-         JFrame frame = (JFrame) SwingUtilities.getAncestorOfClass( JFrame.class, this );
+         final JFrame frame = (JFrame) SwingUtilities.getAncestorOfClass( JFrame.class, this );
          popup = new JDialog( frame );
          popup.setUndecorated( true );
          popup.setModal( false );
@@ -258,6 +262,18 @@ public class WorkspaceView
          popup.setBounds( (int) location.getX(), (int) location.getY() + selectContextButton.getHeight(), contextView.getWidth(), contextView.getHeight() );
          popup.pack();
          popup.setVisible( true );
+         frame.addComponentListener( new ComponentAdapter()
+         {
+            @Override
+            public void componentMoved( ComponentEvent e )
+            {
+               if(popup != null )
+               {
+                  killPopup();
+                  frame.removeComponentListener( this );
+               }
+            }
+         } );
       } else
       {
          killPopup();
