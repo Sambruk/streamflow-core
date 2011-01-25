@@ -259,6 +259,17 @@
             </analyzer>
         </fieldType>
 
+        <fieldType name="ntext" class="solr.TextField">
+            <analyzer type="index">
+                <tokenizer class="solr.NGramTokenizerFactory" minGramSize="3" maxGramSize="15"/>
+                <filter class="solr.LowerCaseFilterFactory"/>
+            </analyzer>
+            <analyzer type="query">
+                <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+                <filter class="solr.LowerCaseFilterFactory"/>
+            </analyzer>
+        </fieldType>
+
         <fieldType name="phone" class="solr.TextField" positionIncrementGap="100">
             <analyzer type="index">
                 <tokenizer class="se.streamsource.streamflow.web.infrastructure.index.SingleTokenTokenizerFactory"/>
@@ -527,6 +538,9 @@ via copyField further on in this schema  -->
      leading wildcard queries. -->
         <field name="text_rev" type="text_rev" indexed="true" stored="false" multiValued="true"/>
 
+        <!-- catchall field that supports search for part of word -->
+        <field name="ntext" type="ntext" indexed="true" stored="false" multiValued="true"/>
+
         <!-- non-tokenized version of manufacturer to make it easier to sort or group
 results by manufacturer.  copied from "manu" via copyField -->
         <!--<field name="manu_exact" type="string" indexed="true" stored="false"/> -->
@@ -596,6 +610,7 @@ or to add multiple fields to the same field for easier/faster searching.  -->
 
     <copyField source="description" dest="text"/>
     <copyField source="description" dest="description_for_sort"/>
+    <copyField source="description" dest="ntext"/>
     <copyField source="note" dest="text"/>
     <copyField source="caseId" dest="text"/>
 
