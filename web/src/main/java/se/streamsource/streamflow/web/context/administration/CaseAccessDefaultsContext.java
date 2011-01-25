@@ -45,11 +45,12 @@ public class CaseAccessDefaultsContext
       CaseAccessDefaults defaults = RoleMap.role( CaseAccessDefaults.class );
       LinksBuilder builder = new LinksBuilder(vbf);
       ResourceBundle bundle = ResourceBundle.getBundle( CaseAccessType.class.getName(), RoleMap.role( Locale.class ) );
+      ResourceBundle permissionTypeBundle = ResourceBundle.getBundle( PermissionType.class.getName(), RoleMap.role( Locale.class ) );
       for (PermissionType permissionType : PermissionType.values())
       {
          if (permissionType == PermissionType.read || permissionType == PermissionType.write)
          {
-            builder.addLink( permissionType.name() +":"+bundle.getString( defaults.getAccessType( permissionType ).name() ), permissionType.name(), "possibledefaultaccess", "possibledefaultaccess?permission="+permissionType.name(), "" );
+            builder.addLink(permissionTypeBundle.getString( permissionType.name() ) +" : "+bundle.getString( defaults.getAccessType( permissionType ).name() ), permissionType.name(), "possibledefaultaccess", "possibledefaultaccess?permission="+permissionType.name(), "" );
          }
       }
 
