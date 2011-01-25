@@ -27,6 +27,7 @@ import ca.odell.glazedlists.gui.TableFormat;
 import ca.odell.glazedlists.matchers.Matcher;
 import ca.odell.glazedlists.swing.EventComboBoxModel;
 import ca.odell.glazedlists.swing.EventJXTableModel;
+import ca.odell.glazedlists.swing.EventTableModel;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.decorator.HighlighterFactory;
@@ -411,7 +412,8 @@ public class CasesTableView
          public Component getTableCellRendererComponent( JTable table, Object value,
                                                          boolean isSelected, boolean hasFocus, int row, int column )
          {
-            boolean hasResolution = !Strings.empty( model.getEventList().get( ((JXTable) table).convertRowIndexToModel( row ) ).resolution().get() );
+            EventTableModel model = (EventTableModel)table.getModel();
+            boolean hasResolution = !Strings.empty( ((CaseTableValue)model.getElementAt( row )).resolution().get() );
             String iconName = hasResolution ? "case_status_withresolution_" + value.toString().toLowerCase() + "_icon"
                   : "case_status_" + value.toString().toLowerCase() + "_icon";
 
