@@ -81,7 +81,8 @@ public interface
                } else if (search.hasName( "label" ))
                {
                   StringBuilder labelQueryBuilder = new StringBuilder( "type:se.streamsource.streamflow.web.domain.entity.label.LabelEntity" );
-                  labelQueryBuilder.append( " description:" ).append( search.getQuotedValue() );
+                  labelQueryBuilder.append( " (description:" ).append( search.getQuotedValue() );
+                  labelQueryBuilder.append( " OR ntext:").append( search.getQuotedValue() ).append( ")" );
 
                   Query<LabelEntity> labels = module.queryBuilderFactory()
                         .newNamedQuery( LabelEntity.class, uow, "solrquery" ).setVariable( "query", labelQueryBuilder.toString() );
@@ -111,7 +112,8 @@ public interface
                } else if (search.hasName( "caseType" ))
                {
                   StringBuilder caseTypeQueryBuilder = new StringBuilder( "type:se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity" );
-                  caseTypeQueryBuilder.append( " description:" ).append( search.getQuotedValue() );
+                  caseTypeQueryBuilder.append( " (description:" ).append( search.getQuotedValue() );
+                  caseTypeQueryBuilder.append( " OR ntext:").append( search.getQuotedValue() ).append( ")" );
 
                   Query<CaseTypeEntity> caseTypes = module.queryBuilderFactory()
                         .newNamedQuery( CaseTypeEntity.class, uow, "solrquery" ).setVariable( "query", caseTypeQueryBuilder.toString() );
@@ -142,7 +144,8 @@ public interface
                } else if (search.hasName( "project" ))
                {
                   StringBuilder projectQueryBuilder = new StringBuilder( "type:se.streamsource.streamflow.web.domain.entity.project.ProjectEntity" );
-                  projectQueryBuilder.append( " description:" ).append( search.getQuotedValue() );
+                  projectQueryBuilder.append( " ( description:" ).append( search.getQuotedValue() );
+                  projectQueryBuilder.append( " OR ntext:").append( search.getQuotedValue() ).append( ")" );
 
                   Query<ProjectEntity> projects = module.queryBuilderFactory()
                         .newNamedQuery( ProjectEntity.class, uow, "solrquery" ).setVariable( "query", projectQueryBuilder.toString() );
@@ -173,7 +176,9 @@ public interface
                {
                   StringBuilder creatorQueryBuilder = new StringBuilder( "type:se.streamsource.streamflow.web.domain.entity.user.UserEntity" );
                   String userName = user.userName().get();
-                  creatorQueryBuilder.append( " (id:" ).append( getUserInSearch( search, userName ) ).append(" OR ").append( " description:" ).append( getUserInSearch( search, userName ) ).append( ")" );
+                  creatorQueryBuilder.append( " (id:" ).append( getUserInSearch( search, userName ) )
+                        .append(" OR ").append( " description:" ).append( getUserInSearch( search, userName ) )
+                        .append(" OR ").append( " ntext:" ).append( getUserInSearch( search, userName ) ).append( ")" );
 
                   Query<UserEntity> users = module.queryBuilderFactory()
                         .newNamedQuery( UserEntity.class, uow, "solrquery" ).setVariable( "query", creatorQueryBuilder.toString() );
@@ -212,7 +217,9 @@ public interface
 
                   StringBuilder creatorQueryBuilder = new StringBuilder( "type:se.streamsource.streamflow.web.domain.entity.user.UserEntity" );
                   String userName = user.userName().get();
-                  creatorQueryBuilder.append( " (id:" ).append( getUserInSearch( search, userName ) ).append(" OR ").append( " description:" ).append( getUserInSearch( search, userName ) ).append( ")" );
+                  creatorQueryBuilder.append( " (id:" ).append( getUserInSearch( search, userName ) )
+                        .append(" OR ").append( " description:" ).append( getUserInSearch( search, userName ) )
+                        .append(" OR ").append( " ntext:" ).append( getUserInSearch( search, userName ) ).append( ")" );
 
                   Query<UserEntity> users = module.queryBuilderFactory()
                         .newNamedQuery( UserEntity.class, uow, "solrquery" ).setVariable( "query", creatorQueryBuilder.toString() );
