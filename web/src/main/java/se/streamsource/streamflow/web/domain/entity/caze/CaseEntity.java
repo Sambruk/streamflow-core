@@ -32,8 +32,19 @@ import se.streamsource.streamflow.domain.structure.Notable;
 import se.streamsource.streamflow.domain.structure.Removable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
 import se.streamsource.streamflow.web.domain.entity.form.SubmittedFormsQueries;
-import se.streamsource.streamflow.web.domain.interaction.gtd.*;
-import se.streamsource.streamflow.web.domain.interaction.security.*;
+import se.streamsource.streamflow.web.domain.interaction.gtd.AssignIdSideEffect;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
+import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
+import se.streamsource.streamflow.web.domain.interaction.gtd.DueOn;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
+import se.streamsource.streamflow.web.domain.interaction.security.Authorization;
+import se.streamsource.streamflow.web.domain.interaction.security.CaseAccess;
+import se.streamsource.streamflow.web.domain.interaction.security.CaseAccessDefaults;
+import se.streamsource.streamflow.web.domain.interaction.security.CaseAccessType;
+import se.streamsource.streamflow.web.domain.interaction.security.PermissionType;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachments;
 import se.streamsource.streamflow.web.domain.structure.attachment.FormAttachments;
@@ -41,7 +52,12 @@ import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.Resolution;
 import se.streamsource.streamflow.web.domain.structure.casetype.Resolvable;
 import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
-import se.streamsource.streamflow.web.domain.structure.caze.*;
+import se.streamsource.streamflow.web.domain.structure.caze.Case;
+import se.streamsource.streamflow.web.domain.structure.caze.Closed;
+import se.streamsource.streamflow.web.domain.structure.caze.Contacts;
+import se.streamsource.streamflow.web.domain.structure.caze.History;
+import se.streamsource.streamflow.web.domain.structure.caze.SubCase;
+import se.streamsource.streamflow.web.domain.structure.caze.SubCases;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipant;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversations;
 import se.streamsource.streamflow.web.domain.structure.form.FormDrafts;
@@ -96,7 +112,7 @@ public interface CaseEntity
       DomainEntity
 {
    class AuthorizationMixin
-      implements Authorization
+         implements Authorization
    {
       @This
       CaseEntity aCase;
@@ -113,7 +129,7 @@ public interface CaseEntity
             case DRAFT:
             {
                // Creator has all permissions
-               return aCase.createdBy().get().equals(actor);
+               return aCase.createdBy().get().equals( actor );
             }
 
             case OPEN:
@@ -150,35 +166,40 @@ public interface CaseEntity
    }
 
    class TypedCaseAccessConcern
-      extends ConcernOf<TypedCase>
-      implements TypedCase
+         extends ConcernOf<TypedCase>
+         implements TypedCase
    {
-      @This CaseAccess caseAccess;
+      @This
+      CaseAccess caseAccess;
 
       public void changeCaseType( @Optional CaseType newCaseType )
       {
          next.changeCaseType( newCaseType );
 
-         // Transfer settings for security from new casetype to case
-         for (Map.Entry<PermissionType, CaseAccessType> entry : ((CaseAccessDefaults.Data)newCaseType).accessPermissionDefaults().get().entrySet())
+         if (newCaseType != null)
          {
-            caseAccess.changeAccess( entry.getKey(), entry.getValue() );
+            // Transfer settings for security from new casetype to case
+            for (Map.Entry<PermissionType, CaseAccessType> entry : ((CaseAccessDefaults.Data) newCaseType).accessPermissionDefaults().get().entrySet())
+            {
+               caseAccess.changeAccess( entry.getKey(), entry.getValue() );
+            }
          }
       }
    }
 
    abstract class OwnableCaseAccessConcern
-      extends ConcernOf<Ownable>
-      implements Ownable
+         extends ConcernOf<Ownable>
+         implements Ownable
    {
-      @This CaseAccess caseAccess;
+      @This
+      CaseAccess caseAccess;
 
       public void changeOwner( Owner owner )
       {
          next.changeOwner( owner );
 
          // Transfer settings for security from new owner to case
-         for (Map.Entry<PermissionType, CaseAccessType> entry : ((CaseAccessDefaults.Data)owner).accessPermissionDefaults().get().entrySet())
+         for (Map.Entry<PermissionType, CaseAccessType> entry : ((CaseAccessDefaults.Data) owner).accessPermissionDefaults().get().entrySet())
          {
             caseAccess.changeAccess( entry.getKey(), entry.getValue() );
          }
@@ -221,7 +242,7 @@ public interface CaseEntity
             attachments.removeAttachment( attachment );
          }
 
-         for( Attachment attachment : formAttachmentsData.formAttachments().toList() )
+         for (Attachment attachment : formAttachmentsData.formAttachments().toList())
          {
             formAttachments.removeFormAttachment( attachment );
          }
@@ -240,10 +261,11 @@ public interface CaseEntity
    }
 
    abstract class HistorySideEffect
-      extends ConcernOf<CaseEntity>
-      implements CaseEntity
+         extends ConcernOf<CaseEntity>
+         implements CaseEntity
    {
-      @This History history;
+      @This
+      History history;
 
       public void changeDescription( @Optional String newDescription )
       {
@@ -252,39 +274,48 @@ public interface CaseEntity
 
       public void assignTo( Assignee assignee )
       {
-         history.addHistoryComment( "Assigned to "+((Describable)assignee).getDescription(), RoleMap.role( ConversationParticipant.class ) );
+         history.addHistoryComment( "{assigned," + ((Describable) assignee).getDescription() +"}", RoleMap.role( ConversationParticipant.class ) );
       }
 
       public void unassign()
       {
+         history.addHistoryComment( "{unassigned}", RoleMap.role( ConversationParticipant.class ) );
       }
 
       public void open()
       {
+         history.addHistoryComment( "{opened}", RoleMap.role( ConversationParticipant.class ) );
       }
 
       public void close()
       {
+         history.addHistoryComment( "{closed}", RoleMap.role( ConversationParticipant.class ) );
       }
 
       public void onHold()
       {
+         history.addHistoryComment( "{paused}", RoleMap.role( ConversationParticipant.class ) );
       }
 
       public void reopen()
       {
+         history.addHistoryComment( "{reopened}", RoleMap.role( ConversationParticipant.class ) );
       }
 
       public void resume()
       {
+         history.addHistoryComment( "{resumed}", RoleMap.role( ConversationParticipant.class ) );
       }
 
       public void resolve( Resolution resolution )
       {
+         history.addHistoryComment( "{resolved," + resolution.getDescription()+"}", RoleMap.role( ConversationParticipant.class ) );
       }
 
       public void changeCaseType( @Optional CaseType newCaseType )
       {
+         history.addHistoryComment( newCaseType != null ? "{changedCaseType," + newCaseType.getDescription() +"}"
+               : "{removedCaseType}", RoleMap.role( ConversationParticipant.class ) );
       }
    }
 }
