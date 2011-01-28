@@ -91,7 +91,7 @@ public class MessagesContext
       {
          String[] tokens = message.substring(1,message.length()-1).split( "," );
          String form = bundle.getString( tokens[0] );
-         message = MessageFormat.format( form, tokens.length > 1 ? tokens[1] : "" );
+         message = new MessageFormat( form, locale ).format( form, tokens.length > 1 ? tokens[1] : "" );
       }
       return message;
    }
