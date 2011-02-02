@@ -70,7 +70,7 @@ public class SurfaceFormDraftContext
       FieldSubmissionValue value = formDraft.getFieldValue( EntityReference.parseEntityReference( fieldId.string().get() ) );
 
       ValueBuilder<FieldValueDTO> builder = vbf.newValueBuilder( FieldValueDTO.class );
-      builder.prototype().field().set( value.field().get().field().get() );
+      builder.prototype().value().set( value.value().get() == null ? "" : value.value().get() );
       builder.prototype().value().set( value.value().get() );
       return builder.newInstance();
    }
