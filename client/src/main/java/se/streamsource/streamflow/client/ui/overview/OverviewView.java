@@ -17,7 +17,11 @@
 
 package se.streamsource.streamflow.client.ui.overview;
 
-import ca.odell.glazedlists.*;
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.FilterList;
+import ca.odell.glazedlists.SeparatorList;
+import ca.odell.glazedlists.SortedList;
+import ca.odell.glazedlists.TextFilterator;
 import ca.odell.glazedlists.gui.TableFormat;
 import ca.odell.glazedlists.swing.EventListModel;
 import ca.odell.glazedlists.swing.TextComponentMatcherEditor;
@@ -27,7 +31,6 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.ui.ContextItem;
 import se.streamsource.streamflow.client.ui.ContextItemGroupComparator;
@@ -39,10 +42,19 @@ import se.streamsource.streamflow.client.ui.workspace.table.CasesView;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.SeparatorContextItemListCellRenderer;
 
-import javax.swing.*;
+import javax.swing.AbstractAction;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.KeyStroke;
+import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.util.Comparator;
@@ -135,13 +147,13 @@ public class OverviewView
                {
                   ContextItem contextItem = (ContextItem) list.getSelectedValue();
                   TableFormat tableFormat;
-                  if (contextItem.getRelation().equals(Icons.assign.name()))
+                  /*if (contextItem.getRelation().equals(Icons.assign.name()))
                   {
                      tableFormat = new OverviewAssignmentsCaseTableFormatter();
                   } else
-                  {
+                  {*/
                      tableFormat = new CasesTableFormatter();
-                  }
+                  //}
                   CasesTableView casesTable = obf.newObjectBuilder( CasesTableView.class ).use( contextItem.getClient(), tableFormat ).newInstance();
                   casesTable.getCaseTable().getSelectionModel().addListSelectionListener( new CaseSelectionListener() );
 
@@ -186,7 +198,7 @@ public class OverviewView
                   int selectedRow = caseTable.getSelectedRow();
                   if (selectedRow != -1)
                   {
-                     String href = (String) caseTable.getModel().getValueAt( caseTable.convertRowIndexToModel(selectedRow), 5 );
+                     String href = (String) caseTable.getModel().getValueAt( caseTable.convertRowIndexToModel(selectedRow), 8 );
                      casesView.showCase( client.getClient( href) );
                   }
                }

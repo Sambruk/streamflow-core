@@ -38,25 +38,48 @@ import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.dci.value.link.TitledLinkValue;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
-import se.streamsource.streamflow.client.util.*;
+import se.streamsource.streamflow.client.util.CommandTask;
+import se.streamsource.streamflow.client.util.EventListSynch;
+import se.streamsource.streamflow.client.util.LinkListCellRenderer;
+import se.streamsource.streamflow.client.util.RefreshWhenShowing;
+import se.streamsource.streamflow.client.util.Refreshable;
+import se.streamsource.streamflow.client.util.WrapLayout;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
 
-import javax.swing.*;
+import javax.swing.ActionMap;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.ComboBoxEditor;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JTextField;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
 
-import static se.streamsource.streamflow.client.util.i18n.text;
+import static se.streamsource.streamflow.client.util.i18n.*;
 
 /**
  * JAVADOC
@@ -131,7 +154,7 @@ public class SearchView
       options.add( am.get( "handle" ) );
 
       search = new JPanel(new WrapLayout(FlowLayout.LEFT));
-      search.add( new JLabel( "Search:" ) );
+      search.add( new JLabel( i18n.text( WorkspaceResources.search ) + ":" ) );
       search.add(searchField);
       search.add( Box.createHorizontalStrut( 10 ) );
       search.add( new JButton( am.get( "add" ) ) );
@@ -139,7 +162,9 @@ public class SearchView
       {
          Box searchBox = Box.createHorizontalBox();
          JLabel label = new JLabel( i18n.text( WorkspaceResources.status ) );
-         status = new JComboBox(new String[]{CaseStates.OPEN.name(), CaseStates.ON_HOLD.name(), CaseStates.CLOSED.name()});
+         status = new JComboBox( new CaseStatesComboBoxModel(
+               new String[]{CaseStates.OPEN.name(), CaseStates.ON_HOLD.name(), CaseStates.CLOSED.name()} ) );
+               //new String[]{CaseStates.OPEN.name(), CaseStates.ON_HOLD.name(), CaseStates.CLOSED.name()});
          label.setForeground( Color.gray );
          searchBox.add( label );
          searchBox.add( status );
@@ -247,7 +272,7 @@ public class SearchView
       {
          Box searchBox = Box.createHorizontalBox();
          JLabel label = new JLabel( i18n.text( WorkspaceResources.created_on ) );
-         createdOn = new JButton("Choose date");
+         createdOn = new JButton(text( WorkspaceResources.choose_date ) );
          createdOn.addActionListener( am.get( "createdOn" ) );
          createdOnPicker.setFirstDayOfWeek( Calendar.MONDAY );
          createdOnPicker.setTraversable( true );
@@ -273,11 +298,11 @@ public class SearchView
 //      add( new JButton( new OptionsAction( options ) ));
 
       searchAddmenu = new JPopupMenu();
-      addSearch( "Status" );
-      addSearch( "Labels" );
-      addSearch( "Assignees" );
-      addSearch( "Projects" );
-      addSearch( "Created on" );
+      addSearch( text( WorkspaceResources.status ) );
+      addSearch( text( WorkspaceResources.label ) );
+      addSearch( text( WorkspaceResources.assignee ) );
+      addSearch( text( WorkspaceResources.project ) );
+      addSearch( text( WorkspaceResources.created_on ) );
 
       new RefreshWhenShowing( this, model);
       new RefreshWhenShowing( this, new Refreshable()
@@ -305,7 +330,7 @@ public class SearchView
    @org.jdesktop.application.Action
    public void createdOn(ActionEvent event)
    {
-      dialogs.showOkDialog( (Component) event.getSource(), createdOnPicker);
+      dialogs.showOkCancelHelpDialog( (Component) event.getSource(), createdOnPicker );
       if (!createdOnPicker.getSelection().isEmpty())
       {
          DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
@@ -352,7 +377,7 @@ public class SearchView
       {
          if (status.isShowing() && status.getSelectedIndex() != -1)
          {
-            searchString+=" status:"+status.getSelectedItem().toString();
+            searchString+=" status:"+ ((CaseStatesComboBoxModel)status.getModel()).getSelectedStatus();
          }
 
          if (labels.isShowing() && labels.getSelectedIndex() != -1)
@@ -452,5 +477,25 @@ public class SearchView
          link = null;
          this.setText( "" );
       }
+   }
+
+   class CaseStatesComboBoxModel
+      extends DefaultComboBoxModel
+   {
+      Map map = new HashMap();
+
+      public CaseStatesComboBoxModel( String[] items )
+      {
+         for( String item : items )
+         {
+            String translation = text( WorkspaceResources.valueOf( item ) );
+            map.put( translation, item );
+            this.addElement( translation );
+         }
+      }
+
+      public Object getSelectedStatus() {
+        return map.get( super.getSelectedItem() );
+    }
    }
 }

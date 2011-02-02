@@ -25,8 +25,8 @@ import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
-import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.dci.value.StringValue;
+import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.domain.contact.Contactable;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.resource.conversation.MessageDTO;
@@ -35,6 +35,10 @@ import se.streamsource.streamflow.web.domain.entity.conversation.MessageEntity;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipant;
 import se.streamsource.streamflow.web.domain.structure.conversation.Message;
 import se.streamsource.streamflow.web.domain.structure.conversation.Messages;
+
+import java.text.MessageFormat;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 /**
  * JAVADOC
@@ -59,7 +63,7 @@ public class MessagesContext
                ? sender
                : EntityReference.getEntityReference( ((MessageEntity) message).sender().get() ).identity() );
          builder.prototype().createdOn().set( ((MessageEntity) message).createdOn().get() );
-         builder.prototype().text().set( ((MessageEntity) message).body().get() );
+         builder.prototype().text().set( translate( ( (MessageEntity) message).body().get(),RoleMap.role( Locale.class ) ) );
          builder.prototype().href().set( ((MessageEntity) message).identity().get() );
          builder.prototype().id().set( ((MessageEntity) message).identity().get() );
 
@@ -78,5 +82,17 @@ public class MessagesContext
       {
          throw new ResourceException( Status.CLIENT_ERROR_FORBIDDEN, e.getMessage() );
       }
+   }
+
+   private String translate( String message, Locale locale )
+   {
+      ResourceBundle bundle = ResourceBundle.getBundle( MessagesContext.class.getName(), locale );
+      if( message.startsWith("{") && message.endsWith("}") )
+      {
+         String[] tokens = message.substring(1,message.length()-1).split( "," );
+         String form = bundle.getString( tokens[0] );
+         message = new MessageFormat( form, locale ).format( form, tokens.length > 1 ? tokens[1] : "" );
+      }
+      return message;
    }
 }

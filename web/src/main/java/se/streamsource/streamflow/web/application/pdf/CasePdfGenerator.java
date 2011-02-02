@@ -25,7 +25,11 @@ import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.io.*;
+import org.qi4j.api.io.Input;
+import org.qi4j.api.io.Output;
+import org.qi4j.api.io.Receiver;
+import org.qi4j.api.io.Sender;
+import org.qi4j.api.io.Transforms;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.util.DateFunctions;
 import org.qi4j.api.value.ValueBuilderFactory;
@@ -41,33 +45,47 @@ import se.streamsource.streamflow.util.Strings;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseDescriptor;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseOutput;
 import se.streamsource.streamflow.web.domain.entity.form.FieldEntity;
-import se.streamsource.streamflow.web.domain.interaction.gtd.*;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
+import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
+import se.streamsource.streamflow.web.domain.interaction.gtd.DueOn;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
+import se.streamsource.streamflow.web.domain.structure.casetype.Resolution;
+import se.streamsource.streamflow.web.domain.structure.casetype.Resolvable;
 import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversation;
 import se.streamsource.streamflow.web.domain.structure.conversation.Message;
 import se.streamsource.streamflow.web.domain.structure.conversation.Messages;
 import se.streamsource.streamflow.web.domain.structure.created.Creator;
-import se.streamsource.streamflow.web.domain.structure.label.*;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
+import se.streamsource.streamflow.web.domain.structure.label.Labelable;
 import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
 
 import javax.swing.text.MutableAttributeSet;
 import javax.swing.text.html.HTML;
 import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.parser.ParserDelegator;
-import java.awt.*;
+import java.awt.Color;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.net.URI;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.ResourceBundle;
 
 /**
  * A specialisation of CaseOutput that is responsible for exporting a case in PDF format;
@@ -124,11 +142,17 @@ public class CasePdfGenerator
 
       float tabStop = document.calculateTabStop( valueFontBold, bundle.getString( "title" ),
             bundle.getString( "createdOn" ), bundle.getString( "createdBy" ), bundle.getString( "owner" ),
-            bundle.getString( "assignedTo" ), bundle.getString( "caseType" ), bundle.getString( "labels" ) );
+            bundle.getString( "assignedTo" ), bundle.getString( "caseType" ), bundle.getString( "labels" ),
+            bundle.getString( "resolution" ), bundle.getString( "dueOn") );
 
       document.printLabelAndText( bundle.getString( "title" ) + ": ", valueFontBold, caze.getDescription(), valueFont, tabStop );
       document.printLabelAndText( bundle.getString( "createdOn" ) + ": ", valueFontBold,
             DateFormat.getDateTimeInstance( DateFormat.SHORT, DateFormat.SHORT, locale ).format( caze.createdOn().get() ), valueFont, tabStop );
+
+      if( ((DueOn.Data)caze).dueOn().get() != null )
+      {
+         document.printLabelAndText( bundle.getString( "dueOn" ) + ": ", valueFontBold, new SimpleDateFormat( bundle.getString("date_format" )).format( ((DueOn.Data)caze).dueOn().get()), valueFont, tabStop );
+      }
 
       Creator creator = caze.createdBy().get();
       if (creator != null)
@@ -153,6 +177,13 @@ public class CasePdfGenerator
       if (caseType != null)
       {
          document.printLabelAndText( bundle.getString( "caseType" ) + ": ", valueFontBold, ((Describable) caseType).getDescription(), valueFont, tabStop );
+      }
+
+      Resolution resolution = ((Resolvable.Data) caze).resolution().get();
+
+      if( resolution != null )
+      {
+         document.printLabelAndText( bundle.getString( "resolution" ) + ":", valueFontBold, ((Describable)resolution).getDescription(), valueFont, tabStop );
       }
 
       List<Label> labels = ((Labelable.Data) caze).labels().toList();
@@ -212,7 +243,7 @@ public class CasePdfGenerator
             {
                public void receive( ContactValue value ) throws IOException
                {
-                  Map<String, String> nameValuePairs = new HashMap<String, String>( 10 );
+                  Map<String, String> nameValuePairs = new LinkedHashMap<String, String>( 10 );
                   if (!Strings.empty( value.name().get() ))
                      nameValuePairs.put( bundle.getString( "name" ), value.name().get() );
 
@@ -224,6 +255,9 @@ public class CasePdfGenerator
 
                   if (!value.emailAddresses().get().isEmpty() && !Strings.empty( value.emailAddresses().get().get( 0 ).emailAddress().get() ))
                      nameValuePairs.put( bundle.getString( "email" ), value.emailAddresses().get().get( 0 ).emailAddress().get() );
+
+                  if (!Strings.empty( value.contactId().get() ) )
+                     nameValuePairs.put( bundle.getString( "contactID" ), value.contactId().get() );
 
                   if (!Strings.empty( value.company().get() ))
                      nameValuePairs.put( bundle.getString( "company" ), value.company().get() );
@@ -351,7 +385,7 @@ public class CasePdfGenerator
                   AttachmentFieldSubmission attachment = vbf.newValueFromJSON( AttachmentFieldSubmission.class, field.value().get() );
                   fieldKeyValues.put( fieldName.getDescription(), attachment.name().get() );
 
-               } else if ( fieldValue instanceof DateFieldValue)
+               } else if ( fieldValue instanceof DateFieldValue && !Strings.empty( field.value().get() ) )
                {
                  fieldKeyValues.put( fieldName.getDescription(), new SimpleDateFormat( bundle.getString("date_format" ))
                        .format( DateFunctions.fromString( field.value().get() ) ) );

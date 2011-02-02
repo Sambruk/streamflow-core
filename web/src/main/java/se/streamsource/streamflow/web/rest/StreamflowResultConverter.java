@@ -44,6 +44,7 @@ import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
+import se.streamsource.streamflow.web.domain.structure.casetype.Resolution;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.created.Creator;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
@@ -195,7 +196,7 @@ public class StreamflowResultConverter
       TableQuery query = (TableQuery) arguments[0];
       TableBuilder table = new TableBuilder( module.valueBuilderFactory() );
 
-      String select = query.select().equals( "*" ) ? "description,created,creator,due,caseid,href,owner,status,casetype,assigned,hascontacts,hasconversations,hasattachments,hassubmittedforms,labels,subcases,parent" : query.select();
+      String select = query.select().equals( "*" ) ? "description,created,creator,due,caseid,href,owner,status,casetype,resolution,assigned,hascontacts,hasconversations,hasattachments,hassubmittedforms,labels,subcases,parent" : query.select();
       String[] columns = select.split( "[, ]" );
 
       // Columns
@@ -224,7 +225,7 @@ public class StreamflowResultConverter
          try
          {
             table.row();
-// "description,created,creator,caseid,href,owner,status,casetype,assigned,hascontacts,hasconversations,hasattachments,hassubmittedforms,labels,subcases,parent"
+// "description,created,creator,caseid,href,owner,status,casetype,resolution,assigned,hascontacts,hasconversations,hasattachments,hassubmittedforms,labels,subcases,parent"
             for (String column : columns)
             {
                if (column.equals( "description" ))
@@ -258,6 +259,10 @@ public class StreamflowResultConverter
                {
                   CaseType caseType = caseEntity.caseType().get();
                   table.cell( caseType, caseType == null ? null : caseType.getDescription() );
+               } else if( column.equals( "resolution") )
+               {
+                  Resolution resolution = caseEntity.resolution().get();
+                  table.cell( resolution, resolution == null ? null : resolution.getDescription() );
                } else if (column.equals( "assigned" ))
                {
                   Assignee assignee = caseEntity.assignedTo().get();

@@ -20,6 +20,7 @@ package se.streamsource.streamflow.client.ui.workspace.table;
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseResources;
 import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
+import se.streamsource.streamflow.util.Strings;
 
 import javax.swing.*;
 
@@ -34,10 +35,14 @@ public class CaseStatusLabel
       setHorizontalAlignment( SwingConstants.CENTER );
    }
 
-   public void setStatus(CaseStates status)
+   public void setStatus(CaseStates status, String resolution)
    {
-      setIcon( i18n.icon( CaseResources.valueOf( "case_status_" + status.toString().toLowerCase() + "_icon" ),
-            i18n.ICON_16 ) );
+      boolean withResolution = !Strings.empty( resolution );
+      String iconName = withResolution ? "case_status_withresolution_" + status.toString().toLowerCase() + "_icon"
+            : "case_status_" + status.toString().toLowerCase() + "_icon";
+
+      setIcon( i18n.icon( CaseResources.valueOf( iconName ), i18n.ICON_16 ) );
+
       setName( i18n.text( CaseResources.valueOf("case_status_"+status.toString().toLowerCase()+"_text" ) ));
       setToolTipText( i18n.text( CaseResources.valueOf("case_status_"+status.toString().toLowerCase()+"_text" ) ) );
    }

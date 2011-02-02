@@ -16,13 +16,18 @@
 
 package se.streamsource.streamflow.client.ui.workspace.table;
 
-import ca.odell.glazedlists.*;
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.FilterList;
+import ca.odell.glazedlists.SeparatorList;
+import ca.odell.glazedlists.SortedList;
 import ca.odell.glazedlists.event.ListEvent;
 import ca.odell.glazedlists.event.ListEventListener;
 import ca.odell.glazedlists.gui.TableFormat;
 import ca.odell.glazedlists.matchers.Matcher;
 import ca.odell.glazedlists.swing.EventComboBoxModel;
 import ca.odell.glazedlists.swing.EventJXTableModel;
+import ca.odell.glazedlists.swing.EventTableModel;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.decorator.HighlighterFactory;
@@ -35,25 +40,58 @@ import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.client.ui.workspace.cases.CaseResources;
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseTableValue;
-import se.streamsource.streamflow.client.util.*;
+import se.streamsource.streamflow.client.util.CommandTask;
+import se.streamsource.streamflow.client.util.EventListSynch;
+import se.streamsource.streamflow.client.util.RefreshWhenShowing;
+import se.streamsource.streamflow.client.util.WrapLayout;
+import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.client.util.table.SeparatorTable;
 import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
+import se.streamsource.streamflow.util.Strings;
 
-import javax.swing.*;
+import javax.swing.ActionMap;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.KeyboardFocusManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.TimeZone;
 
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withNames;
+import static se.streamsource.streamflow.client.util.i18n.*;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 
 /**
  * Base class for all views of case lists.
@@ -62,7 +100,7 @@ public class CasesTableView
       extends JPanel
       implements TransactionListener
 {
-   public static final int MILLIS_IN_DAY = (1000*60*60*24);
+   public static final int MILLIS_IN_DAY = (1000 * 60 * 60 * 24);
    public static final WorkspaceResources[] dueGroups = {WorkspaceResources.overdue, WorkspaceResources.duetoday, WorkspaceResources.duetomorrow, WorkspaceResources.duenextweek, WorkspaceResources.duenextmonth, WorkspaceResources.later, WorkspaceResources.noduedate};
 
    private Matcher<CaseTableValue> labelMatcher = new Matcher<CaseTableValue>()
@@ -216,18 +254,18 @@ public class CasesTableView
 */
 
       filters = new JPanel( new WrapLayout( FlowLayout.LEFT ) );
-      filters.add( new JLabel( i18n.text(WorkspaceResources.filter ) ));
+      filters.add( new JLabel( text( WorkspaceResources.filter ) ) );
       filters.add( new JButton( am.get( "add" ) ) );
       filters.setBorder( BorderFactory.createEtchedBorder() );
       {
          labels = new JComboBox( new EventComboBoxModel<String>( labelList ) );
          labels.setPreferredSize( new Dimension( 150, (int) labels.getPreferredSize().getHeight() ) );
-         labelList.add( i18n.text( WorkspaceResources.all ) );
+         labelList.add( text( WorkspaceResources.all ) );
          labels.setSelectedIndex( 0 );
          labels.addActionListener( am.get( "labels" ) );
 
          Box labelBox = Box.createHorizontalBox();
-         JLabel comp = new JLabel( i18n.text( WorkspaceResources.label ), JLabel.CENTER );
+         JLabel comp = new JLabel( text( WorkspaceResources.label ), JLabel.CENTER );
          comp.setForeground( Color.gray );
          labelBox.add( comp );
          labelBox.add( labels );
@@ -238,12 +276,12 @@ public class CasesTableView
       {
          assignees = new JComboBox( new EventComboBoxModel<String>( assigneeList ) );
          assignees.setPreferredSize( new Dimension( 150, (int) assignees.getPreferredSize().getHeight() ) );
-         assigneeList.add( i18n.text( WorkspaceResources.all ) );
+         assigneeList.add( text( WorkspaceResources.all ) );
          assignees.setSelectedIndex( 0 );
          assignees.addActionListener( am.get( "assignee" ) );
 
          Box assigneeBox = Box.createHorizontalBox();
-         JLabel comp = new JLabel( i18n.text( WorkspaceResources.assignee ), JLabel.CENTER );
+         JLabel comp = new JLabel( text( WorkspaceResources.assignee ), JLabel.CENTER );
          comp.setForeground( Color.gray );
          assigneeBox.add( comp );
          assigneeBox.add( assignees );
@@ -254,12 +292,12 @@ public class CasesTableView
       {
          projects = new JComboBox( new EventComboBoxModel<String>( projectList ) );
          projects.setPreferredSize( new Dimension( 150, (int) projects.getPreferredSize().getHeight() ) );
-         projectList.add( i18n.text( WorkspaceResources.all ) );
+         projectList.add( text( WorkspaceResources.all ) );
          projects.setSelectedIndex( 0 );
          projects.addActionListener( am.get( "project" ) );
 
          Box projectBox = Box.createHorizontalBox();
-         JLabel comp = new JLabel( i18n.text( WorkspaceResources.project ), JLabel.CENTER );
+         JLabel comp = new JLabel( text( WorkspaceResources.project ), JLabel.CENTER );
          comp.setForeground( Color.gray );
          projectBox.add( comp );
          projectBox.add( projects );
@@ -268,11 +306,15 @@ public class CasesTableView
       }
 
       {
-         sorting = new JComboBox( new String[]{"None", "Created on", "Description", "Due date"} );
+         sorting = new JComboBox( new String[]{
+               text( WorkspaceResources.none ),
+               text( WorkspaceResources.created_on ),
+               text( WorkspaceResources.description_label ),
+               text( WorkspaceResources.duedate_column_header )} );
          sorting.addActionListener( am.get( "sorting" ) );
 
          Box sortingBox = Box.createHorizontalBox();
-         JLabel comp = new JLabel( i18n.text( WorkspaceResources.sorting ), JLabel.CENTER );
+         JLabel comp = new JLabel( text( WorkspaceResources.sorting ), JLabel.CENTER );
          comp.setForeground( Color.gray );
          sortingBox.add( comp );
          sortingBox.add( sorting );
@@ -281,11 +323,16 @@ public class CasesTableView
       }
 
       {
-         grouping = new JComboBox( new String[]{"None", "Case type", "Assignee", "Project", "Due on"} );
+         grouping = new JComboBox( new String[]{
+               text( WorkspaceResources.none ),
+               text( WorkspaceResources.case_type ),
+               text( WorkspaceResources.assignee ),
+               text( WorkspaceResources.project ),
+               text( WorkspaceResources.due_on_label )} );
          grouping.addActionListener( am.get( "grouping" ) );
 
          Box groupingBox = Box.createHorizontalBox();
-         JLabel comp = new JLabel( i18n.text( WorkspaceResources.grouping ), JLabel.RIGHT );
+         JLabel comp = new JLabel( text( WorkspaceResources.grouping ), JLabel.RIGHT );
          comp.setForeground( Color.gray );
          groupingBox.add( comp );
          groupingBox.add( grouping );
@@ -294,11 +341,11 @@ public class CasesTableView
       }
 
       filterAddmenu = new JPopupMenu();
-      addFilter( "Labels" );
-      addFilter( "Assignees" );
-      addFilter( "Projects" );
-      addFilter( "Sorting" );
-      addFilter( "Grouping" );
+      addFilter( text( WorkspaceResources.label ) );
+      addFilter( text( WorkspaceResources.assignee ) );
+      addFilter( text( WorkspaceResources.project ) );
+      addFilter( text( WorkspaceResources.sorting ) );
+      addFilter( text( WorkspaceResources.grouping ) );
 
       labels();
 
@@ -359,7 +406,30 @@ public class CasesTableView
             return renderer;
          }
       } );
-      caseTable.setDefaultRenderer( CaseStates.class, new CaseStatusTableCellRenderer() );
+      caseTable.setDefaultRenderer( CaseStates.class, new DefaultTableCellRenderer()
+      {
+         @Override
+         public Component getTableCellRendererComponent( JTable table, Object value,
+                                                         boolean isSelected, boolean hasFocus, int row, int column )
+         {
+            EventTableModel model = (EventTableModel)table.getModel();
+            boolean hasResolution = !Strings.empty( ((CaseTableValue)model.getElementAt( row )).resolution().get() );
+            String iconName = hasResolution ? "case_status_withresolution_" + value.toString().toLowerCase() + "_icon"
+                  : "case_status_" + value.toString().toLowerCase() + "_icon";
+
+            JLabel renderedComponent = (JLabel) super.getTableCellRendererComponent( table, value, isSelected, hasFocus,
+                  row, column );
+            renderedComponent.setHorizontalAlignment( SwingConstants.CENTER );
+            setText( null );
+
+            setIcon( i18n.icon( CaseResources.valueOf( iconName ),
+                  i18n.ICON_16 ) );
+            setName( i18n.text( CaseResources.valueOf( "case_status_" + value.toString().toLowerCase() + "_text" ) ) );
+            setToolTipText( i18n.text( CaseResources.valueOf( "case_status_" + value.toString().toLowerCase() + "_text" ) ) );
+
+            return this;
+         }
+      } );
       caseTable.setDefaultRenderer( SeparatorList.Separator.class, new DefaultTableCellRenderer()
       {
          @Override
@@ -378,7 +448,7 @@ public class CasesTableView
                   value = ((CaseTableValue) ((SeparatorList.Separator) separator).first()).owner().get();
                   break;
                case 4:
-                  value = i18n.text(dueGroups[dueOnGroup(((CaseTableValue) ((SeparatorList.Separator) separator).first()).dueOn().get())]);
+                  value = text( dueGroups[dueOnGroup( ((CaseTableValue) ((SeparatorList.Separator) separator).first()).dueOn().get() )] );
                   break;
             }
             Component component = super.getTableCellRendererComponent( table, value, isSelected, hasFocus, row, column );
@@ -426,9 +496,9 @@ public class CasesTableView
             Collections.sort( sortedLabels );
             Collections.sort( sortedAssignees );
             Collections.sort( sortedProjects );
-            sortedLabels.add( 0, i18n.text( WorkspaceResources.all ) );
-            sortedAssignees.add( 0, i18n.text( WorkspaceResources.all ) );
-            sortedProjects.add( 0, i18n.text( WorkspaceResources.all ) );
+            sortedLabels.add( 0, text( WorkspaceResources.all ) );
+            sortedAssignees.add( 0, text( WorkspaceResources.all ) );
+            sortedProjects.add( 0, text( WorkspaceResources.all ) );
 
             EventListSynch.synchronize( sortedLabels, labelList );
             EventListSynch.synchronize( sortedAssignees, assigneeList );
@@ -471,19 +541,19 @@ public class CasesTableView
 
       long currentTime = System.currentTimeMillis();
       currentTime = currentTime / MILLIS_IN_DAY;
-      currentTime*= MILLIS_IN_DAY;
-      Date today = new Date(currentTime);
-      Date lateToday = new Date(currentTime+MILLIS_IN_DAY-1);
+      currentTime *= MILLIS_IN_DAY;
+      Date today = new Date( currentTime );
+      Date lateToday = new Date( currentTime + MILLIS_IN_DAY - 1 );
 
-      Calendar month = Calendar.getInstance(TimeZone.getTimeZone( "UTC" ));
+      Calendar month = Calendar.getInstance( TimeZone.getTimeZone( "UTC" ) );
       month.setTime( today );
       month.add( Calendar.MONTH, 1 );
 
-      Calendar week = Calendar.getInstance(TimeZone.getTimeZone( "UTC" ));
+      Calendar week = Calendar.getInstance( TimeZone.getTimeZone( "UTC" ) );
       week.setTime( today );
       week.add( Calendar.WEEK_OF_YEAR, 1 );
 
-      Calendar tomorrow = Calendar.getInstance(TimeZone.getTimeZone( "UTC" ));
+      Calendar tomorrow = Calendar.getInstance( TimeZone.getTimeZone( "UTC" ) );
       tomorrow.setTime( lateToday );
       tomorrow.add( Calendar.DATE, 1 );
 
@@ -503,7 +573,7 @@ public class CasesTableView
       else
          group = 0;
 
-      System.out.println(date+"="+group);
+      System.out.println( date + "=" + group );
       return group;
    }
 
