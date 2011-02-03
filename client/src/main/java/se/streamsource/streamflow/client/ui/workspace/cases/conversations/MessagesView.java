@@ -52,7 +52,7 @@ public class MessagesView extends JPanel
    private JPanel sendPanel;
    private JTextPane newMessage;
 
-   private Color[] messageColors = new Color[]{Color.lightGray.brighter(), Color.yellow.brighter()};
+   private Color[] messageColors = new Color[]{Color.lightGray.brighter(), new Color(238,244,253)};
 
    public MessagesView(@Service ApplicationContext context, @Uses CommandQueryClient client, @Structure ObjectBuilderFactory obf)
    {

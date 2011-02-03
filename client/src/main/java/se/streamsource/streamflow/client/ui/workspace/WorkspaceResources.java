@@ -49,6 +49,7 @@ public enum WorkspaceResources
    general_tab,
    forms_tab,
    conversations_tab,
+   history_tab,
    contacts_tab,
    attachments_tab,
 
