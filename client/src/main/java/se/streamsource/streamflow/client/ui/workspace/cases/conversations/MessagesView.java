@@ -273,6 +273,7 @@ public class MessagesView extends JPanel implements TransactionListener
    @Action
    public void closeMessageDetails()
    {
+      messageTable.getSelectionModel().clearSelection();
       detailMessagePanel.remove(showPanel);
       ((CardLayout) detailMessagePanel.getLayout()).show(detailMessagePanel, "INITIAL");
       showMessage.setText(null);
