@@ -279,6 +279,8 @@ public interface CaseEntity
 
       public void unassign()
       {
+         //TODO The problem here is that unassign happens regardless, if the case was currently assigned to a user or not
+         // maybe history should be handled as a concern instead of a sideffect
          history.addHistoryComment( "{unassigned}", RoleMap.role( ConversationParticipant.class ) );
       }
 
@@ -316,6 +318,17 @@ public interface CaseEntity
       {
          history.addHistoryComment( newCaseType != null ? "{changedCaseType," + newCaseType.getDescription() +"}"
                : "{removedCaseType}", RoleMap.role( ConversationParticipant.class ) );
+      }
+
+      public void changeOwner( Owner owner )
+      {
+         history.addHistoryComment( "{changedOwner," + ((Project)owner).getDescription() +"}"
+               , RoleMap.role( ConversationParticipant.class ) );
+      }
+
+      public void createSubCase()
+      {
+         history.addHistoryComment( "{createdSubCase}", RoleMap.role( ConversationParticipant.class ) );
       }
    }
 }
