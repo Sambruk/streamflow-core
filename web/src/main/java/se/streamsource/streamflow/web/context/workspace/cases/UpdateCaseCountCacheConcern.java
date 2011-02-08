@@ -24,9 +24,11 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.EntityValue;
+import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
 import se.streamsource.streamflow.web.infrastructure.caching.Caches;
 import se.streamsource.streamflow.web.infrastructure.caching.Caching;
 import se.streamsource.streamflow.web.infrastructure.caching.CachingService;
@@ -121,7 +123,8 @@ public abstract class UpdateCaseCountCacheConcern
       CaseEntity caze = roleMap.get( CaseEntity.class );
 
       Owner owner = caze.owner().get();
-      if (owner != null) // If no owner, then it is still in drafts mode - no cache to fix
+      // If status DRAFT - no cache to fix since case is moved by open command
+      if ( !CaseStates.DRAFT.equals( ((Status.Data)caze).status().get() ))
       {
          if (caze.isAssigned())
          {
