@@ -22,5 +22,5 @@ package se.streamsource.streamflow.client.ui.workspace.cases.conversations;
 public enum ConversationsResources
 {
    internal_participants_label,
-   external_participants_label
+   external_participants_label,
 }

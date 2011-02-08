@@ -16,173 +16,231 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.conversations;
 
-import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.event.ListEvent;
-import ca.odell.glazedlists.event.ListEventListener;
+import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.created_column_header;
+import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.message_column_header;
+import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.sender_column_header;
+import static se.streamsource.streamflow.client.util.i18n.text;
+
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.KeyboardFocusManager;
+import java.util.Date;
+import java.util.Locale;
+
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextPane;
+import javax.swing.KeyStroke;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyleContext;
+import javax.swing.text.StyledDocument;
+
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
+import org.jdesktop.swingx.JXTable;
+import org.jdesktop.swingx.decorator.HighlighterFactory;
+import org.jdesktop.swingx.renderer.DefaultTableRenderer;
+import org.jdesktop.swingx.renderer.StringValue;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
+
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
-import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
 import se.streamsource.streamflow.resource.conversation.MessageDTO;
+import se.streamsource.streamflow.util.DateFormats;
+import ca.odell.glazedlists.gui.TableFormat;
+import ca.odell.glazedlists.swing.EventJXTableModel;
 
-import javax.swing.*;
-import java.awt.*;
-import java.text.SimpleDateFormat;
-
-public class MessagesView extends JPanel
-      implements ListEventListener<MessageDTO>, TransactionListener
+public class MessagesView extends JPanel implements TransactionListener
 {
+   private static final long serialVersionUID = -4508473068931275932L;
+
    private MessagesModel model;
 
-   private int lastSize = -1;
-   private Box messages;
-   private JPanel writeMessagePanel;
+   private JXTable messageTable;
+   private JPanel detailMessagePanel;
    private JPanel sendPanel;
+   private JPanel showPanel;
    private JTextPane newMessage;
+   private JTextPane showMessage;
 
-   private Color[] messageColors = new Color[]{Color.lightGray.brighter(), new Color(238,244,253)};
-
-   public MessagesView(@Service ApplicationContext context, @Uses CommandQueryClient client, @Structure ObjectBuilderFactory obf)
+   public MessagesView(@Service ApplicationContext context, @Uses CommandQueryClient client,
+         @Structure ObjectBuilderFactory obf)
    {
-      setActionMap( context.getActionMap( this ) );
-      MacOsUIWrapper.convertAccelerators( getActionMap() );
+      setActionMap(context.getActionMap(this));
+      MacOsUIWrapper.convertAccelerators(getActionMap());
 
       setLayout(new BorderLayout());
 
-      model = obf.newObjectBuilder( MessagesModel.class ).use(client).newInstance();
+      model = obf.newObjectBuilder(MessagesModel.class).use(client).newInstance();
 
-      model.messages().addListEventListener( this );
+      messageTable = new JXTable(new EventJXTableModel<MessageDTO>(model.messages(), new TableFormat<MessageDTO>()
+      {
+         String[] columnNames = new String[]
+         { text(sender_column_header), text(message_column_header), text(created_column_header) };
 
-      messages = Box.createVerticalBox();
+         public int getColumnCount()
+         {
+            return columnNames.length;
+         }
 
-      new RefreshWhenShowing(this, model);
+         public String getColumnName(int i)
+         {
+            return columnNames[i];
+         }
 
-      initWriteMessage();
+         public Object getColumnValue(MessageDTO o, int i)
+         {
+            switch (i)
+            {
+            case 0:
+               return o.sender().get();
+            case 1:
+               return o.text().get();
+            case 2:
+               return o.createdOn().get();
+            }
 
-      JScrollPane scrollMessages = new JScrollPane(messages);
+            return null;
+         }
+      }));
+
+      messageTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+      messageTable
+            .setFocusTraversalKeys(
+                  KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS,
+                  KeyboardFocusManager.getCurrentKeyboardFocusManager().getDefaultFocusTraversalKeys(
+                        KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS));
+      messageTable.setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, KeyboardFocusManager
+            .getCurrentKeyboardFocusManager()
+            .getDefaultFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS));
+
+      messageTable.getColumn(2).setCellRenderer(new DefaultTableRenderer(new StringValue()
+      {
+         private static final long serialVersionUID = -6677363096055906298L;
+
+         public String getString(Object value)
+         {
+            return DateFormats.getProgressiveDateTimeValue((Date) value, Locale.getDefault());
+         }
+      }));
+
+      ListSelectionModel selectionModel = messageTable.getSelectionModel();
+      selectionModel.addListSelectionListener(new MessageListSelectionHandler());
+
+      messageTable.addHighlighter(HighlighterFactory.createAlternateStriping());
+
+      messageTable.getColumn(0).setPreferredWidth(100);
+      messageTable.getColumn(1).setPreferredWidth(300);
+      messageTable.getColumn(2).setPreferredWidth(60);
+      messageTable.getColumn(2).setMaxWidth(100);
+
+      initDetailMessage();
+
+      JScrollPane scrollMessages = new JScrollPane(messageTable);
 
       add(scrollMessages, BorderLayout.CENTER);
-      add(writeMessagePanel, BorderLayout.SOUTH );
+      add(detailMessagePanel, BorderLayout.SOUTH);
+
+      new RefreshWhenShowing(this, model);
    }
 
-   public void listChanged( ListEvent<MessageDTO> listEvent )
+   private void initDetailMessage()
    {
-      EventList<MessageDTO> list = model.messages();
-
-      if (list.size() > lastSize)
-      {
-         messages.removeAll();
-
-         int size = list.size();
-         if (size > 0)
-         {
-            SimpleDateFormat dateFormat = new SimpleDateFormat( i18n
-                  .text( WorkspaceResources.date_time_format ) );
-            int idx = 0;
-            for (MessageDTO messageDTO : list)
-            {
-               JLabel message = new JLabel( "<html>"+messageDTO.sender().get() + ", " + dateFormat.format( messageDTO.createdOn().get() )+":"+messageDTO.text().get().replace("\n","<br>" )+"</html>" );
-               message.setBackground( messageColors[idx%2] );
-               message.setOpaque( true );
-               idx++;
-/*
-               Box message = Box.createHorizontalBox();
-               message.setBorder( BorderFactory.createTitledBorder( ) );
-               message.add();
-               message.add(Box.createHorizontalGlue());
-*/
-
-               messages.add( message );
-/*
-               buf.append( "<tr>" );
-               buf.append( "<td width='150' align='left' valign='top'>" );
-               buf.append( "<p>" );
-               buf.append( messageDTO.sender().get() );
-               buf.append( "</p><p>" );
-               buf.append( new SimpleDateFormat( i18n
-                     .text( WorkspaceResources.date_time_format ) ).format( messageDTO
-                     .createdOn().get() ) );
-               buf.append( "</p></td><td width='" ).append( getMessageTableLastColSize() ).append( "' style=''>" );
-               buf.append( messageDTO.text().get().replace("\n","<br>" ));
-               buf
-                     .append( "<hr width='100%' style='border:1px solid #cccccc; padding-top: 15px;'>" );
-               buf.append( "</td>" );
-               buf.append( "</tr>" );
-*/
-
-            }
-//            buf.append( "</table>" );
-         }
-//         buf.append( "</body></html>" );
-         messages.revalidate();
-         lastSize = list.size();
-      }
-   }
-
-
-   private void initWriteMessage()
-   {
-      writeMessagePanel = new JPanel( new CardLayout() );
+      detailMessagePanel = new JPanel(new CardLayout());
 
       // INITIAL
-      JPanel createPanel = new JPanel( new FlowLayout( FlowLayout.RIGHT ) );
-      javax.swing.Action writeMessageAction = getActionMap()
-            .get( "writeMessage" );
-      JButton writeMessage = new JButton( writeMessageAction );
-      writeMessage.registerKeyboardAction( writeMessageAction,
-            (KeyStroke) writeMessageAction
-                  .getValue( javax.swing.Action.ACCELERATOR_KEY ),
-            JComponent.WHEN_IN_FOCUSED_WINDOW );
-      createPanel.add( writeMessage );
+      JPanel createPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+      javax.swing.Action writeMessageAction = getActionMap().get("writeMessage");
+      JButton writeMessage = new JButton(writeMessageAction);
+      writeMessage.registerKeyboardAction(writeMessageAction,
+            (KeyStroke) writeMessageAction.getValue(javax.swing.Action.ACCELERATOR_KEY),
+            JComponent.WHEN_IN_FOCUSED_WINDOW);
+      createPanel.add(writeMessage);
 
       // NEWMESSAGE
-      sendPanel = new JPanel( new BorderLayout() );
-      sendPanel.setPreferredSize( new Dimension( 100, 200 ) );
+      sendPanel = new JPanel(new BorderLayout());
+      sendPanel.setPreferredSize(new Dimension(100, 150));
       JScrollPane messageScroll = new JScrollPane();
 
       newMessage = new JTextPane();
-      newMessage.setContentType( "text/plain" );
-      newMessage.setEditable( true );
-      messageScroll.getViewport().add( newMessage );
+      newMessage.setContentType("text/plain");
+      newMessage.setEditable(true);
+      messageScroll.getViewport().add(newMessage);
 
-      JPanel sendMessagePanel = new JPanel( new FlowLayout( FlowLayout.RIGHT ) );
-      javax.swing.Action sendMessageAction = getActionMap().get( "sendMessage" );
-      JButton sendMessage = new JButton( sendMessageAction );
-      sendMessage.registerKeyboardAction( sendMessageAction,
-            (KeyStroke) sendMessageAction
-                  .getValue( javax.swing.Action.ACCELERATOR_KEY ),
-            JComponent.WHEN_IN_FOCUSED_WINDOW );
-      javax.swing.Action cancelAction = getActionMap().get( "cancelNewMessage" );
-      JButton cancel = new JButton( cancelAction );
+      JPanel sendMessagePanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+      javax.swing.Action sendMessageAction = getActionMap().get("sendMessage");
+      JButton sendMessage = new JButton(sendMessageAction);
+      sendMessage.registerKeyboardAction(sendMessageAction,
+            (KeyStroke) sendMessageAction.getValue(javax.swing.Action.ACCELERATOR_KEY),
+            JComponent.WHEN_IN_FOCUSED_WINDOW);
+      javax.swing.Action cancelAction = getActionMap().get("cancelNewMessage");
+      JButton cancel = new JButton(cancelAction);
 
-      sendMessagePanel.add( sendMessage );
-      sendMessagePanel.add( cancel );
+      sendMessagePanel.add(sendMessage);
+      sendMessagePanel.add(cancel);
 
-      sendPanel.add( messageScroll, BorderLayout.CENTER );
-      sendPanel.add( sendMessagePanel, BorderLayout.SOUTH );
+      sendPanel.add(messageScroll, BorderLayout.CENTER);
+      sendPanel.add(sendMessagePanel, BorderLayout.SOUTH);
 
-      writeMessagePanel.add( createPanel, "INITIAL" );
+      // SHOWMESSAGE
+      showPanel = new JPanel(new BorderLayout());
+      showPanel.setPreferredSize(new Dimension(100, 150));
+      JScrollPane messageShowScroll = new JScrollPane();
 
-      ((CardLayout) writeMessagePanel.getLayout()).show( writeMessagePanel, "INITIAL" );
+      JPanel messageDetailButtonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+      javax.swing.Action closeAction = getActionMap().get("closeMessageDetails");
+      JButton close = new JButton(closeAction);
+
+      messageDetailButtonPanel.add(close);
+
+      showMessage = new JTextPane();
+      showMessage.setContentType("text/plain");
+      showMessage.setEditable(false);
+      messageShowScroll.getViewport().add(showMessage);
+
+      StyledDocument doc = showMessage.getStyledDocument();
+      Style def = StyleContext.getDefaultStyleContext().getStyle(StyleContext.DEFAULT_STYLE);
+
+      Style regular = doc.addStyle("regular", def);
+      StyleConstants.setFontFamily(def, "SansSerif");
+
+      Style s = doc.addStyle("italic", regular);
+      StyleConstants.setItalic(s, true);
+
+      s = doc.addStyle("bold", regular);
+      StyleConstants.setBold(s, true);
+
+      showPanel.add(messageShowScroll, BorderLayout.CENTER);
+      showPanel.add(messageDetailButtonPanel, BorderLayout.SOUTH);
+
+      detailMessagePanel.add(createPanel, "INITIAL");
+
+      ((CardLayout) detailMessagePanel.getLayout()).show(detailMessagePanel, "INITIAL");
    }
 
    @Action
    public void writeMessage()
    {
-      writeMessagePanel.add( sendPanel, "NEW_MESSAGE" );
-      ((CardLayout) writeMessagePanel.getLayout()).show( writeMessagePanel, "NEW_MESSAGE" );
+      detailMessagePanel.add(sendPanel, "NEW_MESSAGE");
+      ((CardLayout) detailMessagePanel.getLayout()).show(detailMessagePanel, "NEW_MESSAGE");
 
       newMessage.requestFocusInWindow();
    }
@@ -191,16 +249,15 @@ public class MessagesView extends JPanel
    public Task sendMessage()
    {
       final String messageText = newMessage.getText();
-      writeMessagePanel.remove( sendPanel );
-      ((CardLayout) writeMessagePanel.getLayout()).show( writeMessagePanel, "INITIAL" );
-      newMessage.setText( null );
+      detailMessagePanel.remove(sendPanel);
+      ((CardLayout) detailMessagePanel.getLayout()).show(detailMessagePanel, "INITIAL");
+      newMessage.setText(null);
       return new CommandTask()
       {
          @Override
-         public void command()
-            throws Exception
+         public void command() throws Exception
          {
-            model.createMessage( messageText );
+            model.createMessage(messageText);
          }
       };
    }
@@ -208,22 +265,49 @@ public class MessagesView extends JPanel
    @Action
    public void cancelNewMessage()
    {
-      writeMessagePanel.remove( sendPanel );
-      ((CardLayout) writeMessagePanel.getLayout()).show( writeMessagePanel, "INITIAL" );
-      newMessage.setText( null );
+      detailMessagePanel.remove(sendPanel);
+      ((CardLayout) detailMessagePanel.getLayout()).show(detailMessagePanel, "INITIAL");
+      newMessage.setText(null);
    }
 
-   private int getMessageTableLastColSize()
+   @Action
+   public void closeMessageDetails()
    {
-      return (int) (getVisibleRect().getWidth() < 600 ? 450
-            : (getVisibleRect().getWidth() - 150));
+      detailMessagePanel.remove(showPanel);
+      ((CardLayout) detailMessagePanel.getLayout()).show(detailMessagePanel, "INITIAL");
+      showMessage.setText(null);
    }
 
-   public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
+   public void notifyTransactions(Iterable<TransactionDomainEvents> transactions)
    {
-      if (Events.matches( Events.withNames("createdMessage"), transactions ))
+      if (Events.matches(Events.withNames("createdMessage"), transactions))
       {
          model.refresh();
+      }
+   }
+
+   class MessageListSelectionHandler implements ListSelectionListener
+   {
+      public void valueChanged(ListSelectionEvent e)
+      {
+         int index = e.getLastIndex();
+
+         showMessage.setText(null);
+         StyledDocument doc = showMessage.getStyledDocument();
+         try
+         {
+            doc.insertString(0,
+                  DateFormats.getFullDateTimeValue(model.messages().get(index).createdOn().get(), Locale.getDefault())
+                        + " : ", doc.getStyle("italic"));
+            doc.insertString(doc.getLength(), model.messages().get(index).sender().get() + "\n", doc.getStyle("bold"));
+            doc.insertString(doc.getLength(), model.messages().get(index).text().get(), doc.getStyle("regular"));
+         } catch (BadLocationException e1)
+         {
+            e1.printStackTrace();
+         }
+
+         detailMessagePanel.add(showPanel, "SHOW_MESSAGE");
+         ((CardLayout) detailMessagePanel.getLayout()).show(detailMessagePanel, "SHOW_MESSAGE");
       }
    }
 }

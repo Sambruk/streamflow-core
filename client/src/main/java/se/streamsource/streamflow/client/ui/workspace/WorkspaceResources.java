@@ -135,5 +135,9 @@ public enum WorkspaceResources
    // CaseStates
    OPEN,
    ON_HOLD,
-   choose_date, CLOSED
+   choose_date, CLOSED,
+   
+   // Conversation
+   sender_column_header,
+   message_column_header,
 }

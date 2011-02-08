@@ -23,6 +23,7 @@ import org.jdesktop.swingx.decorator.HighlighterFactory;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.resource.conversation.ConversationDTO;
+import se.streamsource.streamflow.util.DateFormats;
 
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JLabel;
@@ -39,98 +40,94 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.text.DateFormat;
+import java.util.Locale;
 
 public class ConversationsListCellRenderer implements ListCellRenderer
 {
-	DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
-	
-	public Component getListCellRendererComponent(final JList list,
-			Object value, int index, boolean isSelected, boolean cellHasFocus)
-	{
-		// Tweak to make it possible to have different heights of list elements.
-		list.addListSelectionListener(new ListSelectionListener()
-		{
-			public void valueChanged(ListSelectionEvent lse)
-			{
-				if (!lse.getValueIsAdjusting())
-					list.setCellRenderer(new ConversationsListCellRenderer());
-			}
-		});
-		
-		if (list instanceof JXList)
-		{
-			((JXList)list).addHighlighter( HighlighterFactory.createAlternateStriping() );
-		}
-		
-		ConversationDTO conversations = (ConversationDTO) value;
+   DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
 
-		JPanel renderer = new JPanel(new BorderLayout());
-		renderer.setLayout(new BorderLayout());
-		renderer.setBorder(new EmptyBorder(3, 3, 3, 3));
+   public Component getListCellRendererComponent(final JList list, Object value, int index, boolean isSelected,
+         boolean cellHasFocus)
+   {
+      // Tweak to make it possible to have different heights of list elements.
+      list.addListSelectionListener(new ListSelectionListener()
+      {
+         public void valueChanged(ListSelectionEvent lse)
+         {
+            if (!lse.getValueIsAdjusting())
+               list.setCellRenderer(new ConversationsListCellRenderer());
+         }
+      });
 
-		// Layout and form for the header panel
-		FormLayout headerLayout = new FormLayout(
-				"40dlu:grow, pref, 3dlu, pref", "pref");
-		JPanel headerPanel = new JPanel(headerLayout);
-		headerPanel.setFocusable(false);
-		DefaultFormBuilder headerBuilder = new DefaultFormBuilder(headerLayout,
-				headerPanel);
+      if (list instanceof JXList)
+      {
+         ((JXList) list).addHighlighter(HighlighterFactory.createAlternateStriping());
+      }
 
-		// Title
-		JLabel title = new JLabel(conversations.text().get());
-		title.setFont(title.getFont().deriveFont(Font.BOLD));
-		headerBuilder.add(title);
-		headerBuilder.nextColumn();
+      ConversationDTO conversations = (ConversationDTO) value;
 
-		// Participants
-		JLabel participants = new JLabel(String.valueOf(conversations
-				.participants().get()), i18n.icon(Icons.participants, 16),
-				JLabel.LEADING);
-		headerBuilder.add(participants);
-		headerBuilder.nextColumn(2);
+      JPanel renderer = new JPanel(new BorderLayout());
+      renderer.setLayout(new BorderLayout());
+      renderer.setBorder(new EmptyBorder(3, 3, 3, 3));
 
-		// Conversations
-		JLabel conversationsLabel = new JLabel(String.valueOf(conversations
-				.messages().get()), i18n.icon(Icons.conversations, 16),
-				JLabel.LEADING);
-		headerBuilder.add(conversationsLabel);
-		renderer.add(headerPanel, BorderLayout.NORTH);
+      // Layout and form for the header panel
+      FormLayout headerLayout = new FormLayout("40dlu:grow, pref, 3dlu, pref", "pref");
+      JPanel headerPanel = new JPanel(headerLayout);
+      headerPanel.setFocusable(false);
+      DefaultFormBuilder headerBuilder = new DefaultFormBuilder(headerLayout, headerPanel);
 
-		if (isSelected)
-		{
-			// Layout and form for the content panel
-			JPanel contentPanel = new JPanel(new BorderLayout());
-			contentPanel.setFocusable(false);
+      // Title
+      JLabel title = new JLabel(conversations.text().get());
+      title.setFont(title.getFont().deriveFont(Font.BOLD));
+      headerBuilder.add(title);
+      headerBuilder.nextColumn();
 
-			JPanel ingressPanel = new JPanel(new FlowLayout(
-					FlowLayout.LEFT));
-			
-			// Conversation creation date
-			JLabel labelDate = new JLabel(DateFormat.getDateInstance( DateFormat.MEDIUM ).format(conversations
-					.creationDate().get()));
-			labelDate.setFont(labelDate.getFont().deriveFont(Font.ITALIC));
-			ingressPanel.add(labelDate);
+      // Participants
+      JLabel participants = new JLabel(String.valueOf(conversations.participants().get()), i18n.icon(
+            Icons.participants, 16), JLabel.LEADING);
+      headerBuilder.add(participants);
+      headerBuilder.nextColumn(2);
 
-			// Creator
-			JLabel labelCreator = new JLabel(conversations.creator().get());
-			ingressPanel.add(labelCreator);			
-			contentPanel.add(ingressPanel, BorderLayout.NORTH);
-			renderer.add(contentPanel, BorderLayout.CENTER);
-		} else
-		{
-			renderer.setPreferredSize(headerPanel.getPreferredSize());
-			renderer.setBackground(Color.WHITE);
-			headerPanel.setBackground(Color.WHITE);
-		}
-		
-		if (list.getSelectedIndex() == index)
-		{
-			renderer.setPreferredSize(new Dimension(200, 40));
-		} else
-		{
-			renderer.setPreferredSize(new Dimension(200, 20));
-		}
-		
-		return renderer;
-	}
+      // Conversations
+      JLabel conversationsLabel = new JLabel(String.valueOf(conversations.messages().get()), i18n.icon(
+            Icons.conversations, 16), JLabel.LEADING);
+      headerBuilder.add(conversationsLabel);
+      renderer.add(headerPanel, BorderLayout.NORTH);
+
+      if (isSelected)
+      {
+         // Layout and form for the content panel
+         JPanel contentPanel = new JPanel(new BorderLayout());
+         contentPanel.setFocusable(false);
+
+         JPanel ingressPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+
+         // Conversation creation date
+         JLabel labelDate = new JLabel(DateFormats.getFullDateTimeValue(conversations.creationDate().get(),
+               Locale.getDefault()));
+         labelDate.setFont(labelDate.getFont().deriveFont(Font.ITALIC));
+         ingressPanel.add(labelDate);
+
+         // Creator
+         JLabel labelCreator = new JLabel(conversations.creator().get());
+         ingressPanel.add(labelCreator);
+         contentPanel.add(ingressPanel, BorderLayout.NORTH);
+         renderer.add(contentPanel, BorderLayout.CENTER);
+      } else
+      {
+         renderer.setPreferredSize(headerPanel.getPreferredSize());
+         renderer.setBackground(Color.WHITE);
+         headerPanel.setBackground(Color.WHITE);
+      }
+
+      if (list.getSelectedIndex() == index)
+      {
+         renderer.setPreferredSize(new Dimension(200, 40));
+      } else
+      {
+         renderer.setPreferredSize(new Dimension(200, 20));
+      }
+
+      return renderer;
+   }
 }

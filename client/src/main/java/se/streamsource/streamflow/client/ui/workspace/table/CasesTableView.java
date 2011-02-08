@@ -52,6 +52,7 @@ import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
+import se.streamsource.streamflow.util.DateFormats;
 import se.streamsource.streamflow.util.Strings;
 
 import javax.swing.ActionMap;
@@ -87,6 +88,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.TimeZone;
 
@@ -351,10 +353,12 @@ public class CasesTableView
 
       caseTable.getColumn( 1 ).setPreferredWidth( 70 );
       caseTable.getColumn( 1 ).setMaxWidth( 100 );
-      caseTable.getColumn( 2 ).setPreferredWidth( 150 );
-      caseTable.getColumn( 2 ).setMaxWidth( 150 );
+      caseTable.getColumn( 2 ).setPreferredWidth( 300 );
+      caseTable.getColumn( 2 ).setMaxWidth( 300 );
       caseTable.getColumn( 3 ).setPreferredWidth( 150 );
       caseTable.getColumn( 3 ).setMaxWidth( 150 );
+      caseTable.getColumn( 4 ).setPreferredWidth( 90 );
+      caseTable.getColumn( 4 ).setMaxWidth( 90 );
       caseTable.getColumn( caseTable.getColumnCount() - 1 ).setMaxWidth( 50 );
       caseTable.getColumn( caseTable.getColumnCount() - 1 ).setResizable( false );
 
@@ -376,13 +380,11 @@ public class CasesTableView
 
       caseTable.setDefaultRenderer( Date.class, new DefaultTableRenderer( new StringValue()
       {
-         private SimpleDateFormat format = new SimpleDateFormat();
+         private static final long serialVersionUID = 4782416330896582518L;
 
-         public String getString( Object value )
+         public String getString(Object value)
          {
-            if (value == null) return "";
-            Date time = (Date) value;
-            return format.format( time );
+            return DateFormats.getProgressiveDateTimeValue((Date) value, Locale.getDefault());
          }
       } ) );
       caseTable.setDefaultRenderer( ArrayList.class, new DefaultTableRenderer()
