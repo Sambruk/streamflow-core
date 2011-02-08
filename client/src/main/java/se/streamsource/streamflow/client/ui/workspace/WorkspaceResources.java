@@ -49,6 +49,7 @@ public enum WorkspaceResources
    general_tab,
    forms_tab,
    conversations_tab,
+   history_tab,
    contacts_tab,
    attachments_tab,
 
@@ -134,5 +135,9 @@ public enum WorkspaceResources
    // CaseStates
    OPEN,
    ON_HOLD,
-   choose_date, CLOSED
+   choose_date, CLOSED,
+   
+   // Conversation
+   sender_column_header,
+   message_column_header,
 }

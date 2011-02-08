@@ -16,6 +16,7 @@
 
 package se.streamsource.streamflow.web.resource.workspace.cases;
 
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResource;
 import se.streamsource.streamflow.web.context.RequiresPermission;
@@ -23,6 +24,8 @@ import se.streamsource.streamflow.web.context.workspace.cases.CaseCommandsContex
 import se.streamsource.streamflow.web.context.workspace.cases.CaseContext;
 import se.streamsource.streamflow.web.context.workspace.cases.form.CaseSubmittedFormsContext;
 import se.streamsource.streamflow.web.domain.interaction.security.PermissionType;
+import se.streamsource.streamflow.web.domain.structure.caze.History;
+import se.streamsource.streamflow.web.resource.workspace.cases.conversation.ConversationResource;
 import se.streamsource.streamflow.web.resource.workspace.cases.conversation.ConversationsResource;
 
 /**
@@ -77,5 +80,12 @@ public class CaseResource
    public void attachments()
    {
       subResource( AttachmentsResource.class );
+   }
+   
+   @SubResource
+   public void history()
+   {
+      RoleMap.current().set( RoleMap.role( History.class ).getHistory() );
+      subResource( ConversationResource.class );
    }
 }

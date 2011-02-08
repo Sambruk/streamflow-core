@@ -42,10 +42,4 @@ public class CaseGeneralResource
       subResource( LabelableResource.class );
    }
 
-   @SubResource
-   public void history()
-   {
-      RoleMap.current().set( RoleMap.role( History.class ).getHistory() );
-      subResource( ConversationResource.class );
-   }
 }

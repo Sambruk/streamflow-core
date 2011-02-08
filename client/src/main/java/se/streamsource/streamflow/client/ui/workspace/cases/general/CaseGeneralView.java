@@ -257,10 +257,7 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
       leftForm.add(notePane);
       actionBinder.bind( "changeNote", notePane );
       valueBinder.bind( "note", notePane );
-
-      leftForm.add( new JLabel( i18n.text( WorkspaceResources.history ), JLabel.LEFT ) );
-      leftForm.add( obf.newObjectBuilder( ConversationView.class ).use( client.getSubClient( "history" ) ).newInstance() );
-
+      
       JPanel formsContainer = new JPanel();
       formsContainer.setLayout( new BoxLayout(formsContainer, BoxLayout.X_AXIS) );
       formsContainer.setBorder( Borders.createEmptyBorder( "2dlu, 2dlu, 2dlu, 2dlu" ) );

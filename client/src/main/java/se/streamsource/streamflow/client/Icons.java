@@ -48,6 +48,7 @@ public enum Icons
    conversations,
    forms,
    attachments,
+   history,
 
    subcase,
 
