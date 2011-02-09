@@ -28,6 +28,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilder;
 import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.util.Iterables;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.StreamflowResources;
@@ -118,10 +119,15 @@ public class MembersView
    @Action
    public Task remove()
    {
-      final LinkValue selected = (LinkValue) membersList.getSelectedValue();
+      final Iterable<LinkValue> selected = (Iterable) Iterables.iterable( membersList.getSelectedValues() );
 
       ConfirmationDialog dialog = confirmationDialog.iterator().next();
-      dialog.setRemovalMessage( selected.text().get() );
+      String str = "";
+      for (LinkValue linkValue : selected)
+      {
+         str += linkValue.text().get()+" ";
+      }
+      dialog.setRemovalMessage( str );
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation ) );
       if (dialog.isConfirmed() )
       {
@@ -131,7 +137,10 @@ public class MembersView
             public void command()
                throws Exception
             {
-               membersModel.remove( selected );
+               for (LinkValue linkValue : selected)
+               {
+                  membersModel.remove( linkValue );
+               }
             }
          };
       } else

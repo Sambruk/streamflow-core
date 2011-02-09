@@ -58,6 +58,23 @@ public class WorkspaceContext
       return caseQuery;
    }
 
+/*
+   public TableValue autoComplete(TableQuery query) throws SolrServerException
+   {
+      SolrSearch search = (SolrSearch) module.serviceFinder().findService( SolrSearch.class ).get();
+
+      TableBuilder builder = new TableBuilder(module.valueBuilderFactory());
+      builder.column( "term", "Term", "string" );
+
+      NamedList<Object> result = search.autoComplete( query.where() );
+      for (Map.Entry<String, Object> entry : result)
+      {
+         builder.row().cell( entry.getKey(), entry.getKey() ).endRow();
+      }
+      return builder.newTable();
+   }
+
+*/
    public Query<LabelEntity> possibleLabels()
    {
       QueryBuilder<LabelEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder( LabelEntity.class );

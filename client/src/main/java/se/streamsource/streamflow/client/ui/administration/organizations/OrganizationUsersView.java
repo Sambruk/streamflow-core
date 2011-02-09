@@ -27,6 +27,7 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.util.Iterables;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.link.LinkValue;
@@ -128,14 +129,17 @@ public class OrganizationUsersView
       dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation ) );
       if (dialog.isConfirmed())
       {
-         final LinkValue selected = (LinkValue) participantList.getSelectedValue();
+         final Iterable<LinkValue> selected = (Iterable) Iterables.iterable( participantList.getSelectedValues() );
          return new CommandTask()
          {
             @Override
             public void command()
                throws Exception
             {
-               model.remove( selected );
+               for (LinkValue linkValue : selected)
+               {
+                  model.remove( linkValue );
+               }
             }
          };
       } else

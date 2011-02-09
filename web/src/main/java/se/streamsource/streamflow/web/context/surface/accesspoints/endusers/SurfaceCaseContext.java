@@ -65,7 +65,7 @@ public interface SurfaceCaseContext
       {
          CaseEntity aCase = RoleMap.role( CaseEntity.class);
          EndUserCases cases = RoleMap.role( EndUserCases.class );
-         cases.sendToFunction( aCase );
+         cases.sendTo( aCase );
       }
    }
 }

@@ -87,4 +87,6 @@ public class SearchResultTableModel
       return client.query( "search", builder.newInstance(), TableValue.class );
    }
 
+
+
 }

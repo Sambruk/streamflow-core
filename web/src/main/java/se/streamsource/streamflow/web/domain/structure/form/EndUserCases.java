@@ -42,7 +42,7 @@ public interface EndUserCases
 
    void submitForm( Case caze, FormDraft formSubmission, Submitter submitter );
 
-   void sendToFunction( Case caze );
+   void sendTo( Case caze );
 
    void discardCase( Case caze );
 
@@ -76,8 +76,7 @@ public interface EndUserCases
       public void submitFormAndSendCase( Case caze, FormDraft formSubmission, Submitter submitter )
       {
          submitForm( caze, formSubmission, submitter );
-         sendToFunction( caze );
-
+         sendTo( caze );
       }
 
       public CaseEntity createCase( AnonymousEndUser endUser )
@@ -93,10 +92,11 @@ public interface EndUserCases
          return caseEntity;
       }
 
-      public void sendToFunction( Case caze )
+      public void sendTo( Case caze )
       {
          CaseEntity caseEntity = (CaseEntity) caze;
-         caseEntity.unassign();
+         if (caseEntity.isAssigned())
+            caseEntity.unassign();
          caseEntity.changeOwner( accesspoint.project().get() );
          caseEntity.open();
       }

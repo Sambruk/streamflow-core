@@ -27,6 +27,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilder;
 import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.util.Iterables;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
@@ -115,10 +116,22 @@ public class SelectedResolutionsView
    }
 
    @Action
-   public void remove()
+   public Task remove()
    {
-      LinkValue selected = (LinkValue) list.getSelectedValue();
-      model.remove( selected );
+      final Iterable<LinkValue> selected = (Iterable) Iterables.iterable( list.getSelectedValues() );
+
+      return new CommandTask()
+      {
+         @Override
+         public void command()
+               throws Exception
+         {
+            for (LinkValue linkValue : selected)
+            {
+               model.remove( linkValue );
+            }
+         }
+      };
    }
 
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )

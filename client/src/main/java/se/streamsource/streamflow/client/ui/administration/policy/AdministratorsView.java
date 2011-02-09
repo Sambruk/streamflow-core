@@ -27,9 +27,9 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilder;
 import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.util.Iterables;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.ui.SelectUsersAndGroupsDialog;
 import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
 import se.streamsource.streamflow.client.ui.administration.UsersAndGroupsModel;
@@ -38,7 +38,6 @@ import se.streamsource.streamflow.client.util.LinkListCellRenderer;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
-import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 
@@ -122,24 +121,20 @@ public class AdministratorsView
    @Action
    public Task remove()
    {
-      final LinkValue selected = (LinkValue) administratorList.getSelectedValue();
+      final Iterable<LinkValue> selected = (Iterable) Iterables.iterable( administratorList.getSelectedValues() );
 
-      ConfirmationDialog dialog = confirmationDialog.iterator().next();
-      dialog.setRemovalMessage( selected.text().get() );
-      dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( StreamflowResources.confirmation ) );
-      if (dialog.isConfirmed())
+      return new CommandTask()
       {
-         return new CommandTask()
+         @Override
+         public void command()
+            throws Exception
          {
-            @Override
-            public void command()
-               throws Exception
+            for (LinkValue linkValue : selected)
             {
-               model.remove( selected );
+               model.remove( linkValue );
             }
-         };
-      } else
-         return null;
+         }
+      };
    }
 
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )

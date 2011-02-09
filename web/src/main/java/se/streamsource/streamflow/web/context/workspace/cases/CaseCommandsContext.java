@@ -238,7 +238,8 @@ public interface CaseCommandsContext
 
          Owner toOwner = module.unitOfWorkFactory().currentUnitOfWork().get( Owner.class, entity.entity().get() );
 
-         aCase.unassign();
+         if (aCase.isAssigned())
+            aCase.unassign();
 
          aCase.changeOwner( toOwner );
       }
