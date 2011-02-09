@@ -82,6 +82,22 @@ public class CaseActionsView extends JPanel
 
    private JPanel actionsPanel = new JPanel();
 
+   private enum CaseActionButtonTemplate
+   {
+      open,
+      sendto,
+      assign,
+      unassign,
+      onhold,
+      createsubcase,
+      close,
+      resolve,
+      delete,
+      exportpdf;
+
+
+   }
+
    public CaseActionsView( @Service ApplicationContext context, @Uses CaseModel model )
    {
       this.model = model;
@@ -145,7 +161,7 @@ public class CaseActionsView extends JPanel
    {
       // TODO very odd hack - how to solve state binder update issue during use of accelerator keys.
       Component focusOwner = WindowUtils.findWindow( this ).getFocusOwner();
-      if( focusOwner != null )
+      if (focusOwner != null)
          focusOwner.transferFocus();
 
       return new CommandTask()
@@ -165,7 +181,7 @@ public class CaseActionsView extends JPanel
    {
       // TODO very odd hack - how to solve state binder update issue during use of accelerator keys.
       Component focusOwner = WindowUtils.findWindow( this ).getFocusOwner();
-      if( focusOwner != null )
+      if (focusOwner != null)
          focusOwner.transferFocus();
 
       final SelectLinkDialog dialog = obf.newObjectBuilder( SelectLinkDialog.class )
@@ -318,18 +334,24 @@ public class CaseActionsView extends JPanel
 
       ActionMap am = getActionMap();
 
-      for (LinkValue commandLink : Iterables.flatten( model.getCommands(), model.getQueries() ))
+      for (CaseActionButtonTemplate buttonOrder : CaseActionButtonTemplate.values())
       {
-         javax.swing.Action action1 = am.get( commandLink.rel().get() );
-         if (action1 != null)
+         for (LinkValue commandLink : Iterables.flatten( model.getCommands(), model.getQueries() ))
          {
-            JButton button = new JButton( action1 );
-            button.registerKeyboardAction( action1, (KeyStroke) action1
-                  .getValue( javax.swing.Action.ACCELERATOR_KEY ),
-                  JComponent.WHEN_IN_FOCUSED_WINDOW );
-            button.setHorizontalAlignment( SwingConstants.LEFT );
-            actionsPanel.add( button );
+            if (buttonOrder.toString().equals( commandLink.rel().get() ))
+            {
+               javax.swing.Action action1 = am.get( commandLink.rel().get() );
+               if (action1 != null)
+               {
+                  JButton button = new JButton( action1 );
+                  button.registerKeyboardAction( action1, (KeyStroke) action1
+                        .getValue( javax.swing.Action.ACCELERATOR_KEY ),
+                        JComponent.WHEN_IN_FOCUSED_WINDOW );
+                  button.setHorizontalAlignment( SwingConstants.LEFT );
+                  actionsPanel.add( button );
 //				NotificationGlassPane.registerButton(button);
+               }
+            }
          }
       }
 
