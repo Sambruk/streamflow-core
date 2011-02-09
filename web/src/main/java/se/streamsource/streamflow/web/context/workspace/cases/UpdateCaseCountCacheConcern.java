@@ -20,15 +20,12 @@ package se.streamsource.streamflow.web.context.workspace.cases;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.concern.ConcernOf;
 import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.EntityValue;
 import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
 import se.streamsource.streamflow.web.infrastructure.caching.Caches;
 import se.streamsource.streamflow.web.infrastructure.caching.Caching;
 import se.streamsource.streamflow.web.infrastructure.caching.CachingService;
@@ -41,9 +38,6 @@ public abstract class UpdateCaseCountCacheConcern
    implements CaseCommandsContext
 {
    Caching caching;
-
-   @Structure
-   UnitOfWorkFactory uowf;
 
    public void init(@Optional @Service CachingService cache)
    {
@@ -124,7 +118,7 @@ public abstract class UpdateCaseCountCacheConcern
 
       Owner owner = caze.owner().get();
       // If status DRAFT - no cache to fix since case is moved by open command
-      if ( !CaseStates.DRAFT.equals( ((Status.Data)caze).status().get() ))
+      if ( !CaseStates.DRAFT.equals( caze.status().get() ))
       {
          if (caze.isAssigned())
          {
@@ -175,8 +169,9 @@ public abstract class UpdateCaseCountCacheConcern
    {
       RoleMap roleMap = RoleMap.current();
       CaseEntity caze = roleMap.get( CaseEntity.class );
+      //String createdBy = caze.createdBy().get().toString();
 
-      if (caze.hasOwner())
+      if (caze.hasOwner() && !CaseStates.DRAFT.equals( caze.status().get() ) )
       {
          if (caze.isAssigned())
          {
@@ -193,7 +188,6 @@ public abstract class UpdateCaseCountCacheConcern
          // Update drafts for user
          caching.addToCache( caze.createdBy().get().toString(), -1 );
       }
-
       next.delete();
    }
 }
