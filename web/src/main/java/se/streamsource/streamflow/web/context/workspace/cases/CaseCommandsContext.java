@@ -135,7 +135,7 @@ public interface CaseCommandsContext
    @RequiresStatus(CaseStates.OPEN)
    public void unassign();
 
-   @RequiresStatus(CaseStates.OPEN)
+   @RequiresStatus({CaseStates.OPEN, CaseStates.DRAFT})
    public void delete();
 
    public OutputRepresentation exportpdf( CaseOutputConfigValue config ) throws Throwable;

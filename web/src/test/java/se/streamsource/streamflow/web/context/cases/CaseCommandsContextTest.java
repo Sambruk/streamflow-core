@@ -295,7 +295,7 @@ public class CaseCommandsContextTest
 
       // Check resolved actions
       {
-         checkActions( caze, "delete", "reopen" );
+         checkActions( caze, "reopen" );
       }
 
       // Reopen case
@@ -333,7 +333,7 @@ public class CaseCommandsContextTest
 
       // Check closed actions
       {
-         checkActions( caze, "delete", "reopen" );
+         checkActions( caze, "reopen" );
       }
    }
 
