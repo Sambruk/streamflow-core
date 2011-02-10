@@ -26,6 +26,9 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+
+import se.streamsource.dci.api.RoleMap;
+import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.web.domain.entity.conversation.ConversationEntity;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversation;
@@ -90,6 +93,7 @@ public interface History
          builder.instance().createdOn().set( caze.createdOn().get() );
          ConversationEntity history = builder.newInstance();
          history.changeDescription( "History" );
+         history.createMessage( "{created," + ((Describable)caze.createdBy().get()).getDescription() +"}", RoleMap.role( ConversationParticipant.class ));
          history().set(history);
 
          return history;

@@ -29,6 +29,7 @@ import java.awt.KeyboardFocusManager;
 import java.util.Date;
 import java.util.Locale;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
@@ -47,6 +48,7 @@ import javax.swing.text.StyledDocument;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
+import org.jdesktop.swingx.JXLabel;
 import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.decorator.HighlighterFactory;
 import org.jdesktop.swingx.renderer.DefaultTableRenderer;
@@ -80,6 +82,10 @@ public class MessagesView extends JPanel implements TransactionListener
    private JPanel showPanel;
    private JTextPane newMessage;
    private JTextPane showMessage;
+   private JXLabel authorLabel;
+   private JXLabel createdOnLabel;
+   private JXLabel authorLabelValue;
+   private JXLabel createdOnLabelValue;
 
    public MessagesView(@Service ApplicationContext context, @Uses CommandQueryClient client,
          @Structure ObjectBuilderFactory obf)
@@ -203,13 +209,23 @@ public class MessagesView extends JPanel implements TransactionListener
       // SHOWMESSAGE
       showPanel = new JPanel(new BorderLayout());
       showPanel.setPreferredSize(new Dimension(100, 150));
+      showPanel.setBorder(BorderFactory.createEmptyBorder(5,0,0,0));
       JScrollPane messageShowScroll = new JScrollPane();
 
-      JPanel messageDetailButtonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+      JPanel messageDetailButtonPanel = new JPanel(new BorderLayout());
       javax.swing.Action closeAction = getActionMap().get("closeMessageDetails");
       JButton close = new JButton(closeAction);
 
-      messageDetailButtonPanel.add(close);
+      JPanel messageDetailsLabelPanel = new JPanel(new BorderLayout());
+      authorLabel = new JXLabel(text(sender_column_header));
+      createdOnLabel = new JXLabel(text(created_column_header));
+      authorLabelValue = new JXLabel();
+      createdOnLabelValue = new JXLabel();
+      messageDetailsLabelPanel.add(authorLabelValue, BorderLayout.NORTH);
+      messageDetailsLabelPanel.add(createdOnLabelValue, BorderLayout.SOUTH);
+
+      messageDetailButtonPanel.add(close, BorderLayout.EAST);
+      messageDetailButtonPanel.add(messageDetailsLabelPanel, BorderLayout.WEST);
 
       showMessage = new JTextPane();
       showMessage.setContentType("text/plain");
@@ -229,7 +245,7 @@ public class MessagesView extends JPanel implements TransactionListener
       StyleConstants.setBold(s, true);
 
       showPanel.add(messageShowScroll, BorderLayout.CENTER);
-      showPanel.add(messageDetailButtonPanel, BorderLayout.SOUTH);
+      showPanel.add(messageDetailButtonPanel, BorderLayout.NORTH);
 
       detailMessagePanel.add(createPanel, "INITIAL");
 
@@ -291,24 +307,30 @@ public class MessagesView extends JPanel implements TransactionListener
    {
       public void valueChanged(ListSelectionEvent e)
       {
-         int index = e.getLastIndex();
 
-         showMessage.setText(null);
-         StyledDocument doc = showMessage.getStyledDocument();
-         try
+         if (!e.getValueIsAdjusting())
          {
-            doc.insertString(0,
-                  DateFormats.getFullDateTimeValue(model.messages().get(index).createdOn().get(), Locale.getDefault())
-                        + " : ", doc.getStyle("italic"));
-            doc.insertString(doc.getLength(), model.messages().get(index).sender().get() + "\n", doc.getStyle("bold"));
-            doc.insertString(doc.getLength(), model.messages().get(index).text().get(), doc.getStyle("regular"));
-         } catch (BadLocationException e1)
-         {
-            e1.printStackTrace();
+            int index = messageTable.getSelectedRow();
+            if (index >= 0)
+            {
+               showMessage.setText(null);
+               StyledDocument doc = showMessage.getStyledDocument();
+               try
+               {
+                  authorLabelValue.setText(model.messages().get(index).sender().get());
+                  createdOnLabelValue.setText(DateFormats.getFullDateTimeValue(
+                        model.messages().get(index).createdOn().get(), Locale.getDefault()));
+
+                  doc.insertString(0, model.messages().get(index).text().get(), doc.getStyle("regular"));
+               } catch (BadLocationException e1)
+               {
+                  e1.printStackTrace();
+               }
+
+               detailMessagePanel.add(showPanel, "SHOW_MESSAGE");
+               ((CardLayout) detailMessagePanel.getLayout()).show(detailMessagePanel, "SHOW_MESSAGE");
+            }
          }
-
-         detailMessagePanel.add(showPanel, "SHOW_MESSAGE");
-         ((CardLayout) detailMessagePanel.getLayout()).show(detailMessagePanel, "SHOW_MESSAGE");
       }
    }
 }
