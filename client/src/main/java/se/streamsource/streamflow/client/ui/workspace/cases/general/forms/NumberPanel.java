@@ -24,6 +24,7 @@ import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseResources;
 import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
 import se.streamsource.streamflow.domain.form.NumberFieldValue;
+import se.streamsource.streamflow.util.Strings;
 
 import javax.swing.InputVerifier;
 import javax.swing.JComponent;
@@ -31,7 +32,7 @@ import javax.swing.JTextField;
 import java.awt.BorderLayout;
 
 public class NumberPanel
-       extends AbstractFieldPanel
+      extends AbstractFieldPanel
 {
    private JTextField textField;
 
@@ -42,7 +43,7 @@ public class NumberPanel
    public NumberPanel( @Uses FieldSubmissionValue field, @Uses NumberFieldValue fieldValue )
    {
       super( field );
-      setLayout( new BorderLayout( ) );
+      setLayout( new BorderLayout() );
 
       textField = new JTextField();
       textField.setColumns( 20 );
@@ -79,29 +80,34 @@ public class NumberPanel
          public boolean verify( JComponent input )
          {
             JTextField field = (JTextField) input;
-            try
+
+            String value = field.getText();
+            if (!Strings.empty( value ))
             {
-               String value = field.getText();
-               if ( isInteger)
+               try
                {
-                  binding.updateProperty( Integer.parseInt( value ) );
-               } else
+
+                  if (isInteger)
+                  {
+                     binding.updateProperty( Integer.parseInt( value ) );
+                  } else
+                  {
+                     binding.updateProperty( Double.parseDouble( value.replace( ',', '.' ) ) );
+                  }
+               } catch (NumberFormatException e)
                {
-                  binding.updateProperty( Double.parseDouble( value.replace( ',', '.' ) ) );
+                  if (isInteger)
+                  {
+                     dialogs.showMessageDialog( panel, i18n.text( CaseResources.invalidinteger ), "" );
+                  } else
+                  {
+                     dialogs.showMessageDialog( panel, i18n.text( CaseResources.invalidfloat ), "" );
+                  }
+                  return false;
                }
-            }  catch ( NumberFormatException e)
-            {
-               if ( isInteger )
-               {
-                  dialogs.showMessageDialog( panel , i18n.text( CaseResources.invalidinteger ), ""  );
-               } else
-               {
-                  dialogs.showMessageDialog( panel, i18n.text( CaseResources.invalidfloat ), "");
-               }
-               return false;
             }
             return true;
          }
-      });
+      } );
    }
 }
