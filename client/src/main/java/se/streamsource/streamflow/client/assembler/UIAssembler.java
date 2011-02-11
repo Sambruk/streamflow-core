@@ -166,6 +166,7 @@ import se.streamsource.streamflow.client.ui.workspace.cases.conversations.Conver
 import se.streamsource.streamflow.client.ui.workspace.cases.conversations.ConversationView;
 import se.streamsource.streamflow.client.ui.workspace.cases.conversations.ConversationsModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.conversations.ConversationsView;
+import se.streamsource.streamflow.client.ui.workspace.cases.conversations.MessagesConversationView;
 import se.streamsource.streamflow.client.ui.workspace.cases.conversations.MessagesModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.conversations.MessagesView;
 import se.streamsource.streamflow.client.ui.workspace.cases.forms.CaseEffectiveFieldsValueModel;
@@ -506,7 +507,7 @@ public class UIAssembler
       // conversations
       addMV( module,
             MessagesModel.class,
-            MessagesView.class );
+            MessagesConversationView.class );
 
       addViews( module,
             ConversationView.class );

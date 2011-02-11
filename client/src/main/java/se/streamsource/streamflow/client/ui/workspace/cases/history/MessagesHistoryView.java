@@ -17,7 +17,9 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.history;
 
+import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Task;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
@@ -34,6 +36,30 @@ public class MessagesHistoryView extends MessagesView
    public MessagesHistoryView(@Service ApplicationContext context, @Uses CommandQueryClient client,
          @Structure ObjectBuilderFactory obf)
    {
-      super(context, client, obf);
+      super(context,client,obf);
+   }
+   
+   @Action
+   public void writeMessage()
+   {
+      super.writeMessage();
+   }
+   
+   @Action
+   public Task sendMessage()
+   {
+      return super.sendMessage();
+   }
+   
+   @Action
+   public void cancelNewMessage()
+   {
+      super.cancelNewMessage();
+   }
+
+   @Action
+   public void closeMessageDetails()
+   {
+      super.closeMessageDetails();
    }
 }

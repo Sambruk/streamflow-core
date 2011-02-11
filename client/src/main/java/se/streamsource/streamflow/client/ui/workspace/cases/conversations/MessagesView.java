@@ -23,6 +23,7 @@ import static se.streamsource.streamflow.client.util.i18n.text;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.KeyboardFocusManager;
@@ -70,6 +71,9 @@ import se.streamsource.streamflow.util.DateFormats;
 import ca.odell.glazedlists.gui.TableFormat;
 import ca.odell.glazedlists.swing.EventJXTableModel;
 
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
+
 public class MessagesView extends JPanel implements TransactionListener
 {
    private static final long serialVersionUID = -4508473068931275932L;
@@ -82,8 +86,6 @@ public class MessagesView extends JPanel implements TransactionListener
    private JPanel showPanel;
    private JTextPane newMessage;
    private JTextPane showMessage;
-   private JXLabel authorLabel;
-   private JXLabel createdOnLabel;
    private JXLabel authorLabelValue;
    private JXLabel createdOnLabelValue;
 
@@ -167,6 +169,7 @@ public class MessagesView extends JPanel implements TransactionListener
 
       new RefreshWhenShowing(this, model);
    }
+   
 
    private void initDetailMessage()
    {
@@ -213,18 +216,35 @@ public class MessagesView extends JPanel implements TransactionListener
       JScrollPane messageShowScroll = new JScrollPane();
 
       JPanel messageDetailButtonPanel = new JPanel(new BorderLayout());
+      messageDetailButtonPanel.setBorder(BorderFactory.createEmptyBorder(0,0,3,0));
       javax.swing.Action closeAction = getActionMap().get("closeMessageDetails");
-      JButton close = new JButton(closeAction);
-
-      JPanel messageDetailsLabelPanel = new JPanel(new BorderLayout());
-      authorLabel = new JXLabel(text(sender_column_header));
-      createdOnLabel = new JXLabel(text(created_column_header));
+      JButton closeButton = new JButton(closeAction);
+      JPanel closeButtonPanel = new JPanel( new FlowLayout( FlowLayout.LEFT, 0, 0 ) );
+      closeButtonPanel.setBorder( BorderFactory.createEmptyBorder( 7, 0, 0, 0 ) );
+      closeButtonPanel.add( closeButton );
+      
+      FormLayout detailHeaderLayout = new FormLayout("35dlu, 2dlu, pref:grow", "pref, pref");
+      JPanel messageDetailsLabelPanel = new JPanel();
+      DefaultFormBuilder formBuilder = new DefaultFormBuilder(detailHeaderLayout, messageDetailsLabelPanel);
+      
+      JXLabel authorLabel = new JXLabel(text(sender_column_header));
+      JXLabel createdOnLabel = new JXLabel(text(created_column_header));
+      authorLabel.setForeground(Color.GRAY);
+      createdOnLabel.setForeground(Color.GRAY);
+      
       authorLabelValue = new JXLabel();
       createdOnLabelValue = new JXLabel();
-      messageDetailsLabelPanel.add(authorLabelValue, BorderLayout.NORTH);
-      messageDetailsLabelPanel.add(createdOnLabelValue, BorderLayout.SOUTH);
-
-      messageDetailButtonPanel.add(close, BorderLayout.EAST);
+      
+      formBuilder.setExtent(1, 1);
+      formBuilder.add(authorLabel);
+      formBuilder.nextColumn(2);
+      formBuilder.add(authorLabelValue);
+      formBuilder.nextLine();
+      formBuilder.add(createdOnLabel);
+      formBuilder.nextColumn(2);
+      formBuilder.add(createdOnLabelValue);
+      
+      messageDetailButtonPanel.add(closeButtonPanel, BorderLayout.EAST);
       messageDetailButtonPanel.add(messageDetailsLabelPanel, BorderLayout.WEST);
 
       showMessage = new JTextPane();
