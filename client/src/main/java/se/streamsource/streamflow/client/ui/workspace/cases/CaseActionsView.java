@@ -89,9 +89,11 @@ public class CaseActionsView extends JPanel
       assign,
       unassign,
       onhold,
+      resume,
       createsubcase,
       close,
       resolve,
+      reopen,
       delete,
       exportpdf;
 
