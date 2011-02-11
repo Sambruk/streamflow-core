@@ -58,6 +58,7 @@ import se.streamsource.streamflow.util.Strings;
 import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
@@ -387,14 +388,13 @@ public class CasesTableView
             return DateFormats.getProgressiveDateTimeValue((Date) value, Locale.getDefault());
          }
       } ) );
-      caseTable.setDefaultRenderer( ArrayList.class, new DefaultTableRenderer()
+      caseTable.setDefaultRenderer( ArrayList.class, new DefaultTableCellRenderer()
       {
 
          @Override
          public Component getTableCellRendererComponent( JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column )
          {
             JPanel renderer = new JPanel( new FlowLayout( FlowLayout.LEFT ) );
-            //BoxLayout box = new BoxLayout( renderer, BoxLayout.X_AXIS );
 
             ArrayList<String> icons = (ArrayList<String>) value;
             for (String icon : icons)
@@ -461,10 +461,6 @@ public class CasesTableView
       } );
 
       caseTable.addHighlighter( HighlighterFactory.createAlternateStriping() );
-
-      PinstripePainter p = new PinstripePainter();
-      p.setAngle( 90 );
-      p.setPaint( Color.LIGHT_GRAY );
 
       addFocusListener( new FocusAdapter()
       {

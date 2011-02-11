@@ -85,7 +85,7 @@ public class SeparatorTableUI extends BasicTableUI
       EventTableModel tableModel = (EventTableModel) table.getModel();
       int numColumns = table.getColumnCount();
 
-      if (tableModel.getRowCount()>row && separatorClass.isInstance( tableModel.getElementAt( row ) ))
+      if (tableModel.getRowCount() > row && separatorClass.isInstance( tableModel.getElementAt( row ) ))
       {
          Rectangle cellRect = table.getCellRect( row, 0, true );
          paintCell( g, cellRect, row, 0 );
@@ -109,11 +109,6 @@ public class SeparatorTableUI extends BasicTableUI
       int spacingHeight = table.getRowMargin();
       int spacingWidth = table.getColumnModel().getColumnMargin();
 
-      Color c = g.getColor();
-      g.setColor( table.getGridColor() );
-      g.drawRect( cellRect.x, cellRect.y, cellRect.width - 1, cellRect.height - 1 );
-      g.setColor( c );
-
       cellRect.setBounds( cellRect.x + spacingWidth / 2, cellRect.y + spacingHeight / 2,
             cellRect.width - spacingWidth, cellRect.height - spacingHeight );
 
@@ -126,9 +121,14 @@ public class SeparatorTableUI extends BasicTableUI
       } else
       {
          TableCellRenderer renderer;
-         if (table.getModel().getRowCount()>row && separatorClass.isInstance( ((EventTableModel) table.getModel()).getElementAt( row ) ))
+         if (table.getModel().getRowCount() > row && separatorClass.isInstance( ((EventTableModel) table.getModel()).getElementAt( row ) ))
+         {
+            Color c = g.getColor();
+            g.setColor( table.getGridColor() );
+            g.drawRect( cellRect.x, cellRect.y, cellRect.width - 1, cellRect.height - 1 );
+            g.setColor( c );
             renderer = table.getDefaultRenderer( separatorClass );
-         else
+         } else
             renderer = table.getCellRenderer( row, column );
 
          Component component = table.prepareRenderer( renderer, row, column );
