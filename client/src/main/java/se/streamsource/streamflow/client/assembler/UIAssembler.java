@@ -166,6 +166,7 @@ import se.streamsource.streamflow.client.ui.workspace.cases.conversations.Conver
 import se.streamsource.streamflow.client.ui.workspace.cases.conversations.ConversationView;
 import se.streamsource.streamflow.client.ui.workspace.cases.conversations.ConversationsModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.conversations.ConversationsView;
+import se.streamsource.streamflow.client.ui.workspace.cases.conversations.MessagesConversationView;
 import se.streamsource.streamflow.client.ui.workspace.cases.conversations.MessagesModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.conversations.MessagesView;
 import se.streamsource.streamflow.client.ui.workspace.cases.forms.CaseEffectiveFieldsValueModel;
@@ -195,6 +196,7 @@ import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.Possib
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.TextAreaFieldPanel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.TextFieldPanel;
 import se.streamsource.streamflow.client.ui.workspace.cases.history.HistoryView;
+import se.streamsource.streamflow.client.ui.workspace.cases.history.MessagesHistoryView;
 import se.streamsource.streamflow.client.ui.workspace.context.WorkspaceContextModel2;
 import se.streamsource.streamflow.client.ui.workspace.context.WorkspaceContextView2;
 import se.streamsource.streamflow.client.ui.workspace.search.HandleSearchesDialog;
@@ -447,7 +449,8 @@ public class UIAssembler
       addViews( module, CasesView.class, CasesDetailView.class, ContactsAdminView.class,
             FormsAdminView.class, SubmittedFormsAdminView.class, CheckboxesPanel.class,
             ComboBoxPanel.class, OptionButtonsPanel.class, OpenSelectionPanel.class, ListBoxPanel.class, DatePanel.class,
-            NumberPanel.class, TextAreaFieldPanel.class, TextFieldPanel.class, AttachmentFieldPanel.class, HistoryView.class 
+            NumberPanel.class, TextAreaFieldPanel.class, TextFieldPanel.class, AttachmentFieldPanel.class, 
+            HistoryView.class, MessagesHistoryView.class
       );
 
       addDialogs( module, ContactLookupResultDialog.class );
@@ -504,7 +507,7 @@ public class UIAssembler
       // conversations
       addMV( module,
             MessagesModel.class,
-            MessagesView.class );
+            MessagesConversationView.class );
 
       addViews( module,
             ConversationView.class );
