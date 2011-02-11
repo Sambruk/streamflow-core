@@ -1,4 +1,5 @@
-/*
+/**
+ *
  * Copyright 2009-2010 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,41 +17,49 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.history;
 
-import java.awt.BorderLayout;
-
-import javax.swing.JPanel;
-
+import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Task;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 
 import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.streamflow.client.ui.workspace.cases.conversations.ConversationParticipantsView;
+import se.streamsource.streamflow.client.ui.workspace.cases.conversations.MessagesView;
 
-import com.jgoodies.forms.factories.Borders;
-
-/**
- * JAVADOC
- */
-public class HistoryView extends JPanel
+public class MessagesHistoryView extends MessagesView
 {
 
-   /**
-    * 
-    */
-   private static final long serialVersionUID = 3540488243544689740L;
+   private static final long serialVersionUID = 8844722606127717377L;
 
-   public HistoryView( @Service ApplicationContext appContext,
-                           @Uses CommandQueryClient client,
-                           @Structure ObjectBuilderFactory obf )
+   public MessagesHistoryView(@Service ApplicationContext context, @Uses CommandQueryClient client,
+         @Structure ObjectBuilderFactory obf)
    {
-      this.setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
+      super(context,client,obf);
+   }
+   
+   @Action
+   public void writeMessage()
+   {
+      super.writeMessage();
+   }
+   
+   @Action
+   public Task sendMessage()
+   {
+      return super.sendMessage();
+   }
+   
+   @Action
+   public void cancelNewMessage()
+   {
+      super.cancelNewMessage();
+   }
 
-      this.setLayout( new BorderLayout());
-
-      add( obf.newObjectBuilder( ConversationParticipantsView.class ).use(client.getSubClient( "participants" )).newInstance(), BorderLayout.NORTH );
-      add( obf.newObjectBuilder( MessagesHistoryView.class ).use( client.getSubClient("messages" )).newInstance(), BorderLayout.CENTER );
+   @Action
+   public void closeMessageDetails()
+   {
+      super.closeMessageDetails();
    }
 }
