@@ -19,6 +19,7 @@ package se.streamsource.dci.api;
 
 import org.qi4j.api.composite.TransientComposite;
 import org.qi4j.api.specification.Specification;
+import org.qi4j.spi.structure.ModuleSPI;
 
 import java.lang.reflect.Method;
 import java.util.Collections;
@@ -31,15 +32,15 @@ import static org.qi4j.api.util.Iterables.iterable;
  */
 public class Contexts
 {
-   public static Iterable<Method> commands( Class contextClass, final InteractionConstraints constraints, final RoleMap roleMap )
+   public static Iterable<Method> commands( Class contextClass, final InteractionConstraints constraints, final RoleMap roleMap, final ModuleSPI moduleInstance )
    {
-      if (constraints.isValid( contextClass, roleMap ))
+      if (constraints.isValid( contextClass, roleMap, moduleInstance ))
          return filter( new Specification<Method>()
          {
             public boolean satisfiedBy( Method method )
             {
                if (!method.isSynthetic() && !(method.getDeclaringClass().isAssignableFrom( TransientComposite.class )))
-                  return (method.getReturnType().equals( Void.TYPE ) && constraints.isValid( method, roleMap ));
+                  return (method.getReturnType().equals( Void.TYPE ) && constraints.isValid( method, roleMap, moduleInstance ));
                else
                   return false;
             }
@@ -48,14 +49,14 @@ public class Contexts
          return Collections.emptyList();
    }
 
-   public static Iterable<Method> queries( Class contextClass, final InteractionConstraints constraints, final RoleMap roleMap )
+   public static Iterable<Method> queries( Class contextClass, final InteractionConstraints constraints, final RoleMap roleMap, final ModuleSPI module )
    {
       return filter( new Specification<Method>()
       {
          public boolean satisfiedBy( Method method )
          {
             if (!method.isSynthetic() && !(method.getDeclaringClass().isAssignableFrom( TransientComposite.class )))
-               return (!method.getReturnType().equals( Void.TYPE ) && constraints.isValid( method, roleMap ));
+               return (!method.getReturnType().equals( Void.TYPE ) && constraints.isValid( method, roleMap, module ));
             else
                return false;
          }

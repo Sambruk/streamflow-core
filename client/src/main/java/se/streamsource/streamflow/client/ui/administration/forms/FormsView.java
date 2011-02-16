@@ -197,5 +197,7 @@ public class FormsView
             }
          }
       }
+
+      super.notifyTransactions( transactions );
    }
 }

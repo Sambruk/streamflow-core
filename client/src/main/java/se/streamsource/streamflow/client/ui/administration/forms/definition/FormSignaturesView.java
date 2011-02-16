@@ -43,7 +43,7 @@ import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.util.Strings;
 
-import javax.swing.ActionMap;
+import javax.swing.*;
 import java.awt.Component;
 
 import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
@@ -151,5 +151,6 @@ public class FormSignaturesView
          list.setSelectedIndex( list.getModel().getSize() - 1 );
       }
 
+      super.notifyTransactions( transactions );
    }
 }

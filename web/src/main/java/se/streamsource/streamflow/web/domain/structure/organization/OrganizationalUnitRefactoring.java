@@ -21,12 +21,6 @@ import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import se.streamsource.streamflow.domain.organization.MergeOrganizationalUnitException;
 import se.streamsource.streamflow.domain.organization.MoveOrganizationalUnitException;
-import se.streamsource.streamflow.domain.organization.OpenProjectExistsException;
-import se.streamsource.streamflow.domain.structure.Removable;
-import se.streamsource.streamflow.web.domain.structure.form.Forms;
-import se.streamsource.streamflow.web.domain.structure.group.Groups;
-import se.streamsource.streamflow.web.domain.structure.project.ProjectRoles;
-import se.streamsource.streamflow.web.domain.structure.project.Projects;
 
 /**
  * An organizational unit represents a part of an organization.
@@ -38,7 +32,7 @@ public interface OrganizationalUnitRefactoring
 
    void mergeOrganizationalUnit( OrganizationalUnit to ) throws MergeOrganizationalUnitException;
 
-   void deleteOrganizationalUnit() throws OpenProjectExistsException;
+   void deleteOrganizationalUnit();
 
    interface Data
    {
@@ -58,21 +52,8 @@ public interface OrganizationalUnitRefactoring
       OwningOrganization organization;
 
 
-      public void deleteOrganizationalUnit() throws OpenProjectExistsException
+      public void deleteOrganizationalUnit()
       {
-         if (((Projects.Data)organizationalUnit).projects().count() > 0)
-         {
-            throw new OpenProjectExistsException( "There are open projects" );
-         } else
-         {
-            for (OrganizationalUnitRefactoring oue : organizationalUnits.organizationalUnits())
-            {
-               if (((Projects.Data)oue).projects().count() > 0)
-               {
-                  throw new OpenProjectExistsException( "There are open projects" );
-               }
-            }
-         }
          OrganizationalUnits parent = getParent();
          parent.removeOrganizationalUnit( organizationalUnit );
          organizationalUnit.removeEntity();

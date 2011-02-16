@@ -20,21 +20,14 @@ import ca.odell.glazedlists.swing.EventListModel;
 import com.jgoodies.forms.factories.Borders;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.ui.OptionsAction;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
+import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
 
-import javax.swing.Action;
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import java.awt.BorderLayout;
-import java.awt.Component;
+import java.awt.*;
 
 /**
  * JAVADOC
@@ -59,6 +52,7 @@ public abstract class ListDetailView
    protected void initMaster( EventListModel<LinkValue> listModel, Action createAction, Action[] selectionActions, final DetailFactory factory)
    {
       list = new JList(listModel);
+      list.setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
       list.setCellRenderer( new LinkListCellRenderer() );
 
       JScrollPane scrollPane = new JScrollPane( list );
@@ -136,5 +130,11 @@ public abstract class ListDetailView
    protected LinkValue getSelectedValue()
    {
       return (LinkValue) list.getSelectedValue();
+   }
+
+   public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
+   {
+      if (Events.matches(Events.withUsecases( "delete" ), transactions))
+         list.clearSelection();
    }
 }

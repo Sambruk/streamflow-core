@@ -147,5 +147,7 @@ public class AccessPointsView
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
    {
       model.notifyTransactions( transactions );
+
+      super.notifyTransactions( transactions );
    }
 }

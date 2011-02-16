@@ -17,12 +17,14 @@
 
 package se.streamsource.dci.api;
 
+import org.qi4j.api.composite.TransientComposite;
 import org.qi4j.api.constraint.Constraint;
 import org.qi4j.api.constraint.ConstraintDeclaration;
 import org.qi4j.api.constraint.Constraints;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.object.NoSuchObjectException;
 import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.spi.structure.ModuleSPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,55 +40,72 @@ import java.util.concurrent.ConcurrentHashMap;
  * JAVADOC
  */
 public class InteractionConstraintsService
-   implements InteractionConstraints
+      implements InteractionConstraints
 {
    @Structure
    ObjectBuilderFactory obf;
 
    Logger logger = LoggerFactory.getLogger( InteractionConstraintsService.class );
 
-   private Map<Method, InteractionConstraintsBinding> methodsConstraints = new ConcurrentHashMap<Method, InteractionConstraintsBinding>( );
-   private Map<Class, InteractionConstraintsBinding> classConstraints = new ConcurrentHashMap<Class, InteractionConstraintsBinding>( );
+   private Map<Method, InteractionConstraintsBinding> methodsConstraints = new ConcurrentHashMap<Method, InteractionConstraintsBinding>();
+   private Map<Class, InteractionConstraintsBinding> classConstraints = new ConcurrentHashMap<Class, InteractionConstraintsBinding>();
 
-   public boolean isValid(Method method, RoleMap roleMap )
+   public boolean isValid( Method method, RoleMap roleMap, ModuleSPI module )
    {
-      return getConstraints( method ).isValid( roleMap );
+      return getConstraints( method, module ).isValid( roleMap );
    }
 
-   public boolean isValid(Class resourceClass, RoleMap roleMap)
+   public boolean isValid( Class resourceClass, RoleMap roleMap, ModuleSPI module )
    {
-      return getConstraints( resourceClass ).isValid( roleMap );
+      return getConstraints( resourceClass, module ).isValid( roleMap );
    }
 
-   private InteractionConstraintsBinding getConstraints( Method method )
+   private InteractionConstraintsBinding getConstraints( Method method, ModuleSPI module )
    {
       InteractionConstraintsBinding constraintBindings = methodsConstraints.get( method );
       if (constraintBindings == null)
       {
-         constraintBindings = findConstraints( method );
+         constraintBindings = findConstraints( method, module );
          methodsConstraints.put( method, constraintBindings );
       }
       return constraintBindings;
    }
 
-   private InteractionConstraintsBinding getConstraints( Class aClass )
+   private InteractionConstraintsBinding getConstraints( Class aClass, ModuleSPI module )
    {
       InteractionConstraintsBinding constraintBindings = classConstraints.get( aClass );
       if (constraintBindings == null)
       {
-         constraintBindings = findConstraints( aClass );
+         constraintBindings = findConstraints( aClass, module );
          classConstraints.put( aClass, constraintBindings );
       }
       return constraintBindings;
    }
 
-   private InteractionConstraintsBinding findConstraints( Method method)
+   private InteractionConstraintsBinding findConstraints( Method method, ModuleSPI module )
    {
-      List<Binding> methodConstraintBindings = new ArrayList<Binding>( );
+      List<Binding> methodConstraintBindings = new ArrayList<Binding>();
 
       for (Annotation annotation : method.getAnnotations())
       {
-         if (annotation.annotationType().getAnnotation( ConstraintDeclaration.class ) != null)
+         if (annotation.annotationType().equals(RequiresValid.class))
+         {
+            RequiresValid requiresValid = (RequiresValid) annotation;
+
+            Class contextClass = method.getDeclaringClass();
+            if (InteractionValidation.class.isAssignableFrom( contextClass))
+            {
+               InteractionValidation validation = null;
+               if (TransientComposite.class.isAssignableFrom( contextClass ))
+               {
+                  validation = (InteractionValidation) module.transientBuilderFactory().newTransient( contextClass );
+               } else
+               {
+                  validation = (InteractionValidation) module.objectBuilderFactory().newObject( contextClass );
+               }
+               methodConstraintBindings.add( new RequiresValidBinding( requiresValid, validation ) );
+            }
+         } else if (annotation.annotationType().getAnnotation( ConstraintDeclaration.class ) != null)
          {
             Constraints constraints = annotation.annotationType().getAnnotation( Constraints.class );
 
@@ -95,8 +114,8 @@ public class InteractionConstraintsService
                try
                {
                   Constraint<Annotation, Object> constraint = (Constraint<Annotation, Object>) aClass.newInstance();
-                  Class roleClass = (Class) ((ParameterizedType)aClass.getGenericInterfaces()[0]).getActualTypeArguments()[1];
-                  ConstraintBinding constraintBinding = new ConstraintBinding(constraint, annotation, roleClass);
+                  Class roleClass = (Class) ((ParameterizedType) aClass.getGenericInterfaces()[0]).getActualTypeArguments()[1];
+                  ConstraintBinding constraintBinding = new ConstraintBinding( constraint, annotation, roleClass );
                   methodConstraintBindings.add( constraintBinding );
                } catch (InstantiationException e)
                {
@@ -124,7 +143,7 @@ public class InteractionConstraintsService
             {
                continue; // Skip this constraint
             }
-            InteractionConstraintBinding constraintBinding = new InteractionConstraintBinding(constraint, annotation);
+            InteractionConstraintBinding constraintBinding = new InteractionConstraintBinding( constraint, annotation );
             methodConstraintBindings.add( constraintBinding );
 
          }
@@ -133,12 +152,12 @@ public class InteractionConstraintsService
       if (methodConstraintBindings.isEmpty())
          methodConstraintBindings = null;
 
-      return new InteractionConstraintsBinding( methodConstraintBindings);
+      return new InteractionConstraintsBinding( methodConstraintBindings );
    }
 
-   private InteractionConstraintsBinding findConstraints( Class aClass)
+   private InteractionConstraintsBinding findConstraints( Class aClass, ModuleSPI module )
    {
-      List<Binding> classConstraintBindings = new ArrayList<Binding>( );
+      List<Binding> classConstraintBindings = new ArrayList<Binding>();
 
       for (Annotation annotation : aClass.getAnnotations())
       {
@@ -151,8 +170,8 @@ public class InteractionConstraintsService
                try
                {
                   Constraint<Annotation, Object> constraint = (Constraint<Annotation, Object>) constraintClass.newInstance();
-                  Class roleClass = (Class) ((ParameterizedType)constraint.getClass().getGenericInterfaces()[0]).getActualTypeArguments()[1];
-                  ConstraintBinding constraintBinding = new ConstraintBinding(constraint, annotation, roleClass);
+                  Class roleClass = (Class) ((ParameterizedType) constraint.getClass().getGenericInterfaces()[0]).getActualTypeArguments()[1];
+                  ConstraintBinding constraintBinding = new ConstraintBinding( constraint, annotation, roleClass );
                   classConstraintBindings.add( constraintBinding );
                } catch (InstantiationException e)
                {
@@ -180,7 +199,7 @@ public class InteractionConstraintsService
             {
                continue; // Skip this constraint
             }
-            InteractionConstraintBinding constraintBinding = new InteractionConstraintBinding(constraint, annotation);
+            InteractionConstraintBinding constraintBinding = new InteractionConstraintBinding( constraint, annotation );
             classConstraintBindings.add( constraintBinding );
 
          }
@@ -189,7 +208,7 @@ public class InteractionConstraintsService
       if (classConstraintBindings.isEmpty())
          classConstraintBindings = null;
 
-      return new InteractionConstraintsBinding( classConstraintBindings);
+      return new InteractionConstraintsBinding( classConstraintBindings );
    }
 
    interface Binding
@@ -219,6 +238,34 @@ public class InteractionConstraintsService
       }
    }
 
+   public class RequiresValidBinding
+         implements Binding
+   {
+      RequiresValid annotation;
+      private final InteractionValidation validation;
+
+      public RequiresValidBinding( RequiresValid annotation, InteractionValidation validation )
+      {
+         this.validation = validation;
+         this.annotation = annotation;
+      }
+
+      public boolean isValid( RoleMap roleMap )
+      {
+         try
+         {
+            return validation.isValid( annotation.value() );
+         } catch (IllegalArgumentException e)
+         {
+            return false;
+         } catch (Throwable e)
+         {
+            logger.warn( "Could not check validation constraint for '" + annotation.value() + "'", e );
+            return false;
+         }
+      }
+   }
+
    public class ConstraintBinding
          implements Binding
    {
@@ -237,22 +284,22 @@ public class InteractionConstraintsService
       {
          try
          {
-            Object checkedObject = roleClass.equals(RoleMap.class) ? roleMap : roleMap.get(roleClass);
+            Object checkedObject = roleClass.equals( RoleMap.class ) ? roleMap : roleMap.get( roleClass );
 
             return constraint.isValid( annotation, checkedObject );
          } catch (IllegalArgumentException e)
          {
             return false;
-         }catch (Throwable e)
+         } catch (Throwable e)
          {
-            logger.warn( "Could not check constraint "+constraint.getClass().getName(), e );
+            logger.warn( "Could not check constraint " + constraint.getClass().getName(), e );
             return false;
          }
       }
    }
 
    public class InteractionConstraintBinding
-      implements Binding
+         implements Binding
    {
       InteractionConstraint<Annotation> constraint;
       Annotation annotation;
@@ -270,7 +317,7 @@ public class InteractionConstraintsService
             return constraint.isValid( annotation, roleMap );
          } catch (Throwable e)
          {
-            logger.warn( "Could not check constraint "+constraint.getClass().getName(), e );
+            logger.warn( "Could not check constraint " + constraint.getClass().getName(), e );
             return false;
          }
       }

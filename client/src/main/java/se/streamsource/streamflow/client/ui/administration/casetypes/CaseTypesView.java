@@ -40,8 +40,7 @@ import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.util.Strings;
 
-import javax.swing.ActionMap;
-import javax.swing.JList;
+import javax.swing.*;
 import java.awt.Component;
 import java.awt.Dimension;
 
@@ -200,5 +199,7 @@ public class CaseTypesView
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
    {
       model.notifyTransactions( transactions );
+
+      super.notifyTransactions( transactions );
    }
 }

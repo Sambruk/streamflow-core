@@ -168,6 +168,9 @@ public class UncaughtExceptionHandler implements Thread.UncaughtExceptionHandler
 
    private Throwable unwrap(Throwable e)
    {
+      if (e instanceof OperationException)
+         return e;
+
       if (e.getCause() != null)
       {
          if (e instanceof Error)

@@ -56,5 +56,7 @@ public class OrganizationsView
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
    {
       model.notifyTransactions( transactions );
+
+      super.notifyTransactions( transactions );
    }
 }

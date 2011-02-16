@@ -32,6 +32,10 @@ import java.lang.management.ManagementFactory;
 public class RootResource
    extends CommandQueryResource
 {
+   public RootResource()
+   {
+   }
+
    @SubResource
    public void files( )
    {

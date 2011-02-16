@@ -20,6 +20,7 @@ package se.streamsource.streamflow.client.util;
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.SortedList;
+import ca.odell.glazedlists.TransactionList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.specification.Specifications;
@@ -51,7 +52,7 @@ public class LinkValueListModel
    @Structure
    protected ValueBuilderFactory vbf;
 
-   protected EventList<LinkValue> linkValues = new BasicEventList<LinkValue>();
+   protected EventList<LinkValue> linkValues = new TransactionList<LinkValue>(new BasicEventList<LinkValue>());
    protected EventList<LinkValue> sortedValues = new SortedList<LinkValue>(linkValues, new LinkComparator());
 
    private final String refresh;

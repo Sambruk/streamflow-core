@@ -17,13 +17,16 @@
 
 package se.streamsource.dci.api;
 
+import org.qi4j.spi.structure.ModuleSPI;
+
 import java.lang.reflect.Method;
 
 /**
- * JAVADOC
+ * Service interface for checking whether a particular method or a whole class is not
+ * valid at this point, for whatever reason (application state or authorization rules usually).
  */
 public interface InteractionConstraints
 {
-   public boolean isValid( Method method, RoleMap roleMap );
-   public boolean isValid( Class resourceClass, RoleMap roleMap );
+   public boolean isValid( Method method, RoleMap roleMap, ModuleSPI module );
+   public boolean isValid( Class resourceClass, RoleMap roleMap, ModuleSPI module );
 }

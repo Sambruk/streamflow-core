@@ -39,7 +39,7 @@ import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.util.Strings;
 
-import javax.swing.ActionMap;
+import javax.swing.*;
 import java.awt.Component;
 
 import static se.streamsource.streamflow.client.util.i18n.*;
@@ -150,5 +150,7 @@ public class GroupsView
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
    {
       model.notifyTransactions( transactions );
+
+      super.notifyTransactions( transactions );
    }
 }

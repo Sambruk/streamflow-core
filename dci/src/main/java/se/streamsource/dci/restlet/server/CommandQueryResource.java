@@ -30,9 +30,11 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.property.StateHolder;
+import org.qi4j.api.specification.Specification;
 import org.qi4j.api.unitofwork.EntityTypeNotFoundException;
 import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.util.Iterables;
 import org.qi4j.api.value.Value;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
@@ -126,7 +128,7 @@ public class CommandQueryResource
       RoleMap roleMap = RoleMap.current();
 
       // Check constraints for this resource
-      if (!constraints.isValid( getClass(), roleMap ))
+      if (!constraints.isValid( getClass(), roleMap, module ))
       {
          throw new ResourceException( Status.CLIENT_ERROR_FORBIDDEN );
       }
@@ -207,26 +209,35 @@ public class CommandQueryResource
          final List<Method> subResources = new ArrayList<Method>();
 
          // Add commands+queries from the context classes
-         InteractionConstraints methodConstraints = constraints;
          for (Class contextClass : contextClasses)
          {
             // Check context class constraints
-            if (!constraints.isValid( contextClass, roleMap ))
+            if (!constraints.isValid( contextClass, roleMap, module ))
                continue; // Skip this class entirely
 
-            Method[] methods = contextClass.getMethods();
+            // Filter out methods first.
+            // TODO Cache this
+            Iterable<Method> methods = Iterables.filter( new Specification<Method>()
+            {
+               public boolean satisfiedBy( Method method )
+               {
+                  return !method.isSynthetic() &&
+                        !(method.getDeclaringClass().isAssignableFrom( TransientComposite.class )) &&
+                        !(method.getName().equals("isValid"));
+
+               }
+            }, Iterables.iterable( contextClass.getMethods()));
 
             for (Method method : methods)
             {
-               if (!method.isSynthetic() && !(method.getDeclaringClass().isAssignableFrom( TransientComposite.class )))
-                  if (methodConstraints.isValid( method, roleMap ))
-                     if (isCommand( method ))
-                     {
-                        commands.add( method );
-                     } else
-                     {
-                        queries.add( method );
-                     }
+               if (constraints.isValid( method, roleMap, module ))
+                  if (isCommand( method ))
+                  {
+                     commands.add( method );
+                  } else
+                  {
+                     queries.add( method );
+                  }
             }
          }
 
@@ -237,7 +248,7 @@ public class CommandQueryResource
 
             for (Method method : methods)
             {
-               if (method.getAnnotation( SubResource.class ) != null && methodConstraints.isValid( method, roleMap ))
+               if (method.getAnnotation( SubResource.class ) != null && constraints.isValid( method, roleMap, module ))
                   subResources.add( method );
             }
          }
@@ -361,13 +372,13 @@ public class CommandQueryResource
       return humanReadableString.toString();
    }
 
-   protected Object createContext( String queryName )
+   protected Object createContext( String interactionName )
    {
       for (Class contextClass : contextClasses)
       {
          for (Method method : getContextMethods( contextClass ))
          {
-            if (method.getName().equalsIgnoreCase( queryName ))
+            if (method.getName().equalsIgnoreCase( interactionName ))
             {
                if (TransientComposite.class.isAssignableFrom( contextClass ))
                {
@@ -404,6 +415,14 @@ public class CommandQueryResource
       Object context = createContext( interactionName );
 
       Method method = getInteractionMethod( interactionName );
+
+      // Check context class constraints
+      if (!constraints.isValid( method.getDeclaringClass(), RoleMap.current(), module ))
+         throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
+
+      // Check method constraints
+      if (!constraints.isValid( method, RoleMap.current(), module ))
+         throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
 
       if (isCommand( method ))
       {
@@ -963,9 +982,12 @@ public class CommandQueryResource
          } else if (parameterType.isEnum())
          {
             arg = Enum.valueOf( (Class<Enum>) parameterType, argString );
-         } else if (Integer.class.isAssignableFrom( parameterType ))
+         } else if (Integer.TYPE.isAssignableFrom( parameterType ) || Integer.class.isAssignableFrom( parameterType ))
          {
             arg = Integer.valueOf( argString );
+         } else if (Boolean.TYPE.isAssignableFrom( parameterType ) || Boolean.class.isAssignableFrom( parameterType ))
+         {
+            arg = Boolean.valueOf( argString );
          } else if (parameterType.isInterface())
          {
             arg = uowf.currentUnitOfWork().get( parameterType, argString );

@@ -89,6 +89,9 @@ public abstract class CommandTask
    @Override
    protected void failed( Throwable throwable )
    {
-      throw new OperationException( ErrorResources.error, throwable );
+      if (throwable instanceof OperationException)
+         throw (OperationException) throwable;
+      else
+         throw new OperationException( ErrorResources.error, throwable );
    }
 }

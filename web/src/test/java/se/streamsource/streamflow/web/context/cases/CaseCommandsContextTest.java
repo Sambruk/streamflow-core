@@ -353,7 +353,7 @@ public class CaseCommandsContextTest
          {
             return method.getName();
          }
-      },Contexts.commands( CaseCommandsContext.class, constraints,  RoleMap.current()) ));
+      },Contexts.commands( CaseCommandsContext.class, constraints,  RoleMap.current(), moduleInstance) ));
 
       assertThat( actions, equalTo( asList( allowedActions ) ) );
       uow.discard();

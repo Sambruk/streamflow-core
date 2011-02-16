@@ -118,9 +118,9 @@ public class AdministrationModel
          contextItem.getClient().delete();
       } catch (ResourceException e)
       {
-         if (Status.CLIENT_ERROR_CONFLICT.equals( e.getStatus() ))
+         if (Status.SERVER_ERROR_INTERNAL.equals( e.getStatus() ))
          {
-            throw new OperationException( AdministrationResources.could_not_remove_organisation_with_open_projects, e );
+            throw new OperationException( AdministrationResources.could_not_remove_organisation_with_open_projects, e);
 
          }
       }

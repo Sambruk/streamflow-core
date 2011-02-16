@@ -19,7 +19,6 @@ package se.streamsource.streamflow.client.ui.administration;
 
 import ca.odell.glazedlists.EventList;
 import org.jdesktop.application.Action;
-import org.jdesktop.application.ApplicationAction;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
 import org.jdesktop.swingx.JXTree;
@@ -42,7 +41,7 @@ import se.streamsource.streamflow.client.ui.ContextItem;
 import se.streamsource.streamflow.client.ui.OptionsAction;
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
-import se.streamsource.streamflow.client.util.SelectionActionEnabler;
+import se.streamsource.streamflow.client.util.ResourceActionEnabler;
 import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.NameDialog;
@@ -57,12 +56,8 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.MutableTreeNode;
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.List;
 
 import static org.qi4j.api.specification.Specifications.and;
-import static org.qi4j.api.util.Iterables.addAll;
-import static org.qi4j.api.util.Iterables.map;
-import static se.streamsource.dci.value.link.Links.toRel;
 import static se.streamsource.streamflow.client.util.i18n.text;
 import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 
@@ -152,33 +147,21 @@ public class AdministrationTreeView
 
       new RefreshWhenShowing( this, model );
 
-      tree.getSelectionModel().addTreeSelectionListener( new SelectionActionEnabler(
+      new RefreshWhenShowing( adminPopup, new ResourceActionEnabler(
             am.get( "changeDescription" ),
             am.get( "delete" ),
             am.get( "move" ),
             am.get( "merge" ),
-            am.get( "createOrganizationalUnit" ) )
+            am.get( "createOrganizationalUnit" )
+      )
       {
-         private List<String> commands = new ArrayList<String>();
-
          @Override
-         protected void selectionChanged()
+         protected CommandQueryClient getClient()
          {
-            commands.clear();
             ContextItem contextItem = (ContextItem) ((DefaultMutableTreeNode) (tree.getSelectionPath().getLastPathComponent())).getUserObject();
-            CommandQueryClient client = contextItem.getClient();
-            addAll( commands, map( toRel(), client.queryResource().commands().get() ) );
-         }
-
-         @Override
-         public boolean isSelectedValueValid( javax.swing.Action action )
-         {
-            String actionName = ((ApplicationAction) action).getName().toLowerCase();
-            boolean valid = commands.contains( actionName );
-            return valid;
+            return contextItem.getClient();
          }
       } );
-
    }
 
 
@@ -230,7 +213,7 @@ public class AdministrationTreeView
          {
             @Override
             public void command()
-               throws Exception
+                  throws Exception
             {
                model.createOrganizationalUnit( node, dialog.name() );
             }
@@ -257,7 +240,7 @@ public class AdministrationTreeView
          {
             @Override
             public void command()
-               throws Exception
+                  throws Exception
             {
                model.removeOrganizationalUnit( node );
             }
@@ -279,9 +262,9 @@ public class AdministrationTreeView
          {
             @Override
             public void command()
-               throws Exception
+                  throws Exception
             {
-               model.move(tree.getSelectionPath().getLastPathComponent(), listDialog.getSelectedLink());
+               model.move( tree.getSelectionPath().getLastPathComponent(), listDialog.getSelectedLink() );
             }
          };
       } else
@@ -301,9 +284,9 @@ public class AdministrationTreeView
          {
             @Override
             public void command()
-               throws Exception
+                  throws Exception
             {
-               model.move(tree.getSelectionPath().getLastPathComponent(), listDialog.getSelectedLink());
+               model.move( tree.getSelectionPath().getLastPathComponent(), listDialog.getSelectedLink() );
             }
          };
       } else
@@ -314,7 +297,7 @@ public class AdministrationTreeView
    {
       // Only listen for changes on Organization and OrganizationalUnit
       if (matches( and( onEntityTypes( "se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity",
-                  "se.streamsource.streamflow.web.domain.entity.organization.OrganizationalUnitEntity"),
+            "se.streamsource.streamflow.web.domain.entity.organization.OrganizationalUnitEntity" ),
             withNames( "changedDescription", "removedOrganizationalUnit", "addedOrganizationalUnit" ) ), transactions ))
       {
          ArrayList<Integer> expandedRows = new ArrayList<Integer>();
