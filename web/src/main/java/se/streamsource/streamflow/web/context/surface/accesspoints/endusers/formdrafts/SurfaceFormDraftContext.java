@@ -21,11 +21,11 @@ import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
+
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.domain.form.AttachmentFieldDTO;
 import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
-import se.streamsource.streamflow.domain.form.FieldValue;
 import se.streamsource.streamflow.domain.form.FieldValueDTO;
 import se.streamsource.streamflow.domain.form.FormDraftValue;
 import se.streamsource.streamflow.domain.form.FormSignatureValue;
@@ -67,11 +67,13 @@ public class SurfaceFormDraftContext
    public FieldValueDTO fieldvalue( StringValue fieldId )
    {
       FormDraft formDraft = RoleMap.role( FormDraft.class );
-      FieldSubmissionValue value = formDraft.getFieldValue( EntityReference.parseEntityReference( fieldId.string().get() ) );
+      EntityReference entityReference = EntityReference.parseEntityReference(fieldId.string().get());
+      FieldSubmissionValue value = formDraft.getFieldValue( entityReference );
 
       ValueBuilder<FieldValueDTO> builder = vbf.newValueBuilder( FieldValueDTO.class );
       builder.prototype().value().set( value.value().get() == null ? "" : value.value().get() );
-      builder.prototype().value().set( value.value().get() );
+      builder.prototype().field().set( entityReference );
+      
       return builder.newInstance();
    }
 
