@@ -42,6 +42,7 @@ import se.streamsource.streamflow.client.ui.OptionsAction;
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.ResourceActionEnabler;
+import se.streamsource.streamflow.client.util.TabbedResourceView;
 import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.NameDialog;
@@ -52,8 +53,11 @@ import se.streamsource.streamflow.infrastructure.event.domain.source.Transaction
 import se.streamsource.streamflow.util.Strings;
 
 import javax.swing.*;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.MutableTreeNode;
+import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.util.ArrayList;
 
@@ -140,10 +144,32 @@ public class AdministrationTreeView
       adminPopup.add( am.get( "merge" ) );
 
       JPanel actions = new JPanel();
-      actions.add( new JButton( am.get( "createOrganizationalUnit" ) ) );
-      actions.add( new JButton( new OptionsAction( adminPopup ) ) );
+      final JButton createOUButton = new JButton( am.get( "createOrganizationalUnit" ) );
+      createOUButton.setEnabled( false );
+      actions.add( createOUButton );
+
+      final JButton optionsButton = new JButton( new OptionsAction( adminPopup ) );
+      optionsButton.setEnabled( false );
+      actions.add( optionsButton );
 
       add( actions, BorderLayout.SOUTH );
+
+      tree.addTreeSelectionListener( new TreeSelectionListener()
+      {
+         public void valueChanged( TreeSelectionEvent e )
+         {
+            final TreePath path = e.getNewLeadSelectionPath();
+            if (path != null && !path.getLastPathComponent().equals( model.getRoot() ))
+            {
+               createOUButton.setEnabled( true );
+               optionsButton.setEnabled( true );
+            } else
+            {
+               createOUButton.setEnabled( false );
+               optionsButton.setEnabled( false );
+            }
+         }
+      } );
 
       new RefreshWhenShowing( this, model );
 
