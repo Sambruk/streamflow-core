@@ -32,6 +32,7 @@ public interface LinkValue
     *
     * @return
     */
+   @Optional
    Property<String> text();
 
    /**
