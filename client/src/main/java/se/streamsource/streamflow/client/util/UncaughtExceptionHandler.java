@@ -112,7 +112,13 @@ public class UncaughtExceptionHandler implements Thread.UncaughtExceptionHandler
                         showErrorDialog(ex, frame, text(ErrorResources.communication_error));
                         main.selectAccount();
                         return;
-                     } else
+                     } else if (re.getStatus().equals(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY ) )
+                     {
+                        showErrorDialog(ex, frame, re.getMessage() + "\n" + re.getStatus().getUri(),
+                              re.getStatus().getDescription());
+                        return;
+                     }
+                     else
                      {
                         showErrorDialog(ex, frame, re.getMessage() + "\n" + re.getStatus().getUri());
                         return;
@@ -152,6 +158,15 @@ public class UncaughtExceptionHandler implements Thread.UncaughtExceptionHandler
    {
       JXErrorPane pane = new JXErrorPane();
       pane.setErrorInfo(new ErrorInfo(text(ErrorResources.error), errorMsg, null, "Error", ex, Level.SEVERE,
+            Collections.<String, String> emptyMap()));
+      pane.setPreferredSize(new Dimension(700, 400));
+      JXErrorPane.showDialog(frame, pane);
+   }
+
+   private void showErrorDialog(Throwable ex, Frame frame, String errorMsg, String detailedErrorMsg)
+   {
+      JXErrorPane pane = new JXErrorPane();
+      pane.setErrorInfo(new ErrorInfo(text(ErrorResources.error), errorMsg, detailedErrorMsg, "Error", ex, Level.SEVERE,
             Collections.<String, String> emptyMap()));
       pane.setPreferredSize(new Dimension(700, 400));
       JXErrorPane.showDialog(frame, pane);

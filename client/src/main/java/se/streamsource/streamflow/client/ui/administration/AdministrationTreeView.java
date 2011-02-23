@@ -241,7 +241,7 @@ public class AdministrationTreeView
             public void command()
                   throws Exception
             {
-               model.createOrganizationalUnit( node, dialog.name() );
+               model.createOrganizationalUnit( node, dialog.name().trim() );
             }
          };
       } else
