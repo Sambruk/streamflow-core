@@ -555,7 +555,13 @@ public class InfrastructureAssembler
                   forEntities( "se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity" ).
                      renameAssociation( "selectedTemplate", "formPdfTemplate" ).
                      renameAssociation( "caseTemplate", "casePdfTemplate" ).
-               end();
+               end().
+               toVersion("1.3.0.0").
+                  renameEntity( "se.streamsource.streamflow.web.domain.entity.user.profile.SavedSearchEntity", "se.streamsource.streamflow.web.domain.entity.user.profile.PerspectiveEntity").
+                  forEntities("se.streamsource.streamflow.web.domain.entity.user.UserEntity").
+                     renameAssociation("searches", "perspectives").
+                  end();
+                  
 
          module.addServices( MigrationService.class ).setMetaInfo( migrationBuilder );
          configuration().addEntities( MigrationConfiguration.class ).visibleIn( Visibility.application );

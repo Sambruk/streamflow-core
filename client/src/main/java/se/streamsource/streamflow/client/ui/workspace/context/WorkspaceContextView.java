@@ -48,14 +48,14 @@ import java.util.List;
 /**
  * JAVADOC
  */
-public class WorkspaceContextView2
+public class WorkspaceContextView
       extends JPanel
 {
    private JList contextList;
    private JScrollPane workspaceContextScroll;
-   private WorkspaceContextModel2 contextModel;
+   private WorkspaceContextModel contextModel;
 
-   public WorkspaceContextView2( final @Service ApplicationContext context,
+   public WorkspaceContextView( final @Service ApplicationContext context,
                                  final @Structure ObjectBuilderFactory obf,
                                  @Uses final CommandQueryClient client )
    {
@@ -63,7 +63,7 @@ public class WorkspaceContextView2
 
       setPreferredSize( new Dimension(250, 500) );
 
-      this.contextModel = obf.newObjectBuilder( WorkspaceContextModel2.class ).use( client ).newInstance();
+      this.contextModel = obf.newObjectBuilder( WorkspaceContextModel.class ).use( client ).newInstance();
 
       contextList = new JList();
       Comparator<ContextItem> comparator = new ContextItemGroupComparator();

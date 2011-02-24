@@ -39,7 +39,7 @@ import se.streamsource.streamflow.client.util.StateBinder;
 import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
-import se.streamsource.streamflow.resource.user.profile.SearchValue;
+import se.streamsource.streamflow.resource.user.profile.PerspectiveValue;
 
 import javax.swing.ActionMap;
 import javax.swing.JButton;
@@ -61,7 +61,7 @@ import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.*
 /**
  * JAVADOC
  */
-public class HandleSearchesDialog
+public class HandlePerspectivesDialog
       extends JPanel
       implements ListSelectionListener, Observer
 {
@@ -71,14 +71,14 @@ public class HandleSearchesDialog
    @Service
    DialogService dialogs;
 
-   private SavedSearchesModel model;
+   private PerspectivesModel model;
 
-   private StateBinder searchBinder;
+   private StateBinder perspectiveBinder;
 
-   private JList searches;
+   private JList perspective;
    private JButton remove;
 
-   public HandleSearchesDialog( @Service ApplicationContext context, @Structure ValueBuilderFactory vbf, @Structure ObjectBuilderFactory obf, @Uses SavedSearchesModel model )
+   public HandlePerspectivesDialog( @Service ApplicationContext context, @Structure ValueBuilderFactory vbf, @Structure ObjectBuilderFactory obf, @Uses PerspectivesModel model )
    {
       super( new BorderLayout() );
       setBorder( new EmptyBorder( 5, 5, 5, 5 ) );
@@ -91,11 +91,11 @@ public class HandleSearchesDialog
       JPanel left = new JPanel( new BorderLayout() );
       left.setBorder( new EmptyBorder( 5, 5, 5, 5 ) );
 
-      searches = new JList();
-      searches.setCellRenderer( new LinkListCellRenderer() );
-      searches.addListSelectionListener( this );
-      searches.setModel( new EventListModel<LinkValue>( model.getList() ) );
-      JScrollPane scroll = new JScrollPane( searches );
+      perspective = new JList();
+      perspective.setCellRenderer( new LinkListCellRenderer() );
+      perspective.addListSelectionListener( this );
+      perspective.setModel( new EventListModel<LinkValue>( model.getList() ) );
+      JScrollPane scroll = new JScrollPane( perspective );
 
       left.add( scroll, BorderLayout.CENTER );
 
@@ -116,41 +116,41 @@ public class HandleSearchesDialog
       form.setFocusable( false );
       DefaultFormBuilder builder = new DefaultFormBuilder( layout,
             form );
-      searchBinder = obf.newObject( StateBinder.class );
-      searchBinder.setResourceMap( context.getResourceMap( getClass() ) );
-      SearchValue template = searchBinder.bindingTemplate( SearchValue.class );
+      perspectiveBinder = obf.newObject( StateBinder.class );
+      perspectiveBinder.setResourceMap( context.getResourceMap( getClass() ) );
+      PerspectiveValue template = perspectiveBinder.bindingTemplate( PerspectiveValue.class );
 
       builder.add( new JLabel( i18n.text( WorkspaceResources.name_label ) ) );
       builder.nextColumn( 1 );
       JTextField name;
-      builder.add( searchBinder.bind( name = (JTextField) TEXTFIELD.newField(), template.name() ) );
+      builder.add( perspectiveBinder.bind( name = (JTextField) TEXTFIELD.newField(), template.name() ) );
 
       builder.nextLine();
       builder.add( new JLabel( i18n.text( WorkspaceResources.query_label ) ) );
       builder.nextColumn( 1 );
       JTextField query;
-      builder.add( searchBinder.bind( query = (JTextField) TEXTFIELD.newField(), template.query() ) );
+      builder.add( perspectiveBinder.bind( query = (JTextField) TEXTFIELD.newField(), template.query() ) );
 
       right.add( form, BorderLayout.CENTER );
 
       add( right, BorderLayout.CENTER );
 
-      searchBinder.updateWith( vbf.newValueBuilder( SearchValue.class ).prototype() );
-      searchBinder.addObserver( this );
+      perspectiveBinder.updateWith( vbf.newValueBuilder( PerspectiveValue.class ).prototype() );
+      perspectiveBinder.addObserver( this );
    }
 
    public void valueChanged( ListSelectionEvent e )
    {
       if (!e.getValueIsAdjusting())
       {
-         if (!searches.isSelectionEmpty())
+         if (!perspective.isSelectionEmpty())
          {
-            TitledLinkValue search = (TitledLinkValue) searches.getSelectedValue();
-            ValueBuilder<SearchValue> builder = vbf.newValueBuilder( SearchValue.class );
+            TitledLinkValue search = (TitledLinkValue) perspective.getSelectedValue();
+            ValueBuilder<PerspectiveValue> builder = vbf.newValueBuilder( PerspectiveValue.class );
             builder.prototype().name().set( search.text().get() );
             builder.prototype().query().set( search.title().get() );
 
-            searchBinder.updateWith( builder.prototype() );
+            perspectiveBinder.updateWith( builder.prototype() );
 
             remove.setEnabled( true );
          } else
@@ -163,9 +163,9 @@ public class HandleSearchesDialog
    @Action
    public Task remove()
    {
-      if (!searches.isSelectionEmpty())
+      if (!perspective.isSelectionEmpty())
       {
-         final LinkValue value = (LinkValue) searches.getSelectedValue();
+         final LinkValue value = (LinkValue) perspective.getSelectedValue();
          return new CommandTask()
          {
             @Override
@@ -187,9 +187,9 @@ public class HandleSearchesDialog
 
    public void update( Observable o, final Object arg )
    {
-      if (!searches.isSelectionEmpty())
+      if (!perspective.isSelectionEmpty())
       {
-         final LinkValue linkValue = (LinkValue) searches.getSelectedValue();
+         final LinkValue linkValue = (LinkValue) perspective.getSelectedValue();
          final Property property = (Property) arg;
          final String prop = (String) property.get();
          new CommandTask()

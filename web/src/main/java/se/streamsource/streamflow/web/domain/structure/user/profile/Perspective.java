@@ -24,8 +24,8 @@ import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 
 
-@Mixins(SavedSearch.Mixin.class)
-public interface SavedSearch
+@Mixins(Perspective.Mixin.class)
+public interface Perspective
       extends Describable
 {
    void changeQuery( String query );
@@ -39,7 +39,7 @@ public interface SavedSearch
    }
 
    abstract class Mixin
-         implements SavedSearch, Data
+         implements Perspective, Data
    {
       public void changeQuery( String query )
       {

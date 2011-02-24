@@ -38,7 +38,7 @@ import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.
 /**
  * JAVADOC
  */
-public class WorkspaceContextModel2
+public class WorkspaceContextModel
       implements Refreshable
 {
    EventList<ContextItem> items = new BasicEventList<ContextItem>();
@@ -80,6 +80,12 @@ public class WorkspaceContextModel2
          if (contextLink.rel().get().equals("drafts"))
          {
             list.add( new ContextItem( "", text( drafts_node ), "draft", -1, client.getClient( contextLink ) ) );
+         } else if (contextLink.rel().get().equals("search"))
+         {
+            list.add( new ContextItem( "", text( search_node ), "search", -1, client.getClient( contextLink ) ) );
+         } else if (contextLink.rel().get().equals("perspective"))
+         {
+            list.add( new ContextItem( "", contextLink.text().get(), "perspective", -1, client.getClient( contextLink ) ) );
          } else if (contextLink.rel().get().equals("inbox"))
          {
             list.add( new ContextItem( contextLink.text().get(), text( inboxes_node ), "inbox", -1, client.getClient( contextLink ) ) );

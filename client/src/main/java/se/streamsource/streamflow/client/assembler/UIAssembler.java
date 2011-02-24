@@ -197,14 +197,16 @@ import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.TextAr
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.TextFieldPanel;
 import se.streamsource.streamflow.client.ui.workspace.cases.history.HistoryView;
 import se.streamsource.streamflow.client.ui.workspace.cases.history.MessagesHistoryView;
-import se.streamsource.streamflow.client.ui.workspace.context.WorkspaceContextModel2;
-import se.streamsource.streamflow.client.ui.workspace.context.WorkspaceContextView2;
-import se.streamsource.streamflow.client.ui.workspace.search.HandleSearchesDialog;
+import se.streamsource.streamflow.client.ui.workspace.context.WorkspaceContextModel;
+import se.streamsource.streamflow.client.ui.workspace.context.WorkspaceContextView;
+import se.streamsource.streamflow.client.ui.workspace.search.HandlePerspectivesDialog;
 import se.streamsource.streamflow.client.ui.workspace.search.SaveSearchDialog;
-import se.streamsource.streamflow.client.ui.workspace.search.SavedSearchesModel;
+import se.streamsource.streamflow.client.ui.workspace.search.PerspectivesModel;
 import se.streamsource.streamflow.client.ui.workspace.search.SearchResultTableModel;
 import se.streamsource.streamflow.client.ui.workspace.search.SearchView;
 import se.streamsource.streamflow.client.ui.workspace.table.CasesDetailView;
+import se.streamsource.streamflow.client.ui.workspace.table.CasesFilterModel;
+import se.streamsource.streamflow.client.ui.workspace.table.CasesFilterView;
 import se.streamsource.streamflow.client.ui.workspace.table.CasesTableModel;
 import se.streamsource.streamflow.client.ui.workspace.table.CasesTableView;
 import se.streamsource.streamflow.client.ui.workspace.table.CasesView;
@@ -459,6 +461,8 @@ public class UIAssembler
 
       addMV( module, CaseModel.class, CaseInfoView.class );
 
+      addMV( module, CasesFilterModel.class, CasesFilterView.class);
+      
       addViews( module,
             CaseDetailView.class );
 
@@ -535,14 +539,14 @@ public class UIAssembler
             WorkspaceView.class );
 
       addMV( module,
-            WorkspaceContextModel2.class,
-            WorkspaceContextView2.class );
+            WorkspaceContextModel.class,
+            WorkspaceContextView.class );
 
-      addMV( module, SavedSearchesModel.class, SearchView.class );
+      addMV( module, PerspectivesModel.class, SearchView.class );
 
       addDialogs( module, SelectLinkDialog.class,
             SaveSearchDialog.class,
-            HandleSearchesDialog.class );
+            HandlePerspectivesDialog.class );
 
       module.addValues( CaseTableValue.class ).visibleIn( Visibility.application );
    }

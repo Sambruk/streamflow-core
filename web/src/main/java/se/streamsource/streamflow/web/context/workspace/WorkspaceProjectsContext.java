@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.context.workspace.table;
+package se.streamsource.streamflow.web.context.workspace;
 
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.structure.Module;

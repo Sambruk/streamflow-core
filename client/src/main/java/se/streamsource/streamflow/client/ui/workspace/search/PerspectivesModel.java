@@ -25,22 +25,22 @@ import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.client.util.EventListSynch;
 import se.streamsource.streamflow.client.util.LinkValueListModel;
-import se.streamsource.streamflow.resource.user.profile.SearchValue;
+import se.streamsource.streamflow.resource.user.profile.PerspectiveValue;
 
 import java.util.List;
 
 /**
  * JAVADOC
  */
-public class SavedSearchesModel
+public class PerspectivesModel
       extends LinkValueListModel
 {
    @Structure
    ValueBuilderFactory vbf;
 
-   public void saveSearch( SearchValue saveSearch )
+   public void savePerspective( PerspectiveValue savePerspective )
    {
-      client.postCommand( "createsearch", saveSearch );
+      client.postCommand( "createperspective", savePerspective );
    }
 
    public void remove( LinkValue link )
@@ -57,9 +57,9 @@ public class SavedSearchesModel
       EventListSynch.synchronize( links, linkValues );
    }
 
-   public void updateSearch( LinkValue link, SearchValue searchValue )
+   public void updatePerspective( LinkValue link, PerspectiveValue searchPerspective )
    {
-      client.getClient( link ).postCommand( "update", searchValue );
+      client.getClient( link ).postCommand( "update", searchPerspective );
    }
 
    public void changeDescription( LinkValue link, String name )

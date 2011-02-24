@@ -14,37 +14,37 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.resource.workspace.savedsearch;
+package se.streamsource.streamflow.web.resource.workspace;
 
 import se.streamsource.dci.api.ContextNotFoundException;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResources;
 import se.streamsource.streamflow.infrastructure.application.TitledLinksBuilder;
 import se.streamsource.streamflow.web.context.structure.DescribableContext;
-import se.streamsource.streamflow.web.context.workspace.savedsearch.SavedSearchContext;
-import se.streamsource.streamflow.web.context.workspace.savedsearch.SavedSearchesContext;
-import se.streamsource.streamflow.web.domain.entity.user.profile.SavedSearchEntity;
-import se.streamsource.streamflow.web.domain.structure.user.profile.SavedSearch;
+import se.streamsource.streamflow.web.context.workspace.PerspectiveContext;
+import se.streamsource.streamflow.web.context.workspace.PerspectivesContext;
+import se.streamsource.streamflow.web.domain.entity.user.profile.PerspectiveEntity;
+import se.streamsource.streamflow.web.domain.structure.user.profile.Perspective;
 
 /**
  * JAVADOC
  */
-public class SavedSearchesResource
+public class WorkspacePerspectivesResource
       extends CommandQueryResource
       implements SubResources
 {
-   public SavedSearchesResource( )
+   public WorkspacePerspectivesResource( )
    {
-      super( SavedSearchesContext.class );
+      super( PerspectivesContext.class );
    }
 
    public void index() throws Throwable
    {
       TitledLinksBuilder builder = new TitledLinksBuilder( module.valueBuilderFactory() );
-      Iterable<SavedSearch> savedSearches = (Iterable<SavedSearch>) invoke();
-      for (SavedSearch search : savedSearches)
+      Iterable<Perspective> perspectives = (Iterable<Perspective>) invoke();
+      for (Perspective perspective : perspectives)
       {
-         builder.addDescribable( search, ((SavedSearch.Data) search).query().get() );
+         builder.addDescribable( perspective, ((Perspective.Data) perspective).query().get() );
       }
 
       result(builder.newLinks());
@@ -52,7 +52,7 @@ public class SavedSearchesResource
 
    public void resource( String segment ) throws ContextNotFoundException
    {
-      setRole( SavedSearchEntity.class, segment );
-      subResourceContexts( SavedSearchContext.class, DescribableContext.class );
+      setRole( PerspectiveEntity.class, segment );
+      subResourceContexts( PerspectiveContext.class, DescribableContext.class );
    }
 }

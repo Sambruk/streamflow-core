@@ -40,6 +40,8 @@ public enum Icons
    details,
    inbox,
    draft,
+   search,
+   perspective,
 
    calendar,
 

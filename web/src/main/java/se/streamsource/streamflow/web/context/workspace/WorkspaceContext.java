@@ -17,88 +17,106 @@
 
 package se.streamsource.streamflow.web.context.workspace;
 
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.query.Query;
-import org.qi4j.api.query.QueryBuilder;
-import org.qi4j.api.query.QueryExpressions;
-import org.qi4j.api.structure.Module;
-import se.streamsource.dci.api.RoleMap;
-import se.streamsource.dci.value.table.TableQuery;
-import se.streamsource.streamflow.domain.structure.Describable;
-import se.streamsource.streamflow.domain.structure.Removable;
-import se.streamsource.streamflow.web.domain.entity.label.LabelEntity;
-import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
-import se.streamsource.streamflow.web.domain.entity.user.SearchCaseQueries;
-import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
-import se.streamsource.streamflow.web.domain.structure.caze.Case;
-import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
+import net.sf.ehcache.Element;
 
-import static org.qi4j.api.query.QueryExpressions.eq;
-import static org.qi4j.api.query.QueryExpressions.templateFor;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.unitofwork.UnitOfWork;
+
+import se.streamsource.dci.api.IndexContext;
+import se.streamsource.dci.api.RoleMap;
+import se.streamsource.dci.value.link.LinksValue;
+import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
+import se.streamsource.streamflow.web.domain.entity.gtd.AssignmentsQueries;
+import se.streamsource.streamflow.web.domain.entity.gtd.DraftsQueries;
+import se.streamsource.streamflow.web.domain.entity.gtd.InboxQueries;
+import se.streamsource.streamflow.web.domain.entity.user.ProjectQueries;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
+import se.streamsource.streamflow.web.domain.interaction.profile.Perspectives;
+import se.streamsource.streamflow.web.domain.interaction.profile.Perspectives.Data;
+import se.streamsource.streamflow.web.domain.structure.project.Project;
+import se.streamsource.streamflow.web.domain.structure.user.profile.Perspective;
+import se.streamsource.streamflow.web.infrastructure.caching.Caches;
+import se.streamsource.streamflow.web.infrastructure.caching.Caching;
+import se.streamsource.streamflow.web.infrastructure.caching.CachingService;
 
 /**
  * JAVADOC
  */
 public class WorkspaceContext
+implements IndexContext<LinksValue>
 {
-   @Structure
-   Module module;
+@Structure
+Module module;
 
-   public Iterable<Case> search( TableQuery tableQuery)
+@Service
+CachingService caching;
+
+public LinksValue index()
+{
+   LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
+   ProjectQueries projectQueries = RoleMap.role( ProjectQueries.class );
+   Perspectives.Data perspectives = RoleMap.role( Perspectives.Data.class );
+   
+   linksBuilder.addLink( "Drafts", "drafts", "drafts", "drafts/", "drafts");
+   linksBuilder.addLink( "Search", "search", "search", "search/", "search");
+
+   for (Perspective perspective : perspectives.perspectives())
    {
-      SearchCaseQueries caseQueries = RoleMap.role( SearchCaseQueries.class );
-      Query<Case> caseQuery = caseQueries.search( tableQuery.where() );
-
-      // Paging
-      if (tableQuery.offset() != null)
-         caseQuery.firstResult( Integer.parseInt( tableQuery.offset()) );
-      if (tableQuery.limit() != null)
-         caseQuery.maxResults( Integer.parseInt( tableQuery.limit()) );
-
-      return caseQuery;
+      linksBuilder.addLink( perspective.getDescription(), perspective.toString(), "perspective", "perspectives/" + perspective.toString() + "/", "perspective");
+   }
+   
+   for (Project project : projectQueries.allProjects())
+   {
+      linksBuilder.addLink( project.getDescription(), project.toString(), "inbox", "projects/"+project.toString()+"/inbox/", "inbox");
+      linksBuilder.addLink( project.getDescription(), project.toString(), "assignments", "projects/"+project.toString()+"/assignments/", "assignments");
    }
 
-/*
-   public TableValue autoComplete(TableQuery query) throws SolrServerException
+   return linksBuilder.newLinks();
+}
+
+/**
+ * Calculate casecounts for this user. Uses caching if available.
+ *
+ * @return
+ */
+public LinksValue casecounts()
+{
+   Caching caching = new Caching( this.caching, Caches.CASECOUNTS );
+
+   LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() );
+
+   UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
+
+   Element caseCount;
+   DraftsQueries drafts = RoleMap.role( DraftsQueries.class );
+   if ((caseCount = caching.get( drafts.toString() )) == null)
    {
-      SolrSearch search = (SolrSearch) module.serviceFinder().findService( SolrSearch.class ).get();
+      caseCount = new Element( drafts.toString(), Long.toString( drafts.drafts().newQuery( uow ).count() ) );
+      caching.put( caseCount );
+   }
+   builder.addLink( (String) caseCount.getObjectValue(), "/drafts" );
 
-      TableBuilder builder = new TableBuilder(module.valueBuilderFactory());
-      builder.column( "term", "Term", "string" );
-
-      NamedList<Object> result = search.autoComplete( query.where() );
-      for (Map.Entry<String, Object> entry : result)
+   for (Project project : RoleMap.role( ProjectQueries.class ).allProjects())
+   {
+      if ((caseCount = caching.get( project.toString() )) == null)
       {
-         builder.row().cell( entry.getKey(), entry.getKey() ).endRow();
+         caseCount = new Element( project.toString(), Long.toString( ((InboxQueries) project).inbox().newQuery( uow ).count() ) );
+         caching.put( caseCount );
       }
-      return builder.newTable();
+
+      builder.addLink( (String) caseCount.getObjectValue(), project + "/inbox" );
+
+      if ((caseCount = caching.get( project.toString() + ":" + RoleMap.role( Assignee.class ).toString() )) == null)
+      {
+         caseCount = new Element( project.toString() + ":" + RoleMap.role( Assignee.class ).toString(), Long.toString( ((AssignmentsQueries) project).assignments( RoleMap.role( Assignee.class ) ).count() ) );
+         caching.put( caseCount );
+      }
+
+      builder.addLink( (String) caseCount.getObjectValue(), project + "/assignments" );
    }
 
-*/
-   public Query<LabelEntity> possibleLabels()
-   {
-      QueryBuilder<LabelEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder( LabelEntity.class );
-      queryBuilder = queryBuilder.where(
-            eq( templateFor( Removable.Data.class ).removed(), false ));
-      return queryBuilder.newQuery( module.unitOfWorkFactory().currentUnitOfWork() ).
-            orderBy( QueryExpressions.orderBy( templateFor( Describable.Data.class).description() ) );
-   }
-
-   public Query<UserEntity> possibleAssignees()
-   {
-      QueryBuilder<UserEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder( UserEntity.class );
-      queryBuilder = queryBuilder.where(
-                  eq( templateFor( UserAuthentication.Data.class ).disabled(), false ));
-      return queryBuilder.newQuery( module.unitOfWorkFactory().currentUnitOfWork() ).
-         orderBy( QueryExpressions.orderBy( templateFor( Describable.Data.class).description() ) );
-   }
-
-   public Query<ProjectEntity> possibleProjects()
-   {
-      QueryBuilder<ProjectEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder( ProjectEntity.class );
-      queryBuilder = queryBuilder.where(
-                  eq( templateFor( Removable.Data.class ).removed(), false ));
-      return queryBuilder.newQuery( module.unitOfWorkFactory().currentUnitOfWork() ).
-            orderBy( QueryExpressions.orderBy( templateFor( Describable.Data.class).description() ) );
-   }
+   return builder.newLinks();
+}
 }

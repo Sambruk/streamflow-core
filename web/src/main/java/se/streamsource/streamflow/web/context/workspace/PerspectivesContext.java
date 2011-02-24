@@ -15,34 +15,34 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.context.workspace.savedsearch;
+package se.streamsource.streamflow.web.context.workspace;
 
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.structure.Module;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
-import se.streamsource.streamflow.resource.user.profile.SearchValue;
-import se.streamsource.streamflow.web.domain.interaction.profile.SavedSearches;
-import se.streamsource.streamflow.web.domain.structure.user.profile.SavedSearch;
+import se.streamsource.streamflow.resource.user.profile.PerspectiveValue;
+import se.streamsource.streamflow.web.domain.interaction.profile.Perspectives;
+import se.streamsource.streamflow.web.domain.structure.user.profile.Perspective;
 
 /**
  * JAVADOC
  */
-public class SavedSearchesContext
-      implements IndexContext<Iterable<SavedSearch>>
+public class PerspectivesContext
+      implements IndexContext<Iterable<Perspective>>
 {
    @Structure
    Module module;
 
-   public Iterable<SavedSearch> index()
+   public Iterable<Perspective> index()
    {
-      SavedSearches.Data searches = RoleMap.role( SavedSearches.Data.class );
-      return searches.searches();
+      Perspectives.Data searches = RoleMap.role( Perspectives.Data.class );
+      return searches.perspectives();
    }
 
-   public void createSearch( SearchValue search )
+   public void createSearch( PerspectiveValue perspective )
    {
-      SavedSearches searches = RoleMap.role( SavedSearches.class );
-      searches.createSavedSearch( search );
+      Perspectives perspectives = RoleMap.role( Perspectives.class );
+      perspectives.createPerspective( perspective );
    }
 }

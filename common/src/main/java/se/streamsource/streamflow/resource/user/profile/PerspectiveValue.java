@@ -1,4 +1,5 @@
-/*
+/**
+ *
  * Copyright 2009-2010 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,21 +15,21 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.resource.workspace.context;
+package se.streamsource.streamflow.resource.user.profile;
 
-import se.streamsource.dci.restlet.server.CommandQueryResource;
-import se.streamsource.dci.restlet.server.api.SubResource;
-import se.streamsource.streamflow.web.context.workspace.table.DraftsContext;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueComposite;
+import org.qi4j.library.constraints.annotation.MaxLength;
 
-/**
- * JAVADOC
- */
-public class WorkspaceDraftsResource
-      extends CommandQueryResource
+
+public interface PerspectiveValue
+      extends ValueComposite
 {
-   @SubResource
-   public void drafts()
-   {
-      subResourceContexts( DraftsContext.class );
-   }
+   @Optional
+   @MaxLength(50)
+   Property<String> name();
+
+   @Optional
+   Property<String> query();
 }

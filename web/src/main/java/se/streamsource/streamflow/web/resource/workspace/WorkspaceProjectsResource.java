@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.resource.workspace.context;
+package se.streamsource.streamflow.web.resource.workspace;
 
 import se.streamsource.dci.api.ContextNotFoundException;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResources;
-import se.streamsource.streamflow.web.context.workspace.table.WorkspaceProjectsContext;
+import se.streamsource.streamflow.web.context.workspace.WorkspaceProjectsContext;
 import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
 
 /**

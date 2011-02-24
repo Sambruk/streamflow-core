@@ -84,7 +84,7 @@ public class SearchResultTableModel
       ValueBuilder<TableQuery> builder = vbf.newValueBuilder( TableQuery.class );
       builder.prototype().tq().set( "select * limit 1000 where "+translatedQuery );
 
-      return client.query( "search", builder.newInstance(), TableValue.class );
+      return client.query( "cases", builder.newInstance(), TableValue.class );
    }
 
 

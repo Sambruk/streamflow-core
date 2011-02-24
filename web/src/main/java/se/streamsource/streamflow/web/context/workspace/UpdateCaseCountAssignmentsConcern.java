@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.context.workspace.table;
+package se.streamsource.streamflow.web.context.workspace;
 
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.concern.ConcernOf;
@@ -23,17 +23,18 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.dci.api.RoleMap;
-import se.streamsource.streamflow.web.domain.entity.gtd.Drafts;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
 import se.streamsource.streamflow.web.infrastructure.caching.Caches;
 import se.streamsource.streamflow.web.infrastructure.caching.Caching;
 import se.streamsource.streamflow.web.infrastructure.caching.CachingService;
 
 /**
- * JAVADOC
+ * Increase case count when creating new case in assignments
  */
-public abstract class UpdateCaseCountDraftsConcern
-   extends ConcernOf<DraftsContext>
-   implements DraftsContext
+public abstract class UpdateCaseCountAssignmentsConcern
+   extends ConcernOf<AssignmentsContext>
+   implements AssignmentsContext
 {
    @Optional
    @Service
@@ -44,10 +45,11 @@ public abstract class UpdateCaseCountDraftsConcern
 
    public void createcase()
    {
-      Drafts drafts = RoleMap.role( Drafts.class );
+      Owner owner  = RoleMap.role( Owner.class );
+      Assignee assignee  = RoleMap.role( Assignee.class );
 
-      // Update drafts for user
-      new Caching(caching, Caches.CASECOUNTS).addToCache( drafts.toString(), 1 );
+      // Update assignments for assignee
+      new Caching(caching, Caches.CASECOUNTS).addToCache( owner.toString()+":"+assignee.toString(), 1 );
 
       next.createcase();
    }

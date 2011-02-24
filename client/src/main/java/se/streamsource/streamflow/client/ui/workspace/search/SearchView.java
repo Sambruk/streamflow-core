@@ -17,52 +17,66 @@
 
 package se.streamsource.streamflow.client.ui.workspace.search;
 
-import ca.odell.glazedlists.BasicEventList;
-import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.swing.EventComboBoxModel;
-import org.jdesktop.application.Action;
-import org.jdesktop.application.ApplicationContext;
-import org.jdesktop.application.Task;
-import org.jdesktop.swingx.JXMonthView;
-import org.jdesktop.swingx.calendar.DateSelectionModel;
-import org.jdesktop.swingx.util.WindowUtils;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilder;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import org.qi4j.api.specification.Specifications;
-import org.qi4j.api.structure.Module;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.dci.value.link.LinksValue;
-import se.streamsource.dci.value.link.TitledLinkValue;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
-import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.client.util.dialog.DialogService;
-import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
-import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
-import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
-import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
+import static se.streamsource.streamflow.client.util.i18n.text;
 
-import javax.swing.*;
-import javax.swing.event.PopupMenuEvent;
-import javax.swing.event.PopupMenuListener;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.TimeZone;
 
-import static se.streamsource.streamflow.client.util.i18n.text;
+import javax.swing.ActionMap;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JTextField;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
+
+import org.jdesktop.application.Action;
+import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.swingx.JXMonthView;
+import org.jdesktop.swingx.calendar.DateSelectionModel;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.structure.Module;
+
+import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.dci.value.link.LinksValue;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.client.util.EventListSynch;
+import se.streamsource.streamflow.client.util.LinkListCellRenderer;
+import se.streamsource.streamflow.client.util.RefreshWhenShowing;
+import se.streamsource.streamflow.client.util.Refreshable;
+import se.streamsource.streamflow.client.util.WrapLayout;
+import se.streamsource.streamflow.client.util.i18n;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.swing.EventComboBoxModel;
 
 /**
  * JAVADOC
  */
 public class SearchView
       extends JPanel
-   implements TransactionListener
 {
    @Service
    DialogService dialogs;
@@ -70,15 +84,7 @@ public class SearchView
    @Structure
    Module module;
 
-   @Uses
-   Iterable<SaveSearchDialog> saveSearchDialogs;
-
-   @Uses
-   protected ObjectBuilder<HandleSearchesDialog> handleSearchesDialogs;
-
-//   private JComboBox searches;
    private JTextField searchField;
-   private SavedSearchesModel model;
 
    // Search term helpers
    private JComboBox status;
@@ -106,42 +112,26 @@ public class SearchView
       setLayout( new BoxLayout(this, BoxLayout.X_AXIS) );
       this.searchResultTableModel = searchResultTableModel;
       setLayout( new BoxLayout( this, BoxLayout.X_AXIS ) );
-      setBorder( BorderFactory.createEtchedBorder());
-
+      
       ActionMap am;
       setActionMap( am = context.getActionMap( this ) );
 
-      model = obf.newObjectBuilder( SavedSearchesModel.class ).use(client.getSubClient( "savedsearches" )).newInstance();
-
-/*
-      searches = new JComboBox(new EventComboBoxModel<LinkValue>( model.getList() ) );
-      searches.setMaximumSize( new Dimension( 200, (int) searches.getPreferredSize().getHeight() ) );
-      searches.setEditable( true );
-      searches.setMaximumRowCount( 10 );
-      searches.setRenderer( new SavedSearchListCellRenderer() );
-      searches.setEditor( new SearchComboEditor() );
-*/
-      searchField = new JTextField(20);
+      searchField = new JTextField(40);
       searchField.addActionListener( am.get( "search" ) );
-
-
 
       JPopupMenu options = new JPopupMenu();
       options.add( am.get( "saveSearch" ) );
       options.add( am.get( "handle" ) );
 
       search = new JPanel(new WrapLayout(FlowLayout.LEFT));
-      search.add( new JLabel( i18n.text( WorkspaceResources.search ) + ":" ) );
       search.add(searchField);
       search.add( Box.createHorizontalStrut( 10 ) );
-      search.add( new JButton( am.get( "add" ) ) );
-
+      
       {
          Box searchBox = Box.createHorizontalBox();
          JLabel label = new JLabel( i18n.text( WorkspaceResources.status ) );
          status = new JComboBox( new CaseStatesComboBoxModel(
                new String[]{CaseStates.OPEN.name(), CaseStates.ON_HOLD.name(), CaseStates.CLOSED.name()} ) );
-               //new String[]{CaseStates.OPEN.name(), CaseStates.ON_HOLD.name(), CaseStates.CLOSED.name()});
          label.setForeground( Color.gray );
          searchBox.add( label );
          searchBox.add( status );
@@ -281,7 +271,6 @@ public class SearchView
       addSearch( text( WorkspaceResources.project ) );
       addSearch( text( WorkspaceResources.created_on ) );
 
-      new RefreshWhenShowing( this, model);
       new RefreshWhenShowing( this, new Refreshable()
       {
          public void refresh()
@@ -385,6 +374,7 @@ public class SearchView
       }
    }
 
+  /*
    @Action
    public Task saveSearch()
    {
@@ -406,55 +396,8 @@ public class SearchView
       } else
          return null;
    }
+*/
 
-   @Action
-   public void handle()
-   {
-      HandleSearchesDialog handleSearchesDialog = handleSearchesDialogs.use( module.valueBuilderFactory(), this.model ).newInstance();
-      dialogs.showOkDialog( WindowUtils.findWindow( this ), handleSearchesDialog, text( WorkspaceResources.handle_searches ) );
-   }
-
-   public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
-   {
-      if (Events.matches( Specifications.or(Events.onEntities( model.getList() ), Events.withNames( "createdSavedSearch", "removedSavedSearch" )), transactions ))
-         model.refresh();
-   }
-
-   class SearchComboEditor extends JTextField
-         implements ComboBoxEditor
-   {
-      private LinkValue link;
-
-      public Component getEditorComponent()
-      {
-         return this;
-      }
-
-      public void setItem( Object anObject )
-      {
-         if (anObject instanceof TitledLinkValue)
-         {
-            this.link = (LinkValue) anObject;
-            this.setText( ((TitledLinkValue) anObject).title().get() );
-         }
-      }
-
-      public Object getItem()
-      {
-         return this.getText();
-      }
-
-      public LinkValue getLink()
-      {
-         return link;
-      }
-
-      public void clear()
-      {
-         link = null;
-         this.setText( "" );
-      }
-   }
 
    class CaseStatesComboBoxModel
       extends DefaultComboBoxModel

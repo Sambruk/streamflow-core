@@ -106,6 +106,7 @@ public class CasesTableView
    public static final int MILLIS_IN_DAY = (1000 * 60 * 60 * 24);
    public static final WorkspaceResources[] dueGroups = {WorkspaceResources.overdue, WorkspaceResources.duetoday, WorkspaceResources.duetomorrow, WorkspaceResources.duenextweek, WorkspaceResources.duenextmonth, WorkspaceResources.later, WorkspaceResources.noduedate};
 
+/*   
    private Matcher<CaseTableValue> labelMatcher = new Matcher<CaseTableValue>()
    {
       public boolean matches( CaseTableValue caseTableValue )
@@ -195,12 +196,13 @@ public class CasesTableView
             return 0;
       }
    };
-
+*/
    protected JXTable caseTable;
    protected CasesTableModel model;
    private TableFormat tableFormat;
    private ApplicationContext context;
 
+ /*  
    private JComboBox labels;
    private FilterList<CaseTableValue> labelFilterList;
    private EventList<String> labelList = new BasicEventList<String>();
@@ -218,10 +220,9 @@ public class CasesTableView
 
    private JComboBox grouping;
    private SeparatorList<CaseTableValue> groupingList;
-
+*/
    private JButton cxolumnSettings;
-   private JPopupMenu filterAddmenu;
-   private JPanel filters;
+   //private JPopupMenu filterAddmenu;
 
    public void init( @Service ApplicationContext context,
                      @Uses CasesTableModel casesTableModel,
@@ -251,11 +252,14 @@ public class CasesTableView
                   .getDefaultFocusTraversalKeys( KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS ) );
 
       caseTable.setColumnControlVisible( true );
+      
+      caseTable.setModel( new EventJXTableModel<CaseTableValue>( model.getEventList(), tableFormat ) );
 /*
       columnSettings = new JButton( i18n.icon( Icons.options, 16 ) );
       columnSettings.addActionListener( am.get( "columns" ) );
 */
 
+      /*
       filters = new JPanel( new WrapLayout( FlowLayout.LEFT ) );
       filters.add( new JLabel( text( WorkspaceResources.filter ) ) );
       filters.add( new JButton( am.get( "add" ) ) );
@@ -342,15 +346,8 @@ public class CasesTableView
          groupingBox.setVisible( false );
          filters.add( groupingBox );
       }
-
-      filterAddmenu = new JPopupMenu();
-      addFilter( text( WorkspaceResources.label ) );
-      addFilter( text( WorkspaceResources.assignee ) );
-      addFilter( text( WorkspaceResources.project ) );
-      addFilter( text( WorkspaceResources.sorting ) );
-      addFilter( text( WorkspaceResources.grouping ) );
-
-      labels();
+*/
+      //labels();
 
       caseTable.getColumn( 1 ).setPreferredWidth( 70 );
       caseTable.getColumn( 1 ).setMaxWidth( 100 );
@@ -372,11 +369,11 @@ public class CasesTableView
 
       Component horizontalGlue = Box.createHorizontalGlue();
       horizontalGlue.setPreferredSize( new Dimension( 1500, 10 ) );
-      filters.add( horizontalGlue );
+     // filters.add( horizontalGlue );
 
       JScrollPane caseScrollPane = new JScrollPane( caseTable, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED );
 //      caseScrollPane.setCorner( JScrollPane.UPPER_RIGHT_CORNER, columnSettings );
-      add( filters, BorderLayout.NORTH );
+     // add( filters, BorderLayout.NORTH );
       add( caseScrollPane, BorderLayout.CENTER );
 
       caseTable.setDefaultRenderer( Date.class, new DefaultTableRenderer( new StringValue()
@@ -438,6 +435,7 @@ public class CasesTableView
          public Component getTableCellRendererComponent( JTable table, Object separator, boolean isSelected, boolean hasFocus, int row, int column )
          {
             String value = "";
+            /*
             switch (grouping.getSelectedIndex())
             {
                case 1:
@@ -453,6 +451,7 @@ public class CasesTableView
                   value = text( dueGroups[dueOnGroup( ((CaseTableValue) ((SeparatorList.Separator) separator).first()).dueOn().get() )] );
                   break;
             }
+            */
             Component component = super.getTableCellRendererComponent( table, value, isSelected, hasFocus, row, column );
             component.setFont( component.getFont().deriveFont( Font.BOLD + Font.ITALIC ) );
             component.setBackground( Color.lightGray );
@@ -498,20 +497,15 @@ public class CasesTableView
             sortedAssignees.add( 0, text( WorkspaceResources.all ) );
             sortedProjects.add( 0, text( WorkspaceResources.all ) );
 
+            /*
             EventListSynch.synchronize( sortedLabels, labelList );
             EventListSynch.synchronize( sortedAssignees, assigneeList );
             EventListSynch.synchronize( sortedProjects, projectList );
+            */
          }
       } );
 
       new RefreshWhenShowing( this, model );
-   }
-
-   private void addFilter( String name )
-   {
-      JCheckBoxMenuItem status = new JCheckBoxMenuItem( name );
-      status.addActionListener( getActionMap().get( "showFilter" ) );
-      filterAddmenu.add( status );
    }
 
    public JXTable getCaseTable()
@@ -576,25 +570,6 @@ public class CasesTableView
    }
 
    @org.jdesktop.application.Action
-   public void add( ActionEvent event )
-   {
-      Component source = (Component) event.getSource();
-      filterAddmenu.show( source, 0, source.getHeight() );
-   }
-
-   @org.jdesktop.application.Action
-   public void showFilter()
-   {
-      for (int idx = 0; idx < filterAddmenu.getComponents().length; idx++)
-      {
-         Component component = filterAddmenu.getComponents()[idx];
-         JCheckBoxMenuItem checkBox = (JCheckBoxMenuItem) component;
-         filters.getComponent( idx + 2 ).setVisible( checkBox.isSelected() );
-      }
-      filters.revalidate();
-   }
-
-   @org.jdesktop.application.Action
    public void columns()
    {
       JPopupMenu optionsPopup = new JPopupMenu();
@@ -606,6 +581,7 @@ public class CasesTableView
 //      optionsPopup.show( columnSettings, 0, columnSettings.getHeight() );
    }
 
+/*   
    @org.jdesktop.application.Action
    public void labels()
    {
@@ -644,7 +620,7 @@ public class CasesTableView
 
       caseTable.setModel( new EventJXTableModel<CaseTableValue>( groupingList, tableFormat ) );
    }
-
+*/
    public void notifyTransactions( final Iterable<TransactionDomainEvents> transactions )
    {
 

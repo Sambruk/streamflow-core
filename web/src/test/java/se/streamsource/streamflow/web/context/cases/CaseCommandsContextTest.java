@@ -37,11 +37,11 @@ import se.streamsource.streamflow.web.context.administration.labels.SelectedLabe
 import se.streamsource.streamflow.web.context.organizations.OrganizationalUnitsContextTest;
 import se.streamsource.streamflow.web.context.organizations.ProjectsContextTest;
 import se.streamsource.streamflow.web.context.users.UsersContextTest;
+import se.streamsource.streamflow.web.context.workspace.DraftsContext;
+import se.streamsource.streamflow.web.context.workspace.WorkspaceProjectsContext;
 import se.streamsource.streamflow.web.context.workspace.cases.CaseCommandsContext;
 import se.streamsource.streamflow.web.context.workspace.cases.general.CaseGeneralCommandsContext;
 import se.streamsource.streamflow.web.context.workspace.cases.general.LabelableContext;
-import se.streamsource.streamflow.web.context.workspace.table.DraftsContext;
-import se.streamsource.streamflow.web.context.workspace.table.WorkspaceProjectsContext;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;

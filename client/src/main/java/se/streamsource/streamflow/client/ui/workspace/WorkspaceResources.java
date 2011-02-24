@@ -85,6 +85,8 @@ public enum WorkspaceResources
    // Context selection
    inboxes_node,
    drafts_node,
+   search_node,
+   perspectives_separator,
 
    assignments_node,
 

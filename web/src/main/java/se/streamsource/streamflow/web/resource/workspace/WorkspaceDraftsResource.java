@@ -14,33 +14,21 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.resource.workspace.context;
+package se.streamsource.streamflow.web.resource.workspace;
 
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResource;
-import se.streamsource.streamflow.web.context.workspace.table.DraftsContext;
-import se.streamsource.streamflow.web.context.workspace.table.WorkspaceContext;
+import se.streamsource.streamflow.web.context.workspace.DraftsContext;
 
 /**
  * JAVADOC
  */
-public class WorkspaceContextResource
+public class WorkspaceDraftsResource
       extends CommandQueryResource
 {
-   public WorkspaceContextResource()
-   {
-      super( WorkspaceContext.class );
-   }
-
    @SubResource
    public void drafts()
    {
       subResourceContexts( DraftsContext.class );
-   }
-
-   @SubResource
-   public void projects()
-   {
-      subResource( WorkspaceProjectsResource.class );
    }
 }

@@ -35,7 +35,7 @@ import se.streamsource.streamflow.resource.roles.DateDTO;
 import se.streamsource.streamflow.resource.roles.IntegerDTO;
 import se.streamsource.streamflow.resource.roles.NamedIndexDTO;
 import se.streamsource.streamflow.resource.user.*;
-import se.streamsource.streamflow.resource.user.profile.SearchValue;
+import se.streamsource.streamflow.resource.user.profile.PerspectiveValue;
 
 /**
  * JAVADOC
@@ -79,7 +79,7 @@ public class CommonResourceAssembler
             UserEntityValue.class,
             ProxyUserListDTO.class,
             ProxyUserDTO.class,
-            SearchValue.class,
+            PerspectiveValue.class,
             SelectedTemplatesValue.class,
             CaseOutputConfigValue.class).visibleIn( Visibility.application );
    }

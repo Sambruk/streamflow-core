@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.resource.workspace.context;
+package se.streamsource.streamflow.web.resource.workspace;
 
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResource;
-import se.streamsource.streamflow.web.context.workspace.context.AssignmentsContext;
-import se.streamsource.streamflow.web.context.workspace.context.InboxContext;
+import se.streamsource.streamflow.web.context.workspace.AssignmentsContext;
+import se.streamsource.streamflow.web.context.workspace.InboxContext;
 
 /**
  * JAVADOC

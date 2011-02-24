@@ -19,14 +19,14 @@ package se.streamsource.streamflow.web.domain.entity.user.profile;
 
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
-import se.streamsource.streamflow.web.domain.structure.user.profile.SavedSearch;
+import se.streamsource.streamflow.web.domain.structure.user.profile.Perspective;
 
 
-public interface SavedSearchEntity
+public interface PerspectiveEntity
       extends DomainEntity,
-      SavedSearch,
+      Perspective,
 
-      SavedSearch.Data,
+      Perspective.Data,
       Describable.Data
 {
 }

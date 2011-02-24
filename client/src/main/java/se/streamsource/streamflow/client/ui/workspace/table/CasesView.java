@@ -19,6 +19,7 @@ package se.streamsource.streamflow.client.ui.workspace.table;
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.Icons;
@@ -28,6 +29,7 @@ import se.streamsource.streamflow.client.util.HtmlPanel;
 import se.streamsource.streamflow.client.util.i18n;
 
 import javax.swing.*;
+
 import java.awt.*;
 import java.net.URL;
 
@@ -41,11 +43,13 @@ public class CasesView
 {
    private CasesTableView casesTableView;
    private CasesDetailView detailsView;
+   private CasesFilterView casesFilterView;
+   
    private JSplitPane splitPane;
    private CardLayout cardLayout = new CardLayout();
    private JComponent blank;
 
-   public CasesView( @Structure ObjectBuilderFactory obf, @Service ApplicationContext context )
+   public CasesView( @Structure ObjectBuilderFactory obf, @Service ApplicationContext context, @Uses CommandQueryClient client )
    {
       super();
 
@@ -54,10 +58,11 @@ public class CasesView
       setLayout( cardLayout );
 
       this.detailsView = obf.newObjectBuilder( CasesDetailView.class ).newInstance();
-
+      this.casesFilterView = obf.newObjectBuilder( CasesFilterView.class ).use(client.getSubClient("search")).newInstance();
+      casesFilterView.setVisible(false);
+      
       splitPane = new JSplitPane( JSplitPane.VERTICAL_SPLIT );
       splitPane.setOneTouchExpandable( true );
-      add( splitPane, BorderLayout.CENTER );
 
       splitPane.setTopComponent( new JPanel() );
       splitPane.setBottomComponent( detailsView );
@@ -66,9 +71,12 @@ public class CasesView
       splitPane.setDividerLocation( 1D );
       splitPane.setBorder( BorderFactory.createEmptyBorder() );
 
-
+      JPanel topPanel = new JPanel( new BorderLayout());
+      topPanel.add( casesFilterView, BorderLayout.NORTH);
+      topPanel.add( splitPane, BorderLayout.CENTER);
+      
       add( blank = createBlankPanel(), "blank" );
-      add( splitPane, "cases" );
+      add( topPanel, "cases" );
 
       cardLayout.show( this, "blank" );
    }
@@ -82,6 +90,18 @@ public class CasesView
       return blankPanel;
    }
 
+   public void toogleFilterVisible()
+   {
+      boolean visible = casesFilterView.isVisible();
+      casesFilterView.setVisible(!visible);
+      if (!visible) {
+         // Minimize the bottom component
+      } else 
+      {
+         // Restore the bottom component
+      }
+   }
+   
    public void showTable( CasesTableView casesTableView )
    {
       cardLayout.show( this, "cases" );
