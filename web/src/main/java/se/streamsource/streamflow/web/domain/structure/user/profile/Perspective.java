@@ -17,39 +17,20 @@
 
 package se.streamsource.streamflow.web.domain.structure.user.profile;
 
-import org.qi4j.api.common.Optional;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
+
 import se.streamsource.streamflow.domain.structure.Describable;
-import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.resource.user.profile.PerspectiveValue;
 
 
 @Mixins(Perspective.Mixin.class)
 public interface Perspective
       extends Describable
 {
-   void changeQuery( String query );
-
+   
    interface Data
    {
-      @Optional
-      Property<String> query();
-
-      void changedQuery( @Optional DomainEvent event, String query);
-   }
-
-   abstract class Mixin
-         implements Perspective, Data
-   {
-      public void changeQuery( String query )
-      {
-         if (!query().get().equals( query ))
-            changedQuery(null, query );
-      }
-
-      public void changedQuery( @Optional DomainEvent event, String query )
-      {
-         query().set(query);
-      }
+      Property<PerspectiveValue> perspective();
    }
 }

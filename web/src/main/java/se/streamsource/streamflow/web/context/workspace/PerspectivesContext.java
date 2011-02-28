@@ -40,7 +40,7 @@ public class PerspectivesContext
       return searches.perspectives();
    }
 
-   public void createSearch( PerspectiveValue perspective )
+   public void createPerspective( PerspectiveValue perspective )
    {
       Perspectives perspectives = RoleMap.role( Perspectives.class );
       perspectives.createPerspective( perspective );

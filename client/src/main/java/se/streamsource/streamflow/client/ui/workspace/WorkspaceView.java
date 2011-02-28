@@ -27,6 +27,8 @@ import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.HierarchyEvent;
+import java.awt.event.HierarchyListener;
 import java.awt.event.KeyEvent;
 
 import javax.swing.ActionMap;
@@ -63,6 +65,8 @@ import se.streamsource.streamflow.client.ui.workspace.cases.CaseResources;
 import se.streamsource.streamflow.client.ui.workspace.context.WorkspaceContextView;
 import se.streamsource.streamflow.client.ui.workspace.search.SearchResultTableModel;
 import se.streamsource.streamflow.client.ui.workspace.search.SearchView;
+import se.streamsource.streamflow.client.ui.workspace.table.PerspectiveModel;
+import se.streamsource.streamflow.client.ui.workspace.table.PerspectiveView;
 import se.streamsource.streamflow.client.ui.workspace.table.CasesTableFormatter;
 import se.streamsource.streamflow.client.ui.workspace.table.CasesTableView;
 import se.streamsource.streamflow.client.ui.workspace.table.CasesView;
@@ -71,6 +75,7 @@ import se.streamsource.streamflow.client.util.RoundedBorder;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
+import se.streamsource.streamflow.resource.user.profile.PerspectiveValue;
 import ca.odell.glazedlists.gui.TableFormat;
 
 import com.jgoodies.forms.factories.Borders;
@@ -91,7 +96,7 @@ public class WorkspaceView
    private JLabel selectedContext;
    private JButton selectContextButton;
    private JButton createCaseButton;
-   private JButton filterButton;
+   private JButton perspectiveButton;
 
    private JDialog popup;
 
@@ -140,10 +145,10 @@ public class WorkspaceView
             .getValue( javax.swing.Action.ACCELERATOR_KEY ),
             JComponent.WHEN_IN_FOCUSED_WINDOW );
 
-      // Filter search
-      javax.swing.Action filterAction = am.get( "filter" );
-      filterButton = new JButton( filterAction );
-      filterButton.registerKeyboardAction( filterAction, (KeyStroke) filterAction
+      // Perspective
+      javax.swing.Action perspectiveAction = am.get( "perspective" );
+      perspectiveButton = new JButton( perspectiveAction );
+      perspectiveButton.registerKeyboardAction( perspectiveAction, (KeyStroke) perspectiveAction
             .getValue( javax.swing.Action.ACCELERATOR_KEY ),
             JComponent.WHEN_IN_FOCUSED_WINDOW );
 
@@ -160,13 +165,13 @@ public class WorkspaceView
       topPanel.add(contextSelectionPanel, BorderLayout.WEST);
       
       contextToolbar = new JPanel();
-      contextToolbar.add( filterButton );
+      contextToolbar.add( perspectiveButton );
       contextToolbar.add( createCaseButton );
       contextToolbar.add( refreshButton);
       topPanel.add(contextToolbar, BorderLayout.EAST);
       contextToolbar.setVisible( false );
       
-      searchResultTableModel = obf.newObjectBuilder( SearchResultTableModel.class ).use( client.getSubClient("search") ).newInstance();
+      searchResultTableModel = obf.newObjectBuilder( SearchResultTableModel.class ).use( client.getSubClient("search")).newInstance();
 
       searchView = obf.newObjectBuilder( SearchView.class ).use(searchResultTableModel, client).newInstance();
       topPanel.add( searchView, BorderLayout.CENTER );
@@ -203,10 +208,18 @@ public class WorkspaceView
                ContextItem contextItem = (ContextItem) list.getSelectedValue();
                if (contextItem != null)
                {
-                  boolean isSearch = contextItem.getRelation().equals("search");
+                  boolean isSearch = (contextItem.getRelation().equals("search") || contextItem.getRelation().equals("perspective"));
                   searchView.setVisible(isSearch);
                   contextToolbar.setVisible( true );
                   
+                  if (contextItem.getRelation().equals("perspective"))
+                  {
+                     PerspectiveValue perspectiveValue = contextItem.getClient().query("index", PerspectiveValue.class);
+                     searchView.getTextField().setText(perspectiveValue.query().get());
+                     searchResultTableModel.search(perspectiveValue.query().get());
+                     searchResultTableModel.getPerspectiveModel().setSelectedLabels(perspectiveValue.labels().get());
+                     searchResultTableModel.getPerspectiveModel().setSelectedStatuses(perspectiveValue.statuses().get());
+                  }
                   TableFormat tableFormat;
                   CasesTableView casesTable;
                   tableFormat = new CasesTableFormatter();
@@ -220,7 +233,7 @@ public class WorkspaceView
                   setContextString(contextItem);
 
                   createCaseButton.setVisible(contextItem.getRelation().equals("assign") || contextItem.getRelation().equals("draft"));
-                  filterButton.setVisible(isSearch);
+                  perspectiveButton.setVisible(isSearch);
 
                } else
                {
@@ -231,6 +244,15 @@ public class WorkspaceView
             }
          }
       } );
+      
+      addHierarchyListener(new HierarchyListener()
+      {
+         public void hierarchyChanged(HierarchyEvent e)
+         {
+            if ((e.getChangeFlags() & HierarchyEvent.SHOWING_CHANGED)>0 && !WorkspaceView.this.isShowing())
+              killPopup();
+         }
+      });
    }
 
    private void setContextString( ContextItem contextItem )
@@ -326,9 +348,16 @@ public class WorkspaceView
    }
 
    @Action
-   public void filter()
+   public void perspective()
    {
       casesView.toogleFilterVisible();
+   }
+   
+   public void savePerspective(String name)
+   {
+      PerspectiveModel filterModel = searchResultTableModel.getPerspectiveModel();
+      CommandQueryClient subClient = client.getSubClient("perspectives");
+      subClient.postCommand("createperspective", filterModel.createPerspective(name));
    }
    
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )

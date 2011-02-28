@@ -136,6 +136,7 @@ import se.streamsource.streamflow.client.ui.menu.EditMenu;
 import se.streamsource.streamflow.client.ui.menu.FileMenu;
 import se.streamsource.streamflow.client.ui.menu.HelpMenu;
 import se.streamsource.streamflow.client.ui.menu.OverviewMenuBar;
+import se.streamsource.streamflow.client.ui.menu.PerspectiveMenu;
 import se.streamsource.streamflow.client.ui.menu.ViewMenu;
 import se.streamsource.streamflow.client.ui.menu.WindowMenu;
 import se.streamsource.streamflow.client.ui.menu.WorkspaceMenuBar;
@@ -205,8 +206,9 @@ import se.streamsource.streamflow.client.ui.workspace.search.PerspectivesModel;
 import se.streamsource.streamflow.client.ui.workspace.search.SearchResultTableModel;
 import se.streamsource.streamflow.client.ui.workspace.search.SearchView;
 import se.streamsource.streamflow.client.ui.workspace.table.CasesDetailView;
-import se.streamsource.streamflow.client.ui.workspace.table.CasesFilterModel;
-import se.streamsource.streamflow.client.ui.workspace.table.CasesFilterView;
+import se.streamsource.streamflow.client.ui.workspace.table.PerspectiveModel;
+import se.streamsource.streamflow.client.ui.workspace.table.PerspectiveOptionsView;
+import se.streamsource.streamflow.client.ui.workspace.table.PerspectiveView;
 import se.streamsource.streamflow.client.ui.workspace.table.CasesTableModel;
 import se.streamsource.streamflow.client.ui.workspace.table.CasesTableView;
 import se.streamsource.streamflow.client.ui.workspace.table.CasesView;
@@ -452,7 +454,7 @@ public class UIAssembler
             FormsAdminView.class, SubmittedFormsAdminView.class, CheckboxesPanel.class,
             ComboBoxPanel.class, OptionButtonsPanel.class, OpenSelectionPanel.class, ListBoxPanel.class, DatePanel.class,
             NumberPanel.class, TextAreaFieldPanel.class, TextFieldPanel.class, AttachmentFieldPanel.class, 
-            HistoryView.class, MessagesHistoryView.class
+            HistoryView.class, MessagesHistoryView.class, PerspectiveOptionsView.class
       );
 
       addDialogs( module, ContactLookupResultDialog.class );
@@ -461,7 +463,7 @@ public class UIAssembler
 
       addMV( module, CaseModel.class, CaseInfoView.class );
 
-      addMV( module, CasesFilterModel.class, CasesFilterView.class);
+      addMV( module, PerspectiveModel.class, PerspectiveView.class);
       
       addViews( module,
             CaseDetailView.class );
@@ -563,7 +565,8 @@ public class UIAssembler
             ViewMenu.class,
             AccountMenu.class,
             WindowMenu.class,
-            HelpMenu.class
+            HelpMenu.class,
+            PerspectiveMenu.class
       );
 
       addDialogs( module, CreateAccountDialog.class, AccountsDialog.class );

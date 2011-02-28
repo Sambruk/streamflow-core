@@ -80,34 +80,43 @@ public interface
                   queryBuilder.append( " status:" ).append( search.getValue() );
                } else if (search.hasName( "label" ))
                {
-                  StringBuilder labelQueryBuilder = new StringBuilder( "type:se.streamsource.streamflow.web.domain.entity.label.LabelEntity" );
-                  labelQueryBuilder.append( " (description:" ).append( search.getQuotedValue() );
-                  labelQueryBuilder.append( " OR ntext:").append( search.getQuotedValue() ).append( ")" );
+                  List<LabelEntity> labels = new ArrayList<LabelEntity>();
+                  for (String label : search.getValue().split(","))
+                  {
 
-                  Query<LabelEntity> labels = module.queryBuilderFactory()
-                        .newNamedQuery( LabelEntity.class, uow, "solrquery" ).setVariable( "query", labelQueryBuilder.toString() );
+                     StringBuilder labelQueryBuilder = new StringBuilder(
+                           "type:se.streamsource.streamflow.web.domain.entity.label.LabelEntity");
+                     labelQueryBuilder.append(" (description:").append(label);
+                     labelQueryBuilder.append(" OR ntext:").append(label).append(")");
 
+                      Iterables.addAll(labels,  module.queryBuilderFactory()
+                           .newNamedQuery(LabelEntity.class, uow, "solrquery")
+                           .setVariable("query", labelQueryBuilder.toString()));
+
+                  }
                   if (labels.iterator().hasNext())
                   {
-                     queryBuilder.append( " labels:(" );
+                     queryBuilder.append(" labels:(");
                      int count = 0;
-                     for (LabelEntity label : labels)
+                     for (LabelEntity labelEntity : labels)
                      {
                         if (count == 0)
                         {
-                           queryBuilder.append( label.identity().get() );
+                           queryBuilder.append(labelEntity.identity().get());
                         } else
                         {
-                           queryBuilder.append( " OR " ).append( label.identity().get() );
+                           queryBuilder.append(" OR ").append(labelEntity.identity().get());
                         }
 
                         count++;
                      }
-                     queryBuilder.append( ")" );
+                     queryBuilder.append(")");
                   } else
                   {
-                     // dismiss search - no label/s with given name exist. Return empty search
-                     return module.queryBuilderFactory().newQueryBuilder( Case.class ).newQuery( Collections.<Case>emptyList() );
+                     // dismiss search - no label/s with given name exist.
+                     // Return empty search
+                     return module.queryBuilderFactory().newQueryBuilder(Case.class)
+                           .newQuery(Collections.<Case> emptyList());
                   }
                } else if (search.hasName( "caseType" ))
                {

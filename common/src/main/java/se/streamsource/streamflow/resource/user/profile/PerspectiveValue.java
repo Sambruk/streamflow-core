@@ -17,6 +17,8 @@
 
 package se.streamsource.streamflow.resource.user.profile;
 
+import java.util.List;
+
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
@@ -26,10 +28,13 @@ import org.qi4j.library.constraints.annotation.MaxLength;
 public interface PerspectiveValue
       extends ValueComposite
 {
-   @Optional
    @MaxLength(50)
    Property<String> name();
 
    @Optional
    Property<String> query();
+   
+   Property<List<String>> statuses();
+   
+   Property<List<String>> labels();
 }

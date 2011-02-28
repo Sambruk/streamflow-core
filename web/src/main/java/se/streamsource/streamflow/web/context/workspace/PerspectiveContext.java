@@ -20,9 +20,11 @@ package se.streamsource.streamflow.web.context.workspace;
 import org.qi4j.api.query.Query;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.api.DeleteContext;
+import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.table.TableQuery;
+import se.streamsource.streamflow.resource.user.profile.PerspectiveValue;
 import se.streamsource.streamflow.web.domain.entity.user.SearchCaseQueries;
 import se.streamsource.streamflow.web.domain.interaction.profile.Perspectives;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
@@ -35,25 +37,19 @@ import static se.streamsource.dci.api.RoleMap.*;
  * JAVADOC
  */
 public class PerspectiveContext
-      implements DeleteContext
+      implements DeleteContext, IndexContext<PerspectiveValue>
 {
    public void delete() throws ResourceException
    {
       role( Perspectives.class ).removePerspective( RoleMap.role( Perspective.class ) );
    }
 
-   public void changeQuery( StringValue query )
-   {
-      Perspective perspective = role( Perspective.class );
-      perspective.changeQuery( query.string().get() );
-   }
-   
    public Iterable<Case> cases( TableQuery tableQuery)
    {
       SearchCaseQueries caseQueries = RoleMap.role( SearchCaseQueries.class );
       Perspective.Data perspective = RoleMap.role( Perspective.Data.class );
       
-      Query<Case> caseQuery = caseQueries.search( perspective.query().get() );
+      Query<Case> caseQuery = caseQueries.search( perspective.perspective().get().query().get() );
 
       // Paging
       if (tableQuery.offset() != null)
@@ -62,5 +58,10 @@ public class PerspectiveContext
          caseQuery.maxResults( Integer.parseInt( tableQuery.limit()) );
 
       return caseQuery;
+   }
+
+   public PerspectiveValue index()
+   {
+      return role( Perspective.Data.class).perspective().get();
    }
 }

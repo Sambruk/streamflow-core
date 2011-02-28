@@ -45,7 +45,7 @@ public interface Perspectives
       @Aggregated
       ManyAssociation<Perspective> perspectives();
 
-      Perspective createdPerspective( @Optional DomainEvent event, String id, String query );
+      Perspective createdPerspective( @Optional DomainEvent event, String id, PerspectiveValue perspective );
 
       void removedPerspective( @Optional DomainEvent event, Perspective perspective );
    }
@@ -65,14 +65,14 @@ public interface Perspectives
       public void createPerspective( PerspectiveValue perspective )
       {
          String id = idgen.generate( Identity.class );
-         Perspective newSearch = createdPerspective( null, id, perspective.query().get() );
-         newSearch.changeDescription( perspective.name().get() );
+         Perspective newPerspective = createdPerspective( null, id, perspective );
+         newPerspective.changeDescription( perspective.name().get() );
       }
 
-      public Perspective createdPerspective( DomainEvent event, String id, String query )
+      public Perspective createdPerspective( DomainEvent event, String id, PerspectiveValue perspectiveValue )
       {
          EntityBuilder<PerspectiveEntity> builder = uowf.currentUnitOfWork().newEntityBuilder( PerspectiveEntity.class, id );
-         builder.instance().query().set( query );
+         builder.instance().perspective().set(perspectiveValue);
          Perspective perspective = builder.newInstance();
          state.perspectives().add( perspective );
          return perspective;

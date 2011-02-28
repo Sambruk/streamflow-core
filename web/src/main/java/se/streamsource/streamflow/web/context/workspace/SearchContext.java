@@ -17,11 +17,18 @@
 
 package se.streamsource.streamflow.web.context.workspace;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
 import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.structure.Module;
+import org.qi4j.api.util.Iterables;
+
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.table.TableQuery;
 import se.streamsource.streamflow.domain.structure.Describable;
@@ -30,7 +37,11 @@ import se.streamsource.streamflow.web.domain.entity.label.LabelEntity;
 import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
 import se.streamsource.streamflow.web.domain.entity.user.SearchCaseQueries;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
+import se.streamsource.streamflow.web.domain.interaction.gtd.DueOn;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
+import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
+import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
 import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
 
 import static org.qi4j.api.query.QueryExpressions.eq;
@@ -49,12 +60,27 @@ public class SearchContext
       SearchCaseQueries caseQueries = RoleMap.role( SearchCaseQueries.class );
       Query<Case> caseQuery = caseQueries.search( tableQuery.where() );
 
+      caseQuery = module.queryBuilderFactory().newQueryBuilder( Case.class ).newQuery(caseQuery);
+      
       // Paging
       if (tableQuery.offset() != null)
          caseQuery.firstResult( Integer.parseInt( tableQuery.offset()) );
       if (tableQuery.limit() != null)
          caseQuery.maxResults( Integer.parseInt( tableQuery.limit()) );
-
+      if (tableQuery.orderBy() != null)
+         if (tableQuery.orderBy().equals("status"))
+         {            
+            caseQuery.orderBy( QueryExpressions.orderBy( QueryExpressions.templateFor(Status.Data.class).status()));
+         } else if (tableQuery.orderBy().equals("description"))
+         {            
+            caseQuery.orderBy( QueryExpressions.orderBy( QueryExpressions.templateFor(Describable.Data.class).description()));
+         } else if (tableQuery.orderBy().equals("dueOn"))
+         {            
+            caseQuery.orderBy( QueryExpressions.orderBy( QueryExpressions.templateFor(DueOn.Data.class).dueOn()));
+         } else if (tableQuery.orderBy().equals("createdOn"))
+         {            
+            caseQuery.orderBy( QueryExpressions.orderBy( QueryExpressions.templateFor(CreatedOn.class).createdOn()));
+         } 
       return caseQuery;
    }
 

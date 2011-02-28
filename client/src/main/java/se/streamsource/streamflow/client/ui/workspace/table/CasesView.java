@@ -16,6 +16,7 @@
 
 package se.streamsource.streamflow.client.ui.workspace.table;
 
+import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
@@ -43,23 +44,25 @@ public class CasesView
 {
    private CasesTableView casesTableView;
    private CasesDetailView detailsView;
-   private CasesFilterView casesFilterView;
+   private PerspectiveView perspectiveView;
    
    private JSplitPane splitPane;
    private CardLayout cardLayout = new CardLayout();
    private JComponent blank;
+   private final ObjectBuilderFactory obf;
+   private JPanel topPanel;
 
    public CasesView( @Structure ObjectBuilderFactory obf, @Service ApplicationContext context, @Uses CommandQueryClient client )
    {
       super();
+      this.obf = obf;
 
       setActionMap( context.getActionMap( this ) );
 
       setLayout( cardLayout );
 
       this.detailsView = obf.newObjectBuilder( CasesDetailView.class ).newInstance();
-      this.casesFilterView = obf.newObjectBuilder( CasesFilterView.class ).use(client.getSubClient("search")).newInstance();
-      casesFilterView.setVisible(false);
+      
       
       splitPane = new JSplitPane( JSplitPane.VERTICAL_SPLIT );
       splitPane.setOneTouchExpandable( true );
@@ -71,8 +74,7 @@ public class CasesView
       splitPane.setDividerLocation( 1D );
       splitPane.setBorder( BorderFactory.createEmptyBorder() );
 
-      JPanel topPanel = new JPanel( new BorderLayout());
-      topPanel.add( casesFilterView, BorderLayout.NORTH);
+      topPanel = new JPanel( new BorderLayout());
       topPanel.add( splitPane, BorderLayout.CENTER);
       
       add( blank = createBlankPanel(), "blank" );
@@ -92,14 +94,8 @@ public class CasesView
 
    public void toogleFilterVisible()
    {
-      boolean visible = casesFilterView.isVisible();
-      casesFilterView.setVisible(!visible);
-      if (!visible) {
-         // Minimize the bottom component
-      } else 
-      {
-         // Restore the bottom component
-      }
+      boolean visible = perspectiveView.isVisible();
+      perspectiveView.setVisible(!visible);
    }
    
    public void showTable( CasesTableView casesTableView )
@@ -108,6 +104,15 @@ public class CasesView
       this.casesTableView = casesTableView;
       splitPane.setTopComponent( casesTableView );
       clearCase();
+      if (perspectiveView == null) 
+      {
+         perspectiveView = obf.newObjectBuilder( PerspectiveView.class ).use( casesTableView.getModel().getPerspectiveModel()).newInstance();
+      } else
+      {
+         perspectiveView.setModel(casesTableView.getModel().getPerspectiveModel());
+      }
+      perspectiveView.setVisible(false);
+      topPanel.add( perspectiveView, BorderLayout.NORTH);
    }
 
    public void clearTable()

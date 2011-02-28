@@ -41,12 +41,16 @@ import org.restlet.data.Protocol;
 import org.restlet.routing.Filter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.assembler.StreamflowClientAssembler;
 import se.streamsource.streamflow.client.ui.DebugWindow;
 import se.streamsource.streamflow.client.ui.account.*;
 import se.streamsource.streamflow.client.ui.administration.AdministrationWindow;
 import se.streamsource.streamflow.client.ui.overview.OverviewWindow;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceView;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceWindow;
+import se.streamsource.streamflow.client.ui.workspace.table.PerspectiveModel;
 import se.streamsource.streamflow.client.util.JavaHelp;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.i18n;
@@ -73,7 +77,7 @@ import static se.streamsource.streamflow.client.util.i18n.text;
  */
 @ProxyActions({"cut", "copy", "paste",
       "createDraft", "complete", "assign", "drop", "forward", // Case related proxy actions
-      "find", "selectTree", "selectTable", "selectDetails"})
+      "find", "selectTree", "selectTable", "selectDetails", "managePerspectives", "savePerspective"})
 public class StreamflowApplication
       extends SingleFrameApplication
    implements TransactionListener
@@ -274,7 +278,19 @@ public class StreamflowApplication
       ProfileView profile = obf.newObjectBuilder( ProfileView.class ).use( accountSelector.getSelectedAccount().serverResource().getSubClient( "account" ).getSubClient( "profile" )).newInstance();
       dialogs.showOkDialog( getMainFrame(), profile, text( AccountResources.profile_title ) );
    }
-
+   
+//   @Action
+//   public void managePerspectives()
+//   {
+//      
+//   }
+//
+//   @Action
+//   public void savePerspective()
+//   {
+//      workspaceWindow.getCurrentWorkspace().savePerspective("My perspective");
+//   }
+//   
    public AccountsModel accountsModel()
    {
       return accountsModel;

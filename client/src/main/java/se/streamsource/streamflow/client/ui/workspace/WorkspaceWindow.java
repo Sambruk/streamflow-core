@@ -108,5 +108,10 @@ public class WorkspaceWindow
       accountSelector.addListSelectionListener( workspaceListener );
    }
 
+   public WorkspaceView getCurrentWorkspace()
+   {
+      return currentWorkspace;
+   }
+
 
 }

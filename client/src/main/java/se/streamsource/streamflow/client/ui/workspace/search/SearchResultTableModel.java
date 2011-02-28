@@ -17,18 +17,22 @@
 
 package se.streamsource.streamflow.client.ui.workspace.search;
 
+import java.util.Collections;
+
 import org.jdesktop.application.Application;
 import org.jdesktop.application.Task;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
+
 import se.streamsource.dci.value.table.TableQuery;
 import se.streamsource.dci.value.table.TableValue;
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseTableValue;
+import se.streamsource.streamflow.client.ui.workspace.table.PerspectiveModel;
 import se.streamsource.streamflow.client.ui.workspace.table.CasesTableModel;
+import se.streamsource.streamflow.client.ui.workspace.table.SortBy;
 import se.streamsource.streamflow.client.util.EventListSynch;
-
-import java.util.Collections;
 
 /**
  * Model for search results
@@ -36,6 +40,11 @@ import java.util.Collections;
 public class SearchResultTableModel
       extends CasesTableModel
 {
+   public SearchResultTableModel(@Uses PerspectiveModel perspecitveModel)
+   {
+      super(perspecitveModel);
+   }
+
    @Structure
    ValueBuilderFactory vbf;
 
@@ -81,8 +90,30 @@ public class SearchResultTableModel
    {
       String translatedQuery = SearchTerms.translate( searchString );
 
+      for (String status : perspectiveModel.getSelectedStatuses())
+      {
+         translatedQuery += " status:" + status;
+      }
+      
+      if (!perspectiveModel.getSelectedLabels().isEmpty())
+      {
+         translatedQuery += " label:";
+         String comma = "";
+         for (String label : perspectiveModel.getSelectedLabels())
+         {
+            translatedQuery += comma + label;
+            comma = ",";
+         }
+      }
+      
       ValueBuilder<TableQuery> builder = vbf.newValueBuilder( TableQuery.class );
-      builder.prototype().tq().set( "select * limit 1000 where "+translatedQuery );
+      String query = "select * where " + translatedQuery;
+      if (perspectiveModel.getSortBy() != SortBy.none)
+      {
+         query += " order by " + perspectiveModel.getSortBy().name();
+      }
+      query += " limit 1000";
+      builder.prototype().tq().set( query );
 
       return client.query( "cases", builder.newInstance(), TableValue.class );
    }
