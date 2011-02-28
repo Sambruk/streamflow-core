@@ -90,11 +90,17 @@ public class SearchResultTableModel
    {
       String translatedQuery = SearchTerms.translate( searchString );
 
-      for (String status : perspectiveModel.getSelectedStatuses())
+      if (!perspectiveModel.getSelectedStatuses().isEmpty())
       {
-         translatedQuery += " status:" + status;
+         translatedQuery += " status:";
+         String comma = "";
+         for (String status : perspectiveModel.getSelectedStatuses())
+         {
+            translatedQuery += comma + status;
+            comma = ",";
+         }
       }
-      
+
       if (!perspectiveModel.getSelectedLabels().isEmpty())
       {
          translatedQuery += " label:";

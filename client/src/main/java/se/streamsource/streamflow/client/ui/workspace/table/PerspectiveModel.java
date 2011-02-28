@@ -1,6 +1,9 @@
 package se.streamsource.streamflow.client.ui.workspace.table;
 
+import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.OPEN;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Observable;
 
@@ -27,10 +30,10 @@ public class PerspectiveModel extends Observable implements Refreshable
    BasicEventList<LinkValue> possibleLabels = new BasicEventList<LinkValue>();
    List<String> selectedLabels = new ArrayList<String>();
 
-   List<String> selectedStatuses = new ArrayList<String>();
+   List<String> selectedStatuses = new ArrayList<String>(Arrays.asList(OPEN.name()));
    
-   SortBy sortBy = SortBy.none;
    GroupBy groupBy = GroupBy.none;
+   SortBy sortBy = SortBy.none;
    
    public void refresh()
    {
@@ -80,6 +83,8 @@ public class PerspectiveModel extends Observable implements Refreshable
       builder.prototype().name().set(name);
       builder.prototype().labels().set(getSelectedLabels());
       builder.prototype().statuses().set(getSelectedStatuses());
+      builder.prototype().sortBy().set(getSortBy().name());
+      builder.prototype().groupBy().set(getGroupBy().name());
       
       return builder.newInstance();
    }

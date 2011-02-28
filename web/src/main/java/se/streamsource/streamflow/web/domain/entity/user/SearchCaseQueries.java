@@ -77,7 +77,22 @@ public interface
 
                if (search.hasName("status"))
                {
-                  queryBuilder.append( " status:" ).append( search.getValue() );
+                  queryBuilder.append(" status:(");
+                  int count = 0;
+                  for (String status : Arrays.asList(search.getValue().split(",")))
+                  {
+                     if (count == 0)
+                     {
+                        queryBuilder.append(status);
+                     } else
+                     {
+                        queryBuilder.append(" OR ").append(status);
+                     }
+
+                     count++;
+                  }
+                  queryBuilder.append(")");
+                  
                } else if (search.hasName( "label" ))
                {
                   List<LabelEntity> labels = new ArrayList<LabelEntity>();

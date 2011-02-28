@@ -15,13 +15,11 @@ import java.awt.event.HierarchyEvent;
 import java.awt.event.HierarchyListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListCellRenderer;
-import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JList;
@@ -40,6 +38,7 @@ import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.util.Iterables;
 
 import se.streamsource.streamflow.client.Icons;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.i18n;
 
@@ -56,8 +55,6 @@ public class PerspectiveView extends JPanel
 
    private ObjectBuilderFactory obf;
 
-   private Box groupingPanel;
-
    private JPanel filterPanel;
 
    private JPanel viewPanel;
@@ -65,6 +62,8 @@ public class PerspectiveView extends JPanel
    private JList groupByList;
 
    private JList sortByList;
+
+   private JList statusList;
 
    public void initView(final @Service ApplicationContext context, final @Structure ObjectBuilderFactory obf,
          final @Uses PerspectiveModel model)
@@ -83,6 +82,53 @@ public class PerspectiveView extends JPanel
       addPopupButton(filterPanel, "filterLabel");
       add(filterPanel, BorderLayout.WEST);
 
+      statusList = new JList(new Object[]{OPEN.name(), ON_HOLD.name(), CLOSED.name()});
+      statusList.setSelectedIndex(0);
+      statusList.setCellRenderer(new DefaultListCellRenderer(){
+
+         @Override
+         public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected,
+               boolean cellHasFocus)
+         {
+            setFont(list.getFont());
+            setBackground(list.getBackground());
+            setForeground(list.getForeground());
+            if (model.getSelectedStatuses().contains(value))
+            {
+               setIcon(i18n.icon(Icons.check, 12));
+               setBorder(BorderFactory.createEmptyBorder(4, 0, 0, 0 ));
+            } else {
+
+               setIcon(null);
+               setBorder(BorderFactory.createEmptyBorder(4, 16, 0, 0 ));
+            }
+            setText(text(WorkspaceResources.valueOf(value.toString())));
+            return this;
+         }});
+      
+      statusList.addListSelectionListener(new ListSelectionListener()
+      {
+
+         public void valueChanged(ListSelectionEvent event)
+         {
+            if (!event.getValueIsAdjusting())
+            {
+               String selectedValue = (String) statusList.getSelectedValue();
+               if (selectedValue != null)
+               {
+                  if (model.getSelectedStatuses().contains(selectedValue))
+                  {
+                     model.getSelectedStatuses().remove(selectedValue);
+                  } else
+                  {
+                     model.getSelectedStatuses().add(selectedValue);
+                  }
+                  statusList.clearSelection();
+               }
+            }
+         }
+      });
+      
       viewPanel = new JPanel( new FlowLayout(FlowLayout.RIGHT));
       addPopupButton(viewPanel, "viewSorting");
       addPopupButton(viewPanel, "viewGrouping");
@@ -167,11 +213,7 @@ public class PerspectiveView extends JPanel
    @Action
    public void filterStatus()
    {
-      optionsPanel.setLayout(new BoxLayout(optionsPanel, BoxLayout.PAGE_AXIS));
-      
-      createCheckBox(optionsPanel, text(OPEN), OPEN.name(), model.getSelectedStatuses());
-      createCheckBox(optionsPanel, text(ON_HOLD), ON_HOLD.name(), model.getSelectedStatuses());
-      createCheckBox(optionsPanel, text(CLOSED), CLOSED.name(), model.getSelectedStatuses());
+      optionsPanel.add(statusList);
    }
    
    @Action
@@ -197,29 +239,6 @@ public class PerspectiveView extends JPanel
    public void viewGrouping()
    {
       optionsPanel.add(groupByList);
-   }
-   
-   private void createCheckBox(JPanel panel, String text, String value, final List<String> values)
-   {
-      ItemListener statusListener = new ItemListener()
-      {
-         
-         public void itemStateChanged(ItemEvent e)
-         {
-            if (e.getStateChange() == ItemEvent.SELECTED)
-            {
-               values.add(((JCheckBox)e.getSource()).getActionCommand());
-            } else if (e.getStateChange() == ItemEvent.DESELECTED)
-            {
-               values.remove(((JCheckBox)e.getSource()).getActionCommand());
-            }
-         }
-      };
-      JCheckBox checkBox = new JCheckBox(text);
-      checkBox.setActionCommand(value);
-      checkBox.setSelected(values.contains(value));
-      checkBox.addItemListener(statusListener);
-      panel.add(checkBox);
    }
    
    private void showPopup(final Component button)

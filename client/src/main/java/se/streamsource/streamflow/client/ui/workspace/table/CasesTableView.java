@@ -386,7 +386,6 @@ public class CasesTableView
       else
          group = 0;
 
-      System.out.println( date + "=" + group );
       return group;
    }
 

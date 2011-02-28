@@ -37,4 +37,10 @@ public interface PerspectiveValue
    Property<List<String>> statuses();
    
    Property<List<String>> labels();
+
+   @Optional
+   Property<String> sortBy();
+   
+   @Optional
+   Property<String> groupBy();
 }
