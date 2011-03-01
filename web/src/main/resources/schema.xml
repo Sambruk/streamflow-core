@@ -477,11 +477,13 @@ any data added to them will be ignored outright.  -->
         <field name="contacts" type="json" indexed="false" stored="false"/>
         <field name="contactId" type="string" indexed="true" stored="true" multiValued="true"/>
         <field name="name" type="textgen" indexed="true" stored="true" multiValued="true"/>
+        <field name="company" type="textgen" indexed="true" stored="true" multiValued="true"/>
         <field name="phoneNumbers" type="json" indexed="false" stored="false"/>
         <field name="phoneNumber" type="phone" indexed="true" stored="true" multiValued="true"/>
         <field name="emailAddresses" type="json" indexed="false" stored="false"/>
         <field name="emailAddress" type="string" indexed="true" stored="true" multiValued="true"/>
         <field name="addresses" type="json" indexed="false" stored="false"/>
+        <field name="address" type="string" indexed="true" stored="true" multiValued="true"/>
 
         <field name="labels" type="string" indexed="true" stored="true" multiValued="true"/>
 
@@ -613,6 +615,14 @@ or to add multiple fields to the same field for easier/faster searching.  -->
     <copyField source="description" dest="ntext"/>
     <copyField source="note" dest="text"/>
     <copyField source="caseId" dest="text"/>
+
+    <!-- Copy contact info to text -->
+    <copyField source="name" dest="text"/>
+    <copyField source="contactId" dest="text"/>
+    <copyField source="company" dest="text"/>
+    <copyField source="phoneNumber" dest="text"/>
+    <copyField source="emailAddress" dest="text"/>
+    <copyField source="address" dest="text"/>
 
     <!--
     <copyField source="manu" dest="text"/>
