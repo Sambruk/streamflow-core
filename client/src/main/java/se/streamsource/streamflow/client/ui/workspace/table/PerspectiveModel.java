@@ -1,3 +1,20 @@
+/**
+ *
+ * Copyright 2009-2010 Streamsource AB
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package se.streamsource.streamflow.client.ui.workspace.table;
 
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.OPEN;
@@ -15,9 +32,12 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.LinksValue;
+import se.streamsource.streamflow.client.util.LinkComparator;
 import se.streamsource.streamflow.client.util.Refreshable;
 import se.streamsource.streamflow.resource.user.profile.PerspectiveValue;
 import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.UniqueList;
 
 public class PerspectiveModel extends Observable implements Refreshable
 {
@@ -34,6 +54,7 @@ public class PerspectiveModel extends Observable implements Refreshable
    
    GroupBy groupBy = GroupBy.none;
    SortBy sortBy = SortBy.none;
+   SortOrder sortOrder = SortOrder.asc;
    
    public void refresh()
    {
@@ -42,9 +63,9 @@ public class PerspectiveModel extends Observable implements Refreshable
       possibleLabels.addAll(listValue.links().get());
    }
 
-   public BasicEventList<LinkValue> getPossibleLabels()
+   public EventList<LinkValue> getPossibleLabels()
    {
-      return possibleLabels;
+      return new UniqueList<LinkValue>(possibleLabels, new LinkComparator());
    }
    
    public List<String> getSelectedLabels()
@@ -84,6 +105,7 @@ public class PerspectiveModel extends Observable implements Refreshable
       builder.prototype().labels().set(getSelectedLabels());
       builder.prototype().statuses().set(getSelectedStatuses());
       builder.prototype().sortBy().set(getSortBy().name());
+      builder.prototype().sortOrder().set(getSortOrder().name());
       builder.prototype().groupBy().set(getGroupBy().name());
       
       return builder.newInstance();
@@ -112,5 +134,15 @@ public class PerspectiveModel extends Observable implements Refreshable
    public void setSortBy(SortBy sortBy)
    {
       this.sortBy = sortBy;
+   }
+
+   public SortOrder getSortOrder()
+   {
+      return sortOrder;
+   }
+
+   public void setSortOrder(SortOrder sortOrder)
+   {
+      this.sortOrder = sortOrder;
    }
 }

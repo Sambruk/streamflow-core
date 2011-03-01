@@ -26,6 +26,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
 import org.qi4j.api.query.QueryExpressions;
+import org.qi4j.api.query.grammar.OrderBy.Order;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.util.Iterables;
 
@@ -68,19 +69,24 @@ public class SearchContext
       if (tableQuery.limit() != null)
          caseQuery.maxResults( Integer.parseInt( tableQuery.limit()) );
       if (tableQuery.orderBy() != null)
+      {
+         String[] orderByValue = tableQuery.orderBy().split(" ");
+         Order order = orderByValue[1].equals("asc") ? Order.ASCENDING : Order.DESCENDING;
+         
          if (tableQuery.orderBy().equals("status"))
          {            
-            caseQuery.orderBy( QueryExpressions.orderBy( QueryExpressions.templateFor(Status.Data.class).status()));
-         } else if (tableQuery.orderBy().equals("description"))
+            caseQuery.orderBy( QueryExpressions.orderBy( QueryExpressions.templateFor(Status.Data.class).status(), order));
+         } else if (orderByValue[0].equals("description"))
          {            
-            caseQuery.orderBy( QueryExpressions.orderBy( QueryExpressions.templateFor(Describable.Data.class).description()));
-         } else if (tableQuery.orderBy().equals("dueOn"))
+            caseQuery.orderBy( QueryExpressions.orderBy( QueryExpressions.templateFor(Describable.Data.class).description(), order));
+         } else if (orderByValue[0].equals("dueOn"))
          {            
-            caseQuery.orderBy( QueryExpressions.orderBy( QueryExpressions.templateFor(DueOn.Data.class).dueOn()));
-         } else if (tableQuery.orderBy().equals("createdOn"))
+            caseQuery.orderBy( QueryExpressions.orderBy( QueryExpressions.templateFor(DueOn.Data.class).dueOn(), order));
+         } else if (orderByValue[0].equals("createdOn"))
          {            
-            caseQuery.orderBy( QueryExpressions.orderBy( QueryExpressions.templateFor(CreatedOn.class).createdOn()));
+            caseQuery.orderBy( QueryExpressions.orderBy( QueryExpressions.templateFor(CreatedOn.class).createdOn(), order));
          } 
+      }
       return caseQuery;
    }
 

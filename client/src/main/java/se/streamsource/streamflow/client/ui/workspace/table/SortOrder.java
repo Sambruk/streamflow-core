@@ -17,12 +17,8 @@
 
 package se.streamsource.streamflow.client.ui.workspace.table;
 
-public enum GroupBy
+public enum SortOrder
 {
-
-   none,
-   caseType,
-   dueOn,
-   assignee,
-   project
+   asc,
+   desc
 }

@@ -18,6 +18,8 @@
 package se.streamsource.streamflow.client.util.dialog;
 
 import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.SortedList;
+
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.JXDialog;
@@ -31,6 +33,7 @@ import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.TitledLinkValue;
 import se.streamsource.streamflow.client.util.FilteredList;
 import se.streamsource.streamflow.client.util.GroupedFilteredList;
+import se.streamsource.streamflow.client.util.LinkComparator;
 
 import javax.swing.*;
 import java.awt.*;
@@ -70,7 +73,8 @@ public class SelectLinkDialog
       {
          FilteredList list = new FilteredList();
          list.getList().setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
-         list.setEventList( (EventList<LinkValue>) links );
+         SortedList<LinkValue> sortedIssues = new SortedList( links, new LinkComparator() );
+         list.setEventList( (EventList<LinkValue>) sortedIssues );
          add(list);
          this.list = list.getList();
          this.filterField = list.getFilterField();

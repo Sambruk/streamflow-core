@@ -116,7 +116,7 @@ public class SearchResultTableModel
       String query = "select * where " + translatedQuery;
       if (perspectiveModel.getSortBy() != SortBy.none)
       {
-         query += " order by " + perspectiveModel.getSortBy().name();
+         query += " order by " + perspectiveModel.getSortBy().name() + " " + perspectiveModel.getSortOrder().name();
       }
       query += " limit 1000";
       builder.prototype().tq().set( query );

@@ -81,8 +81,7 @@ public class FilteredList
 
    public void setEventList( EventList<LinkValue> eventList )
    {
-      SortedList<LinkValue> sortedIssues = new SortedList<LinkValue>( eventList, new LinkComparator() );
-      final FilterList<LinkValue> textFilteredIssues = new FilterList<LinkValue>( sortedIssues, new TextComponentMatcherEditor( filterField, new LinkFilterator() ) );
+      final FilterList<LinkValue> textFilteredIssues = new FilterList<LinkValue>( eventList, new TextComponentMatcherEditor( filterField, new LinkFilterator() ) );
       EventListModel listModel = new EventListModel<LinkValue>( textFilteredIssues );
 
       textFilteredIssues.addListEventListener( new ListEventListener<LinkValue>()

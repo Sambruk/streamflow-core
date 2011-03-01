@@ -1,3 +1,20 @@
+/**
+ *
+ * Copyright 2009-2010 Streamsource AB
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package se.streamsource.streamflow.client.ui.workspace.table;
 
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.CLOSED;
@@ -6,6 +23,7 @@ import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.
 import static se.streamsource.streamflow.client.util.i18n.text;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.Point;
@@ -15,6 +33,10 @@ import java.awt.event.HierarchyEvent;
 import java.awt.event.HierarchyListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -37,8 +59,14 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.util.Iterables;
 
+import ca.odell.glazedlists.SeparatorList;
+import ca.odell.glazedlists.SortedList;
+
+import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.client.util.BottomBorder;
+import se.streamsource.streamflow.client.util.LinkComparator;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.i18n;
 
@@ -134,37 +162,8 @@ public class PerspectiveView extends JPanel
       addPopupButton(viewPanel, "viewGrouping");
       add(viewPanel, BorderLayout.EAST);
       
-      sortByList = new SingleOptionEnumPanel<SortBy>(SortBy.values())
-      {
-
-         @Override
-         public SortBy getModelValue()
-         {
-            return model.getSortBy();
-         }
-
-         @Override
-         public void setModelValue(SortBy newValue)
-         {
-            model.setSortBy(newValue);
-         }
-      };
-      
-      groupByList = new SingleOptionEnumPanel<GroupBy>(GroupBy.values())
-      {
-
-         @Override
-         public GroupBy getModelValue()
-         {
-            return model.getGroupBy();
-         }
-
-         @Override
-         public void setModelValue(GroupBy newValue)
-         {
-            model.setGroupBy(newValue);
-         }
-      };
+      sortByList = new SortByList();
+      groupByList = new GroupByList();
       
       addHierarchyListener(new HierarchyListener()
       {
@@ -225,7 +224,22 @@ public class PerspectiveView extends JPanel
    @Action
    public void filterLabel()
    {
-      PerspectiveOptionsView panel = obf.newObjectBuilder(PerspectiveOptionsView.class).use(model.getPossibleLabels(), model.getSelectedLabels()).newInstance();
+      SortedList<LinkValue> sortedLabels = new SortedList<LinkValue>( model.getPossibleLabels(), new Comparator<LinkValue>() 
+      {
+
+         public int compare(LinkValue o1, LinkValue o2)
+         {
+            int val1 = model.getSelectedLabels().contains(o1.text().get()) ? 1:0;
+            int val2 = model.getSelectedLabels().contains(o2.text().get()) ? 1:0;
+            int selectedCompare = val2 - val1;
+            if (selectedCompare == 0)
+               return o1.text().get().compareToIgnoreCase(o2.text().get());
+            else
+               return selectedCompare;
+         }
+      });
+      
+      PerspectiveOptionsView panel = obf.newObjectBuilder(PerspectiveOptionsView.class).use(sortedLabels, model.getSelectedLabels()).newInstance();
       optionsPanel.add(panel);
    }
 
@@ -304,11 +318,27 @@ public class PerspectiveView extends JPanel
       model.savePerspective("Nytt perspektiv");
    }
    
-   abstract class SingleOptionEnumPanel<T extends Enum<T>> extends JList {
+   class SortByList extends JList {
       
-      public SingleOptionEnumPanel(Object[] values)
+      public SortByList()
       {
-         super(values);
+         
+         final List<String> sortByValues = new ArrayList<String>();
+         for (SortBy sortBy : SortBy.values())
+         {
+            sortByValues.add(sortBy.name());
+         }
+         final List<String> sortOrderValues = new ArrayList<String>();
+         for (SortOrder sortOrder : SortOrder.values())
+         {
+            sortOrderValues.add(sortOrder.name());
+         }
+         
+         List<String> allValues = new ArrayList<String>();
+         allValues.addAll(sortByValues);
+         allValues.addAll(sortOrderValues);
+         setListData(allValues.toArray());
+         
          setSelectedIndex(0);
          setCellRenderer(new DefaultListCellRenderer(){
 
@@ -319,7 +349,7 @@ public class PerspectiveView extends JPanel
                setFont(list.getFont());
                setBackground(list.getBackground());
                setForeground(list.getForeground());
-               if (value.equals(getModelValue()))
+               if (value.equals(model.getSortBy().name()) || value.equals(model.getSortOrder().name()))
                {
                   setIcon(i18n.icon(Icons.check, 12));
                   setBorder(BorderFactory.createEmptyBorder(4, 0, 0, 0 ));
@@ -328,7 +358,12 @@ public class PerspectiveView extends JPanel
                   setIcon(null);
                   setBorder(BorderFactory.createEmptyBorder(4, 16, 0, 0 ));
                }
-               setText(text((T)value));
+               if (sortByValues.contains(value.toString()))
+                  setText(text(SortBy.valueOf(value.toString())));
+               else
+                  setText(text(SortOrder.valueOf(value.toString())));
+               if (index == SortBy.values().length-1)
+                  setBorder(BorderFactory.createCompoundBorder(new BottomBorder(Color.LIGHT_GRAY, 1, 3), getBorder()));
                return this;
             }});
          
@@ -339,13 +374,63 @@ public class PerspectiveView extends JPanel
             {
                if (!event.getValueIsAdjusting())
                {
-                  setModelValue( (T) getSelectedValue());
+                  String selectedValue = (String) getSelectedValue();
+                  if (selectedValue != null)
+                  {
+                     if (sortByValues.contains(getSelectedValue().toString()))
+                     {
+                        model.setSortBy(SortBy.valueOf(selectedValue));
+                     } else
+                     {
+                        model.setSortOrder(SortOrder.valueOf(selectedValue));
+                     }
+                     clearSelection();
+                  }
                }
             }
          });
       }
+   }
+   
+   class GroupByList extends JList {
+      
+      public GroupByList()
+      {
+         super(GroupBy.values());
+         setSelectedIndex(0);
+         setCellRenderer(new DefaultListCellRenderer(){
 
-      public abstract T getModelValue();
-      public abstract void setModelValue(T newValue);
+            @Override
+            public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected,
+                  boolean cellHasFocus)
+            {
+               setFont(list.getFont());
+               setBackground(list.getBackground());
+               setForeground(list.getForeground());
+               if (value.equals(model.getGroupBy()))
+               {
+                  setIcon(i18n.icon(Icons.check, 12));
+                  setBorder(BorderFactory.createEmptyBorder(4, 0, 0, 0 ));
+               } else {
+
+                  setIcon(null);
+                  setBorder(BorderFactory.createEmptyBorder(4, 16, 0, 0 ));
+               }
+               setText(text((GroupBy)value));
+               return this;
+            }});
+         
+         addListSelectionListener(new ListSelectionListener()
+         {
+
+            public void valueChanged(ListSelectionEvent event)
+            {
+               if (!event.getValueIsAdjusting())
+               {
+                  model.setGroupBy( (GroupBy) getSelectedValue());
+               }
+            }
+         });
+      }
    }
 }

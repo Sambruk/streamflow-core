@@ -42,5 +42,8 @@ public interface PerspectiveValue
    Property<String> sortBy();
    
    @Optional
+   Property<String> sortOrder();
+   
+   @Optional
    Property<String> groupBy();
 }
