@@ -57,25 +57,25 @@
 
         <dependency>
             <groupId>org.qi4j.core</groupId>
-            <artifactId>qi4j-core-api</artifactId>
+            <artifactId>org.qi4j.core.api</artifactId>
             <scope>compile</scope>
         </dependency>
 
         <dependency>
             <groupId>org.qi4j.core</groupId>
-            <artifactId>qi4j-core-spi</artifactId>
+            <artifactId>org.qi4j.core.spi</artifactId>
             <scope>compile</scope>
         </dependency>
 
         <dependency>
             <groupId>org.qi4j.core</groupId>
-            <artifactId>qi4j-core-bootstrap</artifactId>
+            <artifactId>org.qi4j.core.bootstrap</artifactId>
             <scope>compile</scope>
         </dependency>
 
         <dependency>
             <groupId>org.qi4j.core</groupId>
-            <artifactId>qi4j-core-runtime</artifactId>
+            <artifactId>org.qi4j.core.runtime</artifactId>
             <scope>runtime</scope>
         </dependency>
 

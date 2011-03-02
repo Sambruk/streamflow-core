@@ -114,36 +114,36 @@
         <!-- Qi4j -->
         <dependency>
             <groupId>org.qi4j.core</groupId>
-            <artifactId>qi4j-core-api</artifactId>
+            <artifactId>org.qi4j.core.api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.qi4j.core</groupId>
-            <artifactId>qi4j-core-spi</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.qi4j.core</groupId>
-            <artifactId>qi4j-core-bootstrap</artifactId>
+            <artifactId>org.qi4j.core.spi</artifactId>
         </dependency>
 
         <dependency>
             <groupId>org.qi4j.core</groupId>
-            <artifactId>qi4j-core-runtime</artifactId>
+            <artifactId>org.qi4j.core.bootstrap</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.qi4j.core</groupId>
+            <artifactId>org.qi4j.core.runtime</artifactId>
         </dependency>
         <dependency>
             <groupId>org.qi4j.core</groupId>
-            <artifactId>qi4j-core-testsupport</artifactId>
+            <artifactId>org.qi4j.core.testsupport</artifactId>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.qi4j.library</groupId>
-            <artifactId>qi4j-lib-constraints</artifactId>
+            <artifactId>org.qi4j.library.constraints</artifactId>
         </dependency>
 
         <dependency>
             <groupId>org.qi4j.library</groupId>
-            <artifactId>qi4j-lib-jmx</artifactId>
+            <artifactId>org.qi4j.library.jmx</artifactId>
             <version>${version.qi4j-lib}</version>
         </dependency>
 
@@ -154,33 +154,33 @@
 
         <dependency>
             <groupId>org.qi4j.extension</groupId>
-            <artifactId>qi4j-entitystore-jdbm</artifactId>
+            <artifactId>org.qi4j.extension.entitystore-jdbm</artifactId>
         </dependency>
 
         <dependency>
             <groupId>org.qi4j.extension</groupId>
-            <artifactId>qi4j-migration</artifactId>
+            <artifactId>org.qi4j.extension.migration</artifactId>
         </dependency>
 
         <dependency>
             <groupId>org.qi4j.extension</groupId>
-            <artifactId>qi4j-entitystore-preferences</artifactId>
+            <artifactId>org.qi4j.extension.entitystore-preferences</artifactId>
         </dependency>
 
         <dependency>
             <groupId>org.qi4j.extension</groupId>
-            <artifactId>qi4j-reindexer</artifactId>
+            <artifactId>org.qi4j.extension.reindexer</artifactId>
         </dependency>
 
         <!-- REST -->
         <dependency>
             <groupId>org.qi4j.library</groupId>
-            <artifactId>qi4j-lib-rdf</artifactId>
+            <artifactId>org.qi4j.library.rdf</artifactId>
             <version>${version.qi4j-lib}</version>
         </dependency>
         <dependency>
             <groupId>org.qi4j.extension</groupId>
-            <artifactId>qi4j-entitystore-rest</artifactId>
+            <artifactId>org.qi4j.extension.entitystore-rest</artifactId>
         </dependency>
         <dependency>
             <groupId>org.restlet.jee</groupId>
@@ -258,8 +258,8 @@
 
         <!-- Visualization -->
         <dependency>
-            <groupId>org.qi4j.swing</groupId>
-            <artifactId>qi4j-swing-envisage</artifactId>
+            <groupId>org.qi4j.tool</groupId>
+            <artifactId>org.qi4j.tool.envisage</artifactId>
             <version>${version.qi4j-tools}</version>
             <scope>test</scope>
         </dependency>

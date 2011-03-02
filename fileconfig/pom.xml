@@ -14,19 +14,19 @@
     <dependencies>
         <dependency>
             <groupId>org.qi4j.core</groupId>
-            <artifactId>qi4j-core-api</artifactId>
+            <artifactId>org.qi4j.core.api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.qi4j.core</groupId>
-            <artifactId>qi4j-core-spi</artifactId>
+            <artifactId>org.qi4j.core.spi</artifactId>
         </dependency>
         <dependency>
             <groupId>org.qi4j.core</groupId>
-            <artifactId>qi4j-core-bootstrap</artifactId>
+            <artifactId>org.qi4j.core.bootstrap</artifactId>
         </dependency>
         <dependency>
             <groupId>org.qi4j.library</groupId>
-            <artifactId>qi4j-lib-constraints</artifactId>
+            <artifactId>org.qi4j.library.constraints</artifactId>
         </dependency>
 
         <!-- Testing -->
@@ -36,7 +36,7 @@
         </dependency>
         <dependency>
             <groupId>org.qi4j.core</groupId>
-            <artifactId>qi4j-core-testsupport</artifactId>
+            <artifactId>org.qi4j.core.testsupport</artifactId>
             <scope>test</scope>
         </dependency>
 

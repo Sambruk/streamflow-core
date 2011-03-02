@@ -43,7 +43,7 @@ public class StreamflowRestlet
    {
       initRoleMap( request, RoleMap.current() );
 
-      return module.objectBuilderFactory().newObjectBuilder( RootResource.class ).newInstance();
+      return module.objectBuilderFactory().newObjectBuilder( RootResource.class ).use(this).newInstance();
    }
 
    private void initRoleMap( Request request, RoleMap roleMap )

@@ -140,7 +140,7 @@ public class CommandQueryClientTest
 
       server = new Server( Protocol.HTTP, 8888 );
       CommandQueryRestlet2 restlet = objectBuilderFactory.newObjectBuilder( CommandQueryRestlet2.class ).use( new org.restlet.Context() ).newInstance();
-      server.setNext( restlet );
+      server.setNext(restlet);
       server.start();
 
       Client client = new Client( Protocol.HTTP );
@@ -159,7 +159,7 @@ public class CommandQueryClientTest
    {
       TestResult result = cqc.query( "querywithvalue", valueBuilderFactory.newValueFromJSON( TestQuery.class, "{'abc':'foo'}" ), TestResult.class );
 
-      assertThat( result.toJSON(), equalTo( "{\"xyz\":\"bar\"}" ) );
+      assertThat(result.toJSON(), equalTo("{\"xyz\":\"bar\"}"));
    }
 
    @Test
@@ -349,7 +349,7 @@ public class CommandQueryClientTest
       @Override
       protected Uniform createRoot( Request request, Response response )
       {
-         return module.objectBuilderFactory().newObjectBuilder( RootResource.class ).newInstance();
+         return module.objectBuilderFactory().newObjectBuilder( RootResource.class ).use(this).newInstance();
       }
    }
 
