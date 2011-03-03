@@ -132,7 +132,11 @@ public class WorkspaceView
       managePerspectives = context.getActionMap().get( "managePerspectives" );
       managePerspectives.putValue( "proxy", managePerspectivesAction );
 
-      casesView = obf.newObjectBuilder( CasesView.class ).use(client).newInstance();
+      searchResultTableModel = obf.newObjectBuilder( SearchResultTableModel.class ).use( client.getSubClient("search")).newInstance();
+
+      searchView = obf.newObjectBuilder( SearchView.class ).use(searchResultTableModel, client).newInstance();
+
+      casesView = obf.newObjectBuilder( CasesView.class ).use(client, searchView.getTextField() ).newInstance();
 
       // Create Case
       javax.swing.Action createCaseAction = am.get( "createCase" );
@@ -173,10 +177,7 @@ public class WorkspaceView
       contextToolbar.add( refreshButton);
       topPanel.add(contextToolbar, BorderLayout.EAST);
       contextToolbar.setVisible( false );
-      
-      searchResultTableModel = obf.newObjectBuilder( SearchResultTableModel.class ).use( client.getSubClient("search")).newInstance();
 
-      searchView = obf.newObjectBuilder( SearchView.class ).use(searchResultTableModel, client).newInstance();
       topPanel.add( searchView, BorderLayout.CENTER );
       searchView.setVisible(false);
 

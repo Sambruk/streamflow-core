@@ -22,6 +22,7 @@ import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationAction;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
@@ -45,6 +46,7 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
@@ -61,6 +63,7 @@ import java.awt.event.HierarchyListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
@@ -81,6 +84,7 @@ public class PerspectiveView extends JPanel
    private JDialog popup;
    
    private PerspectiveModel model;
+   private JTextField searchField;
 
    private JPanel optionsPanel;
 
@@ -98,11 +102,12 @@ public class PerspectiveView extends JPanel
    private javax.swing.Action savePerspective;
 
    public void initView(final @Service ApplicationContext context, final @Structure ObjectBuilderFactory obf,
-         final @Uses PerspectiveModel model)
+         final @Uses PerspectiveModel model, @Optional @Uses JTextField searchField)
    {
 
       this.obf = obf;
       this.model = model;
+      this.searchField = searchField;
       setActionMap( context.getActionMap( this ) );
       
       setFocusable(true);
@@ -329,6 +334,7 @@ public class PerspectiveView extends JPanel
    {
       final NameDialog dialog = nameDialogs.iterator().next();
       dialogs.showOkCancelHelpDialog( this, dialog, text( WorkspaceResources.save_perspective ) );
+      // Find SearchView and fetch search field content
       if (!Strings.empty( dialog.name() ))
       {
          return new CommandTask()
@@ -337,7 +343,7 @@ public class PerspectiveView extends JPanel
             public void command()
                   throws Exception
             {
-               model.savePerspective( dialog.name(), "Test" );
+               model.savePerspective( dialog.name(), searchField != null ? searchField.getText() : "" );
             }
          };
       } else
@@ -349,7 +355,7 @@ public class PerspectiveView extends JPanel
       public SortByList()
       {
          List<Enum> allValues = new ArrayList<Enum>();
-         allValues.addAll(Arrays.asList(SortBy.values()));
+         allValues.addAll( Arrays.asList( SortBy.values() ));
          allValues.addAll(Arrays.asList(SortOrder.values()));
          setListData(allValues.toArray());
          

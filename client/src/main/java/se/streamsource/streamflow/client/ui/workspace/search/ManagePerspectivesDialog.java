@@ -210,7 +210,8 @@ public class ManagePerspectivesDialog
 
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
    {
-      if (matches( and( onEntities( "se.streamsource.streamflow.web.domain.entity.user.profile.PerspectiveEntity" ),
+      if (matches( and( onEntityTypes( "se.streamsource.streamflow.web.domain.entity.user.UserEntity",
+            "se.streamsource.streamflow.web.domain.entity.user.profile.PerspectiveEntity"),
             withNames( "createdPerspective", "changedDescription", "removedPerspective" ) ), transactions ))
       {
          refresh();

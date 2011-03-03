@@ -16,8 +16,8 @@
 
 package se.streamsource.streamflow.client.ui.workspace.table;
 
-import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
@@ -29,12 +29,17 @@ import se.streamsource.streamflow.client.ui.workspace.cases.CaseDetailView;
 import se.streamsource.streamflow.client.util.HtmlPanel;
 import se.streamsource.streamflow.client.util.i18n;
 
-import javax.swing.*;
-
-import java.awt.*;
+import javax.swing.BorderFactory;
+import javax.swing.JComponent;
+import javax.swing.JEditorPane;
+import javax.swing.JPanel;
+import javax.swing.JSplitPane;
+import javax.swing.JTextField;
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
 import java.net.URL;
 
-import static se.streamsource.streamflow.client.util.i18n.text;
+import static se.streamsource.streamflow.client.util.i18n.*;
 
 /**
  * JAVADOC
@@ -50,12 +55,15 @@ public class CasesView
    private CardLayout cardLayout = new CardLayout();
    private JComponent blank;
    private final ObjectBuilderFactory obf;
+   private JTextField searchField;
    private JPanel topPanel;
 
-   public CasesView( @Structure ObjectBuilderFactory obf, @Service ApplicationContext context, @Uses CommandQueryClient client )
+   public CasesView( @Structure ObjectBuilderFactory obf, @Service ApplicationContext context, @Uses CommandQueryClient client,
+                     @Optional @Uses JTextField searchField)
    {
       super();
       this.obf = obf;
+      this.searchField = searchField;
 
       setActionMap( context.getActionMap( this ) );
 
@@ -106,7 +114,7 @@ public class CasesView
       clearCase();
       if (perspectiveView == null) 
       {
-         perspectiveView = obf.newObjectBuilder( PerspectiveView.class ).use( casesTableView.getModel().getPerspectiveModel()).newInstance();
+         perspectiveView = obf.newObjectBuilder( PerspectiveView.class ).use( casesTableView.getModel().getPerspectiveModel(), searchField ).newInstance();
       } else
       {
          perspectiveView.setModel(casesTableView.getModel().getPerspectiveModel());

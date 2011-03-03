@@ -80,7 +80,7 @@ public class OverviewView
       this.client = client;
 
       overviewList = new JList();
-      casesView = obf.newObjectBuilder( CasesView.class ).use(client).newInstance();
+      casesView = obf.newObjectBuilder( CasesView.class ).use( client ).newInstance();
       casesView.setBlankPanel(new JPanel());
 
       model = obf.newObjectBuilder( OverviewModel.class ).use( client ).newInstance();
