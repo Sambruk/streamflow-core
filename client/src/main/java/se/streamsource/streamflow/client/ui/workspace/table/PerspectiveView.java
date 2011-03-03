@@ -348,21 +348,9 @@ public class PerspectiveView extends JPanel
       
       public SortByList()
       {
-         
-         final List<String> sortByValues = new ArrayList<String>();
-         for (SortBy sortBy : SortBy.values())
-         {
-            sortByValues.add(sortBy.name());
-         }
-         final List<String> sortOrderValues = new ArrayList<String>();
-         for (SortOrder sortOrder : SortOrder.values())
-         {
-            sortOrderValues.add(sortOrder.name());
-         }
-         
-         List<String> allValues = new ArrayList<String>();
-         allValues.addAll(sortByValues);
-         allValues.addAll(sortOrderValues);
+         List<Enum> allValues = new ArrayList<Enum>();
+         allValues.addAll(Arrays.asList(SortBy.values()));
+         allValues.addAll(Arrays.asList(SortOrder.values()));
          setListData(allValues.toArray());
          
          setSelectedIndex(0);
@@ -375,7 +363,7 @@ public class PerspectiveView extends JPanel
                setFont(list.getFont());
                setBackground(list.getBackground());
                setForeground(list.getForeground());
-               if (value.equals(model.getSortBy().name()) || value.equals(model.getSortOrder().name()))
+               if (value.equals(model.getSortBy()) || value.equals(model.getSortOrder()))
                {
                   setIcon(i18n.icon(Icons.check, 12));
                   setBorder(BorderFactory.createEmptyBorder(4, 0, 0, 0 ));
@@ -384,10 +372,7 @@ public class PerspectiveView extends JPanel
                   setIcon(null);
                   setBorder(BorderFactory.createEmptyBorder(4, 16, 0, 0 ));
                }
-               if (sortByValues.contains(value.toString()))
-                  setText(text(SortBy.valueOf(value.toString())));
-               else
-                  setText(text(SortOrder.valueOf(value.toString())));
+               setText(text((Enum) value));
                if (index == SortBy.values().length-1)
                   setBorder(BorderFactory.createCompoundBorder(new BottomBorder(Color.LIGHT_GRAY, 1, 3), getBorder()));
                return this;
@@ -400,17 +385,18 @@ public class PerspectiveView extends JPanel
             {
                if (!event.getValueIsAdjusting())
                {
-                  String selectedValue = (String) getSelectedValue();
+                  Enum selectedValue = (Enum) getSelectedValue();
                   if (selectedValue != null)
                   {
-                     if (sortByValues.contains(getSelectedValue().toString()))
+                     if (selectedValue instanceof SortBy)
                      {
-                        model.setSortBy(SortBy.valueOf(selectedValue));
+                        model.setSortBy((SortBy)selectedValue);
                      } else
                      {
-                        model.setSortOrder(SortOrder.valueOf(selectedValue));
+                        model.setSortOrder((SortOrder) selectedValue);
                      }
                      clearSelection();
+                     repaint();
                   }
                }
             }

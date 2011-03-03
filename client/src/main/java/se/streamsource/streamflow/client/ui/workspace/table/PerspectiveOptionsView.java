@@ -57,6 +57,7 @@ public class PerspectiveOptionsView extends JPanel
 
       super(new BorderLayout());
       this.selectedValues = selectedValues;
+      final int currentSelectedLabelCount = selectedValues.size();
 
       FilteredList list = new FilteredList();
       list.getList().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -85,7 +86,7 @@ public class PerspectiveOptionsView extends JPanel
                setBorder(BorderFactory.createEmptyBorder(4, 16, 0, 0 ));
             }
             setText(linkValue.text().get());
-            if (index == selectedValues.size()-1)
+            if (index == currentSelectedLabelCount-1)
                setBorder(BorderFactory.createCompoundBorder(new BottomBorder(Color.LIGHT_GRAY, 1, 3), getBorder()));
             return this;
          }
