@@ -334,7 +334,6 @@ public class PerspectiveView extends JPanel
    {
       final NameDialog dialog = nameDialogs.iterator().next();
       dialogs.showOkCancelHelpDialog( this, dialog, text( WorkspaceResources.save_perspective ) );
-      // Find SearchView and fetch search field content
       if (!Strings.empty( dialog.name() ))
       {
          return new CommandTask()

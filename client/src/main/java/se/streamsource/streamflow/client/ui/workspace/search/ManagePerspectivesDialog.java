@@ -18,8 +18,7 @@
 package se.streamsource.streamflow.client.ui.workspace.search;
 
 import ca.odell.glazedlists.swing.EventListModel;
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.builder.ButtonBarBuilder2;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
@@ -28,40 +27,32 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
-import org.qi4j.api.property.Property;
-import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.streamflow.client.ui.OptionsAction;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.LinkListCellRenderer;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.Refreshable;
-import se.streamsource.streamflow.client.util.StateBinder;
+import se.streamsource.streamflow.client.util.SelectionActionEnabler;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
-import se.streamsource.streamflow.client.util.i18n;
+import se.streamsource.streamflow.client.util.dialog.NameDialog;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
-import se.streamsource.streamflow.resource.user.profile.PerspectiveValue;
+import se.streamsource.streamflow.util.Strings;
 
 import javax.swing.ActionMap;
 import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
-import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.util.Observable;
-import java.util.Observer;
 
 import static org.qi4j.api.specification.Specifications.*;
-import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.*;
+import static se.streamsource.streamflow.client.util.i18n.*;
 import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 
 /**
@@ -69,22 +60,20 @@ import static se.streamsource.streamflow.infrastructure.event.domain.source.help
  */
 public class ManagePerspectivesDialog
       extends JPanel
-      implements ListSelectionListener, Observer, TransactionListener, Refreshable
+      implements TransactionListener, Refreshable
 {
-   @Structure
-   ValueBuilderFactory vbf;
-
    @Service
    DialogService dialogs;
 
+   @Uses
+   Iterable<NameDialog> nameDialogs;
+
    private PerspectivesModel model;
 
-   private StateBinder perspectiveBinder;
-
    private JList perspective;
-   private JButton remove;
+   private JButton optionButton;
 
-   public ManagePerspectivesDialog( @Service ApplicationContext context, @Structure ValueBuilderFactory vbf, @Structure ObjectBuilderFactory obf, @Uses CommandQueryClient client )
+   public ManagePerspectivesDialog( @Service ApplicationContext context, @Structure ObjectBuilderFactory obf, @Uses CommandQueryClient client )
    {
       super( new BorderLayout() );
       setBorder( new EmptyBorder( 5, 5, 5, 5 ) );
@@ -92,73 +81,32 @@ public class ManagePerspectivesDialog
       setActionMap( am = context.getActionMap( this ) );
 
       this.model = obf.newObjectBuilder( PerspectivesModel.class ).use( client ).newInstance();
-      this.vbf = vbf;
-
-      JPanel left = new JPanel( new BorderLayout() );
-      left.setBorder( new EmptyBorder( 5, 5, 5, 5 ) );
 
       perspective = new JList();
       perspective.setCellRenderer( new LinkListCellRenderer() );
-      perspective.addListSelectionListener( this );
       perspective.setModel( new EventListModel<LinkValue>( model.getList() ) );
       JScrollPane scroll = new JScrollPane( perspective );
 
-      left.add( scroll, BorderLayout.CENTER );
+      add( scroll, BorderLayout.CENTER );
 
-      JPanel buttonPanel = new JPanel( new FlowLayout( FlowLayout.RIGHT ) );
+      JPopupMenu options = new JPopupMenu();
 
-      remove = new JButton( am.get( "remove" ) );
-      remove.setEnabled( false );
-      buttonPanel.add( remove );
+      javax.swing.Action removeAction = am.get( "remove" );
+      javax.swing.Action renameAction = am.get( "rename" );
 
-      left.add( buttonPanel, BorderLayout.SOUTH );
+      options.add( removeAction );
+      options.add( renameAction );
 
-      add( left, BorderLayout.WEST );
-      FormLayout layout = new FormLayout( "40dlu, 120dlu:grow", "pref, pref" );
+      perspective.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( removeAction, renameAction ) );
+      optionButton = new JButton( new OptionsAction( options ) );
 
-      JPanel right = new JPanel( new BorderLayout() );
-      right.setBorder( new EmptyBorder( 5, 5, 5, 5 ) );
-      JPanel form = new JPanel( layout );
-      form.setFocusable( false );
-      DefaultFormBuilder builder = new DefaultFormBuilder( layout,
-            form );
-      perspectiveBinder = obf.newObject( StateBinder.class );
-      perspectiveBinder.setResourceMap( context.getResourceMap( getClass() ) );
-      PerspectiveValue template = perspectiveBinder.bindingTemplate( PerspectiveValue.class );
-
-      builder.add( new JLabel( i18n.text( WorkspaceResources.name_label ) ) );
-      builder.nextColumn( 1 );
-      JTextField name;
-      builder.add( perspectiveBinder.bind( name = (JTextField) TEXTFIELD.newField(), template.name() ) );
-
-      right.add( form, BorderLayout.CENTER );
-
-      add( right, BorderLayout.CENTER );
-
-      perspectiveBinder.updateWith( vbf.newValueBuilder( PerspectiveValue.class ).prototype() );
-      perspectiveBinder.addObserver( this );
-
+      ButtonBarBuilder2 buttonBuilder = new ButtonBarBuilder2(  );
+      buttonBuilder.addButton( optionButton );
+      buttonBuilder.addUnrelatedGap();
+      buttonBuilder.addGlue();
+      buttonBuilder.addButton(am.get("close"));
+      add( buttonBuilder.getPanel(), BorderLayout.SOUTH );
       new RefreshWhenShowing( this, model );
-   }
-
-   public void valueChanged( ListSelectionEvent e )
-   {
-      if (!e.getValueIsAdjusting())
-      {
-         if (!perspective.isSelectionEmpty())
-         {
-            LinkValue perspective = (LinkValue) this.perspective.getSelectedValue();
-            ValueBuilder<PerspectiveValue> builder = vbf.newValueBuilder( PerspectiveValue.class );
-            builder.prototype().name().set( perspective.text().get() );
-
-            perspectiveBinder.updateWith( builder.prototype() );
-
-            remove.setEnabled( true );
-         } else
-         {
-            remove.setEnabled( false );
-         }
-      }
    }
 
    @Action
@@ -186,26 +134,26 @@ public class ManagePerspectivesDialog
       WindowUtils.findWindow( this ).dispose();
    }
 
-   public void update( Observable o, final Object arg )
+   @Action
+   public Task rename()
    {
-      if (!perspective.isSelectionEmpty())
+      final LinkValue selected = (LinkValue)perspective.getSelectedValue();
+      final NameDialog dialog = nameDialogs.iterator().next();
+      dialogs.showOkCancelHelpDialog( this, dialog, text( WorkspaceResources.change_perspective_title ) );
+
+      if (!Strings.empty( dialog.name() ) )
       {
-         final LinkValue linkValue = (LinkValue) perspective.getSelectedValue();
-         final Property property = (Property) arg;
-         final String prop = (String) property.get();
-         new CommandTask()
+         return new CommandTask()
          {
             @Override
             public void command()
                throws Exception
             {
-               if (property.qualifiedName().name().equals( "name" ))
-               {
-                  model.changeDescription( linkValue, prop );
-               }
+               model.changeDescription( selected, dialog.name() );
             }
-         }.execute();
-      }
+         };
+      } else
+         return null;
    }
 
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )

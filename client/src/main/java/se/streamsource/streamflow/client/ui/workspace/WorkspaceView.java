@@ -253,8 +253,18 @@ public class WorkspaceView
       {
          public void hierarchyChanged(HierarchyEvent e)
          {
-            if ((e.getChangeFlags() & HierarchyEvent.SHOWING_CHANGED)>0 && !WorkspaceView.this.isShowing())
-              killPopup();
+            if ((e.getChangeFlags() & HierarchyEvent.SHOWING_CHANGED)>0 )
+            {
+               if( !WorkspaceView.this.isShowing() )
+               {
+                  killPopup();
+                  context.getActionMap().get( "managePerspectives" ).setEnabled( false );
+               }
+               else
+               {
+                  context.getActionMap().get( "managePerspectives" ).setEnabled( true );
+               }
+            }
          }
       });
    }
@@ -361,7 +371,7 @@ public class WorkspaceView
    public void managePerspectives()
    {
       ManagePerspectivesDialog dialog = obf.newObjectBuilder( ManagePerspectivesDialog.class ).use( client.getSubClient( "perspectives" )).newInstance();
-      dialogs.showOkDialog( this, dialog, i18n.text( WorkspaceResources.manage_perspectives ) );
+      dialogs.showButtonLessDialog( this, dialog, i18n.text( WorkspaceResources.manage_perspectives ) );
    }
    
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )

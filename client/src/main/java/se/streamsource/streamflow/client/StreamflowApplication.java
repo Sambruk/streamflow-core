@@ -210,6 +210,7 @@ public class StreamflowApplication
       } );
 
       getContext().getActionMap().get( "savePerspective" ).setEnabled( false );
+      getContext().getActionMap().get( "managePerspectives" ).setEnabled( false );
    }
 
    @Override
