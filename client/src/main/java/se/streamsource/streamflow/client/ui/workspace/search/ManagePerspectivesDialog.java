@@ -31,14 +31,18 @@ import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.dci.value.link.TitledLinkValue;
-import se.streamsource.streamflow.client.util.dialog.DialogService;
-import se.streamsource.streamflow.client.util.LinkListCellRenderer;
-import se.streamsource.streamflow.client.util.StateBinder;
-import se.streamsource.streamflow.client.util.i18n;
-import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.client.util.CommandTask;
+import se.streamsource.streamflow.client.util.LinkListCellRenderer;
+import se.streamsource.streamflow.client.util.RefreshWhenShowing;
+import se.streamsource.streamflow.client.util.Refreshable;
+import se.streamsource.streamflow.client.util.StateBinder;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.util.i18n;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.resource.user.profile.PerspectiveValue;
 
 import javax.swing.ActionMap;
@@ -56,14 +60,16 @@ import java.awt.FlowLayout;
 import java.util.Observable;
 import java.util.Observer;
 
+import static org.qi4j.api.specification.Specifications.*;
 import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.*;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 
 /**
  * JAVADOC
  */
-public class HandlePerspectivesDialog
+public class ManagePerspectivesDialog
       extends JPanel
-      implements ListSelectionListener, Observer
+      implements ListSelectionListener, Observer, TransactionListener, Refreshable
 {
    @Structure
    ValueBuilderFactory vbf;
@@ -78,14 +84,14 @@ public class HandlePerspectivesDialog
    private JList perspective;
    private JButton remove;
 
-   public HandlePerspectivesDialog( @Service ApplicationContext context, @Structure ValueBuilderFactory vbf, @Structure ObjectBuilderFactory obf, @Uses PerspectivesModel model )
+   public ManagePerspectivesDialog( @Service ApplicationContext context, @Structure ValueBuilderFactory vbf, @Structure ObjectBuilderFactory obf, @Uses CommandQueryClient client )
    {
       super( new BorderLayout() );
       setBorder( new EmptyBorder( 5, 5, 5, 5 ) );
       ActionMap am;
       setActionMap( am = context.getActionMap( this ) );
 
-      this.model = model;
+      this.model = obf.newObjectBuilder( PerspectivesModel.class ).use( client ).newInstance();
       this.vbf = vbf;
 
       JPanel left = new JPanel( new BorderLayout() );
@@ -125,18 +131,14 @@ public class HandlePerspectivesDialog
       JTextField name;
       builder.add( perspectiveBinder.bind( name = (JTextField) TEXTFIELD.newField(), template.name() ) );
 
-      builder.nextLine();
-      builder.add( new JLabel( i18n.text( WorkspaceResources.query_label ) ) );
-      builder.nextColumn( 1 );
-      JTextField query;
-      builder.add( perspectiveBinder.bind( query = (JTextField) TEXTFIELD.newField(), template.query() ) );
-
       right.add( form, BorderLayout.CENTER );
 
       add( right, BorderLayout.CENTER );
 
       perspectiveBinder.updateWith( vbf.newValueBuilder( PerspectiveValue.class ).prototype() );
       perspectiveBinder.addObserver( this );
+
+      new RefreshWhenShowing( this, model );
    }
 
    public void valueChanged( ListSelectionEvent e )
@@ -145,10 +147,9 @@ public class HandlePerspectivesDialog
       {
          if (!perspective.isSelectionEmpty())
          {
-            TitledLinkValue search = (TitledLinkValue) perspective.getSelectedValue();
+            LinkValue perspective = (LinkValue) this.perspective.getSelectedValue();
             ValueBuilder<PerspectiveValue> builder = vbf.newValueBuilder( PerspectiveValue.class );
-            builder.prototype().name().set( search.text().get() );
-            builder.prototype().query().set( search.title().get() );
+            builder.prototype().name().set( perspective.text().get() );
 
             perspectiveBinder.updateWith( builder.prototype() );
 
@@ -201,12 +202,23 @@ public class HandlePerspectivesDialog
                if (property.qualifiedName().name().equals( "name" ))
                {
                   model.changeDescription( linkValue, prop );
-               } else if (property.qualifiedName().name().equals( "query" ))
-               {
-                  model.changeQuery( linkValue, prop );
                }
             }
          }.execute();
       }
+   }
+
+   public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
+   {
+      if (matches( and( onEntities( "se.streamsource.streamflow.web.domain.entity.user.profile.PerspectiveEntity" ),
+            withNames( "createdPerspective", "changedDescription", "removedPerspective" ) ), transactions ))
+      {
+         refresh();
+      }
+   }
+
+   public void refresh()
+   {
+      model.refresh();
    }
 }

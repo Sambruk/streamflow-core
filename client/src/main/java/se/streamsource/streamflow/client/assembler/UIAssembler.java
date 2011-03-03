@@ -17,14 +17,6 @@
 
 package se.streamsource.streamflow.client.assembler;
 
-import static org.qi4j.api.common.Visibility.application;
-import static org.qi4j.api.common.Visibility.layer;
-import static se.streamsource.streamflow.client.util.UIAssemblers.addDialogs;
-import static se.streamsource.streamflow.client.util.UIAssemblers.addMV;
-import static se.streamsource.streamflow.client.util.UIAssemblers.addModels;
-import static se.streamsource.streamflow.client.util.UIAssemblers.addTasks;
-import static se.streamsource.streamflow.client.util.UIAssemblers.addViews;
-
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.common.Visibility;
 import org.qi4j.bootstrap.AssemblyException;
@@ -32,7 +24,6 @@ import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.spi.service.importer.NewObjectImporter;
 import org.restlet.Restlet;
-
 import se.streamsource.streamflow.client.StreamflowApplication;
 import se.streamsource.streamflow.client.ui.ApplicationInitializationService;
 import se.streamsource.streamflow.client.ui.DebugWindow;
@@ -169,7 +160,6 @@ import se.streamsource.streamflow.client.ui.workspace.cases.conversations.Conver
 import se.streamsource.streamflow.client.ui.workspace.cases.conversations.ConversationsView;
 import se.streamsource.streamflow.client.ui.workspace.cases.conversations.MessagesConversationView;
 import se.streamsource.streamflow.client.ui.workspace.cases.conversations.MessagesModel;
-import se.streamsource.streamflow.client.ui.workspace.cases.conversations.MessagesView;
 import se.streamsource.streamflow.client.ui.workspace.cases.forms.CaseEffectiveFieldsValueModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.forms.CaseEffectiveFieldsValueView;
 import se.streamsource.streamflow.client.ui.workspace.cases.forms.CaseSubmittedFormModel;
@@ -200,18 +190,18 @@ import se.streamsource.streamflow.client.ui.workspace.cases.history.HistoryView;
 import se.streamsource.streamflow.client.ui.workspace.cases.history.MessagesHistoryView;
 import se.streamsource.streamflow.client.ui.workspace.context.WorkspaceContextModel;
 import se.streamsource.streamflow.client.ui.workspace.context.WorkspaceContextView;
-import se.streamsource.streamflow.client.ui.workspace.search.HandlePerspectivesDialog;
-import se.streamsource.streamflow.client.ui.workspace.search.SaveSearchDialog;
+import se.streamsource.streamflow.client.ui.workspace.search.ManagePerspectivesDialog;
 import se.streamsource.streamflow.client.ui.workspace.search.PerspectivesModel;
+import se.streamsource.streamflow.client.ui.workspace.search.SaveSearchDialog;
 import se.streamsource.streamflow.client.ui.workspace.search.SearchResultTableModel;
 import se.streamsource.streamflow.client.ui.workspace.search.SearchView;
 import se.streamsource.streamflow.client.ui.workspace.table.CasesDetailView;
-import se.streamsource.streamflow.client.ui.workspace.table.PerspectiveModel;
-import se.streamsource.streamflow.client.ui.workspace.table.PerspectiveOptionsView;
-import se.streamsource.streamflow.client.ui.workspace.table.PerspectiveView;
 import se.streamsource.streamflow.client.ui.workspace.table.CasesTableModel;
 import se.streamsource.streamflow.client.ui.workspace.table.CasesTableView;
 import se.streamsource.streamflow.client.ui.workspace.table.CasesView;
+import se.streamsource.streamflow.client.ui.workspace.table.PerspectiveModel;
+import se.streamsource.streamflow.client.ui.workspace.table.PerspectiveOptionsView;
+import se.streamsource.streamflow.client.ui.workspace.table.PerspectiveView;
 import se.streamsource.streamflow.client.util.ActionBinder;
 import se.streamsource.streamflow.client.util.ExceptionHandlerService;
 import se.streamsource.streamflow.client.util.JavaHelp;
@@ -225,6 +215,9 @@ import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.NameDialog;
 import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
 import se.streamsource.streamflow.client.util.dialog.SelectLinksDialog;
+
+import static org.qi4j.api.common.Visibility.*;
+import static se.streamsource.streamflow.client.util.UIAssemblers.*;
 
 /**
  * JAVADOC
@@ -548,7 +541,7 @@ public class UIAssembler
 
       addDialogs( module, SelectLinkDialog.class,
             SaveSearchDialog.class,
-            HandlePerspectivesDialog.class );
+            ManagePerspectivesDialog.class );
 
       module.addValues( CaseTableValue.class ).visibleIn( Visibility.application );
    }

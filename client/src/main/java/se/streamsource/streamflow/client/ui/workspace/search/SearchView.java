@@ -17,20 +17,30 @@
 
 package se.streamsource.streamflow.client.ui.workspace.search;
 
-import static se.streamsource.streamflow.client.util.i18n.text;
-
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TimeZone;
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.swing.EventComboBoxModel;
+import org.jdesktop.application.Action;
+import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.swingx.JXMonthView;
+import org.jdesktop.swingx.calendar.DateSelectionModel;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.structure.Module;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.dci.value.link.LinksValue;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.client.util.EventListSynch;
+import se.streamsource.streamflow.client.util.LinkListCellRenderer;
+import se.streamsource.streamflow.client.util.RefreshWhenShowing;
+import se.streamsource.streamflow.client.util.Refreshable;
+import se.streamsource.streamflow.client.util.WrapLayout;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.util.i18n;
+import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
 
 import javax.swing.ActionMap;
 import javax.swing.Box;
@@ -45,32 +55,20 @@ import javax.swing.JPopupMenu;
 import javax.swing.JTextField;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TimeZone;
 
-import org.jdesktop.application.Action;
-import org.jdesktop.application.ApplicationContext;
-import org.jdesktop.swingx.JXMonthView;
-import org.jdesktop.swingx.calendar.DateSelectionModel;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import org.qi4j.api.structure.Module;
-
-import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.dci.value.link.LinksValue;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
-import se.streamsource.streamflow.client.util.EventListSynch;
-import se.streamsource.streamflow.client.util.LinkListCellRenderer;
-import se.streamsource.streamflow.client.util.RefreshWhenShowing;
-import se.streamsource.streamflow.client.util.Refreshable;
-import se.streamsource.streamflow.client.util.WrapLayout;
-import se.streamsource.streamflow.client.util.i18n;
-import se.streamsource.streamflow.client.util.dialog.DialogService;
-import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
-import ca.odell.glazedlists.BasicEventList;
-import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.swing.EventComboBoxModel;
+import static se.streamsource.streamflow.client.util.i18n.*;
 
 /**
  * JAVADOC
@@ -107,7 +105,8 @@ public class SearchView
 
    private JPanel search;
 
-   public SearchView( @Service ApplicationContext context, @Uses final CommandQueryClient client, @Uses SearchResultTableModel searchResultTableModel, @Structure ObjectBuilderFactory obf )
+   public SearchView( @Service ApplicationContext context, @Uses final CommandQueryClient client,
+                      @Uses SearchResultTableModel searchResultTableModel, @Structure ObjectBuilderFactory obf )
    {
       setLayout( new BoxLayout(this, BoxLayout.X_AXIS) );
       this.searchResultTableModel = searchResultTableModel;
