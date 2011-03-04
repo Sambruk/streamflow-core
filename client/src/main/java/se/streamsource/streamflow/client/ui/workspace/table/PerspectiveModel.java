@@ -17,36 +17,35 @@
 
 package se.streamsource.streamflow.client.ui.workspace.table;
 
-import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.OPEN;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Observable;
-
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.UniqueList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.client.util.LinkComparator;
 import se.streamsource.streamflow.client.util.Refreshable;
 import se.streamsource.streamflow.resource.user.profile.PerspectiveValue;
-import ca.odell.glazedlists.BasicEventList;
-import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.UniqueList;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Observable;
+
+import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
 
 public class PerspectiveModel extends Observable implements Refreshable
 {
    @Uses
    CommandQueryClient client;
-   
+
    @Structure
    ValueBuilderFactory vbf;
-   
+
    BasicEventList<LinkValue> possibleLabels = new BasicEventList<LinkValue>();
    BasicEventList<LinkValue> possibleCaseTypes = new BasicEventList<LinkValue>();
    BasicEventList<LinkValue> possibleAssignees = new BasicEventList<LinkValue>();
@@ -65,7 +64,7 @@ public class PerspectiveModel extends Observable implements Refreshable
    SortOrder sortOrder = SortOrder.asc;
    
    String createdOn = "";
-   
+
    public void refresh()
    {
       LinksValue labels = client.query( "possiblelabels",
@@ -96,7 +95,7 @@ public class PerspectiveModel extends Observable implements Refreshable
 
    public EventList<LinkValue> getPossibleLabels()
    {
-      return new UniqueList<LinkValue>(possibleLabels, new LinkComparator());
+      return new UniqueList<LinkValue>( possibleLabels, new LinkComparator() );
    }
 
    public BasicEventList<LinkValue> getPossibleCaseTypes()
@@ -118,7 +117,7 @@ public class PerspectiveModel extends Observable implements Refreshable
    {
       return possibleCreatedBy;
    }
-   
+
    public List<String> getSelectedStatuses()
    {
       return selectedStatuses;
@@ -149,22 +148,22 @@ public class PerspectiveModel extends Observable implements Refreshable
       return selectedCreatedBy;
    }
 
-   public void setSelectedStatuses(List<String> selectedStatuses)
+   public void setSelectedStatuses( List<String> selectedStatuses )
    {
       this.selectedStatuses.clear();
-      this.selectedStatuses.addAll(selectedStatuses);
+      this.selectedStatuses.addAll( selectedStatuses );
+   }
+   
+   public void setSelectedLabels( List<String> selectedLabels )
+   {
+      this.selectedLabels.clear();
+      this.selectedLabels.addAll( selectedLabels );
    }
    
    public void setSelectedCaseTypes(List<String> selectedCaseTypes)
    {
       this.selectedCaseTypes.clear();
       this.selectedCaseTypes.addAll(selectedCaseTypes);
-   }
-   
-   public void setSelectedLabels(List<String> selectedLabels)
-   {
-      this.selectedLabels.clear();
-      this.selectedLabels.addAll(selectedLabels);
    }
    
    public void setSelectedAssigness(List<String> selectedAssigness)
@@ -185,13 +184,12 @@ public class PerspectiveModel extends Observable implements Refreshable
       this.selectedCreatedBy.addAll(selectedCreatedBy);
    }
    
-   
    public GroupBy getGroupBy()
    {
       return groupBy;
    }
 
-   public void setGroupBy(GroupBy groupBy)
+   public void setGroupBy( GroupBy groupBy )
    {
       this.groupBy = groupBy;
    }
@@ -201,7 +199,7 @@ public class PerspectiveModel extends Observable implements Refreshable
       return sortBy;
    }
 
-   public void setSortBy(SortBy sortBy)
+   public void setSortBy( SortBy sortBy )
    {
       this.sortBy = sortBy;
    }
@@ -211,39 +209,9 @@ public class PerspectiveModel extends Observable implements Refreshable
       return sortOrder;
    }
 
-   public void setSortOrder(SortOrder sortOrder)
+   public void setSortOrder( SortOrder sortOrder )
    {
       this.sortOrder = sortOrder;
-   }
-   
-   public PerspectiveValue createPerspective(String name)
-   {
-      ValueBuilder<PerspectiveValue> builder = vbf.newValueBuilder(PerspectiveValue.class);
-      builder.prototype().query().set("Test");
-      builder.prototype().name().set(name);
-      builder.prototype().statuses().set(getSelectedStatuses());
-      builder.prototype().labels().set(getSelectedLabels());
-      builder.prototype().caseTypes().set(getSelectedCaseTypes());
-      builder.prototype().assignees().set(getSelectedAssignees());
-      builder.prototype().projects().set(getSelectedProjects());
-      builder.prototype().createdBy().set(getSelectedCreatedBy());
-      builder.prototype().sortBy().set(getSortBy().name());
-      builder.prototype().sortOrder().set(getSortOrder().name());
-      builder.prototype().groupBy().set(getGroupBy().name());
-      
-      return builder.newInstance();
-   }
-   
-   public void savePerspective(String name)
-   {
-      client.postCommand("createperspective", createPerspective(name));
-   }
-
-   @Override
-   public void notifyObservers()
-   {
-      setChanged();
-      super.notifyObservers();
    }
 
    public String getCreatedOn()
@@ -254,5 +222,31 @@ public class PerspectiveModel extends Observable implements Refreshable
    public void setCreatedOn(String createdOn)
    {
       this.createdOn = createdOn;
+   }
+  
+   public PerspectiveValue getPerspective( String name, String query )
+   {
+      ValueBuilder<PerspectiveValue> builder = vbf.newValueBuilder( PerspectiveValue.class );
+      builder.prototype().query().set( query );
+      builder.prototype().name().set( name );
+      builder.prototype().labels().set( getSelectedLabels() );
+      builder.prototype().statuses().set( getSelectedStatuses() );
+      builder.prototype().sortBy().set( getSortBy().name() );
+      builder.prototype().sortOrder().set( getSortOrder().name() );
+      builder.prototype().groupBy().set( getGroupBy().name() );
+
+      return builder.newInstance();
+   }
+
+   public void savePerspective( String name, String query )
+   {
+      client.getClient( "../perspectives/" ).postCommand( "createperspective", getPerspective( name, query ) );
+   }
+   
+   @Override
+   public void notifyObservers()
+   {
+      setChanged();
+      super.notifyObservers();
    }
 }

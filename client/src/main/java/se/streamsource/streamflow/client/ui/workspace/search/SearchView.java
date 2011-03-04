@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.client.ui.workspace.search;
 
+
 import java.awt.FlowLayout;
 
 import javax.swing.ActionMap;
@@ -39,7 +40,6 @@ import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.Refreshable;
-import se.streamsource.streamflow.client.util.WrapLayout;
 import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 
@@ -61,7 +61,8 @@ public class SearchView
 
    private JPanel search;
 
-   public SearchView( @Service ApplicationContext context, @Uses final CommandQueryClient client, @Uses SearchResultTableModel searchResultTableModel, @Structure ObjectBuilderFactory obf )
+   public SearchView( @Service ApplicationContext context, @Uses final CommandQueryClient client,
+                      @Uses SearchResultTableModel searchResultTableModel, @Structure ObjectBuilderFactory obf )
    {
       setLayout( new BoxLayout(this, BoxLayout.X_AXIS) );
       this.searchResultTableModel = searchResultTableModel;

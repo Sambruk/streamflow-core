@@ -45,24 +45,24 @@ import java.util.List;
 import java.util.TimeZone;
 
 import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.DefaultListCellRenderer;
-import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.jdesktop.application.Action;
+import org.jdesktop.application.ApplicationAction;
 import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Task;
 import org.jdesktop.swingx.JXMonthView;
 import org.jdesktop.swingx.calendar.DateSelectionModel;
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
@@ -73,9 +73,12 @@ import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.util.BottomBorder;
+import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.util.dialog.NameDialog;
+import se.streamsource.streamflow.util.Strings;
 import ca.odell.glazedlists.SortedList;
 
 public class PerspectiveView extends JPanel
@@ -86,9 +89,13 @@ public class PerspectiveView extends JPanel
    @Service
    DialogService dialogs;
    
+   @Uses
+   Iterable<NameDialog> nameDialogs;
+
    private JDialog popup;
    
    private PerspectiveModel model;
+   private JTextField searchField;
 
    private JPanel optionsPanel;
 
@@ -103,18 +110,25 @@ public class PerspectiveView extends JPanel
    private JList sortByList;
 
    private JList statusList;
+   private javax.swing.Action savePerspective;
 
    public void initView(final @Service ApplicationContext context, final @Structure ObjectBuilderFactory obf,
-         final @Uses PerspectiveModel model)
+         final @Uses PerspectiveModel model, @Optional @Uses JTextField searchField)
    {
 
       this.obf = obf;
       this.model = model;
-      setActionMap(context.getActionMap(this));
+      this.searchField = searchField;
+      setActionMap( context.getActionMap( this ) );
       
       setFocusable(true);
       setLayout(new BorderLayout());
-      
+
+      // Proxy menu item actions manually
+      ApplicationAction savePerspectiveAction = (ApplicationAction) getActionMap().get( "savePerspective" );
+      savePerspective = context.getActionMap().get( "savePerspective" );
+      savePerspective.putValue( "proxy", savePerspectiveAction );
+
       filterPanel = new JPanel( new FlowLayout(FlowLayout.LEFT));
       addPopupButton(filterPanel, "filterStatus");
       addPopupButton(filterPanel, "filterCaseType");
@@ -182,18 +196,27 @@ public class PerspectiveView extends JPanel
       
       sortByList = new SortByList();
       groupByList = new GroupByList();
-      
-      addHierarchyListener(new HierarchyListener()
+
+      addHierarchyListener( new HierarchyListener()
       {
-         public void hierarchyChanged(HierarchyEvent e)
+         public void hierarchyChanged( HierarchyEvent e )
          {
-            if ((e.getChangeFlags() & HierarchyEvent.SHOWING_CHANGED)>0 && !PerspectiveView.this.isShowing())
-               for (Component component : Iterables.flatten(Iterables.iterable(filterPanel.getComponents()), Iterables.iterable(viewPanel.getComponents())))
+            if ((e.getChangeFlags() & HierarchyEvent.SHOWING_CHANGED) > 0)
+            {
+               if (!PerspectiveView.this.isShowing())
                {
-                  ((JToggleButton)component).setSelected(false);
+                  for (Component component : Iterables.flatten( Iterables.iterable( filterPanel.getComponents() ), Iterables.iterable( viewPanel.getComponents() ) ))
+                  {
+                     ((JToggleButton) component).setSelected( false );
+                  }
+                  savePerspective.setEnabled( false );
+               } else
+               {
+                  savePerspective.setEnabled( true );
                }
+            }
          }
-      });
+      } );
       new RefreshWhenShowing( this, model );
    }
 
@@ -366,37 +389,37 @@ public class PerspectiveView extends JPanel
    
    private void showPopup(final Component button)
    {
-      SwingUtilities.invokeLater(new Runnable()
+      SwingUtilities.invokeLater( new Runnable()
       {
 
          public void run()
          {
-            final JFrame frame = (JFrame) SwingUtilities.getAncestorOfClass(JFrame.class, PerspectiveView.this);
-            popup = new JDialog(frame);
-            popup.setUndecorated(true);
-            popup.setModal(false);
-            popup.setLayout(new BorderLayout());
+            final JFrame frame = (JFrame) SwingUtilities.getAncestorOfClass( JFrame.class, PerspectiveView.this );
+            popup = new JDialog( frame );
+            popup.setUndecorated( true );
+            popup.setModal( false );
+            popup.setLayout( new BorderLayout() );
 
-            popup.add(optionsPanel, BorderLayout.CENTER);
+            popup.add( optionsPanel, BorderLayout.CENTER );
             Point location = button.getLocationOnScreen();
-            popup.setBounds((int) location.getX(), (int) location.getY() + button.getHeight(), optionsPanel.getWidth(),
-                  optionsPanel.getHeight());
+            popup.setBounds( (int) location.getX(), (int) location.getY() + button.getHeight(), optionsPanel.getWidth(),
+                  optionsPanel.getHeight() );
             popup.pack();
-            popup.setVisible(true);
-            frame.addComponentListener(new ComponentAdapter()
+            popup.setVisible( true );
+            frame.addComponentListener( new ComponentAdapter()
             {
                @Override
-               public void componentMoved(ComponentEvent e)
+               public void componentMoved( ComponentEvent e )
                {
                   if (popup != null)
                   {
                      killPopup();
-                     frame.removeComponentListener(this);
+                     frame.removeComponentListener( this );
                   }
                }
-            });
+            } );
          }
-      });
+      } );
    }
 
    public void killPopup()
@@ -414,17 +437,25 @@ public class PerspectiveView extends JPanel
    {
       this.model = model;
    }
-   
-   @Action
-   public void managePerspectives()
-   {
-
-   }
 
    @Action
-   public void savePerspective()
+   public Task savePerspective()
    {
-      model.savePerspective("Nytt perspektiv");
+      final NameDialog dialog = nameDialogs.iterator().next();
+      dialogs.showOkCancelHelpDialog( this, dialog, text( WorkspaceResources.save_perspective ) );
+      if (!Strings.empty( dialog.name() ))
+      {
+         return new CommandTask()
+         {
+            @Override
+            public void command()
+                  throws Exception
+            {
+               model.savePerspective( dialog.name(), searchField != null ? searchField.getText() : "" );
+            }
+         };
+      } else
+         return null;
    }
    
    abstract class SelectedLinkValueComparator implements Comparator<LinkValue>
@@ -448,7 +479,7 @@ public class PerspectiveView extends JPanel
       public SortByList()
       {
          List<Enum> allValues = new ArrayList<Enum>();
-         allValues.addAll(Arrays.asList(SortBy.values()));
+         allValues.addAll( Arrays.asList( SortBy.values() ));
          allValues.addAll(Arrays.asList(SortOrder.values()));
          setListData(allValues.toArray());
          

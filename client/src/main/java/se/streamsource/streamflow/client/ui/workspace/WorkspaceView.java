@@ -17,19 +17,35 @@
 
 package se.streamsource.streamflow.client.ui.workspace;
 
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Point;
-import java.awt.Toolkit;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.HierarchyEvent;
-import java.awt.event.HierarchyListener;
-import java.awt.event.KeyEvent;
+import ca.odell.glazedlists.gui.TableFormat;
+import com.jgoodies.forms.factories.Borders;
+import org.jdesktop.application.Action;
+import org.jdesktop.application.ApplicationAction;
+import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Task;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.streamflow.client.MacOsUIWrapper;
+import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.ui.ContextItem;
+import se.streamsource.streamflow.client.ui.workspace.cases.CaseResources;
+import se.streamsource.streamflow.client.ui.workspace.context.WorkspaceContextView;
+import se.streamsource.streamflow.client.ui.workspace.search.ManagePerspectivesDialog;
+import se.streamsource.streamflow.client.ui.workspace.search.SearchResultTableModel;
+import se.streamsource.streamflow.client.ui.workspace.search.SearchView;
+import se.streamsource.streamflow.client.ui.workspace.table.CasesTableFormatter;
+import se.streamsource.streamflow.client.ui.workspace.table.CasesTableView;
+import se.streamsource.streamflow.client.ui.workspace.table.CasesView;
+import se.streamsource.streamflow.client.util.CommandTask;
+import se.streamsource.streamflow.client.util.RoundedBorder;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.util.i18n;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
+import se.streamsource.streamflow.resource.user.profile.PerspectiveValue;
 
 import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
@@ -47,38 +63,19 @@ import javax.swing.UIDefaults;
 import javax.swing.UIManager;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-
-import org.jdesktop.application.Action;
-import org.jdesktop.application.ApplicationContext;
-import org.jdesktop.application.Task;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
-
-import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.streamflow.client.Icons;
-import se.streamsource.streamflow.client.MacOsUIWrapper;
-import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.ui.ContextItem;
-import se.streamsource.streamflow.client.ui.workspace.cases.CaseResources;
-import se.streamsource.streamflow.client.ui.workspace.context.WorkspaceContextView;
-import se.streamsource.streamflow.client.ui.workspace.search.SearchResultTableModel;
-import se.streamsource.streamflow.client.ui.workspace.search.SearchView;
-import se.streamsource.streamflow.client.ui.workspace.table.PerspectiveModel;
-import se.streamsource.streamflow.client.ui.workspace.table.PerspectiveView;
-import se.streamsource.streamflow.client.ui.workspace.table.CasesTableFormatter;
-import se.streamsource.streamflow.client.ui.workspace.table.CasesTableView;
-import se.streamsource.streamflow.client.ui.workspace.table.CasesView;
-import se.streamsource.streamflow.client.util.CommandTask;
-import se.streamsource.streamflow.client.util.RoundedBorder;
-import se.streamsource.streamflow.client.util.dialog.DialogService;
-import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
-import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
-import se.streamsource.streamflow.resource.user.profile.PerspectiveValue;
-import ca.odell.glazedlists.gui.TableFormat;
-
-import com.jgoodies.forms.factories.Borders;
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Point;
+import java.awt.Toolkit;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.HierarchyEvent;
+import java.awt.event.HierarchyListener;
+import java.awt.event.KeyEvent;
 
 /**
  * JAVADOC
@@ -109,6 +106,7 @@ public class WorkspaceView
    private final CommandQueryClient client;
 
    private SearchView searchView;
+   private javax.swing.Action managePerspectives;
 
 
    public WorkspaceView( final @Service ApplicationContext context,
@@ -129,7 +127,16 @@ public class WorkspaceView
 
       final ActionMap am = getActionMap();
 
-      casesView = obf.newObjectBuilder( CasesView.class ).use(client).newInstance();
+      // Proxy menu item actions manually
+      ApplicationAction managePerspectivesAction = (ApplicationAction) getActionMap().get( "managePerspectives" );
+      managePerspectives = context.getActionMap().get( "managePerspectives" );
+      managePerspectives.putValue( "proxy", managePerspectivesAction );
+
+      searchResultTableModel = obf.newObjectBuilder( SearchResultTableModel.class ).use( client.getSubClient("search")).newInstance();
+
+      searchView = obf.newObjectBuilder( SearchView.class ).use(searchResultTableModel, client).newInstance();
+
+      casesView = obf.newObjectBuilder( CasesView.class ).use(client, searchView.getTextField() ).newInstance();
 
       // Create Case
       javax.swing.Action createCaseAction = am.get( "createCase" );
@@ -170,10 +177,7 @@ public class WorkspaceView
       contextToolbar.add( refreshButton);
       topPanel.add(contextToolbar, BorderLayout.EAST);
       contextToolbar.setVisible( false );
-      
-      searchResultTableModel = obf.newObjectBuilder( SearchResultTableModel.class ).use( client.getSubClient("search")).newInstance();
 
-      searchView = obf.newObjectBuilder( SearchView.class ).use(searchResultTableModel, client).newInstance();
       topPanel.add( searchView, BorderLayout.CENTER );
       searchView.setVisible(false);
 
@@ -253,8 +257,18 @@ public class WorkspaceView
       {
          public void hierarchyChanged(HierarchyEvent e)
          {
-            if ((e.getChangeFlags() & HierarchyEvent.SHOWING_CHANGED)>0 && !WorkspaceView.this.isShowing())
-              killPopup();
+            if ((e.getChangeFlags() & HierarchyEvent.SHOWING_CHANGED)>0 )
+            {
+               if( !WorkspaceView.this.isShowing() )
+               {
+                  killPopup();
+                  context.getActionMap().get( "managePerspectives" ).setEnabled( false );
+               }
+               else
+               {
+                  context.getActionMap().get( "managePerspectives" ).setEnabled( true );
+               }
+            }
          }
       });
    }
@@ -356,12 +370,12 @@ public class WorkspaceView
    {
       casesView.toogleFilterVisible();
    }
-   
-   public void savePerspective(String name)
+
+   @Action
+   public void managePerspectives()
    {
-      PerspectiveModel filterModel = searchResultTableModel.getPerspectiveModel();
-      CommandQueryClient subClient = client.getSubClient("perspectives");
-      subClient.postCommand("createperspective", filterModel.createPerspective(name));
+      ManagePerspectivesDialog dialog = obf.newObjectBuilder( ManagePerspectivesDialog.class ).use( client.getSubClient( "perspectives" )).newInstance();
+      dialogs.showButtonLessDialog( this, dialog, i18n.text( WorkspaceResources.manage_perspectives ) );
    }
    
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )

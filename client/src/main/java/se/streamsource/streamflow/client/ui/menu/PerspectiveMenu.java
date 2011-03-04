@@ -23,8 +23,9 @@ public class PerspectiveMenu
    protected void init()
    {
       menu( "perspectiveMenu",
-            "savePerspective",
-            "managePerspectives"
+            "managePerspectives",
+            "savePerspective"
+
       );
    }
 }

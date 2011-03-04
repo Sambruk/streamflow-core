@@ -96,10 +96,10 @@ public enum WorkspaceResources
    choose_message_delivery_type,
    choose_project,
    choose_form,
-   save_search,
+   save_perspective,
    query_label,
    incomplete_data,
-   handle_searches,
+   manage_perspectives,
    case_separator,
    caze,
    too_long_query,
@@ -141,5 +141,5 @@ public enum WorkspaceResources
    
    // Conversation
    sender_column_header,
-   message_column_header,
+   message_column_header, change_perspective_title,
 }
