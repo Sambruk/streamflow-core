@@ -48,40 +48,105 @@ public class PerspectiveModel extends Observable implements Refreshable
    ValueBuilderFactory vbf;
    
    BasicEventList<LinkValue> possibleLabels = new BasicEventList<LinkValue>();
-   List<String> selectedLabels = new ArrayList<String>();
+   BasicEventList<LinkValue> possibleCaseTypes = new BasicEventList<LinkValue>();
+   BasicEventList<LinkValue> possibleAssignees = new BasicEventList<LinkValue>();
+   BasicEventList<LinkValue> possibleProjects = new BasicEventList<LinkValue>();
+   BasicEventList<LinkValue> possibleCreatedBy = new BasicEventList<LinkValue>();
 
    List<String> selectedStatuses = new ArrayList<String>(Arrays.asList(OPEN.name()));
+   List<String> selectedCaseTypes = new ArrayList<String>();
+   List<String> selectedLabels = new ArrayList<String>();
+   List<String> selectedAssignees = new ArrayList<String>();
+   List<String> selectedProjects = new ArrayList<String>();
+   List<String> selectedCreatedBy = new ArrayList<String>();
    
    GroupBy groupBy = GroupBy.none;
    SortBy sortBy = SortBy.none;
    SortOrder sortOrder = SortOrder.asc;
    
+   String createdOn = "";
+   
    public void refresh()
    {
-      LinksValue listValue = client.query( "possiblelabels",
+      LinksValue labels = client.query( "possiblelabels",
             LinksValue.class );
-      possibleLabels.addAll(listValue.links().get());
+      possibleLabels.clear();
+      possibleLabels.addAll(labels.links().get());
+
+      LinksValue caseTypes = client.query( "possiblecasetypes",
+            LinksValue.class );
+      possibleCaseTypes.clear();
+      possibleCaseTypes.addAll(caseTypes.links().get());
+
+      LinksValue assignees = client.query( "possibleassignees",
+            LinksValue.class );
+      possibleAssignees.clear();
+      possibleAssignees.addAll(assignees.links().get());
+
+      LinksValue projects = client.query( "possibleprojects",
+            LinksValue.class );
+      possibleProjects.clear();
+      possibleProjects.addAll(projects.links().get());
+
+      LinksValue createdby = client.query( "possiblecreatedby",
+            LinksValue.class );
+      possibleCreatedBy.clear();
+      possibleCreatedBy.addAll(createdby.links().get());
    }
 
    public EventList<LinkValue> getPossibleLabels()
    {
       return new UniqueList<LinkValue>(possibleLabels, new LinkComparator());
    }
-   
-   public List<String> getSelectedLabels()
+
+   public BasicEventList<LinkValue> getPossibleCaseTypes()
    {
-      return selectedLabels;
+      return possibleCaseTypes;
+   }
+
+   public BasicEventList<LinkValue> getPossibleAssignees()
+   {
+      return possibleAssignees;
+   }
+   
+   public BasicEventList<LinkValue> getPossibleProjects()
+   {
+      return possibleProjects;
+   }
+   
+   public BasicEventList<LinkValue> getPossibleCreatedBy()
+   {
+      return possibleCreatedBy;
    }
    
    public List<String> getSelectedStatuses()
    {
       return selectedStatuses;
    }
-   
-   public void setSelectedLabels(List<String> selectedLabels)
+
+   public List<String> getSelectedCaseTypes()
    {
-      this.selectedLabels.clear();
-      this.selectedLabels.addAll(selectedLabels);
+      return selectedCaseTypes;
+   }
+
+   public List<String> getSelectedLabels()
+   {
+      return selectedLabels;
+   }
+
+   public List<String> getSelectedAssignees()
+   {
+      return selectedAssignees;
+   }
+   
+   public List<String> getSelectedProjects()
+   {
+      return selectedProjects;
+   }
+   
+   public List<String> getSelectedCreatedBy()
+   {
+      return selectedCreatedBy;
    }
 
    public void setSelectedStatuses(List<String> selectedStatuses)
@@ -90,32 +155,37 @@ public class PerspectiveModel extends Observable implements Refreshable
       this.selectedStatuses.addAll(selectedStatuses);
    }
    
-   @Override
-   public void notifyObservers()
+   public void setSelectedCaseTypes(List<String> selectedCaseTypes)
    {
-      setChanged();
-      super.notifyObservers();
-   }
-
-   public PerspectiveValue createPerspective(String name)
-   {
-      ValueBuilder<PerspectiveValue> builder = vbf.newValueBuilder(PerspectiveValue.class);
-      builder.prototype().query().set("Test");
-      builder.prototype().name().set(name);
-      builder.prototype().labels().set(getSelectedLabels());
-      builder.prototype().statuses().set(getSelectedStatuses());
-      builder.prototype().sortBy().set(getSortBy().name());
-      builder.prototype().sortOrder().set(getSortOrder().name());
-      builder.prototype().groupBy().set(getGroupBy().name());
-      
-      return builder.newInstance();
+      this.selectedCaseTypes.clear();
+      this.selectedCaseTypes.addAll(selectedCaseTypes);
    }
    
-   public void savePerspective(String name)
+   public void setSelectedLabels(List<String> selectedLabels)
    {
-      client.postCommand("createperspective", createPerspective(name));
+      this.selectedLabels.clear();
+      this.selectedLabels.addAll(selectedLabels);
    }
-
+   
+   public void setSelectedAssigness(List<String> selectedAssigness)
+   {
+      this.selectedAssignees.clear();
+      this.selectedAssignees.addAll(selectedAssigness);
+   }
+   
+   public void setSelectedProjects(List<String> selectedProjects)
+   {
+      this.selectedProjects.clear();
+      this.selectedProjects.addAll(selectedProjects);
+   }
+   
+   public void setSelectedCreatedBy(List<String> selectedCreatedBy)
+   {
+      this.selectedCreatedBy.clear();
+      this.selectedCreatedBy.addAll(selectedCreatedBy);
+   }
+   
+   
    public GroupBy getGroupBy()
    {
       return groupBy;
@@ -144,5 +214,45 @@ public class PerspectiveModel extends Observable implements Refreshable
    public void setSortOrder(SortOrder sortOrder)
    {
       this.sortOrder = sortOrder;
+   }
+   
+   public PerspectiveValue createPerspective(String name)
+   {
+      ValueBuilder<PerspectiveValue> builder = vbf.newValueBuilder(PerspectiveValue.class);
+      builder.prototype().query().set("Test");
+      builder.prototype().name().set(name);
+      builder.prototype().statuses().set(getSelectedStatuses());
+      builder.prototype().labels().set(getSelectedLabels());
+      builder.prototype().caseTypes().set(getSelectedCaseTypes());
+      builder.prototype().assignees().set(getSelectedAssignees());
+      builder.prototype().projects().set(getSelectedProjects());
+      builder.prototype().createdBy().set(getSelectedCreatedBy());
+      builder.prototype().sortBy().set(getSortBy().name());
+      builder.prototype().sortOrder().set(getSortOrder().name());
+      builder.prototype().groupBy().set(getGroupBy().name());
+      
+      return builder.newInstance();
+   }
+   
+   public void savePerspective(String name)
+   {
+      client.postCommand("createperspective", createPerspective(name));
+   }
+
+   @Override
+   public void notifyObservers()
+   {
+      setChanged();
+      super.notifyObservers();
+   }
+
+   public String getCreatedOn()
+   {
+      return createdOn;
+   }
+
+   public void setCreatedOn(String createdOn)
+   {
+      this.createdOn = createdOn;
    }
 }

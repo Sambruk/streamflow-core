@@ -49,19 +49,17 @@ public class PerspectiveOptionsView extends JPanel
 {
    private JList itemList;
    private JTextField filterField;
-   private final List<String> selectedValues;
 
    public PerspectiveOptionsView(final @Service ApplicationContext context, @Uses EventList<LinkValue> values,
          @Uses final ArrayList<String> selectedValues, @Structure ObjectBuilderFactory obf)
    {
 
       super(new BorderLayout());
-      this.selectedValues = selectedValues;
       final int currentSelectedLabelCount = selectedValues.size();
 
       FilteredList list = new FilteredList();
       list.getList().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-      list.setEventList((EventList<LinkValue>) values);
+      list.setEventList((EventList<LinkValue>) values, false);
 
       add(list);
       this.itemList = list.getList();

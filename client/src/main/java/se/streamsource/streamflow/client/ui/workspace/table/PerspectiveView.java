@@ -27,23 +27,31 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.HierarchyEvent;
 import java.awt.event.HierarchyListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Comparator;
 import java.util.List;
+import java.util.TimeZone;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListCellRenderer;
+import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
@@ -53,28 +61,31 @@ import javax.swing.event.ListSelectionListener;
 
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.swingx.JXMonthView;
+import org.jdesktop.swingx.calendar.DateSelectionModel;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.util.Iterables;
 
-import ca.odell.glazedlists.SeparatorList;
-import ca.odell.glazedlists.SortedList;
-
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.util.BottomBorder;
-import se.streamsource.streamflow.client.util.LinkComparator;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.i18n;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
+import ca.odell.glazedlists.SortedList;
 
 public class PerspectiveView extends JPanel
 {
 
    private static final long serialVersionUID = -149885124005347187L;
 
+   @Service
+   DialogService dialogs;
+   
    private JDialog popup;
    
    private PerspectiveModel model;
@@ -108,6 +119,13 @@ public class PerspectiveView extends JPanel
       addPopupButton(filterPanel, "filterStatus");
       addPopupButton(filterPanel, "filterCaseType");
       addPopupButton(filterPanel, "filterLabel");
+      addPopupButton(filterPanel, "filterAssignee");
+      addPopupButton(filterPanel, "filterProject");
+      addPopupButton(filterPanel, "filterCreatedBy");
+      addPopupButton(filterPanel, "filterCreatedOn");
+      {
+         
+      }
       add(filterPanel, BorderLayout.WEST);
 
       statusList = new JList(new Object[]{OPEN.name(), ON_HOLD.name(), CLOSED.name()});
@@ -218,28 +236,119 @@ public class PerspectiveView extends JPanel
    @Action
    public void filterCaseType()
    {
-      optionsPanel.setLayout(new BoxLayout(optionsPanel, BoxLayout.PAGE_AXIS));
+      SortedList<LinkValue> sortedCaseTypes = new SortedList<LinkValue>( model.getPossibleCaseTypes(), new SelectedLinkValueComparator()
+      {
+         @Override
+         List<String> getSelectedValues()
+         {
+            return model.getSelectedCaseTypes();
+         }
+      });
+      
+      PerspectiveOptionsView panel = obf.newObjectBuilder(PerspectiveOptionsView.class).use(sortedCaseTypes, model.getSelectedCaseTypes()).newInstance();
+      optionsPanel.add(panel);
    }
 
    @Action
    public void filterLabel()
    {
-      SortedList<LinkValue> sortedLabels = new SortedList<LinkValue>( model.getPossibleLabels(), new Comparator<LinkValue>() 
+      SortedList<LinkValue> sortedLabels = new SortedList<LinkValue>( model.getPossibleLabels(), new SelectedLinkValueComparator()
       {
-
-         public int compare(LinkValue o1, LinkValue o2)
+         @Override
+         List<String> getSelectedValues()
          {
-            int val1 = model.getSelectedLabels().contains(o1.text().get()) ? 1:0;
-            int val2 = model.getSelectedLabels().contains(o2.text().get()) ? 1:0;
-            int selectedCompare = val2 - val1;
-            if (selectedCompare == 0)
-               return o1.text().get().compareToIgnoreCase(o2.text().get());
-            else
-               return selectedCompare;
+            return model.getSelectedLabels();
          }
       });
       
       PerspectiveOptionsView panel = obf.newObjectBuilder(PerspectiveOptionsView.class).use(sortedLabels, model.getSelectedLabels()).newInstance();
+      optionsPanel.add(panel);
+   }
+
+   @Action
+   public void filterAssignee()
+   {
+      SortedList<LinkValue> sortedAssignees = new SortedList<LinkValue>( model.getPossibleAssignees(), new SelectedLinkValueComparator()
+      {
+         @Override
+         List<String> getSelectedValues()
+         {
+            return model.getSelectedAssignees();
+         }
+      });
+      
+      PerspectiveOptionsView panel = obf.newObjectBuilder(PerspectiveOptionsView.class).use(sortedAssignees, model.getSelectedAssignees()).newInstance();
+      optionsPanel.add(panel);
+   }
+
+   @Action
+   public void filterProject()
+   {
+      SortedList<LinkValue> sortedProjects = new SortedList<LinkValue>( model.getPossibleProjects(), new SelectedLinkValueComparator()
+      {
+         @Override
+         List<String> getSelectedValues()
+         {
+            return model.getSelectedProjects();
+         }
+      });
+      
+      PerspectiveOptionsView panel = obf.newObjectBuilder(PerspectiveOptionsView.class).use(sortedProjects, model.getSelectedProjects()).newInstance();
+      optionsPanel.add(panel);
+   }
+   
+   @Action
+   public void filterCreatedOn(ActionEvent event)
+   {
+      final JXMonthView createdOnPicker = new JXMonthView();
+      createdOnPicker.setFirstDayOfWeek(Calendar.MONDAY);
+      createdOnPicker.setTraversable(true);
+      createdOnPicker.setTimeZone(TimeZone.getTimeZone("UTC"));
+      createdOnPicker.setSelectionMode(DateSelectionModel.SelectionMode.SINGLE_INTERVAL_SELECTION);
+      createdOnPicker.setPreferredColumnCount(2);
+      createdOnPicker.setPreferredRowCount(1);
+      Calendar firstMonth = Calendar.getInstance();
+      firstMonth.add(Calendar.MONTH, -1);
+      createdOnPicker.setFirstDisplayedDay(firstMonth.getTime());
+      createdOnPicker.setTodayBackground(Color.gray);
+      
+      createdOnPicker.addActionListener(new ActionListener()
+      {
+         
+         public void actionPerformed(ActionEvent e)
+         {
+            if (!createdOnPicker.getSelection().isEmpty())
+            {
+               DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+               format.setTimeZone( TimeZone.getTimeZone( "UTC" ) );
+
+               if (createdOnPicker.getSelection().size() == 1)
+               {
+                  model.setCreatedOn(format.format(createdOnPicker.getSelection().first()));
+               } else
+               {
+                  model.setCreatedOn( format.format(createdOnPicker.getSelection().first())+" - "+ format.format(createdOnPicker.getSelection().last()));
+               }
+            }
+         }
+      });
+
+      optionsPanel.add(createdOnPicker);
+   }
+
+   @Action
+   public void filterCreatedBy()
+   {
+      SortedList<LinkValue> sortedCreatedBy = new SortedList<LinkValue>( model.getPossibleCreatedBy(), new SelectedLinkValueComparator()
+      {
+         @Override
+         List<String> getSelectedValues()
+         {
+            return model.getSelectedCreatedBy();
+         }
+      });
+      
+      PerspectiveOptionsView panel = obf.newObjectBuilder(PerspectiveOptionsView.class).use(sortedCreatedBy, model.getSelectedCreatedBy()).newInstance();
       optionsPanel.add(panel);
    }
 
@@ -297,7 +406,7 @@ public class PerspectiveView extends JPanel
          popup.setVisible(false);
          popup.dispose();
          popup = null;
-         model.notifyObservers();
+         //model.notifyObservers();
       }
    }
    
@@ -318,6 +427,22 @@ public class PerspectiveView extends JPanel
       model.savePerspective("Nytt perspektiv");
    }
    
+   abstract class SelectedLinkValueComparator implements Comparator<LinkValue>
+   {
+
+      abstract List<String> getSelectedValues();
+      
+      public int compare(LinkValue o1, LinkValue o2)
+      {
+         int val1 = getSelectedValues().contains(o1.text().get()) ? 1:0;
+         int val2 = getSelectedValues().contains(o2.text().get()) ? 1:0;
+         int selectedCompare = val2 - val1;
+         if (selectedCompare == 0)
+            return o1.text().get().compareToIgnoreCase(o2.text().get());
+         else
+            return selectedCompare;
+      }
+   }
    class SortByList extends JList {
       
       public SortByList()

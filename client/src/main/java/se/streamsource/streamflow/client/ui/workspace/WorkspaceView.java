@@ -217,8 +217,12 @@ public class WorkspaceView
                      PerspectiveValue perspectiveValue = contextItem.getClient().query("index", PerspectiveValue.class);
                      searchView.getTextField().setText(perspectiveValue.query().get());
                      searchResultTableModel.search(perspectiveValue.query().get());
-                     searchResultTableModel.getPerspectiveModel().setSelectedLabels(perspectiveValue.labels().get());
                      searchResultTableModel.getPerspectiveModel().setSelectedStatuses(perspectiveValue.statuses().get());
+                     searchResultTableModel.getPerspectiveModel().setSelectedCaseTypes(perspectiveValue.caseTypes().get());
+                     searchResultTableModel.getPerspectiveModel().setSelectedLabels(perspectiveValue.labels().get());
+                     searchResultTableModel.getPerspectiveModel().setSelectedAssigness(perspectiveValue.assignees().get());
+                     searchResultTableModel.getPerspectiveModel().setSelectedProjects(perspectiveValue.projects().get());
+                     searchResultTableModel.getPerspectiveModel().setSelectedCreatedBy(perspectiveValue.createdBy().get());
                   }
                   TableFormat tableFormat;
                   CasesTableView casesTable;

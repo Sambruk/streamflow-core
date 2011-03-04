@@ -40,8 +40,7 @@ import java.util.Comparator;
 /**
  * JAVADOC
  */
-public class FilteredList
-      extends JPanel
+public class FilteredList extends JPanel
 {
    private JTextField filterField;
    private JList list;
@@ -49,19 +48,19 @@ public class FilteredList
 
    public FilteredList()
    {
-      setLayout( new BorderLayout() );
+      setLayout(new BorderLayout());
 
-      filterField = new JTextField( 20 );
+      filterField = new JTextField(20);
 
       list = new JList();
-      list.setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
+      list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
       FilterLinkListCellRenderer filterCellRenderer = new FilterLinkListCellRenderer();
 
-      list.setCellRenderer( filterCellRenderer );
-      pane.setViewportView( list );
+      list.setCellRenderer(filterCellRenderer);
+      pane.setViewportView(list);
 
-      add( filterField, BorderLayout.NORTH );
-      add( pane, BorderLayout.CENTER );
+      add(filterField, BorderLayout.NORTH);
+      add(pane, BorderLayout.CENTER);
    }
 
    public JTextField getFilterField()
@@ -79,43 +78,51 @@ public class FilteredList
       return pane;
    }
 
-   public void setEventList( EventList<LinkValue> eventList )
+   public void setEventList(EventList<LinkValue> eventList)
    {
-      final FilterList<LinkValue> textFilteredIssues = new FilterList<LinkValue>( eventList, new TextComponentMatcherEditor( filterField, new LinkFilterator() ) );
-      EventListModel listModel = new EventListModel<LinkValue>( textFilteredIssues );
+      setEventList(eventList, true);
+   }
 
-      textFilteredIssues.addListEventListener( new ListEventListener<LinkValue>()
+   public void setEventList(EventList<LinkValue> eventList, boolean addFirstIndexSelector)
+   {
+      final FilterList<LinkValue> textFilteredIssues = new FilterList<LinkValue>(eventList,
+            new TextComponentMatcherEditor(filterField, new LinkFilterator()));
+      EventListModel listModel = new EventListModel<LinkValue>(textFilteredIssues);
+
+      if (addFirstIndexSelector)
       {
-         public void listChanged( ListEvent<LinkValue> linkValueListEvent )
+         textFilteredIssues.addListEventListener(new ListEventListener<LinkValue>()
          {
-            if (list.getModel().getSize() > 0)
+            public void listChanged(ListEvent<LinkValue> linkValueListEvent)
             {
-               for (int i = 0; i < list.getModel().getSize(); i++)
+               if (list.getModel().getSize() > 0)
                {
-                  if (list.getModel().getElementAt( i ) != null)
+                  for (int i = 0; i < list.getModel().getSize(); i++)
                   {
-                     final int idx = i;
-                     
-                     SwingUtilities.invokeLater( new Runnable()
+                     if (list.getModel().getElementAt(i) != null)
                      {
-                        public void run()
+                        final int idx = i;
+
+                        SwingUtilities.invokeLater(new Runnable()
                         {
-                           list.setSelectedIndex( idx );
-                        }
-                     });
+                           public void run()
+                           {
+                              list.setSelectedIndex(idx);
+                           }
+                        });
 
-                     break;
+                        break;
+                     }
                   }
+
                }
-
             }
-         }
-      });
+         });
+      }
 
-      list.setModel( listModel );
+      list.setModel(listModel);
 
-      filterField.setText( "" );
-
+      filterField.setText("");
 
    }
 }

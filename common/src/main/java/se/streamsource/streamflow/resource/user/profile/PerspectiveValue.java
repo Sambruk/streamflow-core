@@ -36,8 +36,16 @@ public interface PerspectiveValue
    
    Property<List<String>> statuses();
    
+   Property<List<String>> caseTypes();
+   
    Property<List<String>> labels();
+   
+   Property<List<String>> assignees();
 
+   Property<List<String>> projects();
+   
+   Property<List<String>> createdBy();
+   
    @Optional
    Property<String> sortBy();
    

@@ -100,16 +100,70 @@ public class SearchResultTableModel
             comma = ",";
          }
       }
-
+      
+      if (!perspectiveModel.getSelectedCaseTypes().isEmpty())
+      {
+         translatedQuery += " caseType:\"";
+         String comma = "";
+         for (String caseType : perspectiveModel.getSelectedCaseTypes())
+         {
+            translatedQuery += comma + caseType;
+            comma = ",";
+         }
+         translatedQuery +=  "\"";
+      }
+      
       if (!perspectiveModel.getSelectedLabels().isEmpty())
       {
-         translatedQuery += " label:";
+         translatedQuery += " searchlabels:\"";
          String comma = "";
          for (String label : perspectiveModel.getSelectedLabels())
          {
             translatedQuery += comma + label;
             comma = ",";
          }
+         translatedQuery +=  "\"";
+      }
+
+      if (!perspectiveModel.getSelectedAssignees().isEmpty())
+      {
+         translatedQuery += " assignedTo:\"";
+         String comma = "";
+         for (String assignee : perspectiveModel.getSelectedAssignees())
+         {
+            translatedQuery += comma + assignee;
+            comma = ",";
+         }
+         translatedQuery +=  "\"";
+      }
+
+      if (!perspectiveModel.getSelectedProjects().isEmpty())
+      {
+         translatedQuery += " project:\"";
+         String comma = "";
+         for (String project : perspectiveModel.getSelectedProjects())
+         {
+            translatedQuery += comma + project;
+            comma = ",";
+         }
+         translatedQuery +=  "\"";
+      }
+
+      if (!perspectiveModel.getSelectedCreatedBy().isEmpty())
+      {
+         translatedQuery += " createdBy:\"";
+         String comma = "";
+         for (String createdBy : perspectiveModel.getSelectedCreatedBy())
+         {
+            translatedQuery += comma + createdBy;
+            comma = ",";
+         }
+         translatedQuery +=  "\"";
+      }
+      
+      if (!perspectiveModel.getCreatedOn().isEmpty())
+      {
+            translatedQuery += " createdOn:" + perspectiveModel.getCreatedOn();
       }
       
       ValueBuilder<TableQuery> builder = vbf.newValueBuilder( TableQuery.class );

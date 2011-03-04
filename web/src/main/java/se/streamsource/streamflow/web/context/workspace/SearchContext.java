@@ -34,12 +34,14 @@ import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.table.TableQuery;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.domain.structure.Removable;
+import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity;
 import se.streamsource.streamflow.web.domain.entity.label.LabelEntity;
 import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
 import se.streamsource.streamflow.web.domain.entity.user.SearchCaseQueries;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.DueOn;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
+import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
@@ -99,6 +101,15 @@ public class SearchContext
             orderBy( QueryExpressions.orderBy( templateFor( Describable.Data.class).description() ) );
    }
 
+   public Query<CaseTypeEntity> possibleCaseTypes()
+   {
+      QueryBuilder<CaseTypeEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder( CaseTypeEntity.class );
+      queryBuilder = queryBuilder.where(
+            eq( templateFor( Removable.Data.class ).removed(), false ));
+      return queryBuilder.newQuery( module.unitOfWorkFactory().currentUnitOfWork() ).
+         orderBy( QueryExpressions.orderBy( templateFor( Describable.Data.class).description() ) );
+   }
+
    public Query<UserEntity> possibleAssignees()
    {
       QueryBuilder<UserEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder( UserEntity.class );
@@ -115,5 +126,12 @@ public class SearchContext
                   eq( templateFor( Removable.Data.class ).removed(), false ));
       return queryBuilder.newQuery( module.unitOfWorkFactory().currentUnitOfWork() ).
             orderBy( QueryExpressions.orderBy( templateFor( Describable.Data.class).description() ) );
+   }
+
+   public Query<UserEntity> possibleCreatedBy()
+   {
+      QueryBuilder<UserEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder( UserEntity.class );
+      return queryBuilder.newQuery( module.unitOfWorkFactory().currentUnitOfWork() ).
+         orderBy( QueryExpressions.orderBy( templateFor( Describable.Data.class).description() ) );
    }
 }
