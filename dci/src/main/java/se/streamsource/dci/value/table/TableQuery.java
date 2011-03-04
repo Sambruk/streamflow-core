@@ -124,7 +124,7 @@ public interface TableQuery
                boolean found = false;
                for (String keyword : keywords)
                {
-                  if (currentPhrase.startsWith(keyword))
+                  if (currentPhrase.startsWith(keyword + " "))
                   {
                      found = true;
                      parts.put( keyword, currentPhrase.substring(keyword.length() +1));

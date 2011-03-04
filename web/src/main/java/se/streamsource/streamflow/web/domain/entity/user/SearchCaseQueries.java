@@ -93,7 +93,7 @@ public interface
                   }
                   queryBuilder.append(")");
                   
-               } else if (search.hasName( "searchlabels" ))
+               } else if (search.hasName( "label" ))
                {
                   List<LabelEntity> labels = new ArrayList<LabelEntity>();
                   for (String label : search.getValue().split(","))

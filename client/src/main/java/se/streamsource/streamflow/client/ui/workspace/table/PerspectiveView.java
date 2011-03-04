@@ -46,6 +46,7 @@ import java.util.TimeZone;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListCellRenderer;
+import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JList;
@@ -88,12 +89,12 @@ public class PerspectiveView extends JPanel
 
    @Service
    DialogService dialogs;
-   
+
    @Uses
    Iterable<NameDialog> nameDialogs;
 
    private JDialog popup;
-   
+
    private PerspectiveModel model;
    private JTextField searchField;
 
@@ -119,32 +120,35 @@ public class PerspectiveView extends JPanel
       this.obf = obf;
       this.model = model;
       this.searchField = searchField;
-      setActionMap( context.getActionMap( this ) );
-      
+      setActionMap(context.getActionMap(this));
+
       setFocusable(true);
       setLayout(new BorderLayout());
 
       // Proxy menu item actions manually
-      ApplicationAction savePerspectiveAction = (ApplicationAction) getActionMap().get( "savePerspective" );
-      savePerspective = context.getActionMap().get( "savePerspective" );
-      savePerspective.putValue( "proxy", savePerspectiveAction );
+      ApplicationAction savePerspectiveAction = (ApplicationAction) getActionMap().get("savePerspective");
+      savePerspective = context.getActionMap().get("savePerspective");
+      savePerspective.putValue("proxy", savePerspectiveAction);
 
-      filterPanel = new JPanel( new FlowLayout(FlowLayout.LEFT));
-      addPopupButton(filterPanel, "filterStatus");
+      filterPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+      javax.swing.Action filterClearAction = getActionMap().get("filterClear");
+      JButton filterClearButton = new JButton(filterClearAction);
+      filterPanel.add(filterClearButton);
+      addPopupButton(filterPanel, "filterCreatedOn");
+      addPopupButton(filterPanel, "filterProject");
+      addPopupButton(filterPanel, "filterAssignee");
       addPopupButton(filterPanel, "filterCaseType");
       addPopupButton(filterPanel, "filterLabel");
-      addPopupButton(filterPanel, "filterAssignee");
-      addPopupButton(filterPanel, "filterProject");
       addPopupButton(filterPanel, "filterCreatedBy");
-      addPopupButton(filterPanel, "filterCreatedOn");
-      {
-         
-      }
+      addPopupButton(filterPanel, "filterStatus");
+
       add(filterPanel, BorderLayout.WEST);
 
-      statusList = new JList(new Object[]{OPEN.name(), ON_HOLD.name(), CLOSED.name()});
+      statusList = new JList(new Object[]
+      { OPEN.name(), ON_HOLD.name(), CLOSED.name() });
       statusList.setSelectedIndex(0);
-      statusList.setCellRenderer(new DefaultListCellRenderer(){
+      statusList.setCellRenderer(new DefaultListCellRenderer()
+      {
 
          @Override
          public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected,
@@ -156,16 +160,18 @@ public class PerspectiveView extends JPanel
             if (model.getSelectedStatuses().contains(value))
             {
                setIcon(i18n.icon(Icons.check, 12));
-               setBorder(BorderFactory.createEmptyBorder(4, 0, 0, 0 ));
-            } else {
+               setBorder(BorderFactory.createEmptyBorder(4, 0, 0, 0));
+            } else
+            {
 
                setIcon(null);
-               setBorder(BorderFactory.createEmptyBorder(4, 16, 0, 0 ));
+               setBorder(BorderFactory.createEmptyBorder(4, 16, 0, 0));
             }
             setText(text(WorkspaceResources.valueOf(value.toString())));
             return this;
-         }});
-      
+         }
+      });
+
       statusList.addListSelectionListener(new ListSelectionListener()
       {
 
@@ -188,138 +194,156 @@ public class PerspectiveView extends JPanel
             }
          }
       });
-      
-      viewPanel = new JPanel( new FlowLayout(FlowLayout.RIGHT));
+
+      viewPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
       addPopupButton(viewPanel, "viewSorting");
       addPopupButton(viewPanel, "viewGrouping");
       add(viewPanel, BorderLayout.EAST);
-      
+
       sortByList = new SortByList();
       groupByList = new GroupByList();
 
-      addHierarchyListener( new HierarchyListener()
+      addHierarchyListener(new HierarchyListener()
       {
-         public void hierarchyChanged( HierarchyEvent e )
+         public void hierarchyChanged(HierarchyEvent e)
          {
             if ((e.getChangeFlags() & HierarchyEvent.SHOWING_CHANGED) > 0)
             {
                if (!PerspectiveView.this.isShowing())
                {
-                  for (Component component : Iterables.flatten( Iterables.iterable( filterPanel.getComponents() ), Iterables.iterable( viewPanel.getComponents() ) ))
+                  for (Component component : Iterables.flatten(Iterables.iterable(filterPanel.getComponents()),
+                        Iterables.iterable(viewPanel.getComponents())))
                   {
-                     ((JToggleButton) component).setSelected( false );
+                     ((JToggleButton) component).setSelected(false);
                   }
-                  savePerspective.setEnabled( false );
+                  savePerspective.setEnabled(false);
                } else
                {
-                  savePerspective.setEnabled( true );
+                  savePerspective.setEnabled(true);
                }
             }
          }
-      } );
-      new RefreshWhenShowing( this, model );
+      });
+      new RefreshWhenShowing(this, model);
    }
 
    private void addPopupButton(JPanel panel, String action)
    {
       javax.swing.Action filterLabel = getActionMap().get(action);
       JToggleButton button = new JToggleButton(filterLabel);
-      button.addItemListener( new ItemListener()
+      button.addItemListener(new ItemListener()
       {
-         public void itemStateChanged(ItemEvent itemEvent) {
+         public void itemStateChanged(ItemEvent itemEvent)
+         {
             int state = itemEvent.getStateChange();
-            if (state == ItemEvent.SELECTED) 
+            if (state == ItemEvent.SELECTED)
             {
-               
-               for (Component component : Iterables.flatten(Iterables.iterable(filterPanel.getComponents()), Iterables.iterable(viewPanel.getComponents())))
+
+               for (Component component : Iterables.flatten(Iterables.iterable(filterPanel.getComponents()),
+                     Iterables.iterable(viewPanel.getComponents())))
                {
                   if (component != itemEvent.getSource())
                   {
-                     ((JToggleButton)component).setSelected(false);
+                     ((JToggleButton) component).setSelected(false);
                   }
                }
                optionsPanel = new JPanel();
                JToggleButton button = (JToggleButton) itemEvent.getSource();
                showPopup(button);
-           } else if (state == ItemEvent.DESELECTED)
-           {
-              killPopup();
-           }
+            } else if (state == ItemEvent.DESELECTED)
+            {
+               killPopup();
+            }
          }
-       });
+      });
       panel.add(button);
    }
-   
+
+   @Action
+   public void filterClear()
+   {
+      killPopup();
+      model.clearFilter();
+   }
+
    @Action
    public void filterStatus()
    {
       optionsPanel.add(statusList);
    }
-   
+
    @Action
    public void filterCaseType()
    {
-      SortedList<LinkValue> sortedCaseTypes = new SortedList<LinkValue>( model.getPossibleCaseTypes(), new SelectedLinkValueComparator()
-      {
-         @Override
-         List<String> getSelectedValues()
-         {
-            return model.getSelectedCaseTypes();
-         }
-      });
-      
-      PerspectiveOptionsView panel = obf.newObjectBuilder(PerspectiveOptionsView.class).use(sortedCaseTypes, model.getSelectedCaseTypes()).newInstance();
+      SortedList<LinkValue> sortedCaseTypes = new SortedList<LinkValue>(model.getPossibleCaseTypes(),
+            new SelectedLinkValueComparator()
+            {
+               @Override
+               List<String> getSelectedValues()
+               {
+                  return model.getSelectedCaseTypes();
+               }
+            });
+
+      PerspectiveOptionsView panel = obf.newObjectBuilder(PerspectiveOptionsView.class)
+            .use(sortedCaseTypes, model.getSelectedCaseTypes()).newInstance();
       optionsPanel.add(panel);
    }
 
    @Action
    public void filterLabel()
    {
-      SortedList<LinkValue> sortedLabels = new SortedList<LinkValue>( model.getPossibleLabels(), new SelectedLinkValueComparator()
-      {
-         @Override
-         List<String> getSelectedValues()
-         {
-            return model.getSelectedLabels();
-         }
-      });
-      
-      PerspectiveOptionsView panel = obf.newObjectBuilder(PerspectiveOptionsView.class).use(sortedLabels, model.getSelectedLabels()).newInstance();
+      SortedList<LinkValue> sortedLabels = new SortedList<LinkValue>(model.getPossibleLabels(),
+            new SelectedLinkValueComparator()
+            {
+               @Override
+               List<String> getSelectedValues()
+               {
+                  return model.getSelectedLabels();
+               }
+            });
+
+      PerspectiveOptionsView panel = obf.newObjectBuilder(PerspectiveOptionsView.class)
+            .use(sortedLabels, model.getSelectedLabels()).newInstance();
       optionsPanel.add(panel);
    }
 
    @Action
    public void filterAssignee()
    {
-      SortedList<LinkValue> sortedAssignees = new SortedList<LinkValue>( model.getPossibleAssignees(), new SelectedLinkValueComparator()
-      {
-         @Override
-         List<String> getSelectedValues()
-         {
-            return model.getSelectedAssignees();
-         }
-      });
-      
-      PerspectiveOptionsView panel = obf.newObjectBuilder(PerspectiveOptionsView.class).use(sortedAssignees, model.getSelectedAssignees()).newInstance();
+      SortedList<LinkValue> sortedAssignees = new SortedList<LinkValue>(model.getPossibleAssignees(),
+            new SelectedLinkValueComparator()
+            {
+               @Override
+               List<String> getSelectedValues()
+               {
+                  return model.getSelectedAssignees();
+               }
+            });
+
+      PerspectiveOptionsView panel = obf.newObjectBuilder(PerspectiveOptionsView.class)
+            .use(sortedAssignees, model.getSelectedAssignees()).newInstance();
       optionsPanel.add(panel);
    }
 
    @Action
    public void filterProject()
    {
-      SortedList<LinkValue> sortedProjects = new SortedList<LinkValue>( model.getPossibleProjects(), new SelectedLinkValueComparator()
-      {
-         @Override
-         List<String> getSelectedValues()
-         {
-            return model.getSelectedProjects();
-         }
-      });
-      
-      PerspectiveOptionsView panel = obf.newObjectBuilder(PerspectiveOptionsView.class).use(sortedProjects, model.getSelectedProjects()).newInstance();
+      SortedList<LinkValue> sortedProjects = new SortedList<LinkValue>(model.getPossibleProjects(),
+            new SelectedLinkValueComparator()
+            {
+               @Override
+               List<String> getSelectedValues()
+               {
+                  return model.getSelectedProjects();
+               }
+            });
+
+      PerspectiveOptionsView panel = obf.newObjectBuilder(PerspectiveOptionsView.class)
+            .use(sortedProjects, model.getSelectedProjects()).newInstance();
       optionsPanel.add(panel);
    }
-   
+
    @Action
    public void filterCreatedOn(ActionEvent event)
    {
@@ -334,23 +358,24 @@ public class PerspectiveView extends JPanel
       firstMonth.add(Calendar.MONTH, -1);
       createdOnPicker.setFirstDisplayedDay(firstMonth.getTime());
       createdOnPicker.setTodayBackground(Color.gray);
-      
+
       createdOnPicker.addActionListener(new ActionListener()
       {
-         
+
          public void actionPerformed(ActionEvent e)
          {
             if (!createdOnPicker.getSelection().isEmpty())
             {
                DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-               format.setTimeZone( TimeZone.getTimeZone( "UTC" ) );
+               format.setTimeZone(TimeZone.getTimeZone("UTC"));
 
                if (createdOnPicker.getSelection().size() == 1)
                {
                   model.setCreatedOn(format.format(createdOnPicker.getSelection().first()));
                } else
                {
-                  model.setCreatedOn( format.format(createdOnPicker.getSelection().first())+" - "+ format.format(createdOnPicker.getSelection().last()));
+                  model.setCreatedOn(format.format(createdOnPicker.getSelection().first()) + " - "
+                        + format.format(createdOnPicker.getSelection().last()));
                }
             }
          }
@@ -362,16 +387,18 @@ public class PerspectiveView extends JPanel
    @Action
    public void filterCreatedBy()
    {
-      SortedList<LinkValue> sortedCreatedBy = new SortedList<LinkValue>( model.getPossibleCreatedBy(), new SelectedLinkValueComparator()
-      {
-         @Override
-         List<String> getSelectedValues()
-         {
-            return model.getSelectedCreatedBy();
-         }
-      });
-      
-      PerspectiveOptionsView panel = obf.newObjectBuilder(PerspectiveOptionsView.class).use(sortedCreatedBy, model.getSelectedCreatedBy()).newInstance();
+      SortedList<LinkValue> sortedCreatedBy = new SortedList<LinkValue>(model.getPossibleCreatedBy(),
+            new SelectedLinkValueComparator()
+            {
+               @Override
+               List<String> getSelectedValues()
+               {
+                  return model.getSelectedCreatedBy();
+               }
+            });
+
+      PerspectiveOptionsView panel = obf.newObjectBuilder(PerspectiveOptionsView.class)
+            .use(sortedCreatedBy, model.getSelectedCreatedBy()).newInstance();
       optionsPanel.add(panel);
    }
 
@@ -380,46 +407,46 @@ public class PerspectiveView extends JPanel
    {
       optionsPanel.add(sortByList);
    }
-   
+
    @Action
    public void viewGrouping()
    {
       optionsPanel.add(groupByList);
    }
-   
+
    private void showPopup(final Component button)
    {
-      SwingUtilities.invokeLater( new Runnable()
+      SwingUtilities.invokeLater(new Runnable()
       {
 
          public void run()
          {
-            final JFrame frame = (JFrame) SwingUtilities.getAncestorOfClass( JFrame.class, PerspectiveView.this );
-            popup = new JDialog( frame );
-            popup.setUndecorated( true );
-            popup.setModal( false );
-            popup.setLayout( new BorderLayout() );
+            final JFrame frame = (JFrame) SwingUtilities.getAncestorOfClass(JFrame.class, PerspectiveView.this);
+            popup = new JDialog(frame);
+            popup.setUndecorated(true);
+            popup.setModal(false);
+            popup.setLayout(new BorderLayout());
 
-            popup.add( optionsPanel, BorderLayout.CENTER );
+            popup.add(optionsPanel, BorderLayout.CENTER);
             Point location = button.getLocationOnScreen();
-            popup.setBounds( (int) location.getX(), (int) location.getY() + button.getHeight(), optionsPanel.getWidth(),
-                  optionsPanel.getHeight() );
+            popup.setBounds((int) location.getX(), (int) location.getY() + button.getHeight(), optionsPanel.getWidth(),
+                  optionsPanel.getHeight());
             popup.pack();
-            popup.setVisible( true );
-            frame.addComponentListener( new ComponentAdapter()
+            popup.setVisible(true);
+            frame.addComponentListener(new ComponentAdapter()
             {
                @Override
-               public void componentMoved( ComponentEvent e )
+               public void componentMoved(ComponentEvent e)
                {
                   if (popup != null)
                   {
                      killPopup();
-                     frame.removeComponentListener( this );
+                     frame.removeComponentListener(this);
                   }
                }
-            } );
+            });
          }
-      } );
+      });
    }
 
    public void killPopup()
@@ -429,10 +456,10 @@ public class PerspectiveView extends JPanel
          popup.setVisible(false);
          popup.dispose();
          popup = null;
-         //model.notifyObservers();
+         // model.notifyObservers();
       }
    }
-   
+
    public void setModel(PerspectiveModel model)
    {
       this.model = model;
@@ -442,31 +469,30 @@ public class PerspectiveView extends JPanel
    public Task savePerspective()
    {
       final NameDialog dialog = nameDialogs.iterator().next();
-      dialogs.showOkCancelHelpDialog( this, dialog, text( WorkspaceResources.save_perspective ) );
-      if (!Strings.empty( dialog.name() ))
+      dialogs.showOkCancelHelpDialog(this, dialog, text(WorkspaceResources.save_perspective));
+      if (!Strings.empty(dialog.name()))
       {
          return new CommandTask()
          {
             @Override
-            public void command()
-                  throws Exception
+            public void command() throws Exception
             {
-               model.savePerspective( dialog.name(), searchField != null ? searchField.getText() : "" );
+               model.savePerspective(dialog.name(), searchField != null ? searchField.getText() : "");
             }
          };
       } else
          return null;
    }
-   
+
    abstract class SelectedLinkValueComparator implements Comparator<LinkValue>
    {
 
       abstract List<String> getSelectedValues();
-      
+
       public int compare(LinkValue o1, LinkValue o2)
       {
-         int val1 = getSelectedValues().contains(o1.text().get()) ? 1:0;
-         int val2 = getSelectedValues().contains(o2.text().get()) ? 1:0;
+         int val1 = getSelectedValues().contains(o1.text().get()) ? 1 : 0;
+         int val2 = getSelectedValues().contains(o2.text().get()) ? 1 : 0;
          int selectedCompare = val2 - val1;
          if (selectedCompare == 0)
             return o1.text().get().compareToIgnoreCase(o2.text().get());
@@ -474,17 +500,20 @@ public class PerspectiveView extends JPanel
             return selectedCompare;
       }
    }
-   class SortByList extends JList {
-      
+
+   class SortByList extends JList
+   {
+
       public SortByList()
       {
          List<Enum> allValues = new ArrayList<Enum>();
-         allValues.addAll( Arrays.asList( SortBy.values() ));
+         allValues.addAll(Arrays.asList(SortBy.values()));
          allValues.addAll(Arrays.asList(SortOrder.values()));
          setListData(allValues.toArray());
-         
+
          setSelectedIndex(0);
-         setCellRenderer(new DefaultListCellRenderer(){
+         setCellRenderer(new DefaultListCellRenderer()
+         {
 
             @Override
             public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected,
@@ -496,18 +525,20 @@ public class PerspectiveView extends JPanel
                if (value.equals(model.getSortBy()) || value.equals(model.getSortOrder()))
                {
                   setIcon(i18n.icon(Icons.check, 12));
-                  setBorder(BorderFactory.createEmptyBorder(4, 0, 0, 0 ));
-               } else {
+                  setBorder(BorderFactory.createEmptyBorder(4, 0, 0, 0));
+               } else
+               {
 
                   setIcon(null);
-                  setBorder(BorderFactory.createEmptyBorder(4, 16, 0, 0 ));
+                  setBorder(BorderFactory.createEmptyBorder(4, 16, 0, 0));
                }
                setText(text((Enum) value));
-               if (index == SortBy.values().length-1)
+               if (index == SortBy.values().length - 1)
                   setBorder(BorderFactory.createCompoundBorder(new BottomBorder(Color.LIGHT_GRAY, 1, 3), getBorder()));
                return this;
-            }});
-         
+            }
+         });
+
          addListSelectionListener(new ListSelectionListener()
          {
 
@@ -520,7 +551,7 @@ public class PerspectiveView extends JPanel
                   {
                      if (selectedValue instanceof SortBy)
                      {
-                        model.setSortBy((SortBy)selectedValue);
+                        model.setSortBy((SortBy) selectedValue);
                      } else
                      {
                         model.setSortOrder((SortOrder) selectedValue);
@@ -533,14 +564,16 @@ public class PerspectiveView extends JPanel
          });
       }
    }
-   
-   class GroupByList extends JList {
-      
+
+   class GroupByList extends JList
+   {
+
       public GroupByList()
       {
          super(GroupBy.values());
          setSelectedIndex(0);
-         setCellRenderer(new DefaultListCellRenderer(){
+         setCellRenderer(new DefaultListCellRenderer()
+         {
 
             @Override
             public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected,
@@ -552,16 +585,18 @@ public class PerspectiveView extends JPanel
                if (value.equals(model.getGroupBy()))
                {
                   setIcon(i18n.icon(Icons.check, 12));
-                  setBorder(BorderFactory.createEmptyBorder(4, 0, 0, 0 ));
-               } else {
+                  setBorder(BorderFactory.createEmptyBorder(4, 0, 0, 0));
+               } else
+               {
 
                   setIcon(null);
-                  setBorder(BorderFactory.createEmptyBorder(4, 16, 0, 0 ));
+                  setBorder(BorderFactory.createEmptyBorder(4, 16, 0, 0));
                }
-               setText(text((GroupBy)value));
+               setText(text((GroupBy) value));
                return this;
-            }});
-         
+            }
+         });
+
          addListSelectionListener(new ListSelectionListener()
          {
 
@@ -569,7 +604,7 @@ public class PerspectiveView extends JPanel
             {
                if (!event.getValueIsAdjusting())
                {
-                  model.setGroupBy( (GroupBy) getSelectedValue());
+                  model.setGroupBy((GroupBy) getSelectedValue());
                }
             }
          });

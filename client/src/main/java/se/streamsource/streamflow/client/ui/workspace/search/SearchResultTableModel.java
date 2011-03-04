@@ -115,7 +115,7 @@ public class SearchResultTableModel
       
       if (!perspectiveModel.getSelectedLabels().isEmpty())
       {
-         translatedQuery += " searchlabels:\"";
+         translatedQuery += " label:\"";
          String comma = "";
          for (String label : perspectiveModel.getSelectedLabels())
          {

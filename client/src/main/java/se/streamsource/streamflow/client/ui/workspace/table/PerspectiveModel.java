@@ -249,4 +249,20 @@ public class PerspectiveModel extends Observable implements Refreshable
       setChanged();
       super.notifyObservers();
    }
+
+   public void clearFilter()
+   {
+      selectedStatuses = new ArrayList<String>(Arrays.asList(OPEN.name()));
+      selectedCaseTypes = new ArrayList<String>();
+      selectedLabels = new ArrayList<String>();
+      selectedAssignees = new ArrayList<String>();
+      selectedProjects = new ArrayList<String>();
+      selectedCreatedBy = new ArrayList<String>();
+      
+      groupBy = GroupBy.none;
+      sortBy = SortBy.none;
+      sortOrder = SortOrder.asc;
+      
+      createdOn = "";
+   }
 }
