@@ -22,7 +22,7 @@ public enum SearchTermsResources
    createdOn,
    caseType,
    project,
-   searchlabels,
+   label,
    assignedTo,
    name,
    contactId,

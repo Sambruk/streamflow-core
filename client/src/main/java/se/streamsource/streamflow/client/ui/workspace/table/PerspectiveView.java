@@ -113,6 +113,8 @@ public class PerspectiveView extends JPanel
    private JList statusList;
    private javax.swing.Action savePerspective;
 
+   private DateList createdOnList;
+
    public void initView(final @Service ApplicationContext context, final @Structure ObjectBuilderFactory obf,
          final @Uses PerspectiveModel model, @Optional @Uses JTextField searchField)
    {
@@ -132,7 +134,7 @@ public class PerspectiveView extends JPanel
 
       filterPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
       javax.swing.Action filterClearAction = getActionMap().get("filterClear");
-      JButton filterClearButton = new JButton(filterClearAction);
+      JToggleButton filterClearButton = new JToggleButton(filterClearAction);
       filterPanel.add(filterClearButton);
       addPopupButton(filterPanel, "filterCreatedOn");
       addPopupButton(filterPanel, "filterProject");
@@ -144,56 +146,8 @@ public class PerspectiveView extends JPanel
 
       add(filterPanel, BorderLayout.WEST);
 
-      statusList = new JList(new Object[]
-      { OPEN.name(), ON_HOLD.name(), CLOSED.name() });
-      statusList.setSelectedIndex(0);
-      statusList.setCellRenderer(new DefaultListCellRenderer()
-      {
-
-         @Override
-         public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected,
-               boolean cellHasFocus)
-         {
-            setFont(list.getFont());
-            setBackground(list.getBackground());
-            setForeground(list.getForeground());
-            if (model.getSelectedStatuses().contains(value))
-            {
-               setIcon(i18n.icon(Icons.check, 12));
-               setBorder(BorderFactory.createEmptyBorder(4, 0, 0, 0));
-            } else
-            {
-
-               setIcon(null);
-               setBorder(BorderFactory.createEmptyBorder(4, 16, 0, 0));
-            }
-            setText(text(WorkspaceResources.valueOf(value.toString())));
-            return this;
-         }
-      });
-
-      statusList.addListSelectionListener(new ListSelectionListener()
-      {
-
-         public void valueChanged(ListSelectionEvent event)
-         {
-            if (!event.getValueIsAdjusting())
-            {
-               String selectedValue = (String) statusList.getSelectedValue();
-               if (selectedValue != null)
-               {
-                  if (model.getSelectedStatuses().contains(selectedValue))
-                  {
-                     model.getSelectedStatuses().remove(selectedValue);
-                  } else
-                  {
-                     model.getSelectedStatuses().add(selectedValue);
-                  }
-                  statusList.clearSelection();
-               }
-            }
-         }
-      });
+      statusList = new StatusList();
+      createdOnList = new DateList();
 
       viewPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
       addPopupButton(viewPanel, "viewSorting");
@@ -347,41 +301,8 @@ public class PerspectiveView extends JPanel
    @Action
    public void filterCreatedOn(ActionEvent event)
    {
-      final JXMonthView createdOnPicker = new JXMonthView();
-      createdOnPicker.setFirstDayOfWeek(Calendar.MONDAY);
-      createdOnPicker.setTraversable(true);
-      createdOnPicker.setTimeZone(TimeZone.getTimeZone("UTC"));
-      createdOnPicker.setSelectionMode(DateSelectionModel.SelectionMode.SINGLE_INTERVAL_SELECTION);
-      createdOnPicker.setPreferredColumnCount(2);
-      createdOnPicker.setPreferredRowCount(1);
-      Calendar firstMonth = Calendar.getInstance();
-      firstMonth.add(Calendar.MONTH, -1);
-      createdOnPicker.setFirstDisplayedDay(firstMonth.getTime());
-      createdOnPicker.setTodayBackground(Color.gray);
-
-      createdOnPicker.addActionListener(new ActionListener()
-      {
-
-         public void actionPerformed(ActionEvent e)
-         {
-            if (!createdOnPicker.getSelection().isEmpty())
-            {
-               DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-               format.setTimeZone(TimeZone.getTimeZone("UTC"));
-
-               if (createdOnPicker.getSelection().size() == 1)
-               {
-                  model.setCreatedOn(format.format(createdOnPicker.getSelection().first()));
-               } else
-               {
-                  model.setCreatedOn(format.format(createdOnPicker.getSelection().first()) + " - "
-                        + format.format(createdOnPicker.getSelection().last()));
-               }
-            }
-         }
-      });
-
-      optionsPanel.add(createdOnPicker);
+      
+      optionsPanel.add(createdOnList);
    }
 
    @Action
@@ -501,6 +422,100 @@ public class PerspectiveView extends JPanel
       }
    }
 
+   class DateList extends JList
+   {
+      public DateList()
+      {
+         setListData(new String[] {"1 dag", "1 vecka"});
+
+         setSelectedIndex(0);
+         setCellRenderer(new DefaultListCellRenderer()
+         {
+
+            @Override
+            public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected,
+                  boolean cellHasFocus)
+            {
+               setFont(list.getFont());
+               setBackground(list.getBackground());
+               setForeground(list.getForeground());
+               setBorder(BorderFactory.createEmptyBorder(4, 16, 0, 0));
+               setText((String) value);
+               return this;
+            }
+         });
+
+         addListSelectionListener(new ListSelectionListener()
+         {
+
+            public void valueChanged(ListSelectionEvent event)
+            {
+               if (!event.getValueIsAdjusting())
+               {
+                  
+               }
+            }
+         });
+      }
+   }
+   
+   class StatusList extends JList 
+   {
+      public StatusList()
+      {
+         super(new Object[]
+         { OPEN.name(), ON_HOLD.name(), CLOSED.name() });
+         setSelectedIndex(0);
+         setCellRenderer(new DefaultListCellRenderer()
+         {
+
+            @Override
+            public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected,
+                  boolean cellHasFocus)
+            {
+               setFont(list.getFont());
+               setBackground(list.getBackground());
+               setForeground(list.getForeground());
+               if (model.getSelectedStatuses().contains(value))
+               {
+                  setIcon(i18n.icon(Icons.check, 12));
+                  setBorder(BorderFactory.createEmptyBorder(4, 0, 0, 0));
+               } else
+               {
+
+                  setIcon(null);
+                  setBorder(BorderFactory.createEmptyBorder(4, 16, 0, 0));
+               }
+               setText(text(WorkspaceResources.valueOf(value.toString())));
+               return this;
+            }
+         });
+
+         addListSelectionListener(new ListSelectionListener()
+         {
+
+            public void valueChanged(ListSelectionEvent event)
+            {
+               if (!event.getValueIsAdjusting())
+               {
+                  String selectedValue = (String) statusList.getSelectedValue();
+                  if (selectedValue != null)
+                  {
+                     if (model.getSelectedStatuses().contains(selectedValue))
+                     {
+                        model.getSelectedStatuses().remove(selectedValue);
+                     } else
+                     {
+                        model.getSelectedStatuses().add(selectedValue);
+                     }
+                     statusList.clearSelection();
+                  }
+               }
+            }
+         });
+      }
+   }
+   
    class SortByList extends JList
    {
 
