@@ -26,7 +26,11 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.LinksValue;
-import se.streamsource.dci.value.table.*;
+import se.streamsource.dci.value.table.CellValue;
+import se.streamsource.dci.value.table.ColumnValue;
+import se.streamsource.dci.value.table.RowValue;
+import se.streamsource.dci.value.table.TableQuery;
+import se.streamsource.dci.value.table.TableValue;
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseTableValue;
 import se.streamsource.streamflow.client.util.EventListSynch;
 import se.streamsource.streamflow.client.util.Refreshable;
@@ -35,14 +39,12 @@ import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
 
 /**
  * Base class for all models that list cases
  */
 public class CasesTableModel
-      implements Refreshable, Observer
+      implements Refreshable
 {
    @Structure
    ValueBuilderFactory vbf;
@@ -56,7 +58,6 @@ public class CasesTableModel
    public CasesTableModel(@Uses PerspectiveModel perspectiveModel)
    {
       this.perspectiveModel = perspectiveModel;
-      this.perspectiveModel.addObserver(this);
    }
    
    public PerspectiveModel getPerspectiveModel()
@@ -138,10 +139,5 @@ public class CasesTableModel
          caseTableValues.add(caseBuilder.newInstance());
       }
       return caseTableValues;
-   }
-
-   public void update(Observable arg0, Object arg1)
-   {
-      refresh();
    }
 }
