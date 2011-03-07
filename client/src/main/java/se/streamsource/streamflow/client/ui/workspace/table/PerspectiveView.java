@@ -17,11 +17,40 @@
 
 package se.streamsource.streamflow.client.ui.workspace.table;
 
-import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.CLOSED;
-import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.ON_HOLD;
-import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.OPEN;
-import static se.streamsource.streamflow.client.util.i18n.text;
+import ca.odell.glazedlists.SortedList;
+import org.jdesktop.application.Action;
+import org.jdesktop.application.ApplicationAction;
+import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.application.Task;
+import org.jdesktop.swingx.JXMonthView;
+import org.jdesktop.swingx.calendar.DateSelectionModel;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.util.Iterables;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.streamflow.client.Icons;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.client.util.BottomBorder;
+import se.streamsource.streamflow.client.util.CommandTask;
+import se.streamsource.streamflow.client.util.RefreshWhenShowing;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.util.dialog.NameDialog;
+import se.streamsource.streamflow.util.Strings;
 
+import javax.swing.BorderFactory;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.JToggleButton;
+import javax.swing.SwingUtilities;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -42,46 +71,14 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.TimeZone;
 
-import javax.swing.BorderFactory;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.JToggleButton;
-import javax.swing.SwingUtilities;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
+import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
+import static se.streamsource.streamflow.client.util.i18n.*;
 
-import org.jdesktop.application.Action;
-import org.jdesktop.application.ApplicationAction;
-import org.jdesktop.application.ApplicationContext;
-import org.jdesktop.application.Task;
-import org.jdesktop.swingx.JXMonthView;
-import org.jdesktop.swingx.calendar.DateSelectionModel;
-import org.qi4j.api.common.Optional;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import org.qi4j.api.util.Iterables;
-
-import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.streamflow.client.Icons;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
-import se.streamsource.streamflow.client.util.BottomBorder;
-import se.streamsource.streamflow.client.util.CommandTask;
-import se.streamsource.streamflow.client.util.RefreshWhenShowing;
-import se.streamsource.streamflow.client.util.i18n;
-import se.streamsource.streamflow.client.util.dialog.DialogService;
-import se.streamsource.streamflow.client.util.dialog.NameDialog;
-import se.streamsource.streamflow.util.Strings;
-import ca.odell.glazedlists.SortedList;
-
-public class PerspectiveView extends JPanel
+public class PerspectiveView extends JPanel implements Observer
 {
 
    private static final long serialVersionUID = -149885124005347187L;
@@ -112,12 +109,26 @@ public class PerspectiveView extends JPanel
    private JList statusList;
    private javax.swing.Action savePerspective;
 
+   private enum FilterActions
+   {
+      filterStatus,
+      filterCaseType,
+      filterLabel,
+      filterAssignee,
+      filterProject,
+      filterCreatedBy,
+      filterCreatedOn,
+      viewSorting,
+      viewGrouping
+   }
+
    public void initView(final @Service ApplicationContext context, final @Structure ObjectBuilderFactory obf,
          final @Uses PerspectiveModel model, @Optional @Uses JTextField searchField)
    {
 
       this.obf = obf;
       this.model = model;
+      model.addObserver( this );
       this.searchField = searchField;
       setActionMap( context.getActionMap( this ) );
       
@@ -130,13 +141,13 @@ public class PerspectiveView extends JPanel
       savePerspective.putValue( "proxy", savePerspectiveAction );
 
       filterPanel = new JPanel( new FlowLayout(FlowLayout.LEFT));
-      addPopupButton(filterPanel, "filterStatus");
-      addPopupButton(filterPanel, "filterCaseType");
-      addPopupButton(filterPanel, "filterLabel");
-      addPopupButton(filterPanel, "filterAssignee");
-      addPopupButton(filterPanel, "filterProject");
-      addPopupButton(filterPanel, "filterCreatedBy");
-      addPopupButton(filterPanel, "filterCreatedOn");
+      addPopupButton(filterPanel, FilterActions.filterStatus.name() );
+      addPopupButton(filterPanel, FilterActions.filterCaseType.name() );
+      addPopupButton(filterPanel, FilterActions.filterLabel.name()) ;
+      addPopupButton(filterPanel, FilterActions.filterAssignee.name() );
+      addPopupButton(filterPanel, FilterActions.filterProject.name() );
+      addPopupButton(filterPanel, FilterActions.filterCreatedBy.name() );
+      addPopupButton(filterPanel, FilterActions.filterCreatedOn.name() );
       {
          
       }
@@ -155,7 +166,7 @@ public class PerspectiveView extends JPanel
             setForeground(list.getForeground());
             if (model.getSelectedStatuses().contains(value))
             {
-               setIcon(i18n.icon(Icons.check, 12));
+               setIcon( icon( Icons.check, 12 ));
                setBorder(BorderFactory.createEmptyBorder(4, 0, 0, 0 ));
             } else {
 
@@ -217,6 +228,7 @@ public class PerspectiveView extends JPanel
             }
          }
       } );
+      model.notifyObservers();
       new RefreshWhenShowing( this, model );
    }
 
@@ -259,30 +271,18 @@ public class PerspectiveView extends JPanel
    @Action
    public void filterCaseType()
    {
-      SortedList<LinkValue> sortedCaseTypes = new SortedList<LinkValue>( model.getPossibleCaseTypes(), new SelectedLinkValueComparator()
-      {
-         @Override
-         List<String> getSelectedValues()
-         {
-            return model.getSelectedCaseTypes();
-         }
-      });
+      SortedList<LinkValue> sortedCaseTypes = new SortedList<LinkValue>( model.getPossibleCaseTypes(),
+            new SelectedLinkValueComparator(model.getSelectedCaseTypes()));
       
       PerspectiveOptionsView panel = obf.newObjectBuilder(PerspectiveOptionsView.class).use(sortedCaseTypes, model.getSelectedCaseTypes()).newInstance();
-      optionsPanel.add(panel);
+      optionsPanel.add( panel );
    }
 
    @Action
    public void filterLabel()
    {
-      SortedList<LinkValue> sortedLabels = new SortedList<LinkValue>( model.getPossibleLabels(), new SelectedLinkValueComparator()
-      {
-         @Override
-         List<String> getSelectedValues()
-         {
-            return model.getSelectedLabels();
-         }
-      });
+      SortedList<LinkValue> sortedLabels = new SortedList<LinkValue>( model.getPossibleLabels(),
+            new SelectedLinkValueComparator( model.getSelectedLabels() ) );
       
       PerspectiveOptionsView panel = obf.newObjectBuilder(PerspectiveOptionsView.class).use(sortedLabels, model.getSelectedLabels()).newInstance();
       optionsPanel.add(panel);
@@ -291,15 +291,9 @@ public class PerspectiveView extends JPanel
    @Action
    public void filterAssignee()
    {
-      SortedList<LinkValue> sortedAssignees = new SortedList<LinkValue>( model.getPossibleAssignees(), new SelectedLinkValueComparator()
-      {
-         @Override
-         List<String> getSelectedValues()
-         {
-            return model.getSelectedAssignees();
-         }
-      });
-      
+      SortedList<LinkValue> sortedAssignees = new SortedList<LinkValue>( model.getPossibleAssignees(),
+            new SelectedLinkValueComparator( model.getSelectedAssignees() ) );
+
       PerspectiveOptionsView panel = obf.newObjectBuilder(PerspectiveOptionsView.class).use(sortedAssignees, model.getSelectedAssignees()).newInstance();
       optionsPanel.add(panel);
    }
@@ -307,16 +301,10 @@ public class PerspectiveView extends JPanel
    @Action
    public void filterProject()
    {
-      SortedList<LinkValue> sortedProjects = new SortedList<LinkValue>( model.getPossibleProjects(), new SelectedLinkValueComparator()
-      {
-         @Override
-         List<String> getSelectedValues()
-         {
-            return model.getSelectedProjects();
-         }
-      });
-      
-      PerspectiveOptionsView panel = obf.newObjectBuilder(PerspectiveOptionsView.class).use(sortedProjects, model.getSelectedProjects()).newInstance();
+      SortedList<LinkValue> sortedProjects = new SortedList<LinkValue>( model.getPossibleProjects(),
+            new SelectedLinkValueComparator( model.getSelectedProjects() ) );
+
+      PerspectiveOptionsView panel = obf.newObjectBuilder(PerspectiveOptionsView.class).use( sortedProjects, model.getSelectedProjects(), true).newInstance();
       optionsPanel.add(panel);
    }
    
@@ -362,16 +350,10 @@ public class PerspectiveView extends JPanel
    @Action
    public void filterCreatedBy()
    {
-      SortedList<LinkValue> sortedCreatedBy = new SortedList<LinkValue>( model.getPossibleCreatedBy(), new SelectedLinkValueComparator()
-      {
-         @Override
-         List<String> getSelectedValues()
-         {
-            return model.getSelectedCreatedBy();
-         }
-      });
+      SortedList<LinkValue> sortedCreatedBy = new SortedList<LinkValue>( model.getPossibleCreatedBy(),
+            new SelectedLinkValueComparator( model.getSelectedCreatedBy() ) );
       
-      PerspectiveOptionsView panel = obf.newObjectBuilder(PerspectiveOptionsView.class).use(sortedCreatedBy, model.getSelectedCreatedBy()).newInstance();
+      PerspectiveOptionsView panel = obf.newObjectBuilder(PerspectiveOptionsView.class).use(sortedCreatedBy, model.getSelectedCreatedBy() ).newInstance();
       optionsPanel.add(panel);
    }
 
@@ -429,7 +411,7 @@ public class PerspectiveView extends JPanel
          popup.setVisible(false);
          popup.dispose();
          popup = null;
-         //model.notifyObservers();
+         model.notifyObservers();
       }
    }
    
@@ -457,16 +439,61 @@ public class PerspectiveView extends JPanel
       } else
          return null;
    }
-   
-   abstract class SelectedLinkValueComparator implements Comparator<LinkValue>
-   {
 
-      abstract List<String> getSelectedValues();
-      
+   public void update( Observable o, Object arg )
+   {
+      for( Component comp : filterPanel.getComponents() )
+      {
+         if( comp instanceof JToggleButton )
+         {
+            JToggleButton button = (JToggleButton)comp;
+            boolean selectedIsEmpty = true;
+            switch( FilterActions.valueOf( ((ApplicationAction)button.getAction()).getName()))
+            {
+               case filterStatus:
+                  selectedIsEmpty = model.getSelectedStatuses().isEmpty();
+                  break;
+
+               case filterAssignee:
+                  selectedIsEmpty = model.getSelectedAssignees().isEmpty();
+                  break;
+
+               case filterLabel:
+                  selectedIsEmpty = model.getSelectedLabels().isEmpty();
+                  break;
+
+               case filterProject:
+                  selectedIsEmpty = model.getSelectedProjects().isEmpty();
+                  break;
+
+               case filterCaseType:
+                  selectedIsEmpty = model.getSelectedCaseTypes().isEmpty();
+                  break;
+
+               case filterCreatedBy:
+                  selectedIsEmpty = model.getSelectedCreatedBy().isEmpty();
+                  break;
+               
+
+               default:
+
+            }
+            button.setIcon( selectedIsEmpty ? icon( Icons.down_no_selection, ICON_16 ) : icon( Icons.down_with_selection, ICON_16 ) );
+         }
+      }
+   }
+
+   class SelectedLinkValueComparator implements Comparator<LinkValue>
+   {
+     private List<String> selected;
+     public SelectedLinkValueComparator(List<String> selectedValues )
+     {
+         selected = selectedValues;
+     }
       public int compare(LinkValue o1, LinkValue o2)
       {
-         int val1 = getSelectedValues().contains(o1.text().get()) ? 1:0;
-         int val2 = getSelectedValues().contains(o2.text().get()) ? 1:0;
+         int val1 = selected.contains( o1.text().get() ) ? 1:0;
+         int val2 = selected.contains( o2.text().get() ) ? 1:0;
          int selectedCompare = val2 - val1;
          if (selectedCompare == 0)
             return o1.text().get().compareToIgnoreCase(o2.text().get());
@@ -474,6 +501,7 @@ public class PerspectiveView extends JPanel
             return selectedCompare;
       }
    }
+
    class SortByList extends JList {
       
       public SortByList()
@@ -495,7 +523,7 @@ public class PerspectiveView extends JPanel
                setForeground(list.getForeground());
                if (value.equals(model.getSortBy()) || value.equals(model.getSortOrder()))
                {
-                  setIcon(i18n.icon(Icons.check, 12));
+                  setIcon( icon( Icons.check, 12 ));
                   setBorder(BorderFactory.createEmptyBorder(4, 0, 0, 0 ));
                } else {
 
@@ -551,7 +579,7 @@ public class PerspectiveView extends JPanel
                setForeground(list.getForeground());
                if (value.equals(model.getGroupBy()))
                {
-                  setIcon(i18n.icon(Icons.check, 12));
+                  setIcon( icon( Icons.check, 12 ));
                   setBorder(BorderFactory.createEmptyBorder(4, 0, 0, 0 ));
                } else {
 

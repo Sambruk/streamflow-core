@@ -17,20 +17,15 @@
 
 package se.streamsource.streamflow.web.context.workspace;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.query.QueryBuilder;
 import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.query.grammar.OrderBy.Order;
 import org.qi4j.api.structure.Module;
-import org.qi4j.api.util.Iterables;
-
 import se.streamsource.dci.api.RoleMap;
+import se.streamsource.dci.value.link.LinksBuilder;
+import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.dci.value.table.TableQuery;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.domain.structure.Removable;
@@ -40,15 +35,13 @@ import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
 import se.streamsource.streamflow.web.domain.entity.user.SearchCaseQueries;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.DueOn;
+import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
-import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
-import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
 import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
 
-import static org.qi4j.api.query.QueryExpressions.eq;
-import static org.qi4j.api.query.QueryExpressions.templateFor;
+import static org.qi4j.api.query.QueryExpressions.*;
 
 /**
  * JAVADOC
@@ -119,13 +112,20 @@ public class SearchContext
          orderBy( QueryExpressions.orderBy( templateFor( Describable.Data.class).description() ) );
    }
 
-   public Query<ProjectEntity> possibleProjects()
+   public LinksValue possibleProjects()
    {
       QueryBuilder<ProjectEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder( ProjectEntity.class );
       queryBuilder = queryBuilder.where(
                   eq( templateFor( Removable.Data.class ).removed(), false ));
-      return queryBuilder.newQuery( module.unitOfWorkFactory().currentUnitOfWork() ).
+      Query<ProjectEntity> query = queryBuilder.newQuery( module.unitOfWorkFactory().currentUnitOfWork() ).
             orderBy( QueryExpressions.orderBy( templateFor( Describable.Data.class).description() ) );
+      LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
+
+      for( ProjectEntity project : query )
+      {
+         linksBuilder.addLink(project.getDescription(), project.identity().get(), "", "", "", ((Describable)((Ownable.Data)project).owner().get()).getDescription() );   
+      }
+      return linksBuilder.newLinks();
    }
 
    public Query<UserEntity> possibleCreatedBy()

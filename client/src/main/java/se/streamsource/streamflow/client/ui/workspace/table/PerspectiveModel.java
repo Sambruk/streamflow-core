@@ -33,6 +33,7 @@ import se.streamsource.streamflow.resource.user.profile.PerspectiveValue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Observable;
 
@@ -85,7 +86,7 @@ public class PerspectiveModel extends Observable implements Refreshable
       LinksValue projects = client.query( "possibleprojects",
             LinksValue.class );
       possibleProjects.clear();
-      possibleProjects.addAll(projects.links().get());
+      possibleProjects.addAll((Collection)projects.links().get());
 
       LinksValue createdby = client.query( "possiblecreatedby",
             LinksValue.class );

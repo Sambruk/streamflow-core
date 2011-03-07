@@ -141,5 +141,5 @@ public enum WorkspaceResources
    
    // Conversation
    sender_column_header,
-   message_column_header, change_perspective_title,
+   message_column_header, change_perspective_title, selected_projects,
 }

@@ -17,11 +17,23 @@
 
 package se.streamsource.streamflow.client.ui.workspace.table;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.util.ArrayList;
-import java.util.List;
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.SeparatorList;
+import org.jdesktop.application.ApplicationContext;
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.value.ValueBuilder;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.dci.value.link.TitledLinkValue;
+import se.streamsource.streamflow.client.Icons;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.client.util.BottomBorder;
+import se.streamsource.streamflow.client.util.FilteredList;
+import se.streamsource.streamflow.client.util.GroupedFilteredList;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListCellRenderer;
@@ -31,19 +43,13 @@ import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Font;
+import java.util.ArrayList;
 
-import org.jdesktop.application.ApplicationContext;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
-
-import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.streamflow.client.Icons;
-import se.streamsource.streamflow.client.util.BottomBorder;
-import se.streamsource.streamflow.client.util.FilteredList;
-import se.streamsource.streamflow.client.util.i18n;
-import ca.odell.glazedlists.EventList;
+import static se.streamsource.streamflow.client.util.i18n.*;
 
 public class PerspectiveOptionsView extends JPanel
 {
@@ -51,42 +57,91 @@ public class PerspectiveOptionsView extends JPanel
    private JTextField filterField;
 
    public PerspectiveOptionsView(final @Service ApplicationContext context, @Uses EventList<LinkValue> values,
-         @Uses final ArrayList<String> selectedValues, @Structure ObjectBuilderFactory obf)
+         @Uses final ArrayList<String> selectedValues, @Optional @Uses final Boolean isGrouped,  @Structure ObjectBuilderFactory obf)
    {
 
       super(new BorderLayout());
       final int currentSelectedLabelCount = selectedValues.size();
 
-      FilteredList list = new FilteredList();
-      list.getList().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-      list.setEventList((EventList<LinkValue>) values, false);
+      JPanel list;
 
+      if( isGrouped != null && isGrouped )
+      {
+         list = new GroupedFilteredList();
+         ((GroupedFilteredList)list).getList().setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
+         EventList<TitledLinkValue> titledLinks = new BasicEventList<TitledLinkValue>( );
+         int count = 0;
+         for( LinkValue link : values )
+         {
+            TitledLinkValue linkValue = (TitledLinkValue) link;
+            if( count < selectedValues.size())
+            {
+               ValueBuilder<TitledLinkValue> builder = linkValue.buildWith();
+               builder.prototype().title().set( text( WorkspaceResources.selected_projects ) );
+               titledLinks.add( builder.newInstance() );
+            }
+            else
+            {
+               titledLinks.add( linkValue );
+            }
+            count++;
+         }
+         ((GroupedFilteredList)list).setEventList( titledLinks, text( WorkspaceResources.selected_projects ) );
+
+         this.itemList = ((GroupedFilteredList)list).getList();
+         this.filterField = ((GroupedFilteredList)list).getFilterField();
+      } else
+      {
+         list = new FilteredList();
+         ((FilteredList)list).getList().setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
+         ((FilteredList)list).setEventList( (EventList<LinkValue>) values, false );
+         this.itemList = ((FilteredList)list).getList();
+         this.filterField = ((FilteredList)list).getFilterField();
+      }
       add(list);
-      this.itemList = list.getList();
-      this.filterField = list.getFilterField();
+
 
       itemList.setCellRenderer(new DefaultListCellRenderer(){
          @Override
          public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected,
                boolean cellHasFocus)
          {
-            LinkValue linkValue = (LinkValue) value;
-            setFont(list.getFont());
-            setBackground(list.getBackground());
-            setForeground(list.getForeground());
-            if (selectedValues.contains(linkValue.text().get()))
+            String text;
+            if (value instanceof SeparatorList.Separator )
             {
-               setIcon(i18n.icon(Icons.check, 12));
-               setBorder(BorderFactory.createEmptyBorder(4, 0, 0, 0 ));
-            } else {
+               SeparatorList.Separator separator = (SeparatorList.Separator) value;
 
-               setIcon(null);
-               setBorder(BorderFactory.createEmptyBorder(4, 16, 0, 0 ));
+               if (separator.first() instanceof TitledLinkValue )
+               {
+                  text = ((TitledLinkValue) separator.first()).title().get();
+               } else
+               {
+                  text = ((LinkValue) separator.first()).text().get();
+               }
+               Component component = super.getListCellRendererComponent( list, text, index, isSelected, cellHasFocus );
+               setFont( getFont().deriveFont( Font.BOLD ) );
+               return component;
+            } else
+            {
+               LinkValue linkValue = (LinkValue) value;
+               setFont( list.getFont() );
+               setBackground( list.getBackground() );
+               setForeground( list.getForeground() );
+               if (selectedValues.contains( linkValue.text().get() ))
+               {
+                  setIcon( icon( Icons.check, 12 ) );
+                  setBorder( BorderFactory.createEmptyBorder( 4, 0, 0, 0 ) );
+               } else
+               {
+
+                  setIcon( null );
+                  setBorder( BorderFactory.createEmptyBorder( 4, 16, 0, 0 ) );
+               }
+               setText( linkValue.text().get() );
+               if ( (isGrouped != null && isGrouped) ? index == currentSelectedLabelCount : index == currentSelectedLabelCount - 1 )
+                  setBorder( BorderFactory.createCompoundBorder( new BottomBorder( Color.LIGHT_GRAY, 1, 3 ), getBorder() ) );
+               return this;
             }
-            setText(linkValue.text().get());
-            if (index == currentSelectedLabelCount-1)
-               setBorder(BorderFactory.createCompoundBorder(new BottomBorder(Color.LIGHT_GRAY, 1, 3), getBorder()));
-            return this;
          }
       });
 
@@ -95,7 +150,8 @@ public class PerspectiveOptionsView extends JPanel
 
          public void valueChanged(ListSelectionEvent event)
          {
-            if (!event.getValueIsAdjusting())
+            if (!event.getValueIsAdjusting()
+                  && ! (itemList.getSelectedValue() instanceof SeparatorList.Separator) )
             {
                LinkValue linkValue = (LinkValue) itemList.getSelectedValue();
                if (linkValue != null)

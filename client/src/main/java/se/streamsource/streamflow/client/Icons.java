@@ -74,5 +74,8 @@ public enum Icons
    logo,
    
    // Check
-   check
+   check,
+
+   down_no_selection,
+   down_with_selection
 }
