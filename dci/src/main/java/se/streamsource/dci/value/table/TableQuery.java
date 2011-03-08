@@ -18,8 +18,6 @@ package se.streamsource.dci.value.table;
 
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
-import org.qi4j.api.specification.Specification;
-import org.qi4j.api.util.Iterables;
 import org.qi4j.api.value.ValueComposite;
 
 import java.util.Arrays;
@@ -124,7 +122,7 @@ public interface TableQuery
                boolean found = false;
                for (String keyword : keywords)
                {
-                  if (currentPhrase.startsWith(keyword))
+                  if (currentPhrase.startsWith(keyword + " "))
                   {
                      found = true;
                      parts.put( keyword, currentPhrase.substring(keyword.length() +1));

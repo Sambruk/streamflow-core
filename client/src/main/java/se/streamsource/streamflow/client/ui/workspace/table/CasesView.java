@@ -112,13 +112,12 @@ public class CasesView
       this.casesTableView = casesTableView;
       splitPane.setTopComponent( casesTableView );
       clearCase();
-      if (perspectiveView == null) 
-      {
-         perspectiveView = obf.newObjectBuilder( PerspectiveView.class ).use( casesTableView.getModel().getPerspectiveModel(), searchField ).newInstance();
-      } else
-      {
-         perspectiveView.setModel(casesTableView.getModel().getPerspectiveModel());
-      }
+      // remove occasional UI artifacts
+      if( perspectiveView != null )
+         topPanel.remove( perspectiveView );
+
+      perspectiveView = obf.newObjectBuilder( PerspectiveView.class ).use( casesTableView.getModel().getPerspectiveModel(), searchField ).newInstance();
+
       perspectiveView.setVisible(false);
       topPanel.add( perspectiveView, BorderLayout.NORTH);
    }

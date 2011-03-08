@@ -37,7 +37,12 @@ import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -93,7 +98,7 @@ public interface
                   }
                   queryBuilder.append(")");
                   
-               } else if (search.hasName( "searchlabels" ))
+               } else if (search.hasName( "label" ))
                {
                   List<LabelEntity> labels = new ArrayList<LabelEntity>();
                   for (String label : search.getValue().split(","))

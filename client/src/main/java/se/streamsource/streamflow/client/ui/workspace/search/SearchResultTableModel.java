@@ -17,22 +17,21 @@
 
 package se.streamsource.streamflow.client.ui.workspace.search;
 
-import java.util.Collections;
-
 import org.jdesktop.application.Application;
 import org.jdesktop.application.Task;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-
 import se.streamsource.dci.value.table.TableQuery;
 import se.streamsource.dci.value.table.TableValue;
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseTableValue;
-import se.streamsource.streamflow.client.ui.workspace.table.PerspectiveModel;
 import se.streamsource.streamflow.client.ui.workspace.table.CasesTableModel;
+import se.streamsource.streamflow.client.ui.workspace.table.PerspectiveModel;
 import se.streamsource.streamflow.client.ui.workspace.table.SortBy;
 import se.streamsource.streamflow.client.util.EventListSynch;
+
+import java.util.Collections;
 
 /**
  * Model for search results
@@ -115,7 +114,7 @@ public class SearchResultTableModel
       
       if (!perspectiveModel.getSelectedLabels().isEmpty())
       {
-         translatedQuery += " searchlabels:\"";
+         translatedQuery += " label:\"";
          String comma = "";
          for (String label : perspectiveModel.getSelectedLabels())
          {

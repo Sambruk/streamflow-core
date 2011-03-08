@@ -39,6 +39,10 @@ import se.streamsource.streamflow.client.ui.workspace.search.SearchView;
 import se.streamsource.streamflow.client.ui.workspace.table.CasesTableFormatter;
 import se.streamsource.streamflow.client.ui.workspace.table.CasesTableView;
 import se.streamsource.streamflow.client.ui.workspace.table.CasesView;
+import se.streamsource.streamflow.client.ui.workspace.table.GroupBy;
+import se.streamsource.streamflow.client.ui.workspace.table.PerspectiveModel;
+import se.streamsource.streamflow.client.ui.workspace.table.SortBy;
+import se.streamsource.streamflow.client.ui.workspace.table.SortOrder;
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.RoundedBorder;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
@@ -216,18 +220,6 @@ public class WorkspaceView
                   searchView.setVisible(isSearch);
                   contextToolbar.setVisible( true );
                   
-                  if (contextItem.getRelation().equals("perspective"))
-                  {
-                     PerspectiveValue perspectiveValue = contextItem.getClient().query("index", PerspectiveValue.class);
-                     searchView.getTextField().setText(perspectiveValue.query().get());
-                     searchResultTableModel.search(perspectiveValue.query().get());
-                     searchResultTableModel.getPerspectiveModel().setSelectedStatuses(perspectiveValue.statuses().get());
-                     searchResultTableModel.getPerspectiveModel().setSelectedCaseTypes(perspectiveValue.caseTypes().get());
-                     searchResultTableModel.getPerspectiveModel().setSelectedLabels(perspectiveValue.labels().get());
-                     searchResultTableModel.getPerspectiveModel().setSelectedAssigness(perspectiveValue.assignees().get());
-                     searchResultTableModel.getPerspectiveModel().setSelectedProjects(perspectiveValue.projects().get());
-                     searchResultTableModel.getPerspectiveModel().setSelectedCreatedBy(perspectiveValue.createdBy().get());
-                  }
                   TableFormat tableFormat;
                   CasesTableView casesTable;
                   tableFormat = new CasesTableFormatter();
@@ -236,6 +228,25 @@ public class WorkspaceView
 
                   casesTable.getCaseTable().getSelectionModel().addListSelectionListener(new CaseSelectionListener());
 
+                  if (contextItem.getRelation().equals("perspective"))
+                  {
+                     PerspectiveValue perspectiveValue = contextItem.getClient().query("index", PerspectiveValue.class);
+                     PerspectiveModel perspectiveModel = searchResultTableModel.getPerspectiveModel();
+                     perspectiveModel.setSelectedStatuses( perspectiveValue.statuses().get() );
+                     perspectiveModel.setSelectedCaseTypes( perspectiveValue.caseTypes().get() );
+                     perspectiveModel.setSelectedLabels( perspectiveValue.labels().get() );
+                     perspectiveModel.setSelectedAssigness( perspectiveValue.assignees().get() );
+                     perspectiveModel.setSelectedProjects( perspectiveValue.projects().get() );
+                     perspectiveModel.setSelectedCreatedBy( perspectiveValue.createdBy().get() );
+                     perspectiveModel.setSortBy( SortBy.valueOf( perspectiveValue.sortBy().get() ) );
+                     perspectiveModel.setSortOrder( SortOrder.valueOf( perspectiveValue.sortOrder().get() ) );
+                     perspectiveModel.setGroupBy( GroupBy.valueOf( perspectiveValue.groupBy().get() ) );
+
+                     searchView.getTextField().setText(perspectiveValue.query().get());
+                     searchResultTableModel.search( perspectiveValue.query().get() );
+                     perspectiveModel.notifyObservers();
+                  }
+                  
                   casesView.showTable(casesTable);
 
                   setContextString(contextItem);

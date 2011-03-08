@@ -17,12 +17,12 @@
 
 package se.streamsource.streamflow.resource.user.profile;
 
-import java.util.List;
-
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
 import org.qi4j.library.constraints.annotation.MaxLength;
+
+import java.util.List;
 
 
 public interface PerspectiveValue
@@ -46,12 +46,9 @@ public interface PerspectiveValue
    
    Property<List<String>> createdBy();
    
-   @Optional
    Property<String> sortBy();
-   
-   @Optional
+
    Property<String> sortOrder();
-   
-   @Optional
+
    Property<String> groupBy();
 }

@@ -92,6 +92,8 @@ public class PerspectiveModel extends Observable implements Refreshable
             LinksValue.class );
       possibleCreatedBy.clear();
       possibleCreatedBy.addAll(createdby.links().get());
+
+      notifyObservers();
    }
 
    public EventList<LinkValue> getPossibleLabels()
@@ -235,6 +237,10 @@ public class PerspectiveModel extends Observable implements Refreshable
       builder.prototype().sortBy().set( getSortBy().name() );
       builder.prototype().sortOrder().set( getSortOrder().name() );
       builder.prototype().groupBy().set( getGroupBy().name() );
+      builder.prototype().assignees().set( getSelectedAssignees() );
+      builder.prototype().caseTypes().set( getSelectedCaseTypes() );
+      builder.prototype().createdBy().set( getSelectedCreatedBy() );
+      builder.prototype().projects().set( getSelectedProjects() );
 
       return builder.newInstance();
    }
@@ -249,5 +255,21 @@ public class PerspectiveModel extends Observable implements Refreshable
    {
       setChanged();
       super.notifyObservers();
+   }
+
+   public void clearFilter()
+   {
+      selectedStatuses = new ArrayList<String>(Arrays.asList(OPEN.name()));
+      selectedCaseTypes = new ArrayList<String>();
+      selectedLabels = new ArrayList<String>();
+      selectedAssignees = new ArrayList<String>();
+      selectedProjects = new ArrayList<String>();
+      selectedCreatedBy = new ArrayList<String>();
+      
+      groupBy = GroupBy.none;
+      sortBy = SortBy.none;
+      sortOrder = SortOrder.asc;
+      
+      createdOn = "";
    }
 }
