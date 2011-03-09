@@ -432,7 +432,7 @@ public interface ManagerComposite
       private Date getEventBackupDate( File eventBackup ) throws ParseException
       {
          String name = eventBackup.getName().substring( "streamflow_events_".length() );
-         if (isCompleteEventBackup( eventBackup ))
+         if (isDiffEventBackup(eventBackup))
          {
             // Range
             name = name.substring( name.indexOf( "-" ) + 1, name.indexOf( "." ) );
@@ -448,7 +448,7 @@ public interface ManagerComposite
          return backupDate;
       }
 
-      private boolean isCompleteEventBackup(File eventBackup)
+      private boolean isDiffEventBackup(File eventBackup)
       {
          return eventBackup.getName().substring( "streamflow_events_".length() ).contains( "-" );
       }
@@ -583,7 +583,12 @@ public interface ManagerComposite
          {
             public int compare( File o1, File o2 )
             {
-               return o2.getName().compareTo( o1.getName() );
+               String o1Name = o1.getName();
+               o1Name = o1Name.substring(0, o1Name.lastIndexOf('.'));
+               String o2Name = o2.getName();
+               o2Name = o2Name.substring(0, o2Name.lastIndexOf('.'));
+
+               return o1Name.compareTo(o2Name);
             }
          } );
 
