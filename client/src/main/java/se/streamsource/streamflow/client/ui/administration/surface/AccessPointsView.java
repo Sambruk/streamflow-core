@@ -116,7 +116,7 @@ public class AccessPointsView
             public void command()
                throws Exception
             {
-               model.removeAccessPoint( selected );
+               model.remove( selected );
             }
          };
       } else

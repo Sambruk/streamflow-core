@@ -32,6 +32,7 @@ import org.qi4j.api.property.Property;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.service.ServiceReference;
+import org.qi4j.api.structure.Application;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.spi.Qi4jSPI;
@@ -70,6 +71,9 @@ public interface ManagerService
       @Structure
       Qi4jSPI spi;
 
+      @Structure
+      Application application;
+
       @Uses
       TransientBuilder<ManagerComposite> managerBuilder;
 
@@ -98,7 +102,7 @@ public interface ManagerService
          manager.start();
 
          // Register the Model MBean in the MBean Server
-         objectName = new ObjectName( "Streamflow:name=Manager" );
+         objectName = new ObjectName( application.name()+":name=Manager" );
          server.registerMBean( mbean, objectName );
       }
       public void passivate() throws Exception

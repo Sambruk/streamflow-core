@@ -22,6 +22,7 @@ import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
+import se.streamsource.streamflow.web.domain.entity.gtd.Drafts;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.label.Labelable;
@@ -36,7 +37,7 @@ public interface EndUserCases
 {
    CaseEntity createCaseWithForm( AnonymousEndUser endUser );
 
-   CaseEntity createCase( AnonymousEndUser endUser );
+   CaseEntity createCase( Drafts endUser );
 
    void submitFormAndSendCase( Case caze, FormDraft formSubmission, Submitter submitter );
 
@@ -79,7 +80,7 @@ public interface EndUserCases
          sendTo( caze );
       }
 
-      public CaseEntity createCase( AnonymousEndUser endUser )
+      public CaseEntity createCase( Drafts endUser )
       {
          CaseEntity caseEntity = endUser.createDraft();
          caseEntity.changeDescription( accesspoint.caseType().get().getDescription() );

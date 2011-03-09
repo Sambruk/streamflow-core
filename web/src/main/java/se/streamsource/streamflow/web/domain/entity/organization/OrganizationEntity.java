@@ -35,12 +35,7 @@ import se.streamsource.streamflow.web.domain.structure.casetype.CaseTypes;
 import se.streamsource.streamflow.web.domain.structure.form.Forms;
 import se.streamsource.streamflow.web.domain.structure.label.Labels;
 import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
-import se.streamsource.streamflow.web.domain.structure.organization.AccessPoints;
-import se.streamsource.streamflow.web.domain.structure.organization.Organization;
-import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnitRefactoring;
-import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnits;
-import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganization;
-import se.streamsource.streamflow.web.domain.structure.organization.RolePolicy;
+import se.streamsource.streamflow.web.domain.structure.organization.*;
 import se.streamsource.streamflow.web.domain.structure.project.ProjectRoles;
 import se.streamsource.streamflow.web.domain.structure.role.Roles;
 import se.streamsource.streamflow.web.domain.structure.user.ProxyUsers;
@@ -73,6 +68,7 @@ public interface OrganizationEntity
       SelectedLabels.Data,
       CaseTypes.Data,
       AccessPoints.Data,
+      EmailAccessPoints.Data,
       ProxyUsers.Data,
       Attachments.Data,
       DefaultPdfTemplate.Data,

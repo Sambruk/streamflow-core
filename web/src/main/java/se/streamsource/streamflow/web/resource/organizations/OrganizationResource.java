@@ -25,6 +25,7 @@ import se.streamsource.streamflow.web.domain.interaction.security.PermissionType
 import se.streamsource.streamflow.web.resource.administration.ProxyUsersResource;
 import se.streamsource.streamflow.web.resource.organizations.forms.FormsResource;
 import se.streamsource.streamflow.web.resource.surface.administration.organizations.accesspoints.AccessPointsAdministrationResource;
+import se.streamsource.streamflow.web.resource.surface.administration.organizations.emailaccesspoints.EmailAccessPointsAdministrationResource;
 import se.streamsource.streamflow.web.resource.workspace.cases.AttachmentsResource;
 
 /**
@@ -86,6 +87,12 @@ public class OrganizationResource
    public void accesspoints()
    {
       subResource( AccessPointsAdministrationResource.class );
+   }
+
+   @SubResource
+   public void emailaccesspoints()
+   {
+      subResource(EmailAccessPointsAdministrationResource.class);
    }
 
    @SubResource

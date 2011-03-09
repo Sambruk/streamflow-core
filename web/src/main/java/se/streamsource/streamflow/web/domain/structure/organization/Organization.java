@@ -49,6 +49,7 @@ public interface Organization
       CaseTypes,
       Removable,
       AccessPoints,
+      EmailAccessPoints,
       ProxyUsers,
       Attachments,
       DefaultPdfTemplate,

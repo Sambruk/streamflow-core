@@ -24,6 +24,7 @@ import se.streamsource.streamflow.domain.attachment.AttachmentAssembler;
 import se.streamsource.streamflow.domain.contact.ContactAssembler;
 import se.streamsource.streamflow.domain.form.FormAssembler;
 import se.streamsource.streamflow.domain.interaction.gtd.Actions;
+import se.streamsource.streamflow.domain.organization.EmailAccessPointValue;
 
 /**
  * JAVADOC
@@ -35,6 +36,8 @@ public class CommonDomainAssembler
       new ContactAssembler().assemble( domainLayer.moduleAssembly( "Contact" ) );
       new FormAssembler().assemble( domainLayer.moduleAssembly( "Form" ) );
       new AttachmentAssembler().assemble( domainLayer.moduleAssembly( "Attachment" ) );
+
+      domainLayer.moduleAssembly("Organization").addValues(EmailAccessPointValue.class).visibleIn(Visibility.application);
 
       domainLayer.moduleAssembly( "Case" ).addValues( Actions.class ).visibleIn( Visibility.application );
    }

@@ -40,6 +40,7 @@ import se.streamsource.infrastructure.circuitbreaker.CircuitBreaker;
 import se.streamsource.infrastructure.circuitbreaker.service.ServiceCircuitBreaker;
 
 import javax.mail.*;
+import javax.mail.internet.InternetAddress;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeListener;
@@ -199,7 +200,7 @@ public interface ReceiveMailService
 
             javax.mail.Message[] messages = inbox.getMessages();
             FetchProfile fp = new FetchProfile();
-            fp.add( "In-Reply-To" );
+//            fp.add( "In-Reply-To" );
             inbox.fetch( messages, fp );
 
             for (javax.mail.Message message : messages)
@@ -209,8 +210,9 @@ public interface ReceiveMailService
                try
                {
                   ValueBuilder<EmailValue> builder = vbf.newValueBuilder( EmailValue.class );
-                  builder.prototype().from().set( message.getFrom()[0].toString() );
-                  builder.prototype().to().set( message.getRecipients( Message.RecipientType.TO ).toString() );
+                  builder.prototype().from().set( ((InternetAddress)message.getFrom()[0]).getAddress() );
+                  builder.prototype().fromName().set(((InternetAddress)message.getFrom()[0]).getPersonal());
+                  builder.prototype().to().set( ((InternetAddress)message.getRecipients( Message.RecipientType.TO )[0]).getAddress() );
                   builder.prototype().subject().set( message.getSubject() );
 
                   Object content = message.getContent();

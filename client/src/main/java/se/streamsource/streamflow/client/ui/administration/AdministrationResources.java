@@ -131,5 +131,10 @@ public enum AdministrationResources
    user_title,
    choose_default_access_type,
    caseaccessdefaults_tab,
-   choose_move_casetype_to, formsignatures_tab
+   choose_move_casetype_to,
+   choose_accesspoint_title,
+   emailaccesspoints_tab,
+   accesspoint,
+   email,
+   formsignatures_tab
 }

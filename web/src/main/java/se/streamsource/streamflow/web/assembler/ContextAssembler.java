@@ -49,6 +49,8 @@ import se.streamsource.streamflow.web.context.administration.surface.SelectedTem
 import se.streamsource.streamflow.web.context.administration.surface.accesspoints.AccessPointAdministrationContext;
 import se.streamsource.streamflow.web.context.administration.surface.accesspoints.AccessPointLabelableContext;
 import se.streamsource.streamflow.web.context.administration.surface.accesspoints.AccessPointsAdministrationContext;
+import se.streamsource.streamflow.web.context.administration.surface.emailaccesspoints.EmailAccessPointAdministrationContext;
+import se.streamsource.streamflow.web.context.administration.surface.emailaccesspoints.EmailAccessPointsAdministrationContext;
 import se.streamsource.streamflow.web.context.administration.surface.proxyusers.ProxyUserContext;
 import se.streamsource.streamflow.web.context.administration.surface.proxyusers.ProxyUsersContext;
 import se.streamsource.streamflow.web.context.crystal.CrystalContext;
@@ -106,6 +108,7 @@ import se.streamsource.streamflow.web.resource.surface.accesspoints.endusers.sub
 import se.streamsource.streamflow.web.resource.surface.administration.organizations.accesspoints.AccessPointAdministrationResource;
 import se.streamsource.streamflow.web.resource.surface.administration.organizations.accesspoints.AccessPointLabelableResource;
 import se.streamsource.streamflow.web.resource.surface.administration.organizations.accesspoints.AccessPointsAdministrationResource;
+import se.streamsource.streamflow.web.resource.surface.administration.organizations.emailaccesspoints.EmailAccessPointsAdministrationResource;
 import se.streamsource.streamflow.web.resource.workspace.WorkspaceResource;
 import se.streamsource.streamflow.web.resource.workspace.cases.*;
 import se.streamsource.streamflow.web.resource.workspace.cases.conversation.ConversationParticipantsResource;
@@ -348,6 +351,9 @@ public class ContextAssembler
             AccessPointLabelableResource.class,
             AccessPointsAdministrationContext.class,
             AccessPointsAdministrationResource.class,
+            EmailAccessPointAdministrationContext.class,
+            EmailAccessPointsAdministrationContext.class,
+            EmailAccessPointsAdministrationResource.class,
             ProxyUserContext.class,
             ProxyUsersContext.class,
             ProxyUsersResource.class,

@@ -25,6 +25,7 @@ import org.restlet.Restlet;
 import org.restlet.data.Protocol;
 import org.restlet.engine.http.HttpResponse;
 import org.restlet.routing.Filter;
+import org.restlet.routing.VirtualHost;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.streamsource.streamflow.web.rest.StreamflowRestApplication;
@@ -38,7 +39,7 @@ public class MainWeb
    public StreamflowRestApplication application;
    public Logger logger;
 
-   public static void main( String[] args ) throws Throwable
+   public static void main(String[] args) throws Throwable
    {
       new MainWeb().start();
    }
@@ -59,20 +60,29 @@ public class MainWeb
       DOMConfigurator.configure( logConfig );
 */
 
-      logger = LoggerFactory.getLogger( getClass() );
+      logger = LoggerFactory.getLogger(getClass());
       logger.info("Starting Streamflow");
 
-      Thread.currentThread().setContextClassLoader( getClass().getClassLoader() );
+      Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
 
       try
       {
          component = new Component();
-         component.getClients().add( Protocol.CLAP );
-         component.getClients().add( Protocol.FILE );
-         component.getClients().add( Protocol.HTTP );
-         application = new StreamflowRestApplication( component.getContext().createChildContext() );
+         component.getClients().add(Protocol.CLAP);
+         component.getClients().add(Protocol.FILE);
+         component.getClients().add(Protocol.HTTP);
 
-         component.getDefaultHost().attach( "/streamflow", application );
+
+         application = new StreamflowRestApplication(component.getContext().createChildContext());
+         component.getDefaultHost().attach("/streamflow", application);
+
+         VirtualHost virtualHost = new VirtualHost(component.getContext());
+         virtualHost.setHostDomain("jayway.local");
+         virtualHost.getContext().getAttributes().put("streamflow.host", virtualHost.getHostDomain());
+         Application virtualApplication = new StreamflowRestApplication(virtualHost.getContext());
+         virtualHost.attach("/streamflow", virtualApplication);
+         component.getHosts().add(virtualHost);
+
          component.start();
          logger.info("Started Streamflow");
       } catch (Throwable e)
@@ -84,7 +94,7 @@ public class MainWeb
          throw e;
       } finally
       {
-         Thread.currentThread().setContextClassLoader( null );
+         Thread.currentThread().setContextClassLoader(null);
       }
    }
 
@@ -102,34 +112,34 @@ public class MainWeb
    }
 
    static class ClassLoaderFilter
-      extends Filter
+           extends Filter
    {
       private ClassLoader cl;
 
-      ClassLoaderFilter( Context context, Restlet next )
+      ClassLoaderFilter(Context context, Restlet next)
       {
-         super( context, next );
+         super(context, next);
 
          cl = getClass().getClassLoader();
       }
 
       @Override
-      protected int doHandle( Request request, Response response )
+      protected int doHandle(Request request, Response response)
       {
          Thread thread = Thread.currentThread();
          ClassLoader oldCL = thread.getContextClassLoader();
-         thread.setContextClassLoader( cl );
+         thread.setContextClassLoader(cl);
 
          try
          {
-            return super.doHandle( request, response );
+            return super.doHandle(request, response);
          } finally
          {
-            HttpResponse.setCurrent( null );
-            Context.setCurrent( null );
-            Application.setCurrent( null );
+            HttpResponse.setCurrent(null);
+            Context.setCurrent(null);
+            Application.setCurrent(null);
 
-            thread.setContextClassLoader( oldCL );
+            thread.setContextClassLoader(oldCL);
          }
       }
    }

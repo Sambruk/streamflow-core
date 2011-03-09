@@ -130,7 +130,7 @@ public class DomainAssembler
    {
       module.addEntities( OrganizationsEntity.class, OrganizationEntity.class,
             OrganizationalUnitEntity.class, AccessPointEntity.class ).visibleIn( application );
-      module.addValues( ParticipantRolesValue.class ).visibleIn( Visibility.application );
+      module.addValues( ParticipantRolesValue.class).visibleIn( Visibility.application );
    }
 
    private void labels( ModuleAssembly module ) throws AssemblyException

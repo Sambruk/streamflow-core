@@ -116,13 +116,7 @@ import se.streamsource.streamflow.client.ui.administration.resolutions.SelectedR
 import se.streamsource.streamflow.client.ui.administration.resolutions.SelectedResolutionsView;
 import se.streamsource.streamflow.client.ui.administration.roles.RolesModel;
 import se.streamsource.streamflow.client.ui.administration.roles.RolesView;
-import se.streamsource.streamflow.client.ui.administration.surface.AccessPointModel;
-import se.streamsource.streamflow.client.ui.administration.surface.AccessPointView;
-import se.streamsource.streamflow.client.ui.administration.surface.AccessPointsModel;
-import se.streamsource.streamflow.client.ui.administration.surface.AccessPointsView;
-import se.streamsource.streamflow.client.ui.administration.surface.CreateProxyUserDialog;
-import se.streamsource.streamflow.client.ui.administration.surface.ProxyUsersModel;
-import se.streamsource.streamflow.client.ui.administration.surface.ProxyUsersView;
+import se.streamsource.streamflow.client.ui.administration.surface.*;
 import se.streamsource.streamflow.client.ui.administration.templates.SelectedTemplatesModel;
 import se.streamsource.streamflow.client.ui.administration.templates.SelectedTemplatesView;
 import se.streamsource.streamflow.client.ui.administration.templates.TemplatesView;
@@ -267,6 +261,12 @@ public class UIAssembler
       addMV( module,
             AccessPointModel.class,
             AccessPointView.class );
+
+      addMV( module,
+            EmailAccessPointsModel.class,
+            EmailAccessPointsView.class );
+
+      addViews(module, EmailAccessPointView.class);
 
       addMV( module,
             ProxyUsersModel.class,

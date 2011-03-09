@@ -40,6 +40,9 @@ import se.streamsource.streamflow.web.application.mail.MailReceiver;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversation;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipant;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * Receive emails and create responses in conversations
  */
@@ -92,22 +95,30 @@ public interface ConversationResponseService
             try
             {
                String references = email.headers().get().get( "References" );
-               String lastRef = references.substring( references.lastIndexOf(' ' )+2); // Remove " <" from last message-id
 
-               String[] ids = lastRef.split( "/" );
-               if (ids.length == 2)
+               if (references != null)
                {
-                  String conversationId = ids[0];
-                  String participantId = ids[1].split("@")[0];
+                  // This is a response - handle it!
 
-                  if (!"".equals( conversationId ) && !"".equals( participantId ))
+                  String[] refs = references.split("[ \r\n\t]");
+                  String lastRef = refs[refs.length-1];
+
+                  Matcher matcher = Pattern.compile("<([^/]*)/([^@]*)@[^>]*>").matcher(lastRef);
+
+                  if (matcher.find())
                   {
-                     ConversationParticipant from = uow.get( ConversationParticipant.class, participantId );
-                     Conversation conversation = uow.get( Conversation.class, conversationId );
+                     String conversationId = matcher.group(1);
+                     String participantId = matcher.group(2);
 
-                     String content = email.content().get();
+                     if (!"".equals( conversationId ) && !"".equals( participantId ))
+                     {
+                        ConversationParticipant from = uow.get( ConversationParticipant.class, participantId );
+                        Conversation conversation = uow.get( Conversation.class, conversationId );
 
-                     conversation.createMessage( content, from );
+                        String content = email.content().get();
+
+                        conversation.createMessage( content, from );
+                     }
                   }
                }
 

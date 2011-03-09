@@ -18,9 +18,11 @@
 package se.streamsource.streamflow.web.application.management;
 
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
+import org.qi4j.api.structure.Application;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.EventStream;
@@ -50,6 +52,9 @@ public interface EventManagerService
    class Mixin
          implements Activatable, TransactionListener
    {
+      @Structure
+      Application application;
+
       @Service
       EventStream stream;
 
@@ -70,7 +75,7 @@ public interface EventManagerService
                null, null, null, notificationInfos );
          mbean = new RequiredModelMBean( info );
 
-         objectName = new ObjectName( "Streamflow:type=Log,name=domainevents" );
+         objectName = new ObjectName( application.name()+":type=Log,name=domainevents" );
          server.registerMBean( mbean, objectName );
 
          stream.registerListener( this );

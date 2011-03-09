@@ -78,11 +78,6 @@ public class AccessPointsModel
       }
    }
 
-   public void removeAccessPoint( LinkValue id )
-   {
-      client.getClient( id ).delete();
-   }
-
    public void changeDescription( LinkValue link, String newName )
    {
       ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );

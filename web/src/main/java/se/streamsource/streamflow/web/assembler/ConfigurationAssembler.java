@@ -51,8 +51,6 @@ public class ConfigurationAssembler
 
    private void configuration( ModuleAssembly module ) throws AssemblyException
    {
-      System.setProperty( "application", "StreamFlowServer" );
-
       module.addServices( FileConfiguration.class).visibleIn( Visibility.application ).instantiateOnStartup();
 
       Application.Mode mode = module.layerAssembly().applicationAssembly().mode();
@@ -103,7 +101,7 @@ public class ConfigurationAssembler
          Preferences node;
          try
          {
-            node =  Preferences.userRoot().node( "streamsource/streamflow/web" );
+            node =  Preferences.userRoot().node( "streamsource/streamflow/"+module.layerAssembly().applicationAssembly().name() );
          } finally
          {
             Thread.currentThread().setContextClassLoader( cl );

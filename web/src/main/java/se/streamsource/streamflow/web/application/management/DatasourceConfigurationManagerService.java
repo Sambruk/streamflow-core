@@ -52,6 +52,7 @@ import org.qi4j.api.property.Property;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.service.ServiceReference;
+import org.qi4j.api.structure.Application;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.spi.Qi4jSPI;
@@ -80,6 +81,9 @@ public interface DatasourceConfigurationManagerService
 
       @Structure
       Qi4jSPI spi;
+
+      @Structure
+      Application application;
 
       @Service
       Iterable<ServiceReference<DataSource>> dataSources;
@@ -119,7 +123,7 @@ public interface DatasourceConfigurationManagerService
 
             MBeanInfo mbeanInfo = new MBeanInfo( DataSourceConfiguration.class.getName(), name, attributes.toArray( new MBeanAttributeInfo[attributes.size()] ), null, operations.toArray( new MBeanOperationInfo[operations.size()] ), null );
             Object mbean = new ConfigurableDataSource( dataSourceService, mbeanInfo, name, properties );
-            ObjectName configurableDataSourceName = new ObjectName( "Streamflow:type=Datasource,name=" + name );
+            ObjectName configurableDataSourceName = new ObjectName( application.name()+":type=Datasource,name=" + name );
             server.registerMBean( mbean, configurableDataSourceName );
             configurationNames.add( configurableDataSourceName );
          }

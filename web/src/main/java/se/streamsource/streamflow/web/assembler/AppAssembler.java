@@ -21,8 +21,10 @@ import org.qi4j.api.common.Visibility;
 import org.qi4j.api.service.qualifier.ServiceQualifier;
 import org.qi4j.api.structure.Application;
 import org.qi4j.bootstrap.AssemblyException;
+import org.qi4j.bootstrap.ImportedServiceDeclaration;
 import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
+import org.qi4j.index.rdf.query.NamedSparqlDescriptor;
 import org.qi4j.spi.query.NamedEntityFinder;
 import org.qi4j.spi.query.NamedQueries;
 import org.qi4j.spi.query.NamedQueryDescriptor;
@@ -136,6 +138,26 @@ public class AppAssembler
 
       configuration().addEntities( SendMailConfiguration.class ).visibleIn( Visibility.application );
       configuration().addEntities( ReceiveMailConfiguration.class ).visibleIn( Visibility.application );
+
+      NamedQueries namedQueries = new NamedQueries();
+      namedQueries.addQuery(      new NamedSparqlDescriptor("finduserwithemail",
+                      "PREFIX ns0: <urn:qi4j:type:org.qi4j.api.entity.Identity#>\n" +
+                              "        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
+                              "        PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
+                              "        SELECT DISTINCT ?identity\n" +
+                              "        WHERE {\n" +
+                              "        ?entity rdf:type <urn:qi4j:type:se.streamsource.streamflow.web.domain.entity.user.UserEntity>.\n" +
+                              "        ?entity ns0:identity ?identity.\n" +
+                              "        ?entity <urn:qi4j:type:se.streamsource.streamflow.domain.contact.Contactable-Data#contact> ?v0.\n" +
+                              "        ?v0 <urn:qi4j:type:se.streamsource.streamflow.domain.contact.ContactValue#emailAddresses> ?email\n" +
+                              "        }"));
+      module.importServices(NamedEntityFinder.class).
+              importedBy(ImportedServiceDeclaration.SERVICE_SELECTOR).
+              setMetaInfo(namedQueries).
+              setMetaInfo(ServiceQualifier.withId("RdfIndexingEngineService"));
+
+      module.addServices(CreateCaseFromEmailService.class).instantiateOnStartup();
+      configuration().addEntities(CreateCaseFromEmailConfiguration.class).visibleIn(Visibility.application);
    }
 
    private void conversation( ModuleAssembly module ) throws AssemblyException
