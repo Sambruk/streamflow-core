@@ -1,0 +1,174 @@
+package se.streamsource.streamflow.client.ui.workspace.table;
+
+import org.jdesktop.swingx.JXMonthView;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Uses;
+import se.streamsource.streamflow.client.Icons;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
+
+import javax.swing.BorderFactory;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Date;
+
+import static se.streamsource.streamflow.client.util.i18n.*;
+
+/**
+ * This view shows a date picker combined with a period list.
+ * If a date is picked in the date picker the period is picked date plus period and if no date is picked the time period
+ * will be today minus period.
+ */
+public class PerspectivePeriodView
+      extends JPanel
+{
+   @Service
+   DialogService dialogs;
+
+   boolean isCreationDate;
+   PerspectiveModel model;
+
+   public void initView( @Uses final PerspectiveModel model, @Uses final Boolean isCreationDate )
+   {
+      setLayout( new BorderLayout() );
+      this.isCreationDate = (isCreationDate != null && isCreationDate);
+      this.model = model;
+
+      final JList list = new JList( Period.values() );
+
+      list.setSelectedValue( this.isCreationDate ? model.getCreatedPeriod() : model.getDueOnPeriod(), true );
+      list.setCellRenderer( new DefaultListCellRenderer()
+      {
+
+         @Override
+         public Component getListCellRendererComponent( JList list, Object value, int index, boolean isSelected,
+                                                        boolean cellHasFocus )
+         {
+            setFont( list.getFont() );
+            setBackground( list.getBackground() );
+            setForeground( list.getForeground() );
+            if (value.equals( PerspectivePeriodView.this.isCreationDate ? model.getCreatedPeriod() : model.getDueOnPeriod() ))
+            {
+               setIcon( icon( Icons.check, 12 ) );
+               setBorder( BorderFactory.createEmptyBorder( 4, 0, 0, 0 ) );
+            } else
+            {
+
+               setIcon( null );
+               setBorder( BorderFactory.createEmptyBorder( 4, 16, 0, 0 ) );
+            }
+            setText( text( (Period) value ) );
+            return this;
+         }
+      } );
+
+      list.addListSelectionListener( new ListSelectionListener()
+      {
+
+         public void valueChanged( ListSelectionEvent event )
+         {
+            if (!event.getValueIsAdjusting())
+            {
+               if ( PerspectivePeriodView.this.isCreationDate )
+               {
+                  model.setCreatedPeriod( (Period) list.getSelectedValue() );
+               } else
+               {
+                  model.setDueOnPeriod( (Period) list.getSelectedValue() );
+               }
+            }
+         }
+      } );
+      add( list, BorderLayout.WEST );
+
+      JPanel datePicker = new JPanel( new BorderLayout() );
+      datePicker.setBorder( BorderFactory.createEmptyBorder( 0, 5, 0, 0 ) );
+
+      final JXMonthView monthView = new JXMonthView();
+      monthView.setTraversable( true );
+
+      final JTextField dateField = new JTextField();
+      dateField.setBorder( BorderFactory.createTitledBorder( text( WorkspaceResources.from_date ) ) );
+
+      if( isCreationDate )
+      {
+         if( model.getCreatedOn() != null )
+         {
+           dateField.setText( formatDate( model.getCreatedOn() ) );
+           monthView.setSelectionDate( model.getCreatedOn() );
+           monthView.ensureDateVisible( model.getCreatedOn() );
+         }
+      } else
+      {
+         if( model.getDueOn() != null )
+         {
+           dateField.setText( formatDate( model.getDueOn() ) );
+           monthView.setSelectionDate( model.getDueOn() );
+           monthView.ensureDateVisible( model.getDueOn() );
+         }
+      }
+     
+      dateField.addActionListener( new ActionListener()
+      {
+         public void actionPerformed( ActionEvent e )
+         {
+            monthView.setSelectionDate( parseDate( dateField.getText() ) );
+            monthView.ensureDateVisible( monthView.getSelectionDate() );
+            setDateToModel( parseDate( dateField.getText() ) );
+         }
+      } );
+
+      monthView.addActionListener( new ActionListener()
+      {
+         public void actionPerformed( ActionEvent e )
+         {
+            dateField.setText( formatDate( monthView.getSelectionDate() ) );
+            setDateToModel( monthView.getSelectionDate() );
+         }
+      } );
+
+      datePicker.add( dateField, BorderLayout.NORTH );
+
+      datePicker.add( monthView, BorderLayout.CENTER );
+
+      add( datePicker, BorderLayout.EAST );
+   }
+
+
+   private Date parseDate( String date )
+   {
+      DateTimeFormatter format = DateTimeFormat.forPattern( text( WorkspaceResources.date_format) );
+      return format.parseDateTime( date ).toDate();
+
+   }
+
+   private String formatDate( Date date )
+   {
+      DateTimeFormatter format = DateTimeFormat.forPattern( text( WorkspaceResources.date_format) );
+      return format.print( new DateTime( date ) );
+   }
+
+   private void setDateToModel( Date date )
+   {
+      if (this.isCreationDate)
+      {
+         model.setCreatedOn( date );
+      } else
+      {
+         model.setDueOn( date );
+      }
+   }
+
+
+}

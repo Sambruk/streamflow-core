@@ -50,7 +50,7 @@ public class StreamflowWebAssembler
       assembly.setMetaInfo( new RoleInjectionProviderFactory() );
 
       // Version name rules: x.y.sprint.revision
-      assembly.setVersion( "1.2.9.2945" );
+      assembly.setVersion( "1.3.0.0" );
 
       LayerAssembly configurationLayer = assembly.layerAssembly( "Configuration" );
       LayerAssembly domainInfrastructureLayer = assembly.layerAssembly( "Domain infrastructure" );

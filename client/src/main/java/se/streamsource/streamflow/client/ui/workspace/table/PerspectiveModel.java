@@ -34,6 +34,7 @@ import se.streamsource.streamflow.resource.user.profile.PerspectiveValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Observable;
 
@@ -63,8 +64,11 @@ public class PerspectiveModel extends Observable implements Refreshable
    GroupBy groupBy = GroupBy.none;
    SortBy sortBy = SortBy.none;
    SortOrder sortOrder = SortOrder.asc;
+   Period createdPeriod = Period.none;
+   Period dueOnPeriod = Period.none;
    
-   String createdOn = "";
+   Date createdOn;
+   Date dueOn;
 
    public void refresh()
    {
@@ -217,16 +221,46 @@ public class PerspectiveModel extends Observable implements Refreshable
       this.sortOrder = sortOrder;
    }
 
-   public String getCreatedOn()
+   public Date getCreatedOn()
    {
       return createdOn;
    }
 
-   public void setCreatedOn(String createdOn)
+   public void setCreatedOn(Date createdOn)
    {
       this.createdOn = createdOn;
    }
-  
+
+   public Period getCreatedPeriod()
+   {
+      return createdPeriod;
+   }
+
+   public void setCreatedPeriod( Period selectedValue )
+   {
+      createdPeriod = selectedValue;
+   }
+
+   public Date getDueOn()
+   {
+      return dueOn;
+   }
+
+   public void setDueOn(Date dueOn)
+   {
+      this.dueOn = dueOn;
+   }
+
+   public void setDueOnPeriod( Period selectedValue )
+   {
+      dueOnPeriod = selectedValue;
+   }
+
+   public Period getDueOnPeriod()
+   {
+      return dueOnPeriod;
+   }
+
    public PerspectiveValue getPerspective( String name, String query )
    {
       ValueBuilder<PerspectiveValue> builder = vbf.newValueBuilder( PerspectiveValue.class );
@@ -241,6 +275,10 @@ public class PerspectiveModel extends Observable implements Refreshable
       builder.prototype().caseTypes().set( getSelectedCaseTypes() );
       builder.prototype().createdBy().set( getSelectedCreatedBy() );
       builder.prototype().projects().set( getSelectedProjects() );
+      builder.prototype().createdOnPeriod().set( getCreatedPeriod().name() );
+      builder.prototype().createdOn().set( getCreatedOn() );
+      builder.prototype().dueOnPeriod().set( getDueOnPeriod().name() );
+      builder.prototype().dueOn().set( getDueOn() );
 
       return builder.newInstance();
    }
@@ -270,6 +308,10 @@ public class PerspectiveModel extends Observable implements Refreshable
       sortBy = SortBy.none;
       sortOrder = SortOrder.asc;
       
-      createdOn = "";
+      createdOn = null;
+      createdPeriod = Period.none;
+
+      dueOn = null;
+      dueOnPeriod = Period.none;
    }
 }

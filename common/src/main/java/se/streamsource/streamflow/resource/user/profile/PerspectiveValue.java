@@ -22,6 +22,7 @@ import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
 import org.qi4j.library.constraints.annotation.MaxLength;
 
+import java.util.Date;
 import java.util.List;
 
 
@@ -51,4 +52,14 @@ public interface PerspectiveValue
    Property<String> sortOrder();
 
    Property<String> groupBy();
+
+   Property<String> createdOnPeriod();
+
+   @Optional
+   Property<Date> createdOn();
+
+   Property<String> dueOnPeriod();
+
+   @Optional
+   Property<Date> dueOn();
 }

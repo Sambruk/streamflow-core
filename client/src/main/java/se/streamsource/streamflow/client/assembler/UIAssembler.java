@@ -201,6 +201,7 @@ import se.streamsource.streamflow.client.ui.workspace.table.CasesTableView;
 import se.streamsource.streamflow.client.ui.workspace.table.CasesView;
 import se.streamsource.streamflow.client.ui.workspace.table.PerspectiveModel;
 import se.streamsource.streamflow.client.ui.workspace.table.PerspectiveOptionsView;
+import se.streamsource.streamflow.client.ui.workspace.table.PerspectivePeriodView;
 import se.streamsource.streamflow.client.ui.workspace.table.PerspectiveView;
 import se.streamsource.streamflow.client.util.ActionBinder;
 import se.streamsource.streamflow.client.util.ExceptionHandlerService;
@@ -447,7 +448,7 @@ public class UIAssembler
             FormsAdminView.class, SubmittedFormsAdminView.class, CheckboxesPanel.class,
             ComboBoxPanel.class, OptionButtonsPanel.class, OpenSelectionPanel.class, ListBoxPanel.class, DatePanel.class,
             NumberPanel.class, TextAreaFieldPanel.class, TextFieldPanel.class, AttachmentFieldPanel.class, 
-            HistoryView.class, MessagesHistoryView.class, PerspectiveOptionsView.class
+            HistoryView.class, MessagesHistoryView.class, PerspectiveOptionsView.class, PerspectivePeriodView.class
       );
 
       addDialogs( module, ContactLookupResultDialog.class );

@@ -40,6 +40,7 @@ import se.streamsource.streamflow.client.ui.workspace.table.CasesTableFormatter;
 import se.streamsource.streamflow.client.ui.workspace.table.CasesTableView;
 import se.streamsource.streamflow.client.ui.workspace.table.CasesView;
 import se.streamsource.streamflow.client.ui.workspace.table.GroupBy;
+import se.streamsource.streamflow.client.ui.workspace.table.Period;
 import se.streamsource.streamflow.client.ui.workspace.table.PerspectiveModel;
 import se.streamsource.streamflow.client.ui.workspace.table.SortBy;
 import se.streamsource.streamflow.client.ui.workspace.table.SortOrder;
@@ -241,6 +242,10 @@ public class WorkspaceView
                      perspectiveModel.setSortBy( SortBy.valueOf( perspectiveValue.sortBy().get() ) );
                      perspectiveModel.setSortOrder( SortOrder.valueOf( perspectiveValue.sortOrder().get() ) );
                      perspectiveModel.setGroupBy( GroupBy.valueOf( perspectiveValue.groupBy().get() ) );
+                     perspectiveModel.setCreatedPeriod( Period.valueOf( perspectiveValue.createdOnPeriod().get() ) );
+                     perspectiveModel.setCreatedOn( perspectiveValue.createdOn().get() );
+                     perspectiveModel.setDueOnPeriod( Period.valueOf( perspectiveValue.dueOnPeriod().get() ) );
+                     perspectiveModel.setDueOn( perspectiveValue.dueOn().get() );
 
                      searchView.getTextField().setText(perspectiveValue.query().get());
                      searchResultTableModel.search( perspectiveValue.query().get() );

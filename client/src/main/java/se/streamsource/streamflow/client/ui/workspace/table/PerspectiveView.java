@@ -101,8 +101,6 @@ public class PerspectiveView extends JPanel implements Observer
 
    private JList statusList;
    private javax.swing.Action savePerspective;
-   
-   private DateList createdOnList;
 
    private enum FilterActions
    {
@@ -114,6 +112,7 @@ public class PerspectiveView extends JPanel implements Observer
       filterProject,
       filterCreatedBy,
       filterCreatedOn,
+      filterDueOn,
       viewSorting,
       viewGrouping
    }
@@ -147,12 +146,12 @@ public class PerspectiveView extends JPanel implements Observer
       addPopupButton(filterPanel, FilterActions.filterCaseType.name() );
       addPopupButton(filterPanel, FilterActions.filterLabel.name() );
       addPopupButton(filterPanel, FilterActions.filterCreatedBy.name() );
+      addPopupButton(filterPanel, FilterActions.filterDueOn.name() );
       addPopupButton(filterPanel, FilterActions.filterStatus.name() );
 
       add( filterPanel, BorderLayout.WEST );
 
       statusList = new StatusList();
-      createdOnList = new DateList();
 
       viewPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
       addPopupButton(viewPanel, FilterActions.viewSorting.name() );
@@ -277,8 +276,15 @@ public class PerspectiveView extends JPanel implements Observer
    @Action
    public void filterCreatedOn(ActionEvent event)
    {
-      
-      optionsPanel.add(createdOnList);
+      PerspectivePeriodView period = obf.newObjectBuilder( PerspectivePeriodView.class ).use( model, Boolean.TRUE ).newInstance();
+      optionsPanel.add(period);
+   }
+
+   @Action
+   public void filterDueOn(ActionEvent event)
+   {
+      PerspectivePeriodView period = obf.newObjectBuilder( PerspectivePeriodView.class ).use( model, Boolean.FALSE ).newInstance();
+      optionsPanel.add(period);
    }
 
    @Action
@@ -408,6 +414,14 @@ public class PerspectiveView extends JPanel implements Observer
                   selectedIsEmpty = model.getSelectedCreatedBy().isEmpty();
                   break;
 
+               case filterCreatedOn:
+                  selectedIsEmpty = Period.none.equals( model.getCreatedPeriod() );
+                  break;
+
+               case filterDueOn:
+                  selectedIsEmpty = Period.none.equals( model.getDueOnPeriod() );
+                  break;
+
                case viewSorting:
                   selectedIsEmpty = SortBy.none.equals( model.getSortBy() );
                   break;
@@ -440,43 +454,6 @@ public class PerspectiveView extends JPanel implements Observer
             return o1.text().get().compareToIgnoreCase(o2.text().get());
          else
             return selectedCompare;
-      }
-   }
-
-   class DateList extends JList
-   {
-      public DateList()
-      {
-         setListData(new String[] {"1 dag", "1 vecka"});
-
-         setSelectedIndex(0);
-         setCellRenderer(new DefaultListCellRenderer()
-         {
-
-            @Override
-            public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected,
-                  boolean cellHasFocus)
-            {
-               setFont(list.getFont());
-               setBackground(list.getBackground());
-               setForeground(list.getForeground());
-               setBorder(BorderFactory.createEmptyBorder(4, 16, 0, 0));
-               setText((String) value);
-               return this;
-            }
-         });
-
-         addListSelectionListener(new ListSelectionListener()
-         {
-
-            public void valueChanged(ListSelectionEvent event)
-            {
-               if (!event.getValueIsAdjusting())
-               {
-                  
-               }
-            }
-         });
       }
    }
    

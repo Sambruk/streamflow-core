@@ -251,7 +251,7 @@ public interface
                {
                   queryBuilder.append( " " ).append( search.getName() ).append( ":" ).append( search.getQuotedValue() );
 
-               } else if (search.hasName( "createdOn" ))
+               } else if (search.hasName( "createdOn" ) || search.hasName( "dueOn" ) )
                {
                   buildDateQuery( queryBuilder, search );
                } else if (search.hasName( "assignedTo" ))

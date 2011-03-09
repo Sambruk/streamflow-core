@@ -493,6 +493,8 @@ any data added to them will be ignored outright.  -->
 
         <field name="createdOn" type="date" indexed="true" stored="true"/>
 
+        <field name="dueOn" type="date" indexed="true" stored="true"/>
+
         <field name="status" type="string" indexed="true" stored="true"/>
 
         <field name="createdBy" type="string" indexed="true" stored="true"/>
