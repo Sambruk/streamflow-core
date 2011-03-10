@@ -44,8 +44,8 @@
             <artifactId>org.qi4j.extension.entitystore-preferences</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.qi4j.extension</groupId>
-            <artifactId>org.qi4j.extension.entitystore-rest</artifactId>
+            <groupId>org.qi4j.library</groupId>
+            <artifactId>org.qi4j.library.rest</artifactId>
         </dependency>
 
         <!-- REST -->
