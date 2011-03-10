@@ -16,9 +16,49 @@
 
 package se.streamsource.streamflow.client.ui.workspace.table;
 
-import static se.streamsource.streamflow.client.util.i18n.text;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withNames;
+import ca.odell.glazedlists.SeparatorList;
+import ca.odell.glazedlists.event.ListEvent;
+import ca.odell.glazedlists.event.ListEventListener;
+import ca.odell.glazedlists.gui.TableFormat;
+import ca.odell.glazedlists.swing.EventJXTableModel;
+import ca.odell.glazedlists.swing.EventTableModel;
+import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.swingx.JXTable;
+import org.jdesktop.swingx.decorator.HighlighterFactory;
+import org.jdesktop.swingx.renderer.DefaultTableRenderer;
+import org.jdesktop.swingx.renderer.StringValue;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Uses;
+import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.streamflow.client.Icons;
+import se.streamsource.streamflow.client.MacOsUIWrapper;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.client.ui.workspace.cases.CaseResources;
+import se.streamsource.streamflow.client.ui.workspace.cases.CaseTableValue;
+import se.streamsource.streamflow.client.util.CommandTask;
+import se.streamsource.streamflow.client.util.RefreshWhenShowing;
+import se.streamsource.streamflow.client.util.i18n;
+import se.streamsource.streamflow.client.util.table.SeparatorTable;
+import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
+import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
+import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
+import se.streamsource.streamflow.util.DateFormats;
+import se.streamsource.streamflow.util.Strings;
 
+import javax.swing.ActionMap;
+import javax.swing.Box;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
+import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -41,50 +81,8 @@ import java.util.Observer;
 import java.util.Set;
 import java.util.TimeZone;
 
-import javax.swing.ActionMap;
-import javax.swing.Box;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
-import javax.swing.SwingConstants;
-import javax.swing.table.DefaultTableCellRenderer;
-
-import org.jdesktop.application.ApplicationContext;
-import org.jdesktop.swingx.JXTable;
-import org.jdesktop.swingx.decorator.HighlighterFactory;
-import org.jdesktop.swingx.renderer.DefaultTableRenderer;
-import org.jdesktop.swingx.renderer.StringValue;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Uses;
-
-import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.streamflow.client.Icons;
-import se.streamsource.streamflow.client.MacOsUIWrapper;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
-import se.streamsource.streamflow.client.ui.workspace.cases.CaseResources;
-import se.streamsource.streamflow.client.ui.workspace.cases.CaseTableValue;
-import se.streamsource.streamflow.client.util.CommandTask;
-import se.streamsource.streamflow.client.util.RefreshWhenShowing;
-import se.streamsource.streamflow.client.util.i18n;
-import se.streamsource.streamflow.client.util.table.SeparatorTable;
-import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
-import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
-import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
-import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
-import se.streamsource.streamflow.util.DateFormats;
-import se.streamsource.streamflow.util.Strings;
-import ca.odell.glazedlists.SeparatorList;
-import ca.odell.glazedlists.event.ListEvent;
-import ca.odell.glazedlists.event.ListEventListener;
-import ca.odell.glazedlists.gui.TableFormat;
-import ca.odell.glazedlists.swing.EventJXTableModel;
-import ca.odell.glazedlists.swing.EventTableModel;
+import static se.streamsource.streamflow.client.util.i18n.*;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 
 /**
  * Base class for all views of case lists.
@@ -203,7 +201,7 @@ public class CasesTableView
 
          public String getString(Object value)
          {
-            return DateFormats.getProgressiveDateTimeValue((Date) value, Locale.getDefault());
+            return value != null ? DateFormats.getProgressiveDateTimeValue((Date) value, Locale.getDefault()) : "";
          }
       } ) );
       caseTable.setDefaultRenderer( ArrayList.class, new DefaultTableCellRenderer()
