@@ -76,12 +76,14 @@ public class MainWeb
          application = new StreamflowRestApplication(component.getContext().createChildContext());
          component.getDefaultHost().attach("/streamflow", application);
 
+/*
          VirtualHost virtualHost = new VirtualHost(component.getContext());
          virtualHost.setHostDomain("jayway.local");
          virtualHost.getContext().getAttributes().put("streamflow.host", virtualHost.getHostDomain());
          Application virtualApplication = new StreamflowRestApplication(virtualHost.getContext());
          virtualHost.attach("/streamflow", virtualApplication);
          component.getHosts().add(virtualHost);
+*/
 
          component.start();
          logger.info("Started Streamflow");
