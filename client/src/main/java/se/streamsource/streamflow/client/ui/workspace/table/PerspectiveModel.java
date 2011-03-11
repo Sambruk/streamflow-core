@@ -54,7 +54,7 @@ public class PerspectiveModel extends Observable implements Refreshable
    BasicEventList<LinkValue> possibleProjects = new BasicEventList<LinkValue>();
    BasicEventList<LinkValue> possibleCreatedBy = new BasicEventList<LinkValue>();
 
-   List<String> selectedStatuses = new ArrayList<String>(Arrays.asList(OPEN.name()));
+   List<String> selectedStatuses = new ArrayList<String>(Arrays.asList(OPEN.name(), ON_HOLD.name(), CLOSED.name()));
    List<String> selectedCaseTypes = new ArrayList<String>();
    List<String> selectedLabels = new ArrayList<String>();
    List<String> selectedAssignees = new ArrayList<String>();
@@ -297,7 +297,7 @@ public class PerspectiveModel extends Observable implements Refreshable
 
    public void clearFilter()
    {
-      selectedStatuses = new ArrayList<String>(Arrays.asList(OPEN.name()));
+      selectedStatuses = new ArrayList<String>(Arrays.asList(OPEN.name(), ON_HOLD.name(), CLOSED.name()));
       selectedCaseTypes = new ArrayList<String>();
       selectedLabels = new ArrayList<String>();
       selectedAssignees = new ArrayList<String>();

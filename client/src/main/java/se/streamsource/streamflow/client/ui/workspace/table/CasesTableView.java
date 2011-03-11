@@ -315,12 +315,6 @@ public class CasesTableView
             sortedLabels.add( 0, text( WorkspaceResources.all ) );
             sortedAssignees.add( 0, text( WorkspaceResources.all ) );
             sortedProjects.add( 0, text( WorkspaceResources.all ) );
-
-            /*
-            EventListSynch.synchronize( sortedLabels, labelList );
-            EventListSynch.synchronize( sortedAssignees, assigneeList );
-            EventListSynch.synchronize( sortedProjects, projectList );
-            */
          }
       } );
 

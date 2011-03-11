@@ -93,12 +93,12 @@ public class WorkspaceView
    DialogService dialogs;
 
    SearchResultTableModel searchResultTableModel;
+   PerspectiveModel perspectiveModel;
 
    private WorkspaceContextView contextView;
    private JLabel selectedContext;
    private JButton selectContextButton;
    private JButton createCaseButton;
-   private JButton perspectiveButton;
 
    private JDialog popup;
 
@@ -137,7 +137,8 @@ public class WorkspaceView
       managePerspectives = context.getActionMap().get( "managePerspectives" );
       managePerspectives.putValue( "proxy", managePerspectivesAction );
 
-      searchResultTableModel = obf.newObjectBuilder( SearchResultTableModel.class ).use( client.getSubClient("search")).newInstance();
+      perspectiveModel = obf.newObjectBuilder( PerspectiveModel.class ).use( client.getSubClient( "search" )).newInstance();
+      searchResultTableModel = obf.newObjectBuilder( SearchResultTableModel.class ).use( client.getSubClient("search"), perspectiveModel).newInstance();
 
       searchView = obf.newObjectBuilder( SearchView.class ).use(searchResultTableModel, client).newInstance();
 
@@ -157,12 +158,6 @@ public class WorkspaceView
             .getValue( javax.swing.Action.ACCELERATOR_KEY ),
             JComponent.WHEN_IN_FOCUSED_WINDOW );
 
-      // Perspective
-      javax.swing.Action perspectiveAction = am.get( "perspective" );
-      perspectiveButton = new JButton( perspectiveAction );
-      perspectiveButton.registerKeyboardAction( perspectiveAction, (KeyStroke) perspectiveAction
-            .getValue( javax.swing.Action.ACCELERATOR_KEY ),
-            JComponent.WHEN_IN_FOCUSED_WINDOW );
 
       MacOsUIWrapper.convertAccelerators( getActionMap() );
 
@@ -177,7 +172,7 @@ public class WorkspaceView
       topPanel.add(contextSelectionPanel, BorderLayout.WEST);
       
       contextToolbar = new JPanel();
-      contextToolbar.add( perspectiveButton );
+      //contextToolbar.add( perspectiveButton );
       contextToolbar.add( createCaseButton );
       contextToolbar.add( refreshButton);
       topPanel.add(contextToolbar, BorderLayout.EAST);
@@ -232,7 +227,6 @@ public class WorkspaceView
                   if (contextItem.getRelation().equals("perspective"))
                   {
                      PerspectiveValue perspectiveValue = contextItem.getClient().query("index", PerspectiveValue.class);
-                     PerspectiveModel perspectiveModel = searchResultTableModel.getPerspectiveModel();
                      perspectiveModel.setSelectedStatuses( perspectiveValue.statuses().get() );
                      perspectiveModel.setSelectedCaseTypes( perspectiveValue.caseTypes().get() );
                      perspectiveModel.setSelectedLabels( perspectiveValue.labels().get() );
@@ -250,14 +244,19 @@ public class WorkspaceView
                      searchView.getTextField().setText(perspectiveValue.query().get());
                      searchResultTableModel.search( perspectiveValue.query().get() );
                      perspectiveModel.notifyObservers();
+                  } else
+                  {
+                     searchView.getTextField().setText( "" );
+                     perspectiveModel.clearFilter();
                   }
-                  
+
+
                   casesView.showTable(casesTable);
+                  casesView.setFilterVisible( perspectiveModel, isSearch );
 
                   setContextString(contextItem);
 
                   createCaseButton.setVisible(contextItem.getRelation().equals("assign") || contextItem.getRelation().equals("draft"));
-                  perspectiveButton.setVisible(isSearch);
 
                } else
                {
@@ -379,12 +378,6 @@ public class WorkspaceView
    public void refresh()
    {
       casesView.refresh();
-   }
-
-   @Action
-   public void perspective()
-   {
-      casesView.toogleFilterVisible();
    }
 
    @Action

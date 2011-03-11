@@ -224,6 +224,8 @@ public class PerspectiveView extends JPanel implements Observer
    public void filterClear()
    {
       model.clearFilter();
+      if( searchField != null )
+         searchField.setText( "" );
       killPopup();
    }
 

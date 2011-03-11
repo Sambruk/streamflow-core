@@ -24,12 +24,12 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
-import se.streamsource.streamflow.client.util.JavaHelp;
-import se.streamsource.streamflow.client.util.i18n;
-import se.streamsource.streamflow.client.ui.account.AccountSelector;
 import se.streamsource.streamflow.client.ui.account.AccountModel;
 import se.streamsource.streamflow.client.ui.account.AccountSelectionView;
+import se.streamsource.streamflow.client.ui.account.AccountSelector;
 import se.streamsource.streamflow.client.ui.menu.WorkspaceMenuBar;
+import se.streamsource.streamflow.client.util.JavaHelp;
+import se.streamsource.streamflow.client.util.i18n;
 
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
@@ -71,6 +71,7 @@ public class WorkspaceWindow
 
       frame.setPreferredSize( new Dimension( 1000, 700 ) );
       frame.pack();
+      frame.setExtendedState(frame.getExtendedState() | JXFrame.MAXIMIZED_BOTH);
       // Turn off java help for 1.0 release
       //javaHelp.enableHelp( this.getRootPane(), "workspace" );
 

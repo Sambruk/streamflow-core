@@ -35,6 +35,8 @@ import javax.swing.JEditorPane;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.JTextField;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.net.URL;
@@ -45,7 +47,7 @@ import static se.streamsource.streamflow.client.util.i18n.*;
  * JAVADOC
  */
 public class CasesView
-      extends JPanel
+      extends JPanel implements ListSelectionListener
 {
    private CasesTableView casesTableView;
    private CasesDetailView detailsView;
@@ -100,26 +102,35 @@ public class CasesView
       return blankPanel;
    }
 
-   public void toogleFilterVisible()
+   public void setFilterVisible( PerspectiveModel model, boolean visible )
    {
-      boolean visible = perspectiveView.isVisible();
-      perspectiveView.setVisible(!visible);
+      // TODO this has to be changed when perspectives will be enabled for inbox searches
+      //
+      if (visible)
+      {
+         perspectiveView = obf.newObjectBuilder( PerspectiveView.class ).use( model, searchField ).newInstance();
+
+         topPanel.add( perspectiveView, BorderLayout.NORTH );
+         perspectiveView.setVisible( visible );
+      } else
+      {
+         if (perspectiveView != null)
+         {
+            topPanel.remove( perspectiveView );
+            perspectiveView = null;
+            invalidate();
+         }
+      }
+
    }
    
    public void showTable( CasesTableView casesTableView )
    {
       cardLayout.show( this, "cases" );
       this.casesTableView = casesTableView;
+      this.casesTableView.getCaseTable().getSelectionModel().addListSelectionListener( this );
       splitPane.setTopComponent( casesTableView );
       clearCase();
-      // remove occasional UI artifacts
-      if( perspectiveView != null )
-         topPanel.remove( perspectiveView );
-
-      perspectiveView = obf.newObjectBuilder( PerspectiveView.class ).use( casesTableView.getModel().getPerspectiveModel(), searchField ).newInstance();
-
-      perspectiveView.setVisible(false);
-      topPanel.add( perspectiveView, BorderLayout.NORTH);
    }
 
    public void clearTable()
@@ -161,6 +172,15 @@ public class CasesView
    {
       remove(blank);
       add( blank = blankPanel, "blank" );
+   }
+
+   public void valueChanged( ListSelectionEvent e )
+   {
+      if( !e.getValueIsAdjusting() )
+      {
+         if( e.getFirstIndex() == -1 )
+            clearCase();
+      }
    }
 }
 

@@ -39,12 +39,14 @@ import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 
 /**
  * Base class for all models that list cases
  */
 public class CasesTableModel
-      implements Refreshable
+      implements Refreshable, Observer
 {
    @Structure
    ValueBuilderFactory vbf;
@@ -52,12 +54,12 @@ public class CasesTableModel
    @Uses
    protected CommandQueryClient client;
 
-   @Uses
    protected PerspectiveModel perspectiveModel;
    
    public CasesTableModel(@Uses PerspectiveModel perspectiveModel)
    {
       this.perspectiveModel = perspectiveModel;
+      this.perspectiveModel.addObserver( this );
    }
    
    public PerspectiveModel getPerspectiveModel()
@@ -139,5 +141,10 @@ public class CasesTableModel
          caseTableValues.add(caseBuilder.newInstance());
       }
       return caseTableValues;
+   }
+
+   public void update( Observable o, Object arg )
+   {
+      this.refresh();
    }
 }

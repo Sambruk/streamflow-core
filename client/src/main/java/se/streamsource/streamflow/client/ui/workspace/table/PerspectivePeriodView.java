@@ -26,6 +26,7 @@ import org.qi4j.api.injection.scope.Uses;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.util.Strings;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListCellRenderer;
@@ -140,9 +141,24 @@ public class PerspectivePeriodView
       {
          public void actionPerformed( ActionEvent e )
          {
-            monthView.setSelectionDate( parseDate( dateField.getText() ) );
-            monthView.ensureDateVisible( monthView.getSelectionDate() );
-            setDateToModel( parseDate( dateField.getText() ) );
+            if( !Strings.empty( dateField.getText() ) )
+            {
+               Date date = parseDate( dateField.getText() );
+
+               if (date != null)
+               {
+                  monthView.setSelectionDate( date );
+                  monthView.ensureDateVisible( monthView.getSelectionDate() );
+                  setDateToModel( parseDate( dateField.getText() ) );
+               } else
+               {
+                  dateField.setText( "" );
+               }
+            } else
+            {
+               monthView.setSelectionDate( null );
+               setDateToModel( null );
+            }
          }
       } );
 
@@ -166,7 +182,16 @@ public class PerspectivePeriodView
    private Date parseDate( String date )
    {
       DateTimeFormatter format = DateTimeFormat.forPattern( text( WorkspaceResources.date_format) );
-      return format.parseDateTime( date ).toDate();
+      Date result = null;
+      try{
+        result = format.parseDateTime( date ).toDate();
+      } catch( IllegalArgumentException e )
+      {
+         dialogs.showMessageDialog( this,
+               text( WorkspaceResources.wrong_format_msg) + text( WorkspaceResources.date_format ),
+               text( WorkspaceResources.wrong_format_title));
+      }
+      return result;
 
    }
 
