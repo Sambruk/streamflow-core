@@ -362,6 +362,17 @@ public class PerspectiveView extends JPanel implements Observer
       this.model = model;
    }
 
+   public JDialog getCurrentPopup()
+   {
+      return popup;
+   }
+
+   public void setCurrentPopup( JDialog dialog )
+   {
+      popup = dialog;
+   }
+
+
    @Action
    public Task savePerspective()
    {

@@ -18,7 +18,21 @@
 package se.streamsource.streamflow.client.ui.workspace.search;
 
 
-import java.awt.FlowLayout;
+import org.jdesktop.application.Action;
+import org.jdesktop.application.ApplicationContext;
+import org.jdesktop.swingx.util.WindowUtils;
+import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
+import org.qi4j.api.structure.Module;
+import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import se.streamsource.streamflow.client.ui.workspace.table.PerspectiveView;
+import se.streamsource.streamflow.client.util.RefreshWhenShowing;
+import se.streamsource.streamflow.client.util.Refreshable;
+import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.util.i18n;
 
 import javax.swing.ActionMap;
 import javax.swing.BoxLayout;
@@ -27,21 +41,9 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
-
-import org.jdesktop.application.Action;
-import org.jdesktop.application.ApplicationContext;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import org.qi4j.api.structure.Module;
-
-import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
-import se.streamsource.streamflow.client.util.RefreshWhenShowing;
-import se.streamsource.streamflow.client.util.Refreshable;
-import se.streamsource.streamflow.client.util.i18n;
-import se.streamsource.streamflow.client.util.dialog.DialogService;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.FlowLayout;
 
 /**
  * JAVADOC
@@ -102,14 +104,41 @@ public class SearchView
    @Action
    public void search()
    {
-      String searchString = getTextField().getText();
+      // close all open perspective popups without triggering search twice
+      if (!closedOpenPerspectivePopups( WindowUtils.findWindow( this ) ))
+      {
+         String searchString = getTextField().getText();
 
-      if (searchString.length() > 500)
-      {
-         dialogs.showMessageDialog( this, i18n.text( WorkspaceResources.too_long_query), "" );
-      } else
-      {
-         searchResultTableModel.search( searchString );
+         if (searchString.length() > 500)
+         {
+            dialogs.showMessageDialog( this, i18n.text( WorkspaceResources.too_long_query ), "" );
+         } else
+         {
+            searchResultTableModel.search( searchString );
+         }
       }
+   }
+
+   private boolean closedOpenPerspectivePopups( Container container )
+   {
+      for (Component c : container.getComponents())
+      {
+         if (c instanceof Container)
+         {
+            if (c instanceof PerspectiveView)
+            {
+               PerspectiveView view = ((PerspectiveView) c);
+               if (view.getCurrentPopup() != null)
+               {
+                  view.killPopup();
+                  return true;
+               }
+            } else
+            {
+               closedOpenPerspectivePopups( (Container) c );
+            }
+         }
+      }
+      return false;
    }
 }
