@@ -137,7 +137,7 @@ public class WorkspaceView
       managePerspectives = context.getActionMap().get( "managePerspectives" );
       managePerspectives.putValue( "proxy", managePerspectivesAction );
 
-      perspectiveModel = obf.newObjectBuilder( PerspectiveModel.class ).use( client.getSubClient( "search" )).newInstance();
+      perspectiveModel = obf.newObjectBuilder( PerspectiveModel.class ).use( client.getSubClient( "search" ), this.obf).newInstance();
       searchResultTableModel = obf.newObjectBuilder( SearchResultTableModel.class ).use( client.getSubClient("search"), perspectiveModel).newInstance();
 
       searchView = obf.newObjectBuilder( SearchView.class ).use(searchResultTableModel, client).newInstance();
@@ -219,7 +219,7 @@ public class WorkspaceView
                   TableFormat tableFormat;
                   CasesTableView casesTable;
                   tableFormat = new CasesTableFormatter();
-                  casesTable = obf.newObjectBuilder(CasesTableView.class).use(isSearch ? searchResultTableModel : contextItem.getClient(), tableFormat)
+                  casesTable = obf.newObjectBuilder(CasesTableView.class).use(isSearch ? searchResultTableModel : contextItem.getClient(), tableFormat, obf)
                         .newInstance();
 
                   casesTable.getCaseTable().getSelectionModel().addListSelectionListener(new CaseSelectionListener());
@@ -236,10 +236,10 @@ public class WorkspaceView
                      perspectiveModel.setSortBy( SortBy.valueOf( perspectiveValue.sortBy().get() ) );
                      perspectiveModel.setSortOrder( SortOrder.valueOf( perspectiveValue.sortOrder().get() ) );
                      perspectiveModel.setGroupBy( GroupBy.valueOf( perspectiveValue.groupBy().get() ) );
-                     perspectiveModel.setCreatedPeriod( Period.valueOf( perspectiveValue.createdOnPeriod().get() ) );
-                     perspectiveModel.setCreatedOn( perspectiveValue.createdOn().get() );
-                     perspectiveModel.setDueOnPeriod( Period.valueOf( perspectiveValue.dueOnPeriod().get() ) );
-                     perspectiveModel.setDueOn( perspectiveValue.dueOn().get() );
+                     perspectiveModel.getCreatedOnModel().setPeriod( Period.valueOf( perspectiveValue.createdOnPeriod().get() ) );
+                     perspectiveModel.getCreatedOnModel().setDate( perspectiveValue.createdOn().get() );
+                     perspectiveModel.getDueOnModel().setPeriod( Period.valueOf( perspectiveValue.dueOnPeriod().get() ) );
+                     perspectiveModel.getDueOnModel().setDate( perspectiveValue.dueOn().get() );
 
                      searchView.getTextField().setText(perspectiveValue.query().get());
                      searchResultTableModel.search( perspectiveValue.query().get() );

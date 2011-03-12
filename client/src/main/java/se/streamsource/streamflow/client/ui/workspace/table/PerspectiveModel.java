@@ -22,6 +22,7 @@ import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.UniqueList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
@@ -34,7 +35,6 @@ import se.streamsource.streamflow.resource.user.profile.PerspectiveValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.Observable;
 
@@ -47,6 +47,7 @@ public class PerspectiveModel extends Observable implements Refreshable
 
    @Structure
    ValueBuilderFactory vbf;
+
 
    BasicEventList<LinkValue> possibleLabels = new BasicEventList<LinkValue>();
    BasicEventList<LinkValue> possibleCaseTypes = new BasicEventList<LinkValue>();
@@ -64,12 +65,15 @@ public class PerspectiveModel extends Observable implements Refreshable
    GroupBy groupBy = GroupBy.none;
    SortBy sortBy = SortBy.none;
    SortOrder sortOrder = SortOrder.asc;
-   Period createdPeriod = Period.none;
-   Period dueOnPeriod = Period.none;
-   
-   Date createdOn;
-   Date dueOn;
 
+   private PerspectivePeriodModel createdOnModel;
+   private PerspectivePeriodModel dueOnModel;
+
+   public PerspectiveModel( @Uses ObjectBuilderFactory obf)
+   {
+      createdOnModel = obf.newObjectBuilder( PerspectivePeriodModel.class ).use( Period.none ).newInstance();
+      dueOnModel = obf.newObjectBuilder( PerspectivePeriodModel.class ).use( Period.none ).newInstance();
+   }
    public void refresh()
    {
       LinksValue labels = client.query( "possiblelabels",
@@ -221,44 +225,14 @@ public class PerspectiveModel extends Observable implements Refreshable
       this.sortOrder = sortOrder;
    }
 
-   public Date getCreatedOn()
+   public PerspectivePeriodModel getCreatedOnModel()
    {
-      return createdOn;
+      return createdOnModel;
    }
 
-   public void setCreatedOn(Date createdOn)
+   public PerspectivePeriodModel getDueOnModel()
    {
-      this.createdOn = createdOn;
-   }
-
-   public Period getCreatedPeriod()
-   {
-      return createdPeriod;
-   }
-
-   public void setCreatedPeriod( Period selectedValue )
-   {
-      createdPeriod = selectedValue;
-   }
-
-   public Date getDueOn()
-   {
-      return dueOn;
-   }
-
-   public void setDueOn(Date dueOn)
-   {
-      this.dueOn = dueOn;
-   }
-
-   public void setDueOnPeriod( Period selectedValue )
-   {
-      dueOnPeriod = selectedValue;
-   }
-
-   public Period getDueOnPeriod()
-   {
-      return dueOnPeriod;
+      return dueOnModel;
    }
 
    public PerspectiveValue getPerspective( String name, String query )
@@ -275,10 +249,10 @@ public class PerspectiveModel extends Observable implements Refreshable
       builder.prototype().caseTypes().set( getSelectedCaseTypes() );
       builder.prototype().createdBy().set( getSelectedCreatedBy() );
       builder.prototype().projects().set( getSelectedProjects() );
-      builder.prototype().createdOnPeriod().set( getCreatedPeriod().name() );
-      builder.prototype().createdOn().set( getCreatedOn() );
-      builder.prototype().dueOnPeriod().set( getDueOnPeriod().name() );
-      builder.prototype().dueOn().set( getDueOn() );
+      builder.prototype().createdOnPeriod().set( getCreatedOnModel().getPeriod().name() );
+      builder.prototype().createdOn().set( getCreatedOnModel().getDate() );
+      builder.prototype().dueOnPeriod().set( getDueOnModel().getPeriod().name() );
+      builder.prototype().dueOn().set( getDueOnModel().getDate() );
 
       return builder.newInstance();
    }
@@ -308,10 +282,10 @@ public class PerspectiveModel extends Observable implements Refreshable
       sortBy = SortBy.none;
       sortOrder = SortOrder.asc;
       
-      createdOn = null;
-      createdPeriod = Period.none;
+      getCreatedOnModel().setDate( null );
+      getCreatedOnModel().setPeriod( Period.none );
 
-      dueOn = null;
-      dueOnPeriod = Period.none;
+      getDueOnModel().setDate( null );
+      getDueOnModel().setPeriod( Period.none );
    }
 }

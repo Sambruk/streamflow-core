@@ -106,6 +106,7 @@ public enum WorkspaceResources
    choose_template,
    could_not_print,
    date_format,
+   date_separator,
    wrong_format_msg,
    wrong_format_title,
 
@@ -141,5 +142,5 @@ public enum WorkspaceResources
    
    // Conversation
    sender_column_header,
-   message_column_header, change_perspective_title, selected_projects, from_date,
+   message_column_header, change_perspective_title, selected_projects, search_period
 }

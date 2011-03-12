@@ -19,9 +19,6 @@ package se.streamsource.streamflow.client.ui.workspace.search;
 
 import org.jdesktop.application.Application;
 import org.jdesktop.application.Task;
-import org.joda.time.DateMidnight;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilder;
@@ -36,7 +33,6 @@ import se.streamsource.streamflow.client.ui.workspace.table.SortBy;
 import se.streamsource.streamflow.client.util.EventListSynch;
 
 import java.util.Collections;
-import java.util.Date;
 
 /**
  * Model for search results
@@ -165,21 +161,14 @@ public class SearchResultTableModel
          translatedQuery +=  "\"";
       }
       
-      if ( !Period.none.equals( perspectiveModel.getCreatedPeriod() ) )
+      if ( !Period.none.equals( perspectiveModel.getCreatedOnModel().getPeriod() ) )
       {
-         Date fromDate =  perspectiveModel.getCreatedOn() != null ? perspectiveModel.getCreatedOn() : new Date();
-         int direction = perspectiveModel.getCreatedOn() != null ? 1 : -1;
-
-         translatedQuery += " createdOn:" + getSearchPeriod( fromDate, direction, perspectiveModel.getCreatedPeriod().name() );
-
+         translatedQuery += " createdOn:" + perspectiveModel.getCreatedOnModel().getSearchValue( "yyyyMMdd", "-" );
       }
 
-      if( !Period.none.equals( perspectiveModel.getDueOnPeriod() ))
+      if( !Period.none.equals( perspectiveModel.getDueOnModel().getPeriod() ))
       {
-         Date fromDate =  perspectiveModel.getDueOn() != null ? perspectiveModel.getDueOn() : new Date();
-         int direction = perspectiveModel.getDueOn() != null ? 1 : -1;
-
-         translatedQuery += " dueOn:" + getSearchPeriod( fromDate, direction, perspectiveModel.getDueOnPeriod().name() );
+         translatedQuery += " dueOn:" + perspectiveModel.getDueOnModel().getSearchValue( "yyyyMMdd", "-" );
       }
       
       ValueBuilder<TableQuery> builder = vbf.newValueBuilder( TableQuery.class );
@@ -193,48 +182,4 @@ public class SearchResultTableModel
 
       return client.query( "cases", builder.newInstance(), TableValue.class );
    }
-
-   private String getSearchPeriod( Date fromDate, int direction, String periodName )
-   {
-      DateMidnight from = new DateMidnight( fromDate );
-      DateMidnight to = null;
-      DateTimeFormatter format = DateTimeFormat.forPattern( "yyyyMMdd" );
-
-
-      switch (Period.valueOf( periodName ))
-      {
-         case one_day:
-            return format.print( from);
-
-         case three_days:
-            to = ( direction == 1) ? from.plusDays( 3 ) : from.minusDays( 3 );
-            break;
-
-         case one_week:
-            to = ( direction == 1 ) ? from.plusWeeks( 1 ) : from.minusWeeks( 1 );
-            break;
-
-         case two_weeks:
-            to = ( direction == 1 ) ? from.plusWeeks( 2 ) : from.minusWeeks( 2 );
-            break;
-
-         case one_month:
-            to = ( direction == 1 ) ? from.plusMonths( 1 ) : from.minusMonths( 1 );
-            break;
-
-         case six_months:
-            to = ( direction == 1 ) ? from.plusMonths( 6 ) : from.minusMonths( 6 );
-            break;
-
-         case one_year:
-            to = ( direction == 1 ) ? from.plusYears( 1 ) : from.minusYears( 1 );
-            break;
-
-      }
-      return (direction == 1)
-                  ? format.print( from ) + "-" + format.print( to )
-                  : format.print( to ) + "-" + format.print( from );
-
-   }
-
 }

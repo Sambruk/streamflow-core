@@ -278,14 +278,14 @@ public class PerspectiveView extends JPanel implements Observer
    @Action
    public void filterCreatedOn(ActionEvent event)
    {
-      PerspectivePeriodView period = obf.newObjectBuilder( PerspectivePeriodView.class ).use( model, Boolean.TRUE ).newInstance();
+      PerspectivePeriodView period = obf.newObjectBuilder( PerspectivePeriodView.class ).use( model.getCreatedOnModel() ).newInstance();
       optionsPanel.add(period);
    }
 
    @Action
    public void filterDueOn(ActionEvent event)
    {
-      PerspectivePeriodView period = obf.newObjectBuilder( PerspectivePeriodView.class ).use( model, Boolean.FALSE ).newInstance();
+      PerspectivePeriodView period = obf.newObjectBuilder( PerspectivePeriodView.class ).use( model.getDueOnModel() ).newInstance();
       optionsPanel.add(period);
    }
 
@@ -417,11 +417,11 @@ public class PerspectiveView extends JPanel implements Observer
                   break;
 
                case filterCreatedOn:
-                  selectedIsEmpty = Period.none.equals( model.getCreatedPeriod() );
+                  selectedIsEmpty = Period.none.equals( model.getCreatedOnModel().getPeriod() );
                   break;
 
                case filterDueOn:
-                  selectedIsEmpty = Period.none.equals( model.getDueOnPeriod() );
+                  selectedIsEmpty = Period.none.equals( model.getDueOnModel().getPeriod() );
                   break;
 
                case viewSorting:
