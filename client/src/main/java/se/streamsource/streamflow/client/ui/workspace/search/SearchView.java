@@ -131,6 +131,7 @@ public class SearchView
                if (view.getCurrentPopup() != null)
                {
                   view.killPopup();
+                  view.cleanToggleButtonSelection();
                   return true;
                }
             } else

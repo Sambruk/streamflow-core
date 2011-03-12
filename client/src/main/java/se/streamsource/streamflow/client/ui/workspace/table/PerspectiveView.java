@@ -372,6 +372,18 @@ public class PerspectiveView extends JPanel implements Observer
       popup = dialog;
    }
 
+   public void cleanToggleButtonSelection()
+   {
+      for (Component component : Iterables.flatten( Iterables.iterable( filterPanel.getComponents() ), Iterables.iterable( viewPanel.getComponents() ) ))
+      {
+         if (!(component instanceof JToggleButton))
+            continue;
+         if (((JToggleButton) component).isSelected())
+         {
+            ((JToggleButton) component).setSelected( false );
+         }
+      }
+   }
 
    @Action
    public Task savePerspective()
