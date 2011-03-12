@@ -198,7 +198,7 @@ public class PerspectiveView extends JPanel implements Observer
             int state = itemEvent.getStateChange();
             if (state == ItemEvent.SELECTED) 
             {
-               
+
                for (Component component : Iterables.flatten(Iterables.iterable(filterPanel.getComponents()), Iterables.iterable(viewPanel.getComponents())))
                {
                   if( !(component instanceof JToggleButton) )
