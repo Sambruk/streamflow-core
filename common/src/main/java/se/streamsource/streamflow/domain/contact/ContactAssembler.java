@@ -30,7 +30,7 @@ public class ContactAssembler
 {
    public void assemble( ModuleAssembly module ) throws AssemblyException
    {
-      module.addValues( ContactAddressValue.class,
+      module.values( ContactAddressValue.class,
             ContactEmailValue.class,
             ContactPhoneValue.class,
             ContactValue.class ).visibleIn( Visibility.application );

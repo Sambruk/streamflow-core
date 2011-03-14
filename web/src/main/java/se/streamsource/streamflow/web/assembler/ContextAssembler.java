@@ -132,31 +132,31 @@ public class ContextAssembler
    public void assemble( LayerAssembly layer )
          throws AssemblyException
    {
-      interactions( layer.moduleAssembly( "Context" ) );
+      interactions( layer.module( "Context" ) );
    }
 
    private void interactions( ModuleAssembly module ) throws AssemblyException
    {
-      module.importServices( ResultConverter.class ).importedBy( ImportedServiceDeclaration.NEW_OBJECT );
+      module.importedServices( ResultConverter.class ).importedBy( ImportedServiceDeclaration.NEW_OBJECT );
 
-      module.addObjects( StreamflowResultConverter.class );
+      module.objects( StreamflowResultConverter.class );
 
       new DCIAssembler().assemble( module );
 
-      module.importServices( InteractionConstraintsService.class ).
+      module.importedServices( InteractionConstraintsService.class ).
             importedBy( NewObjectImporter.class ).
             visibleIn( Visibility.application );
-      module.addObjects( InteractionConstraintsService.class );
+      module.objects( InteractionConstraintsService.class );
 
-      module.addObjects( RequiresPermission.RequiresPermissionConstraint.class,
+      module.objects( RequiresPermission.RequiresPermissionConstraint.class,
             ServiceAvailable.ServiceAvailableConstraint.class );
 
       // Import file handling service for file uploads
       DiskFileItemFactory factory = new DiskFileItemFactory();
       factory.setSizeThreshold( 1024 * 1000 * 30 ); // 30 Mb threshold TODO Make this into real service and make this number configurable
-      module.importServices( FileItemFactory.class ).importedBy( INSTANCE ).setMetaInfo( factory );
+      module.importedServices( FileItemFactory.class ).importedBy( INSTANCE ).setMetaInfo( factory );
 
-      module.addObjects( StreamflowRestlet.class ).visibleIn( Visibility.application );
+      module.objects( StreamflowRestlet.class ).visibleIn( Visibility.application );
 
       addResourceContexts( module,
             RootResource.class,
@@ -370,13 +370,13 @@ public class ContextAssembler
       {
          if (CommandQueryResource.class.isAssignableFrom( resourceContextClass ))
          {
-            module.addObjects( resourceContextClass );
+            module.objects( resourceContextClass );
          } else if (TransientComposite.class.isAssignableFrom( resourceContextClass ))
          {
             module.addTransients( (Class<TransientComposite>) resourceContextClass );
          } else
          {
-            module.addObjects( resourceContextClass );
+            module.objects( resourceContextClass );
          }
       }
    }

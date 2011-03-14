@@ -33,12 +33,12 @@ public class CommonDomainAssembler
 {
    public void assemble( LayerAssembly domainLayer ) throws AssemblyException
    {
-      new ContactAssembler().assemble( domainLayer.moduleAssembly( "Contact" ) );
-      new FormAssembler().assemble( domainLayer.moduleAssembly( "Form" ) );
-      new AttachmentAssembler().assemble( domainLayer.moduleAssembly( "Attachment" ) );
+      new ContactAssembler().assemble( domainLayer.module( "Contact" ) );
+      new FormAssembler().assemble( domainLayer.module( "Form" ) );
+      new AttachmentAssembler().assemble( domainLayer.module( "Attachment" ) );
 
-      domainLayer.moduleAssembly("Organization").addValues(EmailAccessPointValue.class).visibleIn(Visibility.application);
+      domainLayer.module("Organization").values(EmailAccessPointValue.class).visibleIn(Visibility.application);
 
-      domainLayer.moduleAssembly( "Case" ).addValues( Actions.class ).visibleIn( Visibility.application );
+      domainLayer.module( "Case" ).values( Actions.class ).visibleIn( Visibility.application );
    }
 }

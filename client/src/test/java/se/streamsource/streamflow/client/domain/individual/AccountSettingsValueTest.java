@@ -32,8 +32,8 @@ public class AccountSettingsValueTest
 {
    public void assemble( ModuleAssembly module ) throws AssemblyException
    {
-      module.addValues( AccountSettingsValue.class );
-      module.addObjects( getClass() );
+      module.values( AccountSettingsValue.class );
+      module.objects( getClass() );
    }
 
    @Test(expected = ConstraintViolationException.class)

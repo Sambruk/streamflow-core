@@ -49,20 +49,20 @@ public class StreamflowWebContextTestAssembler
    @Override
    protected void assembleApplicationLayer( LayerAssembly appLayer ) throws AssemblyException
    {
-      appLayer.applicationAssembly().setMode( Application.Mode.test );
-      appLayer.moduleAssembly( "Pdf" ).addServices( SubmittedFormPdfGenerator.class ).visibleIn( application );
-      new BootstrapAssembler().assemble( appLayer.moduleAssembly( "Bootstrap" ) );
+      appLayer.application().setMode( Application.Mode.test );
+      appLayer.module( "Pdf" ).services( SubmittedFormPdfGenerator.class ).visibleIn( application );
+      new BootstrapAssembler().assemble( appLayer.module( "Bootstrap" ) );
 
-      ApplicationAssembly applicationAssembly = appLayer.applicationAssembly();
-      LayerAssembly layer1 = applicationAssembly.layerAssembly( "Layer 1" );
+      ApplicationAssembly applicationAssembly = appLayer.application();
+      LayerAssembly layer1 = applicationAssembly.layer( "Layer 1" );
       layer1.uses(
-            applicationAssembly.layerAssembly( "Context" ),
-            applicationAssembly.layerAssembly( "Domain infrastructure" ),
-            applicationAssembly.layerAssembly( "Domain" ) );
-      ModuleAssembly moduleAssembly = layer1.moduleAssembly( "Module 1" );
-      moduleAssembly.addValues( EntityValue.class );
-      applicationAssembly.layerAssembly( "Domain infrastructure" ).moduleAssembly( "Events" ).importServices( TransactionVisitor.class ).visibleIn( Visibility.application ).setMetaInfo( transactionVisitor );
-      applicationAssembly.layerAssembly( "Context" ).moduleAssembly( "Contact Lookup" ).importServices( StreamflowContactLookupService.class ).visibleIn( Visibility.application );
+            applicationAssembly.layer( "Context" ),
+            applicationAssembly.layer( "Domain infrastructure" ),
+            applicationAssembly.layer( "Domain" ) );
+      ModuleAssembly moduleAssembly = layer1.module( "Module 1" );
+      moduleAssembly.values( EntityValue.class );
+      applicationAssembly.layer( "Domain infrastructure" ).module( "Events" ).importedServices( TransactionVisitor.class ).visibleIn( Visibility.application ).setMetaInfo( transactionVisitor );
+      applicationAssembly.layer( "Context" ).module( "Contact Lookup" ).importedServices( StreamflowContactLookupService.class ).visibleIn( Visibility.application );
 
    }
 

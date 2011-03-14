@@ -42,9 +42,9 @@ public class AttachmentStoreTest
 {
    public void assemble( ModuleAssembly module ) throws AssemblyException
    {
-      module.layerAssembly().applicationAssembly().setName( getClass().getSimpleName() );
-      module.addServices( FileConfiguration.class, AttachmentStoreService.class );
-      module.addObjects(AttachmentStoreTest.class);
+      module.layer().application().setName( getClass().getSimpleName() );
+      module.services( FileConfiguration.class, AttachmentStoreService.class );
+      module.objects(AttachmentStoreTest.class);
    }
 
    @Service

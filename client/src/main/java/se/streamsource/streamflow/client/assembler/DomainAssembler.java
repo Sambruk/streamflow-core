@@ -38,16 +38,16 @@ public class DomainAssembler
    {
       new CommonDomainAssembler().assemble( layer );
 
-      individual( layer.moduleAssembly( "Individual" ) );
-      restDomainModel( layer.moduleAssembly( "REST domain model" ) );
+      individual( layer.module( "Individual" ) );
+      restDomainModel( layer.module( "REST domain model" ) );
    }
 
    private void individual( ModuleAssembly module ) throws AssemblyException
    {
-      module.addServices( IndividualRepositoryService.class ).visibleIn( Visibility.application );
+      module.services( IndividualRepositoryService.class ).visibleIn( Visibility.application );
 
-      module.addValues( AccountSettingsValue.class ).visibleIn( Visibility.application );
-      module.addEntities( IndividualEntity.class, AccountEntity.class ).visibleIn( Visibility.application );
+      module.values( AccountSettingsValue.class ).visibleIn( Visibility.application );
+      module.entities( IndividualEntity.class, AccountEntity.class ).visibleIn( Visibility.application );
    }
 
    private void restDomainModel( ModuleAssembly module ) throws AssemblyException

@@ -46,17 +46,17 @@ public class TestAssembler
    public ApplicationAssembly assemble( ApplicationAssemblyFactory applicationFactory ) throws AssemblyException
    {
       ApplicationAssembly assembly = applicationFactory.newApplicationAssembly();
-      ModuleAssembly assembly1 = assembly.layerAssembly( "Web" ).moduleAssembly( "REST" );
+      ModuleAssembly assembly1 = assembly.layer( "Web" ).module( "REST" );
       assemble( assembly1 );
 
       new ValueAssembler().assemble( assembly1 );
       new DCIAssembler().assemble( assembly1 );
-      assembly1.importServices(CommandResult.class).importedBy( NEW_OBJECT );
+      assembly1.importedServices(CommandResult.class).importedBy( NEW_OBJECT );
 
-      assembly1.importServices( InteractionConstraintsService.class ).
+      assembly1.importedServices( InteractionConstraintsService.class ).
             importedBy( NewObjectImporter.class ).
             visibleIn( Visibility.application );
-      assembly1.addObjects( InteractionConstraintsService.class );
+      assembly1.objects( InteractionConstraintsService.class );
 
 
       for (Object service : services)
@@ -69,24 +69,24 @@ public class TestAssembler
 
    public void assemble( ModuleAssembly module ) throws AssemblyException
    {
-      module.addObjects( TestCommandQueryRestlet2.class );
+      module.objects( TestCommandQueryRestlet2.class );
 
       // Use defaults
-      module.addObjects( ResultWriterDelegator.class,
+      module.objects( ResultWriterDelegator.class,
             NullCommandResult.class );
 
-      module.addObjects( RootResource.class,
+      module.objects( RootResource.class,
             FileResource.class,
             FileContext.class);
 
-      module.addObjects( JmxServerContext.class, JmxServerResource.class,
+      module.objects( JmxServerContext.class, JmxServerResource.class,
             DomainContext.class, DomainResource.class,
             MBeanContext.class, MBeanResource.class,
             MBeanAttributeContext.class );
 
-      module.addObjects( TestRestletApplication.class,
+      module.objects( TestRestletApplication.class,
             ResourceFinder.class);
       
-      module.addValues( TabularDataValue.class );
+      module.values( TabularDataValue.class );
    }
 }

@@ -46,7 +46,7 @@ public class CommonResourceAssembler
    public void assemble( ModuleAssembly module ) throws AssemblyException
    {
       // Commands
-      module.addValues( RegisterUserCommand.class,
+      module.values( RegisterUserCommand.class,
             ChangePasswordCommand.class,
             BooleanDTO.class,
             DateDTO.class,
@@ -58,7 +58,7 @@ public class CommonResourceAssembler
       new ValueAssembler().assemble( module );
 
       // Result values
-      module.addValues(
+      module.values(
             AccessPointValue.class,
             ListItemValue.class,
             CaseDTO.class,

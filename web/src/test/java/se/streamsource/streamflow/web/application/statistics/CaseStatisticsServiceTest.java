@@ -81,19 +81,19 @@ public class CaseStatisticsServiceTest
    {
       new RdfMemoryStoreAssembler().assemble( module );
 
-      module.addServices( MemoryEntityStoreService.class );
+      module.services( MemoryEntityStoreService.class );
 
-      module.addServices( CaseStatisticsService.class,
+      module.services( CaseStatisticsService.class,
             MemoryEventStoreService.class,
             UuidIdentityGeneratorService.class,
             LoggingStatisticsStore.class).instantiateOnStartup();
-      module.importServices( TimeService.class ).importedBy( ImportedServiceDeclaration.NEW_OBJECT );
-      module.addServices( DomainEventFactoryService.class ).instantiateOnStartup();
+      module.importedServices( TimeService.class ).importedBy( ImportedServiceDeclaration.NEW_OBJECT );
+      module.services( DomainEventFactoryService.class ).instantiateOnStartup();
 
-      module.addEntities( StatisticsConfiguration.class );
+      module.entities( StatisticsConfiguration.class );
       module.forMixin( TransactionTrackerConfiguration.class ).declareDefaults().enabled().set( true );
 
-      module.addEntities( LabelEntity.class,
+      module.entities( LabelEntity.class,
             OrganizationsEntity.class,
             OrganizationEntity.class,
             OrganizationalUnitEntity.class,
@@ -105,12 +105,12 @@ public class CaseStatisticsServiceTest
             ResolutionEntity.class,
             CaseEntity.class,
             CaseTypeEntity.class );
-      module.addValues( ContactValue.class, ParticipantRolesValue.class );
+      module.values( ContactValue.class, ParticipantRolesValue.class );
 
-      module.addObjects( TimeService.class, CaseStatisticsServiceTest.class );
+      module.objects( TimeService.class, CaseStatisticsServiceTest.class );
 
-      module.addValues( DomainEvent.class, TransactionDomainEvents.class );
-      module.addValues( CaseStatisticsValue.class, FormFieldStatisticsValue.class, RelatedStatisticsValue.class );
+      module.values( DomainEvent.class, TransactionDomainEvents.class );
+      module.values( CaseStatisticsValue.class, FormFieldStatisticsValue.class, RelatedStatisticsValue.class );
    }
 
    @Test

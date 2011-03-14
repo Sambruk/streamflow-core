@@ -33,12 +33,12 @@ public class BootstrapAssembler
 {
    public void assemble( ModuleAssembly module ) throws AssemblyException
    {
-      module.addServices( BootstrapDataService.class ).instantiateOnStartup();
+      module.services( BootstrapDataService.class ).instantiateOnStartup();
 
-      if (module.layerAssembly().applicationAssembly().mode() == Application.Mode.development)
+      if (module.layer().application().mode() == Application.Mode.development)
       {
-         module.importServices( NamedEntityFinder.class ).importedBy( ServiceSelectorImporter.class ).setMetaInfo( ServiceQualifier.withId("solr" ));
-         module.addServices( TestDataService.class ).instantiateOnStartup();
+         module.importedServices( NamedEntityFinder.class ).importedBy( ServiceSelectorImporter.class ).setMetaInfo( ServiceQualifier.withId("solr" ));
+         module.services( TestDataService.class ).instantiateOnStartup();
       }
    }
 }

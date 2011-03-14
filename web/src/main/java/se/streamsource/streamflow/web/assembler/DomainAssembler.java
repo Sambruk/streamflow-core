@@ -67,36 +67,36 @@ public class DomainAssembler
          throws AssemblyException
    {
       new CommonDomainAssembler().assemble( layer );
-      new CommonResourceAssembler().assemble( layer.moduleAssembly( "Common" ) );
+      new CommonResourceAssembler().assemble( layer.module( "Common" ) );
 
-      conversations( layer.moduleAssembly( "Conversations" ) );
-      forms( layer.moduleAssembly( "Forms" ) );
-      groups( layer.moduleAssembly( "Groups" ) );
-      labels( layer.moduleAssembly( "Labels" ) );
-      organizations( layer.moduleAssembly( "Organizations" ) );
-      projects( layer.moduleAssembly( "Projects" ) );
-      roles( layer.moduleAssembly( "Roles" ) );
-      cases( layer.moduleAssembly( "Cases" ) );
-      caseTypes( layer.moduleAssembly( "Casetypes" ) );
-      users( layer.moduleAssembly( "Users" ) );
-      attachments( layer.moduleAssembly( "Attachments" ) );
+      conversations( layer.module( "Conversations" ) );
+      forms( layer.module( "Forms" ) );
+      groups( layer.module( "Groups" ) );
+      labels( layer.module( "Labels" ) );
+      organizations( layer.module( "Organizations" ) );
+      projects( layer.module( "Projects" ) );
+      roles( layer.module( "Roles" ) );
+      cases( layer.module( "Cases" ) );
+      caseTypes( layer.module( "Casetypes" ) );
+      users( layer.module( "Users" ) );
+      attachments( layer.module( "Attachments" ) );
    }
 
    private void attachments( ModuleAssembly module ) throws AssemblyException
    {
-      module.addEntities( AttachmentEntity.class ).visibleIn( application );
+      module.entities( AttachmentEntity.class ).visibleIn( application );
    }
 
    private void users( ModuleAssembly module ) throws AssemblyException
    {
-      module.addEntities( UsersEntity.class, UserEntity.class, ProxyUserEntity.class, AnonymousEndUserEntity.class,
+      module.entities( UsersEntity.class, UserEntity.class, ProxyUserEntity.class, AnonymousEndUserEntity.class,
             SavedSearchEntity.class ).visibleIn( application );
 
       NamedQueries namedQueries = new NamedQueries();
       NamedQueryDescriptor queryDescriptor = new NamedSolrDescriptor( "solrquery", "" );
       namedQueries.addQuery( queryDescriptor );
 
-      module.importServices( NamedEntityFinder.class ).
+      module.importedServices( NamedEntityFinder.class ).
             importedBy( ServiceSelectorImporter.class ).
             setMetaInfo( ServiceQualifier.withId( "solr" ) ).
             setMetaInfo( namedQueries );
@@ -104,48 +104,48 @@ public class DomainAssembler
 
    private void caseTypes( ModuleAssembly module ) throws AssemblyException
    {
-      module.addEntities( CaseTypeEntity.class, ResolutionEntity.class ).visibleIn( Visibility.application );
+      module.entities( CaseTypeEntity.class, ResolutionEntity.class ).visibleIn( Visibility.application );
    }
 
    private void cases( ModuleAssembly module ) throws AssemblyException
    {
-      module.addEntities( CaseEntity.class ).visibleIn( Visibility.application );
+      module.entities( CaseEntity.class ).visibleIn( Visibility.application );
    }
 
    private void roles( ModuleAssembly module ) throws AssemblyException
    {
-      module.addEntities( RoleEntity.class ).visibleIn( Visibility.application );
+      module.entities( RoleEntity.class ).visibleIn( Visibility.application );
    }
 
    private void projects( ModuleAssembly module ) throws AssemblyException
    {
-      module.addEntities(
+      module.entities(
             ProjectRoleEntity.class,
             ProjectEntity.class ).visibleIn( application );
 
-      module.addValues( PermissionValue.class ).visibleIn( application );
+      module.values( PermissionValue.class ).visibleIn( application );
    }
 
    private void organizations( ModuleAssembly module ) throws AssemblyException
    {
-      module.addEntities( OrganizationsEntity.class, OrganizationEntity.class,
+      module.entities( OrganizationsEntity.class, OrganizationEntity.class,
             OrganizationalUnitEntity.class, AccessPointEntity.class ).visibleIn( application );
-      module.addValues( ParticipantRolesValue.class).visibleIn( Visibility.application );
+      module.values( ParticipantRolesValue.class).visibleIn( Visibility.application );
    }
 
    private void labels( ModuleAssembly module ) throws AssemblyException
    {
-      module.addEntities( LabelEntity.class ).visibleIn( application );
+      module.entities( LabelEntity.class ).visibleIn( application );
    }
 
    private void groups( ModuleAssembly module ) throws AssemblyException
    {
-      module.addEntities( GroupEntity.class ).visibleIn( application );
+      module.entities( GroupEntity.class ).visibleIn( application );
    }
 
    private void forms( ModuleAssembly module ) throws AssemblyException
    {
-      module.addEntities(
+      module.entities(
             FormEntity.class,
             FormDraftEntity.class,
             FieldEntity.class,
@@ -155,7 +155,7 @@ public class DomainAssembler
 
    private void conversations( ModuleAssembly module ) throws AssemblyException
    {
-      module.addEntities(
+      module.entities(
             ConversationEntity.class,
             MessageEntity.class ).visibleIn( Visibility.application );
    }

@@ -29,6 +29,6 @@ public class MemoryEventStoreTest
    public void assemble( ModuleAssembly module ) throws AssemblyException
    {
       super.assemble( module );
-      module.addServices( MemoryEventStoreService.class );
+      module.services( MemoryEventStoreService.class );
    }
 }

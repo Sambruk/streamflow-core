@@ -32,7 +32,7 @@ public class ClientAssembler
 {
    public void assemble( ModuleAssembly module ) throws AssemblyException
    {
-      module.addObjects( CommandQueryClientFactory.class, CommandQueryClient.class ).visibleIn( Visibility.application );
-      module.addObjects( ResponseReaderDelegator.class, JSONResponseReader.class, TableResponseReader.class ).visibleIn( Visibility.application );
+      module.objects( CommandQueryClientFactory.class, CommandQueryClient.class ).visibleIn( Visibility.application );
+      module.objects( ResponseReaderDelegator.class, JSONResponseReader.class, TableResponseReader.class ).visibleIn( Visibility.application );
    }
 }

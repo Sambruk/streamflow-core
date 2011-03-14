@@ -47,11 +47,11 @@ public class EventPropertyChangeMixinTest
 {
    public void assemble( ModuleAssembly module ) throws AssemblyException
    {
-      module.addValues( DomainEvent.class, TransactionDomainEvents.class );
-      module.addEntities( TestEntity.class );
-      module.addObjects( TimeService.class );
-      module.importServices( Time.class ).importedBy( NewObjectImporter.class );
-      module.addServices( DomainEventFactoryService.class, MemoryEventStoreService.class );
+      module.values( DomainEvent.class, TransactionDomainEvents.class );
+      module.entities( TestEntity.class );
+      module.objects( TimeService.class );
+      module.importedServices( Time.class ).importedBy( NewObjectImporter.class );
+      module.services( DomainEventFactoryService.class, MemoryEventStoreService.class );
       new EntityTestAssembler().assemble( module );
    }
 

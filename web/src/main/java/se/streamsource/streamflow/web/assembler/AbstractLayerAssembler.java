@@ -35,6 +35,6 @@ public class AbstractLayerAssembler
 
    protected ModuleAssembly configuration()
    {
-      return layerAssembly.applicationAssembly().layerAssembly( "Configuration" ).moduleAssembly( "Configuration" );
+      return layerAssembly.application().layer( "Configuration" ).module( "Configuration" );
    }
 }

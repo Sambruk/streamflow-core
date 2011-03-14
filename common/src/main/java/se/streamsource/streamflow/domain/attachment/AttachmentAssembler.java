@@ -30,7 +30,7 @@ public class AttachmentAssembler
 {
    public void assemble( ModuleAssembly module ) throws AssemblyException
    {
-      module.addValues( AttachmentValue.class,
+      module.values( AttachmentValue.class,
             UpdateAttachmentValue.class).visibleIn( Visibility.application );
    }
 }
