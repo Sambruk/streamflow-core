@@ -325,7 +325,8 @@ public interface
          String searchDateTo = search.getValue();
          if (occurrancesOfInString( "-", searchDateFrom ) == 1)
          {
-            searchDateFrom = searchDateFrom.substring( 0, searchDateFrom.indexOf( "-" ) );
+            // Substring and remove escape chars
+            searchDateFrom = searchDateFrom.substring( 0, searchDateFrom.indexOf( "-" ) ).replace("\\", "");
             searchDateTo = searchDateTo.substring( searchDateTo.indexOf( "-" ) + 1, searchDateTo.length() );
          }
          Date referenceDate = new Date();

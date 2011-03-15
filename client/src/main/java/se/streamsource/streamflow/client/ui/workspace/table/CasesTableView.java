@@ -168,9 +168,11 @@ public class CasesTableView
             }
          }
       });
-      
-      caseTable.getColumn( 1 ).setPreferredWidth( 70 );
+
+      caseTable.getColumn( 0 ).setPreferredWidth( 500 );
+      caseTable.getColumn( 1 ).setPreferredWidth( 100 );
       caseTable.getColumn( 1 ).setMaxWidth( 100 );
+      caseTable.getColumn( 1 ).setResizable( false );
       caseTable.getColumn( 2 ).setPreferredWidth( 300 );
       caseTable.getColumn( 2 ).setMaxWidth( 300 );
       caseTable.getColumn( 3 ).setPreferredWidth( 150 );
@@ -181,9 +183,9 @@ public class CasesTableView
       caseTable.getColumn( caseTable.getColumnCount() - 1 ).setResizable( false );
 
       // Do this in reverse because ordering is changed by invisibility
-      caseTable.getColumnExt( 6 ).setVisible( false );
-      caseTable.getColumnExt( 5 ).setVisible( false );
-      caseTable.getColumnExt( 3 ).setVisible( false );
+      //caseTable.getColumnExt( 6 ).setVisible( false );
+      //caseTable.getColumnExt( 5 ).setVisible( false );
+      //caseTable.getColumnExt( 3 ).setVisible( false );
 
       caseTable.setAutoCreateColumnsFromModel( false );
 
@@ -258,17 +260,20 @@ public class CasesTableView
          public Component getTableCellRendererComponent( JTable table, Object separator, boolean isSelected, boolean hasFocus, int row, int column )
          {
             String value = "";
-            
+            boolean emptyDescription = false;
             switch (model.getPerspectiveModel().getGroupBy())
             {
                case caseType:
-                  value = ((CaseTableValue) ((SeparatorList.Separator) separator).first()).caseType().get();
+                  emptyDescription = Strings.empty( ((CaseTableValue) ((SeparatorList.Separator) separator).first()).caseType().get() );
+                  value = !emptyDescription ? ((CaseTableValue) ((SeparatorList.Separator) separator).first()).caseType().get() : text( WorkspaceResources.no_casetype );
                   break;
                case assignee:
-                  value = ((CaseTableValue) ((SeparatorList.Separator) separator).first()).assignedTo().get();
+                  emptyDescription = Strings.empty( ((CaseTableValue) ((SeparatorList.Separator) separator).first()).assignedTo().get() );
+                  value = !emptyDescription ? ((CaseTableValue) ((SeparatorList.Separator) separator).first()).assignedTo().get() : text( WorkspaceResources.no_assignee );
                   break;
                case project:
-                  value = ((CaseTableValue) ((SeparatorList.Separator) separator).first()).owner().get();
+                  emptyDescription = Strings.empty( ((CaseTableValue) ((SeparatorList.Separator) separator).first()).assignedTo().get() );
+                  value = !emptyDescription ? ((CaseTableValue) ((SeparatorList.Separator) separator).first()).owner().get() : text( WorkspaceResources.no_project );
                   break;
                case dueOn:
                   value = text( dueGroups[dueOnGroup( ((CaseTableValue) ((SeparatorList.Separator) separator).first()).dueOn().get() )] );
@@ -431,6 +436,7 @@ public class CasesTableView
             @Override
             protected void command() throws Exception
             {
+
                model.refresh();
 
                if (Events.matches( withNames( "changedStatus",

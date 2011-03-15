@@ -35,8 +35,6 @@ import javax.swing.JEditorPane;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.JTextField;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.net.URL;
@@ -47,7 +45,7 @@ import static se.streamsource.streamflow.client.util.i18n.*;
  * JAVADOC
  */
 public class CasesView
-      extends JPanel implements ListSelectionListener
+      extends JPanel
 {
    private CasesTableView casesTableView;
    private CasesDetailView detailsView;
@@ -128,7 +126,6 @@ public class CasesView
    {
       cardLayout.show( this, "cases" );
       this.casesTableView = casesTableView;
-      this.casesTableView.getCaseTable().getSelectionModel().addListSelectionListener( this );
       splitPane.setTopComponent( casesTableView );
       clearCase();
    }
@@ -172,15 +169,6 @@ public class CasesView
    {
       remove(blank);
       add( blank = blankPanel, "blank" );
-   }
-
-   public void valueChanged( ListSelectionEvent e )
-   {
-      if( !e.getValueIsAdjusting() )
-      {
-         if( e.getFirstIndex() == -1 )
-            clearCase();
-      }
    }
 }
 
