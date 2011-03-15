@@ -20,6 +20,7 @@ package se.streamsource.streamflow.client.ui.workspace;
 import ca.odell.glazedlists.gui.TableFormat;
 import com.jgoodies.forms.factories.Borders;
 import org.jdesktop.application.Action;
+import org.jdesktop.application.ApplicationAction;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
 import org.qi4j.api.injection.scope.Service;
@@ -27,32 +28,59 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.ui.ContextItem;
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseResources;
-import se.streamsource.streamflow.client.ui.workspace.context.WorkspaceContextView2;
+import se.streamsource.streamflow.client.ui.workspace.context.WorkspaceContextView;
+import se.streamsource.streamflow.client.ui.workspace.search.ManagePerspectivesDialog;
 import se.streamsource.streamflow.client.ui.workspace.search.SearchResultTableModel;
 import se.streamsource.streamflow.client.ui.workspace.search.SearchView;
 import se.streamsource.streamflow.client.ui.workspace.table.CasesTableFormatter;
 import se.streamsource.streamflow.client.ui.workspace.table.CasesTableView;
 import se.streamsource.streamflow.client.ui.workspace.table.CasesView;
+import se.streamsource.streamflow.client.ui.workspace.table.GroupBy;
+import se.streamsource.streamflow.client.ui.workspace.table.Period;
+import se.streamsource.streamflow.client.ui.workspace.table.PerspectiveModel;
+import se.streamsource.streamflow.client.ui.workspace.table.SortBy;
+import se.streamsource.streamflow.client.ui.workspace.table.SortOrder;
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.RoundedBorder;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
+import se.streamsource.streamflow.resource.user.profile.PerspectiveValue;
 
-import javax.swing.*;
+import javax.swing.ActionMap;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JTable;
+import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
+import javax.swing.UIDefaults;
+import javax.swing.UIManager;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Point;
+import java.awt.Toolkit;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.HierarchyEvent;
+import java.awt.event.HierarchyListener;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
 
 /**
  * JAVADOC
@@ -65,19 +93,25 @@ public class WorkspaceView
    DialogService dialogs;
 
    SearchResultTableModel searchResultTableModel;
+   PerspectiveModel perspectiveModel;
 
-   private WorkspaceContextView2 contextView;
+   private WorkspaceContextView contextView;
    private JLabel selectedContext;
    private JButton selectContextButton;
+   private JButton createCaseButton;
 
    private JDialog popup;
 
-   private JPanel topPanel;
+   private JPanel contextToolbar;
+   private JPanel contextPanel;
    private CardLayout topLayout = new CardLayout();
 
    private CasesView casesView;
    private final ObjectBuilderFactory obf;
    private final CommandQueryClient client;
+
+   private SearchView searchView;
+   private javax.swing.Action managePerspectives;
 
 
    public WorkspaceView( final @Service ApplicationContext context,
@@ -98,13 +132,21 @@ public class WorkspaceView
 
       final ActionMap am = getActionMap();
 
-      casesView = obf.newObject( CasesView.class );
+      // Proxy menu item actions manually
+      ApplicationAction managePerspectivesAction = (ApplicationAction) getActionMap().get( "managePerspectives" );
+      managePerspectives = context.getActionMap().get( "managePerspectives" );
+      managePerspectives.putValue( "proxy", managePerspectivesAction );
+
+      perspectiveModel = obf.newObjectBuilder( PerspectiveModel.class ).use( client.getSubClient( "search" ), this.obf).newInstance();
+      searchResultTableModel = obf.newObjectBuilder( SearchResultTableModel.class ).use( client.getSubClient("search"), perspectiveModel).newInstance();
+
+      searchView = obf.newObjectBuilder( SearchView.class ).use(searchResultTableModel, client).newInstance();
+
+      casesView = obf.newObjectBuilder( CasesView.class ).use(client, searchView.getTextField() ).newInstance();
 
       // Create Case
       javax.swing.Action createCaseAction = am.get( "createCase" );
-      createCaseAction.setEnabled( false );
-      JButton createCaseButton = new JButton( createCaseAction );
-//      NotificationGlassPane.registerButton(createCaseButton);
+      createCaseButton = new JButton( createCaseAction );
       createCaseButton.registerKeyboardAction( createCaseAction, (KeyStroke) createCaseAction
             .getValue( javax.swing.Action.ACCELERATOR_KEY ),
             JComponent.WHEN_IN_FOCUSED_WINDOW );
@@ -112,58 +154,37 @@ public class WorkspaceView
       // Refresh case list
       javax.swing.Action refreshAction = am.get( "refresh" );
       JButton refreshButton = new JButton( refreshAction );
-//      NotificationGlassPane.registerButton(refreshButton);
       refreshButton.registerKeyboardAction( refreshAction, (KeyStroke) refreshAction
             .getValue( javax.swing.Action.ACCELERATOR_KEY ),
             JComponent.WHEN_IN_FOCUSED_WINDOW );
 
-      // Show search
-      javax.swing.Action showSearchAction = am.get( "showSearch" );
-      JButton showSearchButton = new JButton( showSearchAction );
-//      NotificationGlassPane.registerButton(showSearchButton);
-      showSearchButton.registerKeyboardAction( showSearchAction, (KeyStroke) showSearchAction
-            .getValue( javax.swing.Action.ACCELERATOR_KEY ),
-            JComponent.WHEN_IN_FOCUSED_WINDOW );
 
       MacOsUIWrapper.convertAccelerators( getActionMap() );
 
-      JPanel contextToolbar = new JPanel();
-      contextToolbar.add( createCaseButton );
-      contextToolbar.add( refreshButton );
-      contextToolbar.add( showSearchButton );
-
-      JPanel contextPanel = new JPanel( new BorderLayout() );
-      contextPanel.setBorder( BorderFactory.createEtchedBorder() );
-      JPanel leftContext = new JPanel( new FlowLayout( FlowLayout.LEFT, 0, 0 ) );
-      leftContext.setBorder( BorderFactory.createEmptyBorder( 5, 0, 0, 0 ) );
+      JPanel topPanel = new JPanel( new BorderLayout());
       selectContextButton = new JButton( getActionMap().get( "selectContext" ) );
-      leftContext.add( selectContextButton );
+      JPanel contextSelectionPanel = new JPanel( new FlowLayout( FlowLayout.LEFT, 0, 0 ) );
+      contextSelectionPanel.setBorder( BorderFactory.createEmptyBorder( 5, 0, 0, 0 ) );
+      contextSelectionPanel.add( selectContextButton );
       selectedContext = new JLabel();
       selectedContext.setFont( selectedContext.getFont().deriveFont( Font.BOLD ) );
+      contextSelectionPanel.add( selectedContext );
+      topPanel.add(contextSelectionPanel, BorderLayout.WEST);
+      
+      contextToolbar = new JPanel();
+      //contextToolbar.add( perspectiveButton );
+      contextToolbar.add( createCaseButton );
+      contextToolbar.add( refreshButton);
+      topPanel.add(contextToolbar, BorderLayout.EAST);
+      contextToolbar.setVisible( false );
 
-
-      leftContext.add( selectedContext );
-      contextPanel.add( leftContext, BorderLayout.WEST );
-      contextPanel.add( contextToolbar, BorderLayout.EAST );
-
-      JPanel searchPanel = new JPanel( new BorderLayout() );
-      JPanel searchButtons = new JPanel();
-      searchButtons.add( new JButton( getActionMap().get( "hideSearch" ) ) );
-      searchPanel.add( searchButtons, BorderLayout.EAST );
-
-      searchResultTableModel = obf.newObjectBuilder( SearchResultTableModel.class ).use( client ).newInstance();
-
-      SearchView searchView = obf.newObjectBuilder( SearchView.class ).use(searchResultTableModel, client).newInstance();
-      searchPanel.add( searchView, BorderLayout.CENTER );
-
-      topPanel = new JPanel( topLayout );
-      topPanel.add( contextPanel, "context" );
-      topPanel.add( searchPanel, "search" );
+      topPanel.add( searchView, BorderLayout.CENTER );
+      searchView.setVisible(false);
 
       add( topPanel, BorderLayout.NORTH );
       add( casesView, BorderLayout.CENTER );
 
-      contextView = obf.newObjectBuilder( WorkspaceContextView2.class ).use( client.getSubClient( "context" )).newInstance();
+      contextView = obf.newObjectBuilder( WorkspaceContextView.class ).use( client ).newInstance();
       JList workspaceContextList = contextView.getWorkspaceContextList();
       workspaceContextList.addListSelectionListener( new ListSelectionListener()
       {
@@ -191,27 +212,80 @@ public class WorkspaceView
                ContextItem contextItem = (ContextItem) list.getSelectedValue();
                if (contextItem != null)
                {
+                  boolean isSearch = (contextItem.getRelation().equals("search") || contextItem.getRelation().equals("perspective"));
+                  searchView.setVisible(isSearch);
+                  contextToolbar.setVisible( true );
+                  
                   TableFormat tableFormat;
                   CasesTableView casesTable;
                   tableFormat = new CasesTableFormatter();
-                  casesTable = obf.newObjectBuilder( CasesTableView.class ).use( contextItem.getClient(), tableFormat ).newInstance();
+                  casesTable = obf.newObjectBuilder(CasesTableView.class).use(isSearch ? searchResultTableModel : contextItem.getClient(), tableFormat, obf)
+                        .newInstance();
 
-                  casesTable.getCaseTable().getSelectionModel().addListSelectionListener( new CaseSelectionListener() );
+                  casesTable.getCaseTable().getSelectionModel().addListSelectionListener(new CaseSelectionListener());
 
-                  casesView.showTable( casesTable );
+                  if (contextItem.getRelation().equals("perspective"))
+                  {
+                     PerspectiveValue perspectiveValue = contextItem.getClient().query("index", PerspectiveValue.class);
+                     perspectiveModel.setSelectedStatuses( perspectiveValue.statuses().get() );
+                     perspectiveModel.setSelectedCaseTypes( perspectiveValue.caseTypes().get() );
+                     perspectiveModel.setSelectedLabels( perspectiveValue.labels().get() );
+                     perspectiveModel.setSelectedAssigness( perspectiveValue.assignees().get() );
+                     perspectiveModel.setSelectedProjects( perspectiveValue.projects().get() );
+                     perspectiveModel.setSelectedCreatedBy( perspectiveValue.createdBy().get() );
+                     perspectiveModel.setSortBy( SortBy.valueOf( perspectiveValue.sortBy().get() ) );
+                     perspectiveModel.setSortOrder( SortOrder.valueOf( perspectiveValue.sortOrder().get() ) );
+                     perspectiveModel.setGroupBy( GroupBy.valueOf( perspectiveValue.groupBy().get() ) );
+                     perspectiveModel.getCreatedOnModel().setPeriod( Period.valueOf( perspectiveValue.createdOnPeriod().get() ) );
+                     perspectiveModel.getCreatedOnModel().setDate( perspectiveValue.createdOn().get() );
+                     perspectiveModel.getDueOnModel().setPeriod( Period.valueOf( perspectiveValue.dueOnPeriod().get() ) );
+                     perspectiveModel.getDueOnModel().setDate( perspectiveValue.dueOn().get() );
 
-                  setContextString( contextItem );
+                     searchView.getTextField().setText(perspectiveValue.query().get());
+                     searchResultTableModel.search( perspectiveValue.query().get() );
+                     perspectiveModel.notifyObservers();
+                  } else
+                  {
+                     searchView.getTextField().setText( "" );
+                     perspectiveModel.clearFilter();
+                  }
 
-                  am.get( "createCase" ).setEnabled( !(contextItem.getGroup() != null && contextItem.getRelation().equals( Icons.inbox.name() )) );
+
+                  casesView.showTable(casesTable);
+                  casesView.setFilterVisible( perspectiveModel, isSearch );
+
+                  setContextString(contextItem);
+
+                  createCaseButton.setVisible(contextItem.getRelation().equals("assign") || contextItem.getRelation().equals("draft"));
+
                } else
                {
-                  setContextString( contextItem );
+                  setContextString(contextItem);
                }
 
                killPopup();
             }
          }
       } );
+      
+      addHierarchyListener(new HierarchyListener()
+      {
+         public void hierarchyChanged(HierarchyEvent e)
+         {
+            if ((e.getChangeFlags() & HierarchyEvent.SHOWING_CHANGED)>0 )
+            {
+               if( !WorkspaceView.this.isShowing() )
+               {
+                  killPopup();
+                  context.getActionMap().get( "managePerspectives" ).setEnabled( false );
+               }
+               else
+               {
+                  context.getActionMap().get( "managePerspectives" ).setEnabled( true );
+               }
+            }
+         }
+      });
    }
 
    private void setContextString( ContextItem contextItem )
@@ -235,7 +309,7 @@ public class WorkspaceView
 
          selectedContext.setText( "  " + text + " " );
          FontMetrics fm = selectedContext.getFontMetrics( selectedContext.getFont() );
-         int width = fm.stringWidth( selectedContext.getText() )+selectedContext.getHeight()*2;
+         int width = fm.stringWidth( selectedContext.getText() )+15;
          selectedContext.setPreferredSize( new Dimension( width, 22 ) );
       } else
       {
@@ -281,37 +355,6 @@ public class WorkspaceView
    }
 
    @Action
-   public void showSearch()
-   {
-      if( popup != null )
-         killPopup();
-
-      topLayout.show( topPanel, "search" );
-
-      CasesTableView casesTable = obf.newObjectBuilder( CasesTableView.class ).
-            use( searchResultTableModel, new CasesTableFormatter()).newInstance();
-      casesTable.getCaseTable().getSelectionModel().addListSelectionListener( new CaseSelectionListener() );
-
-      casesView.showTable( casesTable );
-   }
-
-   @Action
-   public void hideSearch()
-   {
-      topLayout.show( topPanel, "context" );
-
-      int selectedContext = contextView.getWorkspaceContextList().getSelectedIndex();
-      if (selectedContext != -1)
-      {
-         contextView.getWorkspaceContextList().clearSelection();
-         contextView.getWorkspaceContextList().setSelectedIndex( selectedContext );
-      }
-
-      // request focus to enable accelerator keys for workspace buttons again
-      this.requestFocus();
-   }
-
-   @Action
    public Task createCase()
    {
       final ContextItem contextItem = (ContextItem) contextView.getWorkspaceContextList().getSelectedValue();
@@ -337,6 +380,13 @@ public class WorkspaceView
       casesView.refresh();
    }
 
+   @Action
+   public void managePerspectives()
+   {
+      ManagePerspectivesDialog dialog = obf.newObjectBuilder( ManagePerspectivesDialog.class ).use( client.getSubClient( "perspectives" )).newInstance();
+      dialogs.showButtonLessDialog( this, dialog, i18n.text( WorkspaceResources.manage_perspectives ) );
+   }
+   
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
    {
    }

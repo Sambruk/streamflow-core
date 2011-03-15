@@ -25,7 +25,18 @@ import se.streamsource.dci.value.ValueAssembler;
 import se.streamsource.streamflow.infrastructure.application.AccessPointValue;
 import se.streamsource.streamflow.infrastructure.application.LinkTree;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
-import se.streamsource.streamflow.resource.caze.*;
+import se.streamsource.streamflow.resource.caze.CaseDTO;
+import se.streamsource.streamflow.resource.caze.CaseFormDTO;
+import se.streamsource.streamflow.resource.caze.CaseGeneralDTO;
+import se.streamsource.streamflow.resource.caze.CaseOutputConfigValue;
+import se.streamsource.streamflow.resource.caze.ContactsDTO;
+import se.streamsource.streamflow.resource.caze.EffectiveFieldDTO;
+import se.streamsource.streamflow.resource.caze.EffectiveFieldsDTO;
+import se.streamsource.streamflow.resource.caze.EndUserCaseDTO;
+import se.streamsource.streamflow.resource.caze.FieldDTO;
+import se.streamsource.streamflow.resource.caze.SubmittedFormDTO;
+import se.streamsource.streamflow.resource.caze.SubmittedFormListDTO;
+import se.streamsource.streamflow.resource.caze.SubmittedFormsListDTO;
 import se.streamsource.streamflow.resource.conversation.ConversationDTO;
 import se.streamsource.streamflow.resource.conversation.MessageDTO;
 import se.streamsource.streamflow.resource.organization.SelectedTemplatesValue;
@@ -34,8 +45,14 @@ import se.streamsource.streamflow.resource.roles.BooleanDTO;
 import se.streamsource.streamflow.resource.roles.DateDTO;
 import se.streamsource.streamflow.resource.roles.IntegerDTO;
 import se.streamsource.streamflow.resource.roles.NamedIndexDTO;
-import se.streamsource.streamflow.resource.user.*;
-import se.streamsource.streamflow.resource.user.profile.SearchValue;
+import se.streamsource.streamflow.resource.user.ChangePasswordCommand;
+import se.streamsource.streamflow.resource.user.NewProxyUserCommand;
+import se.streamsource.streamflow.resource.user.NewUserCommand;
+import se.streamsource.streamflow.resource.user.ProxyUserDTO;
+import se.streamsource.streamflow.resource.user.ProxyUserListDTO;
+import se.streamsource.streamflow.resource.user.RegisterUserCommand;
+import se.streamsource.streamflow.resource.user.UserEntityValue;
+import se.streamsource.streamflow.resource.user.profile.PerspectiveValue;
 
 /**
  * JAVADOC
@@ -79,7 +96,7 @@ public class CommonResourceAssembler
             UserEntityValue.class,
             ProxyUserListDTO.class,
             ProxyUserDTO.class,
-            SearchValue.class,
+            PerspectiveValue.class,
             SelectedTemplatesValue.class,
             CaseOutputConfigValue.class).visibleIn( Visibility.application );
    }

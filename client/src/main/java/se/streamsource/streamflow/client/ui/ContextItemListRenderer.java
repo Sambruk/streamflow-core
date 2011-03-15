@@ -65,7 +65,14 @@ public class ContextItemListRenderer
    public Component getListCellRendererComponent( JList list, Object value, int index, boolean isSelected, boolean cellHasFocus )
    {
       JComponent component = (JComponent) super.getListCellRendererComponent( list, value, index, isSelected, cellHasFocus );
-      component.setBorder( BorderFactory.createEmptyBorder(0, 10, 0, 0 ));
+      ContextItem contextItem = (ContextItem) value;
+      if (contextItem.getRelation().equals("perspective"))
+      {
+         component.setBorder( BorderFactory.createEmptyBorder(0, 20, 0, 0 ));
+      } else
+      {
+         component.setBorder( BorderFactory.createEmptyBorder(0, 10, 0, 0 ));
+      }
       return component;
    }
 }

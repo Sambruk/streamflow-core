@@ -51,7 +51,7 @@ import se.streamsource.streamflow.web.domain.entity.user.AnonymousEndUserEntity;
 import se.streamsource.streamflow.web.domain.entity.user.ProxyUserEntity;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.entity.user.UsersEntity;
-import se.streamsource.streamflow.web.domain.entity.user.profile.SavedSearchEntity;
+import se.streamsource.streamflow.web.domain.entity.user.profile.PerspectiveEntity;
 import se.streamsource.streamflow.web.domain.structure.organization.ParticipantRolesValue;
 import se.streamsource.streamflow.web.domain.structure.project.PermissionValue;
 import se.streamsource.streamflow.web.infrastructure.index.NamedSolrDescriptor;
@@ -90,7 +90,7 @@ public class DomainAssembler
    private void users( ModuleAssembly module ) throws AssemblyException
    {
       module.entities( UsersEntity.class, UserEntity.class, ProxyUserEntity.class, AnonymousEndUserEntity.class,
-            SavedSearchEntity.class ).visibleIn( application );
+            PerspectiveEntity.class ).visibleIn( application );
 
       NamedQueries namedQueries = new NamedQueries();
       NamedQueryDescriptor queryDescriptor = new NamedSolrDescriptor( "solrquery", "" );

@@ -18,10 +18,10 @@ package se.streamsource.streamflow.web.resource.workspace;
 
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResource;
+import se.streamsource.streamflow.web.context.workspace.DraftsContext;
+import se.streamsource.streamflow.web.context.workspace.SearchContext;
 import se.streamsource.streamflow.web.context.workspace.WorkspaceContext;
 import se.streamsource.streamflow.web.resource.workspace.cases.WorkspaceCasesResource;
-import se.streamsource.streamflow.web.resource.workspace.context.WorkspaceContextResource;
-import se.streamsource.streamflow.web.resource.workspace.savedsearch.SavedSearchesResource;
 
 /**
  * JAVADOC
@@ -35,21 +35,33 @@ public class WorkspaceResource
    }
 
    @SubResource
+   public void drafts()
+   {
+      subResourceContexts( DraftsContext.class );
+   }
+
+   @SubResource
+   public void search()
+   {
+      subResourceContexts( SearchContext.class );
+   }
+
+   @SubResource
+   public void projects()
+   {
+      subResource( WorkspaceProjectsResource.class );
+   }
+
+   @SubResource
    public void cases()
    {
       subResource( WorkspaceCasesResource.class );
    }
-
+   
    @SubResource
-   public void context()
+   public void perspectives()
    {
-      subResource( WorkspaceContextResource.class );
-   }
-
-   @SubResource
-   public void savedSearches()
-   {
-      subResource( SavedSearchesResource.class );
+      subResource( WorkspacePerspectivesResource.class );
    }
 
 }

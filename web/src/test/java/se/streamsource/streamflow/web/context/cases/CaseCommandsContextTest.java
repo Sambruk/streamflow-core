@@ -31,17 +31,24 @@ import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.table.TableQuery;
 import se.streamsource.streamflow.web.application.security.UserPrincipal;
 import se.streamsource.streamflow.web.context.ContextTest;
-import se.streamsource.streamflow.web.context.administration.*;
+import se.streamsource.streamflow.web.context.administration.CaseTypesContext;
+import se.streamsource.streamflow.web.context.administration.MembersContext;
+import se.streamsource.streamflow.web.context.administration.OrganizationalUnitsContext;
+import se.streamsource.streamflow.web.context.administration.OrganizationsContext;
+import se.streamsource.streamflow.web.context.administration.ProjectsContext;
+import se.streamsource.streamflow.web.context.administration.ResolutionsContext;
+import se.streamsource.streamflow.web.context.administration.SelectedCaseTypesContext;
+import se.streamsource.streamflow.web.context.administration.SelectedResolutionsContext;
 import se.streamsource.streamflow.web.context.administration.labels.LabelsContext;
 import se.streamsource.streamflow.web.context.administration.labels.SelectedLabelsContext;
 import se.streamsource.streamflow.web.context.organizations.OrganizationalUnitsContextTest;
 import se.streamsource.streamflow.web.context.organizations.ProjectsContextTest;
 import se.streamsource.streamflow.web.context.users.UsersContextTest;
+import se.streamsource.streamflow.web.context.workspace.DraftsContext;
+import se.streamsource.streamflow.web.context.workspace.WorkspaceProjectsContext;
 import se.streamsource.streamflow.web.context.workspace.cases.CaseCommandsContext;
 import se.streamsource.streamflow.web.context.workspace.cases.general.CaseGeneralCommandsContext;
 import se.streamsource.streamflow.web.context.workspace.cases.general.LabelableContext;
-import se.streamsource.streamflow.web.context.workspace.table.DraftsContext;
-import se.streamsource.streamflow.web.context.workspace.table.WorkspaceProjectsContext;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
@@ -54,10 +61,10 @@ import se.streamsource.streamflow.web.domain.structure.user.User;
 import java.lang.reflect.Method;
 import java.util.List;
 
-import static java.util.Arrays.asList;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.assertThat;
-import static org.qi4j.api.util.Iterables.first;
+import static java.util.Arrays.*;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+import static org.qi4j.api.util.Iterables.*;
 
 /**
  * Check lifecycle of a case

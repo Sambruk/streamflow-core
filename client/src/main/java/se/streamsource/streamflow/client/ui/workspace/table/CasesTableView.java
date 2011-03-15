@@ -16,22 +16,15 @@
 
 package se.streamsource.streamflow.client.ui.workspace.table;
 
-import ca.odell.glazedlists.BasicEventList;
-import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.SeparatorList;
-import ca.odell.glazedlists.SortedList;
 import ca.odell.glazedlists.event.ListEvent;
 import ca.odell.glazedlists.event.ListEventListener;
 import ca.odell.glazedlists.gui.TableFormat;
-import ca.odell.glazedlists.matchers.Matcher;
-import ca.odell.glazedlists.swing.EventComboBoxModel;
 import ca.odell.glazedlists.swing.EventJXTableModel;
 import ca.odell.glazedlists.swing.EventTableModel;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.decorator.HighlighterFactory;
-import org.jdesktop.swingx.painter.PinstripePainter;
 import org.jdesktop.swingx.renderer.DefaultTableRenderer;
 import org.jdesktop.swingx.renderer.StringValue;
 import org.qi4j.api.injection.scope.Service;
@@ -43,9 +36,7 @@ import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseResources;
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseTableValue;
 import se.streamsource.streamflow.client.util.CommandTask;
-import se.streamsource.streamflow.client.util.EventListSynch;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
-import se.streamsource.streamflow.client.util.WrapLayout;
 import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.client.util.table.SeparatorTable;
 import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
@@ -56,13 +47,9 @@ import se.streamsource.streamflow.util.DateFormats;
 import se.streamsource.streamflow.util.Strings;
 
 import javax.swing.ActionMap;
-import javax.swing.BorderFactory;
 import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -78,10 +65,8 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.KeyboardFocusManager;
-import java.awt.event.ActionEvent;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -90,6 +75,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.Set;
 import java.util.TimeZone;
 
@@ -106,126 +93,35 @@ public class CasesTableView
    public static final int MILLIS_IN_DAY = (1000 * 60 * 60 * 24);
    public static final WorkspaceResources[] dueGroups = {WorkspaceResources.overdue, WorkspaceResources.duetoday, WorkspaceResources.duetomorrow, WorkspaceResources.duenextweek, WorkspaceResources.duenextmonth, WorkspaceResources.later, WorkspaceResources.noduedate};
 
-   private Matcher<CaseTableValue> labelMatcher = new Matcher<CaseTableValue>()
-   {
-      public boolean matches( CaseTableValue caseTableValue )
-      {
-         if (labels.getSelectedIndex() > 0)
-         {
-            String label = CasesTableView.this.labels.getSelectedItem().toString();
-            for (LinkValue linkValue : caseTableValue.labels().get().links().get())
-            {
-               if (linkValue.text().get().equals( label ))
-                  return true;
-            }
-
-            return false;
-         } else
-            return true;
-      }
-   };
-
-   private Matcher<CaseTableValue> assigneeMatcher = new Matcher<CaseTableValue>()
-   {
-      public boolean matches( CaseTableValue caseTableValue )
-      {
-         if (assignees.getSelectedIndex() > 0)
-         {
-            String assignee = CasesTableView.this.assignees.getSelectedItem().toString();
-            return caseTableValue.assignedTo().get().equals( assignee );
-         } else
-            return true;
-      }
-   };
-
-   private Matcher<CaseTableValue> projectMatcher = new Matcher<CaseTableValue>()
-   {
-      public boolean matches( CaseTableValue caseTableValue )
-      {
-         if (projects.getSelectedIndex() > 0)
-         {
-            String project = CasesTableView.this.projects.getSelectedItem().toString();
-            return caseTableValue.owner().get().equals( project );
-         } else
-            return true;
-      }
-   };
-
-   private Comparator<CaseTableValue> sortingComparator = new Comparator<CaseTableValue>()
-   {
-      public int compare( CaseTableValue o1, CaseTableValue o2 )
-      {
-         int selectedSorting = sorting.getSelectedIndex();
-         if (selectedSorting == 1)
-         {
-            return o1.creationDate().get().compareTo( o2.creationDate().get() );
-         } else if (selectedSorting == 2)
-         {
-            return o1.description().get().compareToIgnoreCase( o2.description().get() );
-         } else if (selectedSorting == 3)
-         {
-            if (o1.dueOn().get() == null && o2.dueOn().get() == null)
-               return 0;
-            else if (o1.dueOn().get() == null)
-               return 1;
-            else if (o2.dueOn().get() == null)
-               return -1;
-            else
-               return (int) Math.signum( o1.dueOn().get().compareTo( o2.dueOn().get() ) );
-         }
-
-         return 0;
-      }
-   };
-
    private Comparator<CaseTableValue> groupingComparator = new Comparator<CaseTableValue>()
    {
       public int compare( CaseTableValue o1, CaseTableValue o2 )
       {
-         int selectedIndex = grouping.getSelectedIndex();
-         if (selectedIndex == 1)
-            return o1.caseType().get().compareTo( o2.caseType().get() );
-         else if (selectedIndex == 2)
-            return o1.assignedTo().get().compareTo( o2.assignedTo().get() );
-         else if (selectedIndex == 3)
-            return o1.owner().get().compareTo( o2.owner().get() );
-         else if (selectedIndex == 4)
-            return dueOnGroup( o1.dueOn().get() ).compareTo( dueOnGroup( o2.dueOn().get() ) );
-         else
-            return 0;
+         GroupBy groupBy = model.getPerspectiveModel().getGroupBy();
+         switch (groupBy) {
+            case caseType :
+               return o1.caseType().get().compareTo( o2.caseType().get() );
+            case dueOn :
+               return dueOnGroup( o1.dueOn().get() ).compareTo( dueOnGroup( o2.dueOn().get() ) );
+            case assignee :
+               return o1.assignedTo().get().compareTo( o2.assignedTo().get() );
+            case project :
+               return o1.owner().get().compareTo( o2.owner().get() );
+            default:
+               return 0;
+         }
       }
    };
-
+   
    protected JXTable caseTable;
    protected CasesTableModel model;
    private TableFormat tableFormat;
    private ApplicationContext context;
 
-   private JComboBox labels;
-   private FilterList<CaseTableValue> labelFilterList;
-   private EventList<String> labelList = new BasicEventList<String>();
-
-   private JComboBox assignees;
-   private FilterList<CaseTableValue> assigneeFilterList;
-   private EventList<String> assigneeList = new BasicEventList<String>();
-
-   private JComboBox projects;
-   private FilterList<CaseTableValue> projectFilterList;
-   private EventList<String> projectList = new BasicEventList<String>();
-
-   private JComboBox sorting;
-   private SortedList<CaseTableValue> sortingList;
-
-   private JComboBox grouping;
-   private SeparatorList<CaseTableValue> groupingList;
-
-   private JButton cxolumnSettings;
-   private JPopupMenu filterAddmenu;
-   private JPanel filters;
 
    public void init( @Service ApplicationContext context,
                      @Uses CasesTableModel casesTableModel,
-                     @Uses TableFormat tableFormat )
+                     final @Uses TableFormat tableFormat )
    {
       setLayout( new BorderLayout() );
 
@@ -250,110 +146,33 @@ public class CasesTableView
             KeyboardFocusManager.getCurrentKeyboardFocusManager()
                   .getDefaultFocusTraversalKeys( KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS ) );
 
+      caseTable.getActionMap().remove( "column.horizontalScroll" );
+      caseTable.getActionMap().remove( "column.packAll" );
+      caseTable.getActionMap().remove( "column.packSelected" );
       caseTable.setColumnControlVisible( true );
-/*
-      columnSettings = new JButton( i18n.icon( Icons.options, 16 ) );
-      columnSettings.addActionListener( am.get( "columns" ) );
-*/
+      
+      caseTable.setModel( new EventJXTableModel<CaseTableValue>( model.getEventList(), tableFormat ) );
 
-      filters = new JPanel( new WrapLayout( FlowLayout.LEFT ) );
-      filters.add( new JLabel( text( WorkspaceResources.filter ) ) );
-      filters.add( new JButton( am.get( "add" ) ) );
-      filters.setBorder( BorderFactory.createEtchedBorder() );
+      model.getPerspectiveModel().addObserver(new Observer()
       {
-         labels = new JComboBox( new EventComboBoxModel<String>( labelList ) );
-         labels.setPreferredSize( new Dimension( 150, (int) labels.getPreferredSize().getHeight() ) );
-         labelList.add( text( WorkspaceResources.all ) );
-         labels.setSelectedIndex( 0 );
-         labels.addActionListener( am.get( "labels" ) );
+         public void update(Observable o, Object arg)
+         {
+            if (model.getPerspectiveModel().getGroupBy() == GroupBy.none)
+            {
+               caseTable.setModel(new EventJXTableModel<CaseTableValue>(model.getEventList(), tableFormat));
+            } else
+            {
+               SeparatorList<CaseTableValue> groupingList = new SeparatorList<CaseTableValue>(model.getEventList(),
+                     groupingComparator, 1, 10000);
+               caseTable.setModel(new EventJXTableModel<CaseTableValue>(groupingList, tableFormat));
+            }
+         }
+      });
 
-         Box labelBox = Box.createHorizontalBox();
-         JLabel comp = new JLabel( text( WorkspaceResources.label ), JLabel.CENTER );
-         comp.setForeground( Color.gray );
-         labelBox.add( comp );
-         labelBox.add( labels );
-         labelBox.setVisible( false );
-         filters.add( labelBox );
-      }
-
-      {
-         assignees = new JComboBox( new EventComboBoxModel<String>( assigneeList ) );
-         assignees.setPreferredSize( new Dimension( 150, (int) assignees.getPreferredSize().getHeight() ) );
-         assigneeList.add( text( WorkspaceResources.all ) );
-         assignees.setSelectedIndex( 0 );
-         assignees.addActionListener( am.get( "assignee" ) );
-
-         Box assigneeBox = Box.createHorizontalBox();
-         JLabel comp = new JLabel( text( WorkspaceResources.assignee ), JLabel.CENTER );
-         comp.setForeground( Color.gray );
-         assigneeBox.add( comp );
-         assigneeBox.add( assignees );
-         assigneeBox.setVisible( false );
-         filters.add( assigneeBox );
-      }
-
-      {
-         projects = new JComboBox( new EventComboBoxModel<String>( projectList ) );
-         projects.setPreferredSize( new Dimension( 150, (int) projects.getPreferredSize().getHeight() ) );
-         projectList.add( text( WorkspaceResources.all ) );
-         projects.setSelectedIndex( 0 );
-         projects.addActionListener( am.get( "project" ) );
-
-         Box projectBox = Box.createHorizontalBox();
-         JLabel comp = new JLabel( text( WorkspaceResources.project ), JLabel.CENTER );
-         comp.setForeground( Color.gray );
-         projectBox.add( comp );
-         projectBox.add( projects );
-         projectBox.setVisible( false );
-         filters.add( projectBox );
-      }
-
-      {
-         sorting = new JComboBox( new String[]{
-               text( WorkspaceResources.none ),
-               text( WorkspaceResources.created_on ),
-               text( WorkspaceResources.description_label ),
-               text( WorkspaceResources.duedate_column_header )} );
-         sorting.addActionListener( am.get( "sorting" ) );
-
-         Box sortingBox = Box.createHorizontalBox();
-         JLabel comp = new JLabel( text( WorkspaceResources.sorting ), JLabel.CENTER );
-         comp.setForeground( Color.gray );
-         sortingBox.add( comp );
-         sortingBox.add( sorting );
-         sortingBox.setVisible( false );
-         filters.add( sortingBox );
-      }
-
-      {
-         grouping = new JComboBox( new String[]{
-               text( WorkspaceResources.none ),
-               text( WorkspaceResources.case_type ),
-               text( WorkspaceResources.assignee ),
-               text( WorkspaceResources.project ),
-               text( WorkspaceResources.due_on_label )} );
-         grouping.addActionListener( am.get( "grouping" ) );
-
-         Box groupingBox = Box.createHorizontalBox();
-         JLabel comp = new JLabel( text( WorkspaceResources.grouping ), JLabel.RIGHT );
-         comp.setForeground( Color.gray );
-         groupingBox.add( comp );
-         groupingBox.add( grouping );
-         groupingBox.setVisible( false );
-         filters.add( groupingBox );
-      }
-
-      filterAddmenu = new JPopupMenu();
-      addFilter( text( WorkspaceResources.label ) );
-      addFilter( text( WorkspaceResources.assignee ) );
-      addFilter( text( WorkspaceResources.project ) );
-      addFilter( text( WorkspaceResources.sorting ) );
-      addFilter( text( WorkspaceResources.grouping ) );
-
-      labels();
-
-      caseTable.getColumn( 1 ).setPreferredWidth( 70 );
+      caseTable.getColumn( 0 ).setPreferredWidth( 500 );
+      caseTable.getColumn( 1 ).setPreferredWidth( 100 );
       caseTable.getColumn( 1 ).setMaxWidth( 100 );
+      caseTable.getColumn( 1 ).setResizable( false );
       caseTable.getColumn( 2 ).setPreferredWidth( 300 );
       caseTable.getColumn( 2 ).setMaxWidth( 300 );
       caseTable.getColumn( 3 ).setPreferredWidth( 150 );
@@ -364,19 +183,18 @@ public class CasesTableView
       caseTable.getColumn( caseTable.getColumnCount() - 1 ).setResizable( false );
 
       // Do this in reverse because ordering is changed by invisibility
-      caseTable.getColumnExt( 6 ).setVisible( false );
-      caseTable.getColumnExt( 5 ).setVisible( false );
-      caseTable.getColumnExt( 3 ).setVisible( false );
+      //caseTable.getColumnExt( 6 ).setVisible( false );
+      //caseTable.getColumnExt( 5 ).setVisible( false );
+      //caseTable.getColumnExt( 3 ).setVisible( false );
 
       caseTable.setAutoCreateColumnsFromModel( false );
 
       Component horizontalGlue = Box.createHorizontalGlue();
       horizontalGlue.setPreferredSize( new Dimension( 1500, 10 ) );
-      filters.add( horizontalGlue );
+     // filters.add( horizontalGlue );
 
       JScrollPane caseScrollPane = new JScrollPane( caseTable, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED );
-//      caseScrollPane.setCorner( JScrollPane.UPPER_RIGHT_CORNER, columnSettings );
-      add( filters, BorderLayout.NORTH );
+
       add( caseScrollPane, BorderLayout.CENTER );
 
       caseTable.setDefaultRenderer( Date.class, new DefaultTableRenderer( new StringValue()
@@ -385,7 +203,7 @@ public class CasesTableView
 
          public String getString(Object value)
          {
-            return DateFormats.getProgressiveDateTimeValue((Date) value, Locale.getDefault());
+            return value != null ? DateFormats.getProgressiveDateTimeValue((Date) value, Locale.getDefault()) : "";
          }
       } ) );
       caseTable.setDefaultRenderer( ArrayList.class, new DefaultTableCellRenderer()
@@ -394,6 +212,10 @@ public class CasesTableView
          @Override
          public Component getTableCellRendererComponent( JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column )
          {
+            if( value instanceof SeparatorList.Separator )
+               return caseTable.getDefaultRenderer( SeparatorList.Separator.class )
+                     .getTableCellRendererComponent( table, value, isSelected, hasFocus, row, column );
+
             JPanel renderer = new JPanel( new FlowLayout( FlowLayout.LEFT ) );
 
             ArrayList<String> icons = (ArrayList<String>) value;
@@ -438,21 +260,26 @@ public class CasesTableView
          public Component getTableCellRendererComponent( JTable table, Object separator, boolean isSelected, boolean hasFocus, int row, int column )
          {
             String value = "";
-            switch (grouping.getSelectedIndex())
+            boolean emptyDescription = false;
+            switch (model.getPerspectiveModel().getGroupBy())
             {
-               case 1:
-                  value = ((CaseTableValue) ((SeparatorList.Separator) separator).first()).caseType().get();
+               case caseType:
+                  emptyDescription = Strings.empty( ((CaseTableValue) ((SeparatorList.Separator) separator).first()).caseType().get() );
+                  value = !emptyDescription ? ((CaseTableValue) ((SeparatorList.Separator) separator).first()).caseType().get() : text( WorkspaceResources.no_casetype );
                   break;
-               case 2:
-                  value = ((CaseTableValue) ((SeparatorList.Separator) separator).first()).assignedTo().get();
+               case assignee:
+                  emptyDescription = Strings.empty( ((CaseTableValue) ((SeparatorList.Separator) separator).first()).assignedTo().get() );
+                  value = !emptyDescription ? ((CaseTableValue) ((SeparatorList.Separator) separator).first()).assignedTo().get() : text( WorkspaceResources.no_assignee );
                   break;
-               case 3:
-                  value = ((CaseTableValue) ((SeparatorList.Separator) separator).first()).owner().get();
+               case project:
+                  emptyDescription = Strings.empty( ((CaseTableValue) ((SeparatorList.Separator) separator).first()).assignedTo().get() );
+                  value = !emptyDescription ? ((CaseTableValue) ((SeparatorList.Separator) separator).first()).owner().get() : text( WorkspaceResources.no_project );
                   break;
-               case 4:
+               case dueOn:
                   value = text( dueGroups[dueOnGroup( ((CaseTableValue) ((SeparatorList.Separator) separator).first()).dueOn().get() )] );
                   break;
             }
+            
             Component component = super.getTableCellRendererComponent( table, value, isSelected, hasFocus, row, column );
             component.setFont( component.getFont().deriveFont( Font.BOLD + Font.ITALIC ) );
             component.setBackground( Color.lightGray );
@@ -497,21 +324,10 @@ public class CasesTableView
             sortedLabels.add( 0, text( WorkspaceResources.all ) );
             sortedAssignees.add( 0, text( WorkspaceResources.all ) );
             sortedProjects.add( 0, text( WorkspaceResources.all ) );
-
-            EventListSynch.synchronize( sortedLabels, labelList );
-            EventListSynch.synchronize( sortedAssignees, assigneeList );
-            EventListSynch.synchronize( sortedProjects, projectList );
          }
       } );
 
       new RefreshWhenShowing( this, model );
-   }
-
-   private void addFilter( String name )
-   {
-      JCheckBoxMenuItem status = new JCheckBoxMenuItem( name );
-      status.addActionListener( getActionMap().get( "showFilter" ) );
-      filterAddmenu.add( status );
    }
 
    public JXTable getCaseTable()
@@ -571,27 +387,7 @@ public class CasesTableView
       else
          group = 0;
 
-      System.out.println( date + "=" + group );
       return group;
-   }
-
-   @org.jdesktop.application.Action
-   public void add( ActionEvent event )
-   {
-      Component source = (Component) event.getSource();
-      filterAddmenu.show( source, 0, source.getHeight() );
-   }
-
-   @org.jdesktop.application.Action
-   public void showFilter()
-   {
-      for (int idx = 0; idx < filterAddmenu.getComponents().length; idx++)
-      {
-         Component component = filterAddmenu.getComponents()[idx];
-         JCheckBoxMenuItem checkBox = (JCheckBoxMenuItem) component;
-         filters.getComponent( idx + 2 ).setVisible( checkBox.isSelected() );
-      }
-      filters.revalidate();
    }
 
    @org.jdesktop.application.Action
@@ -604,45 +400,6 @@ public class CasesTableView
       optionsPopup.add( new JCheckBoxMenuItem( "Created date" ) );
 
 //      optionsPopup.show( columnSettings, 0, columnSettings.getHeight() );
-   }
-
-   @org.jdesktop.application.Action
-   public void labels()
-   {
-      labelFilterList = new FilterList<CaseTableValue>( model.getEventList(), labelMatcher );
-
-      assignee();
-   }
-
-   @org.jdesktop.application.Action
-   public void assignee()
-   {
-      assigneeFilterList = new FilterList<CaseTableValue>( labelFilterList, assigneeMatcher );
-
-      project();
-   }
-
-   @org.jdesktop.application.Action
-   public void project()
-   {
-      projectFilterList = new FilterList<CaseTableValue>( assigneeFilterList, projectMatcher );
-
-      sorting();
-   }
-
-   @org.jdesktop.application.Action
-   public void sorting()
-   {
-      sortingList = new SortedList<CaseTableValue>( projectFilterList, sortingComparator );
-      grouping();
-   }
-
-   @org.jdesktop.application.Action
-   public void grouping()
-   {
-      groupingList = new SeparatorList<CaseTableValue>( sortingList, groupingComparator, grouping.getSelectedIndex() == 0 ? 10000 : 1, 10000 );
-
-      caseTable.setModel( new EventJXTableModel<CaseTableValue>( groupingList, tableFormat ) );
    }
 
    public void notifyTransactions( final Iterable<TransactionDomainEvents> transactions )
@@ -679,6 +436,7 @@ public class CasesTableView
             @Override
             protected void command() throws Exception
             {
+
                model.refresh();
 
                if (Events.matches( withNames( "changedStatus",
