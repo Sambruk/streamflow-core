@@ -82,7 +82,7 @@ public interface
 
                if (search.hasName("status"))
                {
-                  queryBuilder.append(" status:(");
+                  queryBuilder.append( " status:(" );
                   int count = 0;
                   for (String status : Arrays.asList(search.getValue().split(",")))
                   {
@@ -136,7 +136,7 @@ public interface
                      // dismiss search - no label/s with given name exist.
                      // Return empty search
                      return module.queryBuilderFactory().newQueryBuilder(Case.class)
-                           .newQuery(Collections.<Case> emptyList());
+                           .newQuery( Collections.<Case>emptyList() );
                   }
                } else if (search.hasName( "caseType" ))
                {
@@ -378,7 +378,7 @@ public interface
       /**
        * Get the calling user from the access controller roleMap.
        *
-       * @param search
+       * @param 
        * @return
        */
       protected String getUserInSearch( String userName, String user )
@@ -553,17 +553,41 @@ public interface
 
          public String getValue()
          {
-            return value;
+            return escapeLuceneCharacters( value );
          }
 
          public String getQuotedValue()
          {
-            return "\""+value+"\"";
+            return "\""+escapeLuceneCharacters( value )+"\"";
          }
 
          public boolean hasName( String... names )
          {
             return name == null ? false : Arrays.asList( names ).contains( name );
+         }
+
+         private String escapeLuceneCharacters( String query )
+         {
+            List<String> specialChars =
+                  Arrays.asList( "+", "-", "&&", "||", "!", "(", ")", "{", "}", "[", "]", "^", "\"", "~", "*", "?", ":" );
+
+            for ( String str : specialChars )
+            {
+               if( query.contains( str ) )
+               {
+                  char[] escaped = new char[str.length()*2];
+                  int count = 0;
+                  for( Character c : str.toCharArray() )
+                  {
+                     escaped[count] = '\\';
+                     count++;
+                     escaped[count] = c;
+                     count++;
+                  }
+                  query = query.replace( str, new String( escaped ) );
+               }
+            }
+            return query;
          }
       }
    }

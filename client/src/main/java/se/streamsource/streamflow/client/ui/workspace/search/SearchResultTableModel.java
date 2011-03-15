@@ -40,9 +40,9 @@ import java.util.Collections;
 public class SearchResultTableModel
       extends CasesTableModel
 {
-   public SearchResultTableModel(@Uses PerspectiveModel perspecitveModel)
+   public SearchResultTableModel(@Uses PerspectiveModel perspectiveModel)
    {
-      super(perspecitveModel);
+      super(perspectiveModel);
    }
 
    @Structure

@@ -49,7 +49,6 @@ import se.streamsource.streamflow.util.Strings;
 import javax.swing.ActionMap;
 import javax.swing.Box;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -119,7 +118,6 @@ public class CasesTableView
    private TableFormat tableFormat;
    private ApplicationContext context;
 
-   private JButton cxolumnSettings;
 
    public void init( @Service ApplicationContext context,
                      @Uses CasesTableModel casesTableModel,
@@ -148,10 +146,13 @@ public class CasesTableView
             KeyboardFocusManager.getCurrentKeyboardFocusManager()
                   .getDefaultFocusTraversalKeys( KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS ) );
 
+      caseTable.getActionMap().remove( "column.horizontalScroll" );
+      caseTable.getActionMap().remove( "column.packAll" );
+      caseTable.getActionMap().remove( "column.packSelected" );
       caseTable.setColumnControlVisible( true );
+      
       caseTable.setModel( new EventJXTableModel<CaseTableValue>( model.getEventList(), tableFormat ) );
-      
-      
+
       model.getPerspectiveModel().addObserver(new Observer()
       {
          public void update(Observable o, Object arg)
@@ -191,8 +192,7 @@ public class CasesTableView
      // filters.add( horizontalGlue );
 
       JScrollPane caseScrollPane = new JScrollPane( caseTable, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED );
-//      caseScrollPane.setCorner( JScrollPane.UPPER_RIGHT_CORNER, columnSettings );
-     // add( filters, BorderLayout.NORTH );
+
       add( caseScrollPane, BorderLayout.CENTER );
 
       caseTable.setDefaultRenderer( Date.class, new DefaultTableRenderer( new StringValue()
@@ -210,6 +210,10 @@ public class CasesTableView
          @Override
          public Component getTableCellRendererComponent( JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column )
          {
+            if( value instanceof SeparatorList.Separator )
+               return caseTable.getDefaultRenderer( SeparatorList.Separator.class )
+                     .getTableCellRendererComponent( table, value, isSelected, hasFocus, row, column );
+
             JPanel renderer = new JPanel( new FlowLayout( FlowLayout.LEFT ) );
 
             ArrayList<String> icons = (ArrayList<String>) value;
