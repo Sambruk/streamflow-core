@@ -76,7 +76,7 @@ public interface ErrorLogService
                null, null, null, notificationInfos );
          mbean = new RequiredModelMBean( info );
 
-         objectName = new ObjectName( application.name()+":type=Log,name=errorlog" );
+         objectName = new ObjectName( "Qi4j:application="+application.name()+",class=Log,name=errorlog" );
          server.registerMBean( mbean, objectName );
 
          setLevel( Level.SEVERE );

@@ -40,34 +40,41 @@ import static org.qi4j.api.query.QueryExpressions.templateFor;
 @Concerns(UpdateCaseCountAssignmentsConcern.class)
 @Mixins(AssignmentsContext.Mixin.class)
 public interface AssignmentsContext
-   extends Context
+        extends Context
 {
    public Query<Case> cases(TableQuery tableQuery);
 
    public void createcase();
 
    abstract class Mixin
-      implements AssignmentsContext
+           implements AssignmentsContext
    {
       public Query<Case> cases(TableQuery tableQuery)
       {
-         AssignmentsQueries assignments = RoleMap.role( AssignmentsQueries.class);
+         AssignmentsQueries assignments = RoleMap.role(AssignmentsQueries.class);
 
-         Query<Case> query = assignments.assignments( RoleMap.role( Assignee.class ) ).orderBy( orderBy( templateFor( CreatedOn.class ).createdOn() ) );
+         Query<Case> query = assignments.assignments(RoleMap.role(Assignee.class)).orderBy(orderBy(templateFor(CreatedOn.class).createdOn()));
+
+         // Paging
+         if (tableQuery.offset() != null)
+            query.firstResult(Integer.parseInt(tableQuery.offset()));
+         if (tableQuery.limit() != null)
+            query.maxResults(Integer.parseInt(tableQuery.limit()));
+
          return query;
       }
 
       public void createcase()
       {
-         Drafts drafts = RoleMap.role( Drafts.class );
+         Drafts drafts = RoleMap.role(Drafts.class);
          CaseEntity caze = drafts.createDraft();
 
-         Owner owner = RoleMap.role( Owner.class);
-         caze.changeOwner( owner );
+         Owner owner = RoleMap.role(Owner.class);
+         caze.changeOwner(owner);
 
          caze.open();
 
-         caze.assignTo( RoleMap.role(Assignee.class) );
+         caze.assignTo(RoleMap.role(Assignee.class));
       }
    }
 }

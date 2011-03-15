@@ -188,7 +188,7 @@ public interface ReceiveMailService
          if (!circuitBreaker.isOn())
             return; // Don't try - circuit breaker is off
 
-         logger.info("Running mail receiver.");
+         logger.info("Checking email");
 
          Session session = javax.mail.Session.getInstance(props, authenticator);
          session.setDebug(config.configuration().debug().get());
@@ -293,6 +293,8 @@ public interface ReceiveMailService
             }
             inbox.close(false);
             store.close();
+
+            logger.info("Checked email");
 
             circuitBreaker.success();
          } catch (Throwable e)

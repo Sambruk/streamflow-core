@@ -45,6 +45,12 @@ public class InboxContext
       QueryBuilder<Case> builder = inbox.inbox();
       Query<Case> query = builder.newQuery( module.unitOfWorkFactory().currentUnitOfWork() ).orderBy( orderBy( templateFor( CreatedOn.class ).createdOn() ) );
 
+      // Paging
+      if (tableQuery.offset() != null)
+         query.firstResult( Integer.parseInt( tableQuery.offset()) );
+      if (tableQuery.limit() != null)
+         query.maxResults( Integer.parseInt( tableQuery.limit()) );
+
       return query;
    }
 }

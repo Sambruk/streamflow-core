@@ -31,9 +31,9 @@ public class JDBMEventStoreTest
    {
       super.assemble( module );
 
-      module.layerAssembly().applicationAssembly().setName( "jdbmeventstoretest" );
+      module.layer().application().setName( "jdbmeventstoretest" );
 
-      module.addServices( FileConfiguration.class );
-      module.addServices( JdbmEventStoreService.class );
+      module.services( FileConfiguration.class );
+      module.services( JdbmEventStoreService.class );
    }
 }

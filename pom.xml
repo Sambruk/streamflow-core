@@ -540,8 +540,8 @@
 
             <!-- REST -->
             <dependency>
-                <groupId>org.qi4j.extension</groupId>
-                <artifactId>org.qi4j.extension.entitystore-rest</artifactId>
+                <groupId>org.qi4j.library</groupId>
+                <artifactId>org.qi4j.library.rest</artifactId>
                 <version>${version.qi4j-ext}</version>
             </dependency>
             <dependency>

@@ -35,7 +35,7 @@ public class ValueAssembler
 {
    public void assemble( ModuleAssembly module ) throws AssemblyException
    {
-      module.addValues( ResourceValue.class,
+      module.values( ResourceValue.class,
             EntityValue.class,
             StringValue.class,
 

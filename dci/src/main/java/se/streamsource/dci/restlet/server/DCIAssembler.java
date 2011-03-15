@@ -44,22 +44,22 @@ public class DCIAssembler
 
          VelocityEngine velocity = new VelocityEngine( props );
 
-         module.importServices( VelocityEngine.class )
+         module.importedServices( VelocityEngine.class )
                .importedBy( INSTANCE ).setMetaInfo( velocity );
 
       } catch (Exception e)
       {
          throw new AssemblyException( "Could not load velocity properties", e );
       }
-      module.addObjects( DefaultCommandQueryResource.class );
+      module.objects( DefaultCommandQueryResource.class );
 
-      module.importServices( MetadataService.class );
+      module.importedServices( MetadataService.class );
 
-      module.importServices( ResultWriterDelegator.class ).importedBy( NEW_OBJECT );
-      module.addObjects( ResultWriterDelegator.class );
+      module.importedServices( ResultWriterDelegator.class ).importedBy( NEW_OBJECT );
+      module.objects( ResultWriterDelegator.class );
 
       // Standard result writers
-      module.addObjects( ResourceTemplateResultWriter.class,
+      module.objects( ResourceTemplateResultWriter.class,
             LinksResultWriter.class,
             TableResultWriter.class,
             ResourceResultWriter.class,

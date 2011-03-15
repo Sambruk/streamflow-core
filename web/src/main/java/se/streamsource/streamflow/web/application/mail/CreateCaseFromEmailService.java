@@ -61,7 +61,7 @@ import se.streamsource.streamflow.web.domain.structure.organization.Organization
  */
 @Mixins(CreateCaseFromEmailService.Mixin.class)
 public interface CreateCaseFromEmailService
-        extends Configuration, Activatable, ServiceComposite
+        extends Configuration<CreateCaseFromEmailConfiguration>, Activatable, ServiceComposite
 {
    class Mixin
            implements Activatable

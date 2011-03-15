@@ -44,35 +44,35 @@ public class ConfigurationAssembler
    public void assemble( LayerAssembly layer)
          throws AssemblyException
    {
-      configuration(layer.moduleAssembly( "Configuration" ));
-      configurationWithDefaults( layer.moduleAssembly( "DefaultConfiguration" ) );
-      entityStoreConfiguration( layer.moduleAssembly( "EntityStoreConfiguration" ) );
+      configuration(layer.module( "Configuration" ));
+      configurationWithDefaults( layer.module( "DefaultConfiguration" ) );
+      entityStoreConfiguration( layer.module( "EntityStoreConfiguration" ) );
    }
 
    private void configuration( ModuleAssembly module ) throws AssemblyException
    {
-      module.addServices( FileConfiguration.class).visibleIn( Visibility.application ).instantiateOnStartup();
+      module.services( FileConfiguration.class).visibleIn( Visibility.application ).instantiateOnStartup();
 
-      Application.Mode mode = module.layerAssembly().applicationAssembly().mode();
+      Application.Mode mode = module.layer().application().mode();
       if (mode.equals( Application.Mode.production ))
-         module.addServices( ServiceConfiguration.class ).visibleIn( Visibility.application ).instantiateOnStartup();
+         module.services( ServiceConfiguration.class ).visibleIn( Visibility.application ).instantiateOnStartup();
 
       // Configuration entities are registered in this module by using AbstractLayerAssembler.configuration()
 
       // Configurations
-//      module.addEntities( EhCacheConfiguration.class ).visibleIn( Visibility.application );
+//      module.entities( EhCacheConfiguration.class ).visibleIn( Visibility.application );
 
       // Plugin configurations
-      module.addEntities( PluginConfiguration.class ).visibleIn( Visibility.application );
+      module.entities( PluginConfiguration.class ).visibleIn( Visibility.application );
    }
 
    private void configurationWithDefaults( ModuleAssembly module ) throws AssemblyException
    {
-      module.addEntities( ReindexerConfiguration.class ).visibleIn( Visibility.application );
-      module.addEntities( DataSourceConfiguration.class ).visibleIn( Visibility.application );
-      module.addEntities( NotificationConfiguration.class ).visibleIn( Visibility.application );
-      module.addEntities( ConversationResponseConfiguration.class ).visibleIn( Visibility.application );
-      module.addEntities( RemoveAttachmentsConfiguration.class ).visibleIn( Visibility.application );
+      module.entities( ReindexerConfiguration.class ).visibleIn( Visibility.application );
+      module.entities( DataSourceConfiguration.class ).visibleIn( Visibility.application );
+      module.entities( NotificationConfiguration.class ).visibleIn( Visibility.application );
+      module.entities( ConversationResponseConfiguration.class ).visibleIn( Visibility.application );
+      module.entities( RemoveAttachmentsConfiguration.class ).visibleIn( Visibility.application );
 
       module.forMixin( ReindexerConfiguration.class ).declareDefaults().loadValue().set( 50 );
       module.forMixin( DataSourceConfiguration.class ).declareDefaults().properties().set("");
@@ -84,15 +84,15 @@ public class ConfigurationAssembler
    private void entityStoreConfiguration( ModuleAssembly module ) throws AssemblyException
    {
       // Configuration store
-      Application.Mode mode = module.layerAssembly().applicationAssembly().mode();
+      Application.Mode mode = module.layer().application().mode();
       if (mode.equals( Application.Mode.development ))
       {
          // In-memory store
-         module.addServices( MemoryEntityStoreService.class ).visibleIn( Visibility.layer );
+         module.services( MemoryEntityStoreService.class ).visibleIn( Visibility.layer );
       } else if (mode.equals( Application.Mode.test ))
       {
          // In-memory store
-         module.addServices( MemoryEntityStoreService.class ).visibleIn( Visibility.layer );
+         module.services( MemoryEntityStoreService.class ).visibleIn( Visibility.layer );
       } else if (mode.equals( Application.Mode.production ))
       {
          // Preferences storage
@@ -101,13 +101,13 @@ public class ConfigurationAssembler
          Preferences node;
          try
          {
-            node =  Preferences.userRoot().node( "streamsource/streamflow/"+module.layerAssembly().applicationAssembly().name() );
+            node =  Preferences.userRoot().node( "streamsource/streamflow/"+module.layer().application().name() );
          } finally
          {
             Thread.currentThread().setContextClassLoader( cl );
          }
 
-         module.addServices( PreferencesEntityStoreService.class ).setMetaInfo( new PreferencesEntityStoreInfo( node ) ).visibleIn( Visibility.layer );
+         module.services( PreferencesEntityStoreService.class ).setMetaInfo( new PreferencesEntityStoreInfo( node ) ).visibleIn( Visibility.layer );
       }
    }
 }

@@ -75,7 +75,7 @@ public interface EventManagerService
                null, null, null, notificationInfos );
          mbean = new RequiredModelMBean( info );
 
-         objectName = new ObjectName( application.name()+":type=Log,name=domainevents" );
+         objectName = new ObjectName( "Qi4j:application="+application.name()+",class=Log,name=domainevents" );
          server.registerMBean( mbean, objectName );
 
          stream.registerListener( this );

@@ -59,13 +59,13 @@ public class StreamflowWebAssembler
       // Version name rules: x.y.sprint.revision
       assembly.setVersion("1.2.9.2945");
 
-      LayerAssembly configurationLayer = assembly.layerAssembly("Configuration");
-      LayerAssembly domainInfrastructureLayer = assembly.layerAssembly("Domain infrastructure");
-      LayerAssembly domainLayer = assembly.layerAssembly("Domain");
-      LayerAssembly contextLayer = assembly.layerAssembly("Context");
-      LayerAssembly appLayer = assembly.layerAssembly("Application");
-      LayerAssembly webLayer = assembly.layerAssembly("Web");
-      LayerAssembly managementLayer = assembly.layerAssembly("Management");
+      LayerAssembly configurationLayer = assembly.layer("Configuration");
+      LayerAssembly domainInfrastructureLayer = assembly.layer("Domain infrastructure");
+      LayerAssembly domainLayer = assembly.layer("Domain");
+      LayerAssembly contextLayer = assembly.layer("Context");
+      LayerAssembly appLayer = assembly.layer("Application");
+      LayerAssembly webLayer = assembly.layer("Web");
+      LayerAssembly managementLayer = assembly.layer("Management");
 
       managementLayer.uses(appLayer, domainLayer, domainInfrastructureLayer, configurationLayer);
       webLayer.uses(appLayer, contextLayer, domainLayer, domainInfrastructureLayer);

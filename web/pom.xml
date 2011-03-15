@@ -179,8 +179,8 @@
             <version>${version.qi4j-lib}</version>
         </dependency>
         <dependency>
-            <groupId>org.qi4j.extension</groupId>
-            <artifactId>org.qi4j.extension.entitystore-rest</artifactId>
+            <groupId>org.qi4j.library</groupId>
+            <artifactId>org.qi4j.library.rest</artifactId>
         </dependency>
         <dependency>
             <groupId>org.restlet.jee</groupId>

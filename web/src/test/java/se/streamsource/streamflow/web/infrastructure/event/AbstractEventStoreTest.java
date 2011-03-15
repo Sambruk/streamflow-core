@@ -51,14 +51,14 @@ public abstract class AbstractEventStoreTest
 {
    public void assemble( ModuleAssembly module ) throws AssemblyException
    {
-      module.layerAssembly().applicationAssembly().setMode( Application.Mode.test );
+      module.layer().application().setMode( Application.Mode.test );
 
       new EntityTestAssembler().assemble( module );
-      module.addValues( TransactionDomainEvents.class, DomainEvent.class );
-      module.addServices( DomainEventFactoryService.class );
-      module.addObjects( getClass(), TimeService.class );
-      module.addEntities( TestEntity.class );
-      module.importServices( TimeService.class ).importedBy( NewObjectImporter.class );
+      module.values( TransactionDomainEvents.class, DomainEvent.class );
+      module.services( DomainEventFactoryService.class );
+      module.objects( getClass(), TimeService.class );
+      module.entities( TestEntity.class );
+      module.importedServices( TimeService.class ).importedBy( NewObjectImporter.class );
    }
 
    @Service

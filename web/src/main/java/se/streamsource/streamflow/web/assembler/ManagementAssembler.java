@@ -40,17 +40,17 @@ public class ManagementAssembler
          throws AssemblyException
    {
       super.assemble( layer );
-      jmx( layer.moduleAssembly( "JMX" ) );
+      jmx( layer.module( "JMX" ) );
    }
 
    private void jmx( ModuleAssembly module ) throws AssemblyException
    {
       new JMXAssembler().assemble( module );
 
-      module.addObjects( CompositeMBean.class );
+      module.objects( CompositeMBean.class );
       module.addTransients( ManagerComposite.class );
 
-      module.addServices(
+      module.services(
             ManagerService.class,
             DatasourceConfigurationManagerService.class,
             ReindexOnStartupService.class,
@@ -58,9 +58,9 @@ public class ManagementAssembler
             ErrorLogService.class,
             CircuitBreakerManagement.class).visibleIn( application ).instantiateOnStartup();
 
-      module.addServices( ReindexerService.class ).identifiedBy( "reindexer" ).visibleIn( layer );
+      module.services( ReindexerService.class ).identifiedBy( "reindexer" ).visibleIn( layer );
 
-      module.addServices( JmxConnectorService.class ).identifiedBy( "jmxconnector" ).instantiateOnStartup();
-      configuration().addEntities( JmxConnectorConfiguration.class ).visibleIn( Visibility.application );
+      module.services( JmxConnectorService.class ).identifiedBy( "jmxconnector" ).instantiateOnStartup();
+      configuration().entities( JmxConnectorConfiguration.class ).visibleIn( Visibility.application );
    }
 }

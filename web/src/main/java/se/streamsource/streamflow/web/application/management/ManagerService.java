@@ -102,7 +102,7 @@ public interface ManagerService
          manager.start();
 
          // Register the Model MBean in the MBean Server
-         objectName = new ObjectName( application.name()+":name=Manager" );
+         objectName = new ObjectName( "Qi4j:application="+application.name()+",name=Manager" );
          server.registerMBean( mbean, objectName );
       }
       public void passivate() throws Exception

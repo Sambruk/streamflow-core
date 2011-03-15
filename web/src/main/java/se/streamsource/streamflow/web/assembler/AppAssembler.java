@@ -64,57 +64,57 @@ public class AppAssembler
    {
       super.assemble( layer );
 
-      replay(layer.moduleAssembly("Replay"));
+      replay(layer.module("Replay"));
 
-      console( layer.moduleAssembly( "Console" ) );
-      migration( layer.moduleAssembly( "Migration" ) );
+      console( layer.module( "Console" ) );
+      migration( layer.module( "Migration" ) );
 
-      security( layer.moduleAssembly( "Security" ) );
+      security( layer.module( "Security" ) );
 
-      new BootstrapAssembler().assemble( layer.moduleAssembly( "Bootstrap" ) );
+      new BootstrapAssembler().assemble( layer.module( "Bootstrap" ) );
 
-      statistics( layer.moduleAssembly( "Statistics" ) );
+      statistics( layer.module( "Statistics" ) );
 
-      contactLookup( layer.moduleAssembly( "Contact lookup" ) );
+      contactLookup( layer.module( "Contact lookup" ) );
 
-      pdf( layer.moduleAssembly( "Pdf" ) );
+      pdf( layer.module( "Pdf" ) );
 
-      attachment( layer.moduleAssembly( "Attachment" ));
+      attachment( layer.module( "Attachment" ));
 
-      conversation( layer.moduleAssembly( "Conversation" ) );
+      conversation( layer.module( "Conversation" ) );
 
-      if (layer.applicationAssembly().mode().equals( Application.Mode.production ))
+      if (layer.application().mode().equals( Application.Mode.production ))
       {
-         mail( layer.moduleAssembly( "Mail" ) );
+         mail( layer.module( "Mail" ) );
       }
    }
 
    private void replay( ModuleAssembly module ) throws AssemblyException
    {
-      module.addServices( DomainEventPlayerService.class, ApplicationEventPlayerService.class ).visibleIn( Visibility.application );
+      module.services( DomainEventPlayerService.class, ApplicationEventPlayerService.class ).visibleIn( Visibility.application );
    }
 
    private void attachment( ModuleAssembly moduleAssembly ) throws AssemblyException
    {
-      moduleAssembly.addServices( RemoveAttachmentsService.class )
+      moduleAssembly.services( RemoveAttachmentsService.class )
             .identifiedBy( "removeattachments" ).visibleIn( application ).instantiateOnStartup();
    }
 
    private void pdf( ModuleAssembly moduleAssembly ) throws AssemblyException
    {
-      moduleAssembly.addObjects( CasePdfGenerator.class ).visibleIn( application );
-      moduleAssembly.addServices( SubmittedFormPdfGenerator.class ).visibleIn( application );
+      moduleAssembly.objects( CasePdfGenerator.class ).visibleIn( application );
+      moduleAssembly.services( SubmittedFormPdfGenerator.class ).visibleIn( application );
    }
 
    private void contactLookup( ModuleAssembly moduleAssembly ) throws AssemblyException
    {
-      moduleAssembly.addServices( StreamflowContactLookupService.class ).visibleIn( Visibility.application );
+      moduleAssembly.services( StreamflowContactLookupService.class ).visibleIn( Visibility.application );
 
       NamedQueries namedQueries = new NamedQueries();
       NamedQueryDescriptor queryDescriptor = new NamedSolrDescriptor( "solrquery", "" );
       namedQueries.addQuery( queryDescriptor );
 
-      moduleAssembly.importServices( NamedEntityFinder.class ).
+      moduleAssembly.importedServices( NamedEntityFinder.class ).
             importedBy( ServiceSelectorImporter.class ).
             setMetaInfo( ServiceQualifier.withId( "solr" ) ).
             setMetaInfo( namedQueries );
@@ -122,22 +122,22 @@ public class AppAssembler
 
    private void mail( ModuleAssembly module ) throws AssemblyException
    {
-      module.addValues( EmailValue.class ).visibleIn( Visibility.application );
+      module.values( EmailValue.class ).visibleIn( Visibility.application );
       
-      module.addServices( ReceiveMailService.class ).
+      module.services( ReceiveMailService.class ).
             identifiedBy( "receivemail" ).
             instantiateOnStartup().
             visibleIn( Visibility.application ).
             setMetaInfo( new CircuitBreaker(3, 1000*60*5) );
       
-      module.addServices( SendMailService.class ).
+      module.services( SendMailService.class ).
             identifiedBy( "sendmail" ).
             instantiateOnStartup().
             visibleIn( Visibility.application ).
             setMetaInfo( new CircuitBreaker(3, 1000*60*5) );
 
-      configuration().addEntities( SendMailConfiguration.class ).visibleIn( Visibility.application );
-      configuration().addEntities( ReceiveMailConfiguration.class ).visibleIn( Visibility.application );
+      configuration().entities( SendMailConfiguration.class ).visibleIn( Visibility.application );
+      configuration().entities( ReceiveMailConfiguration.class ).visibleIn( Visibility.application );
 
       NamedQueries namedQueries = new NamedQueries();
       namedQueries.addQuery(      new NamedSparqlDescriptor("finduserwithemail",
@@ -151,23 +151,23 @@ public class AppAssembler
                               "        ?entity <urn:qi4j:type:se.streamsource.streamflow.domain.contact.Contactable-Data#contact> ?v0.\n" +
                               "        ?v0 <urn:qi4j:type:se.streamsource.streamflow.domain.contact.ContactValue#emailAddresses> ?email\n" +
                               "        }"));
-      module.importServices(NamedEntityFinder.class).
+      module.importedServices(NamedEntityFinder.class).
               importedBy(ImportedServiceDeclaration.SERVICE_SELECTOR).
               setMetaInfo(namedQueries).
               setMetaInfo(ServiceQualifier.withId("RdfIndexingEngineService"));
 
-      module.addServices(CreateCaseFromEmailService.class).instantiateOnStartup();
-      configuration().addEntities(CreateCaseFromEmailConfiguration.class).visibleIn(Visibility.application);
+      module.services(CreateCaseFromEmailService.class).instantiateOnStartup();
+      configuration().entities(CreateCaseFromEmailConfiguration.class).visibleIn(Visibility.application);
    }
 
    private void conversation( ModuleAssembly module ) throws AssemblyException
    {
-      module.addServices( NotificationService.class )
+      module.services( NotificationService.class )
             .identifiedBy( "notification" )
             .instantiateOnStartup()
             .visibleIn( application );
 
-      module.addServices( ConversationResponseService.class )
+      module.services( ConversationResponseService.class )
             .identifiedBy( "conversationresponse" )
             .instantiateOnStartup()
             .visibleIn( application );
@@ -175,31 +175,31 @@ public class AppAssembler
 
    private void statistics( ModuleAssembly module ) throws AssemblyException
    {
-      if (module.layerAssembly().applicationAssembly().mode().equals( Application.Mode.production ))
+      if (module.layer().application().mode().equals( Application.Mode.production ))
       {
-         module.addServices( CaseStatisticsService.class ).
+         module.services( CaseStatisticsService.class ).
                identifiedBy( "statistics" ).
                instantiateOnStartup().
                visibleIn( application );
-         configuration().addEntities( StatisticsConfiguration.class ).visibleIn( Visibility.application );
+         configuration().entities( StatisticsConfiguration.class ).visibleIn( Visibility.application );
 
-         module.addServices( LoggingStatisticsStore.class ).
+         module.services( LoggingStatisticsStore.class ).
                identifiedBy( "logstatisticsstore" ).
                instantiateOnStartup().
                visibleIn( Visibility.module );
-         module.addServices( JdbcStatisticsStore.class ).
+         module.services( JdbcStatisticsStore.class ).
                identifiedBy( "jdbcstatisticsstore" ).
                instantiateOnStartup().
                visibleIn( Visibility.module );
       }
 
-      module.addValues( RelatedStatisticsValue.class, FormFieldStatisticsValue.class, CaseStatisticsValue.class ).visibleIn( layer );
+      module.values( RelatedStatisticsValue.class, FormFieldStatisticsValue.class, CaseStatisticsValue.class ).visibleIn( layer );
    }
 
    private void security( ModuleAssembly module ) throws AssemblyException
    {
-      module.addValues(UserDetailsValue.class);
-      module.addServices( AuthenticationFilterService.class )
+      module.values(UserDetailsValue.class);
+      module.services( AuthenticationFilterService.class )
             .identifiedBy( "authentication" )
             .instantiateOnStartup()
             .setMetaInfo( new CircuitBreaker(10, 1000*60*5) )
@@ -208,22 +208,22 @@ public class AppAssembler
 
    private void migration( ModuleAssembly module ) throws AssemblyException
    {
-      Application.Mode mode = module.layerAssembly().applicationAssembly().mode();
+      Application.Mode mode = module.layer().application().mode();
       if (mode.equals( Application.Mode.production ))
       {
          // Migrate state
-         module.addServices( StartupMigrationService.class ).
+         module.services( StartupMigrationService.class ).
                visibleIn( application ).
                identifiedBy( "startupmigration" ).
                instantiateOnStartup();
-         configuration().addEntities( StartupMigrationConfiguration.class ).visibleIn( Visibility.application );
+         configuration().entities( StartupMigrationConfiguration.class ).visibleIn( Visibility.application );
       }
    }
 
    private void console( ModuleAssembly module ) throws AssemblyException
    {
-      module.addValues( ConsoleScriptValue.class, ConsoleResultValue.class ).visibleIn( application );
+      module.values( ConsoleScriptValue.class, ConsoleResultValue.class ).visibleIn( application );
 
-      module.addServices( ConsoleService.class ).visibleIn( application );
+      module.services( ConsoleService.class ).visibleIn( application );
    }
 }

@@ -22,10 +22,10 @@ import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.library.rdf.entity.EntityStateSerializer;
 import org.qi4j.library.rdf.entity.EntityTypeSerializer;
-import org.qi4j.rest.entity.EntitiesResource;
-import org.qi4j.rest.entity.EntityResource;
-import org.qi4j.rest.query.IndexResource;
-import org.qi4j.rest.query.SPARQLResource;
+import org.qi4j.library.rest.EntitiesResource;
+import org.qi4j.library.rest.EntityResource;
+import org.qi4j.library.rest.IndexResource;
+import org.qi4j.library.rest.SPARQLResource;
 import org.restlet.security.ChallengeAuthenticator;
 import se.streamsource.dci.restlet.server.ResourceFinder;
 import se.streamsource.streamflow.web.application.security.AuthenticationFilter;
@@ -44,35 +44,35 @@ public class WebAssembler
    public void assemble( LayerAssembly layer )
          throws AssemblyException
    {
-      rest( layer.moduleAssembly( "REST" ) );
+      rest( layer.module("REST") );
    }
 
    private void rest( ModuleAssembly module ) throws AssemblyException
    {
-      module.addObjects( StreamflowRestApplication.class,
-            ResourceFinder.class,
-            EntityStateSerializer.class,
-            EntityTypeSerializer.class );
+      module.objects(StreamflowRestApplication.class,
+              ResourceFinder.class,
+              EntityStateSerializer.class,
+              EntityTypeSerializer.class);
 
-      module.addObjects( SPARQLResource.class,
-            IndexResource.class,
-            EntitiesResource.class,
-            EntityResource.class );
+      module.objects(SPARQLResource.class,
+              IndexResource.class,
+              EntitiesResource.class,
+              EntityResource.class);
 
-      module.importServices( ChallengeAuthenticator.class );
+      module.importedServices(ChallengeAuthenticator.class);
 
       // Resources
-      module.addObjects(
-            APIRouter.class,
-            AuthenticationFilter.class,
+      module.objects(
+              APIRouter.class,
+              AuthenticationFilter.class,
 
-            // Events
-            DomainEventsServerResource.class,
-            ApplicationEventsServerResource.class,
+              // Events
+              DomainEventsServerResource.class,
+              ApplicationEventsServerResource.class,
 
-            // Admin
-            ConsoleServerResource.class,
-            SolrSearchServerResource.class
+              // Admin
+              ConsoleServerResource.class,
+              SolrSearchServerResource.class
       );
    }
 }

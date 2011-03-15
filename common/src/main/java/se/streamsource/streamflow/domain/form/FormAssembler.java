@@ -30,7 +30,7 @@ public class FormAssembler
 {
    public void assemble( ModuleAssembly moduleAssembly ) throws AssemblyException
    {
-      moduleAssembly.addValues( CreateFieldDTO.class,
+      moduleAssembly.values( CreateFieldDTO.class,
             EffectiveFieldValue.class,
             EffectiveFormFieldsValue.class,
             SubmittedFieldValue.class,

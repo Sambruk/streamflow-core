@@ -47,16 +47,16 @@ public class PluginApplicationAssembler
    {
       ApplicationAssembly app = applicationFactory.newApplicationAssembly();
 
-      LayerAssembly webLayer = app.layerAssembly( "Web" );
+      LayerAssembly webLayer = app.layer( "Web" );
       assembleWebLayer(webLayer);
 
-      LayerAssembly pluginLayer = app.layerAssembly( "Plugins" );
+      LayerAssembly pluginLayer = app.layer( "Plugins" );
       assemblePluginLayer(pluginLayer);
 
-      LayerAssembly managementLayer = app.layerAssembly("Management");
+      LayerAssembly managementLayer = app.layer("Management");
       assembleManagementLayer(managementLayer);
 
-      LayerAssembly configurationLayer = app.layerAssembly( "Configuration" );
+      LayerAssembly configurationLayer = app.layer( "Configuration" );
       assembleConfigurationLayer(configurationLayer);
 
       managementLayer.uses(pluginLayer);
@@ -68,7 +68,7 @@ public class PluginApplicationAssembler
 
    private void assembleConfigurationLayer( LayerAssembly configurationLayer ) throws AssemblyException
    {
-      ModuleAssembly configurationModuleAssembly = configurationLayer.moduleAssembly( "Configuration" );
+      ModuleAssembly configurationModuleAssembly = configurationLayer.module( "Configuration" );
 
       // Preferences storage
       ClassLoader cl = Thread.currentThread().getContextClassLoader();
@@ -82,21 +82,21 @@ public class PluginApplicationAssembler
          Thread.currentThread().setContextClassLoader( cl );
       }
 
-      configurationModuleAssembly.addServices( PreferencesEntityStoreService.class ).setMetaInfo( new PreferencesEntityStoreInfo( node ) ).visibleIn( Visibility.application );
+      configurationModuleAssembly.services( PreferencesEntityStoreService.class ).setMetaInfo( new PreferencesEntityStoreInfo( node ) ).visibleIn( Visibility.application );
    }
 
    private void assembleManagementLayer( LayerAssembly managementLayer ) throws AssemblyException
    {
-      ModuleAssembly adminAssembly = managementLayer.moduleAssembly("JMX");
+      ModuleAssembly adminAssembly = managementLayer.module("JMX");
       new JMXAssembler().assemble( adminAssembly );
    }
 
    private void assemblePluginLayer( LayerAssembly pluginLayer ) throws AssemblyException
    {
       // Plugins goes here
-      ModuleAssembly moduleAssembly = pluginLayer.moduleAssembly( "Plugin" );
+      ModuleAssembly moduleAssembly = pluginLayer.module( "Plugin" );
 
-      moduleAssembly.addValues( ContactList.class,
+      moduleAssembly.values( ContactList.class,
             ContactValue.class,
             ContactAddressValue.class,
             ContactEmailValue.class,
@@ -110,10 +110,10 @@ public class PluginApplicationAssembler
    private void assembleWebLayer( LayerAssembly webLayer ) throws AssemblyException
    {
 
-      ModuleAssembly rest = webLayer.moduleAssembly( "REST" );
+      ModuleAssembly rest = webLayer.module( "REST" );
 
       // Plugin wrappers
-      rest.addObjects( ContactLookupRestlet.class,
+      rest.objects( ContactLookupRestlet.class,
             AuthenticationRestlet.class );
 
    }

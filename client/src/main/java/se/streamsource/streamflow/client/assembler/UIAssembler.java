@@ -223,28 +223,28 @@ public class UIAssembler
 {
    public void assemble( LayerAssembly layer ) throws AssemblyException
    {
-      search( layer.moduleAssembly( "Search" ) );
-      administration( layer.moduleAssembly( "Administration" ) );
-      workspace( layer.moduleAssembly( "Workspace" ) );
-      cases( layer.moduleAssembly( "Case" ) );
-      menu( layer.moduleAssembly( "Menu" ) );
-      overview( layer.moduleAssembly( "Overview" ) );
-      streamflow( layer.moduleAssembly( "Streamflow" ) );
-      restlet( layer.moduleAssembly( "Restlet client" ) );
+      search( layer.module( "Search" ) );
+      administration( layer.module( "Administration" ) );
+      workspace( layer.module( "Workspace" ) );
+      cases( layer.module( "Case" ) );
+      menu( layer.module( "Menu" ) );
+      overview( layer.module( "Overview" ) );
+      streamflow( layer.module( "Streamflow" ) );
+      restlet( layer.module( "Restlet client" ) );
 
       // More specific administration modules
-      labels( layer.moduleAssembly( "Labels" ) );
-      userAdministration( layer.moduleAssembly( "Users" ) );
-      organizationAdministration( layer.moduleAssembly( "Organizations" ) );
-      groupAdministration( layer.moduleAssembly( "Groups" ) );
-      projectAdministration( layer.moduleAssembly( "Projects" ) );
-      caseTypeAdministration( layer.moduleAssembly( "Case types" ) );
-      resolutions( layer.moduleAssembly( "Resolutions" ) );
-      roleAdministration( layer.moduleAssembly( "Roles" ) );
-      forms( layer.moduleAssembly( "Forms" ) );
-      administratorAdministrator( layer.moduleAssembly( "Administrators" ) );
-      surfaceAdministration( layer.moduleAssembly( "Surface" ) );
-      caseAccesDefaults(layer.moduleAssembly( "Case access defaults" ));
+      labels( layer.module( "Labels" ) );
+      userAdministration( layer.module( "Users" ) );
+      organizationAdministration( layer.module( "Organizations" ) );
+      groupAdministration( layer.module( "Groups" ) );
+      projectAdministration( layer.module( "Projects" ) );
+      caseTypeAdministration( layer.module( "Case types" ) );
+      resolutions( layer.module( "Resolutions" ) );
+      roleAdministration( layer.module( "Roles" ) );
+      forms( layer.module( "Forms" ) );
+      administratorAdministrator( layer.module( "Administrators" ) );
+      surfaceAdministration( layer.module( "Surface" ) );
+      caseAccesDefaults(layer.module( "Case access defaults" ));
    }
 
    private void caseAccesDefaults( ModuleAssembly moduleAssembly ) throws AssemblyException
@@ -350,7 +350,7 @@ public class UIAssembler
 
       addDialogs( module, FieldCreationDialog.class );
 
-      module.addObjects( FieldValueObserver.class );
+      module.objects( FieldValueObserver.class );
 
    }
 
@@ -387,22 +387,22 @@ public class UIAssembler
 
    private void restlet( ModuleAssembly module ) throws AssemblyException
    {
-      module.importServices( Restlet.class ).visibleIn( application );
+      module.importedServices( Restlet.class ).visibleIn( application );
    }
 
    private void streamflow( ModuleAssembly module ) throws AssemblyException
    {
-      module.addObjects(
+      module.objects(
             StreamflowApplication.class,
             AccountSelector.class
       );
 
       // SAF objects
-      module.importServices( StreamflowApplication.class, ApplicationContext.class, AccountSelector.class ).visibleIn( layer );
+      module.importedServices( StreamflowApplication.class, ApplicationContext.class, AccountSelector.class ).visibleIn( layer );
 
 
-      module.addServices( DummyDataService.class ).instantiateOnStartup();
-      module.addServices( ApplicationInitializationService.class ).instantiateOnStartup();
+      module.services( DummyDataService.class ).instantiateOnStartup();
+      module.services( ApplicationInitializationService.class ).instantiateOnStartup();
 
       addDialogs( module, NameDialog.class,
             SelectUsersAndGroupsDialog.class,
@@ -414,26 +414,26 @@ public class UIAssembler
       addModels( module, LinksListModel.class,
             UsersAndGroupsModel.class );
 
-      module.addObjects( DebugWindow.class );
+      module.objects( DebugWindow.class );
 
-      module.addObjects(
+      module.objects(
             DialogService.class,
             UncaughtExceptionHandler.class,
             JavaHelp.class
       ).visibleIn( layer );
 
-      module.importServices( UncaughtExceptionHandler.class,
+      module.importedServices( UncaughtExceptionHandler.class,
             JavaHelp.class ).importedBy( NewObjectImporter.class ).visibleIn( application );
-      module.addServices(
+      module.services(
             ExceptionHandlerService.class ).instantiateOnStartup();
-      module.importServices( DialogService.class ).importedBy( NewObjectImporter.class ).visibleIn( application );
+      module.importedServices( DialogService.class ).importedBy( NewObjectImporter.class ).visibleIn( application );
 
-      module.addObjects( ActionBinder.class, ValueBinder.class, StateBinder.class ).visibleIn( layer );
+      module.objects( ActionBinder.class, ValueBinder.class, StateBinder.class ).visibleIn( layer );
    }
 
    private void overview( ModuleAssembly module ) throws AssemblyException
    {
-      module.addObjects( OverviewWindow.class ).visibleIn( layer );
+      module.objects( OverviewWindow.class ).visibleIn( layer );
 
       addMV( module,
             OverviewModel.class,
@@ -529,7 +529,7 @@ public class UIAssembler
    private void workspace( ModuleAssembly module ) throws AssemblyException
    {
       addViews( module, AccountSelectionView.class );
-      module.addObjects( WorkspaceWindow.class ).visibleIn( layer );
+      module.objects( WorkspaceWindow.class ).visibleIn( layer );
 
       addViews( module,
             WorkspaceView.class );
@@ -544,7 +544,7 @@ public class UIAssembler
             SaveSearchDialog.class,
             HandleSearchesDialog.class );
 
-      module.addValues( CaseTableValue.class ).visibleIn( Visibility.application );
+      module.values( CaseTableValue.class ).visibleIn( Visibility.application );
    }
 
    private void menu( ModuleAssembly module ) throws AssemblyException
@@ -569,7 +569,7 @@ public class UIAssembler
 
    private void administration( ModuleAssembly module ) throws AssemblyException
    {
-      module.addObjects( AdministrationWindow.class ).visibleIn( layer );
+      module.objects( AdministrationWindow.class ).visibleIn( layer );
 
       addViews( module,
             AdministrationView.class, TabbedResourceView.class );
@@ -599,6 +599,6 @@ public class UIAssembler
 
    private void search( ModuleAssembly module ) throws AssemblyException
    {
-      module.addObjects( SearchResultTableModel.class ).visibleIn( layer );
+      module.objects( SearchResultTableModel.class ).visibleIn( layer );
    }
 }

@@ -107,30 +107,30 @@ public class CommandQueryClientTest
 
    public void assemble( ModuleAssembly module ) throws AssemblyException
    {
-      module.addObjects( RootContext.class, SubContext.class, SubContext2.class, RootResource.class, SubResource1.class );
+      module.objects( RootContext.class, SubContext.class, SubContext2.class, RootResource.class, SubResource1.class );
 
       new ClientAssembler().assemble( module );
 
-      module.addValues( TestQuery.class, TestResult.class, TestCommand.class );
+      module.values( TestQuery.class, TestResult.class, TestCommand.class );
       module.forMixin( TestQuery.class ).declareDefaults().abc().set( "def" );
 
 
       new ValueAssembler().assemble( module );
       new DCIAssembler().assemble( module );
 
-      module.addObjects(NullCommandResult.class );
-      module.importServices(CommandResult.class).importedBy( NEW_OBJECT );
-      module.addObjects(RootRestlet.class );
+      module.objects(NullCommandResult.class );
+      module.importedServices(CommandResult.class).importedBy( NEW_OBJECT );
+      module.objects(RootRestlet.class );
 
-      module.importServices( InteractionConstraintsService.class ).
+      module.importedServices( InteractionConstraintsService.class ).
             importedBy( NewObjectImporter.class ).
             visibleIn( Visibility.application );
-      module.addObjects( InteractionConstraintsService.class );
+      module.objects( InteractionConstraintsService.class );
 
-      module.importServices( MetadataService.class ).importedBy( NEW_OBJECT );
-      module.addObjects( MetadataService.class );
+      module.importedServices( MetadataService.class ).importedBy( NEW_OBJECT );
+      module.objects( MetadataService.class );
 
-      module.addObjects( DescribableContext.class );
+      module.objects( DescribableContext.class );
       module.addTransients( TestComposite.class );
    }
 

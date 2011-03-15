@@ -39,48 +39,48 @@ public class InfrastructureAssembler
 {
    public void assemble( LayerAssembly layer ) throws AssemblyException
    {
-      configuration( layer.moduleAssembly( "Configuration" ) );
-      clientEntityStyore( layer.moduleAssembly( "Client EntityStore" ) );
-      clientEvents( layer.moduleAssembly( "Client Events" ) );
+      configuration( layer.module( "Configuration" ) );
+      clientEntityStyore( layer.module( "Client EntityStore" ) );
+      clientEvents( layer.module( "Client Events" ) );
    }
 
    public void configuration( ModuleAssembly module ) throws AssemblyException
    {
       System.setProperty( "application", "StreamFlowClient" );
 
-      module.addServices( ServiceConfiguration.class ).instantiateOnStartup();
+      module.services( ServiceConfiguration.class ).instantiateOnStartup();
 
-      module.addServices( FileConfiguration.class ).instantiateOnStartup().visibleIn( Visibility.application );
+      module.services( FileConfiguration.class ).instantiateOnStartup().visibleIn( Visibility.application );
 
       // Configurations
-      module.addEntities( JdbmConfiguration.class ).visibleIn( Visibility.layer );
+      module.entities( JdbmConfiguration.class ).visibleIn( Visibility.layer );
 
       // Configuration store
-      module.addServices( MemoryEntityStoreService.class );
+      module.services( MemoryEntityStoreService.class );
    }
 
    private void clientEntityStyore( ModuleAssembly module ) throws AssemblyException
    {
-      Application.Mode mode = module.layerAssembly().applicationAssembly().mode();
+      Application.Mode mode = module.layer().application().mode();
       if (mode.equals( Application.Mode.development ))
       {
          // In-memory store
-         module.addServices( MemoryEntityStoreService.class, UuidIdentityGeneratorService.class ).visibleIn( Visibility.application );
+         module.services( MemoryEntityStoreService.class, UuidIdentityGeneratorService.class ).visibleIn( Visibility.application );
       } else if (mode.equals( Application.Mode.test ))
       {
          // In-memory store
-         module.addServices( MemoryEntityStoreService.class, UuidIdentityGeneratorService.class ).visibleIn( Visibility.application );
+         module.services( MemoryEntityStoreService.class, UuidIdentityGeneratorService.class ).visibleIn( Visibility.application );
       } else if (mode.equals( Application.Mode.production ))
       {
          // JDBM storage
-         module.addServices( JdbmEntityStoreService.class, UuidIdentityGeneratorService.class ).visibleIn( Visibility.application );
+         module.services( JdbmEntityStoreService.class, UuidIdentityGeneratorService.class ).visibleIn( Visibility.application );
       }
    }
 
    private void clientEvents( ModuleAssembly moduleAssembly ) throws AssemblyException
    {
-      moduleAssembly.addValues( TransactionDomainEvents.class, DomainEvent.class ).visibleIn( Visibility.application );
+      moduleAssembly.values( TransactionDomainEvents.class, DomainEvent.class ).visibleIn( Visibility.application );
 
-      moduleAssembly.addServices( ClientEventSourceService.class ).visibleIn( Visibility.application );
+      moduleAssembly.services( ClientEventSourceService.class ).visibleIn( Visibility.application );
    }
 }

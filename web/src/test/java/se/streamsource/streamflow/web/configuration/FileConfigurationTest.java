@@ -39,9 +39,9 @@ public class FileConfigurationTest
 
    public void assemble( ModuleAssembly module ) throws AssemblyException
    {
-      module.layerAssembly().applicationAssembly().setName( "StreamFlowServer" );
-      module.addServices( FileConfiguration.class );
-      module.addObjects( getClass() );
+      module.layer().application().setName( "StreamFlowServer" );
+      module.services( FileConfiguration.class );
+      module.objects( getClass() );
    }
 
    @Test

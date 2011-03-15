@@ -43,9 +43,9 @@ public class StreamflowClientAssembler
       assembly.setVersion( "0.1" );
 
       // Create layers
-      LayerAssembly clientDomainInfrastructureLayer = assembly.layerAssembly( "Client domain infrastructure" );
-      LayerAssembly clientDomainLayer = assembly.layerAssembly( "Client domain" );
-      LayerAssembly uiLayer = assembly.layerAssembly( "UI" );
+      LayerAssembly clientDomainInfrastructureLayer = assembly.layer( "Client domain infrastructure" );
+      LayerAssembly clientDomainLayer = assembly.layer( "Client domain" );
+      LayerAssembly uiLayer = assembly.layer( "UI" );
 
       // Define layer usage
       uiLayer.uses( clientDomainLayer, clientDomainInfrastructureLayer );
