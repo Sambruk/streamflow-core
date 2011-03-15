@@ -98,7 +98,22 @@ public interface AttachmentStoreService
 
       public void deleteAttachment( String id ) throws IOException
       {
-         getFile(id).delete();
+         File file = getFile(id);
+
+         if (!file.exists())
+            throw new FileNotFoundException("Attachment for id "+id+" does not exist");
+
+         file.delete();
+      }
+
+      public long getAttachmentSize(String id) throws FileNotFoundException
+      {
+         File file = getFile(id);
+
+         if (!file.exists())
+            throw new FileNotFoundException("Attachment for id "+id+" does not exist");
+
+         return file.length();
       }
 
       private File getFile( String id )

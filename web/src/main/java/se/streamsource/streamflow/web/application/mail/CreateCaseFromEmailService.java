@@ -44,6 +44,8 @@ import se.streamsource.streamflow.web.application.conversation.ConversationRespo
 import se.streamsource.streamflow.web.domain.entity.gtd.Drafts;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsQueries;
+import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFileValue;
+import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.caze.Contacts;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversation;
@@ -69,6 +71,7 @@ public interface CreateCaseFromEmailService
 
       @Service
       ApplicationEventStream stream;
+
 
       @Structure
       UnitOfWorkFactory uowf;
@@ -141,6 +144,17 @@ public interface CreateCaseFromEmailService
                   // Create conversation
                   Conversation conversation = caze.createConversation(email.subject().get(), (Creator) user);
                   conversation.createMessage(email.content().get(), (ConversationParticipant) user);
+
+                  // Create attachments
+                  for (AttachedFileValue attachedFileValue : email.attachments().get())
+                  {
+                     Attachment attachment = caze.createAttachment(attachedFileValue.uri().get());
+                     attachment.changeName(attachedFileValue.name().get());
+                     attachment.changeMimeType(attachedFileValue.mimeType().get());
+                     attachment.changeModificationDate(attachedFileValue.modificationDate().get());
+                     attachment.changeSize(attachedFileValue.size().get());
+                     attachment.changeUri(attachedFileValue.uri().get());
+                  }
 
                   // Open the case
                   ap.sendTo(caze);

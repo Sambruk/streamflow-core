@@ -37,4 +37,6 @@ public interface AttachmentStore
    InputStream getAttachment(String id) throws IOException;
 
    void deleteAttachment(String id) throws IOException;
+
+   long getAttachmentSize(String id) throws IOException;
 }
