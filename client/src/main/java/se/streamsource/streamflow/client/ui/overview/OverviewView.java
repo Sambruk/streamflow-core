@@ -31,11 +31,9 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.ui.ContextItem;
 import se.streamsource.streamflow.client.ui.ContextItemGroupComparator;
 import se.streamsource.streamflow.client.ui.ContextItemListRenderer;
-import se.streamsource.streamflow.client.ui.workspace.cases.CaseResources;
 import se.streamsource.streamflow.client.ui.workspace.table.CasesTableFormatter;
 import se.streamsource.streamflow.client.ui.workspace.table.CasesTableView;
 import se.streamsource.streamflow.client.ui.workspace.table.CasesView;
@@ -47,7 +45,6 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
-import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
@@ -155,7 +152,6 @@ public class OverviewView
                      tableFormat = new CasesTableFormatter();
                   //}
                   CasesTableView casesTable = obf.newObjectBuilder( CasesTableView.class ).use( contextItem.getClient(), tableFormat ).newInstance();
-                  casesTable.getCaseTable().getSelectionModel().addListSelectionListener( new CaseSelectionListener() );
 
                   casesView.showTable( casesTable );
                } else
@@ -182,31 +178,4 @@ public class OverviewView
       new RefreshWhenShowing(this, model);
    }
 
-   class CaseSelectionListener
-         implements ListSelectionListener
-   {
-      public void valueChanged( ListSelectionEvent e )
-      {
-         if (!e.getValueIsAdjusting())
-         {
-            JTable caseTable = casesView.getCaseTableView().getCaseTable();
-
-            try
-            {
-               if (!caseTable.getSelectionModel().isSelectionEmpty())
-               {
-                  int selectedRow = caseTable.getSelectedRow();
-                  if (selectedRow != -1)
-                  {
-                     String href = (String) caseTable.getModel().getValueAt( caseTable.convertRowIndexToModel(selectedRow), 8 );
-                     casesView.showCase( client.getClient( href) );
-                  }
-               }
-            } catch (Exception e1)
-            {
-               throw new OperationException( CaseResources.could_not_view_details, e1 );
-            }
-         }
-      }
-   }
 }

@@ -74,6 +74,7 @@ public class PerspectiveModel extends Observable implements Refreshable
       createdOnModel = obf.newObjectBuilder( PerspectivePeriodModel.class ).use( Period.none ).newInstance();
       dueOnModel = obf.newObjectBuilder( PerspectivePeriodModel.class ).use( Period.none ).newInstance();
    }
+   
    public void refresh()
    {
       LinksValue labels = client.query( "possiblelabels",

@@ -24,8 +24,10 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.Icons;
+import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseDetailView;
+import se.streamsource.streamflow.client.ui.workspace.cases.CaseResources;
 import se.streamsource.streamflow.client.util.HtmlPanel;
 import se.streamsource.streamflow.client.util.i18n;
 
@@ -34,7 +36,10 @@ import javax.swing.JComponent;
 import javax.swing.JEditorPane;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
+import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.net.URL;
@@ -57,6 +62,7 @@ public class CasesView
    private final ObjectBuilderFactory obf;
    private JTextField searchField;
    private JPanel topPanel;
+   private CommandQueryClient client;
 
    public CasesView( @Structure ObjectBuilderFactory obf, @Service ApplicationContext context, @Uses CommandQueryClient client,
                      @Optional @Uses JTextField searchField)
@@ -64,6 +70,7 @@ public class CasesView
       super();
       this.obf = obf;
       this.searchField = searchField;
+      this.client = client;
 
       setActionMap( context.getActionMap( this ) );
 
@@ -126,6 +133,7 @@ public class CasesView
    {
       cardLayout.show( this, "cases" );
       this.casesTableView = casesTableView;
+      this.casesTableView.getCaseTable().getSelectionModel().addListSelectionListener( new CaseSelectionListener() );
       splitPane.setTopComponent( casesTableView );
       clearCase();
    }
@@ -136,11 +144,6 @@ public class CasesView
       casesTableView = null;
       splitPane.setTopComponent( new JPanel() );
       clearCase();
-   }
-
-   public void showCase( CommandQueryClient client )
-   {
-      detailsView.show( client );
    }
 
    public void clearCase()
@@ -169,6 +172,37 @@ public class CasesView
    {
       remove(blank);
       add( blank = blankPanel, "blank" );
+   }
+
+   class CaseSelectionListener
+         implements ListSelectionListener
+   {
+      public void valueChanged( ListSelectionEvent e )
+      {
+         if (!e.getValueIsAdjusting())
+         {
+            JTable caseTable = getCaseTableView().getCaseTable();
+
+            try
+            {
+               if (!caseTable.getSelectionModel().isSelectionEmpty())
+               {
+                  int selectedRow = caseTable.getSelectedRow();
+                  if (selectedRow != -1)
+                  {
+                     String href = (String) caseTable.getModel().getValueAt( caseTable.convertRowIndexToModel(selectedRow), 8 );
+                     detailsView.show( client.getClient( href ) );
+                  }
+               } else
+               {
+                  detailsView.selectCaseInTable( caseTable );
+               }
+            } catch (Exception e1)
+            {
+               throw new OperationException( CaseResources.could_not_view_details, e1 );
+            }
+         }
+      }
    }
 }
 

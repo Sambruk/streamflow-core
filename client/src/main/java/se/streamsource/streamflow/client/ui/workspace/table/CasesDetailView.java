@@ -32,10 +32,16 @@ import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JSplitPane;
+import javax.swing.JTable;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import java.awt.*;
+import javax.swing.table.TableModel;
+import java.awt.CardLayout;
+import java.awt.Dimension;
 
 import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 
@@ -189,6 +195,32 @@ public class CasesDetailView
       {
          layout.show( this, "blank" );
          layout.show( this, "detail" );
+      }
+   }
+
+
+   /**
+    * Selects this case in a table if the case is available.
+    * If not the case detail is cleared.
+    * @param cases A JTable containing cases.
+    */
+   public void selectCaseInTable( JTable cases )
+   {
+      if( currentCase != null )
+      {
+         TableModel model = cases.getModel();
+         boolean rowFound = false;
+         for( int i=0, n=model.getRowCount(); i < n; i++ )
+         {
+            if( currentCase.toString().endsWith( model.getValueAt( i, 8 ).toString() ) )
+            {
+               cases.getSelectionModel().setSelectionInterval( cases.convertRowIndexToView( i ), cases.convertRowIndexToView( i )  );
+               cases.scrollRectToVisible( cases.getCellRect( i, 0, true ) );
+               rowFound = true;
+            }
+         }
+         if( !rowFound )
+            clear();
       }
    }
 
