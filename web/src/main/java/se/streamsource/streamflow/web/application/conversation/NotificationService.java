@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.web.application.conversation;
 
+import org.qi4j.api.common.ConstructionException;
 import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.entity.association.ManyAssociation;
@@ -26,9 +27,12 @@ import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
+import org.qi4j.api.unitofwork.EntityTypeNotFoundException;
+import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.usecase.UsecaseBuilder;
+import org.qi4j.api.value.NoSuchValueException;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.slf4j.Logger;
@@ -45,6 +49,7 @@ import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Even
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.TransactionTracker;
 import se.streamsource.streamflow.web.application.mail.EmailValue;
 import se.streamsource.streamflow.web.application.mail.MailSender;
+import se.streamsource.streamflow.web.application.mail.ReceiveMailService;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
 import se.streamsource.streamflow.web.domain.interaction.profile.MessageRecipient;
@@ -111,63 +116,71 @@ public interface NotificationService
          {
             UnitOfWork uow = uowf.currentUnitOfWork();
 
-            Message.Data messageData = (Message.Data) message;
-
-            Conversation conversation = messageData.conversation().get();
-
-            ConversationOwner owner = conversation.conversationOwner().get();
-
-            String sender = ((Contactable.Data) messageData.sender().get()).contact().get().name().get();
-            String caseId = "n/a";
-
-            if (owner != null)
-               caseId = ((CaseId.Data) owner).caseId().get() != null ? ((CaseId.Data) owner).caseId().get() : "n/a";
-
-            UserEntity user = uow.get( UserEntity.class, event.entity().get() );
-
-            if (user.delivery().get().equals( MessageRecipient.MessageDeliveryTypes.email ))
+            try
             {
-               String subject = "[" + caseId + "] " + conversation.getDescription();
+               Message.Data messageData = (Message.Data) message;
 
-               String formattedMsg = messageData.body().get();
-               if (formattedMsg.contains( "<body>" ))
+               Conversation conversation = messageData.conversation().get();
+
+               ConversationOwner owner = conversation.conversationOwner().get();
+
+               String sender = ((Contactable.Data) messageData.sender().get()).contact().get().name().get();
+               String caseId = "n/a";
+
+               if (owner != null)
+                  caseId = ((CaseId.Data) owner).caseId().get() != null ? ((CaseId.Data) owner).caseId().get() : "n/a";
+
+               MessageReceiver user = uow.get( MessageReceiver.class, event.entity().get() );
+
+               MessageRecipient.Data recipientSettings = (MessageRecipient.Data) user;
+
+               if (recipientSettings.delivery().get().equals( MessageRecipient.MessageDeliveryTypes.email ))
                {
-                  formattedMsg = formattedMsg.replace( "<body>", "<body><b>" + sender + ":</b><br/><br/>" );
-               }
+                  String subject = "[" + caseId + "] " + conversation.getDescription();
 
-               ContactEmailValue recipientEmail = user.contact().get().defaultEmail();
-               if (recipientEmail != null)
-               {
-                  ValueBuilder<EmailValue> builder = vbf.newValueBuilder( EmailValue.class );
-                  builder.prototype().fromName().set( sender );
-   //                  builder.prototype().from().set( );
-   //               builder.prototype().replyTo();
-                  builder.prototype().to().set( recipientEmail.emailAddress().get() );
-                  builder.prototype().subject().set( subject );
-                  builder.prototype().content().set( formattedMsg );
-                  builder.prototype().contentType().set( "text/plain" );
-
-                  // Threading headers
-                  builder.prototype().messageId().set( "<"+conversation.toString()+"/"+user.toString()+"@Streamflow>" );
-                  ManyAssociation<Message> messages = ((Messages.Data)conversation).messages();
-                  StringBuilder references = new StringBuilder();
-                  String inReplyTo = null;
-                  for (Message previousMessage : messages)
+                  String formattedMsg = messageData.body().get();
+                  if (formattedMsg.contains( "<body>" ))
                   {
-                     if (references.length() > 0)
-                        references.append( " " );
-
-                     inReplyTo = "<"+previousMessage.toString()+"@Streamflow>";
-                     references.append( inReplyTo );
+                     formattedMsg = formattedMsg.replace( "<body>", "<body><b>" + sender + ":</b><br/><br/>" );
                   }
-                  builder.prototype().headers().get().put( "References", references.toString() );
-                  if (inReplyTo != null)
-                     builder.prototype().headers().get().put( "In-Reply-To", inReplyTo );
 
-                  EmailValue emailValue = builder.newInstance();
+                  ContactEmailValue recipientEmail = ((Contactable.Data)user).contact().get().defaultEmail();
+                  if (recipientEmail != null)
+                  {
+                     ValueBuilder<EmailValue> builder = vbf.newValueBuilder( EmailValue.class );
+                     builder.prototype().fromName().set( sender );
+      //                  builder.prototype().from().set( );
+      //               builder.prototype().replyTo();
+                     builder.prototype().to().set( recipientEmail.emailAddress().get() );
+                     builder.prototype().subject().set( subject );
+                     builder.prototype().content().set( formattedMsg );
+                     builder.prototype().contentType().set( "text/plain" );
 
-                  mailSender.sentEmail( null, emailValue );
+                     // Threading headers
+                     builder.prototype().messageId().set( "<"+conversation.toString()+"/"+user.toString()+"@Streamflow>" );
+                     ManyAssociation<Message> messages = ((Messages.Data)conversation).messages();
+                     StringBuilder references = new StringBuilder();
+                     String inReplyTo = null;
+                     for (Message previousMessage : messages)
+                     {
+                        if (references.length() > 0)
+                           references.append( " " );
+
+                        inReplyTo = "<"+previousMessage.toString()+"@Streamflow>";
+                        references.append( inReplyTo );
+                     }
+                     builder.prototype().headers().get().put( "References", references.toString() );
+                     if (inReplyTo != null)
+                        builder.prototype().headers().get().put( "In-Reply-To", inReplyTo );
+
+                     EmailValue emailValue = builder.newInstance();
+
+                     mailSender.sentEmail( null, emailValue );
+                  }
                }
+            } catch (Throwable e)
+            {
+               logger.error("Could not send notification", e);
             }
          }
       }

@@ -57,9 +57,6 @@ public class EmailAccessPointsView
    @Uses
    ObjectBuilder<SelectLinkDialog> caseTypesDialogs;
 
-   @Uses
-   Iterable<NameDialog> nameDialogs;
-
    @Service
    DialogService dialogs;
 
@@ -120,11 +117,14 @@ public class EmailAccessPointsView
 
       if (dialog.getSelectedLink() != null)
       {
-         final NameDialog emailDialog = nameDialogs.iterator().next();
+         JPanel panel = new JPanel(new BorderLayout());
+         panel.add(new JLabel(i18n.text(AdministrationResources.email)), BorderLayout.WEST);
+         final JTextField email = new JTextField();
+         panel.add(email, BorderLayout.CENTER);
 
-         dialogs.showOkCancelHelpDialog( this, emailDialog, text( AdministrationResources.add_accesspoint_title ) );
+         dialogs.showOkCancelHelpDialog(this, panel, text( AdministrationResources.add_accesspoint_title ));
 
-         if (!Strings.empty( emailDialog.name() ))
+         if (!Strings.empty( email.getText() ))
          {
             return new CommandTask()
             {
@@ -132,7 +132,7 @@ public class EmailAccessPointsView
                public void command()
                      throws Exception
                {
-                  model.create(emailDialog.name(), dialog.getSelectedLink());
+                  model.create(email.getText(), dialog.getSelectedLink());
                }
             };
          }

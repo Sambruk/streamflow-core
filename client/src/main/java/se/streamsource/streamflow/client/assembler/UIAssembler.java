@@ -266,8 +266,6 @@ public class UIAssembler
             EmailAccessPointsModel.class,
             EmailAccessPointsView.class );
 
-      addViews(module, EmailAccessPointView.class);
-
       addMV( module,
             ProxyUsersModel.class,
             ProxyUsersView.class );

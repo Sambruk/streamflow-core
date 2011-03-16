@@ -79,7 +79,7 @@ public interface DomainEventFactoryService
          prototype.on().set( time.dateNow() );
          prototype.entity().set( entity.identity().get() );
 
-         // Take user either from Subject or UoW
+         // Take user from RoleMap
          try
          {
             Principal principal = RoleMap.role( Principal.class );

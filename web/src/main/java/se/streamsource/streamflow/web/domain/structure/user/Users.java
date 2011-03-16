@@ -26,12 +26,17 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.QueryBuilderFactory;
 import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
+import se.streamsource.streamflow.domain.contact.ContactEmailValue;
 import se.streamsource.streamflow.domain.contact.ContactValue;
 import se.streamsource.streamflow.domain.contact.Contactable;
 import se.streamsource.streamflow.domain.user.Password;
 import se.streamsource.streamflow.domain.user.Username;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.web.application.mail.EmailValue;
+import se.streamsource.streamflow.web.domain.entity.user.EmailUserEntity;
+import se.streamsource.streamflow.web.domain.interaction.profile.MessageRecipient;
 
 /**
  * JAVADOC
@@ -51,9 +56,13 @@ public interface Users
    User createUser( @Username String username, @Password String password )
          throws IllegalArgumentException;
 
+   EmailUserEntity createEmailUser (EmailValue email);
+
    interface Data
    {
       User createdUser( @Optional DomainEvent event, String username, String password );
+
+      EmailUserEntity createdEmailUser(@Optional DomainEvent event, String email);
    }
 
    abstract class Mixin
@@ -97,6 +106,43 @@ public interface Users
          userEntity.hashedPassword().set( userEntity.hashPassword( password ) );
          Contactable.Data contacts = builder.instanceFor( Contactable.Data.class );
          contacts.contact().set( vbf.newValue( ContactValue.class ) );
+         return builder.newInstance();
+      }
+
+      public EmailUserEntity createEmailUser(EmailValue email)
+              throws IllegalArgumentException
+      {
+         // Check if user already exist
+         EmailUserEntity user;
+         try
+         {
+            user = uowf.currentUnitOfWork().get( EmailUserEntity.class, "email:"+email.from().get() );
+         } catch (NoSuchEntityException e)
+         {
+            // Create new email user
+            user = createdEmailUser(null, email.from().get());
+         }
+
+         // Update contact info
+         ValueBuilder<ContactValue> contactBuilder = vbf.newValueBuilder(ContactValue.class);
+         contactBuilder.prototype().name().set(email.fromName().get());
+
+         ValueBuilder<ContactEmailValue> emailBuilder = vbf.newValueBuilder(ContactEmailValue.class);
+         emailBuilder.prototype().emailAddress().set(email.from().get());
+
+         contactBuilder.prototype().emailAddresses().get().add(emailBuilder.newInstance());
+
+         user.contact().set( contactBuilder.newInstance() );
+
+         user.changeDescription(email.fromName().get());
+
+         return user;
+      }
+
+      public EmailUserEntity createdEmailUser(@Optional DomainEvent event, String email)
+      {
+         EntityBuilder<EmailUserEntity> builder = uowf.currentUnitOfWork().newEntityBuilder( EmailUserEntity.class, "email:"+email );
+
          return builder.newInstance();
       }
    }

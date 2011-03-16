@@ -141,7 +141,7 @@ public interface ReceiveMailService
             logger.info("Starting scheduled mail receiver thread. Checking every: "
                     + (sleep == 0 ? 10 : sleep) + " min");
             receiverExecutor = Executors.newSingleThreadScheduledExecutor(new NamedThreadFactory("ReceiveMail"));
-            receiverExecutor.scheduleAtFixedRate(this, sleep, (sleep == 0 ? 10 : sleep), TimeUnit.MINUTES);
+            receiverExecutor.scheduleAtFixedRate(this, 0, (sleep == 0 ? 10 : sleep), TimeUnit.MINUTES);
          }
       }
 

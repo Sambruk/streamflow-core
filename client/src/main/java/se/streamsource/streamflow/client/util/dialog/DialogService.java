@@ -47,9 +47,6 @@ import java.awt.event.ActionListener;
  */
 public class DialogService
 {
-   @Structure
-   UnitOfWorkFactory uowf;
-
    @Service
    ApplicationContext context;
 

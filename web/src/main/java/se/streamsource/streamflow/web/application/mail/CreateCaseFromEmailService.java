@@ -27,11 +27,17 @@ import org.qi4j.api.query.QueryBuilderFactory;
 import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.unitofwork.EntityTypeNotFoundException;
+import org.qi4j.api.unitofwork.NoSuchEntityException;
 import org.qi4j.api.unitofwork.UnitOfWork;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.usecase.UsecaseBuilder;
+import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.dci.api.Contexts;
 import se.streamsource.dci.api.RoleMap;
+import se.streamsource.streamflow.domain.contact.ContactValue;
+import se.streamsource.streamflow.domain.contact.Contactable;
 import se.streamsource.streamflow.infrastructure.event.application.ApplicationEvent;
 import se.streamsource.streamflow.infrastructure.event.application.TransactionApplicationEvents;
 import se.streamsource.streamflow.infrastructure.event.application.replay.ApplicationEventPlayer;
@@ -44,6 +50,9 @@ import se.streamsource.streamflow.web.application.conversation.ConversationRespo
 import se.streamsource.streamflow.web.domain.entity.gtd.Drafts;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsQueries;
+import se.streamsource.streamflow.web.domain.entity.user.EmailUserEntity;
+import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
+import se.streamsource.streamflow.web.domain.entity.user.UsersEntity;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFileValue;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
@@ -55,6 +64,8 @@ import se.streamsource.streamflow.web.domain.structure.organization.AccessPoint;
 import se.streamsource.streamflow.web.domain.structure.organization.AccessPoints;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
+import se.streamsource.streamflow.web.domain.structure.user.Users;
+import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
 
 /**
  * Receive emails and create cases through Access Points
@@ -72,12 +83,11 @@ public interface CreateCaseFromEmailService
       @Service
       ApplicationEventStream stream;
 
+      @Service
+      AttachmentStore attachments;
 
       @Structure
-      UnitOfWorkFactory uowf;
-
-      @Structure
-      QueryBuilderFactory qbf;
+      Module module;
 
       @This
       Configuration<CreateCaseFromEmailConfiguration> config;
@@ -107,7 +117,7 @@ public interface CreateCaseFromEmailService
       {
          public void receivedEmail(ApplicationEvent event, EmailValue email)
          {
-            UnitOfWork uow = uowf.newUnitOfWork(UsecaseBuilder.newUsecase("Create case from email"));
+            UnitOfWork uow = module.unitOfWorkFactory().newUnitOfWork(UsecaseBuilder.newUsecase("Create case from email"));
 
             try
             {
@@ -141,6 +151,9 @@ public interface CreateCaseFromEmailService
                   caze.changeDescription(email.subject().get());
                   caze.changeNote(email.content().get());
 
+                  // Add contact info
+                  caze.updateContact(0, ((Contactable.Data)user).contact().get());
+
                   // Create conversation
                   Conversation conversation = caze.createConversation(email.subject().get(), (Creator) user);
                   conversation.createMessage(email.content().get(), (ConversationParticipant) user);
@@ -148,16 +161,33 @@ public interface CreateCaseFromEmailService
                   // Create attachments
                   for (AttachedFileValue attachedFileValue : email.attachments().get())
                   {
-                     Attachment attachment = caze.createAttachment(attachedFileValue.uri().get());
-                     attachment.changeName(attachedFileValue.name().get());
-                     attachment.changeMimeType(attachedFileValue.mimeType().get());
-                     attachment.changeModificationDate(attachedFileValue.modificationDate().get());
-                     attachment.changeSize(attachedFileValue.size().get());
-                     attachment.changeUri(attachedFileValue.uri().get());
+                     if (attachedFileValue.mimeType().get().equals("text/x-vcard"))
+                     {
+                        // Add VCard info to contact and then remove it as attachment
+                        attachments.deleteAttachment(attachedFileValue.uri().get().substring("store:".length()));
+                     } else
+                     {
+                        Attachment attachment = caze.createAttachment(attachedFileValue.uri().get());
+                        attachment.changeName(attachedFileValue.name().get());
+                        attachment.changeMimeType(attachedFileValue.mimeType().get());
+                        attachment.changeModificationDate(attachedFileValue.modificationDate().get());
+                        attachment.changeSize(attachedFileValue.size().get());
+                        attachment.changeUri(attachedFileValue.uri().get());
+                     }
                   }
 
                   // Open the case
                   ap.sendTo(caze);
+
+                  // Add user as listener to history
+                  caze.getHistory().addParticipant((ConversationParticipant) user);
+
+                  // Switch to administrator user and send initial history message
+                  UserEntity administrator = uow.get(UserEntity.class, UserEntity.ADMINISTRATOR_USERNAME);
+                  RoleMap.current().set(administrator);
+
+                  caze.getHistory().createMessage("Your message has been received", administrator);
+
                }
 
                uow.complete();
@@ -174,9 +204,15 @@ public interface CreateCaseFromEmailService
          private Drafts getUser(EmailValue email)
          {
             // Try to find real user first
-            Query<Drafts> finduserwithemail = qbf.newNamedQuery(Drafts.class, uowf.currentUnitOfWork(), "finduserwithemail");
+            Query<Drafts> finduserwithemail = module.queryBuilderFactory().newNamedQuery(Drafts.class, module.unitOfWorkFactory().currentUnitOfWork(), "finduserwithemail");
             finduserwithemail.setVariable("email", "[{\"contactType\":\"HOME\",\"emailAddress\":\"" + email.from().get() + "\"}]");
             Drafts user = finduserwithemail.find();
+
+            // Create email user
+            if (user == null)
+            {
+               user = module.unitOfWorkFactory().currentUnitOfWork().get(Users.class, UsersEntity.USERS_ID).createEmailUser(email);
+            }
 
             return user;
          }

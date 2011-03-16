@@ -47,10 +47,7 @@ import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEn
 import se.streamsource.streamflow.web.domain.entity.organization.RoleEntity;
 import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
 import se.streamsource.streamflow.web.domain.entity.project.ProjectRoleEntity;
-import se.streamsource.streamflow.web.domain.entity.user.AnonymousEndUserEntity;
-import se.streamsource.streamflow.web.domain.entity.user.ProxyUserEntity;
-import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
-import se.streamsource.streamflow.web.domain.entity.user.UsersEntity;
+import se.streamsource.streamflow.web.domain.entity.user.*;
 import se.streamsource.streamflow.web.domain.entity.user.profile.SavedSearchEntity;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFileValue;
 import se.streamsource.streamflow.web.domain.structure.organization.ParticipantRolesValue;
@@ -92,7 +89,7 @@ public class DomainAssembler
    private void users( ModuleAssembly module ) throws AssemblyException
    {
       module.entities(UsersEntity.class, UserEntity.class, ProxyUserEntity.class, AnonymousEndUserEntity.class,
-              SavedSearchEntity.class).visibleIn( application );
+              SavedSearchEntity.class, EmailUserEntity.class).visibleIn( application );
 
       NamedQueries namedQueries = new NamedQueries();
       NamedQueryDescriptor queryDescriptor = new NamedSolrDescriptor( "solrquery", "" );
