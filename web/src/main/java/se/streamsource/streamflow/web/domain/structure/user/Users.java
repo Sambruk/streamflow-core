@@ -132,7 +132,7 @@ public interface Users
 
          contactBuilder.prototype().emailAddresses().get().add(emailBuilder.newInstance());
 
-         user.contact().set( contactBuilder.newInstance() );
+         user.updateContact(contactBuilder.newInstance());
 
          user.changeDescription(email.fromName().get());
 
@@ -142,6 +142,7 @@ public interface Users
       public EmailUserEntity createdEmailUser(@Optional DomainEvent event, String email)
       {
          EntityBuilder<EmailUserEntity> builder = uowf.currentUnitOfWork().newEntityBuilder( EmailUserEntity.class, "email:"+email );
+         builder.instance().contact().set(vbf.newValue(ContactValue.class));
 
          return builder.newInstance();
       }

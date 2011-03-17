@@ -304,6 +304,12 @@
             </exclusions>
         </dependency>
 
+        <dependency>
+            <groupId>cardme</groupId>
+            <artifactId>cardme</artifactId>
+            <version>0.2.6</version>
+        </dependency>
+
         <!-- Testing -->
         <dependency>
             <groupId>junit</groupId>

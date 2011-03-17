@@ -53,7 +53,9 @@ import se.streamsource.streamflow.web.application.mail.ReceiveMailService;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
 import se.streamsource.streamflow.web.domain.interaction.profile.MessageRecipient;
+import se.streamsource.streamflow.web.domain.structure.caze.History;
 import se.streamsource.streamflow.web.domain.structure.conversation.*;
+import se.streamsource.streamflow.web.domain.structure.organization.AccessPoint;
 
 /**
  * Send and receive notifications. This service
@@ -138,11 +140,15 @@ public interface NotificationService
                {
                   String subject = "[" + caseId + "] " + conversation.getDescription();
 
-                  String formattedMsg = messageData.body().get();
-                  if (formattedMsg.contains( "<body>" ))
+                  String formattedMsg;
+
+                  History history = (History) owner;
+                  AccessPoint ap = history.getOriginalAccessPoint();
+                  if (ap != null)
                   {
-                     formattedMsg = formattedMsg.replace( "<body>", "<body><b>" + sender + ":</b><br/><br/>" );
-                  }
+                     formattedMsg = message.translateBody(ap.getTemplates());
+                  } else
+                     formattedMsg = messageData.body().get();
 
                   ContactEmailValue recipientEmail = ((Contactable.Data)user).contact().get().defaultEmail();
                   if (recipientEmail != null)

@@ -37,8 +37,9 @@ import se.streamsource.streamflow.web.domain.structure.conversation.Message;
 import se.streamsource.streamflow.web.domain.structure.conversation.Messages;
 
 import java.text.MessageFormat;
-import java.util.Locale;
-import java.util.ResourceBundle;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * JAVADOC
@@ -55,6 +56,13 @@ public class MessagesContext
       ValueBuilder<MessageDTO> builder = module.valueBuilderFactory().newValueBuilder( MessageDTO.class );
       ConversationEntity conversation = RoleMap.role( ConversationEntity.class );
 
+      ResourceBundle bundle = ResourceBundle.getBundle( MessagesContext.class.getName(), RoleMap.role( Locale.class ) );
+      Map<String, String> translations = new HashMap<String, String>();
+      for (String key : bundle.keySet())
+      {
+         translations.put(key, bundle.getString(key));
+      }
+
       for (Message message : conversation.messages())
       {
          Contactable contact = module.unitOfWorkFactory().currentUnitOfWork().get( Contactable.class, EntityReference.getEntityReference( ((MessageEntity) message).sender().get() ).identity() );
@@ -63,7 +71,8 @@ public class MessagesContext
                ? sender
                : EntityReference.getEntityReference( ((MessageEntity) message).sender().get() ).identity() );
          builder.prototype().createdOn().set( ((MessageEntity) message).createdOn().get() );
-         builder.prototype().text().set( translate( ( (MessageEntity) message).body().get(),RoleMap.role( Locale.class ) ) );
+
+         builder.prototype().text().set( message.translateBody(translations));
          builder.prototype().href().set( ((MessageEntity) message).identity().get() );
          builder.prototype().id().set( ((MessageEntity) message).identity().get() );
 
@@ -82,17 +91,5 @@ public class MessagesContext
       {
          throw new ResourceException( Status.CLIENT_ERROR_FORBIDDEN, e.getMessage() );
       }
-   }
-
-   private String translate( String message, Locale locale )
-   {
-      ResourceBundle bundle = ResourceBundle.getBundle( MessagesContext.class.getName(), locale );
-      if( message.startsWith("{") && message.endsWith("}") )
-      {
-         String[] tokens = message.substring(1,message.length()-1).split( "," );
-         String form = bundle.getString( tokens[0] );
-         message = new MessageFormat( form, locale ).format( form, tokens.length > 1 ? tokens[1] : "" );
-      }
-      return message;
    }
 }

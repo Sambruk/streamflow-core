@@ -34,7 +34,8 @@ import java.util.List;
 @Mixins(EmailAccessPoints.Mixin.class)
 public interface EmailAccessPoints
 {
-   void addEmailAccessPoint(EmailAccessPointValue emailAccessPoint);
+   void createEmailAccessPoint(EmailAccessPointValue emailAccessPoint);
+   void updateEmailAccessPoint(EmailAccessPointValue emailAccessPoint);
    void removeEmailAccessPoint(String email);
 
    AccessPoint getAccessPoint(String email) throws IllegalArgumentException;
@@ -44,7 +45,8 @@ public interface EmailAccessPoints
       @UseDefaults
       Property<List<EmailAccessPointValue>> emailAccessPoints();
 
-      void addedEmailAccessPoint(@Optional DomainEvent event, EmailAccessPointValue emailAccessPoint);
+      void createdEmailAccessPoint(@Optional DomainEvent event, EmailAccessPointValue emailAccessPoint);
+      void updatedEmailAccessPoint(@Optional DomainEvent event, EmailAccessPointValue emailAccessPoint);
       void removedEmailAccessPoint(@Optional DomainEvent event, String email);
    }
 
@@ -54,7 +56,7 @@ public interface EmailAccessPoints
       @Structure
       Module module;
 
-      public void addEmailAccessPoint(EmailAccessPointValue emailAccessPoint)
+      public void createEmailAccessPoint(EmailAccessPointValue emailAccessPoint)
       {
          // See first if this is a replacement of existing setting
          for (EmailAccessPointValue emailAccessPointValue : emailAccessPoints().get())
@@ -67,7 +69,20 @@ public interface EmailAccessPoints
          }
 
          // Add it
-         addedEmailAccessPoint(null, emailAccessPoint);
+         createdEmailAccessPoint(null, emailAccessPoint);
+      }
+
+      public void updateEmailAccessPoint(EmailAccessPointValue emailAccessPoint)
+      {
+         // Replacement of existing setting
+         for (EmailAccessPointValue emailAccessPointValue : emailAccessPoints().get())
+         {
+            if (emailAccessPoint.email().get().equals(emailAccessPoint.email().get()))
+            {
+               updatedEmailAccessPoint(null, emailAccessPoint);
+               break;
+            }
+         }
       }
 
       public void removeEmailAccessPoint(String email)
@@ -89,10 +104,26 @@ public interface EmailAccessPoints
          throw new IllegalArgumentException("No AccessPoint registered for email address:"+email);
       }
 
-      public void addedEmailAccessPoint(@Optional DomainEvent event, EmailAccessPointValue emailAccessPoint)
+      public void createdEmailAccessPoint(@Optional DomainEvent event, EmailAccessPointValue emailAccessPoint)
       {
          List<EmailAccessPointValue> list = emailAccessPoints().get();
          list.add(emailAccessPoint);
+         emailAccessPoints().set(list);
+      }
+
+      public void updatedEmailAccessPoint(@Optional DomainEvent event, EmailAccessPointValue emailAccessPoint)
+      {
+         List<EmailAccessPointValue> list = emailAccessPoints().get();
+         for (int i = 0; i < list.size(); i++)
+         {
+            EmailAccessPointValue emailAccessPointValue = list.get(i);
+            if (emailAccessPointValue.email().get().equals(emailAccessPoint.email().get()))
+            {
+               list.set(i, emailAccessPointValue);
+               break;
+            }
+
+         }
          emailAccessPoints().set(list);
       }
 

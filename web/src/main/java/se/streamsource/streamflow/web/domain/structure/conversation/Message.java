@@ -18,16 +18,25 @@
 package se.streamsource.streamflow.web.domain.structure.conversation;
 
 import org.qi4j.api.entity.association.Association;
+import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Immutable;
 import org.qi4j.api.property.Property;
+import se.streamsource.streamflow.util.Strings;
 
-import java.util.Date;
+import java.text.MessageFormat;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * JAVADOC
  */
+@Mixins(Message.Mixin.class)
 public interface Message
 {
+   String translateBody(Map<String, String> translations);
+
    interface Data
    {
       @Immutable
@@ -41,5 +50,31 @@ public interface Message
 
       @Immutable
       Property<String> body();
+   }
+
+   class Mixin
+      implements Message
+   {
+      @This
+      Data data;
+
+      public String translateBody(Map<String, String> translations)
+      {
+         String body = data.body().get();
+
+         if( body.startsWith("{") && body.endsWith("}") )
+         {
+            String[] tokens = body.substring(1,body.length()-1).split( "," );
+            String key = tokens[0];
+            String translation = translations.get(key);
+            if (Strings.empty(translation))
+               return "";
+            String[] args = new String[tokens.length-1];
+            System.arraycopy(tokens, 1, args, 0, args.length);
+            body = new MessageFormat( translation ).format( args );
+            return body;
+         } else
+            return body;
+      }
    }
 }
