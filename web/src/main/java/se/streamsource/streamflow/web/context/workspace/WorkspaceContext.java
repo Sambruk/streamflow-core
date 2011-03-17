@@ -61,7 +61,8 @@ public LinksValue index()
 
    for (Perspective perspective : perspectives.perspectives())
    {
-      linksBuilder.addLink( perspective.getDescription(), perspective.toString(), "perspective", "perspectives/" + perspective.toString() + "/", "perspective");
+      linksBuilder.addLink( perspective.getDescription(), perspective.toString(),
+            ((Perspective.Data)perspective).perspective().get().context().get(), "perspectives/" + perspective.toString() + "/", "perspective");
    }
    
    for (Project project : projectQueries.allProjects())
