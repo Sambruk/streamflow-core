@@ -38,6 +38,7 @@ import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.BorderLayout;
@@ -181,26 +182,33 @@ public class CasesView
       {
          if (!e.getValueIsAdjusting())
          {
-            JTable caseTable = getCaseTableView().getCaseTable();
+            final JTable caseTable = getCaseTableView().getCaseTable();
 
-            try
+            SwingUtilities.invokeLater( new Runnable()
             {
-               if (!caseTable.getSelectionModel().isSelectionEmpty())
+               public void run()
                {
-                  int selectedRow = caseTable.getSelectedRow();
-                  if (selectedRow != -1)
+
+                  try
                   {
-                     String href = (String) caseTable.getModel().getValueAt( caseTable.convertRowIndexToModel(selectedRow), 8 );
-                     detailsView.show( client.getClient( href ) );
+                     if (!caseTable.getSelectionModel().isSelectionEmpty())
+                     {
+                        int selectedRow = caseTable.getSelectedRow();
+                        if (selectedRow != -1)
+                        {
+                           String href = (String) caseTable.getModel().getValueAt( caseTable.convertRowIndexToModel( selectedRow ), 8 );
+                           detailsView.show( client.getClient( href ) );
+                        }
+                     } else
+                     {
+                        detailsView.selectCaseInTable( caseTable );
+                     }
+                  } catch (Exception e1)
+                  {
+                     throw new OperationException( CaseResources.could_not_view_details, e1 );
                   }
-               } else
-               {
-                  detailsView.selectCaseInTable( caseTable );
                }
-            } catch (Exception e1)
-            {
-               throw new OperationException( CaseResources.could_not_view_details, e1 );
-            }
+            } );
          }
       }
    }
