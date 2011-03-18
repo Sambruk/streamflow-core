@@ -1,0 +1,5 @@
+#include TableOfContents as sidebar
+
+= Streamflow user guide =
+
+Welcome to the user guide for the *Streamflow Case Management System*. This manual contains information for users and administrators on how to use the Streamflow client.

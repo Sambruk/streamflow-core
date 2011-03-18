@@ -1,0 +1,13 @@
+#include TableOfContents as sidebar
+
+= Administration =
+
+The following instructions will guide you to how to use the administration features of Streamflow.
+
+== Using the Web Console ==
+
+TODO
+
+== Using VisualVM ==
+
+TODO
