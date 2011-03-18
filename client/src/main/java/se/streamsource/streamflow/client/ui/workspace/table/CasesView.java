@@ -17,21 +17,35 @@
 package se.streamsource.streamflow.client.ui.workspace.table;
 
 import org.jdesktop.application.ApplicationContext;
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.Icons;
+import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseDetailView;
+import se.streamsource.streamflow.client.ui.workspace.cases.CaseResources;
 import se.streamsource.streamflow.client.util.HtmlPanel;
 import se.streamsource.streamflow.client.util.i18n;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.BorderFactory;
+import javax.swing.JComponent;
+import javax.swing.JEditorPane;
+import javax.swing.JPanel;
+import javax.swing.JSplitPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
 import java.net.URL;
 
-import static se.streamsource.streamflow.client.util.i18n.text;
+import static se.streamsource.streamflow.client.util.i18n.*;
 
 /**
  * JAVADOC
@@ -41,23 +55,33 @@ public class CasesView
 {
    private CasesTableView casesTableView;
    private CasesDetailView detailsView;
+   private PerspectiveView perspectiveView;
+   
    private JSplitPane splitPane;
    private CardLayout cardLayout = new CardLayout();
    private JComponent blank;
+   private final ObjectBuilderFactory obf;
+   private JTextField searchField;
+   private JPanel topPanel;
+   private CommandQueryClient client;
 
-   public CasesView( @Structure ObjectBuilderFactory obf, @Service ApplicationContext context )
+   public CasesView( @Structure ObjectBuilderFactory obf, @Service ApplicationContext context, @Uses CommandQueryClient client,
+                     @Optional @Uses JTextField searchField)
    {
       super();
+      this.obf = obf;
+      this.searchField = searchField;
+      this.client = client;
 
       setActionMap( context.getActionMap( this ) );
 
       setLayout( cardLayout );
 
       this.detailsView = obf.newObjectBuilder( CasesDetailView.class ).newInstance();
-
+      
+      
       splitPane = new JSplitPane( JSplitPane.VERTICAL_SPLIT );
       splitPane.setOneTouchExpandable( true );
-      add( splitPane, BorderLayout.CENTER );
 
       splitPane.setTopComponent( new JPanel() );
       splitPane.setBottomComponent( detailsView );
@@ -66,9 +90,11 @@ public class CasesView
       splitPane.setDividerLocation( 1D );
       splitPane.setBorder( BorderFactory.createEmptyBorder() );
 
-
+      topPanel = new JPanel( new BorderLayout());
+      topPanel.add( splitPane, BorderLayout.CENTER);
+      
       add( blank = createBlankPanel(), "blank" );
-      add( splitPane, "cases" );
+      add( topPanel, "cases" );
 
       cardLayout.show( this, "blank" );
    }
@@ -82,10 +108,33 @@ public class CasesView
       return blankPanel;
    }
 
+   public void setFilterVisible( PerspectiveModel model, boolean visible )
+   {
+      // TODO this has to be changed when perspectives will be enabled for inbox searches
+      //
+      if (visible)
+      {
+         perspectiveView = obf.newObjectBuilder( PerspectiveView.class ).use( model, searchField ).newInstance();
+
+         topPanel.add( perspectiveView, BorderLayout.NORTH );
+         perspectiveView.setVisible( visible );
+      } else
+      {
+         if (perspectiveView != null)
+         {
+            topPanel.remove( perspectiveView );
+            perspectiveView = null;
+            invalidate();
+         }
+      }
+
+   }
+   
    public void showTable( CasesTableView casesTableView )
    {
       cardLayout.show( this, "cases" );
       this.casesTableView = casesTableView;
+      this.casesTableView.getCaseTable().getSelectionModel().addListSelectionListener( new CaseSelectionListener() );
       splitPane.setTopComponent( casesTableView );
       clearCase();
    }
@@ -96,11 +145,6 @@ public class CasesView
       casesTableView = null;
       splitPane.setTopComponent( new JPanel() );
       clearCase();
-   }
-
-   public void showCase( CommandQueryClient client )
-   {
-      detailsView.show( client );
    }
 
    public void clearCase()
@@ -129,6 +173,44 @@ public class CasesView
    {
       remove(blank);
       add( blank = blankPanel, "blank" );
+   }
+
+   class CaseSelectionListener
+         implements ListSelectionListener
+   {
+      public void valueChanged( ListSelectionEvent e )
+      {
+         if (!e.getValueIsAdjusting())
+         {
+            final JTable caseTable = getCaseTableView().getCaseTable();
+
+            SwingUtilities.invokeLater( new Runnable()
+            {
+               public void run()
+               {
+
+                  try
+                  {
+                     if (!caseTable.getSelectionModel().isSelectionEmpty())
+                     {
+                        int selectedRow = caseTable.getSelectedRow();
+                        if (selectedRow != -1)
+                        {
+                           String href = (String) caseTable.getModel().getValueAt( caseTable.convertRowIndexToModel( selectedRow ), 8 );
+                           detailsView.show( client.getClient( href ) );
+                        }
+                     } else
+                     {
+                        detailsView.selectCaseInTable( caseTable );
+                     }
+                  } catch (Exception e1)
+                  {
+                     throw new OperationException( CaseResources.could_not_view_details, e1 );
+                  }
+               }
+            } );
+         }
+      }
    }
 }
 

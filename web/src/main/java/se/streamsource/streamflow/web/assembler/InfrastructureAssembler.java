@@ -52,7 +52,11 @@ import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.factory.DomainEventFactoryService;
 import se.streamsource.streamflow.infrastructure.time.TimeService;
-import se.streamsource.streamflow.server.plugin.contact.*;
+import se.streamsource.streamflow.server.plugin.contact.ContactAddressValue;
+import se.streamsource.streamflow.server.plugin.contact.ContactEmailValue;
+import se.streamsource.streamflow.server.plugin.contact.ContactList;
+import se.streamsource.streamflow.server.plugin.contact.ContactPhoneValue;
+import se.streamsource.streamflow.server.plugin.contact.ContactValue;
 import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStoreService;
 import se.streamsource.streamflow.web.infrastructure.caching.CachingServiceComposite;
 import se.streamsource.streamflow.web.infrastructure.database.DataSourceService;
@@ -71,8 +75,8 @@ import se.streamsource.streamflow.web.resource.EventsCommandResult;
 
 import javax.sql.DataSource;
 
-import static org.qi4j.api.service.qualifier.ServiceTags.tags;
-import static org.qi4j.bootstrap.ImportedServiceDeclaration.NEW_OBJECT;
+import static org.qi4j.api.service.qualifier.ServiceTags.*;
+import static org.qi4j.bootstrap.ImportedServiceDeclaration.*;
 
 /**
  * JAVADOC
@@ -555,7 +559,13 @@ public class InfrastructureAssembler
                   forEntities( "se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity" ).
                      renameAssociation( "selectedTemplate", "formPdfTemplate" ).
                      renameAssociation( "caseTemplate", "casePdfTemplate" ).
-               end();
+               end().
+               toVersion("1.3.0.0").
+                  renameEntity( "se.streamsource.streamflow.web.domain.entity.user.profile.SavedSearchEntity", "se.streamsource.streamflow.web.domain.entity.user.profile.PerspectiveEntity").
+                  forEntities("se.streamsource.streamflow.web.domain.entity.user.UserEntity").
+                     renameAssociation("searches", "perspectives").
+                  end();
+                  
 
          module.services( MigrationService.class ).setMetaInfo( migrationBuilder );
          configuration().entities( MigrationConfiguration.class ).visibleIn( Visibility.application );

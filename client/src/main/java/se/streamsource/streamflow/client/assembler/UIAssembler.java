@@ -17,14 +17,6 @@
 
 package se.streamsource.streamflow.client.assembler;
 
-import static org.qi4j.api.common.Visibility.application;
-import static org.qi4j.api.common.Visibility.layer;
-import static se.streamsource.streamflow.client.util.UIAssemblers.addDialogs;
-import static se.streamsource.streamflow.client.util.UIAssemblers.addMV;
-import static se.streamsource.streamflow.client.util.UIAssemblers.addModels;
-import static se.streamsource.streamflow.client.util.UIAssemblers.addTasks;
-import static se.streamsource.streamflow.client.util.UIAssemblers.addViews;
-
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.common.Visibility;
 import org.qi4j.bootstrap.AssemblyException;
@@ -32,7 +24,6 @@ import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.spi.service.importer.NewObjectImporter;
 import org.restlet.Restlet;
-
 import se.streamsource.streamflow.client.StreamflowApplication;
 import se.streamsource.streamflow.client.ui.ApplicationInitializationService;
 import se.streamsource.streamflow.client.ui.DebugWindow;
@@ -116,7 +107,16 @@ import se.streamsource.streamflow.client.ui.administration.resolutions.SelectedR
 import se.streamsource.streamflow.client.ui.administration.resolutions.SelectedResolutionsView;
 import se.streamsource.streamflow.client.ui.administration.roles.RolesModel;
 import se.streamsource.streamflow.client.ui.administration.roles.RolesView;
-import se.streamsource.streamflow.client.ui.administration.surface.*;
+import se.streamsource.streamflow.client.ui.administration.surface.AccessPointModel;
+import se.streamsource.streamflow.client.ui.administration.surface.AccessPointView;
+import se.streamsource.streamflow.client.ui.administration.surface.AccessPointsModel;
+import se.streamsource.streamflow.client.ui.administration.surface.AccessPointsView;
+import se.streamsource.streamflow.client.ui.administration.surface.CreateProxyUserDialog;
+import se.streamsource.streamflow.client.ui.administration.surface.EmailAccessPointView;
+import se.streamsource.streamflow.client.ui.administration.surface.EmailAccessPointsModel;
+import se.streamsource.streamflow.client.ui.administration.surface.EmailAccessPointsView;
+import se.streamsource.streamflow.client.ui.administration.surface.ProxyUsersModel;
+import se.streamsource.streamflow.client.ui.administration.surface.ProxyUsersView;
 import se.streamsource.streamflow.client.ui.administration.templates.SelectedTemplatesModel;
 import se.streamsource.streamflow.client.ui.administration.templates.SelectedTemplatesView;
 import se.streamsource.streamflow.client.ui.administration.templates.TemplatesView;
@@ -130,6 +130,7 @@ import se.streamsource.streamflow.client.ui.menu.EditMenu;
 import se.streamsource.streamflow.client.ui.menu.FileMenu;
 import se.streamsource.streamflow.client.ui.menu.HelpMenu;
 import se.streamsource.streamflow.client.ui.menu.OverviewMenuBar;
+import se.streamsource.streamflow.client.ui.menu.PerspectiveMenu;
 import se.streamsource.streamflow.client.ui.menu.ViewMenu;
 import se.streamsource.streamflow.client.ui.menu.WindowMenu;
 import se.streamsource.streamflow.client.ui.menu.WorkspaceMenuBar;
@@ -162,7 +163,6 @@ import se.streamsource.streamflow.client.ui.workspace.cases.conversations.Conver
 import se.streamsource.streamflow.client.ui.workspace.cases.conversations.ConversationsView;
 import se.streamsource.streamflow.client.ui.workspace.cases.conversations.MessagesConversationView;
 import se.streamsource.streamflow.client.ui.workspace.cases.conversations.MessagesModel;
-import se.streamsource.streamflow.client.ui.workspace.cases.conversations.MessagesView;
 import se.streamsource.streamflow.client.ui.workspace.cases.forms.CaseEffectiveFieldsValueModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.forms.CaseEffectiveFieldsValueView;
 import se.streamsource.streamflow.client.ui.workspace.cases.forms.CaseSubmittedFormModel;
@@ -191,17 +191,22 @@ import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.TextAr
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.TextFieldPanel;
 import se.streamsource.streamflow.client.ui.workspace.cases.history.HistoryView;
 import se.streamsource.streamflow.client.ui.workspace.cases.history.MessagesHistoryView;
-import se.streamsource.streamflow.client.ui.workspace.context.WorkspaceContextModel2;
-import se.streamsource.streamflow.client.ui.workspace.context.WorkspaceContextView2;
-import se.streamsource.streamflow.client.ui.workspace.search.HandleSearchesDialog;
+import se.streamsource.streamflow.client.ui.workspace.context.WorkspaceContextModel;
+import se.streamsource.streamflow.client.ui.workspace.context.WorkspaceContextView;
+import se.streamsource.streamflow.client.ui.workspace.search.ManagePerspectivesDialog;
+import se.streamsource.streamflow.client.ui.workspace.search.PerspectivesModel;
 import se.streamsource.streamflow.client.ui.workspace.search.SaveSearchDialog;
-import se.streamsource.streamflow.client.ui.workspace.search.SavedSearchesModel;
 import se.streamsource.streamflow.client.ui.workspace.search.SearchResultTableModel;
 import se.streamsource.streamflow.client.ui.workspace.search.SearchView;
 import se.streamsource.streamflow.client.ui.workspace.table.CasesDetailView;
 import se.streamsource.streamflow.client.ui.workspace.table.CasesTableModel;
 import se.streamsource.streamflow.client.ui.workspace.table.CasesTableView;
 import se.streamsource.streamflow.client.ui.workspace.table.CasesView;
+import se.streamsource.streamflow.client.ui.workspace.table.PerspectiveModel;
+import se.streamsource.streamflow.client.ui.workspace.table.PerspectiveOptionsView;
+import se.streamsource.streamflow.client.ui.workspace.table.PerspectivePeriodModel;
+import se.streamsource.streamflow.client.ui.workspace.table.PerspectivePeriodView;
+import se.streamsource.streamflow.client.ui.workspace.table.PerspectiveView;
 import se.streamsource.streamflow.client.util.ActionBinder;
 import se.streamsource.streamflow.client.util.ExceptionHandlerService;
 import se.streamsource.streamflow.client.util.JavaHelp;
@@ -215,6 +220,9 @@ import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.NameDialog;
 import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
 import se.streamsource.streamflow.client.util.dialog.SelectLinksDialog;
+
+import static org.qi4j.api.common.Visibility.*;
+import static se.streamsource.streamflow.client.util.UIAssemblers.*;
 
 /**
  * JAVADOC
@@ -450,7 +458,7 @@ public class UIAssembler
             FormsAdminView.class, SubmittedFormsAdminView.class, CheckboxesPanel.class,
             ComboBoxPanel.class, OptionButtonsPanel.class, OpenSelectionPanel.class, ListBoxPanel.class, DatePanel.class,
             NumberPanel.class, TextAreaFieldPanel.class, TextFieldPanel.class, AttachmentFieldPanel.class, 
-            HistoryView.class, MessagesHistoryView.class
+            HistoryView.class, MessagesHistoryView.class, PerspectiveOptionsView.class
       );
 
       addDialogs( module, ContactLookupResultDialog.class );
@@ -459,6 +467,10 @@ public class UIAssembler
 
       addMV( module, CaseModel.class, CaseInfoView.class );
 
+      addMV( module, PerspectiveModel.class, PerspectiveView.class);
+
+      addMV( module, PerspectivePeriodModel.class, PerspectivePeriodView.class );
+      
       addViews( module,
             CaseDetailView.class );
 
@@ -535,14 +547,14 @@ public class UIAssembler
             WorkspaceView.class );
 
       addMV( module,
-            WorkspaceContextModel2.class,
-            WorkspaceContextView2.class );
+            WorkspaceContextModel.class,
+            WorkspaceContextView.class );
 
-      addMV( module, SavedSearchesModel.class, SearchView.class );
+      addMV( module, PerspectivesModel.class, SearchView.class );
 
       addDialogs( module, SelectLinkDialog.class,
             SaveSearchDialog.class,
-            HandleSearchesDialog.class );
+            ManagePerspectivesDialog.class );
 
       module.values( CaseTableValue.class ).visibleIn( Visibility.application );
    }
@@ -559,7 +571,8 @@ public class UIAssembler
             ViewMenu.class,
             AccountMenu.class,
             WindowMenu.class,
-            HelpMenu.class
+            HelpMenu.class,
+            PerspectiveMenu.class
       );
 
       addDialogs( module, CreateAccountDialog.class, AccountsDialog.class );

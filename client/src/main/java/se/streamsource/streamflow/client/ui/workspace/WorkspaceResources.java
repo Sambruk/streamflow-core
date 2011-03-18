@@ -85,6 +85,8 @@ public enum WorkspaceResources
    // Context selection
    inboxes_node,
    drafts_node,
+   search_node,
+   perspectives_separator,
 
    assignments_node,
 
@@ -94,16 +96,17 @@ public enum WorkspaceResources
    choose_message_delivery_type,
    choose_project,
    choose_form,
-   save_search,
+   save_perspective,
    query_label,
    incomplete_data,
-   handle_searches,
+   manage_perspectives,
    case_separator,
    caze,
    too_long_query,
    choose_template,
    could_not_print,
    date_format,
+   date_separator,
    wrong_format_msg,
    wrong_format_title,
 
@@ -139,5 +142,5 @@ public enum WorkspaceResources
    
    // Conversation
    sender_column_header,
-   message_column_header,
+   message_column_header, change_perspective_title, selected_projects, no_casetype, no_assignee, no_project, search_period
 }

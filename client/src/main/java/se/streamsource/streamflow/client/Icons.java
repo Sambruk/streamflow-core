@@ -40,6 +40,8 @@ public enum Icons
    details,
    inbox,
    draft,
+   search,
+   perspective,
 
    calendar,
 
@@ -69,5 +71,11 @@ public enum Icons
 
    // Logos
    name_logo,
-   logo
+   logo,
+   
+   // Check
+   check,
+
+   down_no_selection,
+   down_with_selection
 }
