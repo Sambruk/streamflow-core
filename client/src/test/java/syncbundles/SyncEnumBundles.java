@@ -29,7 +29,7 @@ import java.util.zip.GZIPOutputStream;
  * When executed, this tool will find all properties files that are ResourceBundles and try to locate
  * an Enum class that has the same name. If one is found, check all properties to see if they exist
  * in the Enum. If no, then remove them.
- *
+ * <p/>
  * Invoke without parameters to do a "dry run", without making changes. This will just log what changes
  * that should be done. If you add the parameter "fix", then the changes will be written back.
  */
@@ -39,24 +39,24 @@ public class SyncEnumBundles
    private static Logger logger;
    private static boolean fix = false;
 
-   public static void main( String[] args ) throws IOException, ClassNotFoundException
+   public static void main(String[] args) throws IOException, ClassNotFoundException
    {
       if (args.length > 0 && args[0].equals("fix"))
          fix = true;
 
       base = new File(".");
-      logger = LoggerFactory.getLogger( SyncEnumBundles.class );
+      logger = LoggerFactory.getLogger(SyncEnumBundles.class);
 
-      logger.info( "Checking resources at:"+ base.getAbsolutePath());
+      logger.info("Checking resources at:" + base.getAbsolutePath());
       if (fix)
          logger.info("Changes will be written to resource files");
       else
          logger.info("Changes will only be logged");
 
-      check( base );
+      check(base);
    }
 
-   private static void check( File resources ) throws IOException, ClassNotFoundException
+   private static void check(File resources) throws IOException, ClassNotFoundException
    {
       for (File file : resources.listFiles())
       {
@@ -64,22 +64,22 @@ public class SyncEnumBundles
             check(file);
          else
          {
-            if (file.getName().endsWith( ".properties" ))
+            if (file.getName().endsWith(".properties"))
             {
                // TODO I'm sure there's a fancy regex that could do this instead
                // Get a file on the form /src/main/resources/foo/bar/resources/Some_sv.properties
                // to the form foo.bar.Some
                String enumName = file.getPath();
-               enumName = enumName.substring(enumName.indexOf( "resources/" )+"resources/".length());
-               enumName = enumName.replace( File.separatorChar, '.' );
-               enumName = enumName.substring( 0, enumName.indexOf(".properties" ));
+               enumName = enumName.substring(enumName.indexOf("resources/") + "resources/".length());
+               enumName = enumName.replace(File.separatorChar, '.');
+               enumName = enumName.substring(0, enumName.indexOf(".properties"));
                enumName = enumName.replace(".resources", "");
-               enumName = enumName.split( "_" )[0];
+               enumName = enumName.split("_")[0];
 
                final Class enumClass;
                try
                {
-                  enumClass = SyncEnumBundles.class.getClassLoader().loadClass( enumName );
+                  enumClass = SyncEnumBundles.class.getClassLoader().loadClass(enumName);
                   if (!enumClass.isEnum())
                      continue;
                } catch (ClassNotFoundException e)
@@ -87,38 +87,38 @@ public class SyncEnumBundles
                   continue;
                }
 
-               logger.info("Checking bundle at:"+file.getName()+", classname:"+enumName);
+               logger.info("Checking bundle at:" + file.getName() + ", classname:" + enumName);
 
-               File output = File.createTempFile( "fixed", ".properties" );
-               textInput( file ).transferTo( Transforms.filter(new Specification<String>()
+               File output = File.createTempFile("fixed", ".properties");
+               textInput(file).transferTo(Transforms.filter(new Specification<String>()
                {
-                  public boolean satisfiedBy( String item )
+                  public boolean satisfiedBy(String item)
                   {
-                     if (!item.contains( "=" ))
+                     if (!item.contains("="))
                         return true;
 
-                     String[] property = item.split( "=" );
+                     String[] property = item.split("=");
 
                      String name = property[0];
 
                      try
                      {
-                        enumClass.getField( name );
+                        enumClass.getField(name);
                         return true;
                      } catch (NoSuchFieldException e)
                      {
-                        logger.info( "   Property "+name+" has been removed" );
+                        logger.info("   Property " + name + " has been removed");
                         return false;
                      }
                   }
-               }, text( output )));
+               }, text(output)));
 
                if (fix)
                {
-                  if (output.renameTo( file ))
-                     logger.debug( "Fixed "+file );
+                  if (output.renameTo(file))
+                     logger.debug("Fixed " + file);
                   else
-                     logger.warn("Could not overwrite fixed file "+file);
+                     logger.warn("Could not overwrite fixed file " + file);
                } else
                {
                   if (!output.delete())
@@ -129,79 +129,79 @@ public class SyncEnumBundles
       }
    }
 
-   public static Output<String, IOException> text( final File file )
+   public static Output<String, IOException> text(final File file)
    {
-       return new Output<String, IOException>()
-       {
-           public <SenderThrowableType extends Throwable> void receiveFrom( final Sender<String, SenderThrowableType> sender ) throws IOException, SenderThrowableType
-           {
-               OutputStream stream = new FileOutputStream( file );
+      return new Output<String, IOException>()
+      {
+         public <SenderThrowableType extends Throwable> void receiveFrom(Sender<? extends String, SenderThrowableType> sender) throws IOException, SenderThrowableType
+         {
+            OutputStream stream = new FileOutputStream(file);
 
-               // If file should be gzipped, do that automatically
-               if (file.getName().endsWith( ".gz" ))
-                   stream = new GZIPOutputStream( stream );
+            // If file should be gzipped, do that automatically
+            if (file.getName().endsWith(".gz"))
+               stream = new GZIPOutputStream(stream);
 
-               final BufferedWriter writer = new BufferedWriter( new OutputStreamWriter( stream, "ISO-8859-1" ) );
+            final BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(stream, "ISO-8859-1"));
 
-               try
+            try
+            {
+               sender.sendTo(new Receiver<String, IOException>()
                {
-                   sender.sendTo( new Receiver<String, IOException>()
-                   {
-                       public void receive( String item ) throws IOException
-                       {
-                           writer.append( item ).append( '\n' );
-                       }
-                   } );
-                   writer.close();
-               } catch (IOException e)
-               {
-                   // We failed writing - close and delete
-                   writer.close();
-                   file.delete();
-               } catch (Throwable senderThrowableType)
-               {
-                   // We failed writing - close and delete
-                   writer.close();
-                   file.delete();
+                  public void receive(String item) throws IOException
+                  {
+                     writer.append(item).append('\n');
+                  }
+               });
+               writer.close();
+            } catch (IOException e)
+            {
+               // We failed writing - close and delete
+               writer.close();
+               file.delete();
+            } catch (Throwable senderThrowableType)
+            {
+               // We failed writing - close and delete
+               writer.close();
+               file.delete();
 
-                   throw (SenderThrowableType) senderThrowableType;
-               }
-           }
-       };
+               throw (SenderThrowableType) senderThrowableType;
+            }
+         }
+      };
    }
 
-    public static Input<String, IOException> textInput( final File source )
-    {
-        return new Input<String, IOException>()
-        {
-            public <ReceiverThrowableType extends Throwable> void transferTo( Output<String, ReceiverThrowableType> output ) throws IOException, ReceiverThrowableType
+   public static Input<String, IOException> textInput(final File source)
+   {
+      return new Input<String, IOException>()
+      {
+         public <ReceiverThrowableType extends Throwable> void transferTo(Output<? super String, ReceiverThrowableType> output) throws IOException, ReceiverThrowableType
+         {
+            InputStream stream = new FileInputStream(source);
+
+            // If file is gzipped, unzip it automatically
+            if (source.getName().endsWith(".gz"))
+               stream = new GZIPInputStream(stream);
+
+            final BufferedReader reader = new BufferedReader(new InputStreamReader(stream, "ISO-8859-1"));
+
+            try
             {
-                InputStream stream = new FileInputStream( source );
-
-                // If file is gzipped, unzip it automatically
-                if (source.getName().endsWith( ".gz" ))
-                    stream = new GZIPInputStream(stream);
-
-                final BufferedReader reader = new BufferedReader( new InputStreamReader( stream, "ISO-8859-1" ) );
-
-                try
-                {
-                    output.receiveFrom( new Sender<String, IOException>()
-                    {
-                        public <ReceiverThrowableType extends Throwable> void sendTo( Receiver<String, ReceiverThrowableType> receiver ) throws ReceiverThrowableType, IOException
-                        {
-                            String line;
-                            while ((line = reader.readLine()) != null)
-                            {
-                                receiver.receive( line );
-                            }
-                        }
-                    } );
-                } finally
-                {
-                    reader.close();
-                }
+               output.receiveFrom(new Sender<String, IOException>()
+               {
+                  public <ReceiverThrowableType extends Throwable> void sendTo(Receiver<? super String, ReceiverThrowableType> receiver) throws ReceiverThrowableType, IOException
+                  {
+                     String line;
+                     while ((line = reader.readLine()) != null)
+                     {
+                        receiver.receive(line);
+                     }
+                  }
+               });
+            } finally
+            {
+               reader.close();
             }
-        };
-    }
+         }
+      };
+   }
 }

@@ -1,32 +1,18 @@
 #
-# This is a statwiki HTML generator. It is run by statwiki for every wiki file it processes.
 #
-# These globals are always in a generator before it is started by statwiki:
-# - out: file object the generator should write the HTML output to, the file accepts unicode
-# - pagename: wiki pagename of currently generated page
-# - summary: #summary pragma value for the current page, empty if not specified
-# - genconfig: config.Section object for the [generator] section of the wiki config file
-# - content: statwiki.Context object which holds the current page's content
-# - modifiy_time: current page's *.wiki modification time, as string
-# - generate_time: current time, as string
+# Copyright 2009-2010 Streamsource AB
 #
-# This generator supports per-page %-formatting in the wikitext. Use the following pragma
-# to enable it:
-#   #execute enable_content_formatting = True
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
 #
-# Note that you will have to escape %-signs with %% if formatting is enabled.
+#     http://www.apache.org/licenses/LICENSE-2.0
 #
-# The following settings are available in the [generator] section of your wiki's config file:
-# - name: name of the wiki, displayed in browser window's titlebar
-# - gray_title: left (gray) part of the title displayed at the top of the pages
-# - orange_title: right (orange) part of the title
-# - title_sep: number of spaces between gray and orange titles
-# - slogan: slogan displayed under the title at the top od the pages
-# - year: year part of the copyright string displayed at the bottom of the pages
-# - by: name part of the copyright string
-# - cse_id: if defined, enables the Google Custom Search bar; set to your custom search ID
-# - menu: defines the menu bar under the titlebar; should be a series of wiki [] links,
-#   please use text links only
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 #
 
 # We use this helper function to format the menu.

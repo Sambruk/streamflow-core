@@ -42,11 +42,11 @@ import java.util.TreeMap;
  */
 @Mixins(MemoryApplicationEventStoreService.Mixin.class)
 public interface MemoryApplicationEventStoreService
-      extends ApplicationEventSource, ApplicationEventStore, ApplicationEventStream, Activatable, ServiceComposite
+        extends ApplicationEventSource, ApplicationEventStore, ApplicationEventStream, Activatable, ServiceComposite
 {
    abstract class Mixin
-         extends AbstractApplicationEventStoreMixin
-         implements ApplicationEventSource
+           extends AbstractApplicationEventStoreMixin
+           implements ApplicationEventSource
    {
       // This holds all transactions
       private TreeMap<Long, String> store = new TreeMap<Long, String>();
@@ -61,34 +61,34 @@ public interface MemoryApplicationEventStoreService
          super.passivate();
       }
 
-      public Input<TransactionApplicationEvents, IOException> transactionsAfter( final long afterTimestamp, final long maxTransactions )
+      public Input<TransactionApplicationEvents, IOException> transactionsAfter(final long afterTimestamp, final long maxTransactions)
       {
          return new Input<TransactionApplicationEvents, IOException>()
          {
-            public <ReceiverThrowableType extends Throwable> void transferTo( Output<TransactionApplicationEvents, ReceiverThrowableType> output ) throws IOException, ReceiverThrowableType
+            public <ReceiverThrowableType extends Throwable> void transferTo(Output<? super TransactionApplicationEvents, ReceiverThrowableType> output) throws IOException, ReceiverThrowableType
             {
                // Lock datastore first
                lock.lock();
                try
                {
-                  output.receiveFrom( new Sender<TransactionApplicationEvents, IOException>()
+                  output.receiveFrom(new Sender<TransactionApplicationEvents, IOException>()
                   {
-                     public <ReceiverThrowableType extends Throwable> void sendTo( Receiver<TransactionApplicationEvents, ReceiverThrowableType> receiver ) throws ReceiverThrowableType, IOException
+                     public <ReceiverThrowableType extends Throwable> void sendTo(Receiver<? super TransactionApplicationEvents, ReceiverThrowableType> receiver) throws ReceiverThrowableType, IOException
                      {
                         try
                         {
 
                            long count = 0;
                            Long startTime = afterTimestamp + 1;
-                           Collection<String> txsAfterDate = store.tailMap( startTime ).values();
+                           Collection<String> txsAfterDate = store.tailMap(startTime).values();
 
                            for (String txJson : txsAfterDate)
                            {
-                              JSONTokener tokener = new JSONTokener( txJson );
+                              JSONTokener tokener = new JSONTokener(txJson);
                               JSONObject json = (JSONObject) tokener.nextValue();
-                              TransactionApplicationEvents tx = (TransactionApplicationEvents) transactionEventsType.fromJSON( json, module );
+                              TransactionApplicationEvents tx = (TransactionApplicationEvents) transactionEventsType.fromJSON(json, module);
 
-                              receiver.receive( tx );
+                              receiver.receive(tx);
 
                               count++;
                               if (count == maxTransactions)
@@ -96,10 +96,10 @@ public interface MemoryApplicationEventStoreService
                            }
                         } catch (JSONException e)
                         {
-                           logger.warn( "Could not de-serialize events", e );
+                           logger.warn("Could not de-serialize events", e);
                         }
                      }
-                  } );
+                  });
                } finally
                {
                   lock.unlock();
@@ -108,50 +108,50 @@ public interface MemoryApplicationEventStoreService
          };
       }
 
-      public Input<TransactionApplicationEvents, IOException> transactionsBefore( final long beforeTimestamp, final long maxTransactions )
+      public Input<TransactionApplicationEvents, IOException> transactionsBefore(final long beforeTimestamp, final long maxTransactions)
       {
          return new Input<TransactionApplicationEvents, IOException>()
          {
-            public <ReceiverThrowableType extends Throwable> void transferTo( Output<TransactionApplicationEvents, ReceiverThrowableType> output ) throws IOException, ReceiverThrowableType
+            public <ReceiverThrowableType extends Throwable> void transferTo(Output<? super TransactionApplicationEvents, ReceiverThrowableType> output) throws IOException, ReceiverThrowableType
             {
                // Lock datastore first
                lock.lock();
                try
                {
-                  output.receiveFrom( new Sender<TransactionApplicationEvents, IOException>()
+                  output.receiveFrom(new Sender<TransactionApplicationEvents, IOException>()
                   {
-                     public <ReceiverThrowableType extends Throwable> void sendTo( Receiver<TransactionApplicationEvents, ReceiverThrowableType> receiver ) throws ReceiverThrowableType, IOException
+                     public <ReceiverThrowableType extends Throwable> void sendTo(Receiver<? super TransactionApplicationEvents, ReceiverThrowableType> receiver) throws ReceiverThrowableType, IOException
                      {
                         try
                         {
                            long count = 0;
                            Long startTime = beforeTimestamp - 1;
-                           Collection<String> txsBeforeDate = store.headMap( startTime ).values();
+                           Collection<String> txsBeforeDate = store.headMap(startTime).values();
 
                            // Reverse the list - this could be done more easily in JDK1.6
                            LinkedList<String> values = new LinkedList<String>();
                            for (String json : txsBeforeDate)
                            {
-                              values.addFirst( json );
+                              values.addFirst(json);
                            }
 
                            for (String txJson : values)
                            {
-                              JSONTokener tokener = new JSONTokener( txJson );
+                              JSONTokener tokener = new JSONTokener(txJson);
                               JSONObject json = (JSONObject) tokener.nextValue();
-                              TransactionApplicationEvents tx = (TransactionApplicationEvents) transactionEventsType.fromJSON( json, module );
+                              TransactionApplicationEvents tx = (TransactionApplicationEvents) transactionEventsType.fromJSON(json, module);
 
-                              receiver.receive( tx );
+                              receiver.receive(tx);
                               count++;
                               if (count == maxTransactions)
                                  return;
                            }
                         } catch (JSONException e)
                         {
-                           logger.warn( "Could not de-serialize events", e );
+                           logger.warn("Could not de-serialize events", e);
                         }
                      }
-                  } );
+                  });
                } finally
                {
                   lock.unlock();
@@ -161,20 +161,20 @@ public interface MemoryApplicationEventStoreService
       }
 
       protected void rollback()
-            throws IOException
+              throws IOException
       {
       }
 
       protected void commit()
-            throws IOException
+              throws IOException
       {
       }
 
       @Override
-      protected void storeEvents( TransactionApplicationEvents transactionDomain ) throws IOException
+      protected void storeEvents(TransactionApplicationEvents transactionDomain) throws IOException
       {
          String jsonString = transactionDomain.toString();
-         store.put( transactionDomain.timestamp().get(), jsonString );
+         store.put(transactionDomain.timestamp().get(), jsonString);
       }
    }
 }
