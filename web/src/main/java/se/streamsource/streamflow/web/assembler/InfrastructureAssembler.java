@@ -75,7 +75,6 @@ import se.streamsource.streamflow.web.resource.EventsCommandResult;
 
 import javax.sql.DataSource;
 
-import static org.qi4j.api.service.qualifier.ServiceTags.*;
 import static org.qi4j.bootstrap.ImportedServiceDeclaration.*;
 
 /**
@@ -160,7 +159,7 @@ public class InfrastructureAssembler
 
       if (module.layer().application().mode() == Application.Mode.production)
       {
-         module.services( JdbmEventStoreService.class ).identifiedBy( "eventstore" ).setMetaInfo( tags( "domain" ) ).visibleIn( Visibility.application );
+         module.services( JdbmEventStoreService.class ).identifiedBy( "eventstore" ).taggedWith( "domain" ).visibleIn( Visibility.application );
          module.services( JdbmApplicationEventStoreService.class ).identifiedBy( "applicationeventstore" ).visibleIn( Visibility.application );
       } else
       {
