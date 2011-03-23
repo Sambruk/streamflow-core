@@ -16,6 +16,7 @@
 
 package se.streamsource.streamflow.client.ui.workspace.table;
 
+import ca.odell.glazedlists.SeparatorList;
 import org.jdesktop.application.ApplicationContext;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.injection.scope.Service;
@@ -171,9 +172,10 @@ public class CasesView
                      if (!caseTable.getSelectionModel().isSelectionEmpty())
                      {
                         int selectedRow = caseTable.getSelectedRow();
-                        if (selectedRow != -1)
+                        Object selectedValue = caseTable.getModel().getValueAt( caseTable.convertRowIndexToModel( selectedRow ), 8 );
+                        if (selectedRow != -1 && !(selectedValue instanceof SeparatorList.Separator) )
                         {
-                           String href = (String) caseTable.getModel().getValueAt( caseTable.convertRowIndexToModel( selectedRow ), 8 );
+                           String href = (String) selectedValue;
                            detailsView.show( client.getClient( href ) );
                         }
                      } else
