@@ -19,8 +19,10 @@ package se.streamsource.streamflow.client.ui.workspace.table;
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.TransactionList;
+import ca.odell.glazedlists.UniqueList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
@@ -33,20 +35,26 @@ import se.streamsource.dci.value.table.TableQuery;
 import se.streamsource.dci.value.table.TableValue;
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseTableValue;
 import se.streamsource.streamflow.client.util.EventListSynch;
+import se.streamsource.streamflow.client.util.LinkComparator;
 import se.streamsource.streamflow.client.util.Refreshable;
 import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
+import se.streamsource.streamflow.resource.user.profile.PerspectiveValue;
+import se.streamsource.streamflow.util.Strings;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Observable;
-import java.util.Observer;
+
+import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
 
 /**
  * Base class for all models that list cases
  */
-public class CasesTableModel
-      implements Refreshable, Observer
+public class CasesTableModel extends Observable
+      implements Refreshable
 {
    @Structure
    ValueBuilderFactory vbf;
@@ -54,17 +62,30 @@ public class CasesTableModel
    @Uses
    protected CommandQueryClient client;
 
-   protected PerspectiveModel perspectiveModel;
+   BasicEventList<LinkValue> possibleLabels = new BasicEventList<LinkValue>();
+   BasicEventList<LinkValue> possibleCaseTypes = new BasicEventList<LinkValue>();
+   BasicEventList<LinkValue> possibleAssignees = new BasicEventList<LinkValue>();
+   BasicEventList<LinkValue> possibleProjects = new BasicEventList<LinkValue>();
+   BasicEventList<LinkValue> possibleCreatedBy = new BasicEventList<LinkValue>();
+
+   List<String> selectedStatuses = new ArrayList<String>( Arrays.asList( OPEN.name(), ON_HOLD.name(), CLOSED.name() ));
+   List<String> selectedCaseTypeIds = new ArrayList<String>();
+   List<String> selectedLabelIds = new ArrayList<String>();
+   List<String> selectedAssigneeIds = new ArrayList<String>();
+   List<String> selectedProjectIds = new ArrayList<String>();
+   List<String> selectedCreatedByIds = new ArrayList<String>();
+
+   GroupBy groupBy = GroupBy.none;
+   SortBy sortBy = SortBy.none;
+   SortOrder sortOrder = SortOrder.asc;
+
+   private PerspectivePeriodModel createdOnModel;
+   private PerspectivePeriodModel dueOnModel;
    
-   public CasesTableModel(@Uses PerspectiveModel perspectiveModel)
+   public CasesTableModel(@Structure ObjectBuilderFactory obf  )
    {
-      this.perspectiveModel = perspectiveModel;
-      this.perspectiveModel.addObserver( this );
-   }
-   
-   public PerspectiveModel getPerspectiveModel()
-   {
-      return perspectiveModel;
+      createdOnModel = obf.newObjectBuilder( PerspectivePeriodModel.class ).use( Period.none ).newInstance();
+      dueOnModel = obf.newObjectBuilder( PerspectivePeriodModel.class ).use( Period.none ).newInstance();
    }
 
    protected EventList<CaseTableValue> eventList = new TransactionList<CaseTableValue>(new BasicEventList<CaseTableValue>());
@@ -74,15 +95,34 @@ public class CasesTableModel
       return eventList;
    }
 
+   public void search( String text )
+   {
+      refresh();
+   }
+
    public void refresh()
    {
       ValueBuilder<TableQuery> builder = vbf.newValueBuilder( TableQuery.class );
-      builder.prototype().tq().set( "select *" );
+      String queryString = "select *";
+      String whereClause = addWhereClauseFromFilter();
+      String sorting = addSortingFromFilter();
+
+      if( !Strings.empty( whereClause ) )
+         queryString += " where " + whereClause;
+
+      if( !Strings.empty( sorting ))
+         queryString += " " + sorting;
+
+      builder.prototype().tq().set( queryString );
       TableQuery query = builder.newInstance();
+
 
       TableValue table = client.query( "cases", query, TableValue.class );
       List<CaseTableValue> caseTableValues = caseTableValues( table );
       EventListSynch.synchronize( caseTableValues, eventList );
+
+      setChanged();
+      notifyObservers();
    }
 
    protected List<CaseTableValue> caseTableValues( TableValue table )
@@ -143,8 +183,356 @@ public class CasesTableModel
       return caseTableValues;
    }
 
-   public void update( Observable o, Object arg )
+   public EventList<LinkValue> getPossibleLabels()
    {
-      this.refresh();
+      LinksValue labels = client.query( "possiblelabels",
+            LinksValue.class );
+      possibleLabels.clear();
+      possibleLabels.addAll(labels.links().get());
+      return new UniqueList<LinkValue>( possibleLabels, new LinkComparator() );
+   }
+
+   public BasicEventList<LinkValue> getPossibleCaseTypes()
+   {
+      LinksValue caseTypes = client.query( "possiblecasetypes",
+            LinksValue.class );
+      possibleCaseTypes.clear();
+      possibleCaseTypes.addAll(caseTypes.links().get());
+      return possibleCaseTypes;
+   }
+
+   public BasicEventList<LinkValue> getPossibleAssignees()
+   {
+      LinksValue assignees = client.query( "possibleassignees",
+            LinksValue.class );
+      possibleAssignees.clear();
+      possibleAssignees.addAll(assignees.links().get());
+      return possibleAssignees;
+   }
+
+   public BasicEventList<LinkValue> getPossibleProjects()
+   {
+      LinksValue projects = client.query( "possibleprojects",
+            LinksValue.class );
+      possibleProjects.clear();
+      possibleProjects.addAll((Collection)projects.links().get());
+      return possibleProjects;
+   }
+
+   public BasicEventList<LinkValue> getPossibleCreatedBy()
+   {
+      LinksValue createdby = client.query( "possiblecreatedby",
+            LinksValue.class );
+      possibleCreatedBy.clear();
+      possibleCreatedBy.addAll(createdby.links().get());
+      return possibleCreatedBy;
+   }
+
+   public List<String> getSelectedStatuses()
+   {
+      return selectedStatuses;
+   }
+
+   public List<String> getSelectedCaseTypes()
+   {
+      return selectedDescriptions( selectedCaseTypeIds, possibleCaseTypes );
+   }
+
+   public List<String> getSelectedCaseTypeIds()
+   {
+      return selectedCaseTypeIds;
+   }
+
+   public List<String> getSelectedLabels()
+   {
+      return selectedDescriptions( selectedLabelIds, possibleLabels );
+   }
+
+   public List<String> getSelectedLabelIds()
+   {
+      return selectedLabelIds;
+   }
+
+   public List<String> getSelectedAssignees()
+   {
+      return selectedDescriptions( selectedAssigneeIds, possibleAssignees );
+   }
+
+   public List<String> getSelectedAssigneeIds()
+   {
+      return selectedAssigneeIds;
+   }
+
+   public List<String> getSelectedProjects()
+   {
+      return selectedDescriptions( selectedProjectIds, possibleProjects );
+   }
+
+   public List<String> getSelectedProjectIds()
+   {
+      return selectedProjectIds;
+   }
+
+   public List<String> getSelectedCreatedBy()
+   {
+      return selectedDescriptions( selectedCreatedByIds, possibleCreatedBy );
+   }
+
+   public List<String> getSelectedCreatedByIds()
+   {
+      return selectedCreatedByIds;
+   }
+
+   public void setSelectedStatusIds( List<String> selectedStatuses )
+   {
+      this.selectedStatuses.clear();
+      this.selectedStatuses.addAll( selectedStatuses );
+   }
+
+   public void setSelectedLabelIds( List<String> selectedLabelIds )
+   {
+      this.selectedLabelIds.clear();
+      this.selectedLabelIds.addAll( selectedLabelIds );
+   }
+
+   public void setSelectedCaseTypeIds( List<String> selectedCaseTypeIds )
+   {
+      this.selectedCaseTypeIds.clear();
+      this.selectedCaseTypeIds.addAll(selectedCaseTypeIds);
+   }
+
+   public void setSelectedAssigneeIds( List<String> selectedAssigneeIds )
+   {
+      this.selectedAssigneeIds.clear();
+      this.selectedAssigneeIds.addAll(selectedAssigneeIds);
+   }
+
+   public void setSelectedProjectIds( List<String> selectedProjectIds )
+   {
+      this.selectedProjectIds.clear();
+      this.selectedProjectIds.addAll(selectedProjectIds);
+   }
+
+   public void setSelectedCreatedByIds( List<String> selectedCreatedByIds )
+   {
+      this.selectedCreatedByIds.clear();
+      this.selectedCreatedByIds.addAll(selectedCreatedByIds);
+   }
+
+   public GroupBy getGroupBy()
+   {
+      return groupBy;
+   }
+
+   public void setGroupBy( GroupBy groupBy )
+   {
+      this.groupBy = groupBy;
+   }
+
+   public SortBy getSortBy()
+   {
+      return sortBy;
+   }
+
+   public void setSortBy( SortBy sortBy )
+   {
+      this.sortBy = sortBy;
+   }
+
+   public SortOrder getSortOrder()
+   {
+      return sortOrder;
+   }
+
+   public void setSortOrder( SortOrder sortOrder )
+   {
+      this.sortOrder = sortOrder;
+   }
+
+   public PerspectivePeriodModel getCreatedOnModel()
+   {
+      return createdOnModel;
+   }
+
+   public PerspectivePeriodModel getDueOnModel()
+   {
+      return dueOnModel;
+   }
+
+   public PerspectiveValue getPerspective( String name, String query )
+   {
+      ValueBuilder<PerspectiveValue> builder = vbf.newValueBuilder( PerspectiveValue.class );
+      builder.prototype().query().set( query );
+      builder.prototype().name().set( name );
+      builder.prototype().labels().set( getSelectedLabelIds() );
+      builder.prototype().statuses().set( getSelectedStatuses() );
+      builder.prototype().sortBy().set( getSortBy().name() );
+      builder.prototype().sortOrder().set( getSortOrder().name() );
+      builder.prototype().groupBy().set( getGroupBy().name() );
+      builder.prototype().assignees().set( getSelectedAssigneeIds() );
+      builder.prototype().caseTypes().set( getSelectedCaseTypeIds() );
+      builder.prototype().createdBy().set( getSelectedCreatedByIds() );
+      builder.prototype().projects().set( getSelectedProjectIds() );
+      builder.prototype().createdOnPeriod().set( getCreatedOnModel().getPeriod().name() );
+      builder.prototype().createdOn().set( getCreatedOnModel().getDate() );
+      builder.prototype().dueOnPeriod().set( getDueOnModel().getPeriod().name() );
+      builder.prototype().dueOn().set( getDueOnModel().getDate() );
+      //TODO Can refernce be made relative
+      builder.prototype().context().set( client.getReference().toString() );
+
+      return builder.newInstance();
+   }
+
+   public void clearFilter()
+   {
+      selectedStatuses = new ArrayList<String>();
+      selectedCaseTypeIds = new ArrayList<String>();
+      selectedLabelIds = new ArrayList<String>();
+      selectedAssigneeIds = new ArrayList<String>();
+      selectedProjectIds = new ArrayList<String>();
+      selectedCreatedByIds = new ArrayList<String>();
+
+      groupBy = GroupBy.none;
+      sortBy = SortBy.none;
+      sortOrder = SortOrder.asc;
+
+      getCreatedOnModel().setDate( null );
+      getCreatedOnModel().setPeriod( Period.none );
+
+      getDueOnModel().setDate( null );
+      getDueOnModel().setPeriod( Period.none );
+   }
+
+   public List<LinkValue> possibleFilterLinks()
+   {
+      return client.queryResource().queries().get();
+   }
+
+   public void setFilter( PerspectiveValue perspectiveValue )
+   {
+      setSelectedStatusIds( perspectiveValue.statuses().get() );
+      setSelectedCaseTypeIds( perspectiveValue.caseTypes().get() );
+      setSelectedLabelIds( perspectiveValue.labels().get() );
+      setSelectedAssigneeIds( perspectiveValue.assignees().get() );
+      setSelectedProjectIds( perspectiveValue.projects().get() );
+      setSelectedCreatedByIds( perspectiveValue.createdBy().get() );
+      setSortBy( SortBy.valueOf( perspectiveValue.sortBy().get() ) );
+      setSortOrder( SortOrder.valueOf( perspectiveValue.sortOrder().get() ) );
+      setGroupBy( GroupBy.valueOf( perspectiveValue.groupBy().get() ) );
+      getCreatedOnModel().setPeriod( Period.valueOf( perspectiveValue.createdOnPeriod().get() ) );
+      getCreatedOnModel().setDate( perspectiveValue.createdOn().get() );
+      getDueOnModel().setPeriod( Period.valueOf( perspectiveValue.dueOnPeriod().get() ) );
+      getDueOnModel().setDate( perspectiveValue.dueOn().get() );
+   }
+
+   protected String addSortingFromFilter()
+   {
+       String sort = "";
+      if (getSortBy() != SortBy.none)
+      {
+         sort = " order by " + getSortBy().name() + " " + getSortOrder().name();
+      }
+      return sort;
+   }
+
+   protected String addWhereClauseFromFilter()
+   {
+      String filter = "";
+
+      if (!getSelectedStatuses().isEmpty())
+      {
+         filter += " status:";
+         String comma = "";
+         for (String status : getSelectedStatuses())
+         {
+            filter += comma + status;
+            comma = ",";
+         }
+      }
+
+      if (!getSelectedCaseTypes().isEmpty())
+      {
+         filter += " caseType:\"";
+         String comma = "";
+         for (String caseType : getSelectedCaseTypeIds())
+         {
+            filter += comma + caseType;
+            comma = ",";
+         }
+         filter +=  "\"";
+      }
+
+      if (!getSelectedLabels().isEmpty())
+      {
+         filter += " label:\"";
+         String comma = "";
+         for (String label : getSelectedLabelIds())
+         {
+            filter += comma + label;
+            comma = ",";
+         }
+         filter +=  "\"";
+      }
+
+      if (!getSelectedAssignees().isEmpty())
+      {
+         filter += " assignedTo:\"";
+         String comma = "";
+         for (String assignee : getSelectedAssigneeIds())
+         {
+            filter += comma + assignee;
+            comma = ",";
+         }
+         filter +=  "\"";
+      }
+
+      if (!getSelectedProjects().isEmpty())
+      {
+         filter += " project:\"";
+         String comma = "";
+         for (String project : getSelectedProjectIds())
+         {
+            filter += comma + project;
+            comma = ",";
+         }
+         filter +=  "\"";
+      }
+
+      if (!getSelectedCreatedBy().isEmpty())
+      {
+         filter += " createdBy:\"";
+         String comma = "";
+         for (String createdBy : getSelectedCreatedByIds())
+         {
+            filter += comma + createdBy;
+            comma = ",";
+         }
+         filter +=  "\"";
+      }
+
+      if ( !Period.none.equals( getCreatedOnModel().getPeriod() ) )
+      {
+         filter += " createdOn:" + getCreatedOnModel().getSearchValue( "yyyyMMdd", "-" );
+      }
+
+      if( !Period.none.equals( getDueOnModel().getPeriod() ))
+      {
+         filter += " dueOn:" + getDueOnModel().getSearchValue( "yyyyMMdd", "-" );
+      }
+      return filter;
+   }
+
+   private List<String> selectedDescriptions( List<String> selected, List<LinkValue> baseList )
+   {
+      List<String> descriptions = new ArrayList<String>();
+      for(String id : selected )
+      {
+         for( LinkValue link : baseList )
+         {
+            if( link.id().get().equals( id ))
+               descriptions.add( link.text().get() );
+         }
+      }
+      return descriptions;
    }
 }

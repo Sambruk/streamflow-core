@@ -62,7 +62,7 @@ public LinksValue index()
    for (Perspective perspective : perspectives.perspectives())
    {
       linksBuilder.addLink( perspective.getDescription(), perspective.toString(),
-            ((Perspective.Data)perspective).perspective().get().context().get(), "perspectives/" + perspective.toString() + "/", "perspective");
+            "perspective", "perspectives/" + perspective.toString() + "/", "perspective");
    }
    
    for (Project project : projectQueries.allProjects())
@@ -91,7 +91,7 @@ public LinksValue casecounts()
    DraftsQueries drafts = RoleMap.role( DraftsQueries.class );
    if ((caseCount = caching.get( drafts.toString() )) == null)
    {
-      caseCount = new Element( drafts.toString(), Long.toString( drafts.drafts().newQuery( uow ).count() ) );
+      caseCount = new Element( drafts.toString(), Long.toString( drafts.drafts( null ).newQuery( uow ).count() ) );
       caching.put( caseCount );
    }
    builder.addLink( (String) caseCount.getObjectValue(), "/drafts" );
@@ -100,7 +100,7 @@ public LinksValue casecounts()
    {
       if ((caseCount = caching.get( project.toString() )) == null)
       {
-         caseCount = new Element( project.toString(), Long.toString( ((InboxQueries) project).inbox().newQuery( uow ).count() ) );
+         caseCount = new Element( project.toString(), Long.toString( ((InboxQueries) project).inbox( null).newQuery( uow ).count() ) );
          caching.put( caseCount );
       }
 
@@ -108,7 +108,8 @@ public LinksValue casecounts()
 
       if ((caseCount = caching.get( project.toString() + ":" + RoleMap.role( Assignee.class ).toString() )) == null)
       {
-         caseCount = new Element( project.toString() + ":" + RoleMap.role( Assignee.class ).toString(), Long.toString( ((AssignmentsQueries) project).assignments( RoleMap.role( Assignee.class ) ).count() ) );
+         caseCount = new Element( project.toString() + ":" + RoleMap.role( Assignee.class ).toString(),
+               Long.toString( ((AssignmentsQueries) project).assignments( RoleMap.role( Assignee.class ), null ).newQuery( uow ).count() ) );
          caching.put( caseCount );
       }
 

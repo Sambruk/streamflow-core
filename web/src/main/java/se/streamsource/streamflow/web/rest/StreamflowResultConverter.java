@@ -196,7 +196,7 @@ public class StreamflowResultConverter
       TableQuery query = (TableQuery) arguments[0];
       TableBuilder table = new TableBuilder( module.valueBuilderFactory() );
 
-      String select = query.select().equals( "*" ) ? "description,created,creator,due,caseid,href,owner,status,casetype,resolution,assigned,hascontacts,hasconversations,hasattachments,hassubmittedforms,labels,subcases,parent" : query.select();
+      String select = "*".equals( query.select().trim() ) ? "description,created,creator,due,caseid,href,owner,status,casetype,resolution,assigned,hascontacts,hasconversations,hasattachments,hassubmittedforms,labels,subcases,parent" : query.select();
       String[] columns = select.split( "[, ]" );
 
       // Columns

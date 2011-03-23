@@ -36,17 +36,40 @@ import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
-import se.streamsource.streamflow.client.ui.workspace.cases.conversations.ConversationView;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.PossibleFormsView;
-import se.streamsource.streamflow.client.util.*;
+import se.streamsource.streamflow.client.util.ActionBinder;
+import se.streamsource.streamflow.client.util.CommandTask;
+import se.streamsource.streamflow.client.util.RefreshComponents;
+import se.streamsource.streamflow.client.util.RefreshWhenShowing;
+import se.streamsource.streamflow.client.util.Refreshable;
+import se.streamsource.streamflow.client.util.UncaughtExceptionHandler;
+import se.streamsource.streamflow.client.util.ValueBinder;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
+import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 
-import javax.swing.*;
+import javax.swing.ActionMap;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.KeyStroke;
+import javax.swing.LayoutFocusTraversalPolicy;
+import javax.swing.SwingConstants;
 import javax.swing.text.DefaultFormatterFactory;
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Insets;
+import java.awt.KeyboardFocusManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -59,11 +82,9 @@ import java.util.Date;
 import java.util.TimeZone;
 
 import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.*;
-import static se.streamsource.streamflow.client.util.i18n.text;
-import static se.streamsource.streamflow.domain.interaction.gtd.CaseStates.DRAFT;
-import static se.streamsource.streamflow.domain.interaction.gtd.CaseStates.OPEN;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.matches;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withNames;
+import static se.streamsource.streamflow.client.util.i18n.*;
+import static se.streamsource.streamflow.domain.interaction.gtd.CaseStates.*;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 
 /**
  * JAVADOC
@@ -175,13 +196,15 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
             JComponent.WHEN_IN_FOCUSED_WINDOW );
 
       labelButton.setHorizontalAlignment( SwingConstants.LEFT );
-      labelButton.addActionListener( new ActionListener(){
+      labelButton.addActionListener( new ActionListener()
+      {
 
          public void actionPerformed( ActionEvent e )
          {
             labelButton.requestFocusInWindow();
          }
-      });
+      } );
+      labels.setButtonRelation( labelButton );
       refreshLabelComponents.enabledOn( "addlabel", labelButton, labels );
       
       rightBuilder.add( labelButton,
@@ -302,15 +325,6 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
    public void refresh()
    {
       model.refresh();
-//      labels.getModel().refresh();
-
-/*
-      dueOnField.setEnabled( model.getCommandEnabled( "changedueon" ) );
-      descriptionField.setEnabled( model.getCommandEnabled( "changedescription" ) );
-      notePane.getViewport().getView().setEnabled( model.getCommandEnabled( "changenote" ) );
-      caseTypeButton.setEnabled( model.getCommandEnabled( "casetype" ) );
-      selectedCaseType.setEnabled( model.getCommandEnabled( "casetype" ) );
-*/
 
       boolean enabled = model.getCaseStatus().equals( DRAFT ) || model.getCaseStatus().equals( OPEN );
       labelButton.setEnabled( enabled );

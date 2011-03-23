@@ -17,17 +17,17 @@
 
 package se.streamsource.streamflow.web.context.workspace;
 
-import org.qi4j.api.query.Query;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.table.TableQuery;
 import se.streamsource.streamflow.resource.user.profile.PerspectiveValue;
-import se.streamsource.streamflow.web.domain.entity.user.SearchCaseQueries;
 import se.streamsource.streamflow.web.domain.interaction.profile.Perspectives;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.user.profile.Perspective;
+
+import java.util.Collections;
 
 import static se.streamsource.dci.api.RoleMap.*;
 
@@ -44,7 +44,10 @@ public class PerspectiveContext
 
    public Iterable<Case> cases( TableQuery tableQuery)
    {
-      SearchCaseQueries caseQueries = RoleMap.role( SearchCaseQueries.class );
+      //TODO Should delegate to corresponding context
+      // Might be necessary to build up where clause including perspective filter before delegation
+
+      /*SearchCaseQueries caseQueries = RoleMap.role( SearchCaseQueries.class );
       Perspective.Data perspective = RoleMap.role( Perspective.Data.class );
       
       Query<Case> caseQuery = caseQueries.search( perspective.perspective().get().query().get() );
@@ -55,7 +58,8 @@ public class PerspectiveContext
       if (tableQuery.limit() != null)
          caseQuery.maxResults( Integer.parseInt( tableQuery.limit()) );
 
-      return caseQuery;
+      return caseQuery; */
+      return Collections.<Case>emptyList();
    }
 
    public PerspectiveValue index()

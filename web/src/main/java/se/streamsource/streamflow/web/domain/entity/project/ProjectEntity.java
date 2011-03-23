@@ -112,7 +112,7 @@ public interface ProjectEntity
       public void removeMember( Member member )
       {
          // Get all active cases in a project for a particular user and unassign.
-         for (Assignable caze : assignments.assignments( (Assignee) member ))
+         for (Assignable caze : assignments.assignments( (Assignee) member, null ).newQuery( uowf.currentUnitOfWork() ))
          {
             caze.unassign();
          }

@@ -134,4 +134,13 @@ public class SearchContext
       return queryBuilder.newQuery( module.unitOfWorkFactory().currentUnitOfWork() ).
          orderBy( QueryExpressions.orderBy( templateFor( Describable.Data.class).description() ) );
    }
+
+   /**
+    * Convenience method to be able to tell the gui that Status has to be rendered visible in the Perspective filter.
+    * @return
+    */
+   public LinksValue possibleStatus()
+   {
+      return new LinksBuilder( module.valueBuilderFactory() ).newLinks();
+   }
 }

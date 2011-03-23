@@ -20,7 +20,7 @@ package se.streamsource.streamflow.client.ui.workspace.search;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.Task;
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.dci.value.table.TableQuery;
@@ -28,8 +28,6 @@ import se.streamsource.dci.value.table.TableValue;
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseTableValue;
 import se.streamsource.streamflow.client.ui.workspace.table.CasesTableModel;
 import se.streamsource.streamflow.client.ui.workspace.table.Period;
-import se.streamsource.streamflow.client.ui.workspace.table.PerspectiveModel;
-import se.streamsource.streamflow.client.ui.workspace.table.SortBy;
 import se.streamsource.streamflow.client.util.EventListSynch;
 
 import java.util.Collections;
@@ -40,15 +38,15 @@ import java.util.Collections;
 public class SearchResultTableModel
       extends CasesTableModel
 {
-   public SearchResultTableModel(@Uses PerspectiveModel perspectiveModel)
-   {
-      super(perspectiveModel);
-   }
-
    @Structure
    ValueBuilderFactory vbf;
 
    private String searchString;
+
+   public SearchResultTableModel(@Structure ObjectBuilderFactory obf )
+   {
+      super( obf );
+   }
 
    public void search( String text )
    {
@@ -84,102 +82,113 @@ public class SearchResultTableModel
             }
          }.execute();
       }
+
+      setChanged();
+      notifyObservers();
    }
 
    private TableValue performSearch()
    {
       String translatedQuery = SearchTerms.translate( searchString );
 
-      if (!perspectiveModel.getSelectedStatuses().isEmpty())
-      {
-         translatedQuery += " status:";
-         String comma = "";
-         for (String status : perspectiveModel.getSelectedStatuses())
-         {
-            translatedQuery += comma + status;
-            comma = ",";
-         }
-      }
-      
-      if (!perspectiveModel.getSelectedCaseTypes().isEmpty())
-      {
-         translatedQuery += " caseType:\"";
-         String comma = "";
-         for (String caseType : perspectiveModel.getSelectedCaseTypes())
-         {
-            translatedQuery += comma + caseType;
-            comma = ",";
-         }
-         translatedQuery +=  "\"";
-      }
-      
-      if (!perspectiveModel.getSelectedLabels().isEmpty())
-      {
-         translatedQuery += " label:\"";
-         String comma = "";
-         for (String label : perspectiveModel.getSelectedLabels())
-         {
-            translatedQuery += comma + label;
-            comma = ",";
-         }
-         translatedQuery +=  "\"";
-      }
-
-      if (!perspectiveModel.getSelectedAssignees().isEmpty())
-      {
-         translatedQuery += " assignedTo:\"";
-         String comma = "";
-         for (String assignee : perspectiveModel.getSelectedAssignees())
-         {
-            translatedQuery += comma + assignee;
-            comma = ",";
-         }
-         translatedQuery +=  "\"";
-      }
-
-      if (!perspectiveModel.getSelectedProjects().isEmpty())
-      {
-         translatedQuery += " project:\"";
-         String comma = "";
-         for (String project : perspectiveModel.getSelectedProjects())
-         {
-            translatedQuery += comma + project;
-            comma = ",";
-         }
-         translatedQuery +=  "\"";
-      }
-
-      if (!perspectiveModel.getSelectedCreatedBy().isEmpty())
-      {
-         translatedQuery += " createdBy:\"";
-         String comma = "";
-         for (String createdBy : perspectiveModel.getSelectedCreatedBy())
-         {
-            translatedQuery += comma + createdBy;
-            comma = ",";
-         }
-         translatedQuery +=  "\"";
-      }
-      
-      if ( !Period.none.equals( perspectiveModel.getCreatedOnModel().getPeriod() ) )
-      {
-         translatedQuery += " createdOn:" + perspectiveModel.getCreatedOnModel().getSearchValue( "yyyyMMdd", "-" );
-      }
-
-      if( !Period.none.equals( perspectiveModel.getDueOnModel().getPeriod() ))
-      {
-         translatedQuery += " dueOn:" + perspectiveModel.getDueOnModel().getSearchValue( "yyyyMMdd", "-" );
-      }
+      translatedQuery += addWhereClauseFromFilter();
       
       ValueBuilder<TableQuery> builder = vbf.newValueBuilder( TableQuery.class );
       String query = "select * where " + translatedQuery;
-      if (perspectiveModel.getSortBy() != SortBy.none)
-      {
-         query += " order by " + perspectiveModel.getSortBy().name() + " " + perspectiveModel.getSortOrder().name();
-      }
+
+      query += addSortingFromFilter();
+
       query += " limit 1000";
       builder.prototype().tq().set( query );
 
       return client.query( "cases", builder.newInstance(), TableValue.class );
+   }
+
+   @Override
+   protected String addWhereClauseFromFilter()
+   {
+      String filter = "";
+
+      if (!getSelectedStatuses().isEmpty())
+      {
+         filter += " status:";
+         String comma = "";
+         for (String status : getSelectedStatuses())
+         {
+            filter += comma + status;
+            comma = ",";
+         }
+      }
+
+      if (!getSelectedCaseTypes().isEmpty())
+      {
+         filter += " caseType:\"";
+         String comma = "";
+         for (String caseType : getSelectedCaseTypes())
+         {
+            filter += comma + caseType;
+            comma = ",";
+         }
+         filter +=  "\"";
+      }
+
+      if (!getSelectedLabels().isEmpty())
+      {
+         filter += " label:\"";
+         String comma = "";
+         for (String label : getSelectedLabels())
+         {
+            filter += comma + label;
+            comma = ",";
+         }
+         filter +=  "\"";
+      }
+
+      if (!getSelectedAssignees().isEmpty())
+      {
+         filter += " assignedTo:\"";
+         String comma = "";
+         for (String assignee : getSelectedAssignees())
+         {
+            filter += comma + assignee;
+            comma = ",";
+         }
+         filter +=  "\"";
+      }
+
+      if (!getSelectedProjects().isEmpty())
+      {
+         filter += " project:\"";
+         String comma = "";
+         for (String project : getSelectedProjects())
+         {
+            filter += comma + project;
+            comma = ",";
+         }
+         filter +=  "\"";
+      }
+
+      if (!getSelectedCreatedBy().isEmpty())
+      {
+         filter += " createdBy:\"";
+         String comma = "";
+         for (String createdBy : getSelectedCreatedBy())
+         {
+            filter += comma + createdBy;
+            comma = ",";
+         }
+         filter +=  "\"";
+      }
+
+      if ( !Period.none.equals( getCreatedOnModel().getPeriod() ) )
+      {
+         filter += " createdOn:" + getCreatedOnModel().getSearchValue( "yyyyMMdd", "-" );
+      }
+
+      if( !Period.none.equals( getDueOnModel().getPeriod() ))
+      {
+         filter += " dueOn:" + getDueOnModel().getSearchValue( "yyyyMMdd", "-" );
+      }
+      return filter;
    }
 }

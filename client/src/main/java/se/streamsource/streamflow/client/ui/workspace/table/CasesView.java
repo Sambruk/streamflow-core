@@ -55,7 +55,6 @@ public class CasesView
 {
    private CasesTableView casesTableView;
    private CasesDetailView detailsView;
-   private PerspectiveView perspectiveView;
    
    private JSplitPane splitPane;
    private CardLayout cardLayout = new CardLayout();
@@ -108,28 +107,6 @@ public class CasesView
       return blankPanel;
    }
 
-   public void setFilterVisible( PerspectiveModel model, boolean visible )
-   {
-      // TODO this has to be changed when perspectives will be enabled for inbox searches
-      //
-      if (visible)
-      {
-         perspectiveView = obf.newObjectBuilder( PerspectiveView.class ).use( model, searchField ).newInstance();
-
-         topPanel.add( perspectiveView, BorderLayout.NORTH );
-         perspectiveView.setVisible( visible );
-      } else
-      {
-         if (perspectiveView != null)
-         {
-            topPanel.remove( perspectiveView );
-            perspectiveView = null;
-            invalidate();
-         }
-      }
-
-   }
-   
    public void showTable( CasesTableView casesTableView )
    {
       cardLayout.show( this, "cases" );

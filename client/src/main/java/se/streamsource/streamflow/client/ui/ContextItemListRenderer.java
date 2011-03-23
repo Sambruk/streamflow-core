@@ -43,7 +43,7 @@ public class ContextItemListRenderer
                public Icon getIcon( Object o )
                {
                   ContextItem item = (ContextItem) o;
-                  return i18n.icon( Icons.valueOf(item.getRelation() ), 16);
+                  return i18n.icon( Icons.valueOf( item.getRelation() ), 16);
                }
             },
             new StringValue()

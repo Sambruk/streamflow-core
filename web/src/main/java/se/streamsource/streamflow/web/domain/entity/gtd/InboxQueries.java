@@ -16,6 +16,7 @@
  */
 package se.streamsource.streamflow.web.domain.entity.gtd;
 
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.association.Association;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
@@ -25,6 +26,7 @@ import org.qi4j.api.query.QueryBuilderFactory;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
+import se.streamsource.streamflow.util.Strings;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
@@ -36,12 +38,13 @@ import static org.qi4j.api.query.QueryExpressions.*;
 
 @Mixins(InboxQueries.Mixin.class)
 public interface InboxQueries
+   extends AbstractCaseQueriesFilter
 {
-   QueryBuilder<Case> inbox();
+   QueryBuilder<Case> inbox( @Optional String filter );
 
    boolean inboxHasActiveCases();
 
-   class Mixin
+   abstract class Mixin
          implements InboxQueries
    {
 
@@ -57,7 +60,7 @@ public interface InboxQueries
       @This
       Owner owner;
 
-      public QueryBuilder<Case> inbox()
+      public QueryBuilder<Case> inbox( String filter )
       {
          // Find all Open cases with specific owner which have not yet been assigned
          QueryBuilder<Case> queryBuilder = qbf.newQueryBuilder( Case.class );
@@ -68,12 +71,16 @@ public interface InboxQueries
                eq( ownableId, owner ),
                isNull( assignee )
                 ) );
+
+         if( !Strings.empty( filter ) )
+            queryBuilder = applyFilter( queryBuilder, filter );
+
          return queryBuilder;
       }
 
       public boolean inboxHasActiveCases()
       {
-         return inbox().newQuery( uowf.currentUnitOfWork() ).count() > 0;
+         return inbox("").newQuery( uowf.currentUnitOfWork() ).count() > 0;
       }
 
    }

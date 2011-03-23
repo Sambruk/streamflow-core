@@ -202,8 +202,6 @@ import se.streamsource.streamflow.client.ui.workspace.table.CasesDetailView;
 import se.streamsource.streamflow.client.ui.workspace.table.CasesTableModel;
 import se.streamsource.streamflow.client.ui.workspace.table.CasesTableView;
 import se.streamsource.streamflow.client.ui.workspace.table.CasesView;
-import se.streamsource.streamflow.client.ui.workspace.table.PerspectiveModel;
-import se.streamsource.streamflow.client.ui.workspace.table.PerspectiveOptionsView;
 import se.streamsource.streamflow.client.ui.workspace.table.PerspectivePeriodModel;
 import se.streamsource.streamflow.client.ui.workspace.table.PerspectivePeriodView;
 import se.streamsource.streamflow.client.ui.workspace.table.PerspectiveView;
@@ -458,7 +456,7 @@ public class UIAssembler
             FormsAdminView.class, SubmittedFormsAdminView.class, CheckboxesPanel.class,
             ComboBoxPanel.class, OptionButtonsPanel.class, OpenSelectionPanel.class, ListBoxPanel.class, DatePanel.class,
             NumberPanel.class, TextAreaFieldPanel.class, TextFieldPanel.class, AttachmentFieldPanel.class, 
-            HistoryView.class, MessagesHistoryView.class, PerspectiveOptionsView.class
+            HistoryView.class, MessagesHistoryView.class, PerspectiveView.class
       );
 
       addDialogs( module, ContactLookupResultDialog.class );
@@ -466,8 +464,6 @@ public class UIAssembler
       addMV( module, CasesTableModel.class, CasesTableView.class );
 
       addMV( module, CaseModel.class, CaseInfoView.class );
-
-      addMV( module, PerspectiveModel.class, PerspectiveView.class);
 
       addMV( module, PerspectivePeriodModel.class, PerspectivePeriodView.class );
       

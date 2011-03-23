@@ -25,6 +25,7 @@ import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.client.util.EventListSynch;
 import se.streamsource.streamflow.client.util.LinkValueListModel;
+import se.streamsource.streamflow.resource.user.profile.PerspectiveValue;
 
 import java.util.List;
 
@@ -56,5 +57,10 @@ public class PerspectivesModel
       ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
       builder.prototype().string().set( name );
       client.getClient( link ).postCommand( "changedescription", builder.newInstance() );
+   }
+
+   public void savePerspective( PerspectiveValue perspective )
+   {
+      client.postCommand( "create", perspective );
    }
 }
