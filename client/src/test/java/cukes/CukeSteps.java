@@ -19,9 +19,6 @@ package cukes;
 
 import static org.fest.swing.launcher.ApplicationLauncher.application;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
-
-
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JTextField;

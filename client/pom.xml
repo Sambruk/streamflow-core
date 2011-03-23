@@ -14,6 +14,7 @@
 	<description>Streamflow client</description>
 	<properties>
 		<cuke4duke.version>0.4.3</cuke4duke.version>
+		<cukeArgs>--color</cukeArgs>
 	</properties>
 	<profiles>
 		<profile>
@@ -24,6 +25,27 @@
 						<groupId>cuke4duke</groupId>
 						<artifactId>cuke4duke-maven-plugin</artifactId>
 						<version>${cuke4duke.version}</version>
+						<configuration>
+							<cucumberArgs>
+								<cucumberArg>--backtrace</cucumberArg>
+								<cucumberArg>--color</cucumberArg>
+								<cucumberArg>--verbose</cucumberArg>
+								<cucumberArg>--format</cucumberArg>
+								<cucumberArg>pretty</cucumberArg>
+								<cucumberArg>--format</cucumberArg>
+								<cucumberArg>junit</cucumberArg>
+								<cucumberArg>--out</cucumberArg>
+								<cucumberArg>target/surefire-reports/</cucumberArg>
+								<cucumberArg>--format</cucumberArg>
+								<cucumberArg>html</cucumberArg>
+								<cucumberArg>--out</cucumberArg>
+								<cucumberArg>target/surefire-reports/cuke_results.html</cucumberArg>
+								<cucumberArg>target/test-classes</cucumberArg>
+							</cucumberArgs>
+							<gems>
+								<gem>install cuke4duke --version ${cuke4duke.version}</gem>
+							</gems>
+						</configuration>
 						<executions>
 							<execution>
 								<id>run-features</id>
@@ -42,6 +64,46 @@
 		<plugins>
 
 			<!-- Resources -->
+			<plugin>
+				<groupId>cuke4duke</groupId>
+				<artifactId>cuke4duke-maven-plugin</artifactId>
+				<version>${cuke4duke.version}</version>
+				<configuration>
+					<jvmArgs>
+						<!-- Debugging. See http://wiki.github.com/aslakhellesoy/cuke4duke/debug-cuke4duke-steps -->
+						<!--jvmArg>-Xdebug</jvmArg> <jvmArg>-Xnoagent</jvmArg> <jvmArg>-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=4000</jvmArg> 
+							<jvmArg>-Xmx384m</jvmArg -->
+						<jvmArg>-Dcuke4duke.objectFactory=cuke4duke.internal.jvmclass.PicoFactory</jvmArg>
+						<jvmArg>-Dfile.encoding=UTF-8</jvmArg>
+					</jvmArgs>
+					<!-- You may not need all of these arguments in your own project. We 
+						have a lot here for testing purposes... -->
+					<cucumberArgs>
+						<cucumberArg>${cukeArgs}</cucumberArg>
+						<cucumberArg>--backtrace</cucumberArg>
+						<cucumberArg>--color</cucumberArg>
+						<cucumberArg>--verbose</cucumberArg>
+						<cucumberArg>--format</cucumberArg>
+						<cucumberArg>pretty</cucumberArg>
+						<cucumberArg>--format</cucumberArg>
+						<cucumberArg>junit</cucumberArg>
+						<cucumberArg>--out</cucumberArg>
+						<cucumberArg>target/surefire-reports/</cucumberArg>
+						<cucumberArg>--format</cucumberArg>
+						<cucumberArg>html</cucumberArg>
+						<cucumberArg>--out</cucumberArg>
+						<cucumberArg>target/surefire-reports/cuke_results.html</cucumberArg>
+						<cucumberArg>--format</cucumberArg>
+						<cucumberArg>usage</cucumberArg>
+						<cucumberArg>--out</cucumberArg>
+						<cucumberArg>target/usage.txt</cucumberArg>
+						<cucumberArg>target/test-classes</cucumberArg>
+					</cucumberArgs>
+					<gems>
+						<gem>install cuke4duke --version ${cuke4duke.version}</gem>
+					</gems>
+				</configuration>
+			</plugin>
 			<plugin>
 				<artifactId>maven-resources-plugin</artifactId>
 				<version>2.4.1</version>
@@ -74,47 +136,7 @@
 					</execution>
 				</executions>
 			</plugin>
-			<plugin>
-				<groupId>cuke4duke</groupId>
-				<artifactId>cuke4duke-maven-plugin</artifactId>
-				<version>${cuke4duke.version}</version>
-				<configuration>
-					<jvmArgs>
-						<!-- Debugging. See http://wiki.github.com/aslakhellesoy/cuke4duke/debug-cuke4duke-steps -->
-						<!--jvmArg>-Xdebug</jvmArg> <jvmArg>-Xnoagent</jvmArg> <jvmArg>-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=4000</jvmArg> 
-							<jvmArg>-Xmx384m</jvmArg -->
-						<jvmArg>-Dcuke4duke.objectFactory=cuke4duke.internal.jvmclass.PicoFactory</jvmArg>
-						<jvmArg>-Dfile.encoding=UTF-8</jvmArg>
-					</jvmArgs>
-					<!-- You may not need all of these arguments in your own project. We 
-						have a lot here for testing purposes... -->
-					<cucumberArgs>
-						<cucumberArg>${cukeArgs}</cucumberArg>
-						<cucumberArg>--backtrace</cucumberArg>
-						<cucumberArg>--color</cucumberArg>
-						<cucumberArg>--verbose</cucumberArg>
-						<cucumberArg>--format</cucumberArg>
-						<cucumberArg>pretty</cucumberArg>
-						<cucumberArg>--format</cucumberArg>
-						<cucumberArg>junit</cucumberArg>
-						<cucumberArg>--out</cucumberArg>
-						<cucumberArg>target/surefire-reports</cucumberArg>
-						<cucumberArg>--format</cucumberArg>
-						<cucumberArg>html</cucumberArg>
-						<cucumberArg>--out</cucumberArg>
-						<cucumberArg>target/surefire-reports/results.html</cucumberArg>
-						<cucumberArg>--format</cucumberArg>
-						<cucumberArg>usage</cucumberArg>
-						<cucumberArg>--out</cucumberArg>
-						<cucumberArg>target/usage.txt</cucumberArg>
-						<cucumberArg>--require</cucumberArg>
-						<cucumberArg>${basedir}/target/test-classes</cucumberArg>
-					</cucumberArgs>
-					<gems>
-						<gem>install cuke4duke --version ${cuke4duke.version}</gem>
-					</gems>
-				</configuration>
-			</plugin>
+			
 		</plugins>
 	</build>
 	<dependencies>
