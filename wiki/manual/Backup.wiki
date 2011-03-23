@@ -1,0 +1,19 @@
+#include TableOfContents as sidebar
+
+= Backup =
+
+The following instructions will guide you to how to set up and use the backup facilities in Streamflow.
+
+== What needs to be backed up? ==
+
+TODO
+
+== Doing a backup using VisualVM ==
+
+TODO
+
+== Doing a backup from the command line ==
+
+{{{
+<input type="hidden" name="cx" value="">
+}}}

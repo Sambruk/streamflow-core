@@ -1,0 +1,29 @@
+#include TableOfContents as sidebar
+
+= Wiki =
+
+Welcome to the example *static wiki*.
+
+== How to customize? ==
+
+You can customize this wiki by editing the file:///_statwiki.config file.
+
+For start, edit the title, slogan and other visual parameters of the wiki pages. Open the config file using your favorite text editor and find the `[generator]` section. This section contains settings for the _HTML generator_ which builds the HTML around the _wikitext_ processed by StatWiki.
+
+The explanation of all available generator settings can be found in the generator itself (the file:///template/generator.py file in the `template` subdirectory).
+
+After you're done, save the configuration file and rebuild your wiki by running StatWiki with the `--build` option. This is needed so that the title and other static objects are updated on all pages.
+
+== Search bar ==
+
+You can enable a search bar on the top of the page. To do that, create a _Custom Search Engine_ using Google's service available at:
+
+http://www.google.com/cse
+
+You should configure it to only search the wiki pages by setting the domain your wiki is available at. A final step is to go to the Google's search bar settings, then to the _Code_ tab and copy the *value* attribute from the following line:
+
+{{{
+<input type="hidden" name="cx" value="">
+}}}
+
+Paste it into the `cse_id` setting in the `[generator]` section of the wiki config file. Rebuild the wiki. Done.

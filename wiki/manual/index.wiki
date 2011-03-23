@@ -1,0 +1,6 @@
+#include TableOfContents as sidebar
+
+= Streamflow manual =
+
+Welcome to the manual for the *Streamflow Case Management System*. This manual contains information for system administrators on how to install and operate Streamflow servers. For information on how to use
+the Streamflow client, including how to set things up, please take a look at the Streamflow user guide.

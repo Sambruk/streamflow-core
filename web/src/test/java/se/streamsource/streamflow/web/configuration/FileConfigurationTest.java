@@ -53,7 +53,7 @@ public class FileConfigurationTest
 
       File user = config.user();
       Assert.assertThat( "OS is correct", config.os(), CoreMatchers.equalTo( FileConfiguration.OS.mac ) );
-      Assert.assertThat( "configuration is correct", config.configurationDirectory(), CoreMatchers.equalTo( new File( user, "/Library/Preferences/StreamFlowServer" ) ) );
+      Assert.assertThat( "configuration is correct", config.configurationDirectory(), CoreMatchers.equalTo( new File( user, "/Library/Preferences/StreamFlowServer-test" ) ) );
    }
 
    @Test
@@ -64,6 +64,6 @@ public class FileConfigurationTest
 
       File user = config.user();
       Assert.assertThat( "OS is correct", config.os(), CoreMatchers.equalTo( FileConfiguration.OS.unix ) );
-      Assert.assertThat( "configuration is correct", config.configurationDirectory(), CoreMatchers.equalTo( new File( user, "/.StreamFlowServer/etc" ) ) );
+      Assert.assertThat( "configuration is correct", config.configurationDirectory(), CoreMatchers.equalTo( new File( user, "/.StreamFlowServer-test/etc" ) ) );
    }
 }

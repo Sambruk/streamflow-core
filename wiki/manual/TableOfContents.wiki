@@ -1,0 +1,8 @@
+* [index Manual]
+  * [Installation Installing Streamflow]
+  * [Administration Administration]
+    * [Backup Backing up data]
+    * [Restore Restoring data from backup]
+  * [Plugins Using plugins]
+    * [PluginsLdap LDAP plugin]
+    * [PluginsEid eID plugin]
