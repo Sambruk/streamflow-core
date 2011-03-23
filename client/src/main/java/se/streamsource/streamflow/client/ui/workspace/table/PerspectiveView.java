@@ -21,7 +21,6 @@ import ca.odell.glazedlists.SortedList;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationAction;
 import org.jdesktop.application.ApplicationContext;
-import org.jdesktop.application.Task;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
@@ -29,13 +28,11 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.util.Iterables;
 import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.dci.value.link.Links;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.util.BottomBorder;
-import se.streamsource.streamflow.client.util.CommandTask;
-import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.NameDialog;
-import se.streamsource.streamflow.util.Strings;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListCellRenderer;
@@ -86,25 +83,18 @@ public class PerspectiveView extends JPanel implements Observer
    @Uses
    Iterable<NameDialog> nameDialogs;
 
+   private CasesTableModel model;
+
    private JDialog popup;
-   
-   private PerspectiveModel model;
    private JTextField searchField;
-
    private JPanel optionsPanel;
-
+   private ApplicationContext context;
    private ObjectBuilderFactory obf;
-
    private JPanel filterPanel;
-
    private JPanel viewPanel;
-
    private JList groupByList;
-
    private JList sortByList;
-
    private JList statusList;
-   private javax.swing.Action savePerspective;
 
    private enum FilterActions
    {
@@ -122,8 +112,9 @@ public class PerspectiveView extends JPanel implements Observer
    }
 
    public void initView(final @Service ApplicationContext context, final @Structure ObjectBuilderFactory obf,
-         final @Uses PerspectiveModel model, @Optional @Uses JTextField searchField)
+         final @Uses CasesTableModel model, @Optional @Uses JTextField searchField)
    {
+      this.context = context;
 
       this.obf = obf;
       this.model = model;
@@ -134,24 +125,28 @@ public class PerspectiveView extends JPanel implements Observer
       setFocusable(true);
       setLayout(new BorderLayout());
 
-      // Proxy menu item actions manually
-      ApplicationAction savePerspectiveAction = (ApplicationAction) getActionMap().get( "savePerspective" );
-      savePerspective = context.getActionMap().get( "savePerspective" );
-      savePerspective.putValue( "proxy", savePerspectiveAction );
-
       filterPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
       javax.swing.Action filterClearAction = getActionMap().get( FilterActions.filterClear.name() );
       JButton filterClearButton = new JButton( filterClearAction );
       filterPanel.add(filterClearButton);
 
       addPopupButton( filterPanel, FilterActions.filterCreatedOn.name() );
-      addPopupButton(filterPanel, FilterActions.filterProject.name() );
-      addPopupButton(filterPanel, FilterActions.filterAssignee.name() );
+      List<LinkValue> linkValues = model.possibleFilterLinks();
+      if( Iterables.matchesAny( Links.withRel( "possibleprojects" ), linkValues ) )
+         addPopupButton(filterPanel, FilterActions.filterProject.name() );
+
+      if( Iterables.matchesAny( Links.withRel( "possibleassignees" ), linkValues ) )
+         addPopupButton(filterPanel, FilterActions.filterAssignee.name() );
+
       addPopupButton(filterPanel, FilterActions.filterCaseType.name() );
       addPopupButton(filterPanel, FilterActions.filterLabel.name() );
-      addPopupButton(filterPanel, FilterActions.filterCreatedBy.name() );
+
+      if( Iterables.matchesAny( Links.withRel( "possiblecreatedby" ), linkValues ) )
+         addPopupButton(filterPanel, FilterActions.filterCreatedBy.name() );
+
       addPopupButton(filterPanel, FilterActions.filterDueOn.name() );
-      addPopupButton(filterPanel, FilterActions.filterStatus.name() );
+      if( Iterables.matchesAny( Links.withRel( "possiblestatus" ) , linkValues ) )
+         addPopupButton(filterPanel, FilterActions.filterStatus.name() );
 
       add( filterPanel, BorderLayout.WEST );
 
@@ -180,15 +175,11 @@ public class PerspectiveView extends JPanel implements Observer
                      
                      ((JToggleButton) component).setSelected( false );
                   }
-                  savePerspective.setEnabled( false );
-               } else
-               {
-                  savePerspective.setEnabled( true );
-               }
+               } 
             }
          }
       } );
-      new RefreshWhenShowing( this, model );
+      //new RefreshWhenShowing( this, model );
    }
 
    private void addPopupButton(JPanel panel, String action)
@@ -245,7 +236,7 @@ public class PerspectiveView extends JPanel implements Observer
       SortedList<LinkValue> sortedCaseTypes = new SortedList<LinkValue>( model.getPossibleCaseTypes(),
             new SelectedLinkValueComparator(model.getSelectedCaseTypes()));
       
-      PerspectiveOptionsView panel = obf.newObjectBuilder(PerspectiveOptionsView.class).use(sortedCaseTypes, model.getSelectedCaseTypes()).newInstance();
+      PerspectiveOptionsView panel = new PerspectiveOptionsView(context, sortedCaseTypes, model.getSelectedCaseTypeIds(), false, obf );
       optionsPanel.add( panel );
    }
 
@@ -255,7 +246,7 @@ public class PerspectiveView extends JPanel implements Observer
       SortedList<LinkValue> sortedLabels = new SortedList<LinkValue>( model.getPossibleLabels(),
             new SelectedLinkValueComparator( model.getSelectedLabels() ) );
       
-      PerspectiveOptionsView panel = obf.newObjectBuilder(PerspectiveOptionsView.class).use(sortedLabels, model.getSelectedLabels()).newInstance();
+      PerspectiveOptionsView panel = new PerspectiveOptionsView( context, sortedLabels, model.getSelectedLabelIds(), false, obf );
       optionsPanel.add(panel);
    }
 
@@ -265,7 +256,7 @@ public class PerspectiveView extends JPanel implements Observer
       SortedList<LinkValue> sortedAssignees = new SortedList<LinkValue>( model.getPossibleAssignees(),
             new SelectedLinkValueComparator( model.getSelectedAssignees() ) );
 
-      PerspectiveOptionsView panel = obf.newObjectBuilder(PerspectiveOptionsView.class).use(sortedAssignees, model.getSelectedAssignees()).newInstance();
+      PerspectiveOptionsView panel = new PerspectiveOptionsView( context, sortedAssignees, model.getSelectedAssigneeIds(), false, obf );
       optionsPanel.add(panel);
    }
 
@@ -275,7 +266,7 @@ public class PerspectiveView extends JPanel implements Observer
       SortedList<LinkValue> sortedProjects = new SortedList<LinkValue>( model.getPossibleProjects(),
             new SelectedLinkValueComparator( model.getSelectedProjects() ) );
 
-      PerspectiveOptionsView panel = obf.newObjectBuilder(PerspectiveOptionsView.class).use( sortedProjects, model.getSelectedProjects(), true).newInstance();
+      PerspectiveOptionsView panel = new PerspectiveOptionsView( context, sortedProjects, model.getSelectedProjectIds(), true, obf );
       optionsPanel.add( panel );
    }
    
@@ -299,7 +290,7 @@ public class PerspectiveView extends JPanel implements Observer
       SortedList<LinkValue> sortedCreatedBy = new SortedList<LinkValue>( model.getPossibleCreatedBy(),
             new SelectedLinkValueComparator( model.getSelectedCreatedBy() ) );
       
-      PerspectiveOptionsView panel = obf.newObjectBuilder(PerspectiveOptionsView.class).use(sortedCreatedBy, model.getSelectedCreatedBy() ).newInstance();
+      PerspectiveOptionsView panel = new PerspectiveOptionsView( context, sortedCreatedBy, model.getSelectedCreatedByIds(), false, obf );
       optionsPanel.add(panel);
    }
 
@@ -366,13 +357,9 @@ public class PerspectiveView extends JPanel implements Observer
          popup.dispose();
          popup = null;
       }
-      model.notifyObservers();
+      model.refresh();
    }
-   
-   public void setModel(PerspectiveModel model)
-   {
-      this.model = model;
-   }
+
 
    public JDialog getCurrentPopup()
    {
@@ -397,26 +384,6 @@ public class PerspectiveView extends JPanel implements Observer
       }
    }
 
-   @Action
-   public Task savePerspective()
-   {
-      final NameDialog dialog = nameDialogs.iterator().next();
-      dialogs.showOkCancelHelpDialog( this, dialog, text( save_perspective ) );
-      if (!Strings.empty( dialog.name() ))
-      {
-         return new CommandTask()
-         {
-            @Override
-            public void command()
-                  throws Exception
-            {
-               model.savePerspective( dialog.name(), searchField != null ? searchField.getText() : "" );
-            }
-         };
-      } else
-         return null;
-   }
-
    public void update( Observable o, Object arg )
    {
       for( Component comp : Iterables.flatten( Iterables.iterable(filterPanel.getComponents()), Iterables.iterable(viewPanel.getComponents()) ) )
@@ -432,23 +399,23 @@ public class PerspectiveView extends JPanel implements Observer
                   break;
 
                case filterAssignee:
-                  selectedIsEmpty = model.getSelectedAssignees().isEmpty();
+                  selectedIsEmpty = model.getSelectedAssigneeIds().isEmpty();
                   break;
 
                case filterLabel:
-                  selectedIsEmpty = model.getSelectedLabels().isEmpty();
+                  selectedIsEmpty = model.getSelectedLabelIds().isEmpty();
                   break;
 
                case filterProject:
-                  selectedIsEmpty = model.getSelectedProjects().isEmpty();
+                  selectedIsEmpty = model.getSelectedProjectIds().isEmpty();
                   break;
 
                case filterCaseType:
-                  selectedIsEmpty = model.getSelectedCaseTypes().isEmpty();
+                  selectedIsEmpty = model.getSelectedCaseTypeIds().isEmpty();
                   break;
 
                case filterCreatedBy:
-                  selectedIsEmpty = model.getSelectedCreatedBy().isEmpty();
+                  selectedIsEmpty = model.getSelectedCreatedByIds().isEmpty();
                   break;
 
                case filterCreatedOn:
@@ -473,6 +440,12 @@ public class PerspectiveView extends JPanel implements Observer
             button.setIcon( selectedIsEmpty ? icon( Icons.down_no_selection, ICON_16 ) : icon( Icons.down_with_selection, ICON_16 ) );
          }
       }
+      SwingUtilities.invokeLater( new Runnable(){
+         public void run()
+         {
+            PerspectiveView.this.invalidate();
+         }
+      });
    }
 
    class SelectedLinkValueComparator implements Comparator<LinkValue>

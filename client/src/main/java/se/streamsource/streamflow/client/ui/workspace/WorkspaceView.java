@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.client.ui.workspace;
 
+import ca.odell.glazedlists.SeparatorList;
 import ca.odell.glazedlists.gui.TableFormat;
 import com.jgoodies.forms.factories.Borders;
 import org.jdesktop.application.Action;
@@ -32,23 +33,21 @@ import se.streamsource.streamflow.client.MacOsUIWrapper;
 import se.streamsource.streamflow.client.ui.ContextItem;
 import se.streamsource.streamflow.client.ui.workspace.context.WorkspaceContextView;
 import se.streamsource.streamflow.client.ui.workspace.search.ManagePerspectivesDialog;
+import se.streamsource.streamflow.client.ui.workspace.search.PerspectivesModel;
 import se.streamsource.streamflow.client.ui.workspace.search.SearchResultTableModel;
 import se.streamsource.streamflow.client.ui.workspace.search.SearchView;
 import se.streamsource.streamflow.client.ui.workspace.table.CasesTableFormatter;
 import se.streamsource.streamflow.client.ui.workspace.table.CasesTableView;
 import se.streamsource.streamflow.client.ui.workspace.table.CasesView;
-import se.streamsource.streamflow.client.ui.workspace.table.GroupBy;
-import se.streamsource.streamflow.client.ui.workspace.table.Period;
-import se.streamsource.streamflow.client.ui.workspace.table.PerspectiveModel;
-import se.streamsource.streamflow.client.ui.workspace.table.SortBy;
-import se.streamsource.streamflow.client.ui.workspace.table.SortOrder;
 import se.streamsource.streamflow.client.util.CommandTask;
 import se.streamsource.streamflow.client.util.RoundedBorder;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
+import se.streamsource.streamflow.client.util.dialog.NameDialog;
 import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.resource.user.profile.PerspectiveValue;
+import se.streamsource.streamflow.util.Strings;
 
 import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
@@ -60,6 +59,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
+import javax.swing.ListModel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIDefaults;
 import javax.swing.UIManager;
@@ -89,8 +89,10 @@ public class WorkspaceView
    @Service
    DialogService dialogs;
 
+   @Uses
+   Iterable<NameDialog> nameDialogs;
+
    SearchResultTableModel searchResultTableModel;
-   PerspectiveModel perspectiveModel;
 
    private WorkspaceContextView contextView;
    private JLabel selectedContext;
@@ -109,6 +111,7 @@ public class WorkspaceView
 
    private SearchView searchView;
    private javax.swing.Action managePerspectives;
+   private javax.swing.Action savePerspective;
 
 
    public WorkspaceView( final @Service ApplicationContext context,
@@ -134,8 +137,12 @@ public class WorkspaceView
       managePerspectives = context.getActionMap().get( "managePerspectives" );
       managePerspectives.putValue( "proxy", managePerspectivesAction );
 
-      perspectiveModel = obf.newObjectBuilder( PerspectiveModel.class ).use( client.getSubClient( "search" ), this.obf).newInstance();
-      searchResultTableModel = obf.newObjectBuilder( SearchResultTableModel.class ).use( client.getSubClient("search"), perspectiveModel).newInstance();
+      // Proxy menu item actions manually
+      ApplicationAction savePerspectiveAction = (ApplicationAction) getActionMap().get( "savePerspective" );
+      savePerspective = context.getActionMap().get( "savePerspective" );
+      savePerspective.putValue( "proxy", savePerspectiveAction );
+
+      searchResultTableModel = obf.newObjectBuilder( SearchResultTableModel.class ).use( client.getSubClient("search") ).newInstance();
 
       searchView = obf.newObjectBuilder( SearchView.class ).use(searchResultTableModel, client).newInstance();
 
@@ -209,53 +216,62 @@ public class WorkspaceView
                ContextItem contextItem = (ContextItem) list.getSelectedValue();
                if (contextItem != null)
                {
-                  boolean isSearch = (contextItem.getRelation().equals("search") || contextItem.getRelation().equals("perspective"));
-                  searchView.setVisible(isSearch);
-                  contextToolbar.setVisible( true );
-                  
+                  boolean isSearch = contextItem.getRelation().equals( "search" );
+                  boolean isPerspective = contextItem.getRelation().equals( "perspective" );
+
                   TableFormat tableFormat;
                   CasesTableView casesTable;
                   tableFormat = new CasesTableFormatter();
-                  casesTable = obf.newObjectBuilder(CasesTableView.class).use(isSearch ? searchResultTableModel : contextItem.getClient(), tableFormat, obf)
-                        .newInstance();
-
-                  if (contextItem.getRelation().equals("perspective"))
+                  
+                  if ( isPerspective )
                   {
-                     PerspectiveValue perspectiveValue = contextItem.getClient().query("index", PerspectiveValue.class);
-                     perspectiveModel.setSelectedStatuses( perspectiveValue.statuses().get() );
-                     perspectiveModel.setSelectedCaseTypes( perspectiveValue.caseTypes().get() );
-                     perspectiveModel.setSelectedLabels( perspectiveValue.labels().get() );
-                     perspectiveModel.setSelectedAssigness( perspectiveValue.assignees().get() );
-                     perspectiveModel.setSelectedProjects( perspectiveValue.projects().get() );
-                     perspectiveModel.setSelectedCreatedBy( perspectiveValue.createdBy().get() );
-                     perspectiveModel.setSortBy( SortBy.valueOf( perspectiveValue.sortBy().get() ) );
-                     perspectiveModel.setSortOrder( SortOrder.valueOf( perspectiveValue.sortOrder().get() ) );
-                     perspectiveModel.setGroupBy( GroupBy.valueOf( perspectiveValue.groupBy().get() ) );
-                     perspectiveModel.getCreatedOnModel().setPeriod( Period.valueOf( perspectiveValue.createdOnPeriod().get() ) );
-                     perspectiveModel.getCreatedOnModel().setDate( perspectiveValue.createdOn().get() );
-                     perspectiveModel.getDueOnModel().setPeriod( Period.valueOf( perspectiveValue.dueOnPeriod().get() ) );
-                     perspectiveModel.getDueOnModel().setDate( perspectiveValue.dueOn().get() );
+                     PerspectiveValue perspectiveValue = contextItem.getClient().query( "index", PerspectiveValue.class );
+                     String contextRel = perspectiveValue.context().get();
+
+                     ListModel listModel = list.getModel();
+                     for (int i = 0; i < listModel.getSize(); i++)
+                     {
+                        Object element = listModel.getElementAt( i );
+                        if (!(element instanceof SeparatorList.Separator))
+                        {
+                           if (contextRel.equals( ((ContextItem) element).getClient().getReference().toString() ))
+                           {
+                              contextItem = (ContextItem)element;
+                              isSearch = contextItem.getRelation().equals( "search" );
+                              break;
+                           }
+                        }
+                     }
+                     casesTable = obf.newObjectBuilder(CasesTableView.class)
+                           .use( obf, isSearch ? searchResultTableModel : contextItem.getClient(), tableFormat, isSearch ? searchView.getTextField() : null )
+                              .newInstance();
+
+                     casesTable.getModel().setFilter( perspectiveValue );
 
                      searchView.getTextField().setText(perspectiveValue.query().get());
-                     searchResultTableModel.search( perspectiveValue.query().get() );
-                     perspectiveModel.notifyObservers();
+                     setContextString( contextItem, perspectiveValue.name().get() );
+
                   } else
                   {
+                     casesTable = obf.newObjectBuilder(CasesTableView.class)
+                           .use( obf, isSearch ? searchResultTableModel : contextItem.getClient(), tableFormat, isSearch ? searchView.getTextField() : null )
+                              .newInstance();
+
                      searchView.getTextField().setText( "" );
-                     perspectiveModel.clearFilter();
+                     casesTable.getModel().clearFilter();
+                     setContextString( contextItem, null );
                   }
 
+                  searchView.setVisible(isSearch);
+                  contextToolbar.setVisible( true );
 
                   casesView.showTable(casesTable);
-                  casesView.setFilterVisible( perspectiveModel, isSearch );
-
-                  setContextString(contextItem);
 
                   createCaseButton.setVisible(contextItem.getRelation().equals("assign") || contextItem.getRelation().equals("draft"));
 
                } else
                {
-                  setContextString(contextItem);
+                  setContextString( contextItem, null );
                }
 
                killPopup();
@@ -273,17 +289,19 @@ public class WorkspaceView
                {
                   killPopup();
                   context.getActionMap().get( "managePerspectives" ).setEnabled( false );
+                  context.getActionMap().get( "savePerspective" ).setEnabled( false );
                }
                else
                {
                   context.getActionMap().get( "managePerspectives" ).setEnabled( true );
+                  context.getActionMap().get( "savePerspective" ).setEnabled( true );
                }
             }
          }
       });
    }
 
-   private void setContextString( ContextItem contextItem )
+   private void setContextString( ContextItem contextItem, String perspective )
    {
       if (contextItem != null)
       {
@@ -302,6 +320,7 @@ public class WorkspaceView
             text += contextItem.getGroup() + " : " + contextItem.getName();
          }
 
+         text = Strings.empty( perspective ) ? text :  text + " : " + perspective;
          selectedContext.setText( "  " + text + " " );
          FontMetrics fm = selectedContext.getFontMetrics( selectedContext.getFont() );
          int width = fm.stringWidth( selectedContext.getText() )+15;
@@ -380,6 +399,28 @@ public class WorkspaceView
    {
       ManagePerspectivesDialog dialog = obf.newObjectBuilder( ManagePerspectivesDialog.class ).use( client.getSubClient( "perspectives" )).newInstance();
       dialogs.showButtonLessDialog( this, dialog, i18n.text( WorkspaceResources.manage_perspectives ) );
+   }
+
+   @Action
+   public Task savePerspective()
+   {
+      final NameDialog dialog = nameDialogs.iterator().next();
+      dialogs.showOkCancelHelpDialog( this, dialog, i18n.text( WorkspaceResources.save_perspective ) );
+      if (!Strings.empty( dialog.name() ))
+      {
+         return new CommandTask()
+         {
+            @Override
+            public void command()
+                  throws Exception
+            {
+               PerspectivesModel model = obf.newObjectBuilder( PerspectivesModel.class ).use( client.getSubClient( "perspectives" ) ).newInstance();
+               PerspectiveValue perspective = casesView.getCaseTableView().getModel().getPerspective( dialog.name(), searchView.isVisible() ? searchView.getTextField().getText() : "" );
+               model.savePerspective( perspective );
+            }
+         };
+      } else
+         return null;
    }
    
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )

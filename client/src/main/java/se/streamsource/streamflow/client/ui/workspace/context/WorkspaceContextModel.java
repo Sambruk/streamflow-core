@@ -85,7 +85,7 @@ public class WorkspaceContextModel
             list.add( new ContextItem( "", text( search_node ), "search", -1, client.getClient( contextLink ) ) );
          } else if (contextLink.rel().get().equals("perspective"))
          {
-            list.add( new ContextItem( "", contextLink.text().get(), "perspective", -1, client.getClient( contextLink ) ) );
+            list.add( new ContextItem( "", contextLink.text().get(), contextLink.rel().get(), -1, client.getClient( contextLink ) ) );
          } else if (contextLink.rel().get().equals("inbox"))
          {
             list.add( new ContextItem( contextLink.text().get(), text( inboxes_node ), "inbox", -1, client.getClient( contextLink ) ) );

@@ -36,6 +36,7 @@ import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 
+import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.ListSelectionModel;
 import java.awt.Component;
@@ -53,9 +54,11 @@ public class CaseLabelsView
    private ObjectBuilder<SelectLinkDialog> labelSelectionDialog;
 
    private CaseLabelsModel model;
+   private JButton actionButton;
 
-   public CaseLabelsView(@Service ApplicationContext context, @Uses CommandQueryClient client, @Structure ObjectBuilderFactory obf)
+   public CaseLabelsView(@Service ApplicationContext context, @Uses CommandQueryClient client, @Structure ObjectBuilderFactory obf )
    {
+      this.actionButton = actionButton;
       setActionMap( context.getActionMap(this ));
       MacOsUIWrapper.convertAccelerators( context.getActionMap(
             CaseLabelsView.class, this ) );
@@ -105,7 +108,7 @@ public class CaseLabelsView
    {
       final SelectLinkDialog dialog = labelSelectionDialog.use( model.getPossibleLabels() ).newInstance();
       dialog.setSelectionMode( ListSelectionModel.MULTIPLE_INTERVAL_SELECTION );
-      dialogs.showOkCancelHelpDialog( this, dialog );
+      dialogs.showOkCancelHelpDialog( actionButton == null ? this : actionButton, dialog );
 
       return new CommandTask()
       {
@@ -140,5 +143,10 @@ public class CaseLabelsView
    public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
    {
       model.notifyTransactions(transactions);
+   }
+
+   public void setButtonRelation( JButton button )
+   {
+      this.actionButton = button;
    }
 }

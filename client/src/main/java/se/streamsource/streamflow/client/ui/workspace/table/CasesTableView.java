@@ -27,8 +27,11 @@ import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.decorator.HighlighterFactory;
 import org.jdesktop.swingx.renderer.DefaultTableRenderer;
 import org.jdesktop.swingx.renderer.StringValue;
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
@@ -55,6 +58,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -90,6 +94,9 @@ public class CasesTableView
       extends JPanel
       implements TransactionListener
 {
+   @Structure
+   ObjectBuilderFactory obf;
+
    public static final int MILLIS_IN_DAY = (1000 * 60 * 60 * 24);
    public static final WorkspaceResources[] dueGroups = {WorkspaceResources.overdue, WorkspaceResources.duetoday, WorkspaceResources.duetomorrow, WorkspaceResources.duenextweek, WorkspaceResources.duenextmonth, WorkspaceResources.later, WorkspaceResources.noduedate};
 
@@ -97,7 +104,7 @@ public class CasesTableView
    {
       public int compare( CaseTableValue o1, CaseTableValue o2 )
       {
-         GroupBy groupBy = model.getPerspectiveModel().getGroupBy();
+         GroupBy groupBy = model.getGroupBy();
          switch (groupBy) {
             case caseType :
                return o1.caseType().get().compareTo( o2.caseType().get() );
@@ -118,10 +125,13 @@ public class CasesTableView
    private TableFormat tableFormat;
    private ApplicationContext context;
 
+   private PerspectiveView filter;
+
 
    public void init( @Service ApplicationContext context,
                      @Uses CasesTableModel casesTableModel,
-                     final @Uses TableFormat tableFormat )
+                     final @Uses TableFormat tableFormat,
+                     @Optional @Uses JTextField searchField   )
    {
       setLayout( new BorderLayout() );
 
@@ -133,6 +143,10 @@ public class CasesTableView
       setActionMap( am );
       MacOsUIWrapper.convertAccelerators( context.getActionMap(
             CasesTableView.class, this ) );
+
+      // Filter
+      filter = obf.newObjectBuilder( PerspectiveView.class ).use( model, searchField ).newInstance();
+      add( filter, BorderLayout.NORTH );
 
       // Table
       // Trigger creation of filters and table model
@@ -153,21 +167,21 @@ public class CasesTableView
       
       caseTable.setModel( new EventJXTableModel<CaseTableValue>( model.getEventList(), tableFormat ) );
 
-      model.getPerspectiveModel().addObserver(new Observer()
+      model.addObserver( new Observer()
       {
-         public void update(Observable o, Object arg)
+         public void update( Observable o, Object arg )
          {
-            if (model.getPerspectiveModel().getGroupBy() == GroupBy.none)
+            if (model.getGroupBy() == GroupBy.none)
             {
-               caseTable.setModel(new EventJXTableModel<CaseTableValue>(model.getEventList(), tableFormat));
+               caseTable.setModel( new EventJXTableModel<CaseTableValue>( model.getEventList(), tableFormat ) );
             } else
             {
-               SeparatorList<CaseTableValue> groupingList = new SeparatorList<CaseTableValue>(model.getEventList(),
-                     groupingComparator, 1, 10000);
-               caseTable.setModel(new EventJXTableModel<CaseTableValue>(groupingList, tableFormat));
+               SeparatorList<CaseTableValue> groupingList = new SeparatorList<CaseTableValue>( model.getEventList(),
+                     groupingComparator, 1, 10000 );
+               caseTable.setModel( new EventJXTableModel<CaseTableValue>( groupingList, tableFormat ) );
             }
          }
-      });
+      } );
 
       caseTable.getColumn( 0 ).setPreferredWidth( 500 );
       caseTable.getColumn( 1 ).setPreferredWidth( 100 );
@@ -261,7 +275,7 @@ public class CasesTableView
          {
             String value = "";
             boolean emptyDescription = false;
-            switch (model.getPerspectiveModel().getGroupBy())
+            switch (model.getGroupBy())
             {
                case caseType:
                   emptyDescription = Strings.empty( ((CaseTableValue) ((SeparatorList.Separator) separator).first()).caseType().get() );

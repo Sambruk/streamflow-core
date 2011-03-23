@@ -21,10 +21,6 @@ import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.SeparatorList;
 import org.jdesktop.application.ApplicationContext;
-import org.qi4j.api.common.Optional;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.dci.value.link.LinkValue;
@@ -47,7 +43,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
-import java.util.ArrayList;
+import java.util.List;
 
 import static se.streamsource.streamflow.client.util.i18n.*;
 
@@ -56,8 +52,9 @@ public class PerspectiveOptionsView extends JPanel
    private JList itemList;
    private JTextField filterField;
 
-   public PerspectiveOptionsView(final @Service ApplicationContext context, @Uses EventList<LinkValue> values,
-         @Uses final ArrayList<String> selectedValues, @Optional @Uses final Boolean isGrouped,  @Structure ObjectBuilderFactory obf)
+
+   public PerspectiveOptionsView(final ApplicationContext context, List<LinkValue> values,
+         final List selectedValues, final boolean isGrouped,  ObjectBuilderFactory obf)
    {
 
       super(new BorderLayout());
@@ -65,7 +62,7 @@ public class PerspectiveOptionsView extends JPanel
 
       JPanel list;
 
-      if( isGrouped != null && isGrouped )
+      if( isGrouped )
       {
          list = new GroupedFilteredList();
          ((GroupedFilteredList)list).getList().setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
@@ -127,7 +124,7 @@ public class PerspectiveOptionsView extends JPanel
                setFont( list.getFont() );
                setBackground( list.getBackground() );
                setForeground( list.getForeground() );
-               if (selectedValues.contains( linkValue.text().get() ))
+               if (selectedValues.contains( linkValue.id().get() ))
                {
                   setIcon( icon( Icons.check, 12 ) );
                   setBorder( BorderFactory.createEmptyBorder( 4, 0, 0, 0 ) );
@@ -138,7 +135,7 @@ public class PerspectiveOptionsView extends JPanel
                   setBorder( BorderFactory.createEmptyBorder( 4, 16, 0, 0 ) );
                }
                setText( linkValue.text().get() );
-               if ( (isGrouped != null && isGrouped) ? index == currentSelectedLabelCount : index == currentSelectedLabelCount - 1 )
+               if ( isGrouped ? index == currentSelectedLabelCount : index == currentSelectedLabelCount - 1 )
                   setBorder( BorderFactory.createCompoundBorder( new BottomBorder( Color.LIGHT_GRAY, 1, 3 ), getBorder() ) );
                return this;
             }
@@ -156,12 +153,12 @@ public class PerspectiveOptionsView extends JPanel
                LinkValue linkValue = (LinkValue) itemList.getSelectedValue();
                if (linkValue != null)
                {
-                  if (selectedValues.contains(linkValue.text().get()))
+                  if (selectedValues.contains(linkValue.id().get()))
                   {
-                     selectedValues.remove(linkValue.text().get());
+                     selectedValues.remove(linkValue.id().get());
                   } else
                   {
-                     selectedValues.add(linkValue.text().get());
+                     selectedValues.add(linkValue.id().get());
                   }
                   itemList.clearSelection();
                }

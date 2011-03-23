@@ -17,26 +17,32 @@
 
 package se.streamsource.streamflow.web.context.overview;
 
+import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.query.Query;
+import org.qi4j.api.query.QueryBuilder;
+import org.qi4j.api.structure.Module;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.table.TableQuery;
 import se.streamsource.streamflow.web.domain.entity.gtd.AssignmentsQueries;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
 
-import static org.qi4j.api.query.QueryExpressions.orderBy;
-import static org.qi4j.api.query.QueryExpressions.templateFor;
+import static org.qi4j.api.query.QueryExpressions.*;
 
 /**
  * JAVADOC
  */
 public class OverviewProjectAssignmentsContext
 {
+   @Structure
+   Module module;
    public Query<Case> cases(TableQuery tableQuery)
    {
       AssignmentsQueries assignmentsQueries = RoleMap.role( AssignmentsQueries.class );
 
-      Query<Case> query = (Query<Case>) assignmentsQueries.assignments( null ).orderBy( orderBy( templateFor( CreatedOn.class ).createdOn() ) );
+      QueryBuilder<Case> builder = assignmentsQueries.assignments( null, null );
+
+      Query<Case> query =  builder.newQuery( module.unitOfWorkFactory().currentUnitOfWork() ).orderBy( orderBy( templateFor( CreatedOn.class ).createdOn() ) );;
       return query;
    }
 }
