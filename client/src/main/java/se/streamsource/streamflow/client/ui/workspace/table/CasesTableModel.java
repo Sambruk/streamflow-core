@@ -439,7 +439,7 @@ public class CasesTableModel extends Observable
    {
       String filter = "";
 
-      if (!getSelectedStatuses().isEmpty())
+      if (!selectedStatuses.isEmpty())
       {
          filter += " status:";
          String comma = "";
@@ -450,7 +450,7 @@ public class CasesTableModel extends Observable
          }
       }
 
-      if (!getSelectedCaseTypes().isEmpty())
+      if (!selectedCaseTypeIds.isEmpty())
       {
          filter += " caseType:\"";
          String comma = "";
@@ -462,7 +462,7 @@ public class CasesTableModel extends Observable
          filter +=  "\"";
       }
 
-      if (!getSelectedLabels().isEmpty())
+      if (!selectedLabelIds.isEmpty())
       {
          filter += " label:\"";
          String comma = "";
@@ -474,7 +474,7 @@ public class CasesTableModel extends Observable
          filter +=  "\"";
       }
 
-      if (!getSelectedAssignees().isEmpty())
+      if (!selectedAssigneeIds.isEmpty())
       {
          filter += " assignedTo:\"";
          String comma = "";
@@ -486,7 +486,7 @@ public class CasesTableModel extends Observable
          filter +=  "\"";
       }
 
-      if (!getSelectedProjects().isEmpty())
+      if (!selectedProjectIds.isEmpty())
       {
          filter += " project:\"";
          String comma = "";
@@ -498,7 +498,7 @@ public class CasesTableModel extends Observable
          filter +=  "\"";
       }
 
-      if (!getSelectedCreatedBy().isEmpty())
+      if (!selectedCreatedByIds.isEmpty())
       {
          filter += " createdBy:\"";
          String comma = "";

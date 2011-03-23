@@ -27,7 +27,6 @@ import se.streamsource.dci.value.table.TableQuery;
 import se.streamsource.dci.value.table.TableValue;
 import se.streamsource.streamflow.client.ui.workspace.cases.CaseTableValue;
 import se.streamsource.streamflow.client.ui.workspace.table.CasesTableModel;
-import se.streamsource.streamflow.client.ui.workspace.table.Period;
 import se.streamsource.streamflow.client.util.EventListSynch;
 
 import java.util.Collections;
@@ -102,93 +101,5 @@ public class SearchResultTableModel
       builder.prototype().tq().set( query );
 
       return client.query( "cases", builder.newInstance(), TableValue.class );
-   }
-
-   @Override
-   protected String addWhereClauseFromFilter()
-   {
-      String filter = "";
-
-      if (!getSelectedStatuses().isEmpty())
-      {
-         filter += " status:";
-         String comma = "";
-         for (String status : getSelectedStatuses())
-         {
-            filter += comma + status;
-            comma = ",";
-         }
-      }
-
-      if (!getSelectedCaseTypes().isEmpty())
-      {
-         filter += " caseType:\"";
-         String comma = "";
-         for (String caseType : getSelectedCaseTypes())
-         {
-            filter += comma + caseType;
-            comma = ",";
-         }
-         filter +=  "\"";
-      }
-
-      if (!getSelectedLabels().isEmpty())
-      {
-         filter += " label:\"";
-         String comma = "";
-         for (String label : getSelectedLabels())
-         {
-            filter += comma + label;
-            comma = ",";
-         }
-         filter +=  "\"";
-      }
-
-      if (!getSelectedAssignees().isEmpty())
-      {
-         filter += " assignedTo:\"";
-         String comma = "";
-         for (String assignee : getSelectedAssignees())
-         {
-            filter += comma + assignee;
-            comma = ",";
-         }
-         filter +=  "\"";
-      }
-
-      if (!getSelectedProjects().isEmpty())
-      {
-         filter += " project:\"";
-         String comma = "";
-         for (String project : getSelectedProjects())
-         {
-            filter += comma + project;
-            comma = ",";
-         }
-         filter +=  "\"";
-      }
-
-      if (!getSelectedCreatedBy().isEmpty())
-      {
-         filter += " createdBy:\"";
-         String comma = "";
-         for (String createdBy : getSelectedCreatedBy())
-         {
-            filter += comma + createdBy;
-            comma = ",";
-         }
-         filter +=  "\"";
-      }
-
-      if ( !Period.none.equals( getCreatedOnModel().getPeriod() ) )
-      {
-         filter += " createdOn:" + getCreatedOnModel().getSearchValue( "yyyyMMdd", "-" );
-      }
-
-      if( !Period.none.equals( getDueOnModel().getPeriod() ))
-      {
-         filter += " dueOn:" + getDueOnModel().getSearchValue( "yyyyMMdd", "-" );
-      }
-      return filter;
    }
 }

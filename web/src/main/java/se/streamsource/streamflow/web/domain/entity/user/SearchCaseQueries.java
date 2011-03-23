@@ -107,7 +107,7 @@ public interface
                   {
                      try
                      {
-                        labels.add( module.unitOfWorkFactory().currentUnitOfWork().get( LabelEntity.class, label ) );
+                        labels.add( module.unitOfWorkFactory().currentUnitOfWork().get( LabelEntity.class, label.replace( "\\", "" ) ) );
 
                      } catch (NoSuchEntityException e)
                      {
@@ -152,7 +152,7 @@ public interface
                   {
                      try
                      {
-                        caseTypes.add( module.unitOfWorkFactory().currentUnitOfWork().get( CaseTypeEntity.class, caseType ) );
+                        caseTypes.add( module.unitOfWorkFactory().currentUnitOfWork().get( CaseTypeEntity.class, caseType.replace( "\\", "" ) ) );
                      } catch ( NoSuchElementException e )
                      {
                         StringBuilder caseTypeQueryBuilder = new StringBuilder(
@@ -195,7 +195,7 @@ public interface
                   {
                      try
                      {
-                        projects.add( module.unitOfWorkFactory().currentUnitOfWork().get( ProjectEntity.class, project ) );
+                        projects.add( module.unitOfWorkFactory().currentUnitOfWork().get( ProjectEntity.class, project.replace( "\\", "" ) ) );
                      } catch ( NoSuchEntityException e )
                      {
                         StringBuilder projectQueryBuilder = new StringBuilder(
@@ -238,7 +238,7 @@ public interface
                   {
                      try
                      {
-                        users.add( module.unitOfWorkFactory().currentUnitOfWork().get( UserEntity.class, user ) );
+                        users.add( module.unitOfWorkFactory().currentUnitOfWork().get( UserEntity.class, user.replace( "\\", "" ) ) );
                      } catch ( NoSuchEntityException e )
                      {
                         StringBuilder creatorQueryBuilder = new StringBuilder( "type:se.streamsource.streamflow.web.domain.entity.user.UserEntity" );
@@ -287,7 +287,7 @@ public interface
                   {
                      try
                      {
-                        users.add( module.unitOfWorkFactory().currentUnitOfWork().get( UserEntity.class, user ) );
+                        users.add( module.unitOfWorkFactory().currentUnitOfWork().get( UserEntity.class, user.replace( "\\", "" ) ) );
                      } catch ( NoSuchEntityException e )
                      {
                         StringBuilder creatorQueryBuilder = new StringBuilder(

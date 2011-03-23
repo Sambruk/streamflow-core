@@ -243,19 +243,18 @@ public class WorkspaceView
                         }
                      }
                      casesTable = obf.newObjectBuilder(CasesTableView.class)
-                           .use( isSearch ? searchResultTableModel : contextItem.getClient(), tableFormat, obf )
+                           .use( obf, isSearch ? searchResultTableModel : contextItem.getClient(), tableFormat, isSearch ? searchView.getTextField() : null )
                               .newInstance();
 
                      casesTable.getModel().setFilter( perspectiveValue );
 
                      searchView.getTextField().setText(perspectiveValue.query().get());
-                     casesTable.getModel().refresh();
                      setContextString( contextItem, perspectiveValue.name().get() );
 
                   } else
                   {
                      casesTable = obf.newObjectBuilder(CasesTableView.class)
-                           .use( isSearch ? searchResultTableModel : contextItem.getClient(), tableFormat, obf )
+                           .use( obf, isSearch ? searchResultTableModel : contextItem.getClient(), tableFormat, isSearch ? searchView.getTextField() : null )
                               .newInstance();
 
                      searchView.getTextField().setText( "" );

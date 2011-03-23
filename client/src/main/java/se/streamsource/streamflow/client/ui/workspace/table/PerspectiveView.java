@@ -399,23 +399,23 @@ public class PerspectiveView extends JPanel implements Observer
                   break;
 
                case filterAssignee:
-                  selectedIsEmpty = model.getSelectedAssignees().isEmpty();
+                  selectedIsEmpty = model.getSelectedAssigneeIds().isEmpty();
                   break;
 
                case filterLabel:
-                  selectedIsEmpty = model.getSelectedLabels().isEmpty();
+                  selectedIsEmpty = model.getSelectedLabelIds().isEmpty();
                   break;
 
                case filterProject:
-                  selectedIsEmpty = model.getSelectedProjects().isEmpty();
+                  selectedIsEmpty = model.getSelectedProjectIds().isEmpty();
                   break;
 
                case filterCaseType:
-                  selectedIsEmpty = model.getSelectedCaseTypes().isEmpty();
+                  selectedIsEmpty = model.getSelectedCaseTypeIds().isEmpty();
                   break;
 
                case filterCreatedBy:
-                  selectedIsEmpty = model.getSelectedCreatedBy().isEmpty();
+                  selectedIsEmpty = model.getSelectedCreatedByIds().isEmpty();
                   break;
 
                case filterCreatedOn:
@@ -440,6 +440,12 @@ public class PerspectiveView extends JPanel implements Observer
             button.setIcon( selectedIsEmpty ? icon( Icons.down_no_selection, ICON_16 ) : icon( Icons.down_with_selection, ICON_16 ) );
          }
       }
+      SwingUtilities.invokeLater( new Runnable(){
+         public void run()
+         {
+            PerspectiveView.this.invalidate();
+         }
+      });
    }
 
    class SelectedLinkValueComparator implements Comparator<LinkValue>

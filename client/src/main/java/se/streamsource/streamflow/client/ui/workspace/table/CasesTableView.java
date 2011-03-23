@@ -27,6 +27,7 @@ import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.decorator.HighlighterFactory;
 import org.jdesktop.swingx.renderer.DefaultTableRenderer;
 import org.jdesktop.swingx.renderer.StringValue;
+import org.qi4j.api.common.Optional;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
@@ -57,6 +58,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -128,7 +130,8 @@ public class CasesTableView
 
    public void init( @Service ApplicationContext context,
                      @Uses CasesTableModel casesTableModel,
-                     final @Uses TableFormat tableFormat )
+                     final @Uses TableFormat tableFormat,
+                     @Optional @Uses JTextField searchField   )
    {
       setLayout( new BorderLayout() );
 
@@ -142,7 +145,7 @@ public class CasesTableView
             CasesTableView.class, this ) );
 
       // Filter
-      filter = obf.newObjectBuilder( PerspectiveView.class ).use( model ).newInstance();
+      filter = obf.newObjectBuilder( PerspectiveView.class ).use( model, searchField ).newInstance();
       add( filter, BorderLayout.NORTH );
 
       // Table
