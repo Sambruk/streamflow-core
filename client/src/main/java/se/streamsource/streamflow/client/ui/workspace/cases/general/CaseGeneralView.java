@@ -167,6 +167,7 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
       rightBuilder.nextLine();
       rightBuilder.setExtent( 3, 1 );
       rightBuilder.add( valueBinder.bind( "description", actionBinder.bind( "changeDescription", descriptionField = (JTextField) TEXTFIELD.newField() ) ) );
+      descriptionField.setName("txtCaseDescription");
       rightBuilder.nextLine();
       descriptionLabel.setLabelFor( descriptionField );
       refreshComponents.enabledOn( "changedescription", descriptionField );

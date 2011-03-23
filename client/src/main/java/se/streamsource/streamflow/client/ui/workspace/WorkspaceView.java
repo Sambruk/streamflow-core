@@ -167,6 +167,7 @@ public class WorkspaceView
 
       JPanel topPanel = new JPanel( new BorderLayout());
       selectContextButton = new JButton( getActionMap().get( "selectContext" ) );
+      selectContextButton.setName("btnSelectContext");
       JPanel contextSelectionPanel = new JPanel( new FlowLayout( FlowLayout.LEFT, 0, 0 ) );
       contextSelectionPanel.setBorder( BorderFactory.createEmptyBorder( 5, 0, 0, 0 ) );
       contextSelectionPanel.add( selectContextButton );
