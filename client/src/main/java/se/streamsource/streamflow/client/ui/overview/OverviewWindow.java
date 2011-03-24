@@ -24,11 +24,11 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
+import se.streamsource.streamflow.client.ui.account.AccountModel;
+import se.streamsource.streamflow.client.ui.account.AccountSelector;
+import se.streamsource.streamflow.client.ui.menu.OverviewMenuBar;
 import se.streamsource.streamflow.client.util.JavaHelp;
 import se.streamsource.streamflow.client.util.i18n;
-import se.streamsource.streamflow.client.ui.account.AccountSelector;
-import se.streamsource.streamflow.client.ui.account.AccountModel;
-import se.streamsource.streamflow.client.ui.menu.OverviewMenuBar;
 
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -55,7 +55,7 @@ public class OverviewWindow
       setFrame( frame );
       setMenuBar( menu );
 
-      frame.setPreferredSize( new Dimension( 1000, 600 ) );
+      frame.setPreferredSize( new Dimension( 1300, 800 ) );
       frame.pack();
 
       accountSelector.addListSelectionListener( new ListSelectionListener()

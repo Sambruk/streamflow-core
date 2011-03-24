@@ -42,6 +42,7 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.util.List;
 
@@ -59,6 +60,9 @@ public class PerspectiveOptionsView extends JPanel
 
       super(new BorderLayout());
       final int currentSelectedLabelCount = selectedValues.size();
+      setPreferredSize( new Dimension( 250, 200 ) );
+      setMaximumSize( new Dimension( 250, 200 ) );
+      setMinimumSize( new Dimension( 250, 200 ) );
 
       JPanel list;
 
@@ -96,7 +100,6 @@ public class PerspectiveOptionsView extends JPanel
          this.filterField = ((FilteredList)list).getFilterField();
       }
       add(list);
-
 
       itemList.setCellRenderer(new DefaultListCellRenderer(){
          @Override

@@ -69,7 +69,7 @@ public class WorkspaceWindow
       setMenuBar( menu );
 
 
-      frame.setPreferredSize( new Dimension( 1300, 1000 ) );
+      frame.setPreferredSize( new Dimension( 1300, 800 ) );
       frame.pack();
       frame.setExtendedState(frame.getExtendedState() | JXFrame.MAXIMIZED_BOTH);
       // Turn off java help for 1.0 release
