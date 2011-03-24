@@ -179,7 +179,6 @@ public class PerspectiveView extends JPanel implements Observer
             }
          }
       } );
-      //new RefreshWhenShowing( this, model );
    }
 
    private void addPopupButton(JPanel panel, String action)
@@ -313,6 +312,12 @@ public class PerspectiveView extends JPanel implements Observer
 
          public void run()
          {
+            // Make it impossible to have several popups open at the same time
+            if( popup != null )
+            {
+               popup.dispose();
+               popup = null;
+            }
             final JFrame frame = (JFrame) SwingUtilities.getAncestorOfClass( JFrame.class, PerspectiveView.this );
             popup = new JDialog( frame );
             popup.getRootPane().registerKeyboardAction( new ActionListener()

@@ -30,6 +30,7 @@ import se.streamsource.streamflow.client.util.EventListSynch;
 import se.streamsource.streamflow.client.util.Refreshable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
@@ -95,6 +96,7 @@ public class WorkspaceContextModel
          }
       }
 
+      EventListSynch.synchronize( Collections.<ContextItem>emptyList(), items );
       EventListSynch.synchronize( list, items );
 
       applyCounts();
