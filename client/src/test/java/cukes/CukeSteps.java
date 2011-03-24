@@ -56,7 +56,8 @@ public class CukeSteps {
 		application(MainClient.class).start();
 		FrameMatcher matcher = FrameMatcher.withTitle( "Streamflow Workspace" );
 		workspaceFrame = WindowFinder.findFrame( matcher ).withTimeout(10000).using( robot );
-		workspaceFrame.show(); 
+		workspaceFrame.show();
+		workspaceFrame.maximize();
 	}
 	@After
 	public void stopClient() {
