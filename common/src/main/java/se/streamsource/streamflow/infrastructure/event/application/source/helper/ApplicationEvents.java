@@ -168,7 +168,7 @@ public class ApplicationEvents
 
       return new Output<TransactionApplicationEvents, ApplicationEventReplayException>()
       {
-         public <SenderThrowableType extends Throwable> void receiveFrom( Sender<TransactionApplicationEvents, SenderThrowableType> sender ) throws ApplicationEventReplayException, SenderThrowableType
+         public <SenderThrowableType extends Throwable> void receiveFrom(Sender<? extends TransactionApplicationEvents, SenderThrowableType> sender) throws ApplicationEventReplayException, SenderThrowableType
          {
             sender.sendTo( new Receiver<TransactionApplicationEvents, ApplicationEventReplayException>()
             {

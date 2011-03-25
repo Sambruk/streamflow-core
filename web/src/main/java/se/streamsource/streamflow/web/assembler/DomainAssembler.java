@@ -39,12 +39,7 @@ import se.streamsource.streamflow.web.domain.entity.form.FormDraftEntity;
 import se.streamsource.streamflow.web.domain.entity.form.FormEntity;
 import se.streamsource.streamflow.web.domain.entity.form.PageEntity;
 import se.streamsource.streamflow.web.domain.entity.label.LabelEntity;
-import se.streamsource.streamflow.web.domain.entity.organization.AccessPointEntity;
-import se.streamsource.streamflow.web.domain.entity.organization.GroupEntity;
-import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
-import se.streamsource.streamflow.web.domain.entity.organization.OrganizationalUnitEntity;
-import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
-import se.streamsource.streamflow.web.domain.entity.organization.RoleEntity;
+import se.streamsource.streamflow.web.domain.entity.organization.*;
 import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
 import se.streamsource.streamflow.web.domain.entity.project.ProjectRoleEntity;
 import se.streamsource.streamflow.web.domain.entity.user.*;
@@ -54,7 +49,7 @@ import se.streamsource.streamflow.web.domain.structure.organization.ParticipantR
 import se.streamsource.streamflow.web.domain.structure.project.PermissionValue;
 import se.streamsource.streamflow.web.infrastructure.index.NamedSolrDescriptor;
 
-import static org.qi4j.api.common.Visibility.*;
+import static org.qi4j.api.common.Visibility.application;
 
 /**
  * JAVADOC

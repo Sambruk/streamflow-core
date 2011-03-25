@@ -96,9 +96,9 @@ public class ApplicationTransactionTracker<ReceiverThrowableType extends Throwab
    {
       return new Output<TransactionApplicationEvents, ReceiverThrowableType>()
       {
-         public <SenderThrowableType extends Throwable> void receiveFrom( final Sender<TransactionApplicationEvents, SenderThrowableType> sender ) throws ReceiverThrowableType, SenderThrowableType
+         public <SenderThrowableType extends Throwable> void receiveFrom(final Sender<? extends TransactionApplicationEvents, SenderThrowableType> sender) throws ReceiverThrowableType, SenderThrowableType
          {
-            if (!upToSpeed)
+         if (!upToSpeed)
             {
                // The tracker has not handled successfully all transactions before,
                // so it needs to get the backlog first
@@ -120,7 +120,7 @@ public class ApplicationTransactionTracker<ReceiverThrowableType extends Throwab
             {
                output.receiveFrom( new Sender<TransactionApplicationEvents, SenderThrowableType>()
                {
-                  public <ReceiverThrowableType extends Throwable> void sendTo( final Receiver<TransactionApplicationEvents, ReceiverThrowableType> receiver ) throws ReceiverThrowableType, SenderThrowableType
+                  public <ReceiverThrowableType extends Throwable> void sendTo(final Receiver<? super TransactionApplicationEvents, ReceiverThrowableType> receiver) throws ReceiverThrowableType, SenderThrowableType
                   {
                      sender.sendTo( new Receiver<TransactionApplicationEvents, ReceiverThrowableType>()
                      {
