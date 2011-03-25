@@ -275,6 +275,7 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
 
       notePane = (JScrollPane) TEXTAREA.newField();
       notePane.setMinimumSize( new Dimension( 10, 50 ) );
+      notePane.setPreferredSize( new Dimension( 700, 300 ) );
       refreshComponents.enabledOn( "changenote", notePane.getViewport().getView() );
 
       leftForm.add(new JLabel(i18n.text( WorkspaceResources.note_label ), JLabel.LEFT));
