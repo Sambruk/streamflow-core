@@ -16,9 +16,11 @@
 
 package se.streamsource.dci.restlet.server;
 
+import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Initializable;
 import org.qi4j.api.mixin.InitializationException;
+import org.qi4j.api.service.ServiceReference;
 import org.qi4j.api.structure.Module;
 import org.restlet.Response;
 import org.slf4j.Logger;
@@ -32,17 +34,28 @@ import java.util.ResourceBundle;
  * Delegates to a list of potential writers. Register writers on startup.
  */
 public class ResultWriterDelegator
-   implements ResultWriter, Initializable
+        implements ResultWriter
 {
    List<ResultWriter> responseWriters = new ArrayList<ResultWriter>( );
 
    @Structure
    Module module;
 
-   public void initialize() throws InitializationException
+   public void init(@Service Iterable<ServiceReference<ResultWriter>> resultWriters) throws InitializationException
    {
       Logger logger = LoggerFactory.getLogger( getClass() );
 
+      // Add custom writers first
+      for (ServiceReference<ResultWriter> resultWriter : resultWriters)
+      {
+         if (!resultWriter.identity().equals("resultwriterdelegator"))
+         {
+            logger.info("Registered result writer:" + resultWriter.identity());
+            registerResultWriter(resultWriter.get());
+         }
+      }
+
+      // Add defaults
       ResourceBundle defaultResultWriters = ResourceBundle.getBundle( "resultwriters" );
 
       String resultWriterClasses = defaultResultWriters.getString( "resultwriters" );

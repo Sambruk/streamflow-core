@@ -55,7 +55,7 @@ public class DCIAssembler
 
       module.importedServices( MetadataService.class );
 
-      module.importedServices( ResultWriterDelegator.class ).importedBy( NEW_OBJECT );
+      module.importedServices(ResultWriterDelegator.class).identifiedBy("resultwriterdelegator").importedBy(NEW_OBJECT);
       module.objects( ResultWriterDelegator.class );
 
       // Standard result writers

@@ -71,7 +71,7 @@ public abstract class CommandQueryRestlet2
    CommandResult commandResult;
 
    @Service
-   ResultWriter responseWriter;
+   ResultWriterDelegator responseWriter;
 
    private Map<Class, Uniform> subResources = Collections.synchronizedMap(new HashMap<Class, Uniform>());
 

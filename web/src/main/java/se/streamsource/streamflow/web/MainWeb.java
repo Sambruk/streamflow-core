@@ -16,12 +16,7 @@
 
 package se.streamsource.streamflow.web;
 
-import org.restlet.Application;
-import org.restlet.Component;
-import org.restlet.Context;
-import org.restlet.Request;
-import org.restlet.Response;
-import org.restlet.Restlet;
+import org.restlet.*;
 import org.restlet.data.Protocol;
 import org.restlet.engine.http.HttpResponse;
 import org.restlet.routing.Filter;
@@ -92,7 +87,13 @@ public class MainWeb
          logger.info("Could not start Streamflow", e);
 
          if (component != null)
+            try
+            {
             component.stop();
+            } catch (Exception e1)
+            {
+               // Ignore
+            }
          throw e;
       } finally
       {

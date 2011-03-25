@@ -52,6 +52,21 @@ public class MacOsUIExtension
       });
    }
 
+   public void attachMacOpenFileExtension()
+   {
+      if (System.getProperty("os.name").startsWith("Mac"))
+      {
+         Application macApplication = Application.getApplication();
+         macApplication.setOpenFileHandler(new OpenFilesHandler()
+         {
+            public void openFiles(AppEvent.OpenFilesEvent openFilesEvent)
+            {
+               application.openFile(openFilesEvent.getFiles().get(0));
+            }
+         });
+      }
+   }
+
    /**
     * Replace all "ctrl" keystrokes with "meta" (Apple command) keystrokes.
     */
@@ -80,6 +95,7 @@ public class MacOsUIExtension
 
    /**
     * Replace all "ctrl" keystrokes with "meta" (Apple command) keystrokes.
+    *
     * @param actions
     */
    public static void convertAccelerators(ActionMap actions)

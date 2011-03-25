@@ -327,15 +327,15 @@ public interface ManagerComposite
             // Restore data from latest backup in /backup
             File latestBackup = getLatestBackup();
 
-            if (latestBackup != null)
+            // Check if a backup actually exists
+            if (latestBackup == null)
                importDatabase( latestBackup.getAbsolutePath() );
             else
             {
-               // Ensure that at least the root OrganizationsEntity is created
-               UnitOfWork uow = uowf.newUnitOfWork( UsecaseBuilder.newUsecase( "Create organizations" ) );
-               uow.newEntity( OrganizationsEntity.class, OrganizationsEntity.ORGANIZATIONS_ID );
-               uow.complete();
+               return "Error: no backup to restore";
             }
+
+            importDatabase(latestBackup.getAbsolutePath());
 
             // Reindex state
             reindex();

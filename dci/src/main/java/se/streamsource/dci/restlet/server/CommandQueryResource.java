@@ -104,7 +104,7 @@ public class CommandQueryResource
 
    private
    @Service
-   ResultWriter resultWriter;
+   ResultWriterDelegator resultWriter;
 
    private
    @Service

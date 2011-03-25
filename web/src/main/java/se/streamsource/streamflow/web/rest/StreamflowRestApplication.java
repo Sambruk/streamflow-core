@@ -62,6 +62,7 @@ public class StreamflowRestApplication
    {
       super(parentContext);
       getMetadataService().addExtension("srj", APPLICATION_SPARQL_JSON);
+      getMetadataService().addExtension("case", MediaType.register("application/x-streamflow-case+json", "Streamflow Case"));
 
    }
 
