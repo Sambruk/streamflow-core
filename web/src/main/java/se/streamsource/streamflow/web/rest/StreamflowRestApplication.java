@@ -18,10 +18,8 @@
 package se.streamsource.streamflow.web.rest;
 
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.bootstrap.Energy4Java;
-import org.qi4j.spi.structure.ApplicationModelSPI;
 import org.qi4j.spi.structure.ApplicationSPI;
 import org.restlet.Application;
 import org.restlet.Context;
@@ -62,6 +60,7 @@ public class StreamflowRestApplication
    {
       super(parentContext);
       getMetadataService().addExtension("srj", APPLICATION_SPARQL_JSON);
+      getMetadataService().addExtension("case", MediaType.register("application/x-streamflow-case+json", "Streamflow Case"));
 
    }
 
@@ -95,7 +94,7 @@ public class StreamflowRestApplication
             String name = "StreamflowServer";
             Object host = getContext().getAttributes().get("streamflow.host");
             if (host != null)
-               name+="-"+host;
+               name += "-" + host;
 
             streamflowWebAssembler.setName(name);
             app = is.newApplication(streamflowWebAssembler);

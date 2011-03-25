@@ -26,7 +26,7 @@ public class MacOsUIExtension
 {
    private StreamflowApplication application;
 
-   public MacOsUIExtension( StreamflowApplication application )
+   public MacOsUIExtension(StreamflowApplication application)
    {
       this.application = application;
    }
@@ -34,22 +34,37 @@ public class MacOsUIExtension
    public void attachMacUIExtension()
    {
       Application macApp = Application.getApplication();
-      macApp.setDockIconImage( i18n.icon(Icons.logo, 64 ).getImage());
-      macApp.setAboutHandler( new AboutHandler()
+      macApp.setDockIconImage(i18n.icon(Icons.logo, 64).getImage());
+      macApp.setAboutHandler(new AboutHandler()
       {
-         public void handleAbout( AppEvent.AboutEvent aboutEvent )
+         public void handleAbout(AppEvent.AboutEvent aboutEvent)
          {
             application.showAbout();
          }
       });
-      macApp.setQuitHandler( new QuitHandler()
+      macApp.setQuitHandler(new QuitHandler()
       {
-         public void handleQuitRequestWith( AppEvent.QuitEvent quitEvent, QuitResponse quitResponse )
+         public void handleQuitRequestWith(AppEvent.QuitEvent quitEvent, QuitResponse quitResponse)
          {
             application.shutdown();
             quitResponse.performQuit();
          }
       });
+   }
+
+   public void attachMacOpenFileExtension()
+   {
+      if (System.getProperty("os.name").startsWith("Mac"))
+      {
+         Application macApplication = Application.getApplication();
+         macApplication.setOpenFileHandler(new OpenFilesHandler()
+         {
+            public void openFiles(AppEvent.OpenFilesEvent openFilesEvent)
+            {
+               application.openFile(openFilesEvent.getFiles().get(0));
+            }
+         });
+      }
    }
 
    /**
@@ -61,25 +76,26 @@ public class MacOsUIExtension
       Object[] keys = actions.allKeys();
       for (Object key : keys)
       {
-         Action action = actions.get( key );
-         KeyStroke keyStroke = (KeyStroke) action.getValue( Action.ACCELERATOR_KEY );
+         Action action = actions.get(key);
+         KeyStroke keyStroke = (KeyStroke) action.getValue(Action.ACCELERATOR_KEY);
          Object ack = action.getValue(Action.ACTION_COMMAND_KEY);
-         if (keyStroke != null && keyStroke.toString().contains( "ctrl" ))
+         if (keyStroke != null && keyStroke.toString().contains("ctrl"))
          {
-            keyStroke = KeyStroke.getKeyStroke( keyStroke.toString().replace( "ctrl", "meta" ) );
-            action.putValue( Action.ACCELERATOR_KEY, keyStroke );
+            keyStroke = KeyStroke.getKeyStroke(keyStroke.toString().replace("ctrl", "meta"));
+            action.putValue(Action.ACCELERATOR_KEY, keyStroke);
          }
-         String toolTip = (String) action.getValue( Action.SHORT_DESCRIPTION );
-         if (toolTip != null && toolTip.contains( "ctrl" ))
+         String toolTip = (String) action.getValue(Action.SHORT_DESCRIPTION);
+         if (toolTip != null && toolTip.contains("ctrl"))
          {
-        	toolTip = toolTip.replace( "ctrl", "meta" );
-            action.putValue( Action.SHORT_DESCRIPTION, toolTip );
+            toolTip = toolTip.replace("ctrl", "meta");
+            action.putValue(Action.SHORT_DESCRIPTION, toolTip);
          }
       }
    }
 
    /**
     * Replace all "ctrl" keystrokes with "meta" (Apple command) keystrokes.
+    *
     * @param actions
     */
    public static void convertAccelerators(ActionMap actions)
@@ -87,19 +103,19 @@ public class MacOsUIExtension
       Object[] keys = actions.allKeys();
       for (Object key : keys)
       {
-         Action action = actions.get( key );
-         KeyStroke keyStroke = (KeyStroke) action.getValue( Action.ACCELERATOR_KEY );
+         Action action = actions.get(key);
+         KeyStroke keyStroke = (KeyStroke) action.getValue(Action.ACCELERATOR_KEY);
          Object ack = action.getValue(Action.ACTION_COMMAND_KEY);
-         if (keyStroke != null && keyStroke.toString().contains( "ctrl" ))
+         if (keyStroke != null && keyStroke.toString().contains("ctrl"))
          {
-            keyStroke = KeyStroke.getKeyStroke( keyStroke.toString().replace( "ctrl", "meta" ) );
-            action.putValue( Action.ACCELERATOR_KEY, keyStroke );
+            keyStroke = KeyStroke.getKeyStroke(keyStroke.toString().replace("ctrl", "meta"));
+            action.putValue(Action.ACCELERATOR_KEY, keyStroke);
          }
-         String toolTip = (String) action.getValue( Action.SHORT_DESCRIPTION );
-         if (toolTip != null && toolTip.contains( "ctrl" ))
+         String toolTip = (String) action.getValue(Action.SHORT_DESCRIPTION);
+         if (toolTip != null && toolTip.contains("ctrl"))
          {
-        	toolTip = toolTip.replace( "ctrl", "meta" );
-            action.putValue( Action.SHORT_DESCRIPTION, toolTip );
+            toolTip = toolTip.replace("ctrl", "meta");
+            action.putValue(Action.SHORT_DESCRIPTION, toolTip);
          }
       }
    }

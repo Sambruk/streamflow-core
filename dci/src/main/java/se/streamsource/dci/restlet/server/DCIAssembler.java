@@ -33,37 +33,37 @@ import static org.qi4j.bootstrap.ImportedServiceDeclaration.NEW_OBJECT;
  * JAVADOC
  */
 public class DCIAssembler
-      implements Assembler
+        implements Assembler
 {
-   public void assemble( ModuleAssembly module ) throws AssemblyException
+   public void assemble(ModuleAssembly module) throws AssemblyException
    {
       Properties props = new Properties();
       try
       {
-         props.load( getClass().getResourceAsStream( "/velocity.properties" ) );
+         props.load(getClass().getResourceAsStream("/velocity.properties"));
 
-         VelocityEngine velocity = new VelocityEngine( props );
+         VelocityEngine velocity = new VelocityEngine(props);
 
-         module.importedServices( VelocityEngine.class )
-               .importedBy( INSTANCE ).setMetaInfo( velocity );
+         module.importedServices(VelocityEngine.class)
+                 .importedBy(INSTANCE).setMetaInfo(velocity);
 
       } catch (Exception e)
       {
-         throw new AssemblyException( "Could not load velocity properties", e );
+         throw new AssemblyException("Could not load velocity properties", e);
       }
-      module.objects( DefaultCommandQueryResource.class );
+      module.objects(DefaultCommandQueryResource.class);
 
-      module.importedServices( MetadataService.class );
+      module.importedServices(MetadataService.class);
 
-      module.importedServices( ResultWriterDelegator.class ).importedBy( NEW_OBJECT );
-      module.objects( ResultWriterDelegator.class );
+      module.importedServices(ResultWriterDelegator.class).identifiedBy("resultwriterdelegator").importedBy(NEW_OBJECT);
+      module.objects(ResultWriterDelegator.class);
 
       // Standard result writers
-      module.objects( ResourceTemplateResultWriter.class,
-            LinksResultWriter.class,
-            TableResultWriter.class,
-            ResourceResultWriter.class,
-            ValueCompositeResultWriter.class,
-            FormResultWriter.class );
+      module.objects(ResourceTemplateResultWriter.class,
+              LinksResultWriter.class,
+              TableResultWriter.class,
+              ResourceResultWriter.class,
+              ValueCompositeResultWriter.class,
+              FormResultWriter.class);
    }
 }

@@ -47,71 +47,71 @@ import se.streamsource.streamflow.web.resource.events.DomainEventsServerResource
  * Router for the Streamflow REST API.
  */
 public class APIRouter
-      extends Router
+        extends Router
 {
    private ObjectBuilderFactory factory;
    private AuthenticationFilterService filterService;
 
-   public APIRouter( @Uses Context context, @Structure ObjectBuilderFactory factory, @Service AuthenticationFilterService filterService ) throws Exception
+   public APIRouter(@Uses Context context, @Structure ObjectBuilderFactory factory, @Service AuthenticationFilterService filterService) throws Exception
    {
-      super( context );
+      super(context);
       this.factory = factory;
       this.filterService = filterService;
 
-      Restlet cqr = factory.newObjectBuilder( CommandQueryRestlet2.class ).use( getContext() ).newInstance();
+      Restlet cqr = factory.newObjectBuilder(CommandQueryRestlet2.class).use(getContext()).newInstance();
 
-      Filter authenticationFilter = factory.newObjectBuilder( AuthenticationFilter.class ).use( getContext(), cqr, this.filterService ).newInstance();
-      
-      Filter performanceLoggingFilter = new PerformanceLoggingFilter( context, authenticationFilter );
+      Filter authenticationFilter = factory.newObjectBuilder(AuthenticationFilter.class).use(getContext(), cqr, this.filterService).newInstance();
 
-      attachDefault( new ExtensionMediaTypeFilter( getContext(), performanceLoggingFilter ) );
+      Filter performanceLoggingFilter = new PerformanceLoggingFilter(context, authenticationFilter);
+
+      attachDefault(new ExtensionMediaTypeFilter(getContext(), performanceLoggingFilter));
 
       // Events
-      attach( "/events/domain", new ExtensionMediaTypeFilter( getContext(), createServerResourceFinder( DomainEventsServerResource.class ) ), Template.MODE_STARTS_WITH );
-      attach( "/events/application", new ExtensionMediaTypeFilter( getContext(), createServerResourceFinder( ApplicationEventsServerResource.class ) ), Template.MODE_STARTS_WITH );
+      attach("/events/domain", new ExtensionMediaTypeFilter(getContext(), createServerResourceFinder(DomainEventsServerResource.class)), Template.MODE_STARTS_WITH);
+      attach("/events/application", new ExtensionMediaTypeFilter(getContext(), createServerResourceFinder(ApplicationEventsServerResource.class)), Template.MODE_STARTS_WITH);
 
       // Admin resources
-      Router adminRouter = new Router( getContext() );
-      adminRouter.attach( "/entity", createServerResourceFinder( EntitiesResource.class ) );
-      adminRouter.attach( "/entity/{identity}", createServerResourceFinder( EntityResource.class ) );
-      adminRouter.attach( "/query", new PerformanceLoggingFilter( context, createServerResourceFinder( SPARQLResource.class ) ), Template.MODE_STARTS_WITH );
-      adminRouter.attach( "/index", createServerResourceFinder( IndexResource.class ) );
-      adminRouter.attach( "/console", createServerResourceFinder( ConsoleServerResource.class ) );
-      adminRouter.attach( "/search", createServerResourceFinder( SolrSearchServerResource.class ) );
-      adminRouter.attach( "/log", LoggingServerResource.class );
-      attach( "/admin/tools", new ExtensionMediaTypeFilter( getContext(), adminRouter ) );
+      Router adminRouter = new Router(getContext());
+      adminRouter.attach("/entity", createServerResourceFinder(EntitiesResource.class));
+      adminRouter.attach("/entity/{identity}", createServerResourceFinder(EntityResource.class));
+      adminRouter.attach("/query", new PerformanceLoggingFilter(context, createServerResourceFinder(SPARQLResource.class)), Template.MODE_STARTS_WITH);
+      adminRouter.attach("/index", createServerResourceFinder(IndexResource.class));
+      adminRouter.attach("/console", createServerResourceFinder(ConsoleServerResource.class));
+      adminRouter.attach("/search", createServerResourceFinder(SolrSearchServerResource.class));
+      adminRouter.attach("/log", LoggingServerResource.class);
+      attach("/admin/tools", new ExtensionMediaTypeFilter(getContext(), adminRouter));
 
       {
-         Directory dir = new Directory( getContext(), "clap://thread/static/admin/" );
-         dir.setIndexName( "index.html" );
-         attach( "/admin/", dir );
+         Directory dir = new Directory(getContext(), "clap://thread/static/admin/");
+         dir.setIndexName("index.html");
+         attach("/admin/", dir);
       }
 
       {
-         Directory dir = new Directory( getContext(), "clap://thread/static/crystal/" );
-         dir.setIndexName( "index.html" );
-         attach( "/statistics/", dir );
+         Directory dir = new Directory(getContext(), "clap://thread/static/crystal/");
+         dir.setIndexName("index.html");
+         attach("/statistics/", dir);
       }
 
       // Version info
-      Directory directory = new Directory( getContext(), "clap://thread/static/" );
-      directory.setListingAllowed( true );
-      attach( "/static", factory.newObjectBuilder( AuthenticationFilter.class ).use( getContext(), directory, this.filterService ).newInstance());
+      Directory directory = new Directory(getContext(), "clap://thread/static/");
+      directory.setListingAllowed(true);
+      attach("/static", factory.newObjectBuilder(AuthenticationFilter.class).use(getContext(), directory, this.filterService).newInstance());
    }
 
-   private Restlet createServerResourceFinder( Class<? extends ServerResource> resource )
+   private Restlet createServerResourceFinder(Class<? extends ServerResource> resource)
    {
-      return createServerResourceFinder( resource, true );
+      return createServerResourceFinder(resource, true);
    }
 
-   private Restlet createServerResourceFinder( Class<? extends ServerResource> resource, boolean secure )
+   private Restlet createServerResourceFinder(Class<? extends ServerResource> resource, boolean secure)
    {
-      ResourceFinder finder = factory.newObject( ResourceFinder.class );
-      finder.setTargetClass( resource );
+      ResourceFinder finder = factory.newObject(ResourceFinder.class);
+      finder.setTargetClass(resource);
 
       if (secure)
       {
-         return factory.newObjectBuilder( AuthenticationFilter.class ).use( getContext(), finder, this.filterService ).newInstance();
+         return factory.newObjectBuilder(AuthenticationFilter.class).use(getContext(), finder, this.filterService).newInstance();
       } else
          return finder;
    }

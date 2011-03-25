@@ -19,7 +19,7 @@
     codebase="$$codebase"
     href="$outputFile">
   <information>
-    <title>Streamflow(tm)</title>
+    <title>Streamflow</title>
     <homepage href="${project.url}"/>
     <vendor>${project.organization.name}</vendor>
     <description kind="one-line">${project.organization.name}&#0153; Client</description>
@@ -33,6 +33,12 @@
       kind="splash"
       href="images/Streamflow_cmyk_500px.png"/>
     <offline-allowed/>
+    <shortcut online="false">
+      <desktop/>
+      <menu submenu="Streamsource"/>
+    </shortcut>
+    <association extensions="case" mime-type="application/x-streamflow-case+json">
+    </association>
   </information>
   <security>
      <all-permissions/>

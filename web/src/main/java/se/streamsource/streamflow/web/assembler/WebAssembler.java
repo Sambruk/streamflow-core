@@ -41,13 +41,13 @@ import se.streamsource.streamflow.web.rest.StreamflowRestApplication;
  */
 public class WebAssembler
 {
-   public void assemble( LayerAssembly layer )
-         throws AssemblyException
+   public void assemble(LayerAssembly layer)
+           throws AssemblyException
    {
-      rest( layer.module("REST") );
+      rest(layer.module("REST"));
    }
 
-   private void rest( ModuleAssembly module ) throws AssemblyException
+   private void rest(ModuleAssembly module) throws AssemblyException
    {
       module.objects(StreamflowRestApplication.class,
               ResourceFinder.class,

@@ -50,7 +50,7 @@ import java.util.Map;
  * JAVADOC
  */
 public abstract class CommandQueryRestlet2
-      extends Restlet
+        extends Restlet
 {
    private
    @Structure
@@ -71,14 +71,14 @@ public abstract class CommandQueryRestlet2
    CommandResult commandResult;
 
    @Service
-   ResultWriter responseWriter;
+   ResultWriterDelegator responseWriter;
 
    private Map<Class, Uniform> subResources = Collections.synchronizedMap(new HashMap<Class, Uniform>());
 
    @Override
-   public void handle( Request request, Response response )
+   public void handle(Request request, Response response)
    {
-      MDC.put( "url", request.getResourceRef().toString() );
+      MDC.put("url", request.getResourceRef().toString());
 
       try
       {
@@ -89,34 +89,34 @@ public abstract class CommandQueryRestlet2
          {
             // Root of the call
             Reference ref = request.getResourceRef();
-            List<String> segments = ref.getScheme().equals( "riap" ) ? ref.getRelativeRef( new Reference( "riap://application/" ) ).getSegments() : ref.getRelativeRef().getSegments();
+            List<String> segments = ref.getScheme().equals("riap") ? ref.getRelativeRef(new Reference("riap://application/")).getSegments() : ref.getRelativeRef().getSegments();
 
             // Handle conversion of verbs into standard interactions
-            if (segments.get( segments.size() - 1 ).equals( "" ))
+            if (segments.get(segments.size() - 1).equals(""))
             {
-               if (request.getMethod().equals( Method.DELETE ))
+               if (request.getMethod().equals(Method.DELETE))
                {
                   // Translate DELETE into command "delete"
-                  segments.set( segments.size() - 1, "delete" );
-               } else if (request.getMethod().equals( Method.PUT ))
+                  segments.set(segments.size() - 1, "delete");
+               } else if (request.getMethod().equals(Method.PUT))
                {
                   // Translate PUT into command "update"
-                  segments.set( segments.size() - 1, "update" );
+                  segments.set(segments.size() - 1, "update");
                }
             }
 
-            request.getAttributes().put( "segments", segments );
-            request.getAttributes().put( "template", new StringBuilder( "/rest/" ) );
+            request.getAttributes().put("segments", segments);
+            request.getAttributes().put("template", new StringBuilder("/rest/"));
 
-            Usecase usecase = UsecaseBuilder.buildUsecase( getUsecaseName( request ) ).with( request.getMethod().isSafe() ? CacheOptions.ALWAYS : CacheOptions.NEVER ).newUsecase();
-            UnitOfWork uow = uowf.newUnitOfWork( usecase );
+            Usecase usecase = UsecaseBuilder.buildUsecase(getUsecaseName(request)).with(request.getMethod().isSafe() ? CacheOptions.ALWAYS : CacheOptions.NEVER).newUsecase();
+            UnitOfWork uow = uowf.newUnitOfWork(usecase);
 
             RoleMap.newCurrentRoleMap();
             try
             {
                // Start handling the build-up for the context
-               Uniform resource = createRoot( request, response );
-               resource.handle( request, response );
+               Uniform resource = createRoot(request, response);
+               resource.handle(request, response);
 
                if (response.getEntity() != null)
                {
@@ -126,7 +126,7 @@ public abstract class CommandQueryRestlet2
                      try
                      {
                         ResourceValidity validity = RoleMap.role(ResourceValidity.class);
-                        validity.updateResponse( response );
+                        validity.updateResponse(response);
                      } catch (IllegalArgumentException e)
                      {
                         // Ignore
@@ -136,13 +136,13 @@ public abstract class CommandQueryRestlet2
                   // Check if characterset is set
                   if (response.getEntity().getCharacterSet() == null)
                   {
-                     response.getEntity().setCharacterSet( CharacterSet.UTF_8 );
+                     response.getEntity().setCharacterSet(CharacterSet.UTF_8);
                   }
 
                   // Check if language is set
                   if (response.getEntity().getLanguages().isEmpty())
                   {
-                     response.getEntity().getLanguages().add( Language.ENGLISH );
+                     response.getEntity().getLanguages().add(Language.ENGLISH);
                   }
 
                   uow.discard();
@@ -165,11 +165,11 @@ public abstract class CommandQueryRestlet2
                   if (result != null)
                   {
                      if (result instanceof Representation)
-                        response.setEntity( (Representation) result );
+                        response.setEntity((Representation) result);
                      else
                      {
-                        if (!responseWriter.write( result, response ))
-                           throw new ResourceException( Status.SERVER_ERROR_INTERNAL, "Could not write result of type " + result.getClass().getName() );
+                        if (!responseWriter.write(result, response))
+                           throw new ResourceException(Status.SERVER_ERROR_INTERNAL, "Could not write result of type " + result.getClass().getName());
                      }
 
                      if (response.getEntity() != null)
@@ -177,13 +177,13 @@ public abstract class CommandQueryRestlet2
                         // Check if characterset is set
                         if (response.getEntity().getCharacterSet() == null)
                         {
-                           response.getEntity().setCharacterSet( CharacterSet.UTF_8 );
+                           response.getEntity().setCharacterSet(CharacterSet.UTF_8);
                         }
 
                         // Check if language is set
                         if (response.getEntity().getLanguages().isEmpty())
                         {
-                           response.getEntity().getLanguages().add( Language.ENGLISH );
+                           response.getEntity().getLanguages().add(Language.ENGLISH);
                         }
 
                         // Check if last modified and tag should be set
@@ -193,9 +193,9 @@ public abstract class CommandQueryRestlet2
 
                            try
                            {
-                              validity.updateEntity( lastModifiedUoW );
+                              validity.updateEntity(lastModifiedUoW);
 
-                              validity.updateResponse( response );
+                              validity.updateResponse(response);
                            } finally
                            {
                               lastModifiedUoW.discard();
@@ -216,7 +216,7 @@ public abstract class CommandQueryRestlet2
             } catch (Throwable e)
             {
                uow.discard();
-               handleException( response, e );
+               handleException(response, e);
                return;
             } finally
             {
@@ -229,7 +229,7 @@ public abstract class CommandQueryRestlet2
       }
    }
 
-   protected abstract Uniform createRoot( Request request, Response response );
+   protected abstract Uniform createRoot(Request request, Response response);
 
    // Callbacks used from resources
    public void subResource(Class<? extends CommandQueryResource> subResourceClass)
@@ -239,7 +239,7 @@ public abstract class CommandQueryRestlet2
       if (subResource == null)
       {
          // Instantiate and store subresource instance
-         subResource = module.objectBuilderFactory().newObjectBuilder( subResourceClass ).use(this).newInstance();
+         subResource = module.objectBuilderFactory().newObjectBuilder(subResourceClass).use(this).newInstance();
          subResources.put(subResourceClass, subResource);
       }
 
@@ -248,18 +248,18 @@ public abstract class CommandQueryRestlet2
 
    public void subResourceContexts(Class<?>[] contextClasses)
    {
-      module.objectBuilderFactory().newObjectBuilder( DefaultCommandQueryResource.class ).use( new Object[]{contextClasses} ).newInstance().handle( Request.getCurrent(), Response.getCurrent() );
+      module.objectBuilderFactory().newObjectBuilder(DefaultCommandQueryResource.class).use(new Object[]{contextClasses}).newInstance().handle(Request.getCurrent(), Response.getCurrent());
    }
 
-   private String getUsecaseName( Request request )
+   private String getUsecaseName(Request request)
    {
-      if (request.getMethod().equals( org.restlet.data.Method.DELETE ))
+      if (request.getMethod().equals(org.restlet.data.Method.DELETE))
          return "delete";
       else
          return request.getResourceRef().getLastSegment();
    }
 
-   private void handleException( Response response, Throwable ex )
+   private void handleException(Response response, Throwable ex)
    {
       try
       {
@@ -267,33 +267,33 @@ public abstract class CommandQueryRestlet2
       } catch (ResourceException e)
       {
          // IAE (or subclasses) are considered client faults
-         LoggerFactory.getLogger( getClass() ).debug( "ResourceException thrown during processing", e );
-         response.setEntity( new StringRepresentation( e.getMessage() ) );
-         response.setStatus( e.getStatus() );
+         LoggerFactory.getLogger(getClass()).debug("ResourceException thrown during processing", e);
+         response.setEntity(new StringRepresentation(e.getMessage()));
+         response.setStatus(e.getStatus());
       } catch (IllegalArgumentException e)
       {
          // IAE (or subclasses) are considered client faults
-         LoggerFactory.getLogger( getClass() ).debug( "IllegalArgumentsException thrown during processing", e );
-         response.setEntity( new StringRepresentation( e.getMessage() ) );
-         response.setStatus( Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY );
+         LoggerFactory.getLogger(getClass()).debug("IllegalArgumentsException thrown during processing", e);
+         response.setEntity(new StringRepresentation(e.getMessage()));
+         response.setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY);
       } catch (RuntimeException e)
       {
          // RuntimeExceptions are considered server faults
-         LoggerFactory.getLogger( getClass() ).warn( "Exception thrown during processing", e );
-         response.setEntity( new StringRepresentation( e.getMessage() ) );
-         response.setStatus( Status.SERVER_ERROR_INTERNAL );
+         LoggerFactory.getLogger(getClass()).warn("Exception thrown during processing", e);
+         response.setEntity(new StringRepresentation(e.getMessage()));
+         response.setStatus(Status.SERVER_ERROR_INTERNAL);
       } catch (Exception e)
       {
          // Checked exceptions are considered client faults
-         LoggerFactory.getLogger( getClass() ).debug( "Checked exception thrown during processing", e );
-         response.setEntity( new StringRepresentation( e.getMessage() ) );
-         response.setStatus( Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY );
+         LoggerFactory.getLogger(getClass()).debug("Checked exception thrown during processing", e);
+         response.setEntity(new StringRepresentation(e.getMessage()));
+         response.setStatus(Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY);
       } catch (Throwable e)
       {
          // Anything else are considered server faults
-         LoggerFactory.getLogger( getClass() ).error( "Exception thrown during processing", e );
-         response.setEntity( new StringRepresentation( e.getMessage() ) );
-         response.setStatus( Status.SERVER_ERROR_INTERNAL );
+         LoggerFactory.getLogger(getClass()).error("Exception thrown during processing", e);
+         response.setEntity(new StringRepresentation(e.getMessage()));
+         response.setStatus(Status.SERVER_ERROR_INTERNAL);
       }
    }
 }

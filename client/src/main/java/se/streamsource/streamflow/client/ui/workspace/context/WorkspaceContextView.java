@@ -16,11 +16,7 @@
 
 package se.streamsource.streamflow.client.ui.workspace.context;
 
-import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.FilterList;
-import ca.odell.glazedlists.SeparatorList;
-import ca.odell.glazedlists.SortedList;
-import ca.odell.glazedlists.TextFilterator;
+import ca.odell.glazedlists.*;
 import ca.odell.glazedlists.swing.EventListModel;
 import ca.odell.glazedlists.swing.TextComponentMatcherEditor;
 import org.jdesktop.application.ApplicationContext;
@@ -33,15 +29,11 @@ import se.streamsource.streamflow.client.ui.ContextItem;
 import se.streamsource.streamflow.client.ui.ContextItemGroupComparator;
 import se.streamsource.streamflow.client.ui.ContextItemListRenderer;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
+import se.streamsource.streamflow.client.util.Refreshable;
 import se.streamsource.streamflow.client.util.SeparatorContextItemListCellRenderer;
 
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import javax.swing.ListSelectionModel;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
+import javax.swing.*;
+import java.awt.*;
 import java.util.Comparator;
 import java.util.List;
 
@@ -49,52 +41,58 @@ import java.util.List;
  * JAVADOC
  */
 public class WorkspaceContextView
-      extends JPanel
+        extends JPanel
+        implements Refreshable
 {
    private JList contextList;
    private JScrollPane workspaceContextScroll;
    private WorkspaceContextModel contextModel;
 
-   public WorkspaceContextView( final @Service ApplicationContext context,
-                                 final @Structure ObjectBuilderFactory obf,
-                                 @Uses final CommandQueryClient client )
+   public WorkspaceContextView(final @Service ApplicationContext context,
+                               final @Structure ObjectBuilderFactory obf,
+                               @Uses final CommandQueryClient client)
    {
-      setLayout( new BorderLayout() );
+      setLayout(new BorderLayout());
 
-      setPreferredSize( new Dimension(250, 500) );
+      setPreferredSize(new Dimension(250, 500));
 
-      this.contextModel = obf.newObjectBuilder( WorkspaceContextModel.class ).use( client ).newInstance();
+      this.contextModel = obf.newObjectBuilder(WorkspaceContextModel.class).use(client).newInstance();
 
       contextList = new JList();
       Comparator<ContextItem> comparator = new ContextItemGroupComparator();
 
       JTextField filterField = new JTextField();
-      SortedList<ContextItem> sortedIssues = new SortedList<ContextItem>( contextModel.getItems(), new Comparator<ContextItem>()
+      SortedList<ContextItem> sortedIssues = new SortedList<ContextItem>(contextModel.getItems(), new Comparator<ContextItem>()
       {
-         public int compare( ContextItem o1, ContextItem o2 )
+         public int compare(ContextItem o1, ContextItem o2)
          {
-            return o1.getGroup().compareTo( o2.getGroup() );
+            return o1.getGroup().compareTo(o2.getGroup());
          }
       });
-      final FilterList<ContextItem> textFilteredIssues = new FilterList<ContextItem>( sortedIssues, new TextComponentMatcherEditor<ContextItem>( filterField, new TextFilterator<ContextItem>()
+      final FilterList<ContextItem> textFilteredIssues = new FilterList<ContextItem>(sortedIssues, new TextComponentMatcherEditor<ContextItem>(filterField, new TextFilterator<ContextItem>()
       {
-         public void getFilterStrings( List<String> strings, ContextItem contextItem )
+         public void getFilterStrings(List<String> strings, ContextItem contextItem)
          {
             strings.add(contextItem.getGroup());
          }
-      }) );
-      EventList<ContextItem> separatorList = new SeparatorList<ContextItem>( textFilteredIssues, comparator, 1, 10000 );
-      contextList.setModel( new EventListModel<ContextItem>( separatorList ) );
-      contextList.getSelectionModel().setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
+      }));
+      EventList<ContextItem> separatorList = new SeparatorList<ContextItem>(textFilteredIssues, comparator, 1, 10000);
+      contextList.setModel(new EventListModel<ContextItem>(separatorList));
+      contextList.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-      contextList.setCellRenderer( new SeparatorContextItemListCellRenderer( new ContextItemListRenderer()));
+      contextList.setCellRenderer(new SeparatorContextItemListCellRenderer(new ContextItemListRenderer()));
 
-      workspaceContextScroll = new JScrollPane( contextList );
+      workspaceContextScroll = new JScrollPane(contextList);
 
-      add( filterField, BorderLayout.NORTH );
-      add( workspaceContextScroll, BorderLayout.CENTER );
+      add(filterField, BorderLayout.NORTH);
+      add(workspaceContextScroll, BorderLayout.CENTER);
 
-      new RefreshWhenShowing( this, contextModel);
+      new RefreshWhenShowing(this, this);
+   }
+
+   public void refresh()
+   {
+      contextModel.refresh();
    }
 
    public JList getWorkspaceContextList()
