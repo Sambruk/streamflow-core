@@ -525,4 +525,14 @@ public class CasesTableModel extends Observable
    {
       invisibleColumns.remove( index );
    }
+
+   public void createCase()
+   {
+      client.postCommand( "createcase" );
+   }
+
+   public boolean isCreateCaseEnabled()
+   {
+      return client.getReference().getLastSegment().equals("assignments") || client.getReference().getLastSegment().equals("drafts");
+   }
 }

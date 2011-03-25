@@ -113,6 +113,8 @@ public class WorkspaceView
    private javax.swing.Action managePerspectives;
    private javax.swing.Action savePerspective;
 
+   private CasesTableView casesTable;
+
 
    public WorkspaceView( final @Service ApplicationContext context,
                          final @Structure ObjectBuilderFactory obf,
@@ -221,7 +223,6 @@ public class WorkspaceView
                   boolean isPerspective = contextItem.getRelation().equals( "perspective" );
 
                   TableFormat tableFormat;
-                  CasesTableView casesTable;
                   tableFormat = new CasesTableFormatter();
                   
                   if ( isPerspective )
@@ -268,7 +269,7 @@ public class WorkspaceView
 
                   casesView.showTable(casesTable);
 
-                  createCaseButton.setVisible(contextItem.getRelation().equals("assign") || contextItem.getRelation().equals("draft"));
+                  createCaseButton.setVisible( casesTable.getModel().isCreateCaseEnabled() );
 
                } else
                {
@@ -372,21 +373,15 @@ public class WorkspaceView
    @Action
    public Task createCase()
    {
-      final ContextItem contextItem = (ContextItem) contextView.getWorkspaceContextList().getSelectedValue();
-
-      if (contextItem != null)
+      return new CommandTask()
       {
-         return new CommandTask()
+         @Override
+         public void command()
+               throws Exception
          {
-            @Override
-            public void command()
-                  throws Exception
-            {
-               contextItem.getClient().postCommand( "createcase" );
-            }
-         };
-      } else
-         return null;
+            casesTable.getModel().createCase();
+         }
+      };
    }
 
    @Action
