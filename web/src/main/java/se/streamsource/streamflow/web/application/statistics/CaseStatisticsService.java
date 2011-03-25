@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -85,8 +85,8 @@ import se.streamsource.streamflow.web.domain.structure.user.User;
 
 import java.util.Date;
 
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 import static org.qi4j.api.specification.Specifications.*;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 
 /**
  * Consumes domain events and creates application events for statistics.

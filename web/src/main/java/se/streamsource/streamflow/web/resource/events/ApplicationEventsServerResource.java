@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,8 +43,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static java.util.Collections.reverse;
-import static org.qi4j.api.io.Outputs.collection;
+import static java.util.Collections.*;
+import static org.qi4j.api.io.Outputs.*;
 
 /**
  * Get application events before or after a given date in various formats

@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,11 @@ import se.streamsource.streamflow.web.domain.interaction.security.Authentication
 import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
 
 import javax.management.MBeanServer;
-import javax.management.remote.*;
+import javax.management.remote.JMXAuthenticator;
+import javax.management.remote.JMXConnectorServer;
+import javax.management.remote.JMXConnectorServerFactory;
+import javax.management.remote.JMXPrincipal;
+import javax.management.remote.JMXServiceURL;
 import javax.security.auth.Subject;
 import java.net.InetAddress;
 import java.rmi.RemoteException;

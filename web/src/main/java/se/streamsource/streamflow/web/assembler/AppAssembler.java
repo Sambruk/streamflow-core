@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import org.qi4j.spi.query.NamedEntityFinder;
 import org.qi4j.spi.query.NamedQueries;
 import org.qi4j.spi.query.NamedQueryDescriptor;
 import org.qi4j.spi.service.importer.ServiceSelectorImporter;
+import se.streamsource.infrastructure.circuitbreaker.CircuitBreaker;
 import se.streamsource.streamflow.infrastructure.event.application.replay.ApplicationEventPlayerService;
 import se.streamsource.streamflow.infrastructure.event.domain.replay.DomainEventPlayerService;
 import se.streamsource.streamflow.server.plugin.authentication.UserDetailsValue;
@@ -37,21 +38,31 @@ import se.streamsource.streamflow.web.application.console.ConsoleResultValue;
 import se.streamsource.streamflow.web.application.console.ConsoleScriptValue;
 import se.streamsource.streamflow.web.application.console.ConsoleService;
 import se.streamsource.streamflow.web.application.contact.StreamflowContactLookupService;
-import se.streamsource.streamflow.web.application.mail.*;
-import se.streamsource.streamflow.web.application.migration.StartupMigrationConfiguration;
-import se.streamsource.streamflow.web.application.migration.StartupMigrationService;
 import se.streamsource.streamflow.web.application.conversation.ConversationResponseService;
 import se.streamsource.streamflow.web.application.conversation.NotificationService;
+import se.streamsource.streamflow.web.application.mail.CreateCaseFromEmailConfiguration;
+import se.streamsource.streamflow.web.application.mail.CreateCaseFromEmailService;
+import se.streamsource.streamflow.web.application.mail.EmailValue;
+import se.streamsource.streamflow.web.application.mail.ReceiveMailConfiguration;
+import se.streamsource.streamflow.web.application.mail.ReceiveMailService;
+import se.streamsource.streamflow.web.application.mail.SendMailConfiguration;
+import se.streamsource.streamflow.web.application.mail.SendMailService;
+import se.streamsource.streamflow.web.application.migration.StartupMigrationConfiguration;
+import se.streamsource.streamflow.web.application.migration.StartupMigrationService;
 import se.streamsource.streamflow.web.application.organization.BootstrapAssembler;
 import se.streamsource.streamflow.web.application.pdf.CasePdfGenerator;
 import se.streamsource.streamflow.web.application.pdf.SubmittedFormPdfGenerator;
 import se.streamsource.streamflow.web.application.security.AuthenticationFilterService;
-import se.streamsource.streamflow.web.application.statistics.*;
-import se.streamsource.infrastructure.circuitbreaker.CircuitBreaker;
+import se.streamsource.streamflow.web.application.statistics.CaseStatisticsService;
+import se.streamsource.streamflow.web.application.statistics.CaseStatisticsValue;
+import se.streamsource.streamflow.web.application.statistics.FormFieldStatisticsValue;
+import se.streamsource.streamflow.web.application.statistics.JdbcStatisticsStore;
+import se.streamsource.streamflow.web.application.statistics.LoggingStatisticsStore;
+import se.streamsource.streamflow.web.application.statistics.RelatedStatisticsValue;
+import se.streamsource.streamflow.web.application.statistics.StatisticsConfiguration;
 import se.streamsource.streamflow.web.infrastructure.index.NamedSolrDescriptor;
 
-import static org.qi4j.api.common.Visibility.application;
-import static org.qi4j.api.common.Visibility.layer;
+import static org.qi4j.api.common.Visibility.*;
 
 /**
  * JAVADOC

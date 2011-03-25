@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,8 +41,8 @@ import se.streamsource.streamflow.resource.roles.DateDTO;
 import java.util.Date;
 import java.util.Observable;
 
-import static org.qi4j.api.util.Iterables.matchesAny;
-import static se.streamsource.dci.value.link.Links.withRel;
+import static org.qi4j.api.util.Iterables.*;
+import static se.streamsource.dci.value.link.Links.*;
 
 /**
  * Model for the general info about a case.

@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,12 +24,17 @@ import org.qi4j.bootstrap.ModuleAssembly;
 import org.qi4j.index.reindexer.ReindexerService;
 import org.qi4j.library.jmx.JMXAssembler;
 import se.streamsource.infrastructure.circuitbreaker.jmx.CircuitBreakerManagement;
-import se.streamsource.streamflow.web.application.management.*;
+import se.streamsource.streamflow.web.application.management.CompositeMBean;
+import se.streamsource.streamflow.web.application.management.DatasourceConfigurationManagerService;
+import se.streamsource.streamflow.web.application.management.ErrorLogService;
+import se.streamsource.streamflow.web.application.management.EventManagerService;
+import se.streamsource.streamflow.web.application.management.ManagerComposite;
+import se.streamsource.streamflow.web.application.management.ManagerService;
+import se.streamsource.streamflow.web.application.management.ReindexOnStartupService;
 import se.streamsource.streamflow.web.application.management.jmxconnector.JmxConnectorConfiguration;
 import se.streamsource.streamflow.web.application.management.jmxconnector.JmxConnectorService;
 
-import static org.qi4j.api.common.Visibility.application;
-import static org.qi4j.api.common.Visibility.layer;
+import static org.qi4j.api.common.Visibility.*;
 
 /**
  * Assembler for management layer

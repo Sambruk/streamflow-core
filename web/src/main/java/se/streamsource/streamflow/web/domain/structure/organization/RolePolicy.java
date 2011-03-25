@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.qi4j.api.entity.EntityReference.getEntityReference;
+import static org.qi4j.api.entity.EntityReference.*;
 
 /**
  * Policy for managging Roles assigned to Participants. Participants

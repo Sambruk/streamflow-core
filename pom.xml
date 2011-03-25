@@ -167,12 +167,12 @@
         </contributor>
     </contributors>
 
-    <inceptionYear>2009-2010</inceptionYear>
+    <inceptionYear>2009-2011</inceptionYear>
     <url>http://www.streamsource.se</url>
 
     <organization>
         <name>Streamsource AB</name>
-        <url>N/A</url>
+        <url>www.streamsource.se</url>
     </organization>
 
     <build>
@@ -305,6 +305,8 @@
                         <exclude>**/javadoc/**</exclude>
                         <exclude>**/site/**</exclude>
                         <exclude>**/version.html</exclude>
+                        <exclude>**/*.py</exclude>
+                        <exclude>**/manual/template/**</exclude>
                     </excludes>
                     <mapping>
                         <tcl>SCRIPT_STYLE</tcl>
