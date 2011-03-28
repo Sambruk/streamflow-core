@@ -15,24 +15,22 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.domain.form;
+package se.streamsource.streamflow.resource.caze;
 
-import org.qi4j.api.entity.EntityReference;
+import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueComposite;
 
-import java.util.Date;
+import java.util.List;
 
 /**
  * JAVADOC
  */
-public interface EffectiveFieldValue
-      extends SubmittedFieldValue
+public interface SubmittedPageDTO
+      extends ValueComposite
 {
-   Property<EntityReference> form();
+   Property<String> name();
 
-   Property<EntityReference> page();
-
-   Property<EntityReference> submitter();
-
-   Property<Date> submissionDate();
+   @UseDefaults
+   Property<List<FieldDTO>> fields();
 }

@@ -321,7 +321,7 @@ public class CaseActionsView extends JPanel
       final ValueBuilder<CaseOutputConfigValue> config = vbf.newValueBuilder( CaseOutputConfigValue.class );
       config.prototype().contacts().set( true );
       config.prototype().conversations().set( true );
-      config.prototype().effectiveFields().set( true );
+      config.prototype().submittedForms().set( true );
       config.prototype().attachments().set( true );
 
       return new PrintCaseTask( config.newInstance() );

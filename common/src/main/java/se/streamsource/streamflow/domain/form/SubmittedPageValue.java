@@ -17,22 +17,21 @@
 
 package se.streamsource.streamflow.domain.form;
 
+import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueComposite;
 
-import java.util.Date;
+import java.util.List;
 
 /**
  * JAVADOC
  */
-public interface EffectiveFieldValue
-      extends SubmittedFieldValue
+public interface SubmittedPageValue
+      extends ValueComposite
 {
-   Property<EntityReference> form();
-
    Property<EntityReference> page();
 
-   Property<EntityReference> submitter();
-
-   Property<Date> submissionDate();
+   @UseDefaults
+   Property<List<SubmittedFieldValue>> fields();
 }

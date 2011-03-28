@@ -37,5 +37,5 @@ public interface SubmittedFormDTO
    Property<String> form();
 
    @UseDefaults
-   Property<List<FieldDTO>> values();
+   Property<List<SubmittedPageDTO>> pages();
 }

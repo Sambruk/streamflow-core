@@ -34,6 +34,8 @@ public interface EffectiveFieldDTO
 
    Property<String> formName();
 
+   Property<String> pageName();
+
    Property<String> fieldName();
 
    Property<String> fieldType();

@@ -39,6 +39,7 @@ import se.streamsource.streamflow.domain.form.FormDraftValue;
 import se.streamsource.streamflow.domain.form.PageSubmissionValue;
 import se.streamsource.streamflow.domain.form.SubmittedFieldValue;
 import se.streamsource.streamflow.domain.form.SubmittedFormValue;
+import se.streamsource.streamflow.domain.form.SubmittedPageValue;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.web.domain.entity.attachment.AttachmentEntity;
 import se.streamsource.streamflow.web.domain.structure.attachment.FormAttachments;
@@ -116,6 +117,9 @@ public interface SubmittedForms
          ValueBuilder<SubmittedFieldValue> fieldBuilder = vbf.newValueBuilder( SubmittedFieldValue.class );
          for (PageSubmissionValue pageValue : value.pages().get())
          {
+            ValueBuilder<SubmittedPageValue> pageBuilder = vbf.newValueBuilder(SubmittedPageValue.class);
+            pageBuilder.prototype().page().set(pageValue.page().get());
+
             for (FieldSubmissionValue field : pageValue.fields().get())
             {
                // ignore comment fields when submitting
@@ -148,15 +152,18 @@ public interface SubmittedForms
                   EffectiveFieldValue effectiveFieldValue = effectiveValues.get( field.field().get().field().get() );
                   if (effectiveFieldValue == null || !effectiveFieldValue.value().get().equals( fieldBuilder.prototype().value().get() ))
                   {
+                     eFieldBuilder.prototype().page().set( pageValue.page().get() );
                      eFieldBuilder.prototype().field().set( field.field().get().field().get() );
                      eFieldBuilder.prototype().value().set( fieldBuilder.prototype().value().get() );
                      effectiveValues.put( field.field().get().field().get(), eFieldBuilder.newInstance() );
                      effectiveFieldsChanged = true;
                   }
 
-                  formBuilder.prototype().values().get().add( fieldBuilder.newInstance() );
+                  pageBuilder.prototype().fields().get().add( fieldBuilder.newInstance() );
                }
             }
+
+            formBuilder.prototype().pages().get().add(pageBuilder.newInstance());
          }
 
          // update the effective fields and submitted forms

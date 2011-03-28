@@ -36,6 +36,7 @@ import se.streamsource.streamflow.domain.form.FormDraftValue;
 import se.streamsource.streamflow.domain.form.PageSubmissionValue;
 import se.streamsource.streamflow.domain.form.SubmittedFieldValue;
 import se.streamsource.streamflow.domain.form.SubmittedFormValue;
+import se.streamsource.streamflow.domain.form.SubmittedPageValue;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
 import se.streamsource.streamflow.web.domain.structure.attachment.FormAttachments;
@@ -177,11 +178,14 @@ public interface FormDrafts
          if ( submittedFormValue == null)
             return null;
 
-         for (SubmittedFieldValue submittedFieldValue : submittedFormValue.values().get())
+         for (SubmittedPageValue submittedPageValue : submittedFormValue.pages().get())
          {
-            if ( submittedFieldValue.field().get().equals( EntityReference.getEntityReference( field )))
+            for (SubmittedFieldValue submittedFieldValue : submittedPageValue.fields().get())
             {
-               return submittedFieldValue.value().get();
+               if ( submittedFieldValue.field().get().equals( EntityReference.getEntityReference( field )))
+               {
+                  return submittedFieldValue.value().get();
+               }
             }
          }
          return null;

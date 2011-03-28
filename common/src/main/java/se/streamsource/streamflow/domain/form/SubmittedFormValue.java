@@ -38,5 +38,5 @@ public interface SubmittedFormValue
    Property<EntityReference> form();
 
    @UseDefaults
-   Property<List<SubmittedFieldValue>> values();
+   Property<List<SubmittedPageValue>> pages();
 }

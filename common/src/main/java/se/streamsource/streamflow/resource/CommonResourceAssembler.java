@@ -37,6 +37,7 @@ import se.streamsource.streamflow.resource.caze.FieldDTO;
 import se.streamsource.streamflow.resource.caze.SubmittedFormDTO;
 import se.streamsource.streamflow.resource.caze.SubmittedFormListDTO;
 import se.streamsource.streamflow.resource.caze.SubmittedFormsListDTO;
+import se.streamsource.streamflow.resource.caze.SubmittedPageDTO;
 import se.streamsource.streamflow.resource.conversation.ConversationDTO;
 import se.streamsource.streamflow.resource.conversation.MessageDTO;
 import se.streamsource.streamflow.resource.organization.SelectedTemplatesValue;
@@ -91,6 +92,7 @@ public class CommonResourceAssembler
             EffectiveFieldsDTO.class,
             EffectiveFieldDTO.class,
             SubmittedFormDTO.class,
+            SubmittedPageDTO.class,
             SubmittedFormListDTO.class,
             SubmittedFormsListDTO.class,
             UserEntityValue.class,

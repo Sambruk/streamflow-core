@@ -34,9 +34,6 @@ public interface CaseOutputConfigValue
    Property<Boolean> conversations();
 
    @UseDefaults
-   Property<Boolean> effectiveFields();
-
-   @UseDefaults
    Property<Boolean> submittedForms();
 
    @UseDefaults
