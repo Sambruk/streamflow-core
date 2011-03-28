@@ -27,6 +27,8 @@ import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.decorator.HighlighterFactory;
 import org.jdesktop.swingx.renderer.DefaultTableRenderer;
 import org.jdesktop.swingx.renderer.StringValue;
+import org.jdesktop.swingx.table.TableColumnExt;
+import org.jdesktop.swingx.table.TableColumnModelExt;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
@@ -52,16 +54,15 @@ import se.streamsource.streamflow.util.Strings;
 import javax.swing.ActionMap;
 import javax.swing.Box;
 import javax.swing.ImageIcon;
-import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableColumn;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -71,6 +72,8 @@ import java.awt.Font;
 import java.awt.KeyboardFocusManager;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -105,21 +108,22 @@ public class CasesTableView
       public int compare( CaseTableValue o1, CaseTableValue o2 )
       {
          GroupBy groupBy = model.getGroupBy();
-         switch (groupBy) {
-            case caseType :
+         switch (groupBy)
+         {
+            case caseType:
                return o1.caseType().get().compareTo( o2.caseType().get() );
-            case dueOn :
+            case dueOn:
                return dueOnGroup( o1.dueOn().get() ).compareTo( dueOnGroup( o2.dueOn().get() ) );
-            case assignee :
+            case assignee:
                return o1.assignedTo().get().compareTo( o2.assignedTo().get() );
-            case project :
+            case project:
                return o1.owner().get().compareTo( o2.owner().get() );
             default:
                return 0;
          }
       }
    };
-   
+
    protected JXTable caseTable;
    protected CasesTableModel model;
    private TableFormat tableFormat;
@@ -131,7 +135,7 @@ public class CasesTableView
    public void init( @Service ApplicationContext context,
                      @Uses CasesTableModel casesTableModel,
                      final @Uses TableFormat tableFormat,
-                     @Optional @Uses JTextField searchField   )
+                     @Optional @Uses JTextField searchField )
    {
       setLayout( new BorderLayout() );
 
@@ -164,7 +168,7 @@ public class CasesTableView
       caseTable.getActionMap().remove( "column.packAll" );
       caseTable.getActionMap().remove( "column.packSelected" );
       caseTable.setColumnControlVisible( true );
-      
+
       caseTable.setModel( new EventJXTableModel<CaseTableValue>( model.getEventList(), tableFormat ) );
 
       model.addObserver( new Observer()
@@ -180,6 +184,13 @@ public class CasesTableView
                      groupingComparator, 1, 10000 );
                caseTable.setModel( new EventJXTableModel<CaseTableValue>( groupingList, tableFormat ) );
             }
+
+            for (Integer invisibleCol : model.getInvisibleColumns())
+            {
+               TableColumnModelExt tm = (TableColumnModelExt) caseTable.getColumnModel();
+               if (tm.getColumnExt( invisibleCol ).isVisible())
+                  caseTable.getColumnExt( invisibleCol ).setVisible( false );
+            }
          }
       } );
 
@@ -193,19 +204,45 @@ public class CasesTableView
       caseTable.getColumn( 3 ).setMaxWidth( 150 );
       caseTable.getColumn( 4 ).setPreferredWidth( 90 );
       caseTable.getColumn( 4 ).setMaxWidth( 90 );
-      caseTable.getColumn( caseTable.getColumnCount() - 1 ).setMaxWidth( 50 );
-      caseTable.getColumn( caseTable.getColumnCount() - 1 ).setResizable( false );
-
-      // Do this in reverse because ordering is changed by invisibility
-      //caseTable.getColumnExt( 6 ).setVisible( false );
-      //caseTable.getColumnExt( 5 ).setVisible( false );
-      //caseTable.getColumnExt( 3 ).setVisible( false );
+      caseTable.getColumn( 5 ).setPreferredWidth( 90 );
+      caseTable.getColumn( 5 ).setMaxWidth( 90 );
+      caseTable.getColumn( 6 ).setPreferredWidth( 150 );
+      caseTable.getColumn( 6 ).setMaxWidth( 150 );
+      caseTable.getColumn( 6 ).setResizable( false );
+      caseTable.getColumn( 7 ).setMaxWidth( 50 );
+      caseTable.getColumn( 7 ).setResizable( false );
 
       caseTable.setAutoCreateColumnsFromModel( false );
 
+      int count = 0;
+      for (TableColumn c : caseTable.getColumns())
+      {
+         c.setIdentifier( (Integer)count );
+         count++;
+         
+         c.addPropertyChangeListener( new PropertyChangeListener()
+         {
+            public void propertyChange( PropertyChangeEvent evt )
+            {
+               if ("visible".equals( evt.getPropertyName() ))
+               {
+                  TableColumnExt columnExt = (TableColumnExt) evt.getSource();
+
+                  if (columnExt.isVisible())
+                  {
+                     model.removeInvisibleColumn( columnExt.getModelIndex() );
+                  } else
+                  {
+                     model.addInvisibleColumn( columnExt.getModelIndex() );
+                  }
+               }
+            }
+         } );
+      }
+
       Component horizontalGlue = Box.createHorizontalGlue();
       horizontalGlue.setPreferredSize( new Dimension( 1500, 10 ) );
-     // filters.add( horizontalGlue );
+      // filters.add( horizontalGlue );
 
       JScrollPane caseScrollPane = new JScrollPane( caseTable, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED );
 
@@ -215,9 +252,9 @@ public class CasesTableView
       {
          private static final long serialVersionUID = 4782416330896582518L;
 
-         public String getString(Object value)
+         public String getString( Object value )
          {
-            return value != null ? DateFormats.getProgressiveDateTimeValue((Date) value, Locale.getDefault()) : "";
+            return value != null ? DateFormats.getProgressiveDateTimeValue( (Date) value, Locale.getDefault() ) : "";
          }
       } ) );
       caseTable.setDefaultRenderer( ArrayList.class, new DefaultTableCellRenderer()
@@ -226,7 +263,7 @@ public class CasesTableView
          @Override
          public Component getTableCellRendererComponent( JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column )
          {
-            if( value instanceof SeparatorList.Separator )
+            if (value instanceof SeparatorList.Separator)
                return caseTable.getDefaultRenderer( SeparatorList.Separator.class )
                      .getTableCellRendererComponent( table, value, isSelected, hasFocus, row, column );
 
@@ -250,8 +287,8 @@ public class CasesTableView
          public Component getTableCellRendererComponent( JTable table, Object value,
                                                          boolean isSelected, boolean hasFocus, int row, int column )
          {
-            EventTableModel model = (EventTableModel)table.getModel();
-            boolean hasResolution = !Strings.empty( ((CaseTableValue)model.getElementAt( row )).resolution().get() );
+            EventTableModel model = (EventTableModel) table.getModel();
+            boolean hasResolution = !Strings.empty( ((CaseTableValue) model.getElementAt( row )).resolution().get() );
             String iconName = hasResolution ? "case_status_withresolution_" + value.toString().toLowerCase() + "_icon"
                   : "case_status_" + value.toString().toLowerCase() + "_icon";
 
@@ -293,7 +330,7 @@ public class CasesTableView
                   value = text( dueGroups[dueOnGroup( ((CaseTableValue) ((SeparatorList.Separator) separator).first()).dueOn().get() )] );
                   break;
             }
-            
+
             Component component = super.getTableCellRendererComponent( table, value, isSelected, hasFocus, row, column );
             component.setFont( component.getFont().deriveFont( Font.BOLD + Font.ITALIC ) );
             component.setBackground( Color.lightGray );
@@ -354,7 +391,6 @@ public class CasesTableView
       return model;
    }
 
-
    private Integer dueOnGroup( Date date )
    {
       /**
@@ -402,18 +438,6 @@ public class CasesTableView
          group = 0;
 
       return group;
-   }
-
-   @org.jdesktop.application.Action
-   public void columns()
-   {
-      JPopupMenu optionsPopup = new JPopupMenu();
-      optionsPopup.add( new JCheckBoxMenuItem( "Case id" ) );
-      optionsPopup.add( new JCheckBoxMenuItem( "Case type" ) );
-      optionsPopup.add( new JCheckBoxMenuItem( "Status" ) );
-      optionsPopup.add( new JCheckBoxMenuItem( "Created date" ) );
-
-//      optionsPopup.show( columnSettings, 0, columnSettings.getHeight() );
    }
 
    public void notifyTransactions( final Iterable<TransactionDomainEvents> transactions )

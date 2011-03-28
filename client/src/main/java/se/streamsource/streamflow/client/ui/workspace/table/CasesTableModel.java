@@ -44,6 +44,7 @@ import se.streamsource.streamflow.util.Strings;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Observable;
@@ -74,6 +75,7 @@ public class CasesTableModel extends Observable
    List<String> selectedAssigneeIds = new ArrayList<String>();
    List<String> selectedProjectIds = new ArrayList<String>();
    List<String> selectedCreatedByIds = new ArrayList<String>();
+   List<Integer> invisibleColumns = new ArrayList<Integer>();
 
    GroupBy groupBy = GroupBy.none;
    SortBy sortBy = SortBy.none;
@@ -119,6 +121,8 @@ public class CasesTableModel extends Observable
 
       TableValue table = client.query( "cases", query, TableValue.class );
       List<CaseTableValue> caseTableValues = caseTableValues( table );
+
+      EventListSynch.synchronize( Collections.<CaseTableValue>emptyList(), eventList );
       EventListSynch.synchronize( caseTableValues, eventList );
 
       setChanged();
@@ -283,42 +287,6 @@ public class CasesTableModel extends Observable
       return selectedCreatedByIds;
    }
 
-   public void setSelectedStatusIds( List<String> selectedStatuses )
-   {
-      this.selectedStatuses.clear();
-      this.selectedStatuses.addAll( selectedStatuses );
-   }
-
-   public void setSelectedLabelIds( List<String> selectedLabelIds )
-   {
-      this.selectedLabelIds.clear();
-      this.selectedLabelIds.addAll( selectedLabelIds );
-   }
-
-   public void setSelectedCaseTypeIds( List<String> selectedCaseTypeIds )
-   {
-      this.selectedCaseTypeIds.clear();
-      this.selectedCaseTypeIds.addAll(selectedCaseTypeIds);
-   }
-
-   public void setSelectedAssigneeIds( List<String> selectedAssigneeIds )
-   {
-      this.selectedAssigneeIds.clear();
-      this.selectedAssigneeIds.addAll(selectedAssigneeIds);
-   }
-
-   public void setSelectedProjectIds( List<String> selectedProjectIds )
-   {
-      this.selectedProjectIds.clear();
-      this.selectedProjectIds.addAll(selectedProjectIds);
-   }
-
-   public void setSelectedCreatedByIds( List<String> selectedCreatedByIds )
-   {
-      this.selectedCreatedByIds.clear();
-      this.selectedCreatedByIds.addAll(selectedCreatedByIds);
-   }
-
    public GroupBy getGroupBy()
    {
       return groupBy;
@@ -364,21 +332,22 @@ public class CasesTableModel extends Observable
       ValueBuilder<PerspectiveValue> builder = vbf.newValueBuilder( PerspectiveValue.class );
       builder.prototype().query().set( query );
       builder.prototype().name().set( name );
-      builder.prototype().labels().set( getSelectedLabelIds() );
-      builder.prototype().statuses().set( getSelectedStatuses() );
-      builder.prototype().sortBy().set( getSortBy().name() );
-      builder.prototype().sortOrder().set( getSortOrder().name() );
-      builder.prototype().groupBy().set( getGroupBy().name() );
-      builder.prototype().assignees().set( getSelectedAssigneeIds() );
-      builder.prototype().caseTypes().set( getSelectedCaseTypeIds() );
-      builder.prototype().createdBy().set( getSelectedCreatedByIds() );
-      builder.prototype().projects().set( getSelectedProjectIds() );
-      builder.prototype().createdOnPeriod().set( getCreatedOnModel().getPeriod().name() );
-      builder.prototype().createdOn().set( getCreatedOnModel().getDate() );
-      builder.prototype().dueOnPeriod().set( getDueOnModel().getPeriod().name() );
-      builder.prototype().dueOn().set( getDueOnModel().getDate() );
+      builder.prototype().labels().set( selectedLabelIds );
+      builder.prototype().statuses().set( selectedStatuses );
+      builder.prototype().sortBy().set( sortBy.name() );
+      builder.prototype().sortOrder().set( sortOrder.name() );
+      builder.prototype().groupBy().set( groupBy.name() );
+      builder.prototype().assignees().set( selectedAssigneeIds );
+      builder.prototype().caseTypes().set( selectedCaseTypeIds );
+      builder.prototype().createdBy().set( selectedCreatedByIds );
+      builder.prototype().projects().set( selectedProjectIds );
+      builder.prototype().createdOnPeriod().set( createdOnModel.getPeriod().name() );
+      builder.prototype().createdOn().set( createdOnModel.getDate() );
+      builder.prototype().dueOnPeriod().set( dueOnModel.getPeriod().name() );
+      builder.prototype().dueOn().set( dueOnModel.getDate() );
       //TODO Can refernce be made relative
       builder.prototype().context().set( client.getReference().toString() );
+      builder.prototype().invisibleColumns().set( invisibleColumns );
 
       return builder.newInstance();
    }
@@ -391,16 +360,17 @@ public class CasesTableModel extends Observable
       selectedAssigneeIds = new ArrayList<String>();
       selectedProjectIds = new ArrayList<String>();
       selectedCreatedByIds = new ArrayList<String>();
+      invisibleColumns = new ArrayList<Integer>();
 
       groupBy = GroupBy.none;
       sortBy = SortBy.none;
       sortOrder = SortOrder.asc;
 
-      getCreatedOnModel().setDate( null );
-      getCreatedOnModel().setPeriod( Period.none );
+      createdOnModel.setDate( null );
+      createdOnModel.setPeriod( Period.none );
 
-      getDueOnModel().setDate( null );
-      getDueOnModel().setPeriod( Period.none );
+      dueOnModel.setDate( null );
+      dueOnModel.setPeriod( Period.none );
    }
 
    public List<LinkValue> possibleFilterLinks()
@@ -410,27 +380,29 @@ public class CasesTableModel extends Observable
 
    public void setFilter( PerspectiveValue perspectiveValue )
    {
-      setSelectedStatusIds( perspectiveValue.statuses().get() );
-      setSelectedCaseTypeIds( perspectiveValue.caseTypes().get() );
-      setSelectedLabelIds( perspectiveValue.labels().get() );
-      setSelectedAssigneeIds( perspectiveValue.assignees().get() );
-      setSelectedProjectIds( perspectiveValue.projects().get() );
-      setSelectedCreatedByIds( perspectiveValue.createdBy().get() );
-      setSortBy( SortBy.valueOf( perspectiveValue.sortBy().get() ) );
-      setSortOrder( SortOrder.valueOf( perspectiveValue.sortOrder().get() ) );
-      setGroupBy( GroupBy.valueOf( perspectiveValue.groupBy().get() ) );
-      getCreatedOnModel().setPeriod( Period.valueOf( perspectiveValue.createdOnPeriod().get() ) );
-      getCreatedOnModel().setDate( perspectiveValue.createdOn().get() );
-      getDueOnModel().setPeriod( Period.valueOf( perspectiveValue.dueOnPeriod().get() ) );
-      getDueOnModel().setDate( perspectiveValue.dueOn().get() );
+      perspectiveValue = vbf.newValueBuilder( PerspectiveValue.class ).withPrototype( perspectiveValue ).prototype();
+      selectedStatuses = perspectiveValue.statuses().get();
+      selectedCaseTypeIds = perspectiveValue.caseTypes().get();
+      selectedLabelIds = perspectiveValue.labels().get();
+      selectedAssigneeIds = perspectiveValue.assignees().get();
+      selectedProjectIds = perspectiveValue.projects().get();
+      selectedCreatedByIds = perspectiveValue.createdBy().get();
+      sortBy = SortBy.valueOf( perspectiveValue.sortBy().get() );
+      sortOrder = SortOrder.valueOf( perspectiveValue.sortOrder().get() );
+      groupBy = GroupBy.valueOf( perspectiveValue.groupBy().get() );
+      createdOnModel.setPeriod( Period.valueOf( perspectiveValue.createdOnPeriod().get() ) );
+      createdOnModel.setDate( perspectiveValue.createdOn().get() );
+      dueOnModel.setPeriod( Period.valueOf( perspectiveValue.dueOnPeriod().get() ) );
+      dueOnModel.setDate( perspectiveValue.dueOn().get() );
+      invisibleColumns = perspectiveValue.invisibleColumns().get();
    }
 
    protected String addSortingFromFilter()
    {
        String sort = "";
-      if (getSortBy() != SortBy.none)
+      if (sortBy != SortBy.none)
       {
-         sort = " order by " + getSortBy().name() + " " + getSortOrder().name();
+         sort = " order by " + sortBy.name() + " " + sortOrder.name();
       }
       return sort;
    }
@@ -443,7 +415,7 @@ public class CasesTableModel extends Observable
       {
          filter += " status:";
          String comma = "";
-         for (String status : getSelectedStatuses())
+         for ( String status : selectedStatuses )
          {
             filter += comma + status;
             comma = ",";
@@ -454,7 +426,7 @@ public class CasesTableModel extends Observable
       {
          filter += " caseType:\"";
          String comma = "";
-         for (String caseType : getSelectedCaseTypeIds())
+         for (String caseType : selectedCaseTypeIds)
          {
             filter += comma + caseType;
             comma = ",";
@@ -466,7 +438,7 @@ public class CasesTableModel extends Observable
       {
          filter += " label:\"";
          String comma = "";
-         for (String label : getSelectedLabelIds())
+         for (String label : selectedLabelIds)
          {
             filter += comma + label;
             comma = ",";
@@ -478,7 +450,7 @@ public class CasesTableModel extends Observable
       {
          filter += " assignedTo:\"";
          String comma = "";
-         for (String assignee : getSelectedAssigneeIds())
+         for (String assignee : selectedAssigneeIds)
          {
             filter += comma + assignee;
             comma = ",";
@@ -490,7 +462,7 @@ public class CasesTableModel extends Observable
       {
          filter += " project:\"";
          String comma = "";
-         for (String project : getSelectedProjectIds())
+         for (String project : selectedProjectIds)
          {
             filter += comma + project;
             comma = ",";
@@ -502,7 +474,7 @@ public class CasesTableModel extends Observable
       {
          filter += " createdBy:\"";
          String comma = "";
-         for (String createdBy : getSelectedCreatedByIds())
+         for (String createdBy : selectedCreatedByIds)
          {
             filter += comma + createdBy;
             comma = ",";
@@ -510,14 +482,14 @@ public class CasesTableModel extends Observable
          filter +=  "\"";
       }
 
-      if ( !Period.none.equals( getCreatedOnModel().getPeriod() ) )
+      if ( !Period.none.equals( createdOnModel.getPeriod() ) )
       {
-         filter += " createdOn:" + getCreatedOnModel().getSearchValue( "yyyyMMdd", "-" );
+         filter += " createdOn:" + createdOnModel.getSearchValue( "yyyyMMdd", "-" );
       }
 
-      if( !Period.none.equals( getDueOnModel().getPeriod() ))
+      if( !Period.none.equals( dueOnModel.getPeriod() ))
       {
-         filter += " dueOn:" + getDueOnModel().getSearchValue( "yyyyMMdd", "-" );
+         filter += " dueOn:" + dueOnModel.getSearchValue( "yyyyMMdd", "-" );
       }
       return filter;
    }
@@ -534,5 +506,33 @@ public class CasesTableModel extends Observable
          }
       }
       return descriptions;
+   }
+
+   public List<Integer> getInvisibleColumns()
+   {
+      return invisibleColumns;
+   }
+
+   public void addInvisibleColumn( Integer index )
+   {
+      if( !invisibleColumns.contains( index ) )
+      {
+         invisibleColumns.add( index  );
+      }
+   }
+
+   public void removeInvisibleColumn( Integer index )
+   {
+      invisibleColumns.remove( index );
+   }
+
+   public void createCase()
+   {
+      client.postCommand( "createcase" );
+   }
+
+   public boolean isCreateCaseEnabled()
+   {
+      return client.getReference().getLastSegment().equals("assignments") || client.getReference().getLastSegment().equals("drafts");
    }
 }

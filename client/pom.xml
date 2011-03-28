@@ -344,20 +344,4 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-	<repositories>
-		<repository>
-			<id>codehaus</id>
-			<url>http://repository.codehaus.org</url>
-		</repository>
-		<repository>
-			<id>cukes</id>
-			<url>http://cukes.info/maven</url>
-		</repository>
-	</repositories>
-	<pluginRepositories>
-		<pluginRepository>
-			<id>cukes</id>
-			<url>http://cukes.info/maven</url>
-		</pluginRepository>
-	</pluginRepositories>
 </project>

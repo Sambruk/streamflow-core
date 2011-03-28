@@ -51,6 +51,7 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
@@ -132,6 +133,7 @@ public class PerspectiveView extends JPanel implements Observer
 
       addPopupButton( filterPanel, FilterActions.filterCreatedOn.name() );
       List<LinkValue> linkValues = model.possibleFilterLinks();
+
       if( Iterables.matchesAny( Links.withRel( "possibleprojects" ), linkValues ) )
          addPopupButton(filterPanel, FilterActions.filterProject.name() );
 
@@ -145,6 +147,7 @@ public class PerspectiveView extends JPanel implements Observer
          addPopupButton(filterPanel, FilterActions.filterCreatedBy.name() );
 
       addPopupButton(filterPanel, FilterActions.filterDueOn.name() );
+
       if( Iterables.matchesAny( Links.withRel( "possiblestatus" ) , linkValues ) )
          addPopupButton(filterPanel, FilterActions.filterStatus.name() );
 
@@ -179,7 +182,6 @@ public class PerspectiveView extends JPanel implements Observer
             }
          }
       } );
-      //new RefreshWhenShowing( this, model );
    }
 
    private void addPopupButton(JPanel panel, String action)
@@ -227,7 +229,12 @@ public class PerspectiveView extends JPanel implements Observer
    @Action
    public void filterStatus()
    {
-      optionsPanel.add(statusList);
+      JPanel statusPanel = new JPanel( new BorderLayout() );
+      statusPanel.setPreferredSize( new Dimension( 100, 60 )  );
+      statusPanel.setMaximumSize( new Dimension( 100, 60 ) );
+      statusPanel.setMaximumSize( new Dimension( 100, 60 ) );
+      statusPanel.add( statusList, BorderLayout.CENTER );
+      optionsPanel.add( statusPanel );
    }
    
    @Action
@@ -313,6 +320,12 @@ public class PerspectiveView extends JPanel implements Observer
 
          public void run()
          {
+            // Make it impossible to have several popups open at the same time
+            if( popup != null )
+            {
+               popup.dispose();
+               popup = null;
+            }
             final JFrame frame = (JFrame) SwingUtilities.getAncestorOfClass( JFrame.class, PerspectiveView.this );
             popup = new JDialog( frame );
             popup.getRootPane().registerKeyboardAction( new ActionListener()
@@ -473,7 +486,6 @@ public class PerspectiveView extends JPanel implements Observer
       {
          super(new Object[]
          { OPEN.name(), ON_HOLD.name(), CLOSED.name() });
-         setSelectedIndex(0);
          setCellRenderer(new DefaultListCellRenderer()
          {
 

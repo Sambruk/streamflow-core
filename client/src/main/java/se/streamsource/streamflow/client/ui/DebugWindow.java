@@ -32,6 +32,7 @@ import javax.swing.ActionMap;
 import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
 import javax.swing.table.DefaultTableModel;
+import java.awt.Dimension;
 
 /**
  * JAVADOC
@@ -59,7 +60,8 @@ public class DebugWindow
 
       setToolBar( toolbar );
 
-      frame.setSize( 400, 400 );
+      frame.setPreferredSize( new Dimension( 600, 300 ) );
+      frame.pack();
    }
 
    @Action

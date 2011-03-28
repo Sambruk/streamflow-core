@@ -66,5 +66,7 @@ public interface PerspectiveValue
 
    @UseDefaults
    Property<String> context();
+
+   Property<List<Integer>> invisibleColumns();
    
 }
