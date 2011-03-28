@@ -307,6 +307,7 @@
                         <exclude>**/version.html</exclude>
                         <exclude>**/*.py</exclude>
                         <exclude>**/manual/template/**</exclude>
+                        <exclude>**/**.wiki</exclude>
                     </excludes>
                     <mapping>
                         <tcl>SCRIPT_STYLE</tcl>
