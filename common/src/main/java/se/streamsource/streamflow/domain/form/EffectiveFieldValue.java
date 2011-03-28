@@ -30,6 +30,8 @@ public interface EffectiveFieldValue
 {
    Property<EntityReference> form();
 
+   Property<EntityReference> page();
+
    Property<EntityReference> submitter();
 
    Property<Date> submissionDate();

@@ -25,18 +25,7 @@ import se.streamsource.dci.value.ValueAssembler;
 import se.streamsource.streamflow.infrastructure.application.AccessPointValue;
 import se.streamsource.streamflow.infrastructure.application.LinkTree;
 import se.streamsource.streamflow.infrastructure.application.ListItemValue;
-import se.streamsource.streamflow.resource.caze.CaseDTO;
-import se.streamsource.streamflow.resource.caze.CaseFormDTO;
-import se.streamsource.streamflow.resource.caze.CaseGeneralDTO;
-import se.streamsource.streamflow.resource.caze.CaseOutputConfigValue;
-import se.streamsource.streamflow.resource.caze.ContactsDTO;
-import se.streamsource.streamflow.resource.caze.EffectiveFieldDTO;
-import se.streamsource.streamflow.resource.caze.EffectiveFieldsDTO;
-import se.streamsource.streamflow.resource.caze.EndUserCaseDTO;
-import se.streamsource.streamflow.resource.caze.FieldDTO;
-import se.streamsource.streamflow.resource.caze.SubmittedFormDTO;
-import se.streamsource.streamflow.resource.caze.SubmittedFormListDTO;
-import se.streamsource.streamflow.resource.caze.SubmittedFormsListDTO;
+import se.streamsource.streamflow.resource.caze.*;
 import se.streamsource.streamflow.resource.conversation.ConversationDTO;
 import se.streamsource.streamflow.resource.conversation.MessageDTO;
 import se.streamsource.streamflow.resource.organization.SelectedTemplatesValue;
@@ -91,6 +80,7 @@ public class CommonResourceAssembler
             EffectiveFieldsDTO.class,
             EffectiveFieldDTO.class,
             SubmittedFormDTO.class,
+            SubmittedPageDTO.class,
             SubmittedFormListDTO.class,
             SubmittedFormsListDTO.class,
             UserEntityValue.class,

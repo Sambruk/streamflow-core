@@ -21,6 +21,7 @@ import org.qi4j.api.io.Inputs;
 import se.streamsource.streamflow.domain.contact.ContactValue;
 import se.streamsource.streamflow.domain.form.EffectiveFieldValue;
 import se.streamsource.streamflow.domain.form.EffectiveFormFieldsValue;
+import se.streamsource.streamflow.domain.form.SubmittedFormValue;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachments;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
@@ -53,13 +54,9 @@ public class CaseDescriptor
       return Inputs.iterable(((Contacts.Data)caze).contacts().get());
    }
 
-   public Input<EffectiveFieldValue, RuntimeException> effectiveFields()
+   public Input<SubmittedFormValue, RuntimeException> submittedForms()
    {
-      EffectiveFormFieldsValue value = ((SubmittedForms.Data) caze).effectiveFieldValues().get();
-      if (value == null)
-         return Inputs.iterable( Collections.<EffectiveFieldValue>emptyList() );
-      else
-         return Inputs.iterable( value.fields().get());
+      return Inputs.iterable(((SubmittedForms.Data) caze).submittedForms().get());
    }
 
    public Input<Conversation, RuntimeException> conversations()

@@ -55,6 +55,7 @@ public class FormAssembler
             FieldDefinitionValue.class,
             FieldSubmissionValue.class,
             SubmittedFormValue.class,
+            SubmittedPageValue.class,
             PageSubmissionValue.class,
             FormSignatureValue.class,
             RequiredSignaturesValue.class,

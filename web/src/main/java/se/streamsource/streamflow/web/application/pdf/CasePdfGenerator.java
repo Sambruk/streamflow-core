@@ -205,7 +205,7 @@ public class CasePdfGenerator implements CaseOutput
 
       if (config.effectiveFields().get())
       {
-         generateEffectiveFields(cazeDescriptor.effectiveFields());
+         generateSubmittedForms(cazeDescriptor.submittedForms());
       }
 
       if (config.conversations().get())
@@ -323,11 +323,102 @@ public class CasePdfGenerator implements CaseOutput
       conversations.transferTo(output);
    }
 
-   public void generateEffectiveFields(Input<EffectiveFieldValue, RuntimeException> effectiveFields) throws IOException
+   public void generateSubmittedForms(Input<SubmittedFormValue, RuntimeException> submittedForms) throws IOException
    {
+/*
+      ArrayList<SubmittedFormValue> formValues = new ArrayList<SubmittedFormValue>();
+      submittedForms.transferTo(Outputs.collection(formValues));
+
+      // Latest forms first please
+      Collections.reverse(formValues);
+
+      Set<EntityReference> printedForms = new HashSet<EntityReference>();
+      boolean printedHeader = false;
+      for (SubmittedFormValue formValue : formValues)
+      {
+         if (printedForms.contains(formValue.form().get()))
+            continue; // Skip this form - already printed
+
+         // Form PDF section header
+         if (!printedHeader)
+         {
+            document.changeColor(Color.BLUE);
+            document.println(bundle.getString("submittedForms") + ":", valueFontBold);
+            document.changeColor(Color.BLACK);
+            printedHeader = true;
+         }
+
+         Describable form = uowf.currentUnitOfWork().get(Describable.class, formValue.form().get().identity() );
+
+         document.println(form.getDescription() + ":", valueFontBold);
+         document.underLine(form.getDescription(), valueFontBold);
+         document.println("", valueFont);
+
+         float fieldNameTabStop = 0;
+         for (SubmittedPageValue submittedPageValue : formValue.pages().get())
+         {
+            for (SubmittedFieldValue submittedFieldValue : submittedPageValue.fields().get())
+            {
+               Describable fieldName = uowf.currentUnitOfWork().get(Describable.class, field.field().get().identity());
+
+               float tempTabStop = document.calculateTabStop(valueFontBold, fieldName.getDescription());
+               if (tempTabStop > fieldNameTabStop)
+               {
+                  fieldNameTabStop = tempTabStop;
+               }
+               fieldValues.put(field.field().get().identity(), field);
+
+               // keep track of last submitter and submission date
+               if (lastSubmittedOn == null || lastSubmittedOn.before(field.submissionDate().get()))
+               {
+                  lastSubmittedOn = field.submissionDate().get();
+                  lastSubmittedBy = uowf.currentUnitOfWork().get(Describable.class, field.submitter().get().identity()).getDescription();
+               }
+            }
+         }
+
+         float tabStop = document.calculateTabStop(valueFontBold, bundle.getString("lastSubmitted"), bundle.getString("lastSubmittedBy"));
+         document.printLabelAndText(bundle.getString("lastSubmitted") + ":", valueFontBold,
+                 DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, locale).format(lastSubmittedOn),
+                 valueFont, tabStop);
+         document.printLabelAndText(bundle.getString("lastSubmittedBy") + ":", valueFontBold, lastSubmittedBy, valueFont, tabStop);
+         document.print("", valueFont);
+
+
+         for (Map.Entry<String, EffectiveFieldValue> entry : fieldValues.entrySet())
+         {
+            EffectiveFieldValue field = entry.getValue();
+            FieldValue fieldValue = uowf.currentUnitOfWork().get(FieldEntity.class, field.field().get().identity())
+                    .fieldValue().get();
+
+            if (!Strings.empty(field.value().get()))
+            {
+               String label = uowf.currentUnitOfWork().get(Describable.class, field.field().get().identity())
+                       .getDescription();
+               String value = "";
+               // convert JSON String if field type AttachmentFieldValue
+               if (fieldValue instanceof AttachmentFieldValue)
+               {
+                  AttachmentFieldSubmission attachment = vbf.newValueFromJSON(AttachmentFieldSubmission.class, field
+                          .value().get());
+                  value = attachment.name().get();
+
+               } else if (fieldValue instanceof DateFieldValue && !Strings.empty(field.value().get()))
+               {
+                  value = new SimpleDateFormat(bundle.getString("date_format")).format(DateFunctions
+                          .fromString(field.value().get()));
+               } else
+               {
+                  value = field.value().get();
+               }
+               document.printLabelAndText(label + ":", valueFontBold, value, valueFont, fieldNameTabStop);
+            }
+         }
+      }
+
       final Map<EntityReference, List<EffectiveFieldValue>> forms = new LinkedHashMap<EntityReference, List<EffectiveFieldValue>>(10);
 
-      effectiveFields.transferTo(new Output<EffectiveFieldValue, IOException>()
+      submittedForms.transferTo(new Output<EffectiveFieldValue, IOException>()
       {
          public <SenderThrowableType extends Throwable> void receiveFrom(Sender<? extends EffectiveFieldValue, SenderThrowableType> sender) throws IOException, SenderThrowableType
          {
@@ -429,6 +520,7 @@ public class CasePdfGenerator implements CaseOutput
             }
          }
       }
+      */
    }
 
    public void generateAttachments(Input<Attachment, RuntimeException> attachments) throws IOException

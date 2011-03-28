@@ -29,13 +29,7 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
-import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
-import se.streamsource.streamflow.domain.form.FieldValue;
-import se.streamsource.streamflow.domain.form.FormDraftValue;
-import se.streamsource.streamflow.domain.form.PageSubmissionValue;
-import se.streamsource.streamflow.domain.form.SubmittedFieldValue;
-import se.streamsource.streamflow.domain.form.SubmittedFormValue;
+import se.streamsource.streamflow.domain.form.*;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
 import se.streamsource.streamflow.web.domain.structure.attachment.FormAttachments;
@@ -177,11 +171,14 @@ public interface FormDrafts
          if ( submittedFormValue == null)
             return null;
 
-         for (SubmittedFieldValue submittedFieldValue : submittedFormValue.values().get())
+         for (SubmittedPageValue submittedPageValue : submittedFormValue.pages().get())
          {
-            if ( submittedFieldValue.field().get().equals( EntityReference.getEntityReference( field )))
+            for (SubmittedFieldValue submittedFieldValue : submittedPageValue.fields().get())
             {
-               return submittedFieldValue.value().get();
+               if ( submittedFieldValue.field().get().equals( EntityReference.getEntityReference( field )))
+               {
+                  return submittedFieldValue.value().get();
+               }
             }
          }
          return null;

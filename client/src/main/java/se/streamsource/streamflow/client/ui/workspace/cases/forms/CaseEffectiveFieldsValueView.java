@@ -33,8 +33,7 @@ import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.resource.caze.EffectiveFieldDTO;
 
 import javax.swing.*;
-import java.awt.Color;
-import java.awt.Font;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.text.SimpleDateFormat;
 import java.util.LinkedHashMap;
@@ -72,7 +71,10 @@ public class CaseEffectiveFieldsValueView
          public void iterate( EffectiveFieldDTO effectiveFieldDTO )
          {
             String formName = effectiveFieldDTO.formName().get();
-            if ( !formBuilder.containsKey( formName ))
+
+            DefaultFormBuilder builder = formBuilder.get( formName );
+
+            if ( builder == null)
             {
                JPanel formPanel = new JPanel();
                formPanel.setBackground( Color.WHITE );
@@ -80,6 +82,27 @@ public class CaseEffectiveFieldsValueView
                formBuilder.put( formName, builder( formPanel ) );
             }
 
+            // Find/create page panel
+            JPanel formPanel = builder.getPanel();
+            JPanel pagePanel = null;
+            for (Component page : formPanel.getComponents())
+            {
+               if (page.getName().equals(effectiveFieldDTO.pageName().get()))
+               {
+                  pagePanel = (JPanel) page;
+                  break;
+               }
+            }
+
+            if (pagePanel == null)
+            {
+               pagePanel = new JPanel();
+               formPanel.setBackground( Color.WHITE );
+               formPanel.setBorder( BorderFactory.createTitledBorder( effectiveFieldDTO.pageName().get() ));
+               formPanel.add(pagePanel);
+            }
+
+            // Add field to page panel
             JLabel label = new JLabel( effectiveFieldDTO.fieldName().get(), SwingConstants.LEFT );
             label.setFont( label.getFont().deriveFont( Font.BOLD ) );
 
@@ -87,7 +110,6 @@ public class CaseEffectiveFieldsValueView
             component.setBackground( Color.WHITE );
             component.setToolTipText( effectiveFieldDTO.submitter().get()+", "+formatter.format( effectiveFieldDTO.submissionDate().get() ) );
 
-            DefaultFormBuilder builder = formBuilder.get( formName );
             builder.append( label);
             builder.nextColumn();
             builder.append( component );

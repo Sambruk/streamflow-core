@@ -75,6 +75,8 @@ import se.streamsource.streamflow.web.resource.EventsCommandResult;
 
 import javax.sql.DataSource;
 
+import java.io.IOException;
+
 import static org.qi4j.bootstrap.ImportedServiceDeclaration.*;
 
 /**
@@ -109,8 +111,8 @@ public class InfrastructureAssembler
       new ClientAssembler().assemble( moduleAssembly );
 
       moduleAssembly.services( ContactLookupService.class ).
-            identifiedBy( "contactlookup" ).
-            visibleIn( Visibility.application ).
+            identifiedBy("contactlookup").
+            visibleIn(Visibility.application).
             instantiateOnStartup();
 
       moduleAssembly.values( ContactList.class,
@@ -159,7 +161,7 @@ public class InfrastructureAssembler
 
       if (module.layer().application().mode() == Application.Mode.production)
       {
-         module.services( JdbmEventStoreService.class ).identifiedBy( "eventstore" ).taggedWith( "domain" ).visibleIn( Visibility.application );
+         module.services( JdbmEventStoreService.class ).identifiedBy( "eventstore" ).taggedWith("domain").visibleIn( Visibility.application );
          module.services( JdbmApplicationEventStoreService.class ).identifiedBy( "applicationeventstore" ).visibleIn( Visibility.application );
       } else
       {
@@ -563,7 +565,77 @@ public class InfrastructureAssembler
                   renameEntity( "se.streamsource.streamflow.web.domain.entity.user.profile.SavedSearchEntity", "se.streamsource.streamflow.web.domain.entity.user.profile.PerspectiveEntity").
                   forEntities("se.streamsource.streamflow.web.domain.entity.user.UserEntity").
                      renameAssociation("searches", "perspectives").
-                  end();
+                  end().
+               toVersion("1.3.0.1").
+                 forEntities("se.streamsource.streamflow.web.domain.entity.caze.CaseEntity").
+                     removeProperty("effectiveFieldValues", null).
+                     custom(new EntityMigrationOperation()
+                     {
+                        public boolean upgrade(JSONObject state, StateStore stateStore, Migrator migrator) throws JSONException
+                        {
+                           try
+                           {
+                              JSONArray submittedForms = state.getJSONObject( "properties" ).getJSONArray("submittedForms");
+
+                              for (int i = 0; i < submittedForms.length(); i++)
+                              {
+                                 JSONObject submittedForm = submittedForms.getJSONObject(i);
+                                 JSONArray fields = submittedForm.getJSONArray("values");
+
+                                 JSONObject formState = stateStore.getState(submittedForm.getString("form"));
+
+                                 JSONArray formPages = formState.getJSONObject("manyassociations").getJSONArray("pages");
+
+                                 JSONArray submittedPages = new JSONArray();
+
+                                 for (int k = 0; k < formPages.length(); k++)
+                                 {
+                                    JSONObject submittedPage = new JSONObject();
+
+                                    submittedPage.put("page", formPages.getString(k));
+
+                                    JSONObject pageState = stateStore.getState(formPages.getString(k));
+
+                                    JSONArray fieldsState = pageState.getJSONObject("manyassociations").getJSONArray("fields");
+
+                                    JSONArray submittedFields = new JSONArray();
+                                    for (int j = 0; j < fieldsState.length(); j++)
+                                    {
+                                       for (int m = 0; m < fields.length(); m++)
+                                       {
+                                          JSONObject field = fields.getJSONObject(m);
+
+                                          if (field.getString("field").equals(fieldsState.getString(j)))
+                                          {
+                                             submittedFields.put(field);
+                                             break;
+                                          }
+                                       }
+                                    }
+                                    submittedPage.put("fields", submittedFields);
+
+                                    submittedPages.put(submittedPage);
+                                 }
+
+                                 submittedForm.put("pages", submittedPages);
+                                 submittedForm.remove("values");
+                              }
+
+                              return true;
+                           } catch (IOException e)
+                           {
+                              throw new JSONException(e);
+                           }
+                        }
+
+                        public boolean downgrade(JSONObject state, StateStore stateStore, Migrator migrator) throws JSONException
+                        {
+                           return false;
+                        }
+                     }).
+                 end();
+
+
                   
 
          module.services( MigrationService.class ).setMetaInfo( migrationBuilder );
@@ -578,9 +650,9 @@ public class InfrastructureAssembler
    {
       module.services( DataSourceService.class ).identifiedBy( "datasource" ).visibleIn( Visibility.application );
       module.importedServices( DataSource.class ).
-            importedBy( ServiceInstanceImporter.class ).
-            setMetaInfo( "datasource" ).
-            identifiedBy( "streamflowds" ).visibleIn( Visibility.application );
+            importedBy(ServiceInstanceImporter.class).
+            setMetaInfo("datasource").
+            identifiedBy("streamflowds").visibleIn( Visibility.application );
 
       Application.Mode mode = module.layer().application().mode();
       if (mode.equals( Application.Mode.production ))

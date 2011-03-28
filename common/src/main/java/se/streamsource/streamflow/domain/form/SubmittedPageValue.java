@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.resource.caze;
+package se.streamsource.streamflow.domain.form;
 
 import org.qi4j.api.common.UseDefaults;
+import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
 
@@ -27,15 +28,11 @@ import java.util.List;
 /**
  * JAVADOC
  */
-public interface SubmittedFormDTO
+public interface SubmittedPageValue
       extends ValueComposite
 {
-   Property<Date> submissionDate();
-
-   Property<String> submitter();
-
-   Property<String> form();
+   Property<EntityReference> page();
 
    @UseDefaults
-   Property<List<SubmittedPageDTO>> pages();
+   Property<List<SubmittedFieldValue>> fields();
 }

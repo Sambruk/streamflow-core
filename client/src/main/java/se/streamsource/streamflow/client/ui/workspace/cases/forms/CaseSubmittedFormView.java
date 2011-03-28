@@ -31,6 +31,7 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.resource.caze.FieldDTO;
+import se.streamsource.streamflow.resource.caze.SubmittedPageDTO;
 import se.streamsource.streamflow.resource.roles.IntegerDTO;
 
 import javax.swing.*;
@@ -42,7 +43,7 @@ import java.awt.event.ActionEvent;
  */
 public class CaseSubmittedFormView
       extends CaseSubmittedFormAbstractView
-      implements ListEventListener<FieldDTO>
+      implements ListEventListener<SubmittedPageDTO>
 {
    private CaseSubmittedFormModel model;
 
@@ -59,22 +60,30 @@ public class CaseSubmittedFormView
       new RefreshWhenShowing( this, model );
    }
 
-   public void listChanged( ListEvent<FieldDTO> listEvent )
+   public void listChanged( ListEvent<SubmittedPageDTO> listEvent )
    {
       panel().removeAll();
       final DefaultFormBuilder builder = builder( panel() );
 
-      safeRead( model.getEventList(), new EventCallback<FieldDTO>() {
-         public void iterate( FieldDTO field )
+      safeRead( model.getEventList(), new EventCallback<SubmittedPageDTO>() {
+         public void iterate( SubmittedPageDTO page )
          {
-            JLabel label = new JLabel( field.field().get(), SwingConstants.LEFT);
-            label.setFont(  label. getFont().deriveFont( Font.BOLD ) );
-            JComponent component = getComponent( field.value().get(), field.fieldType().get() );
+            JLabel label = new JLabel( page.name().get(), SwingConstants.LEFT);
+            label.setFont(  label. getFont().deriveFont( Font.ITALIC + Font.BOLD ));
+            builder.append(label);
+            builder.nextLine();
 
-            builder.append( label );
-            builder.nextLine();
-            builder.append( component );
-            builder.nextLine();
+            for (FieldDTO field : page.fields().get())
+            {
+               label = new JLabel( field.field().get(), SwingConstants.LEFT);
+               label.setFont(label.getFont().deriveFont(Font.BOLD));
+               JComponent component = getComponent( field.value().get(), field.fieldType().get() );
+
+               builder.append( label );
+               builder.nextLine();
+               builder.append( component );
+               builder.nextLine();
+            }
          }
       });
       revalidate();

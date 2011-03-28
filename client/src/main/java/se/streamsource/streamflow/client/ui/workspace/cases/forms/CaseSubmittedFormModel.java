@@ -30,6 +30,7 @@ import se.streamsource.streamflow.client.util.EventListSynch;
 import se.streamsource.streamflow.client.util.Refreshable;
 import se.streamsource.streamflow.resource.caze.FieldDTO;
 import se.streamsource.streamflow.resource.caze.SubmittedFormDTO;
+import se.streamsource.streamflow.resource.caze.SubmittedPageDTO;
 import se.streamsource.streamflow.resource.roles.IntegerDTO;
 
 import java.io.IOException;
@@ -45,15 +46,15 @@ public class CaseSubmittedFormModel
    @Structure
    ValueBuilderFactory vbf;
 
-   private EventList<FieldDTO> eventList = new TransactionList<FieldDTO>( new BasicEventList<FieldDTO>() );
+   private EventList<SubmittedPageDTO> eventList = new TransactionList<SubmittedPageDTO>( new BasicEventList<SubmittedPageDTO>() );
 
    public void refresh()
    {
       SubmittedFormDTO form = client.query( "submittedform", index, SubmittedFormDTO.class );
-      EventListSynch.synchronize( form.values().get(), eventList );
+      EventListSynch.synchronize( form.pages().get(), eventList );
    }
 
-   public EventList<FieldDTO> getEventList()
+   public EventList<SubmittedPageDTO> getEventList()
    {
       return eventList;
    }

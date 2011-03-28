@@ -27,15 +27,11 @@ import java.util.List;
 /**
  * JAVADOC
  */
-public interface SubmittedFormDTO
+public interface SubmittedPageDTO
       extends ValueComposite
 {
-   Property<Date> submissionDate();
-
-   Property<String> submitter();
-
-   Property<String> form();
+   Property<String> name();
 
    @UseDefaults
-   Property<List<SubmittedPageDTO>> pages();
+   Property<List<FieldDTO>> fields();
 }
