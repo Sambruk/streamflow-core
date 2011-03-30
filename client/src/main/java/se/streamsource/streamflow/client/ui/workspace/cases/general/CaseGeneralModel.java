@@ -78,11 +78,12 @@ public class CaseGeneralModel
       if (newDescription.equals(general.description().get()))
          return; // No change
 
+      general.description().set( newDescription );
       ValueBuilder<StringValue> builder = vbf
             .newValueBuilder( StringValue.class );
       builder.prototype().string().set( newDescription );
       client.postCommand( "changedescription", builder.newInstance() );
-      general.description().set( newDescription );
+
    }
 
    public void changeNote( String newNote )

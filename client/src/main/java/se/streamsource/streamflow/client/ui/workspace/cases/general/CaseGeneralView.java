@@ -28,6 +28,7 @@ import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
 import org.jdesktop.swingx.JXDatePicker;
 import org.jdesktop.swingx.calendar.DatePickerFormatter;
+import org.qi4j.api.constraint.ConstraintViolationException;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
@@ -35,7 +36,10 @@ import org.qi4j.api.object.ObjectBuilder;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.link.LinkValue;
+import se.streamsource.streamflow.application.error.ErrorResources;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
+import se.streamsource.streamflow.client.OperationException;
+import se.streamsource.streamflow.client.StreamflowResources;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.PossibleFormsView;
 import se.streamsource.streamflow.client.util.ActionBinder;
@@ -77,10 +81,12 @@ import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.text.DateFormat;
+import java.text.MessageFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.ResourceBundle;
 import java.util.TimeZone;
 
 import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.*;
@@ -350,6 +356,27 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
                throws Exception
          {
             model.changeDescription( descriptionField.getText() );
+         }
+
+         protected void failed( Throwable throwable )
+         {
+            if( throwable instanceof ConstraintViolationException )
+            {
+
+               //TODO this is not a good solution - ConstraintViolationException should expose both annotation name and annotation value not just annotation toString()
+               String constraint = ((ConstraintViolationException)throwable).getLocalizedMessages(
+                                    ResourceBundle.getBundle( "se.streamsource.streamflow.client.ui.workspace.resources.WorkspaceResources") )[0];
+               constraint = constraint.substring( constraint.indexOf( "=" ) + 1 , constraint.lastIndexOf( ")" ) );
+
+               dialogs.showMessageDialog( descriptionField,
+                     new MessageFormat( i18n.text( StreamflowResources.max_length ) ).format( new Object[]{ constraint } ).toString(),
+                              i18n.text( StreamflowResources.invalid_input ) );
+               descriptionField.setText( descriptionField.getText().substring( 0, Integer.parseInt( constraint ) ) );
+            }
+            else if (throwable instanceof OperationException)
+               throw (OperationException) throwable;
+            else
+               throw new OperationException( ErrorResources.error, throwable );
          }
       };
    }
