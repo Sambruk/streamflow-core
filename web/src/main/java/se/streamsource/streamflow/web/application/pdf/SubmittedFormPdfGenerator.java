@@ -36,6 +36,7 @@ import se.streamsource.streamflow.domain.form.SubmittedPageValue;
 import se.streamsource.streamflow.web.domain.entity.form.FieldEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
+import se.streamsource.streamflow.web.domain.structure.form.Page;
 import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
 
 import java.io.IOException;
@@ -82,6 +83,7 @@ public interface SubmittedFormPdfGenerator extends ServiceComposite
          PdfFont h2Font = new PdfFont(PDType1Font.HELVETICA_BOLD, 14);
          PdfFont valueFont = new PdfFont(PDType1Font.HELVETICA, 12);
          PdfFont descFont = new PdfFont(PDType1Font.HELVETICA_OBLIQUE, 10);
+         PdfFont pageFont = new PdfFont(PDType1Font.HELVETICA_BOLD_OBLIQUE, 14 );
 
          Form form = uowFactory.currentUnitOfWork().get(Form.class, value.form().get().identity());
 
@@ -94,6 +96,9 @@ public interface SubmittedFormPdfGenerator extends ServiceComposite
 
          for (SubmittedPageValue submittedPageValue : value.pages().get())
          {
+            Page page = uowFactory.currentUnitOfWork().get( Page.class, submittedPageValue.page().get().identity() );
+            document.println( page.getDescription(), pageFont );
+
             // TODO Page breaks
             for (SubmittedFieldValue submittedFieldValue : submittedPageValue.fields().get())
             {
