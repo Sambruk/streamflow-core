@@ -26,7 +26,7 @@ import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.ui.workspace.cases.attachments.AttachmentsView;
 import se.streamsource.streamflow.client.ui.workspace.cases.contacts.ContactsAdminView;
 import se.streamsource.streamflow.client.ui.workspace.cases.conversations.ConversationsView;
-import se.streamsource.streamflow.client.ui.workspace.cases.forms.FormsAdminView;
+import se.streamsource.streamflow.client.ui.workspace.cases.forms.SubmittedFormsAdminView;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.CaseGeneralView;
 import se.streamsource.streamflow.client.ui.workspace.cases.history.HistoryView;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
@@ -71,7 +71,7 @@ public class CaseDetailView
       // TODO This could be changed to use model.getResourceValue().resources()
       tabs.addTab( text( WorkspaceResources.general_tab ), icon( Icons.general ), obf.newObjectBuilder( CaseGeneralView.class ).use( client.getSubClient("general" )).newInstance(), text( WorkspaceResources.general_tab ) );
       tabs.addTab( text( WorkspaceResources.contacts_tab ), icon( Icons.projects ), obf.newObjectBuilder( ContactsAdminView.class ).use( client.getSubClient("contacts" )).newInstance(), text( WorkspaceResources.contacts_tab ) );
-      tabs.addTab( text( WorkspaceResources.forms_tab ), icon( Icons.forms ), obf.newObjectBuilder( FormsAdminView.class ).use( client.getSubClient("submittedforms" )).newInstance(), text( WorkspaceResources.forms_tab ) );
+      tabs.addTab( text( WorkspaceResources.forms_tab ), icon( Icons.forms ), obf.newObjectBuilder( SubmittedFormsAdminView.class ).use( client.getSubClient("submittedforms" )).newInstance(), text( WorkspaceResources.forms_tab ) );
       tabs.addTab( text( WorkspaceResources.conversations_tab ), icon( Icons.conversations ), obf.newObjectBuilder( ConversationsView.class ).use( client.getSubClient("conversations" )).newInstance(), text( WorkspaceResources.conversations_tab ) );
       tabs.addTab( text( WorkspaceResources.attachments_tab ), icon( Icons.attachments ), obf.newObjectBuilder( AttachmentsView.class ).use( client.getSubClient("attachments" )).newInstance(), text( WorkspaceResources.attachments_tab ) );
       tabs.addTab( text( WorkspaceResources.history_tab ), icon( Icons.history ), obf.newObjectBuilder( HistoryView.class ).use( client.getSubClient("history" )).newInstance(), text( WorkspaceResources.history_tab ) );

@@ -44,18 +44,24 @@ public class CaseSubmittedFormModel
 
    @Structure
    ValueBuilderFactory vbf;
+   SubmittedFormDTO form;
 
    private EventList<SubmittedPageDTO> eventList = new TransactionList<SubmittedPageDTO>( new BasicEventList<SubmittedPageDTO>() );
 
    public void refresh()
    {
-      SubmittedFormDTO form = client.query( "submittedform", index, SubmittedFormDTO.class );
+      form = client.query( "submittedform", index, SubmittedFormDTO.class );
       EventListSynch.synchronize( form.pages().get(), eventList );
    }
 
    public EventList<SubmittedPageDTO> getEventList()
    {
       return eventList;
+   }
+
+   public SubmittedFormDTO getForm()
+   {
+      return form;
    }
 
    public Representation download( String attachmentId ) throws IOException

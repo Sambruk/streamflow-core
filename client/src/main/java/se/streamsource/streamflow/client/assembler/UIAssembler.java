@@ -163,13 +163,10 @@ import se.streamsource.streamflow.client.ui.workspace.cases.conversations.Conver
 import se.streamsource.streamflow.client.ui.workspace.cases.conversations.ConversationsView;
 import se.streamsource.streamflow.client.ui.workspace.cases.conversations.MessagesConversationView;
 import se.streamsource.streamflow.client.ui.workspace.cases.conversations.MessagesModel;
-import se.streamsource.streamflow.client.ui.workspace.cases.forms.CaseEffectiveFieldsValueModel;
-import se.streamsource.streamflow.client.ui.workspace.cases.forms.CaseEffectiveFieldsValueView;
 import se.streamsource.streamflow.client.ui.workspace.cases.forms.CaseSubmittedFormModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.forms.CaseSubmittedFormView;
 import se.streamsource.streamflow.client.ui.workspace.cases.forms.CaseSubmittedFormsModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.forms.CaseSubmittedFormsView;
-import se.streamsource.streamflow.client.ui.workspace.cases.forms.FormsAdminView;
 import se.streamsource.streamflow.client.ui.workspace.cases.forms.SubmittedFormsAdminView;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.CaseGeneralModel;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.CaseGeneralView;
@@ -453,7 +450,7 @@ public class UIAssembler
    private void cases( ModuleAssembly module ) throws AssemblyException
    {
       addViews( module, CasesView.class, CasesDetailView.class, ContactsAdminView.class,
-            FormsAdminView.class, SubmittedFormsAdminView.class, CheckboxesPanel.class,
+            SubmittedFormsAdminView.class, CheckboxesPanel.class,
             ComboBoxPanel.class, OptionButtonsPanel.class, OpenSelectionPanel.class, ListBoxPanel.class, DatePanel.class,
             NumberPanel.class, TextAreaFieldPanel.class, TextFieldPanel.class, AttachmentFieldPanel.class, 
             HistoryView.class, MessagesHistoryView.class, PerspectiveView.class
@@ -487,10 +484,6 @@ public class UIAssembler
       addMV( module,
             CaseLabelsModel.class,
             CaseLabelsView.class );
-
-      addMV( module,
-            CaseEffectiveFieldsValueModel.class,
-            CaseEffectiveFieldsValueView.class );
 
       addMV( module,
             CaseSubmittedFormsModel.class,

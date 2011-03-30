@@ -22,12 +22,14 @@ import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
+import se.streamsource.streamflow.resource.caze.SubmittedFormListDTO;
 
-import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
+import javax.swing.JTree;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.DefaultMutableTreeNode;
 
 
 /**
@@ -38,27 +40,27 @@ public class SubmittedFormsAdminView
 {
    public SubmittedFormsAdminView( @Uses final CommandQueryClient client, @Structure final ObjectBuilderFactory obf, @Structure final ValueBuilderFactory vbf)
    {
-      CaseSubmittedFormsView submittedFormsView = obf.newObjectBuilder( CaseSubmittedFormsView.class ).use( client ).newInstance();
+      final CaseSubmittedFormsView submittedFormsView = obf.newObjectBuilder( CaseSubmittedFormsView.class ).use( client ).newInstance();
       setLeftComponent( submittedFormsView );
       setRightComponent( new JPanel() );
 
-      final JList submittedForms = submittedFormsView.getSubmittedFormsList();
-      submittedForms.addListSelectionListener( new ListSelectionListener()
+      final JTree submittedForms = submittedFormsView.getSubmittedFormsTree();
+      submittedForms.addTreeSelectionListener( new TreeSelectionListener()
       {
-         public void valueChanged( ListSelectionEvent e )
+         public void valueChanged( TreeSelectionEvent e )
          {
-            if (!e.getValueIsAdjusting())
+             
+            SubmittedFormListDTO form = (SubmittedFormListDTO) ((DefaultMutableTreeNode)e.getPath().getLastPathComponent()).getUserObject();
+            int idx = submittedFormsView.getModel().getSubmittedForms().indexOf( form );
+            if (idx != -1)
             {
-               int idx = submittedForms.getSelectedIndex();
-               if (idx != -1 && idx < submittedForms.getModel().getSize())
-               {
 
-                  CaseSubmittedFormView submittedFormView = obf.newObjectBuilder( CaseSubmittedFormView.class ).use( client, idx ).newInstance();
-                  setRightComponent( submittedFormView );
-               } else
-               {
-                  setRightComponent( new JPanel() );
-               }
+               CaseSubmittedFormView submittedFormView = obf.newObjectBuilder( CaseSubmittedFormView.class ).
+                     use( client, idx ).newInstance();
+               setRightComponent( submittedFormView );
+            } else
+            {
+               setRightComponent( new JPanel() );
             }
          }
       } );

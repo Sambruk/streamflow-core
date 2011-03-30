@@ -23,6 +23,8 @@ import com.jgoodies.forms.builder.DefaultFormBuilder;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ApplicationContext;
 import org.jdesktop.application.Task;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
@@ -32,14 +34,19 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.resource.caze.FieldDTO;
+import se.streamsource.streamflow.resource.caze.SubmittedFormDTO;
 import se.streamsource.streamflow.resource.caze.SubmittedPageDTO;
 import se.streamsource.streamflow.resource.roles.IntegerDTO;
 
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
+
+import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
+import static se.streamsource.streamflow.client.util.i18n.*;
 
 /**
  * JAVADOC
@@ -67,19 +74,32 @@ public class CaseSubmittedFormView
    {
       panel().removeAll();
       final DefaultFormBuilder builder = builder( panel() );
+      SubmittedFormDTO form = model.getForm();
 
-      safeRead( model.getEventList(), new EventCallback<SubmittedPageDTO>() {
+      JLabel title = new JLabel( form.form().get() + ": (" + form.submitter().get() +
+            ", " + DateTimeFormat.forPattern( text( date_time_format ) ).print( new DateTime( form.submissionDate().get()) ) +
+            ")");
+      //title.setFont( title.getFont().deriveFont( Font. ))
+
+      builder.append( title );
+      builder.nextLine();
+
+      safeRead( model.getEventList(), new EventCallback<SubmittedPageDTO>()
+      {
          public void iterate( SubmittedPageDTO page )
          {
-            JLabel label = new JLabel( page.name().get(), SwingConstants.LEFT);
-            label.setFont(  label. getFont().deriveFont( Font.ITALIC + Font.BOLD ));
-            builder.append(label);
+            JLabel label = new JLabel( page.name().get(), SwingConstants.LEFT );
+            label.setFont( label.getFont().deriveFont( Font.ITALIC + Font.BOLD ) );
+            label.setBackground( Color.LIGHT_GRAY );
+            label.setOpaque( true );
+
+            builder.append( label );
             builder.nextLine();
 
             for (FieldDTO field : page.fields().get())
             {
-               label = new JLabel( field.field().get(), SwingConstants.LEFT);
-               label.setFont(label.getFont().deriveFont(Font.BOLD));
+               label = new JLabel( field.field().get(), SwingConstants.LEFT );
+               label.setFont( label.getFont().deriveFont( Font.BOLD ) );
                JComponent component = getComponent( field.value().get(), field.fieldType().get() );
 
                builder.append( label );
@@ -88,7 +108,7 @@ public class CaseSubmittedFormView
                builder.nextLine();
             }
          }
-      });
+      } );
       revalidate();
       repaint(  );
    }
