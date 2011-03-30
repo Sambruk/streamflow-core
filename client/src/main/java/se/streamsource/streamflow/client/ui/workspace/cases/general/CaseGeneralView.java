@@ -66,6 +66,7 @@ import javax.swing.KeyStroke;
 import javax.swing.LayoutFocusTraversalPolicy;
 import javax.swing.SwingConstants;
 import javax.swing.text.DefaultFormatterFactory;
+import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -235,7 +236,9 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
       rightBuilder.add( formsLabel,
             new CellConstraints( 1, 6, 1, 1, CellConstraints.LEFT, CellConstraints.TOP, new Insets( 5, 0, 0, 0 ) ) );
 
-      rightBuilder.add( forms,
+      JPanel formsPanel = new JPanel( new BorderLayout() );
+      formsPanel.add( forms, BorderLayout.WEST );
+      rightBuilder.add( formsPanel,
             new CellConstraints( 3, 6, 1, 1, CellConstraints.FILL, CellConstraints.FILL, new Insets( 5, 0, 0, 0 ) ) );
 
       // Limit pickable dates to future
