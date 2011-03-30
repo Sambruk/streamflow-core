@@ -21,6 +21,7 @@ import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.io.Inputs;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
@@ -249,7 +250,7 @@ public interface ReceiveMailService
                            prototype.name().set(part.getFileName());
                            prototype.size().set((long) part.getSize());
 
-                           String id = attachmentStore.storeAttachment(part.getInputStream());
+                           String id = attachmentStore.storeAttachment(Inputs.byteBuffer(part.getInputStream(), 4096));
                            String uri = "store:"+id;
                            prototype.uri().set(uri);
 

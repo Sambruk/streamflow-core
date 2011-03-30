@@ -131,7 +131,7 @@ public class CommandQueryClientTest
       module.objects( MetadataService.class );
 
       module.objects( DescribableContext.class );
-      module.addTransients( TestComposite.class );
+      module.transients( TestComposite.class );
    }
 
    @Before

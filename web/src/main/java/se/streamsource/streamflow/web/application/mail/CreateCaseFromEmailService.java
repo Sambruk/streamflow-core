@@ -23,7 +23,10 @@ import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
+import org.qi4j.api.io.Input;
+import org.qi4j.api.io.Inputs;
 import org.qi4j.api.io.Output;
+import org.qi4j.api.io.Outputs;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.query.Query;
 import org.qi4j.api.service.Activatable;
@@ -50,7 +53,6 @@ import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 import se.streamsource.streamflow.web.domain.entity.user.UsersEntity;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFileValue;
 import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
-import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversation;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipant;
 import se.streamsource.streamflow.web.domain.structure.created.Creator;
@@ -60,9 +62,9 @@ import se.streamsource.streamflow.web.domain.structure.organization.Organization
 import se.streamsource.streamflow.web.domain.structure.user.Users;
 import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 
 /**
  * Receive emails and create cases through Access Points
@@ -163,79 +165,7 @@ public interface CreateCaseFromEmailService
                   {
                      if (attachedFileValue.mimeType().get().contains("text/x-vcard"))
                      {
-                        // Add VCard info to contact and then remove it as attachment
-                        String[] mimeTypeParts = attachedFileValue.mimeType().get().split(";");
-                        String charSet = "UTF-8";
-                        for (String mimeTypePart : mimeTypeParts)
-                        {
-                           if (mimeTypePart.trim().startsWith("charset"))
-                           {
-                              charSet = mimeTypePart.split("=")[1].trim();
-                           }
-                        }
-
-                        InputStream input = attachments.getAttachment(attachedFileValue.uri().get().substring("store:".length()));
-                        BufferedReader reader = new BufferedReader(new InputStreamReader(input, "ISO-8859-1"));
-                        StringBuffer buf = new StringBuffer();
-                        try
-                        {
-                           String line;
-                           while ((line = reader.readLine()) != null)
-                              buf.append(line).append('\n');
-                        } finally
-                        {
-                           reader.close();
-                        }
-                        VCard vcard = vcardEngine.parse(buf.toString());
-
-                        Contactable.Data contactData = ((Contactable.Data)user);
-                        ContactBuilder contactBuilder = new ContactBuilder(contactData.contact().get(), module.valueBuilderFactory());
-
-                        boolean modified = false;
-
-                        // Check company
-                        if (vcard.getOrganizations().hasOrganizations())
-                        {
-                           contactBuilder.company(vcard.getOrganizations().getOrganizations().next());
-                           modified = true;
-                        }
-
-                        // Check phone numbers
-                        if (vcard.getTelephoneNumbers().hasNext())
-                        {
-                           contactBuilder.phoneNumber(vcard.getTelephoneNumbers().next().getTelephone());
-                           modified = true;
-                        }
-
-                        // Check address
-                        if (vcard.getAddresses().hasNext())
-                        {
-                           AddressFeature address = vcard.getAddresses().next();
-                           String addressString = address.getStreetAddress();
-                           if (address.getPostalCode() != null)
-                              addressString+=", "+address.getPostalCode();
-                           if (address.getLocality() != null)
-                              addressString+=", "+address.getLocality();
-                           if (address.getCountryName() != null)
-                              addressString+= ", "+address.getCountryName();
-                           contactBuilder.address(addressString);
-                           modified = true;
-                        }
-
-                        // Check note
-                        if (vcard.getNotes().hasNext())
-                        {
-                           contactBuilder.note(vcard.getNotes().next().getNote());
-                           modified = true;
-                        }
-
-                        // Update contact info if necessary
-                        if (modified)
-                        {
-                           ((Contactable)user).updateContact(contactBuilder.newInstance());
-                        }
-
-                        attachments.deleteAttachment(attachedFileValue.uri().get().substring("store:".length()));
+                        addVCardAsContact((Contactable.Data) user, attachedFileValue);
                      } else
                      {
                         Attachment attachment = caze.createAttachment(attachedFileValue.uri().get());
@@ -272,6 +202,78 @@ public interface CreateCaseFromEmailService
             {
                RoleMap.clearCurrentRoleMap();
             }
+         }
+
+         private void addVCardAsContact(Contactable.Data user, AttachedFileValue attachedFileValue) throws IOException
+         {
+            // Add VCard info to contact and then remove it as attachment
+            String[] mimeTypeParts = attachedFileValue.mimeType().get().split(";");
+            String charSet = "UTF-8";
+            for (String mimeTypePart : mimeTypeParts)
+            {
+               if (mimeTypePart.trim().startsWith("charset"))
+               {
+                  charSet = mimeTypePart.split("=")[1].trim();
+               }
+            }
+
+            Input<ByteBuffer, IOException> input = attachments.attachment(attachedFileValue.uri().get().substring("store:".length()));
+            input.transferTo(Outputs.systemOut());
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            input.transferTo(Outputs.<Object>byteBuffer(baos));
+
+            String vcardString = new String(baos.toByteArray(), Charset.forName("UTF-8"));
+
+            VCard vcard = vcardEngine.parse(vcardString);
+
+            ContactBuilder contactBuilder = new ContactBuilder(user.contact().get(), module.valueBuilderFactory());
+
+            boolean modified = false;
+
+            // Check company
+            if (vcard.getOrganizations().hasOrganizations())
+            {
+               contactBuilder.company(vcard.getOrganizations().getOrganizations().next());
+               modified = true;
+            }
+
+            // Check phone numbers
+            if (vcard.getTelephoneNumbers().hasNext())
+            {
+               contactBuilder.phoneNumber(vcard.getTelephoneNumbers().next().getTelephone());
+               modified = true;
+            }
+
+            // Check address
+            if (vcard.getAddresses().hasNext())
+            {
+               AddressFeature address = vcard.getAddresses().next();
+               String addressString = address.getStreetAddress();
+               if (address.getPostalCode() != null)
+                  addressString+=", "+address.getPostalCode();
+               if (address.getLocality() != null)
+                  addressString+=", "+address.getLocality();
+               if (address.getCountryName() != null)
+                  addressString+= ", "+address.getCountryName();
+               contactBuilder.address(addressString);
+               modified = true;
+            }
+
+            // Check note
+            if (vcard.getNotes().hasNext())
+            {
+               contactBuilder.note(vcard.getNotes().next().getNote());
+               modified = true;
+            }
+
+            // Update contact info if necessary
+            if (modified)
+            {
+               ((Contactable)user).updateContact(contactBuilder.newInstance());
+            }
+
+            attachments.deleteAttachment(attachedFileValue.uri().get().substring("store:".length()));
          }
 
          private Drafts getUser(EmailValue email)

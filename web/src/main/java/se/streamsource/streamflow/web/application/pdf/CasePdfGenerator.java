@@ -18,9 +18,7 @@
 package se.streamsource.streamflow.web.application.pdf;
 
 import java.awt.Color;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringReader;
+import java.io.*;
 import java.net.URI;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -46,11 +44,7 @@ import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.io.Input;
-import org.qi4j.api.io.Output;
-import org.qi4j.api.io.Receiver;
-import org.qi4j.api.io.Sender;
-import org.qi4j.api.io.Transforms;
+import org.qi4j.api.io.*;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.util.DateFunctions;
 import org.qi4j.api.value.ValueBuilderFactory;
@@ -245,8 +239,7 @@ public class CasePdfGenerator implements CaseOutput
       final Transforms.Counter<ContactValue> counter = new Transforms.Counter<ContactValue>();
       contacts.transferTo(Transforms.map(counter, new Output<ContactValue, IOException>()
       {
-         public <SenderThrowableType extends Throwable> void receiveFrom(
-               Sender<ContactValue, SenderThrowableType> sender) throws IOException, SenderThrowableType
+         public <SenderThrowableType extends Throwable> void receiveFrom(Sender<? extends ContactValue, SenderThrowableType> sender) throws IOException, SenderThrowableType
          {
             sender.sendTo(new Receiver<ContactValue, IOException>()
             {
@@ -308,8 +301,7 @@ public class CasePdfGenerator implements CaseOutput
       final Transforms.Counter<Conversation> counter = new Transforms.Counter<Conversation>();
       Output<Conversation, IOException> output = Transforms.map(counter, new Output<Conversation, IOException>()
       {
-         public <SenderThrowableType extends Throwable> void receiveFrom(
-               Sender<Conversation, SenderThrowableType> sender) throws IOException, SenderThrowableType
+         public <SenderThrowableType extends Throwable> void receiveFrom(Sender<? extends Conversation, SenderThrowableType> sender) throws IOException, SenderThrowableType
          {
             sender.sendTo(new Receiver<Conversation, IOException>()
             {
@@ -352,7 +344,7 @@ public class CasePdfGenerator implements CaseOutput
 
       effectiveFields.transferTo( new Output<EffectiveFieldValue, IOException>()
       {
-         public <SenderThrowableType extends Throwable> void receiveFrom( Sender<EffectiveFieldValue, SenderThrowableType> sender ) throws IOException, SenderThrowableType
+         public <SenderThrowableType extends Throwable> void receiveFrom(Sender<? extends EffectiveFieldValue, SenderThrowableType> sender) throws IOException, SenderThrowableType
          {
             sender.sendTo( new Receiver<EffectiveFieldValue, IOException>()
             {
@@ -459,8 +451,7 @@ public class CasePdfGenerator implements CaseOutput
       final Transforms.Counter<Attachment> counter = new Transforms.Counter<Attachment>();
       attachments.transferTo(Transforms.map(counter, new Output<Attachment, IOException>()
       {
-         public <SenderThrowableType extends Throwable> void receiveFrom(Sender<Attachment, SenderThrowableType> sender)
-               throws IOException, SenderThrowableType
+         public <SenderThrowableType extends Throwable> void receiveFrom(Sender<? extends Attachment, SenderThrowableType> sender) throws IOException, SenderThrowableType
          {
             sender.sendTo(new Receiver<Attachment, IOException>()
             {
@@ -498,9 +489,11 @@ public class CasePdfGenerator implements CaseOutput
          {
             attachmentId = new URI(templateUri).getSchemeSpecificPart();
 
-            InputStream templateStream = store.getAttachment(attachmentId);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            store.attachment(attachmentId).transferTo(Outputs.byteBuffer(baos));
+
             Underlay underlay = new Underlay();
-            generatedDoc = underlay.underlay(generatedDoc, templateStream);
+            generatedDoc = underlay.underlay(generatedDoc, new ByteArrayInputStream(baos.toByteArray()));
 
          } catch (Exception e)
          {

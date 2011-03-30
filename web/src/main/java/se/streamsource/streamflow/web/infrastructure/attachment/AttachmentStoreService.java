@@ -19,6 +19,9 @@ package se.streamsource.streamflow.web.infrastructure.attachment;
 
 import org.apache.commons.io.IOUtils;
 import org.qi4j.api.injection.scope.Service;
+import org.qi4j.api.io.Input;
+import org.qi4j.api.io.Inputs;
+import org.qi4j.api.io.Outputs;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.ServiceComposite;
 import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
@@ -31,6 +34,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.text.DecimalFormat;
 import java.util.Random;
 
@@ -49,51 +53,35 @@ public interface AttachmentStoreService
       @Service
       FileConfiguration fileConfig;
 
-      public String storeAttachment( InputStream in )
+      public String storeAttachment( Input<ByteBuffer, IOException> input )
             throws IOException
       {
          // Create new id for file
-         DecimalFormat format = new DecimalFormat("000000000");
-         File file;
-         String id;
-         do
-         {
-            id = format.format( Math.abs(random.nextLong()) );
-            file = getFile(id);
-         } while (file.exists()); // Ensure we're not reusing an id
+         File file = createFile();
 
          // Write data to disk
-         BufferedOutputStream out = null;
-         try
-         {
-            out = new BufferedOutputStream(new FileOutputStream(file));
-            IOUtils.copyLarge( new BufferedInputStream(in, 1024),  out);
-
-            in.close();
-            out.close();
-
-            return id;
-         } catch (IOException ex)
-         {
-            in.close();
-            if (out != null)
-               out.close();
-
-            // Remove file if it was partially written
-            file.delete();
-
-            throw ex;
-         }
+         input.transferTo(Outputs.<Object>byteBuffer(file));
+         return getId(file);
       }
 
-      public InputStream getAttachment( String id ) throws IOException
+      public Input<ByteBuffer, IOException> attachment(String id) throws FileNotFoundException
       {
          File file = getFile(id);
 
          if (!file.exists())
             throw new FileNotFoundException("Attachment for id "+id+" does not exist");
 
-         return new BufferedInputStream(new FileInputStream(file));
+         return Inputs.byteBuffer(file, 4096);
+      }
+
+      public Input<String, IOException> text(String id) throws FileNotFoundException
+      {
+         File file = getFile(id);
+
+         if (!file.exists())
+            throw new FileNotFoundException("Attachment for id "+id+" does not exist");
+
+         return Inputs.text(file);
       }
 
       public void deleteAttachment( String id ) throws IOException
@@ -114,6 +102,25 @@ public interface AttachmentStoreService
             throw new FileNotFoundException("Attachment for id "+id+" does not exist");
 
          return file.length();
+      }
+
+      private String getId(File file)
+      {
+         return file.getName().substring(0, file.getName().length()-4);
+      }
+
+      private File createFile()
+      {
+         DecimalFormat format = new DecimalFormat("000000000");
+         File file;
+         String id;
+         do
+         {
+            id = format.format( Math.abs(random.nextLong()) );
+            file = getFile(id);
+         } while (file.exists()); // Ensure we're not reusing an id
+
+         return file;
       }
 
       private File getFile( String id )

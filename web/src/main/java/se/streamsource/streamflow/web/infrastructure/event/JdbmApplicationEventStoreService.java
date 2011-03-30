@@ -134,7 +134,7 @@ public interface JdbmApplicationEventStoreService
       {
          return Transforms.lock(JdbmEventStoreMixin.this.lock, new Output<String, IOException>()
          {
-            public <SenderThrowableType extends Throwable> void receiveFrom( Sender<String, SenderThrowableType> sender ) throws IOException, SenderThrowableType
+            public <SenderThrowableType extends Throwable> void receiveFrom(Sender<? extends String, SenderThrowableType> sender) throws IOException, SenderThrowableType
             {
                try
                {
@@ -181,7 +181,7 @@ public interface JdbmApplicationEventStoreService
       {
          return new Input<TransactionApplicationEvents, IOException>()
          {
-            public <ReceiverThrowableType extends Throwable> void transferTo( Output<TransactionApplicationEvents, ReceiverThrowableType> output ) throws IOException, ReceiverThrowableType
+            public <ReceiverThrowableType extends Throwable> void transferTo(Output<? super TransactionApplicationEvents, ReceiverThrowableType> output) throws IOException, ReceiverThrowableType
             {
                // Lock datastore first
                lock();
@@ -194,7 +194,7 @@ public interface JdbmApplicationEventStoreService
 
                   output.receiveFrom( new Sender<TransactionApplicationEvents, IOException>()
                   {
-                     public <ReceiverThrowableType extends Throwable> void sendTo( Receiver<TransactionApplicationEvents, ReceiverThrowableType> receiver ) throws ReceiverThrowableType, IOException
+                     public <ReceiverThrowableType extends Throwable> void sendTo(Receiver<? super TransactionApplicationEvents, ReceiverThrowableType> receiver) throws ReceiverThrowableType, IOException
                      {
                         Tuple tuple = new Tuple();
                         long count = 0;
@@ -227,7 +227,7 @@ public interface JdbmApplicationEventStoreService
       {
          return new Input<TransactionApplicationEvents, IOException>()
          {
-            public <ReceiverThrowableType extends Throwable> void transferTo( Output<TransactionApplicationEvents, ReceiverThrowableType> output ) throws IOException, ReceiverThrowableType
+            public <ReceiverThrowableType extends Throwable> void transferTo(Output<? super TransactionApplicationEvents, ReceiverThrowableType> output) throws IOException, ReceiverThrowableType
             {
                // Lock datastore first
                lock();
@@ -240,7 +240,7 @@ public interface JdbmApplicationEventStoreService
 
                   output.receiveFrom( new Sender<TransactionApplicationEvents, IOException>()
                   {
-                     public <ReceiverThrowableType extends Throwable> void sendTo( Receiver<TransactionApplicationEvents, ReceiverThrowableType> receiver ) throws ReceiverThrowableType, IOException
+                     public <ReceiverThrowableType extends Throwable> void sendTo(Receiver<? super TransactionApplicationEvents, ReceiverThrowableType> receiver) throws ReceiverThrowableType, IOException
                      {
                         Tuple tuple = new Tuple();
 

@@ -23,6 +23,7 @@ import org.qi4j.api.common.ConstructionException;
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.io.Outputs;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.service.ServiceComposite;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
@@ -37,6 +38,8 @@ import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
 import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -137,9 +140,12 @@ public interface SubmittedFormPdfGenerator extends ServiceComposite
          {
 
             String attachmentId = new URI( templateUri ).getSchemeSpecificPart();
-            InputStream templateStream = store.getAttachment( attachmentId );
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            store.attachment(attachmentId).transferTo(Outputs.byteBuffer(baos));
+
             Underlay underlay = new Underlay();
-            submittedFormPdf = underlay.underlay( submittedFormPdf, templateStream );
+            submittedFormPdf = underlay.underlay( submittedFormPdf, new ByteArrayInputStream(baos.toByteArray()) );
          }
          return submittedFormPdf;
       }
