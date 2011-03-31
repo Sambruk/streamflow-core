@@ -379,6 +379,7 @@ public class WorkspaceView
          public void command()
                throws Exception
          {
+            casesTable.getModel().clearFilter();
             casesTable.getModel().createCase();
          }
       };

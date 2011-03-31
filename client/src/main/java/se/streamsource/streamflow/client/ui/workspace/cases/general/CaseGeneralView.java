@@ -346,7 +346,7 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
       valueBinder.update( model.getGeneral() );
    }
 
-   @Action(block = Task.BlockingScope.COMPONENT)
+   @Action(block = Task.BlockingScope.WINDOW)
    public Task changeDescription( final ActionEvent event )
    {
       return new CommandTask()
