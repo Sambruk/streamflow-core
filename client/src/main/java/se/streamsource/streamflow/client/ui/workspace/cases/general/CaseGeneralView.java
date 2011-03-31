@@ -372,6 +372,7 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
                      new MessageFormat( i18n.text( StreamflowResources.max_length ) ).format( new Object[]{ constraint } ).toString(),
                               i18n.text( StreamflowResources.invalid_input ) );
                descriptionField.setText( descriptionField.getText().substring( 0, Integer.parseInt( constraint ) ) );
+               descriptionField.requestFocusInWindow();
             }
             else if (throwable instanceof OperationException)
                throw (OperationException) throwable;

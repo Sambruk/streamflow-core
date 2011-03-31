@@ -42,7 +42,6 @@ import se.streamsource.streamflow.client.ui.administration.projects.ProjectsView
 import se.streamsource.streamflow.client.ui.administration.resolutions.ResolutionsView;
 import se.streamsource.streamflow.client.ui.administration.resolutions.SelectedResolutionsView;
 import se.streamsource.streamflow.client.ui.administration.surface.AccessPointsView;
-import se.streamsource.streamflow.client.ui.administration.surface.EmailAccessPointsView;
 import se.streamsource.streamflow.client.ui.administration.surface.ProxyUsersView;
 import se.streamsource.streamflow.client.ui.administration.templates.TemplatesView;
 import se.streamsource.streamflow.client.ui.administration.users.UsersAdministrationView;
@@ -92,7 +91,7 @@ public class TabbedResourceView
       addTab( "organizationusers", AdministrationResources.users_tab, OrganizationUsersView.class );
 
       addTab( "accesspoints", AdministrationResources.accesspoints_tab, AccessPointsView.class );
-      addTab( "emailaccesspoints", AdministrationResources.emailaccesspoints_tab, EmailAccessPointsView.class );
+      //addTab( "emailaccesspoints", AdministrationResources.emailaccesspoints_tab, EmailAccessPointsView.class );
       addTab( "proxyusers", AdministrationResources.proxyusers_tab, ProxyUsersView.class );
       addTab( "attachments", AdministrationResources.templates_tab, TemplatesView.class );
 
