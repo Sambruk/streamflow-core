@@ -44,7 +44,6 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -153,7 +152,7 @@ public interface
                      try
                      {
                         caseTypes.add( module.unitOfWorkFactory().currentUnitOfWork().get( CaseTypeEntity.class, caseType.replace( "\\", "" ) ) );
-                     } catch ( NoSuchElementException e )
+                     } catch ( NoSuchEntityException e )
                      {
                         StringBuilder caseTypeQueryBuilder = new StringBuilder(
                               "type:se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity" );

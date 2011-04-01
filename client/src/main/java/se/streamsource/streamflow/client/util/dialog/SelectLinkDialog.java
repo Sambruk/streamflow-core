@@ -39,6 +39,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,6 +60,9 @@ public class SelectLinkDialog
                                       @Structure ObjectBuilderFactory obf )
    {
       super( new BorderLayout());
+      setPreferredSize( new Dimension( 250, 200 ) );
+      setMaximumSize( new Dimension( 250, 200 ) );
+      setMinimumSize( new Dimension( 250, 200 ) );
 
       setActionMap( context.getActionMap( this ) );
       getActionMap().put( JXDialog.CLOSE_ACTION_COMMAND, getActionMap().get("cancel" ));

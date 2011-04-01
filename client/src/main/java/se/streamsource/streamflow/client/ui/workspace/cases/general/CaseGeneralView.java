@@ -349,9 +349,12 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
    public Task changeDescription( final ActionEvent event )
    {
       Property<String> description = model.getGeneral().description();
+      String oldValue = description.get();
       try
       {
          description.set( descriptionField.getText() );
+         // set back old value to not mess up model execution
+         description.set( oldValue );
       } catch ( ConstraintViolationException cve )
       {
          int maxLength = description.metaInfo( MaxLength.class ).value();
