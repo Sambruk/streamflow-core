@@ -217,6 +217,9 @@ public class ActionBinder
                   message.append( "<p>" ).append( s ).append( "</p>" );
                }
                message.append( "</html>" );
+            } else
+            {
+               message.append( exception.getMessage() );
             }
 
             JLabel main = new JLabel( message.toString() );
