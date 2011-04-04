@@ -79,6 +79,6 @@ public class EmailAccessPointsAdministrationContext
    public void create(EmailAccessPointValue value)
    {
       EmailAccessPoints eap = role(EmailAccessPoints.class);
-      eap.addEmailAccessPoint(value);
+      eap.createEmailAccessPoint(value);
    }
 }

@@ -17,9 +17,12 @@
 
 package se.streamsource.streamflow.domain.organization;
 
+import org.qi4j.api.common.UseDefaults;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
+
+import java.util.Map;
 
 /**
  * Value for connecting an incoming email address (in the "To:" field) to an AccessPoint.
@@ -29,4 +32,11 @@ public interface EmailAccessPointValue
 {
    Property<String> email();
    Property<EntityReference> accessPoint();
+
+   // Formatting
+   @UseDefaults
+   Property<String> subject();
+
+   @UseDefaults
+   Property<Map<String, String>> messages();
 }

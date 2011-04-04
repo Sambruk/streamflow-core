@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.web.application.conversation;
 
+import org.qi4j.api.common.ConstructionException;
 import org.qi4j.api.concern.Concerns;
 import org.qi4j.api.configuration.Configuration;
 import org.qi4j.api.entity.association.ManyAssociation;
@@ -24,17 +25,23 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.query.MissingIndexingSystemException;
+import org.qi4j.api.query.Query;
 import org.qi4j.api.service.Activatable;
 import org.qi4j.api.service.ServiceComposite;
-import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.qi4j.api.structure.Module;
+import org.qi4j.api.unitofwork.*;
 import org.qi4j.api.usecase.UsecaseBuilder;
+import org.qi4j.api.util.Iterables;
+import org.qi4j.api.value.NoSuchValueException;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.domain.contact.ContactEmailValue;
 import se.streamsource.streamflow.domain.contact.Contactable;
+import se.streamsource.streamflow.domain.organization.EmailAccessPointValue;
 import se.streamsource.streamflow.infrastructure.event.application.factory.ApplicationEventCreationConcern;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.infrastructure.event.domain.replay.DomainEventPlayer;
@@ -45,10 +52,20 @@ import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Even
 import se.streamsource.streamflow.infrastructure.event.domain.source.helper.TransactionTracker;
 import se.streamsource.streamflow.web.application.mail.EmailValue;
 import se.streamsource.streamflow.web.application.mail.MailSender;
+import se.streamsource.streamflow.web.application.mail.ReceiveMailService;
 import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
+import se.streamsource.streamflow.web.domain.entity.user.UsersEntity;
 import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
 import se.streamsource.streamflow.web.domain.interaction.profile.MessageRecipient;
+import se.streamsource.streamflow.web.domain.structure.caze.History;
 import se.streamsource.streamflow.web.domain.structure.conversation.*;
+import se.streamsource.streamflow.web.domain.structure.organization.AccessPoint;
+import se.streamsource.streamflow.web.domain.structure.organization.EmailAccessPoints;
+
+import java.text.MessageFormat;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.ResourceBundle;
 
 /**
  * Send and receive notifications. This service
@@ -72,10 +89,7 @@ public interface NotificationService
       private EventStream stream;
 
       @Structure
-      private UnitOfWorkFactory uowf;
-
-      @Structure
-      private ValueBuilderFactory vbf;
+      private Module module;
 
       @This
       private Configuration<NotificationConfiguration> config;
@@ -90,10 +104,55 @@ public interface NotificationService
 
       private SendEmails sendEmails = new SendEmails();
 
+      Map<String, String> templateDefaults = new HashMap<String, String>();
+      private EmailAccessPoints eap;
+
       public void activate() throws Exception
       {
+         // Get defaults for emails
+         ResourceBundle bundle = ResourceBundle.getBundle(EmailAccessPoints.class.getName());
+         for (String key : bundle.keySet())
+         {
+            templateDefaults.put(key, bundle.getString(key));
+         }
+
+         // Update all email->AccessPoint template lists
+         UnitOfWork uow = module.unitOfWorkFactory().newUnitOfWork(UsecaseBuilder.newUsecase("Update templates"));
+
+         // Store reference to EAP
+         eap = module.queryBuilderFactory().newQueryBuilder(EmailAccessPoints.class).newQuery(uow).find();
+
+         try
+         {
+            Query<EmailAccessPoints.Data> eap = module.queryBuilderFactory().newQueryBuilder(EmailAccessPoints.Data.class).newQuery(uow);
+            for (EmailAccessPoints.Data emailAccessPoints : eap)
+            {
+               for (EmailAccessPointValue eapv : emailAccessPoints.emailAccessPoints().get())
+               {
+                  Map<String,String> templates = eapv.messages().get();
+                  boolean updated = false;
+                  for (Map.Entry<String, String> stringStringEntry : templateDefaults.entrySet())
+                  {
+                     if (!templates.containsKey(stringStringEntry.getKey()))
+                     {
+                        templates.put(stringStringEntry.getKey(), stringStringEntry.getValue());
+                        updated = true;
+                     }
+                  }
+                  if (updated)
+                  {
+                     ((EmailAccessPoints)eap).updateEmailAccessPoint(eapv);
+                  }
+               }
+            }
+            uow.complete();
+         } catch (Exception e)
+         {
+            uow.discard();
+         }
+
          EventRouter router = new EventRouter();
-         router.route( Events.withNames( SendEmails.class ), Events.playEvents( player, sendEmails, uowf, UsecaseBuilder.newUsecase("Send email to participant" )) );
+         router.route( Events.withNames( SendEmails.class ), Events.playEvents( player, sendEmails, module.unitOfWorkFactory(), UsecaseBuilder.newUsecase("Send email to participant" )) );
 
          tracker = new TransactionTracker( stream, eventSource, config, Events.adapter( router ) );
          tracker.start();
@@ -109,65 +168,89 @@ public interface NotificationService
       {
          public void receivedMessage( DomainEvent event, Message message )
          {
-            UnitOfWork uow = uowf.currentUnitOfWork();
+            UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
 
-            Message.Data messageData = (Message.Data) message;
-
-            Conversation conversation = messageData.conversation().get();
-
-            ConversationOwner owner = conversation.conversationOwner().get();
-
-            String sender = ((Contactable.Data) messageData.sender().get()).contact().get().name().get();
-            String caseId = "n/a";
-
-            if (owner != null)
-               caseId = ((CaseId.Data) owner).caseId().get() != null ? ((CaseId.Data) owner).caseId().get() : "n/a";
-
-            UserEntity user = uow.get( UserEntity.class, event.entity().get() );
-
-            if (user.delivery().get().equals( MessageRecipient.MessageDeliveryTypes.email ))
+            try
             {
-               String subject = "[" + caseId + "] " + conversation.getDescription();
+               Message.Data messageData = (Message.Data) message;
 
-               String formattedMsg = messageData.body().get();
-               if (formattedMsg.contains( "<body>" ))
+               Conversation conversation = messageData.conversation().get();
+
+               ConversationOwner owner = conversation.conversationOwner().get();
+
+               String sender = ((Contactable.Data) messageData.sender().get()).contact().get().name().get();
+               String caseId = "n/a";
+
+               if (owner != null)
+                  caseId = ((CaseId.Data) owner).caseId().get() != null ? ((CaseId.Data) owner).caseId().get() : "n/a";
+
+               MessageReceiver user = uow.get( MessageReceiver.class, event.entity().get() );
+
+               MessageRecipient.Data recipientSettings = (MessageRecipient.Data) user;
+
+               if (recipientSettings.delivery().get().equals( MessageRecipient.MessageDeliveryTypes.email ))
                {
-                  formattedMsg = formattedMsg.replace( "<body>", "<body><b>" + sender + ":</b><br/><br/>" );
-               }
+                  String subject;
+                  String formattedMsg;
 
-               ContactEmailValue recipientEmail = user.contact().get().defaultEmail();
-               if (recipientEmail != null)
-               {
-                  ValueBuilder<EmailValue> builder = vbf.newValueBuilder( EmailValue.class );
-                  builder.prototype().fromName().set( sender );
-   //                  builder.prototype().from().set( );
-   //               builder.prototype().replyTo();
-                  builder.prototype().to().set( recipientEmail.emailAddress().get() );
-                  builder.prototype().subject().set( subject );
-                  builder.prototype().content().set( formattedMsg );
-                  builder.prototype().contentType().set( "text/plain" );
+                  History history = (History) owner;
+                  AccessPoint ap = history.getOriginalAccessPoint();
+                  EmailAccessPointValue emailAccessPoint = null;
 
-                  // Threading headers
-                  builder.prototype().messageId().set( "<"+conversation.toString()+"/"+user.toString()+"@Streamflow>" );
-                  ManyAssociation<Message> messages = ((Messages.Data)conversation).messages();
-                  StringBuilder references = new StringBuilder();
-                  String inReplyTo = null;
-                  for (Message previousMessage : messages)
+                  if (ap != null)
                   {
-                     if (references.length() > 0)
-                        references.append( " " );
-
-                     inReplyTo = "<"+previousMessage.toString()+"@Streamflow>";
-                     references.append( inReplyTo );
+                     emailAccessPoint = uow.get(eap).getEmailAccessPoint(ap);
+                     formattedMsg = message.translateBody(emailAccessPoint.messages().get());
+                     subject = MessageFormat.format(emailAccessPoint.subject().get(), caseId, conversation.getDescription());
+                  } else
+                  {
+                     formattedMsg = message.translateBody(templateDefaults);
+                     subject = "[" + caseId + "] " + conversation.getDescription(); // Default subject format
                   }
-                  builder.prototype().headers().get().put( "References", references.toString() );
-                  if (inReplyTo != null)
-                     builder.prototype().headers().get().put( "In-Reply-To", inReplyTo );
 
-                  EmailValue emailValue = builder.newInstance();
+                  if (formattedMsg.trim().equals(""))
+                     return; // Don't try to send empty messages
 
-                  mailSender.sentEmail( null, emailValue );
+                  ContactEmailValue recipientEmail = ((Contactable.Data)user).contact().get().defaultEmail();
+                  if (recipientEmail != null)
+                  {
+                     ValueBuilder<EmailValue> builder = module.valueBuilderFactory().newValueBuilder(EmailValue.class);
+                     builder.prototype().fromName().set( sender );
+
+                     if (emailAccessPoint != null)
+                        builder.prototype().from().set(emailAccessPoint.email().get() );
+
+      //               builder.prototype().replyTo();
+                     builder.prototype().to().set( recipientEmail.emailAddress().get() );
+                     builder.prototype().subject().set( subject );
+                     builder.prototype().content().set( formattedMsg );
+                     builder.prototype().contentType().set( "text/plain" );
+
+                     // Threading headers
+                     builder.prototype().messageId().set( "<"+conversation.toString()+"/"+user.toString()+"@Streamflow>" );
+                     ManyAssociation<Message> messages = ((Messages.Data)conversation).messages();
+                     StringBuilder references = new StringBuilder();
+                     String inReplyTo = null;
+                     for (Message previousMessage : messages)
+                     {
+                        if (references.length() > 0)
+                           references.append( " " );
+
+                        inReplyTo = "<"+previousMessage.toString()+"/"+user.toString()+"@Streamflow>";
+                        references.append( inReplyTo );
+                     }
+                     builder.prototype().headers().get().put( "References", references.toString() );
+                     if (inReplyTo != null)
+                        builder.prototype().headers().get().put( "In-Reply-To", inReplyTo );
+
+                     EmailValue emailValue = builder.newInstance();
+
+                     mailSender.sentEmail( null, emailValue );
+                  }
                }
+            } catch (Throwable e)
+            {
+               logger.error("Could not send notification", e);
             }
          }
       }

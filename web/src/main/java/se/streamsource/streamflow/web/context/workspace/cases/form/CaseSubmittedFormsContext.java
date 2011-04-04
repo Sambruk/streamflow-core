@@ -18,11 +18,14 @@ package se.streamsource.streamflow.web.context.workspace.cases.form;
 
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.io.Outputs;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.data.Disposition;
 import org.restlet.data.Form;
+import org.restlet.data.MediaType;
 import org.restlet.representation.InputRepresentation;
+import org.restlet.representation.OutputRepresentation;
 import org.restlet.representation.Representation;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
@@ -40,6 +43,7 @@ import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
 import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -84,14 +88,21 @@ public class CaseSubmittedFormsContext
       if ( value != null )
       {
          AttachedFile.Data data = uowf.currentUnitOfWork().get( AttachedFile.Data.class, id.string().get() );
-         String fileId = new URI( data.uri().get() ).getSchemeSpecificPart();
+         final String fileId = new URI( data.uri().get() ).getSchemeSpecificPart();
 
-         InputRepresentation inputRepresentation = new InputRepresentation( store.getAttachment( fileId ) );
+         OutputRepresentation outputRepresentation = new OutputRepresentation(  new MediaType( data.mimeType().get() ), store.getAttachmentSize(fileId) )
+         {
+            @Override
+            public void write(OutputStream outputStream) throws IOException
+            {
+               store.attachment(fileId).transferTo(Outputs.<Object>byteBuffer(outputStream));
+            }
+         };
          Form downloadParams = new Form();
          downloadParams.set( Disposition.NAME_FILENAME, value.name().get() );
 
-         inputRepresentation.setDisposition( new Disposition( Disposition.TYPE_ATTACHMENT, downloadParams ) );
-         return inputRepresentation;
+         outputRepresentation.setDisposition(new Disposition(Disposition.TYPE_ATTACHMENT, downloadParams));
+         return outputRepresentation;
       } else
       {
          // 404

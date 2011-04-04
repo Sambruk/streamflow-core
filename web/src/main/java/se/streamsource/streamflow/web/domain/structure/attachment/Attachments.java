@@ -123,7 +123,7 @@ public interface Attachments
 
       public boolean hasAttachments()
       {
-         return !attachments().toList().isEmpty();
+         return attachments().count() != 0;
       }
    }
 }

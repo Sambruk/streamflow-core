@@ -25,14 +25,20 @@ import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.query.QueryBuilderFactory;
+import org.qi4j.api.query.QueryExpressions;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.web.domain.entity.conversation.ConversationEntity;
+import se.streamsource.streamflow.web.domain.entity.organization.AccessPointEntity;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversation;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipant;
+import se.streamsource.streamflow.web.domain.structure.conversation.Message;
+import se.streamsource.streamflow.web.domain.structure.conversation.Messages;
+import se.streamsource.streamflow.web.domain.structure.organization.AccessPoint;
 
 /**
  * JAVADOC
@@ -43,6 +49,8 @@ public interface History
    void addHistoryComment(String comment, ConversationParticipant participant);
 
    Conversation getHistory();
+
+   AccessPoint getOriginalAccessPoint();
 
    interface Data
    {
@@ -65,6 +73,9 @@ public interface History
 
       @This
       Case caze;
+
+      @Structure
+      QueryBuilderFactory qbf;
 
       public Conversation getHistory()
       {
@@ -97,6 +108,26 @@ public interface History
          history().set(history);
 
          return history;
+      }
+
+      public AccessPoint getOriginalAccessPoint()
+      {
+         Messages.Data messages = ((Messages.Data) data.history().get());
+         for (Message message : messages.messages())
+         {
+            String body = ((Message.Data) message).body().get();
+            if (body.startsWith("{accesspoint"))
+            {
+               // This is the history message that the case has been received through a particular AccessPoint
+               String accessPointName = body.substring(body.indexOf(",")+1, body.length()-1);
+
+               // Now find it
+               AccessPointEntity ap = qbf.newQueryBuilder(AccessPointEntity.class).where(QueryExpressions.eq(QueryExpressions.templateFor(Describable.Data.class).description(), accessPointName)).newQuery(uowf.currentUnitOfWork()).find();
+               return ap;
+            }
+         }
+
+         return null; // No AccessPoint was used to receive this case
       }
    }
 }

@@ -23,6 +23,7 @@ import org.apache.commons.fileupload.FileUploadException;
 import org.qi4j.api.entity.Identity;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.io.Inputs;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
 import org.restlet.Request;
@@ -167,7 +168,7 @@ public class AttachmentsContext
 
    private Attachment createAttachment( InputStream inputStream ) throws IOException, URISyntaxException
    {
-      String id = store.storeAttachment( inputStream );
+      String id = store.storeAttachment( Inputs.byteBuffer(inputStream, 4096));
 
       String url = "store:" + id;
 

@@ -67,15 +67,6 @@
                     <stopKey>stopit</stopKey>
                     <stopPort>9999</stopPort>
                 </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.slf4j</groupId>
-                        <artifactId>slf4j-api</artifactId>
-                        <version>1.6.1</version>
-                        <type>jar</type>
-                    </dependency>
-
-                </dependencies>
             </plugin>
         </plugins>
     </build>
@@ -287,11 +278,17 @@
 
         <!-- Mail -->
         <dependency>
-            <groupId>sun-javamail</groupId>
+            <groupId>javax.mail</groupId>
             <artifactId>mail</artifactId>
-            <version>1.4</version>
+            <version>1.4.4</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.activation</groupId>
+            <artifactId>activation</artifactId>
+            <version>1.1.1</version>
             <scope>provided</scope>
         </dependency>
+            
         <dependency>
             <groupId>org.subethamail</groupId>
             <artifactId>subethasmtp</artifactId>
@@ -302,6 +299,12 @@
                     <artifactId>slf4j-simple</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>cardme</groupId>
+            <artifactId>cardme</artifactId>
+            <version>0.2.6</version>
         </dependency>
 
         <!-- Testing -->

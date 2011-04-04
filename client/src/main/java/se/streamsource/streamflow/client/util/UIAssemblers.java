@@ -21,6 +21,7 @@ import org.jdesktop.application.Task;
 import org.qi4j.api.common.Visibility;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ModuleAssembly;
+import se.streamsource.streamflow.client.ui.workspace.cases.CaseActionsView;
 
 import javax.swing.JComponent;
 

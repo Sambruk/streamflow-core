@@ -46,17 +46,11 @@ public class EmailAccessPointAdministrationContext
 
    public void update(EmailAccessPointValue value)
    {
-      role(EmailAccessPoints.class).addEmailAccessPoint(value);
+      role(EmailAccessPoints.class).updateEmailAccessPoint(value);
    }
 
    public EmailAccessPointValue index()
    {
       return role(EmailAccessPointValue.class);
-   }
-
-   public void create(EmailAccessPointValue value)
-   {
-      EmailAccessPoints eap = role(EmailAccessPoints.class);
-      eap.addEmailAccessPoint(value);
    }
 }

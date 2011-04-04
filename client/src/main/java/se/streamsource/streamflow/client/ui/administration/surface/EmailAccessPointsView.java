@@ -38,11 +38,14 @@ import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.NameDialog;
 import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
+import se.streamsource.streamflow.domain.organization.EmailAccessPointValue;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.util.Strings;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 
 import static se.streamsource.streamflow.client.util.i18n.text;
@@ -56,9 +59,6 @@ public class EmailAccessPointsView
 
    @Uses
    ObjectBuilder<SelectLinkDialog> caseTypesDialogs;
-
-   @Uses
-   Iterable<NameDialog> nameDialogs;
 
    @Service
    DialogService dialogs;
@@ -95,7 +95,28 @@ public class EmailAccessPointsView
       table.setGridColor(Color.lightGray);
       table.setShowHorizontalLines(true);
 
-      add(new JScrollPane(table), BorderLayout.CENTER);
+      final JSplitPane masterDetail = new JSplitPane(JSplitPane.VERTICAL_SPLIT,new JScrollPane(table), new JPanel() );
+
+      table.getSelectionModel().addListSelectionListener(new ListSelectionListener()
+      {
+         public void valueChanged(ListSelectionEvent e)
+         {
+            if (!e.getValueIsAdjusting())
+            {
+               int selectedRow = table.getSelectedRow();
+               if (selectedRow == -1)
+                  masterDetail.setRightComponent(new JPanel());
+               else
+               {
+                  CommandQueryClient emailClient = client.getSubClient(selectedRow+"");
+                  EmailAccessPointView view = obf.newObjectBuilder(EmailAccessPointView.class).use(emailClient).newInstance();
+                  masterDetail.setRightComponent(view);
+               }
+            }
+         }
+      });
+
+      add(masterDetail, BorderLayout.CENTER);
 
       ActionMap am = context.getActionMap( this );
       setActionMap(am);
@@ -120,11 +141,14 @@ public class EmailAccessPointsView
 
       if (dialog.getSelectedLink() != null)
       {
-         final NameDialog emailDialog = nameDialogs.iterator().next();
+         JPanel panel = new JPanel(new BorderLayout());
+         panel.add(new JLabel(i18n.text(AdministrationResources.email)), BorderLayout.WEST);
+         final JTextField email = new JTextField();
+         panel.add(email, BorderLayout.CENTER);
 
-         dialogs.showOkCancelHelpDialog( this, emailDialog, text( AdministrationResources.add_accesspoint_title ) );
+         dialogs.showOkCancelHelpDialog(this, panel, text( AdministrationResources.add_accesspoint_title ));
 
-         if (!Strings.empty( emailDialog.name() ))
+         if (!Strings.empty( email.getText() ))
          {
             return new CommandTask()
             {
@@ -132,7 +156,7 @@ public class EmailAccessPointsView
                public void command()
                      throws Exception
                {
-                  model.create(emailDialog.name(), dialog.getSelectedLink());
+                  model.create(email.getText(), dialog.getSelectedLink());
                }
             };
          }

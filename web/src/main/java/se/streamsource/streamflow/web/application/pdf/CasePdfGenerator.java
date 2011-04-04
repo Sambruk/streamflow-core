@@ -58,9 +58,7 @@ import javax.swing.text.html.HTML;
 import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.parser.ParserDelegator;
 import java.awt.*;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringReader;
+import java.io.*;
 import java.net.URI;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -474,9 +472,11 @@ public class CasePdfGenerator implements CaseOutput
          {
             attachmentId = new URI(templateUri).getSchemeSpecificPart();
 
-            InputStream templateStream = store.getAttachment(attachmentId);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            store.attachment(attachmentId).transferTo(Outputs.byteBuffer(baos));
+
             Underlay underlay = new Underlay();
-            generatedDoc = underlay.underlay(generatedDoc, templateStream);
+            generatedDoc = underlay.underlay(generatedDoc, new ByteArrayInputStream(baos.toByteArray()));
 
          } catch (Exception e)
          {

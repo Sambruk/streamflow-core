@@ -23,7 +23,6 @@ import org.qi4j.bootstrap.LayerAssembly;
 import se.streamsource.streamflow.domain.attachment.AttachmentAssembler;
 import se.streamsource.streamflow.domain.contact.ContactAssembler;
 import se.streamsource.streamflow.domain.form.FormAssembler;
-import se.streamsource.streamflow.domain.interaction.gtd.Actions;
 import se.streamsource.streamflow.domain.organization.EmailAccessPointValue;
 
 /**
@@ -35,10 +34,8 @@ public class CommonDomainAssembler
    {
       new ContactAssembler().assemble( domainLayer.module( "Contact" ) );
       new FormAssembler().assemble( domainLayer.module( "Form" ) );
-      new AttachmentAssembler().assemble( domainLayer.module( "Attachment" ) );
+      new AttachmentAssembler().assemble(domainLayer.module("Attachment"));
 
       domainLayer.module("Organization").values(EmailAccessPointValue.class).visibleIn(Visibility.application);
-
-      domainLayer.module( "Case" ).values( Actions.class ).visibleIn( Visibility.application );
    }
 }

@@ -23,6 +23,7 @@ import org.qi4j.api.entity.Identity;
 import org.qi4j.api.injection.scope.This;
 import org.qi4j.api.mixin.Mixins;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
 
 /**
  * JAVADOC
@@ -48,7 +49,7 @@ public interface MessageReceiver
       {
          if (!identity.identity().get().equals(
                EntityReference.getEntityReference(
-                     ((Message.Data) message).sender().get() ).identity() ))
+                     ((Message.Data) message).sender().get() ).identity() ) && !identity.identity().get().equals(UserEntity.ADMINISTRATOR_USERNAME))
          {
             receivedMessage( null, message );
          }

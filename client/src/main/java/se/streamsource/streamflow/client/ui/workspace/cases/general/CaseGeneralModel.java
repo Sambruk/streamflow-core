@@ -32,7 +32,6 @@ import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.client.OperationException;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.util.Refreshable;
-import se.streamsource.streamflow.domain.interaction.gtd.Actions;
 import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
 import se.streamsource.streamflow.resource.caze.CaseGeneralDTO;
 import se.streamsource.streamflow.resource.roles.DateDTO;
@@ -142,11 +141,6 @@ public class CaseGeneralModel
    public void removeCaseType( )
    {
       client.postCommand( "casetype", vbf.newValue( EntityValue.class ));
-   }
-
-   public Actions actions()
-   {
-      return client.query( "actions", Actions.class );
    }
 
    public boolean getCommandEnabled( String commandName )

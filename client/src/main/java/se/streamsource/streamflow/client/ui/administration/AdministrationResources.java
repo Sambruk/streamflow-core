@@ -136,5 +136,5 @@ public enum AdministrationResources
    emailaccesspoints_tab,
    accesspoint,
    email,
-   formsignatures_tab
+   subject, emailTemplates, formsignatures_tab
 }

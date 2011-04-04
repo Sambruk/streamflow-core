@@ -156,7 +156,7 @@ public class AppAssembler
               setMetaInfo(namedQueries).
               setMetaInfo(ServiceQualifier.withId("RdfIndexingEngineService"));
 
-      module.services(CreateCaseFromEmailService.class).instantiateOnStartup();
+      module.services(CreateCaseFromEmailService.class).visibleIn(Visibility.application).instantiateOnStartup();
       configuration().entities(CreateCaseFromEmailConfiguration.class).visibleIn(Visibility.application);
    }
 

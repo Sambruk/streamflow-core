@@ -19,12 +19,14 @@ package se.streamsource.streamflow.web.context.workspace.cases.attachment;
 
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.io.Outputs;
 import org.qi4j.api.util.DateFunctions;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.data.Disposition;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.representation.InputRepresentation;
+import org.restlet.representation.OutputRepresentation;
 import org.restlet.representation.Representation;
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.UpdateContext;
@@ -35,6 +37,7 @@ import se.streamsource.streamflow.web.domain.structure.attachment.Attachments;
 import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -87,24 +90,32 @@ public class AttachmentContext
    {
       AttachedFile.Data fileData = role( AttachedFile.Data.class );
 
-      String id = new URI( fileData.uri().get() ).getSchemeSpecificPart();
+      final String id = new URI( fileData.uri().get() ).getSchemeSpecificPart();
 
-      InputRepresentation inputRepresentation = new InputRepresentation( store.getAttachment( id ), new MediaType( fileData.mimeType().get() ) );
+      OutputRepresentation outputRepresentation = new OutputRepresentation( new MediaType( fileData.mimeType().get() ), store.getAttachmentSize(id) )
+      {
+         @Override
+         public void write(OutputStream outputStream) throws IOException
+         {
+            store.attachment(id).transferTo(Outputs.<Object>byteBuffer(outputStream));
+         }
+      };
+
       Form downloadParams = new Form();
       downloadParams.set( Disposition.NAME_FILENAME, fileData.name().get() );
 
       if (fileData.size().get() != null)
       {
          downloadParams.set( Disposition.NAME_SIZE, Long.toString( fileData.size().get() ) );
-         inputRepresentation.setSize( fileData.size().get() );
+         outputRepresentation.setSize(fileData.size().get());
       }
       if (fileData.modificationDate().get() != null)
       {
          downloadParams.set( Disposition.NAME_CREATION_DATE, DateFunctions.toUtcString( fileData.modificationDate().get() ) );
-         inputRepresentation.setModificationDate( fileData.modificationDate().get() );
+         outputRepresentation.setModificationDate(fileData.modificationDate().get());
       }
 
-      inputRepresentation.setDisposition( new Disposition( Disposition.TYPE_ATTACHMENT, downloadParams ) );
-      return inputRepresentation;
+      outputRepresentation.setDisposition(new Disposition(Disposition.TYPE_ATTACHMENT, downloadParams));
+      return outputRepresentation;
    }
 }
