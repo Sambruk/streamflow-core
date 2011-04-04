@@ -35,7 +35,6 @@ public interface AccessPoint
       SelectedForms,
       FormPdfTemplate,
       EndUserCases,
-      AccessPointSettings,
-      EmailTemplates
+      AccessPointSettings
 {
 }
