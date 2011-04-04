@@ -310,7 +310,7 @@ public class CasePdfGenerator implements CaseOutput
                                 + DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, locale).format(
                                 data.createdOn().get()) + ": ";
 
-                        document.print(label, valueFontBold).print(extractBody(data.body().get()), valueFont)
+                        document.print(label, valueFontBold).print(data.body().get(), valueFont)
                                 .print("", valueFont);
                      }
                   }
