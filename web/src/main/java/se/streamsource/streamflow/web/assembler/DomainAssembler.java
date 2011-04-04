@@ -43,7 +43,7 @@ import se.streamsource.streamflow.web.domain.entity.organization.*;
 import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
 import se.streamsource.streamflow.web.domain.entity.project.ProjectRoleEntity;
 import se.streamsource.streamflow.web.domain.entity.user.*;
-import se.streamsource.streamflow.web.domain.entity.user.profile.PerspectiveEntity;
+import se.streamsource.streamflow.web.domain.entity.user.PerspectiveEntity;
 import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFileValue;
 import se.streamsource.streamflow.web.domain.structure.organization.ParticipantRolesValue;
 import se.streamsource.streamflow.web.domain.structure.project.PermissionValue;

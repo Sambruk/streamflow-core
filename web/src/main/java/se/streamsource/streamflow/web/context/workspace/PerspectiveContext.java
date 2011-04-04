@@ -23,9 +23,9 @@ import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.table.TableQuery;
 import se.streamsource.streamflow.resource.user.profile.PerspectiveValue;
-import se.streamsource.streamflow.web.domain.interaction.profile.Perspectives;
+import se.streamsource.streamflow.web.domain.structure.user.Perspective;
+import se.streamsource.streamflow.web.domain.structure.user.Perspectives;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
-import se.streamsource.streamflow.web.domain.structure.user.profile.Perspective;
 
 import java.util.Collections;
 

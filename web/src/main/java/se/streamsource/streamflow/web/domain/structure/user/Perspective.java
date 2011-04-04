@@ -15,18 +15,21 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.domain.entity.user.profile;
+package se.streamsource.streamflow.web.domain.structure.user;
 
+import org.qi4j.api.mixin.Mixins;
+import org.qi4j.api.property.Property;
 import se.streamsource.streamflow.domain.structure.Describable;
-import se.streamsource.streamflow.web.domain.entity.DomainEntity;
-import se.streamsource.streamflow.web.domain.structure.user.profile.Perspective;
+import se.streamsource.streamflow.resource.user.profile.PerspectiveValue;
 
 
-public interface PerspectiveEntity
-      extends DomainEntity,
-      Perspective,
-
-      Perspective.Data,
-      Describable.Data
+@Mixins(Perspective.Mixin.class)
+public interface Perspective
+      extends Describable
 {
+   
+   interface Data
+   {
+      Property<PerspectiveValue> perspective();
+   }
 }

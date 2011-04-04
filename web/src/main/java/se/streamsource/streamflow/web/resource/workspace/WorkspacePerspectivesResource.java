@@ -23,8 +23,8 @@ import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.web.context.structure.DescribableContext;
 import se.streamsource.streamflow.web.context.workspace.PerspectiveContext;
 import se.streamsource.streamflow.web.context.workspace.PerspectivesContext;
-import se.streamsource.streamflow.web.domain.entity.user.profile.PerspectiveEntity;
-import se.streamsource.streamflow.web.domain.structure.user.profile.Perspective;
+import se.streamsource.streamflow.web.domain.entity.user.PerspectiveEntity;
+import se.streamsource.streamflow.web.domain.structure.user.Perspective;
 
 /**
  * JAVADOC

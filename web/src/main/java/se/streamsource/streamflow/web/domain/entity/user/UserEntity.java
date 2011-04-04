@@ -31,7 +31,7 @@ import se.streamsource.streamflow.web.domain.entity.gtd.DraftsQueries;
 import se.streamsource.streamflow.web.domain.entity.gtd.InboxQueries;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Actor;
 import se.streamsource.streamflow.web.domain.interaction.profile.MessageRecipient;
-import se.streamsource.streamflow.web.domain.interaction.profile.Perspectives;
+import se.streamsource.streamflow.web.domain.structure.user.Perspectives;
 import se.streamsource.streamflow.web.domain.interaction.security.Authentication;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipant;
 import se.streamsource.streamflow.web.domain.structure.conversation.MessageReceiver;
@@ -53,7 +53,7 @@ public interface UserEntity
       Actor,
       Authentication,
       MessageRecipient,
-      Perspectives,
+        Perspectives,
 
       // Structure
       User,

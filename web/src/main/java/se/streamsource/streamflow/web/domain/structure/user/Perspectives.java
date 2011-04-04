@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.domain.interaction.profile;
+package se.streamsource.streamflow.web.domain.structure.user;
 
 import org.qi4j.api.common.Optional;
 import org.qi4j.api.entity.Aggregated;
@@ -30,8 +30,7 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.unitofwork.UnitOfWorkFactory;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.resource.user.profile.PerspectiveValue;
-import se.streamsource.streamflow.web.domain.entity.user.profile.PerspectiveEntity;
-import se.streamsource.streamflow.web.domain.structure.user.profile.Perspective;
+import se.streamsource.streamflow.web.domain.entity.user.PerspectiveEntity;
 
 @Mixins(Perspectives.Mixin.class)
 public interface Perspectives

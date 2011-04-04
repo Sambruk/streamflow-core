@@ -23,8 +23,8 @@ import se.streamsource.dci.api.CreateContext;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.streamflow.resource.user.profile.PerspectiveValue;
-import se.streamsource.streamflow.web.domain.interaction.profile.Perspectives;
-import se.streamsource.streamflow.web.domain.structure.user.profile.Perspective;
+import se.streamsource.streamflow.web.domain.structure.user.Perspective;
+import se.streamsource.streamflow.web.domain.structure.user.Perspectives;
 
 /**
  * JAVADOC

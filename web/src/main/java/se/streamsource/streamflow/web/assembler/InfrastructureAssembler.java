@@ -563,7 +563,9 @@ public class InfrastructureAssembler
                   renameEntity( "se.streamsource.streamflow.web.domain.entity.user.profile.SavedSearchEntity", "se.streamsource.streamflow.web.domain.entity.user.profile.PerspectiveEntity").
                   forEntities("se.streamsource.streamflow.web.domain.entity.user.UserEntity").
                      renameAssociation("searches", "perspectives").
-                  end();
+                  end().
+               toVersion("1.4.0.0").
+                  renameEntity("se.streamsource.streamflow.web.domain.entity.user.profile.PerspectiveEntity", "se.streamsource.streamflow.web.domain.entity.user.PerspectiveEntity");
                   
 
          module.services( MigrationService.class ).setMetaInfo( migrationBuilder );
