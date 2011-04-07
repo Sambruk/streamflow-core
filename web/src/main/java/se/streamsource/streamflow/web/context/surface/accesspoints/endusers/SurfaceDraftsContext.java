@@ -25,8 +25,10 @@ import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.link.LinksValue;
+import se.streamsource.streamflow.domain.contact.ContactValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.resource.caze.CaseFormDTO;
+import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
 import se.streamsource.streamflow.web.domain.entity.gtd.DraftsQueries;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.form.EndUserCases;
@@ -56,14 +58,25 @@ public class SurfaceDraftsContext
    {
       EndUser endUser = RoleMap.role(EndUser.class);
       EndUserCases endUserCases = RoleMap.role(EndUserCases.class);
-      endUserCases.createCase(endUser);
+      CaseEntity caze = endUserCases.createCase(endUser);
+
+      // Add contact info to case
+      ContactValue contact = endUser.getContact();
+      if (contact != null)
+         caze.updateContact(0, contact);
    }
 
    public void createcasewithform()
    {
       EndUser endUser = RoleMap.role(EndUser.class);
       EndUserCases endUserCases = RoleMap.role(EndUserCases.class);
-      endUserCases.createCaseWithForm(endUser);
+      CaseEntity caze = endUserCases.createCaseWithForm(endUser);
+
+
+      // Add contact info to case
+      ContactValue contact = endUser.getContact();
+      if (contact != null)
+         caze.updateContact(0, contact);
    }
 
    public CaseFormDTO findcasewithform()

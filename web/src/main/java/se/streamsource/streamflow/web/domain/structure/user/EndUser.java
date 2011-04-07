@@ -21,12 +21,13 @@ import se.streamsource.streamflow.domain.contact.Contactable;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.domain.structure.Removable;
 import se.streamsource.streamflow.web.domain.entity.gtd.Drafts;
+import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipant;
 import se.streamsource.streamflow.web.domain.structure.created.Creator;
 import se.streamsource.streamflow.web.domain.structure.form.Submitter;
 
 /**
  */
 public interface EndUser
-   extends Drafts, Submitter, Creator, Removable, Describable, Contactable
+   extends Drafts, Submitter, Creator, Removable, Describable, Contactable, ConversationParticipant
 {
 }
