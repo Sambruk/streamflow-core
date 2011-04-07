@@ -98,6 +98,8 @@ public class EmailAccessPointsContextTest
    {
       // Create case type and label
       {
+         UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
+
          playRole( Organizations.class, OrganizationsEntity.ORGANIZATIONS_ID);
          playRole( OrganizationalUnits.class, findLink(context(OrganizationsContext.class).index(), "Organization"));
          playRole( findDescribable(context(OrganizationalUnitsContext.class).index(), "OU1"));
@@ -111,9 +113,12 @@ public class EmailAccessPointsContextTest
 
          context(LabelsContext.class).createlabel(stringValue("Label 1"));
 
-         context(SelectedLabelsContext.class).addlabel(ContextTest.<Label>entity(findLink(context(SelectedLabelsContext.class).possiblelabels(), "Label1")));
+         context(SelectedLabelsContext.class).addlabel(ContextTest.<Label>entity(findLink(context(SelectedLabelsContext.class).possiblelabels(), "Label 1")));
 
+         uow.complete();
          clearEvents();
+
+         createEmailAccessPoint("streamsourceflow@gmail.com");
       }
 
       // Set casetype and label

@@ -32,8 +32,8 @@ import se.streamsource.streamflow.web.infrastructure.caching.CachingService;
  * JAVADOC
  */
 public abstract class UpdateCaseCountDraftsConcern
-   extends ConcernOf<DraftsContext>
-   implements DraftsContext
+        extends ConcernOf<DraftsContext>
+        implements DraftsContext
 {
    @Optional
    @Service
@@ -44,10 +44,10 @@ public abstract class UpdateCaseCountDraftsConcern
 
    public void createcase()
    {
-      Drafts drafts = RoleMap.role( Drafts.class );
+      Drafts drafts = RoleMap.role(Drafts.class);
 
       // Update drafts for user
-      new Caching(caching, Caches.CASECOUNTS).addToCache( drafts.toString(), 1 );
+      new Caching(caching, Caches.CASECOUNTS).addToCache(drafts.toString(), 1);
 
       next.createcase();
    }

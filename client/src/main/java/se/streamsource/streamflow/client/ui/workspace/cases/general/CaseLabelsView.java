@@ -36,16 +36,13 @@ import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.ListSelectionModel;
-import java.awt.Component;
-import java.awt.FlowLayout;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 
 public class CaseLabelsView
-      extends JPanel
-      implements ListEventListener, TransactionListener
+        extends JPanel
+        implements ListEventListener, TransactionListener
 {
    @Service
    private DialogService dialogs;
@@ -66,9 +63,9 @@ public class CaseLabelsView
       this.model = model;
       model.getLabels().addListEventListener( this );
 
-      setLayout( new FlowLayout( FlowLayout.LEFT ) );
+      setLayout(new FlowLayout(FlowLayout.LEFT));
       //setBorder( BorderFactory.createLineBorder( Color.BLUE, 1));
-      new RefreshWhenShowing( this, model );
+      new RefreshWhenShowing(this, model);
    }
 
    public CaseLabelsModel getModel()
@@ -76,27 +73,27 @@ public class CaseLabelsView
       return model;
    }
 
-   public void setEnabled( boolean enabled )
+   public void setEnabled(boolean enabled)
    {
-      super.setEnabled( enabled );
+      super.setEnabled(enabled);
       for (Component component : getComponents())
       {
-         component.setEnabled( enabled );
+         component.setEnabled(enabled);
       }
    }
 
-   public void listChanged( ListEvent listEvent )
+   public void listChanged(ListEvent listEvent)
    {
       removeAll();
 
       for (int i = 0; i < model.getLabels().size(); i++)
       {
-         LinkValue linkValue = model.getLabels().get( i );
-         RemovableLabel label = new RemovableLabel( linkValue, false );
-         label.setToolTipText( linkValue.text().get() );
-         label.getButton().addActionListener( getActionMap().get("remove" ));
-         label.setEnabled( isEnabled() );
-         add( label );
+         LinkValue linkValue = model.getLabels().get(i);
+         RemovableLabel label = new RemovableLabel(linkValue, false);
+         label.setToolTipText(linkValue.text().get());
+         label.getButton().addActionListener(getActionMap().get("remove"));
+         label.setEnabled(isEnabled());
+         add(label);
       }
 
       revalidate();
@@ -106,9 +103,9 @@ public class CaseLabelsView
    @Action
    public Task addLabel()
    {
-      final SelectLinkDialog dialog = labelSelectionDialog.use( model.getPossibleLabels() ).newInstance();
-      dialog.setSelectionMode( ListSelectionModel.MULTIPLE_INTERVAL_SELECTION );
-      dialogs.showOkCancelHelpDialog( actionButton == null ? this : actionButton, dialog );
+      final SelectLinkDialog dialog = labelSelectionDialog.use(model.getPossibleLabels()).newInstance();
+      dialog.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+      dialogs.showOkCancelHelpDialog(actionButton == null ? this : actionButton, dialog);
 
       return new CommandTask()
       {
@@ -117,7 +114,7 @@ public class CaseLabelsView
          {
             for (LinkValue listItemValue : dialog.getSelectedLinks())
             {
-               model.addLabel( listItemValue );
+               model.addLabel(listItemValue);
             }
          }
       };
@@ -125,27 +122,27 @@ public class CaseLabelsView
 
 
    @Action
-   public Task remove( final ActionEvent e )
+   public Task remove(final ActionEvent e)
    {
       return new CommandTask()
       {
          @Override
          public void command()
-            throws Exception
+                 throws Exception
          {
             Component component = ((Component) e.getSource());
             RemovableLabel label = (RemovableLabel) component.getParent();
-            model.removeLabel( label.link() );
+            model.removeLabel(label.link());
          }
       };
    }
 
-   public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
+   public void notifyTransactions(Iterable<TransactionDomainEvents> transactions)
    {
       model.notifyTransactions(transactions);
    }
 
-   public void setButtonRelation( JButton button )
+   public void setButtonRelation(JButton button)
    {
       this.actionButton = button;
    }

@@ -29,7 +29,7 @@ import se.streamsource.streamflow.web.domain.entity.user.ProjectQueries;
  * JAVADOC
  */
 public class WorkspaceProjectsContext
-      implements IndexContext<LinksValue>
+        implements IndexContext<LinksValue>
 {
    @Structure
    Module module;

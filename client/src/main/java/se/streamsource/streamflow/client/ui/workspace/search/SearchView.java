@@ -34,22 +34,14 @@ import se.streamsource.streamflow.client.util.Refreshable;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.i18n;
 
-import javax.swing.ActionMap;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.KeyStroke;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.FlowLayout;
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * JAVADOC
  */
 public class SearchView
-      extends JPanel
+        extends JPanel
 {
    @Service
    DialogService dialogs;
@@ -63,30 +55,30 @@ public class SearchView
 
    private JPanel search;
 
-   public SearchView( @Service ApplicationContext context, @Uses final CommandQueryClient client,
-                      @Uses SearchResultTableModel searchResultTableModel, @Structure ObjectBuilderFactory obf )
+   public SearchView(@Service ApplicationContext context, @Uses final CommandQueryClient client,
+                     @Uses SearchResultTableModel searchResultTableModel, @Structure ObjectBuilderFactory obf)
    {
-      setLayout( new BoxLayout(this, BoxLayout.X_AXIS) );
+      setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
       this.searchResultTableModel = searchResultTableModel;
-      
-      ActionMap am;
-      setActionMap( am = context.getActionMap( this ) );
 
-      javax.swing.Action searchAction = am.get( "search" );
-      JButton searchButton = new JButton( searchAction );
-      searchButton.registerKeyboardAction( searchAction, (KeyStroke) searchAction
-            .getValue( javax.swing.Action.ACCELERATOR_KEY ),
-            JComponent.WHEN_IN_FOCUSED_WINDOW );
-      
+      ActionMap am;
+      setActionMap(am = context.getActionMap(this));
+
+      javax.swing.Action searchAction = am.get("search");
+      JButton searchButton = new JButton(searchAction);
+      searchButton.registerKeyboardAction(searchAction, (KeyStroke) searchAction
+              .getValue(javax.swing.Action.ACCELERATOR_KEY),
+              JComponent.WHEN_IN_FOCUSED_WINDOW);
+
       searchField = new JTextField(40);
-      searchField.addActionListener( searchAction );
+      searchField.addActionListener(searchAction);
 
       search = new JPanel(new FlowLayout(FlowLayout.LEFT));
       search.add(searchField);
-      search.add( searchButton );
+      search.add(searchButton);
       add(search);
 
-      new RefreshWhenShowing( this, new Refreshable()
+      new RefreshWhenShowing(this, new Refreshable()
       {
          public void refresh()
          {
@@ -105,21 +97,21 @@ public class SearchView
    public void search()
    {
       // close all open perspective popups without triggering search twice
-      if (!closedOpenPerspectivePopups( WindowUtils.findWindow( this ) ))
+      if (!closedOpenPerspectivePopups(WindowUtils.findWindow(this)))
       {
          String searchString = getTextField().getText();
 
          if (searchString.length() > 500)
          {
-            dialogs.showMessageDialog( this, i18n.text( WorkspaceResources.too_long_query ), "" );
+            dialogs.showMessageDialog(this, i18n.text(WorkspaceResources.too_long_query), "");
          } else
          {
-            searchResultTableModel.search( searchString );
+            searchResultTableModel.search(searchString);
          }
       }
    }
 
-   private boolean closedOpenPerspectivePopups( Container container )
+   private boolean closedOpenPerspectivePopups(Container container)
    {
       for (Component c : container.getComponents())
       {
@@ -136,7 +128,7 @@ public class SearchView
                }
             } else
             {
-               closedOpenPerspectivePopups( (Container) c );
+               closedOpenPerspectivePopups((Container) c);
             }
          }
       }

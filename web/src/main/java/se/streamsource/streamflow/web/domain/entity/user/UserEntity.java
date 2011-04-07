@@ -46,52 +46,52 @@ import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
  */
 @Mixins({UserEntity.LifecycleMixin.class, UserEntity.AuthenticationMixin.class})
 public interface UserEntity
-      extends DomainEntity,
+        extends DomainEntity,
 
       // Interactions
-      Drafts,
-      Actor,
-      Authentication,
-      MessageRecipient,
+        Drafts,
+        Actor,
+        Authentication,
+        MessageRecipient,
         Perspectives,
 
-      // Structure
-      User,
-      Contactable,
-      ConversationParticipant,
-      OrganizationParticipations,
-      Submitter,
+        // Structure
+        User,
+        Contactable,
+        ConversationParticipant,
+        OrganizationParticipations,
+        Submitter,
 
-      // Queries
-      DraftsQueries,
-      AssignmentsQueries,
-      OverviewQueries,
-      InboxQueries,
-      ProjectQueries,
-      SearchCaseQueries,
+        // Queries
+        DraftsQueries,
+        AssignmentsQueries,
+        OverviewQueries,
+        InboxQueries,
+        ProjectQueries,
+        SearchCaseQueries,
 
-      // Data
-      Contactable.Data,
-      OrganizationParticipations.Data,
-      Describable.Data,
-      Participation.Data,
-      UserAuthentication.Data,
-      MessageRecipient.Data,
-      MessageReceiver.Data,
-      Perspectives.Data
+        // Data
+        Contactable.Data,
+        OrganizationParticipations.Data,
+        Describable.Data,
+        Participation.Data,
+        UserAuthentication.Data,
+        MessageRecipient.Data,
+        MessageReceiver.Data,
+        Perspectives.Data
 {
    public static final String ADMINISTRATOR_USERNAME = "administrator";
 
    abstract class LifecycleMixin
-         extends Describable.Mixin
-         implements Lifecycle
+           extends Describable.Mixin
+           implements Lifecycle
    {
       @This
       Identity identity;
 
       public void create() throws LifecycleException
       {
-         description().set( identity.identity().get() );
+         description().set(identity.identity().get());
       }
 
       public void remove() throws LifecycleException
@@ -100,17 +100,17 @@ public interface UserEntity
    }
 
    class AuthenticationMixin
-         implements Authentication
+           implements Authentication
    {
       @This
       UserAuthentication.Data data;
 
-      public boolean login( String password )
+      public boolean login(String password)
       {
          if (data.disabled().get())
             return false;
 
-         boolean correct = data.isCorrectPassword( password );
+         boolean correct = data.isCorrectPassword(password);
 
          return correct;
       }

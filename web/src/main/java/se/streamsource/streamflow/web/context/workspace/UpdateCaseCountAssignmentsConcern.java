@@ -33,8 +33,8 @@ import se.streamsource.streamflow.web.infrastructure.caching.CachingService;
  * Increase case count when creating new case in assignments
  */
 public abstract class UpdateCaseCountAssignmentsConcern
-   extends ConcernOf<AssignmentsContext>
-   implements AssignmentsContext
+        extends ConcernOf<AssignmentsContext>
+        implements AssignmentsContext
 {
    @Optional
    @Service
@@ -45,11 +45,11 @@ public abstract class UpdateCaseCountAssignmentsConcern
 
    public void createcase()
    {
-      Owner owner  = RoleMap.role( Owner.class );
-      Assignee assignee  = RoleMap.role( Assignee.class );
+      Owner owner = RoleMap.role(Owner.class);
+      Assignee assignee = RoleMap.role(Assignee.class);
 
       // Update assignments for assignee
-      new Caching(caching, Caches.CASECOUNTS).addToCache( owner.toString()+":"+assignee.toString(), 1 );
+      new Caching(caching, Caches.CASECOUNTS).addToCache(owner.toString() + ":" + assignee.toString(), 1);
 
       next.createcase();
    }

@@ -18,11 +18,7 @@
 package se.streamsource.streamflow.web.infrastructure.database;
 
 import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.service.ImportedServiceDescriptor;
-import org.qi4j.api.service.ServiceFinder;
-import org.qi4j.api.service.ServiceImporter;
-import org.qi4j.api.service.ServiceImporterException;
-import org.qi4j.api.service.ServiceReference;
+import org.qi4j.api.service.*;
 
 /**
  * Use a registered service that implements ServiceImporter to do the actual
@@ -32,7 +28,7 @@ import org.qi4j.api.service.ServiceReference;
  * module.importedServices(OtherService.class).importedBy(ServiceInstanceImporter.class).setMetaInfo("someid");
  */
 public class ServiceInstanceImporter
-   implements ServiceImporter
+        implements ServiceImporter
 {
    @Structure
    ServiceFinder finder;
@@ -41,30 +37,30 @@ public class ServiceInstanceImporter
 
    String serviceId;
 
-   public Object importService( ImportedServiceDescriptor importedServiceDescriptor ) throws ServiceImporterException
+   public Object importService(ImportedServiceDescriptor importedServiceDescriptor) throws ServiceImporterException
    {
-      serviceId = importedServiceDescriptor.metaInfo( String.class );
+      serviceId = importedServiceDescriptor.metaInfo(String.class);
 
-      return getServiceImporter().importService( importedServiceDescriptor );
+      return getServiceImporter().importService(importedServiceDescriptor);
    }
 
-   public boolean isActive( Object o )
+   public boolean isActive(Object o)
    {
-      return getServiceImporter().isActive( o );
+      return getServiceImporter().isActive(o);
    }
 
-   public boolean isAvailable( Object instance )
+   public boolean isAvailable(Object instance)
    {
-      return getServiceImporter().isAvailable( instance );
+      return getServiceImporter().isAvailable(instance);
    }
 
    private ServiceImporter getServiceImporter()
    {
       if (service == null)
       {
-         for (ServiceReference<ServiceImporter> reference : finder.<ServiceImporter>findServices( ServiceImporter.class ))
+         for (ServiceReference<ServiceImporter> reference : finder.<ServiceImporter>findServices(ServiceImporter.class))
          {
-            if (reference.identity().equals( serviceId ))
+            if (reference.identity().equals(serviceId))
             {
                service = reference.get();
                break;
@@ -73,7 +69,7 @@ public class ServiceInstanceImporter
       }
 
       if (service == null)
-         throw new ServiceImporterException("No service importer with id '"+ serviceId +"' was found");
+         throw new ServiceImporterException("No service importer with id '" + serviceId + "' was found");
 
       return service;
    }

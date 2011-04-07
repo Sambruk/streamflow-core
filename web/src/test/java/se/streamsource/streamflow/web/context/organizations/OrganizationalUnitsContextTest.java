@@ -50,7 +50,7 @@ public class OrganizationalUnitsContextTest
       RoleMap.current().set( new UserPrincipal("administrator") );
       playRole( Organizations.class, OrganizationsEntity.ORGANIZATIONS_ID);
       playRole( OrganizationalUnits.class, findLink( context( OrganizationsContext.class).index(), "Organization" ));
-      context( OrganizationalUnitsContext.class).createorganizationalunit( stringValue( name) );
+      context( OrganizationalUnitsContext.class).createorganizationalunit( name );
       uow.complete();
    }
 

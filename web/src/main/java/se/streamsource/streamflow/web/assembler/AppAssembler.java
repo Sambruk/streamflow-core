@@ -95,27 +95,27 @@ public class AppAssembler
       module.services( DomainEventPlayerService.class, ApplicationEventPlayerService.class ).visibleIn( Visibility.application );
    }
 
-   private void attachment( ModuleAssembly moduleAssembly ) throws AssemblyException
+   private void attachment( ModuleAssembly module ) throws AssemblyException
    {
-      moduleAssembly.services( RemoveAttachmentsService.class )
+      module.services( RemoveAttachmentsService.class )
             .identifiedBy( "removeattachments" ).visibleIn( application ).instantiateOnStartup();
    }
 
-   private void pdf( ModuleAssembly moduleAssembly ) throws AssemblyException
+   private void pdf( ModuleAssembly module ) throws AssemblyException
    {
-      moduleAssembly.objects( CasePdfGenerator.class ).visibleIn( application );
-      moduleAssembly.services( SubmittedFormPdfGenerator.class ).visibleIn( application );
+      module.objects( CasePdfGenerator.class ).visibleIn( application );
+      module.services( SubmittedFormPdfGenerator.class ).visibleIn( application );
    }
 
-   private void contactLookup( ModuleAssembly moduleAssembly ) throws AssemblyException
+   private void contactLookup( ModuleAssembly module ) throws AssemblyException
    {
-      moduleAssembly.services( StreamflowContactLookupService.class ).visibleIn( Visibility.application );
+      module.services( StreamflowContactLookupService.class ).visibleIn( Visibility.application );
 
       NamedQueries namedQueries = new NamedQueries();
       NamedQueryDescriptor queryDescriptor = new NamedSolrDescriptor( "solrquery", "" );
       namedQueries.addQuery( queryDescriptor );
 
-      moduleAssembly.importedServices( NamedEntityFinder.class ).
+      module.importedServices( NamedEntityFinder.class ).
             importedBy( ServiceSelectorImporter.class ).
             setMetaInfo( ServiceQualifier.withId( "solr" ) ).
             setMetaInfo( namedQueries );

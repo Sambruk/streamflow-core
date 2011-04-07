@@ -77,10 +77,10 @@ public class InfrastructureAssembler
       }
    }
 
-   private void clientEvents( ModuleAssembly moduleAssembly ) throws AssemblyException
+   private void clientEvents( ModuleAssembly module ) throws AssemblyException
    {
-      moduleAssembly.values( TransactionDomainEvents.class, DomainEvent.class ).visibleIn( Visibility.application );
+      module.values( TransactionDomainEvents.class, DomainEvent.class ).visibleIn( Visibility.application );
 
-      moduleAssembly.services( ClientEventSourceService.class ).visibleIn( Visibility.application );
+      module.services( ClientEventSourceService.class ).visibleIn( Visibility.application );
    }
 }

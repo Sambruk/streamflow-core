@@ -15,26 +15,18 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.domain.entity.user;
+package se.streamsource.streamflow.web.domain.structure.user;
 
+import se.streamsource.streamflow.domain.contact.Contactable;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.domain.structure.Removable;
-import se.streamsource.streamflow.web.domain.entity.DomainEntity;
-import se.streamsource.streamflow.web.domain.entity.gtd.DraftsQueries;
-import se.streamsource.streamflow.web.domain.structure.user.AnonymousEndUser;
+import se.streamsource.streamflow.web.domain.entity.gtd.Drafts;
+import se.streamsource.streamflow.web.domain.structure.created.Creator;
+import se.streamsource.streamflow.web.domain.structure.form.Submitter;
 
 /**
- * JAVADOC
  */
-public interface AnonymousEndUserEntity
-   extends AnonymousEndUser,
-      DomainEntity,
-
-      // Data
-      Removable.Data,
-      Describable.Data,
-
-      //Queries
-      DraftsQueries
+public interface EndUser
+   extends Drafts, Submitter, Creator, Removable, Describable, Contactable
 {
 }

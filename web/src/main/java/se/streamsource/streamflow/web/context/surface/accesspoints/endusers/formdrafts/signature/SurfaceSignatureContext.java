@@ -32,7 +32,7 @@ import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.form.EndUserCases;
 import se.streamsource.streamflow.web.domain.structure.form.FormDraft;
 import se.streamsource.streamflow.web.domain.structure.form.RequiredSignatures;
-import se.streamsource.streamflow.web.domain.structure.user.AnonymousEndUser;
+import se.streamsource.streamflow.web.domain.structure.user.EndUser;
 
 import static se.streamsource.dci.api.RoleMap.*;
 
@@ -64,7 +64,7 @@ public interface SurfaceSignatureContext
       public void submit()
       {
          EndUserCases userCases = role( EndUserCases.class );
-         AnonymousEndUser user = role( AnonymousEndUser.class );
+         EndUser user = role( EndUser.class );
          FormDraft formSubmission = role( FormDraft.class );
          Case aCase = role( Case.class );
 
@@ -74,7 +74,7 @@ public interface SurfaceSignatureContext
       public void submitandsend()
       {
          EndUserCases userCases = role( EndUserCases.class );
-         AnonymousEndUser user = role( AnonymousEndUser.class );
+         EndUser user = role( EndUser.class );
          FormDraft formSubmission = role( FormDraft.class );
          Case aCase = role( Case.class );
 

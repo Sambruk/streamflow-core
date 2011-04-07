@@ -35,22 +35,22 @@ import se.streamsource.streamflow.web.domain.entity.user.PerspectiveEntity;
 @Mixins(Perspectives.Mixin.class)
 public interface Perspectives
 {
-   public void createPerspective( PerspectiveValue perspective );
+   public void createPerspective(PerspectiveValue perspective);
 
-   public void removePerspective( Perspective perspective );
+   public void removePerspective(Perspective perspective);
 
    interface Data
    {
       @Aggregated
       ManyAssociation<Perspective> perspectives();
 
-      Perspective createdPerspective( @Optional DomainEvent event, String id, PerspectiveValue perspective );
+      Perspective createdPerspective(@Optional DomainEvent event, String id, PerspectiveValue perspective);
 
-      void removedPerspective( @Optional DomainEvent event, Perspective perspective );
+      void removedPerspective(@Optional DomainEvent event, Perspective perspective);
    }
 
    abstract class Mixin
-         implements Perspectives, Data
+           implements Perspectives, Data
    {
       @This
       Data state;
@@ -61,34 +61,34 @@ public interface Perspectives
       @Structure
       UnitOfWorkFactory uowf;
 
-      public void createPerspective( PerspectiveValue perspective )
+      public void createPerspective(PerspectiveValue perspective)
       {
-         String id = idgen.generate( Identity.class );
-         Perspective newPerspective = createdPerspective( null, id, perspective );
-         newPerspective.changeDescription( perspective.name().get() );
+         String id = idgen.generate(Identity.class);
+         Perspective newPerspective = createdPerspective(null, id, perspective);
+         newPerspective.changeDescription(perspective.name().get());
       }
 
-      public Perspective createdPerspective( DomainEvent event, String id, PerspectiveValue perspectiveValue )
+      public Perspective createdPerspective(DomainEvent event, String id, PerspectiveValue perspectiveValue)
       {
-         EntityBuilder<PerspectiveEntity> builder = uowf.currentUnitOfWork().newEntityBuilder( PerspectiveEntity.class, id );
+         EntityBuilder<PerspectiveEntity> builder = uowf.currentUnitOfWork().newEntityBuilder(PerspectiveEntity.class, id);
          builder.instance().perspective().set(perspectiveValue);
          Perspective perspective = builder.newInstance();
-         state.perspectives().add( perspective );
+         state.perspectives().add(perspective);
          return perspective;
       }
 
-      public void removePerspective( Perspective perspective )
+      public void removePerspective(Perspective perspective)
       {
-         if (state.perspectives().contains( perspective ))
+         if (state.perspectives().contains(perspective))
          {
-            removedPerspective( null, perspective );
+            removedPerspective(null, perspective);
          }
       }
 
-      public void removedPerspective( DomainEvent event, Perspective perspective )
+      public void removedPerspective(DomainEvent event, Perspective perspective)
       {
-         state.perspectives().remove( perspective );
-         uowf.currentUnitOfWork().remove( perspective );
+         state.perspectives().remove(perspective);
+         uowf.currentUnitOfWork().remove(perspective);
       }
    }
 }

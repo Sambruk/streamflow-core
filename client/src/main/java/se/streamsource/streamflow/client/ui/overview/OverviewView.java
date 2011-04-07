@@ -17,11 +17,7 @@
 
 package se.streamsource.streamflow.client.ui.overview;
 
-import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.FilterList;
-import ca.odell.glazedlists.SeparatorList;
-import ca.odell.glazedlists.SortedList;
-import ca.odell.glazedlists.TextFilterator;
+import ca.odell.glazedlists.*;
 import ca.odell.glazedlists.gui.TableFormat;
 import ca.odell.glazedlists.swing.EventListModel;
 import ca.odell.glazedlists.swing.TextComponentMatcherEditor;
@@ -40,18 +36,10 @@ import se.streamsource.streamflow.client.ui.workspace.table.CasesView;
 import se.streamsource.streamflow.client.util.RefreshWhenShowing;
 import se.streamsource.streamflow.client.util.SeparatorContextItemListCellRenderer;
 
-import javax.swing.AbstractAction;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTextField;
-import javax.swing.KeyStroke;
-import javax.swing.ListSelectionModel;
+import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.util.Comparator;
@@ -61,7 +49,7 @@ import java.util.List;
  * JAVADOC
  */
 public class OverviewView
-      extends JPanel
+        extends JPanel
 {
    private JList overviewList;
    private JSplitPane pane;
@@ -69,69 +57,69 @@ public class OverviewView
    private OverviewModel model;
    private final CommandQueryClient client;
 
-   public OverviewView( final @Service ApplicationContext context,
-                        final @Uses CommandQueryClient client,
-                        final @Structure ObjectBuilderFactory obf )
+   public OverviewView(final @Service ApplicationContext context,
+                       final @Uses CommandQueryClient client,
+                       final @Structure ObjectBuilderFactory obf)
    {
-      super( new BorderLayout() );
+      super(new BorderLayout());
       this.client = client;
 
       overviewList = new JList();
-      casesView = obf.newObjectBuilder( CasesView.class ).use( client ).newInstance();
+      casesView = obf.newObjectBuilder(CasesView.class).use(client).newInstance();
       casesView.setBlankPanel(new JPanel());
 
-      model = obf.newObjectBuilder( OverviewModel.class ).use( client ).newInstance();
+      model = obf.newObjectBuilder(OverviewModel.class).use(client).newInstance();
 
       JTextField filterField = new JTextField();
-      SortedList<ContextItem> sortedIssues = new SortedList<ContextItem>( model.getItems(), new Comparator<ContextItem>()
+      SortedList<ContextItem> sortedIssues = new SortedList<ContextItem>(model.getItems(), new Comparator<ContextItem>()
       {
-         public int compare( ContextItem o1, ContextItem o2 )
+         public int compare(ContextItem o1, ContextItem o2)
          {
-            return o1.getGroup().compareTo( o2.getGroup() );
+            return o1.getGroup().compareTo(o2.getGroup());
          }
       });
-      final FilterList<ContextItem> textFilteredIssues = new FilterList<ContextItem>( sortedIssues, new TextComponentMatcherEditor<ContextItem>( filterField, new TextFilterator<ContextItem>()
+      final FilterList<ContextItem> textFilteredIssues = new FilterList<ContextItem>(sortedIssues, new TextComponentMatcherEditor<ContextItem>(filterField, new TextFilterator<ContextItem>()
       {
-         public void getFilterStrings( List<String> strings, ContextItem contextItem )
+         public void getFilterStrings(List<String> strings, ContextItem contextItem)
          {
             strings.add(contextItem.getGroup());
          }
-      }) );
+      }));
 
       Comparator<ContextItem> comparator = new ContextItemGroupComparator();
-      EventList<ContextItem> separatorList = new SeparatorList<ContextItem>( textFilteredIssues, comparator, 1, 10000 );
-      overviewList.setModel( new EventListModel<ContextItem>( separatorList ) );
-      overviewList.getSelectionModel().setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
+      EventList<ContextItem> separatorList = new SeparatorList<ContextItem>(textFilteredIssues, comparator, 1, 10000);
+      overviewList.setModel(new EventListModel<ContextItem>(separatorList));
+      overviewList.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-      overviewList.getInputMap().put( KeyStroke.getKeyStroke( KeyEvent.VK_ENTER, 0 ), "select" );
-      overviewList.getActionMap().put( "select", new AbstractAction()
+      overviewList.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "select");
+      overviewList.getActionMap().put("select", new AbstractAction()
       {
-         public void actionPerformed( ActionEvent e )
+         public void actionPerformed(ActionEvent e)
          {
             pane.getRightComponent().requestFocus();
          }
-      } );
+      });
 
-      overviewList.setCellRenderer( new SeparatorContextItemListCellRenderer( new ContextItemListRenderer()));
+      overviewList.setCellRenderer(new SeparatorContextItemListCellRenderer(new ContextItemListRenderer()));
 
-      JScrollPane workspaceScroll = new JScrollPane( overviewList, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED );
+      JScrollPane workspaceScroll = new JScrollPane(overviewList, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
-      pane = new JSplitPane( JSplitPane.HORIZONTAL_SPLIT );
-      pane.setDividerLocation( 200 );
-      pane.setResizeWeight( 0 );
+      pane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+      pane.setDividerLocation(200);
+      pane.setResizeWeight(0);
 
-      JPanel overviewOutline = new JPanel( new BorderLayout() );
-      overviewOutline.add( workspaceScroll, BorderLayout.CENTER );
-      overviewOutline.setMinimumSize( new Dimension( 150, 300 ) );
+      JPanel overviewOutline = new JPanel(new BorderLayout());
+      overviewOutline.add(workspaceScroll, BorderLayout.CENTER);
+      overviewOutline.setMinimumSize(new Dimension(150, 300));
 
-      pane.setLeftComponent( overviewOutline );
-      pane.setRightComponent( casesView );
+      pane.setLeftComponent(overviewOutline);
+      pane.setRightComponent(casesView);
 
-      add( pane, BorderLayout.CENTER );
+      add(pane, BorderLayout.CENTER);
 
-      overviewList.addListSelectionListener( new ListSelectionListener()
+      overviewList.addListSelectionListener(new ListSelectionListener()
       {
-         public void valueChanged( ListSelectionEvent e )
+         public void valueChanged(ListSelectionEvent e)
          {
             if (!e.getValueIsAdjusting())
             {
@@ -149,11 +137,11 @@ public class OverviewView
                      tableFormat = new OverviewAssignmentsCaseTableFormatter();
                   } else
                   {*/
-                     tableFormat = new CasesTableFormatter();
+                  tableFormat = new CasesTableFormatter();
                   //}
-                  CasesTableView casesTable = obf.newObjectBuilder( CasesTableView.class ).use( contextItem.getClient(), tableFormat ).newInstance();
+                  CasesTableView casesTable = obf.newObjectBuilder(CasesTableView.class).use(contextItem.getClient(), tableFormat).newInstance();
 
-                  casesView.showTable( casesTable );
+                  casesView.showTable(casesTable);
                } else
                {
                   // TODO Overview of all projects
@@ -173,7 +161,7 @@ public class OverviewView
                }
             }
          }
-      } );
+      });
 
       new RefreshWhenShowing(this, model);
    }

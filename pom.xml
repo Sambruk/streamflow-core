@@ -32,6 +32,7 @@
 
     <modules>
         <module>common</module>
+        <module>streamflow-surface-api</module>
         <module>infrastructure</module>
         <module>fileconfig</module>
         <module>dci</module>

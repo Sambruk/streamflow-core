@@ -139,7 +139,7 @@ public enum WorkspaceResources
    OPEN,
    ON_HOLD,
    choose_date, CLOSED,
-   
+
    // Conversation
    sender_column_header,
    message_column_header, change_perspective_title, selected_projects, no_casetype, no_assignee, no_project, search_period

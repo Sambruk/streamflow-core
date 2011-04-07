@@ -25,17 +25,17 @@ import se.streamsource.streamflow.web.context.workspace.InboxContext;
  * JAVADOC
  */
 public class WorkspaceProjectResource
-      extends CommandQueryResource
+        extends CommandQueryResource
 {
    @SubResource
    public void inbox()
    {
-      subResourceContexts( InboxContext.class );
+      subResourceContexts(InboxContext.class);
    }
 
    @SubResource
    public void assignments()
    {
-      subResourceContexts( AssignmentsContext.class );
+      subResourceContexts(AssignmentsContext.class);
    }
 }

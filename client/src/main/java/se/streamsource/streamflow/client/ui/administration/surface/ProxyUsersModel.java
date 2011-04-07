@@ -23,6 +23,7 @@ import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
+import org.restlet.data.Form;
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.StringValue;
@@ -70,9 +71,11 @@ public class ProxyUsersModel
       }
    }
 
-   public void changeEnabled( ProxyUserDTO proxyUser )
+   public void changeEnabled( ProxyUserDTO proxyUser, boolean enabled )
    {
-      client.getSubClient( proxyUser.username().get() ).postCommand( "changeenabled" );
+      Form form = new Form();
+      form.set("enabled", Boolean.toString(enabled));
+      client.getSubClient( proxyUser.username().get() ).postCommand( "changeenabled", form.getWebRepresentation() );
    }
 
    public void resetPassword( ProxyUserDTO proxyUser, String password )

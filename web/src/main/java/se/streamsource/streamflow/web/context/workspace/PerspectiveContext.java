@@ -29,20 +29,20 @@ import se.streamsource.streamflow.web.domain.structure.caze.Case;
 
 import java.util.Collections;
 
-import static se.streamsource.dci.api.RoleMap.*;
+import static se.streamsource.dci.api.RoleMap.role;
 
 /**
  * JAVADOC
  */
 public class PerspectiveContext
-      implements DeleteContext, IndexContext<PerspectiveValue>
+        implements DeleteContext, IndexContext<PerspectiveValue>
 {
    public void delete() throws ResourceException
    {
-      role( Perspectives.class ).removePerspective( RoleMap.role( Perspective.class ) );
+      role(Perspectives.class).removePerspective(RoleMap.role(Perspective.class));
    }
 
-   public Iterable<Case> cases( TableQuery tableQuery)
+   public Iterable<Case> cases(TableQuery tableQuery)
    {
       //TODO Should delegate to corresponding context
       // Might be necessary to build up where clause including perspective filter before delegation
@@ -64,6 +64,6 @@ public class PerspectiveContext
 
    public PerspectiveValue index()
    {
-      return role( Perspective.Data.class).perspective().get();
+      return role(Perspective.Data.class).perspective().get();
    }
 }

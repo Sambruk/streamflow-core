@@ -23,6 +23,7 @@ import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResources;
 import se.streamsource.streamflow.web.context.surface.accesspoints.AccessPointsContext;
 import se.streamsource.streamflow.web.domain.entity.organization.AccessPointEntity;
+import se.streamsource.streamflow.web.domain.structure.form.SelectedForms;
 import se.streamsource.streamflow.web.domain.structure.organization.AccessPoints;
 import se.streamsource.streamflow.web.domain.structure.user.ProxyUser;
 
@@ -44,7 +45,7 @@ public class AccessPointsResource
 
       AccessPoints.Data data = (AccessPoints.Data) proxyUser.organization().get();
 
-      AccessPointEntity ap = (AccessPointEntity) findManyAssociation( data.accessPoints(), segment );
+      SelectedForms.Data ap = (SelectedForms.Data) findManyAssociation( data.accessPoints(), segment );
       if (ap.selectedForms().count() == 0)
          throw new ResourceException( Status.CLIENT_ERROR_NOT_FOUND ); // Not valid AccessPoint
 

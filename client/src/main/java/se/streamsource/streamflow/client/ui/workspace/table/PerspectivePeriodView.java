@@ -25,18 +25,15 @@ import se.streamsource.streamflow.client.Icons;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 
-import javax.swing.BorderFactory;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.JList;
-import javax.swing.JPanel;
+import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import java.awt.BorderLayout;
-import java.awt.Component;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import static se.streamsource.streamflow.client.util.i18n.*;
+import static se.streamsource.streamflow.client.util.i18n.icon;
+import static se.streamsource.streamflow.client.util.i18n.text;
 
 /**
  * This view shows a date picker combined with a period list.
@@ -44,7 +41,7 @@ import static se.streamsource.streamflow.client.util.i18n.*;
  * will be today minus period.
  */
 public class PerspectivePeriodView
-      extends JPanel
+        extends JPanel
 {
    @Service
    DialogService dialogs;
@@ -52,95 +49,95 @@ public class PerspectivePeriodView
    boolean isCreationDate;
    PerspectivePeriodModel model;
 
-   public void initView( @Uses final PerspectivePeriodModel model )
+   public void initView(@Uses final PerspectivePeriodModel model)
    {
-      setLayout( new BorderLayout() );
+      setLayout(new BorderLayout());
       this.model = model;
 
       final JXTextField dateField = new JXTextField();
-      dateField.setBorder( BorderFactory.createTitledBorder( text( WorkspaceResources.search_period ) ) );
-      dateField.setEditable( false );
-      dateField.setText( model.getSearchValue( text( WorkspaceResources.date_format ),
-               " " + text( WorkspaceResources.date_separator ) + " " ) );
+      dateField.setBorder(BorderFactory.createTitledBorder(text(WorkspaceResources.search_period)));
+      dateField.setEditable(false);
+      dateField.setText(model.getSearchValue(text(WorkspaceResources.date_format),
+              " " + text(WorkspaceResources.date_separator) + " "));
 
       final JXMonthView monthView = new JXMonthView();
-      monthView.setTraversable( true );
+      monthView.setTraversable(true);
 
       if (model.getDate() != null)
       {
-         monthView.setSelectionDate( model.getDate() );
-         monthView.ensureDateVisible( model.getDate() );
+         monthView.setSelectionDate(model.getDate());
+         monthView.ensureDateVisible(model.getDate());
       }
 
-      final JList list = new JList( Period.values() );
+      final JList list = new JList(Period.values());
 
-      list.setSelectedValue( model.getPeriod(), true );
-      list.setCellRenderer( new DefaultListCellRenderer()
+      list.setSelectedValue(model.getPeriod(), true);
+      list.setCellRenderer(new DefaultListCellRenderer()
       {
 
          @Override
-         public Component getListCellRendererComponent( JList list, Object value, int index, boolean isSelected,
-                                                        boolean cellHasFocus )
+         public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected,
+                                                       boolean cellHasFocus)
          {
-            setFont( list.getFont() );
-            setBackground( list.getBackground() );
-            setForeground( list.getForeground() );
-            if (value.equals( model.getPeriod() ))
+            setFont(list.getFont());
+            setBackground(list.getBackground());
+            setForeground(list.getForeground());
+            if (value.equals(model.getPeriod()))
             {
-               setIcon( icon( Icons.check, 12 ) );
-               setBorder( BorderFactory.createEmptyBorder( 4, 0, 0, 0 ) );
+               setIcon(icon(Icons.check, 12));
+               setBorder(BorderFactory.createEmptyBorder(4, 0, 0, 0));
             } else
             {
 
-               setIcon( null );
-               setBorder( BorderFactory.createEmptyBorder( 4, 16, 0, 0 ) );
+               setIcon(null);
+               setBorder(BorderFactory.createEmptyBorder(4, 16, 0, 0));
             }
-            setText( text( (Period) value ) );
+            setText(text((Period) value));
             return this;
          }
-      } );
+      });
 
-      list.addListSelectionListener( new ListSelectionListener()
+      list.addListSelectionListener(new ListSelectionListener()
       {
 
-         public void valueChanged( ListSelectionEvent event )
+         public void valueChanged(ListSelectionEvent event)
          {
             if (!event.getValueIsAdjusting())
             {
-               model.setPeriod( (Period) list.getSelectedValue() );
-               if (model.getPeriod().equals( Period.none ))
+               model.setPeriod((Period) list.getSelectedValue());
+               if (model.getPeriod().equals(Period.none))
                {
                   monthView.clearSelection();
-                  model.setDate( null );
+                  model.setDate(null);
                } else
                {
-                  model.setPeriod( (Period) list.getSelectedValue() );
+                  model.setPeriod((Period) list.getSelectedValue());
                }
-               dateField.setText( model.getSearchValue( text( WorkspaceResources.date_format ),
-                        " " + text( WorkspaceResources.date_separator ) + " " ) );
+               dateField.setText(model.getSearchValue(text(WorkspaceResources.date_format),
+                       " " + text(WorkspaceResources.date_separator) + " "));
 
             }
          }
-      } );
-      add( list, BorderLayout.WEST );
+      });
+      add(list, BorderLayout.WEST);
 
-      JPanel datePicker = new JPanel( new BorderLayout() );
-      datePicker.setBorder( BorderFactory.createEmptyBorder( 0, 5, 0, 0 ) );
+      JPanel datePicker = new JPanel(new BorderLayout());
+      datePicker.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
 
-      monthView.addActionListener( new ActionListener()
+      monthView.addActionListener(new ActionListener()
       {
-         public void actionPerformed( ActionEvent e )
+         public void actionPerformed(ActionEvent e)
          {
-            model.setDate( monthView.getSelectionDate() );
-            dateField.setText( model.getSearchValue( text( WorkspaceResources.date_format ),
-                  " " + text( WorkspaceResources.date_separator ) + " " ) );
+            model.setDate(monthView.getSelectionDate());
+            dateField.setText(model.getSearchValue(text(WorkspaceResources.date_format),
+                    " " + text(WorkspaceResources.date_separator) + " "));
          }
-      } );
+      });
 
-      add( dateField, BorderLayout.NORTH );
+      add(dateField, BorderLayout.NORTH);
 
-      datePicker.add( monthView, BorderLayout.CENTER );
+      datePicker.add(monthView, BorderLayout.CENTER);
 
-      add( datePicker, BorderLayout.EAST );
+      add(datePicker, BorderLayout.EAST);
    }
 }

@@ -24,11 +24,11 @@ import se.streamsource.streamflow.web.context.workspace.DraftsContext;
  * JAVADOC
  */
 public class WorkspaceDraftsResource
-      extends CommandQueryResource
+        extends CommandQueryResource
 {
    @SubResource
    public void drafts()
    {
-      subResourceContexts( DraftsContext.class );
+      subResourceContexts(DraftsContext.class);
    }
 }

@@ -56,8 +56,8 @@ import static org.qi4j.api.common.Visibility.application;
  */
 public class DomainAssembler
 {
-   public void assemble( LayerAssembly layer )
-         throws AssemblyException
+   public void assemble(LayerAssembly layer)
+           throws AssemblyException
    {
       new CommonDomainAssembler().assemble( layer );
       new CommonResourceAssembler().assemble( layer.module("Common") );
@@ -75,20 +75,20 @@ public class DomainAssembler
       attachments( layer.module("Attachments") );
    }
 
-   private void attachments( ModuleAssembly module ) throws AssemblyException
+   private void attachments(ModuleAssembly module) throws AssemblyException
    {
       module.entities(AttachmentEntity.class).visibleIn( application );
       module.values(AttachedFileValue.class).visibleIn( application );
    }
 
-   private void users( ModuleAssembly module ) throws AssemblyException
+   private void users(ModuleAssembly module) throws AssemblyException
    {
-      module.entities( UsersEntity.class, UserEntity.class, EmailUserEntity.class, ProxyUserEntity.class, AnonymousEndUserEntity.class,
+      module.entities( UsersEntity.class, UserEntity.class, EmailUserEntity.class, ProxyUserEntity.class, EndUserEntity.class,
             PerspectiveEntity.class ).visibleIn( application );
 
       NamedQueries namedQueries = new NamedQueries();
-      NamedQueryDescriptor queryDescriptor = new NamedSolrDescriptor( "solrquery", "" );
-      namedQueries.addQuery( queryDescriptor );
+      NamedQueryDescriptor queryDescriptor = new NamedSolrDescriptor("solrquery", "");
+      namedQueries.addQuery(queryDescriptor);
 
       module.importedServices(NamedEntityFinder.class).
             importedBy( ServiceSelectorImporter.class ).
@@ -96,22 +96,22 @@ public class DomainAssembler
             setMetaInfo( namedQueries );
    }
 
-   private void caseTypes( ModuleAssembly module ) throws AssemblyException
+   private void caseTypes(ModuleAssembly module) throws AssemblyException
    {
       module.entities(CaseTypeEntity.class, ResolutionEntity.class).visibleIn( Visibility.application );
    }
 
-   private void cases( ModuleAssembly module ) throws AssemblyException
+   private void cases(ModuleAssembly module) throws AssemblyException
    {
       module.entities(CaseEntity.class).visibleIn( Visibility.application );
    }
 
-   private void roles( ModuleAssembly module ) throws AssemblyException
+   private void roles(ModuleAssembly module) throws AssemblyException
    {
       module.entities(RoleEntity.class).visibleIn( Visibility.application );
    }
 
-   private void projects( ModuleAssembly module ) throws AssemblyException
+   private void projects(ModuleAssembly module) throws AssemblyException
    {
       module.entities(
               ProjectRoleEntity.class,
@@ -120,24 +120,24 @@ public class DomainAssembler
       module.values(PermissionValue.class).visibleIn( application );
    }
 
-   private void organizations( ModuleAssembly module ) throws AssemblyException
+   private void organizations(ModuleAssembly module) throws AssemblyException
    {
       module.entities(OrganizationsEntity.class, OrganizationEntity.class,
               OrganizationalUnitEntity.class, AccessPointEntity.class, EmailAccessPointEntity.class).visibleIn( application );
       module.values(ParticipantRolesValue.class).visibleIn( Visibility.application );
    }
 
-   private void labels( ModuleAssembly module ) throws AssemblyException
+   private void labels(ModuleAssembly module) throws AssemblyException
    {
       module.entities(LabelEntity.class).visibleIn( application );
    }
 
-   private void groups( ModuleAssembly module ) throws AssemblyException
+   private void groups(ModuleAssembly module) throws AssemblyException
    {
       module.entities(GroupEntity.class).visibleIn( application );
    }
 
-   private void forms( ModuleAssembly module ) throws AssemblyException
+   private void forms(ModuleAssembly module) throws AssemblyException
    {
       module.entities(
               FormEntity.class,
@@ -147,7 +147,7 @@ public class DomainAssembler
       ).visibleIn(Visibility.application);
    }
 
-   private void conversations( ModuleAssembly module ) throws AssemblyException
+   private void conversations(ModuleAssembly module) throws AssemblyException
    {
       module.entities(
               ConversationEntity.class,

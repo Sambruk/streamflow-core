@@ -38,7 +38,8 @@ import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
 
-import static org.qi4j.api.query.QueryExpressions.*;
+import static org.qi4j.api.query.QueryExpressions.orderBy;
+import static org.qi4j.api.query.QueryExpressions.templateFor;
 
 /**
  * JAVADOC
@@ -64,9 +65,9 @@ public interface AssignmentsContext
 
          AssignmentsQueries assignments = RoleMap.role(AssignmentsQueries.class);
 
-         QueryBuilder<Case> builder = assignments.assignments( RoleMap.role( Assignee.class ), tableQuery.where() );
+         QueryBuilder<Case> builder = assignments.assignments(RoleMap.role(Assignee.class), tableQuery.where());
 
-         Query<Case> query = builder.newQuery( module.unitOfWorkFactory().currentUnitOfWork() ).orderBy( orderBy( templateFor( CreatedOn.class ).createdOn() ) );
+         Query<Case> query = builder.newQuery(module.unitOfWorkFactory().currentUnitOfWork()).orderBy(orderBy(templateFor(CreatedOn.class).createdOn()));
 
          // Paging
          if (tableQuery.offset() != null)
@@ -74,23 +75,23 @@ public interface AssignmentsContext
          if (tableQuery.limit() != null)
             query.maxResults(Integer.parseInt(tableQuery.limit()));
 
-        if (tableQuery.orderBy() != null)
+         if (tableQuery.orderBy() != null)
          {
-            String[] orderByValue = tableQuery.orderBy().split( " " );
-            OrderBy.Order order = orderByValue[1].equals( "asc" ) ? OrderBy.Order.ASCENDING : OrderBy.Order.DESCENDING;
+            String[] orderByValue = tableQuery.orderBy().split(" ");
+            OrderBy.Order order = orderByValue[1].equals("asc") ? OrderBy.Order.ASCENDING : OrderBy.Order.DESCENDING;
 
-            if (tableQuery.orderBy().equals( "status" ))
+            if (tableQuery.orderBy().equals("status"))
             {
-               query.orderBy( QueryExpressions.orderBy( QueryExpressions.templateFor( Status.Data.class ).status(), order ) );
-            } else if (orderByValue[0].equals( "description" ))
+               query.orderBy(QueryExpressions.orderBy(QueryExpressions.templateFor(Status.Data.class).status(), order));
+            } else if (orderByValue[0].equals("description"))
             {
-               query.orderBy( QueryExpressions.orderBy( QueryExpressions.templateFor( Describable.Data.class ).description(), order ) );
-            } else if (orderByValue[0].equals( "dueOn" ))
+               query.orderBy(QueryExpressions.orderBy(QueryExpressions.templateFor(Describable.Data.class).description(), order));
+            } else if (orderByValue[0].equals("dueOn"))
             {
-               query.orderBy( QueryExpressions.orderBy( QueryExpressions.templateFor( DueOn.Data.class ).dueOn(), order ) );
-            } else if (orderByValue[0].equals( "createdOn" ))
+               query.orderBy(QueryExpressions.orderBy(QueryExpressions.templateFor(DueOn.Data.class).dueOn(), order));
+            } else if (orderByValue[0].equals("createdOn"))
             {
-               query.orderBy( QueryExpressions.orderBy( QueryExpressions.templateFor( CreatedOn.class ).createdOn(), order ) );
+               query.orderBy(QueryExpressions.orderBy(QueryExpressions.templateFor(CreatedOn.class).createdOn(), order));
             }
          }
          return query;

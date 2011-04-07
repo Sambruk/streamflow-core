@@ -20,19 +20,14 @@ import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.property.Property;
 import org.qi4j.api.value.ValueComposite;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Query value for Google Data queries.
  */
 @Mixins(TableQuery.Mixin.class)
 public interface TableQuery
-   extends ValueComposite
+        extends ValueComposite
 {
    Property<String> tq();
 
@@ -55,11 +50,11 @@ public interface TableQuery
    public String options();
 
    abstract class Mixin
-      implements TableQuery
+           implements TableQuery
    {
-      private static Collection<String> keywords = Arrays.asList("select","where","group by", "pivot", "order by", "limit", "offset", "label", "options");
+      private static Collection<String> keywords = Arrays.asList("select", "where", "group by", "pivot", "order by", "limit", "offset", "label", "options");
 
-      private Map<String,String> parts;
+      private Map<String, String> parts;
 
       public String select()
       {
@@ -106,14 +101,14 @@ public interface TableQuery
          return getParts().get("options");
       }
 
-      private Map<String,String> getParts()
+      private Map<String, String> getParts()
       {
          if (parts == null)
          {
-            parts = new HashMap<String,String>();
+            parts = new HashMap<String, String>();
 
             String value = tq().get();
-            List<String> values = Arrays.asList(value.split( " " ));
+            List<String> values = Arrays.asList(value.split(" "));
             Collections.reverse(values);
             String currentPhrase = "";
             for (String str : values)
@@ -125,12 +120,12 @@ public interface TableQuery
                   if (currentPhrase.startsWith(keyword + " "))
                   {
                      found = true;
-                     parts.put( keyword, currentPhrase.substring(keyword.length() +1));
+                     parts.put(keyword, currentPhrase.substring(keyword.length() + 1));
                      currentPhrase = "";
                      break;
                   }
                }
-               
+
                if (!found)
                   currentPhrase = " " + currentPhrase;
             }

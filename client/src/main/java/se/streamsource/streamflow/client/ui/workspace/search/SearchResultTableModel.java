@@ -35,19 +35,19 @@ import java.util.Collections;
  * Model for search results
  */
 public class SearchResultTableModel
-      extends CasesTableModel
+        extends CasesTableModel
 {
    @Structure
    ValueBuilderFactory vbf;
 
    private String searchString;
 
-   public SearchResultTableModel(@Structure ObjectBuilderFactory obf )
+   public SearchResultTableModel(@Structure ObjectBuilderFactory obf)
    {
-      super( obf );
+      super(obf);
    }
 
-   public void search( String text )
+   public void search(String text)
    {
       searchString = text;
 
@@ -59,7 +59,7 @@ public class SearchResultTableModel
    {
       if (searchString != null)
       {
-         new Task<TableValue, Void>( Application.getInstance(  ))
+         new Task<TableValue, Void>(Application.getInstance())
          {
             @Override
             protected TableValue doInBackground() throws Exception
@@ -68,14 +68,14 @@ public class SearchResultTableModel
             }
 
             @Override
-            protected void succeeded( TableValue result )
+            protected void succeeded(TableValue result)
             {
-               EventListSynch.synchronize( Collections.<CaseTableValue>emptyList(), eventList );
-               EventListSynch.synchronize( caseTableValues( result ), eventList );
+               EventListSynch.synchronize(Collections.<CaseTableValue>emptyList(), eventList);
+               EventListSynch.synchronize(caseTableValues(result), eventList);
             }
 
             @Override
-            protected void failed( Throwable cause )
+            protected void failed(Throwable cause)
             {
                throw (RuntimeException) cause;
             }
@@ -88,18 +88,18 @@ public class SearchResultTableModel
 
    private TableValue performSearch()
    {
-      String translatedQuery = SearchTerms.translate( searchString );
+      String translatedQuery = SearchTerms.translate(searchString);
 
       translatedQuery += addWhereClauseFromFilter();
-      
-      ValueBuilder<TableQuery> builder = vbf.newValueBuilder( TableQuery.class );
+
+      ValueBuilder<TableQuery> builder = vbf.newValueBuilder(TableQuery.class);
       String query = "select * where " + translatedQuery;
 
       query += addSortingFromFilter();
 
       query += " limit 1000";
-      builder.prototype().tq().set( query );
+      builder.prototype().tq().set(query);
 
-      return client.query( "cases", builder.newInstance(), TableValue.class );
+      return client.query("cases", builder.newInstance(), TableValue.class);
    }
 }

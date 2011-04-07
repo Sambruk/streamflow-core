@@ -37,39 +37,15 @@ import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.MacOsUIWrapper;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
 import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.PossibleFormsView;
-import se.streamsource.streamflow.client.util.ActionBinder;
-import se.streamsource.streamflow.client.util.CommandTask;
-import se.streamsource.streamflow.client.util.RefreshComponents;
-import se.streamsource.streamflow.client.util.RefreshWhenShowing;
-import se.streamsource.streamflow.client.util.Refreshable;
-import se.streamsource.streamflow.client.util.UncaughtExceptionHandler;
-import se.streamsource.streamflow.client.util.ValueBinder;
+import se.streamsource.streamflow.client.util.*;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
-import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 
-import javax.swing.ActionMap;
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.KeyStroke;
-import javax.swing.LayoutFocusTraversalPolicy;
-import javax.swing.SwingConstants;
+import javax.swing.*;
 import javax.swing.text.DefaultFormatterFactory;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Insets;
-import java.awt.KeyboardFocusManager;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -82,9 +58,11 @@ import java.util.Date;
 import java.util.TimeZone;
 
 import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.*;
-import static se.streamsource.streamflow.client.util.i18n.*;
-import static se.streamsource.streamflow.domain.interaction.gtd.CaseStates.*;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
+import static se.streamsource.streamflow.client.util.i18n.text;
+import static se.streamsource.streamflow.domain.interaction.gtd.CaseStates.DRAFT;
+import static se.streamsource.streamflow.domain.interaction.gtd.CaseStates.OPEN;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.matches;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withNames;
 
 /**
  * JAVADOC
@@ -117,159 +95,159 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
    private JButton labelButton;
    private final ApplicationContext appContext;
 
-   public CaseGeneralView( @Service ApplicationContext appContext,
-                           @Uses CommandQueryClient client,
-                           @Structure ObjectBuilderFactory obf )
+   public CaseGeneralView(@Service ApplicationContext appContext,
+                          @Uses CommandQueryClient client,
+                          @Structure ObjectBuilderFactory obf)
    {
       this.appContext = appContext;
-      this.model = obf.newObjectBuilder( CaseGeneralModel.class ).use( client ).newInstance();
+      this.model = obf.newObjectBuilder(CaseGeneralModel.class).use(client).newInstance();
       RefreshComponents refreshComponents = new RefreshComponents();
-      model.addObserver( refreshComponents );
+      model.addObserver(refreshComponents);
 
-      this.labels = obf.newObjectBuilder( CaseLabelsView.class ).use( client.getSubClient( "labels" ) ).newInstance();
+      this.labels = obf.newObjectBuilder(CaseLabelsView.class).use(client.getSubClient("labels")).newInstance();
 
       RefreshComponents refreshLabelComponents = new RefreshComponents();
-      labels.getModel().addObserver( refreshLabelComponents );
+      labels.getModel().addObserver(refreshLabelComponents);
 
-      this.forms = obf.newObjectBuilder( PossibleFormsView.class ).use( client.getClient( "../possibleforms/" ) ).newInstance();
-      refreshComponents.visibleOn( "changedescription", forms );
-      this.setBorder( BorderFactory.createEmptyBorder() );
-      getVerticalScrollBar().setUnitIncrement( 30 );
+      this.forms = obf.newObjectBuilder(PossibleFormsView.class).use(client.getClient("../possibleforms/")).newInstance();
+      refreshComponents.visibleOn("changedescription", forms);
+      this.setBorder(BorderFactory.createEmptyBorder());
+      getVerticalScrollBar().setUnitIncrement(30);
 
-      setActionMap( appContext.getActionMap( this ) );
+      setActionMap(appContext.getActionMap(this));
       ActionMap am = getActionMap();
-      MacOsUIWrapper.convertAccelerators( appContext.getActionMap(
-            CaseGeneralView.class, this ) );
+      MacOsUIWrapper.convertAccelerators(appContext.getActionMap(
+              CaseGeneralView.class, this));
 
-      actionBinder = obf.newObjectBuilder( ActionBinder.class ).use( am ).newInstance();
-      valueBinder = obf.newObject( ValueBinder.class );
-      actionBinder.setResourceMap( appContext.getResourceMap( getClass() ) );
+      actionBinder = obf.newObjectBuilder(ActionBinder.class).use(am).newInstance();
+      valueBinder = obf.newObject(ValueBinder.class);
+      actionBinder.setResourceMap(appContext.getResourceMap(getClass()));
 
       // Layout and form for the right panel
-      FormLayout rightLayout = new FormLayout( "70dlu, 2dlu, 200:grow", "pref, pref, pref, pref, 20dlu, pref, pref" );
+      FormLayout rightLayout = new FormLayout("70dlu, 2dlu, 200:grow", "pref, pref, pref, pref, 20dlu, pref, pref");
 
-      rightForm = new JPanel( rightLayout );
-      rightForm.setFocusable( false );
-      DefaultFormBuilder rightBuilder = new DefaultFormBuilder( rightLayout,
-            rightForm );
-      rightBuilder.setBorder( Borders.createEmptyBorder( Sizes.DLUY2,
-            Sizes.DLUX2, Sizes.DLUY2, Sizes.DLUX2 ) );
+      rightForm = new JPanel(rightLayout);
+      rightForm.setFocusable(false);
+      DefaultFormBuilder rightBuilder = new DefaultFormBuilder(rightLayout,
+              rightForm);
+      rightBuilder.setBorder(Borders.createEmptyBorder(Sizes.DLUY2,
+              Sizes.DLUX2, Sizes.DLUY2, Sizes.DLUX2));
 
-      selectedCaseType.setFont( selectedCaseType.getFont().deriveFont(
-            Font.BOLD ) );
-      selectedCaseType.getButton().addActionListener(am.get("removeCaseType" ));
-      valueBinder.bind( "caseType", selectedCaseType );
+      selectedCaseType.setFont(selectedCaseType.getFont().deriveFont(
+              Font.BOLD));
+      selectedCaseType.getButton().addActionListener(am.get("removeCaseType"));
+      valueBinder.bind("caseType", selectedCaseType);
 
       // Description
-      rightBuilder.setExtent( 1, 1 );
-      JLabel descriptionLabel = rightBuilder.append(i18n.text( WorkspaceResources.description_label ));
-      descriptionLabel.setBorder( BorderFactory.createEmptyBorder( 0, 2, 0, 0 ) );
+      rightBuilder.setExtent(1, 1);
+      JLabel descriptionLabel = rightBuilder.append(i18n.text(WorkspaceResources.description_label));
+      descriptionLabel.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0));
       rightBuilder.nextLine();
-      rightBuilder.setExtent( 3, 1 );
-      rightBuilder.add( valueBinder.bind( "description", actionBinder.bind( "changeDescription", descriptionField = (JTextField) TEXTFIELD.newField() ) ) );
+      rightBuilder.setExtent(3, 1);
+      rightBuilder.add(valueBinder.bind("description", actionBinder.bind("changeDescription", descriptionField = (JTextField) TEXTFIELD.newField())));
       descriptionField.setName("txtCaseDescription");
       rightBuilder.nextLine();
-      descriptionLabel.setLabelFor( descriptionField );
-      refreshComponents.enabledOn( "changedescription", descriptionField );
+      descriptionLabel.setLabelFor(descriptionField);
+      refreshComponents.enabledOn("changedescription", descriptionField);
 
       // Select case type
-      javax.swing.Action caseTypeAction = am.get( "changeCaseType" );
-      caseTypeButton = new JButton( caseTypeAction );
-      caseTypeButton.registerKeyboardAction( caseTypeAction, (KeyStroke) caseTypeAction
-            .getValue( javax.swing.Action.ACCELERATOR_KEY ),
-            JComponent.WHEN_IN_FOCUSED_WINDOW );
-      caseTypeButton.setHorizontalAlignment( SwingConstants.LEFT );
-      refreshComponents.enabledOn( "casetype", caseTypeButton, selectedCaseType );
+      javax.swing.Action caseTypeAction = am.get("changeCaseType");
+      caseTypeButton = new JButton(caseTypeAction);
+      caseTypeButton.registerKeyboardAction(caseTypeAction, (KeyStroke) caseTypeAction
+              .getValue(javax.swing.Action.ACCELERATOR_KEY),
+              JComponent.WHEN_IN_FOCUSED_WINDOW);
+      caseTypeButton.setHorizontalAlignment(SwingConstants.LEFT);
+      refreshComponents.enabledOn("casetype", caseTypeButton, selectedCaseType);
 
-      rightBuilder.add( caseTypeButton,
-            new CellConstraints( 1, 3, 1, 1, CellConstraints.FILL, CellConstraints.TOP, new Insets( 2, 0, 5, 0 ) ) );
-      rightBuilder.add( selectedCaseType,
-            new CellConstraints( 3, 3, 1, 1, CellConstraints.LEFT, CellConstraints.BOTTOM, new Insets( 5, 0, 0, 0 ) ) );
+      rightBuilder.add(caseTypeButton,
+              new CellConstraints(1, 3, 1, 1, CellConstraints.FILL, CellConstraints.TOP, new Insets(2, 0, 5, 0)));
+      rightBuilder.add(selectedCaseType,
+              new CellConstraints(3, 3, 1, 1, CellConstraints.LEFT, CellConstraints.BOTTOM, new Insets(5, 0, 0, 0)));
 
       rightBuilder.nextLine();
 
       // Select labels
-      javax.swing.Action labelAction = labels.getActionMap().get( "addLabel" );
-      labelButton = new JButton( labelAction );
+      javax.swing.Action labelAction = labels.getActionMap().get("addLabel");
+      labelButton = new JButton(labelAction);
 //		NotificationGlassPane.registerButton(labelButton);
-      labelButton.registerKeyboardAction( labelAction, (KeyStroke) labelAction
-            .getValue( javax.swing.Action.ACCELERATOR_KEY ),
-            JComponent.WHEN_IN_FOCUSED_WINDOW );
+      labelButton.registerKeyboardAction(labelAction, (KeyStroke) labelAction
+              .getValue(javax.swing.Action.ACCELERATOR_KEY),
+              JComponent.WHEN_IN_FOCUSED_WINDOW);
 
-      labelButton.setHorizontalAlignment( SwingConstants.LEFT );
-      labelButton.addActionListener( new ActionListener()
+      labelButton.setHorizontalAlignment(SwingConstants.LEFT);
+      labelButton.addActionListener(new ActionListener()
       {
 
-         public void actionPerformed( ActionEvent e )
+         public void actionPerformed(ActionEvent e)
          {
             labelButton.requestFocusInWindow();
          }
-      } );
-      labels.setButtonRelation( labelButton );
-      refreshLabelComponents.enabledOn( "addlabel", labelButton, labels );
-      
-      rightBuilder.add( labelButton,
-            new CellConstraints( 1, 4, 1, 1, CellConstraints.FILL, CellConstraints.TOP, new Insets( 5, 0, 0, 0 ) ) );
+      });
+      labels.setButtonRelation(labelButton);
+      refreshLabelComponents.enabledOn("addlabel", labelButton, labels);
 
-      labels.setPreferredSize( new Dimension( 500, 80 ) );
-      rightBuilder.add( labels,
-            new CellConstraints( 3, 4, 1, 1, CellConstraints.LEFT, CellConstraints.TOP, new Insets( 5, 0, 0, 0 ) ) );
+      rightBuilder.add(labelButton,
+              new CellConstraints(1, 4, 1, 1, CellConstraints.FILL, CellConstraints.TOP, new Insets(5, 0, 0, 0)));
+
+      labels.setPreferredSize(new Dimension(500, 80));
+      rightBuilder.add(labels,
+              new CellConstraints(3, 4, 1, 1, CellConstraints.LEFT, CellConstraints.TOP, new Insets(5, 0, 0, 0)));
       rightBuilder.nextLine();
 
       // Due date
-      rightBuilder.setExtent( 1, 1 );
-      rightBuilder.add( new JLabel( i18n.text( WorkspaceResources.due_on_label ) ),
-            new CellConstraints( 1, 5, 1, 1, CellConstraints.LEFT, CellConstraints.TOP, new Insets( 4, 2, 0, 0 ) ) );
+      rightBuilder.setExtent(1, 1);
+      rightBuilder.add(new JLabel(i18n.text(WorkspaceResources.due_on_label)),
+              new CellConstraints(1, 5, 1, 1, CellConstraints.LEFT, CellConstraints.TOP, new Insets(4, 2, 0, 0)));
       rightBuilder.nextColumn();
       rightBuilder.nextColumn();
-      rightBuilder.add( valueBinder.bind( "dueOn", actionBinder.bind( "changeDueOn", dueOnField = (JXDatePicker) DATEPICKER.newField() ) ),
-            new CellConstraints( 3, 5, 1, 1, CellConstraints.LEFT, CellConstraints.BOTTOM, new Insets( 4, 2, 0, 0 ) ) );
+      rightBuilder.add(valueBinder.bind("dueOn", actionBinder.bind("changeDueOn", dueOnField = (JXDatePicker) DATEPICKER.newField())),
+              new CellConstraints(3, 5, 1, 1, CellConstraints.LEFT, CellConstraints.BOTTOM, new Insets(4, 2, 0, 0)));
       rightBuilder.nextLine();
-      refreshComponents.enabledOn( "changedueon", dueOnField );
+      refreshComponents.enabledOn("changedueon", dueOnField);
 
 
       // Forms
-      JLabel formsLabel = new JLabel( i18n.text( WorkspaceResources.forms_label ) );
-      refreshComponents.visibleOn( "changedescription", formsLabel);
-      rightBuilder.add( formsLabel,
-            new CellConstraints( 1, 6, 1, 1, CellConstraints.LEFT, CellConstraints.TOP, new Insets( 5, 0, 0, 0 ) ) );
+      JLabel formsLabel = new JLabel(i18n.text(WorkspaceResources.forms_label));
+      refreshComponents.visibleOn("changedescription", formsLabel);
+      rightBuilder.add(formsLabel,
+              new CellConstraints(1, 6, 1, 1, CellConstraints.LEFT, CellConstraints.TOP, new Insets(5, 0, 0, 0)));
 
-      rightBuilder.add( forms,
-            new CellConstraints( 3, 6, 1, 1, CellConstraints.FILL, CellConstraints.FILL, new Insets( 5, 0, 0, 0 ) ) );
+      rightBuilder.add(forms,
+              new CellConstraints(3, 6, 1, 1, CellConstraints.FILL, CellConstraints.FILL, new Insets(5, 0, 0, 0)));
 
       // Limit pickable dates to future
       Calendar calendar = Calendar.getInstance();
-      calendar.setTime( new Date() );
-      calendar.add( Calendar.DAY_OF_MONTH, 1 );
-      dueOnField.getMonthView().setLowerBound( calendar.getTime() );
+      calendar.setTime(new Date());
+      calendar.add(Calendar.DAY_OF_MONTH, 1);
+      dueOnField.getMonthView().setLowerBound(calendar.getTime());
 
-      final DateFormat dateFormat = DateFormat.getDateInstance( DateFormat.SHORT );
-      dateFormat.setTimeZone( TimeZone.getTimeZone( "UTC" ) );
-      dueOnField.getEditor().setFormatterFactory( new DefaultFormatterFactory( new DatePickerFormatter( new DateFormat[]{dateFormat} )
+      final DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.SHORT);
+      dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+      dueOnField.getEditor().setFormatterFactory(new DefaultFormatterFactory(new DatePickerFormatter(new DateFormat[]{dateFormat})
       {
 
          @Override
-         public Object stringToValue( String text ) throws ParseException
+         public Object stringToValue(String text) throws ParseException
          {
             Object result;
             try
             {
-               result = super.stringToValue( text );
+               result = super.stringToValue(text);
             } catch (ParseException pe)
             {
-               dialogs.showMessageDialog( dueOnField,
-                     text( WorkspaceResources.wrong_format_msg ) + " " + ((SimpleDateFormat) dateFormat).toPattern(),
-                     text( WorkspaceResources.wrong_format_title ) );
+               dialogs.showMessageDialog(dueOnField,
+                       text(WorkspaceResources.wrong_format_msg) + " " + ((SimpleDateFormat) dateFormat).toPattern(),
+                       text(WorkspaceResources.wrong_format_title));
                throw pe;
             }
             return result;
          }
-      } ) );
+      }));
 
 
       // Layout and form for the bottom panel
-      FormLayout leftLayout = new FormLayout( "200dlu:grow",
-            "pref,fill:pref:grow" );
+      FormLayout leftLayout = new FormLayout("200dlu:grow",
+              "pref,fill:pref:grow");
 
       leftForm = Box.createVerticalBox();
 
@@ -278,16 +256,16 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
       notePane.setPreferredSize( new Dimension( 700, 300 ) );
       refreshComponents.enabledOn( "changenote", notePane.getViewport().getView() );
 
-      leftForm.add(new JLabel(i18n.text( WorkspaceResources.note_label ), JLabel.LEFT));
+      leftForm.add(new JLabel(i18n.text(WorkspaceResources.note_label), JLabel.LEFT));
       leftForm.add(notePane);
-      actionBinder.bind( "changeNote", notePane );
-      valueBinder.bind( "note", notePane );
-      
+      actionBinder.bind("changeNote", notePane);
+      valueBinder.bind("note", notePane);
+
       JPanel formsContainer = new JPanel();
-      formsContainer.setLayout( new BoxLayout(formsContainer, BoxLayout.X_AXIS) );
-      formsContainer.setBorder( Borders.createEmptyBorder( "2dlu, 2dlu, 2dlu, 2dlu" ) );
-      formsContainer.add( leftForm );
-      formsContainer.add( rightForm );
+      formsContainer.setLayout(new BoxLayout(formsContainer, BoxLayout.X_AXIS));
+      formsContainer.setBorder(Borders.createEmptyBorder("2dlu, 2dlu, 2dlu, 2dlu"));
+      formsContainer.add(leftForm);
+      formsContainer.add(rightForm);
 
 /*
       JPanel borderLayoutContainer = new JPanel( new BorderLayout() );
@@ -295,85 +273,85 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
       borderLayoutContainer.add( leftForm, BorderLayout.CENTER );
 */
 
-      setViewportView( formsContainer );
+      setViewportView(formsContainer);
 
-      setFocusTraversalPolicy( new LayoutFocusTraversalPolicy() );
-      setFocusCycleRoot( true );
-      setFocusable( true );
+      setFocusTraversalPolicy(new LayoutFocusTraversalPolicy());
+      setFocusCycleRoot(true);
+      setFocusable(true);
 
-      addFocusListener( new FocusListener()
+      addFocusListener(new FocusListener()
       {
-         public void focusGained( FocusEvent e )
+         public void focusGained(FocusEvent e)
          {
             Component defaultComp = getFocusTraversalPolicy()
-                  .getDefaultComponent( notePane );
+                    .getDefaultComponent(notePane);
             if (defaultComp != null)
             {
                defaultComp.requestFocusInWindow();
             }
          }
 
-         public void focusLost( FocusEvent e )
+         public void focusLost(FocusEvent e)
          {
          }
-      } );
+      });
 
-      notePane.getViewport().getView().setFocusTraversalKeys( KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, null );
-      notePane.getViewport().getView().setFocusTraversalKeys( KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, null );
+      notePane.getViewport().getView().setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, null);
+      notePane.getViewport().getView().setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, null);
 
-      new RefreshWhenShowing( this, this );
+      new RefreshWhenShowing(this, this);
    }
 
    public void refresh()
    {
       model.refresh();
 
-      boolean enabled = model.getCaseStatus().equals( DRAFT ) || model.getCaseStatus().equals( OPEN );
-      labelButton.setEnabled( enabled );
-      labels.setEnabled( enabled );
-      forms.setEnabled( enabled );
+      boolean enabled = model.getCaseStatus().equals(DRAFT) || model.getCaseStatus().equals(OPEN);
+      labelButton.setEnabled(enabled);
+      labels.setEnabled(enabled);
+      forms.setEnabled(enabled);
 
-      valueBinder.update( model.getGeneral() );
+      valueBinder.update(model.getGeneral());
    }
 
    @Action(block = Task.BlockingScope.COMPONENT)
-   public Task changeDescription( final ActionEvent event )
+   public Task changeDescription(final ActionEvent event)
    {
       return new CommandTask()
       {
          @Override
          public void command()
-               throws Exception
+                 throws Exception
          {
-            model.changeDescription( descriptionField.getText() );
+            model.changeDescription(descriptionField.getText());
          }
       };
    }
 
    @Action(block = Task.BlockingScope.COMPONENT)
-   public Task changeNote( final ActionEvent event )
+   public Task changeNote(final ActionEvent event)
    {
       return new CommandTask()
       {
          @Override
          public void command()
-               throws Exception
+                 throws Exception
          {
-            model.changeNote( ((JTextArea) event.getSource()).getText() );
+            model.changeNote(((JTextArea) event.getSource()).getText());
          }
       };
    }
 
    @Action(block = Task.BlockingScope.COMPONENT)
-   public Task changeDueOn( final ActionEvent event )
+   public Task changeDueOn(final ActionEvent event)
    {
       return new CommandTask()
       {
          @Override
          public void command()
-               throws Exception
+                 throws Exception
          {
-            model.changeDueOn( dueOnField.getDate() );
+            model.changeDueOn(dueOnField.getDate());
          }
       };
    }
@@ -382,11 +360,11 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
    public Task changeCaseType()
    {
       final SelectLinkDialog dialog = caseTypeDialog.use(
-            model.getPossibleCaseTypes() ).newInstance();
-      dialogs.showOkCancelHelpDialog( caseTypeButton, dialog, i18n.text( WorkspaceResources.choose_casetype ) );
+              model.getPossibleCaseTypes()).newInstance();
+      dialogs.showOkCancelHelpDialog(caseTypeButton, dialog, i18n.text(WorkspaceResources.choose_casetype));
 
       caseTypeButton.requestFocusInWindow();
-      
+
       if (dialog.getSelectedLink() != null)
       {
          return new CommandTask()
@@ -395,21 +373,21 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
             protected void command() throws Exception
             {
                LinkValue selected = dialog.getSelectedLink();
-               model.changeCaseType( selected );
+               model.changeCaseType(selected);
 
-               selectedCaseType.getLabel().setText( selected.text().get() );
+               selectedCaseType.getLabel().setText(selected.text().get());
 
                String labelQuery = dialog.getFilterField().getText();
                // if the query string has any match inside label descriptions
                // we do a search for that labels and add them to the case automatically
-               if (!"".equals( labelQuery ) && selected.classes().get().toLowerCase().indexOf( labelQuery.toLowerCase() ) != -1)
+               if (!"".equals(labelQuery) && selected.classes().get().toLowerCase().indexOf(labelQuery.toLowerCase()) != -1)
                {
                   EventList<LinkValue> possibleLabels = labels.getModel().getPossibleLabels();
                   for (LinkValue link : possibleLabels)
                   {
-                     if (link.text().get().toLowerCase().contains( labelQuery.toLowerCase() ))
+                     if (link.text().get().toLowerCase().contains(labelQuery.toLowerCase()))
                      {
-                        labels.getModel().addLabel( link );
+                        labels.getModel().addLabel(link);
                      }
                   }
                }
@@ -427,16 +405,16 @@ public class CaseGeneralView extends JScrollPane implements TransactionListener,
       {
          @Override
          public void command()
-               throws Exception
+                 throws Exception
          {
             model.removeCaseType();
          }
       };
    }
 
-   public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
+   public void notifyTransactions(Iterable<TransactionDomainEvents> transactions)
    {
-      if (matches( withNames( "addedLabel", "removedLabel", "changedOwner", "changedCaseType", "changedStatus" ), transactions ))
+      if (matches(withNames("addedLabel", "removedLabel", "changedOwner", "changedCaseType", "changedStatus"), transactions))
       {
          refresh();
       }

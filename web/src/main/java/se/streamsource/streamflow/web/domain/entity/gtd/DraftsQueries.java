@@ -35,12 +35,12 @@ import static org.qi4j.api.query.QueryExpressions.*;
 
 @Mixins(DraftsQueries.Mixin.class)
 public interface DraftsQueries
-   extends AbstractCaseQueriesFilter
+        extends AbstractCaseQueriesFilter
 {
-   QueryBuilder<Case> drafts( @Optional String filter);
+   QueryBuilder<Case> drafts(@Optional String filter);
 
    abstract class Mixin
-         implements DraftsQueries
+           implements DraftsQueries
    {
       @Structure
       QueryBuilderFactory qbf;
@@ -48,17 +48,17 @@ public interface DraftsQueries
       @This
       Creator creator;
 
-      public QueryBuilder<Case> drafts( String filter)
+      public QueryBuilder<Case> drafts(String filter)
       {
          // Find all Draft cases with specific creator which have not yet been opened
-         QueryBuilder<Case> queryBuilder = qbf.newQueryBuilder( Case.class );
-         Association<Creator> createdId = templateFor( CreatedOn.class ).createdBy();
-         queryBuilder = queryBuilder.where( and(
-               eq( createdId, creator ),
-               QueryExpressions.eq( templateFor( Status.Data.class ).status(), CaseStates.DRAFT ) ) );
+         QueryBuilder<Case> queryBuilder = qbf.newQueryBuilder(Case.class);
+         Association<Creator> createdId = templateFor(CreatedOn.class).createdBy();
+         queryBuilder = queryBuilder.where(and(
+                 eq(createdId, creator),
+                 QueryExpressions.eq(templateFor(Status.Data.class).status(), CaseStates.DRAFT)));
 
-         if( !Strings.empty( filter ) )
-            queryBuilder = applyFilter( queryBuilder, filter );
+         if (!Strings.empty(filter))
+            queryBuilder = applyFilter(queryBuilder, filter);
 
          return queryBuilder;
       }

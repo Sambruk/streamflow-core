@@ -15,17 +15,22 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.domain.structure.user;
+package se.streamsource.streamflow.surface.api;
 
-import se.streamsource.streamflow.domain.structure.Describable;
-import se.streamsource.streamflow.domain.structure.Removable;
-import se.streamsource.streamflow.web.domain.entity.gtd.Drafts;
-import se.streamsource.streamflow.web.domain.structure.created.Creator;
-import se.streamsource.streamflow.web.domain.structure.form.Submitter;
+import org.qi4j.api.property.Property;
+import org.qi4j.api.value.ValueComposite;
+
+import java.util.Date;
 
 /**
+ * Description of an open case
  */
-public interface AnonymousEndUser
-   extends Drafts, Submitter, Creator, Removable, Describable
+public interface OpenCaseDTO
+   extends ValueComposite
 {
+   Property<String> description();
+   Property<Date> creationDate();
+   Property<String> caseId();
+   Property<String> status();
+   Property<String> project();
 }

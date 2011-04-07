@@ -52,6 +52,19 @@ public interface History
 
    Conversation getHistory();
 
+   /**
+    * Get last message that corresponds to the given standard type.
+    *
+    * Example: The case has been closed, and so a message has been recorded for this:
+    * {closed}
+    *
+    * Calling getHistoryMessage("closed") will return this message.
+    *
+    * @param type of message
+    * @return the last message matching this type or null if none match
+    */
+   Message.Data getHistoryMessage(String type);
+
    EmailAccessPoint getOriginalEmailAccessPoint();
 
    interface Data
@@ -87,6 +100,18 @@ public interface History
             history = data.createdHistory( null, idgen.generate( ConversationEntity.class ) );
          }
          return history;
+      }
+
+      public Message.Data getHistoryMessage(String type)
+      {
+         Conversation conversation = getHistory();
+         Message.Data foundMessage = null;
+         for (Message message : ((Messages.Data) conversation).messages())
+         {
+            if (((Message.Data)message).body().get().startsWith("{"+type))
+               foundMessage = (Message.Data) message;
+         }
+         return foundMessage; // No messages match this
       }
 
       public void addHistoryComment(String comment, ConversationParticipant participant)

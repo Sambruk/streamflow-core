@@ -26,17 +26,17 @@ import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
  * JAVADOC
  */
 public class WorkspaceProjectsResource
-   extends CommandQueryResource
-      implements SubResources
+        extends CommandQueryResource
+        implements SubResources
 {
-   public WorkspaceProjectsResource(  )
+   public WorkspaceProjectsResource()
    {
-      super( WorkspaceProjectsContext.class );
+      super(WorkspaceProjectsContext.class);
    }
 
-   public void resource( String segment ) throws ContextNotFoundException
+   public void resource(String segment) throws ContextNotFoundException
    {
-      setRole( ProjectEntity.class, segment );
-      subResource( WorkspaceProjectResource.class );
+      setRole(ProjectEntity.class, segment);
+      subResource(WorkspaceProjectResource.class);
    }
 }

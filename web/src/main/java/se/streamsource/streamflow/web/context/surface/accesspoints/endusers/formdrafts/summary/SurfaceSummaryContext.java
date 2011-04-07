@@ -32,7 +32,7 @@ import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.form.EndUserCases;
 import se.streamsource.streamflow.web.domain.structure.form.FormDraft;
 import se.streamsource.streamflow.web.domain.structure.form.RequiredSignatures;
-import se.streamsource.streamflow.web.domain.structure.user.AnonymousEndUser;
+import se.streamsource.streamflow.web.domain.structure.user.EndUser;
 
 /**
  * JAVADOC
@@ -62,7 +62,7 @@ public interface SurfaceSummaryContext
       public void submit()
       {
          EndUserCases userCases = RoleMap.role( EndUserCases.class );
-         AnonymousEndUser user = RoleMap.role( AnonymousEndUser.class );
+         EndUser user = RoleMap.role( EndUser.class );
          FormDraft formSubmission = RoleMap.role( FormDraft.class );
          Case aCase = RoleMap.role( Case.class );
 
@@ -72,7 +72,7 @@ public interface SurfaceSummaryContext
       public void submitandsend()
       {
          EndUserCases userCases = RoleMap.role( EndUserCases.class );
-         AnonymousEndUser user = RoleMap.role( AnonymousEndUser.class );
+         EndUser user = RoleMap.role( EndUser.class );
          FormDraft formSubmission = RoleMap.role( FormDraft.class );
          Case aCase = RoleMap.role( Case.class );
 

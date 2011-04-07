@@ -33,16 +33,14 @@ import se.streamsource.streamflow.client.util.i18n;
 import se.streamsource.streamflow.resource.user.profile.PerspectiveValue;
 import se.streamsource.streamflow.util.Strings;
 
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import java.awt.BorderLayout;
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * Save a search.
  */
 public class SaveSearchDialog
-      extends JPanel
+        extends JPanel
 {
    @Structure
    ValueBuilderFactory vbf;
@@ -55,33 +53,33 @@ public class SaveSearchDialog
 
    PerspectiveValue search;
 
-   public SaveSearchDialog( @Service ApplicationContext context )
+   public SaveSearchDialog(@Service ApplicationContext context)
    {
-      super( new BorderLayout() );
+      super(new BorderLayout());
 
-      setActionMap( context.getActionMap( this ) );
-      getActionMap().put( JXDialog.CLOSE_ACTION_COMMAND, getActionMap().get("cancel" ));
+      setActionMap(context.getActionMap(this));
+      getActionMap().put(JXDialog.CLOSE_ACTION_COMMAND, getActionMap().get("cancel"));
 
-      FormLayout layout = new FormLayout( "40dlu, 5dlu, 120dlu:grow", "pref, pref" );
+      FormLayout layout = new FormLayout("40dlu, 5dlu, 120dlu:grow", "pref, pref");
 
-      JPanel form = new JPanel( layout );
-      form.setFocusable( false );
-      DefaultFormBuilder builder = new DefaultFormBuilder( layout,
-            form );
+      JPanel form = new JPanel(layout);
+      form.setFocusable(false);
+      DefaultFormBuilder builder = new DefaultFormBuilder(layout,
+              form);
 
       name = new JTextField();
       query = new JTextField();
 
-      builder.add( new JLabel( i18n.text( WorkspaceResources.name_label ) ) );
-      builder.nextColumn( 2 );
-      builder.add( name );
+      builder.add(new JLabel(i18n.text(WorkspaceResources.name_label)));
+      builder.nextColumn(2);
+      builder.add(name);
 
       builder.nextLine();
-      builder.add( new JLabel( i18n.text( WorkspaceResources.query_label ) ) );
-      builder.nextColumn( 2 );
-      builder.add( query );
+      builder.add(new JLabel(i18n.text(WorkspaceResources.query_label)));
+      builder.nextColumn(2);
+      builder.add(query);
 
-      add( form, BorderLayout.CENTER );
+      add(form, BorderLayout.CENTER);
    }
 
    public PerspectiveValue search()
@@ -92,29 +90,29 @@ public class SaveSearchDialog
    @Action
    public void execute()
    {
-      if (!Strings.empty( name.getText() ) && !Strings.empty( query.getText() ))
+      if (!Strings.empty(name.getText()) && !Strings.empty(query.getText()))
       {
-         ValueBuilder<PerspectiveValue> builder = vbf.newValueBuilder( PerspectiveValue.class );
-         builder.prototype().name().set( name.getText() );
-         builder.prototype().query().set( query.getText() );
+         ValueBuilder<PerspectiveValue> builder = vbf.newValueBuilder(PerspectiveValue.class);
+         builder.prototype().name().set(name.getText());
+         builder.prototype().query().set(query.getText());
 
          search = builder.newInstance();
 
-         WindowUtils.findWindow( this ).dispose();
+         WindowUtils.findWindow(this).dispose();
       } else
       {
-         dialogs.showOkDialog( WindowUtils.findWindow( this ), new JLabel( i18n.text( WorkspaceResources.incomplete_data ) ) );
+         dialogs.showOkDialog(WindowUtils.findWindow(this), new JLabel(i18n.text(WorkspaceResources.incomplete_data)));
       }
    }
 
    @Action
    public void cancel()
    {
-      WindowUtils.findWindow( this ).dispose();
+      WindowUtils.findWindow(this).dispose();
    }
 
-   public void presetQuery( String query )
+   public void presetQuery(String query)
    {
-      this.query.setText( query );
+      this.query.setText(query);
    }
 }

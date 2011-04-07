@@ -59,8 +59,8 @@ public class StreamflowWebContextTestAssembler
             applicationAssembly.layer( "Context" ),
             applicationAssembly.layer( "Domain infrastructure" ),
             applicationAssembly.layer( "Domain" ) );
-      ModuleAssembly moduleAssembly = layer1.module( "Module 1" );
-      moduleAssembly.values( EntityValue.class );
+      ModuleAssembly module = layer1.module( "Module 1" );
+      module.values( EntityValue.class );
       applicationAssembly.layer( "Domain infrastructure" ).module( "Events" ).importedServices( TransactionVisitor.class ).visibleIn( Visibility.application ).setMetaInfo( transactionVisitor );
       applicationAssembly.layer( "Context" ).module( "Contact Lookup" ).importedServices( StreamflowContactLookupService.class ).visibleIn( Visibility.application );
 

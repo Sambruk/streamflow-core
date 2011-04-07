@@ -21,16 +21,22 @@ import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.qi4j.api.common.Visibility;
 import org.qi4j.api.composite.TransientComposite;
+import org.qi4j.api.service.qualifier.ServiceQualifier;
 import org.qi4j.bootstrap.AssemblyException;
 import org.qi4j.bootstrap.ImportedServiceDeclaration;
 import org.qi4j.bootstrap.LayerAssembly;
 import org.qi4j.bootstrap.ModuleAssembly;
+import org.qi4j.spi.query.NamedEntityFinder;
+import org.qi4j.spi.query.NamedQueries;
+import org.qi4j.spi.query.NamedQueryDescriptor;
 import org.qi4j.spi.service.importer.NewObjectImporter;
+import org.qi4j.spi.service.importer.ServiceSelectorImporter;
 import se.streamsource.dci.api.InteractionConstraintsService;
 import se.streamsource.dci.api.ServiceAvailable;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.DCIAssembler;
 import se.streamsource.dci.restlet.server.ResultConverter;
+import se.streamsource.streamflow.surface.api.StreamflowSurfaceAPIAssembler;
 import se.streamsource.streamflow.web.context.RequiresPermission;
 import se.streamsource.streamflow.web.context.account.AccountContext;
 import se.streamsource.streamflow.web.context.account.ContactableContext;
@@ -62,15 +68,17 @@ import se.streamsource.streamflow.web.context.structure.DescribableContext;
 import se.streamsource.streamflow.web.context.structure.NotableContext;
 import se.streamsource.streamflow.web.context.surface.accesspoints.AccessPointContext;
 import se.streamsource.streamflow.web.context.surface.accesspoints.AccessPointsContext;
-import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.EndUserContext;
-import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.EndUsersContext;
-import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.SurfaceCaseContext;
+import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.*;
 import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.formdrafts.SurfaceFormDraftContext;
 import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.formdrafts.SurfaceFormDraftsContext;
 import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.formdrafts.summary.SurfaceSummaryContext;
 import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.requiredforms.SurfaceRequiredFormsContext;
 import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.submittedforms.SurfaceSubmittedFormContext;
 import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.submittedforms.SurfaceSubmittedFormsContext;
+import se.streamsource.streamflow.web.context.surface.endusers.ClosedCaseContext;
+import se.streamsource.streamflow.web.context.surface.endusers.ClosedCasesContext;
+import se.streamsource.streamflow.web.context.surface.endusers.OpenCaseContext;
+import se.streamsource.streamflow.web.context.surface.endusers.OpenCasesContext;
 import se.streamsource.streamflow.web.context.workspace.*;
 import se.streamsource.streamflow.web.context.workspace.cases.CaseCommandsContext;
 import se.streamsource.streamflow.web.context.workspace.cases.CaseContext;
@@ -83,6 +91,7 @@ import se.streamsource.streamflow.web.context.workspace.cases.contact.ContactsCo
 import se.streamsource.streamflow.web.context.workspace.cases.conversation.*;
 import se.streamsource.streamflow.web.context.workspace.cases.form.CaseSubmittedFormsContext;
 import se.streamsource.streamflow.web.context.workspace.cases.general.*;
+import se.streamsource.streamflow.web.infrastructure.index.NamedSolrDescriptor;
 import se.streamsource.streamflow.web.resource.RootResource;
 import se.streamsource.streamflow.web.resource.account.AccountResource;
 import se.streamsource.streamflow.web.resource.administration.*;
@@ -99,6 +108,7 @@ import se.streamsource.streamflow.web.resource.surface.accesspoints.AccessPoints
 import se.streamsource.streamflow.web.resource.surface.accesspoints.endusers.EndUserResource;
 import se.streamsource.streamflow.web.resource.surface.accesspoints.endusers.EndUsersResource;
 import se.streamsource.streamflow.web.resource.surface.accesspoints.endusers.SurfaceCaseResource;
+import se.streamsource.streamflow.web.resource.surface.accesspoints.endusers.SurfaceDraftsResource;
 import se.streamsource.streamflow.web.resource.surface.accesspoints.endusers.formdrafts.SurfaceFormDraftResource;
 import se.streamsource.streamflow.web.resource.surface.accesspoints.endusers.formdrafts.SurfaceFormDraftsResource;
 import se.streamsource.streamflow.web.resource.surface.accesspoints.endusers.submittedforms.SurfaceSubmittedFormsResource;
@@ -107,6 +117,9 @@ import se.streamsource.streamflow.web.resource.surface.administration.organizati
 import se.streamsource.streamflow.web.resource.surface.administration.organizations.accesspoints.AccessPointsAdministrationResource;
 import se.streamsource.streamflow.web.resource.surface.administration.organizations.emailaccesspoints.EmailAccessPointAdministrationResource;
 import se.streamsource.streamflow.web.resource.surface.administration.organizations.emailaccesspoints.EmailAccessPointsAdministrationResource;
+import se.streamsource.streamflow.web.resource.surface.endusers.ClosedCasesResource;
+import se.streamsource.streamflow.web.resource.surface.endusers.OpenCaseResource;
+import se.streamsource.streamflow.web.resource.surface.endusers.OpenCasesResource;
 import se.streamsource.streamflow.web.resource.workspace.*;
 import se.streamsource.streamflow.web.resource.workspace.cases.*;
 import se.streamsource.streamflow.web.resource.workspace.cases.conversation.ConversationParticipantsResource;
@@ -155,6 +168,16 @@ public class ContextAssembler
 
       module.objects(StreamflowRestlet.class).visibleIn(Visibility.application);
 
+      // Named queries
+      NamedQueries namedQueries = new NamedQueries();
+      NamedQueryDescriptor queryDescriptor = new NamedSolrDescriptor("solrquery", "");
+      namedQueries.addQuery(queryDescriptor);
+
+      module.importedServices(NamedEntityFinder.class).
+              importedBy(ServiceSelectorImporter.class).
+              setMetaInfo(ServiceQualifier.withId("solr")).
+              setMetaInfo(namedQueries);
+
       addResourceContexts(module,
               RootResource.class,
 
@@ -177,6 +200,9 @@ public class ContextAssembler
               UserContext.class,
               UserResource.class,
 
+              // Administration
+              AdministrationContext.class,
+              AdministrationResource.class,
 
               OrganizationsContext.class,
               OrganizationsResource.class,
@@ -191,6 +217,9 @@ public class ContextAssembler
               LabelsContext.class,
               LabelsResource.class,
 
+              AdministratorContext.class,
+              AdministratorsContext.class,
+              AdministratorsResource.class,
 
               FormContext.class,
               FormResource.class,
@@ -322,7 +351,18 @@ public class ContextAssembler
               SurfaceResource.class,
               SurfaceCaseContext.class,
               SurfaceCaseResource.class,
-              EndUserContext.class,
+              SurfaceDraftsResource.class,
+              SurfaceDraftsContext.class,
+              se.streamsource.streamflow.web.resource.surface.endusers.EndUserResource.class,
+              se.streamsource.streamflow.web.resource.surface.endusers.EndUsersResource.class,
+              EndUsersContext.class,
+              OpenCasesResource.class,
+              OpenCaseResource.class,
+              OpenCasesContext.class,
+              OpenCaseContext.class,
+              ClosedCasesResource.class,
+              ClosedCasesContext.class,
+              ClosedCaseContext.class,
               EndUserResource.class,
               EndUsersContext.class,
               EndUsersResource.class,

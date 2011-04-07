@@ -33,34 +33,34 @@ import java.util.List;
  * JAVADOC
  */
 public class PerspectivesModel
-      extends LinkValueListModel
+        extends LinkValueListModel
 {
    @Structure
    ValueBuilderFactory vbf;
 
-   public void remove( LinkValue link )
+   public void remove(LinkValue link)
    {
       if (link != null)
       {
-         client.getClient( link ).delete();
+         client.getClient(link).delete();
       }
    }
 
    public void refresh()
    {
-      List<LinkValue> links = client.query( "index", LinksValue.class ).links().get();
-      EventListSynch.synchronize( links, linkValues );
+      List<LinkValue> links = client.query("index", LinksValue.class).links().get();
+      EventListSynch.synchronize(links, linkValues);
    }
 
-   public void changeDescription( LinkValue link, String name )
+   public void changeDescription(LinkValue link, String name)
    {
-      ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
-      builder.prototype().string().set( name );
-      client.getClient( link ).postCommand( "changedescription", builder.newInstance() );
+      ValueBuilder<StringValue> builder = vbf.newValueBuilder(StringValue.class);
+      builder.prototype().string().set(name);
+      client.getClient(link).postCommand("changedescription", builder.newInstance());
    }
 
-   public void savePerspective( PerspectiveValue perspective )
+   public void savePerspective(PerspectiveValue perspective)
    {
-      client.postCommand( "create", perspective );
+      client.postCommand("create", perspective);
    }
 }

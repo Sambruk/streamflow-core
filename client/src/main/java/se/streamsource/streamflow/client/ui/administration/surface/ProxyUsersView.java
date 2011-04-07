@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.client.ui.administration.surface;
 
+import ca.odell.glazedlists.gui.AdvancedTableFormat;
 import ca.odell.glazedlists.gui.TableFormat;
 import ca.odell.glazedlists.gui.WritableTableFormat;
 import ca.odell.glazedlists.swing.EventJXTableModel;
@@ -49,6 +50,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import java.awt.BorderLayout;
+import java.util.Comparator;
 
 import static se.streamsource.streamflow.client.util.i18n.*;
 import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
@@ -85,10 +87,10 @@ public class ProxyUsersView
       tableModel = new EventJXTableModel<ProxyUserDTO>( model.getEventList(), tableFormat );
 
       proxyUsersTable = new JXTable( tableModel );
-      proxyUsersTable.getColumn( 0 ).setCellRenderer( new DefaultTableRenderer( new CheckBoxProvider() ) );
-      proxyUsersTable.getColumn( 0 ).setMaxWidth( 30 );
-      proxyUsersTable.getColumn( 0 ).setResizable( false );
-      proxyUsersTable.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( am.get( "resetPassword" ) ) );
+      proxyUsersTable.getColumn( 0 ).setCellRenderer(new DefaultTableRenderer(new CheckBoxProvider()));
+      proxyUsersTable.getColumn( 0 ).setMaxWidth(60);
+      proxyUsersTable.getColumn( 0 ).setResizable(false);
+      proxyUsersTable.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(am.get("resetPassword")));
 
       JScrollPane scroll = new JScrollPane();
       scroll.setViewportView( proxyUsersTable );
@@ -187,16 +189,23 @@ public class ProxyUsersView
    }
 
    private class ProxyUsersTableFormat
-      implements WritableTableFormat<ProxyUserDTO>
+      implements WritableTableFormat<ProxyUserDTO>, AdvancedTableFormat<ProxyUserDTO>
    {
       public boolean isEditable( ProxyUserDTO proxyUserDTO, int i )
       {
          return i == 0;
       }
 
-      public ProxyUserDTO setColumnValue( ProxyUserDTO proxyUserDTO, Object o, int i )
+      public ProxyUserDTO setColumnValue( final ProxyUserDTO proxyUserDTO, final Object o, int i )
       {
-         model.changeEnabled( proxyUserDTO );
+         new CommandTask()
+         {
+            @Override
+            protected void command() throws Exception
+            {
+               model.changeEnabled( proxyUserDTO, (Boolean)o );
+            }
+         }.execute();
          return null;
       }
 
@@ -213,12 +222,22 @@ public class ProxyUsersView
          text(AdministrationResources.description_label)}[i];
       }
 
+      public Class getColumnClass(int i)
+      {
+         return new Class[]{Boolean.class, String.class, String.class}[i];
+      }
+
+      public Comparator getColumnComparator(int i)
+      {
+         return null;
+      }
+
       public Object getColumnValue( ProxyUserDTO proxyUserDTO, int i )
       {
          switch (i)
          {
             case 0:
-               return proxyUserDTO.disabled().get();
+               return !proxyUserDTO.disabled().get();
             case 1:
                return proxyUserDTO.username().get();
             case 2:

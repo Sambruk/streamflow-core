@@ -26,36 +26,39 @@ import java.util.Comparator;
  * JAVADOC
  */
 public class TitledLinkGroupingComparator
-      implements Comparator<TitledLinkValue>
+        implements Comparator<TitledLinkValue>
 {
    private String topValue = "";
 
-   public TitledLinkGroupingComparator(){}
-   
-   public TitledLinkGroupingComparator( String topValue )
+   public TitledLinkGroupingComparator()
+   {
+   }
+
+   public TitledLinkGroupingComparator(String topValue)
    {
       this.topValue = topValue;
    }
-   public int compare( TitledLinkValue o1, TitledLinkValue o2 )
+
+   public int compare(TitledLinkValue o1, TitledLinkValue o2)
    {
       int value = -1;
       String s1 = o1.title().get();
       String s2 = o2.title().get();
 
-      if( !Strings.empty( topValue ) )
+      if (!Strings.empty(topValue))
       {
-        if( topValue.equals( s1 ) && !topValue.equals( s2 ) )
-        {
+         if (topValue.equals(s1) && !topValue.equals(s2))
+         {
             value = -1;
-        } else if ( !topValue.equals( s1 ) && topValue.equals( s2 ) )
-        {
-           value = 1;
-        } else
-           value = s1.compareTo( s2 );
+         } else if (!topValue.equals(s1) && topValue.equals(s2))
+         {
+            value = 1;
+         } else
+            value = s1.compareTo(s2);
 
       } else
       {
-         value = s1.compareTo( s2 );
+         value = s1.compareTo(s2);
       }
 
       return value;

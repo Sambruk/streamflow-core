@@ -30,26 +30,26 @@ import se.streamsource.streamflow.web.domain.structure.user.Perspective;
  * JAVADOC
  */
 public class WorkspacePerspectivesResource
-      extends CommandQueryResource
-      implements SubResources
+        extends CommandQueryResource
+        implements SubResources
 {
-   public WorkspacePerspectivesResource( )
+   public WorkspacePerspectivesResource()
    {
-      super( PerspectivesContext.class );
+      super(PerspectivesContext.class);
    }
 
    public void index() throws Throwable
    {
-      LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() );
+      LinksBuilder builder = new LinksBuilder(module.valueBuilderFactory());
       Iterable<Perspective> perspectives = (Iterable<Perspective>) invoke();
       builder.addDescribables(perspectives);
-      
+
       result(builder.newLinks());
    }
 
-   public void resource( String segment ) throws ContextNotFoundException
+   public void resource(String segment) throws ContextNotFoundException
    {
-      setRole( PerspectiveEntity.class, segment );
-      subResourceContexts( PerspectiveContext.class, DescribableContext.class );
+      setRole(PerspectiveEntity.class, segment);
+      subResourceContexts(PerspectiveContext.class, DescribableContext.class);
    }
 }

@@ -20,6 +20,7 @@ package se.streamsource.streamflow.web.resource.surface;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResource;
 import se.streamsource.streamflow.web.resource.surface.accesspoints.AccessPointsResource;
+import se.streamsource.streamflow.web.resource.surface.endusers.EndUsersResource;
 
 /**
  * JAVADOC
@@ -31,5 +32,11 @@ public class SurfaceResource
    public void accesspoints()
    {
       subResource( AccessPointsResource.class );
+   }
+
+   @SubResource
+   public void endusers()
+   {
+      subResource( EndUsersResource.class );
    }
 }

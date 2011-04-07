@@ -27,41 +27,41 @@ import se.streamsource.streamflow.web.resource.workspace.cases.WorkspaceCasesRes
  * JAVADOC
  */
 public class WorkspaceResource
-      extends CommandQueryResource
+        extends CommandQueryResource
 {
    public WorkspaceResource()
    {
-      super( WorkspaceContext.class );
+      super(WorkspaceContext.class);
    }
 
    @SubResource
    public void drafts()
    {
-      subResourceContexts( DraftsContext.class );
+      subResourceContexts(DraftsContext.class);
    }
 
    @SubResource
    public void search()
    {
-      subResourceContexts( SearchContext.class );
+      subResourceContexts(SearchContext.class);
    }
 
    @SubResource
    public void projects()
    {
-      subResource( WorkspaceProjectsResource.class );
+      subResource(WorkspaceProjectsResource.class);
    }
 
    @SubResource
    public void cases()
    {
-      subResource( WorkspaceCasesResource.class );
+      subResource(WorkspaceCasesResource.class);
    }
-   
+
    @SubResource
    public void perspectives()
    {
-      subResource( WorkspacePerspectivesResource.class );
+      subResource(WorkspacePerspectivesResource.class);
    }
 
 }

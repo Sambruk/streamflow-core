@@ -34,11 +34,8 @@ import se.streamsource.streamflow.client.util.FilteredList;
 import se.streamsource.streamflow.client.util.GroupedFilteredList;
 import se.streamsource.streamflow.client.util.LinkComparator;
 
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.ListSelectionModel;
-import java.awt.BorderLayout;
+import javax.swing.*;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,7 +43,7 @@ import java.util.List;
  * Select one or more links from a list of links. The links may use grouping with the TitledLinkValue subtype.
  */
 public class SelectLinkDialog
-      extends JPanel
+        extends JPanel
 {
 
    private LinkValue selectedLink;
@@ -54,29 +51,29 @@ public class SelectLinkDialog
    private JList list;
    private JTextField filterField;
 
-   public SelectLinkDialog( final @Service ApplicationContext context,
-                                     @Uses EventList<? extends LinkValue> links,
-                                      @Structure ObjectBuilderFactory obf )
+   public SelectLinkDialog(final @Service ApplicationContext context,
+                           @Uses EventList<? extends LinkValue> links,
+                           @Structure ObjectBuilderFactory obf)
    {
-      super( new BorderLayout());
+      super(new BorderLayout());
 
-      setActionMap( context.getActionMap( this ) );
-      getActionMap().put( JXDialog.CLOSE_ACTION_COMMAND, getActionMap().get("cancel" ));
+      setActionMap(context.getActionMap(this));
+      getActionMap().put(JXDialog.CLOSE_ACTION_COMMAND, getActionMap().get("cancel"));
 
-      if (Iterables.first( links ) instanceof TitledLinkValue)
+      if (Iterables.first(links) instanceof TitledLinkValue)
       {
          GroupedFilteredList list = new GroupedFilteredList();
-         list.getList().setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
-         list.setEventList( (EventList<TitledLinkValue>) links );
+         list.getList().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+         list.setEventList((EventList<TitledLinkValue>) links);
          add(list);
          this.list = list.getList();
          this.filterField = list.getFilterField();
       } else
       {
          FilteredList list = new FilteredList();
-         list.getList().setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
-         SortedList<LinkValue> sortedIssues = new SortedList( links, new LinkComparator() );
-         list.setEventList( (EventList<LinkValue>) sortedIssues );
+         list.getList().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+         SortedList<LinkValue> sortedIssues = new SortedList(links, new LinkComparator());
+         list.setEventList((EventList<LinkValue>) sortedIssues);
          add(list);
          this.list = list.getList();
          this.filterField = list.getFilterField();
@@ -84,12 +81,12 @@ public class SelectLinkDialog
 
       // Skip filtering if short list
       if (links.size() < 10)
-         filterField.setVisible( false );
+         filterField.setVisible(false);
    }
 
    public void setSelectionMode(int selectionMode)
    {
-      list.setSelectionMode( selectionMode );
+      list.setSelectionMode(selectionMode);
    }
 
    public JTextField getFilterField()
@@ -117,16 +114,16 @@ public class SelectLinkDialog
       {
          for (Object link : list.getSelectedValues())
          {
-            selectedLinks.add( (LinkValue) link);
+            selectedLinks.add((LinkValue) link);
          }
       }
 
-      WindowUtils.findWindow( this ).dispose();
+      WindowUtils.findWindow(this).dispose();
    }
 
    @Action
    public void cancel()
    {
-      WindowUtils.findWindow( this ).dispose();
+      WindowUtils.findWindow(this).dispose();
    }
 }

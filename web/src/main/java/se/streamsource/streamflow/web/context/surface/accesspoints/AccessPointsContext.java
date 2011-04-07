@@ -18,13 +18,17 @@
 package se.streamsource.streamflow.web.context.surface.accesspoints;
 
 import org.qi4j.api.injection.scope.Structure;
+import org.qi4j.api.specification.Specification;
 import org.qi4j.api.structure.Module;
+import org.qi4j.api.util.Iterables;
 import org.qi4j.api.value.ValueBuilder;
 import se.streamsource.dci.api.IndexContext;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 import se.streamsource.streamflow.infrastructure.application.TitledLinksBuilder;
+import se.streamsource.streamflow.web.domain.structure.form.SelectedForms;
+import se.streamsource.streamflow.web.domain.structure.organization.AccessPoint;
 import se.streamsource.streamflow.web.domain.structure.organization.AccessPoints;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 import se.streamsource.streamflow.web.domain.structure.user.ProxyUser;
@@ -66,7 +70,14 @@ public class AccessPointsContext
 
       LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
 
-      linksBuilder.addDescribables( data.accessPoints() );
+      linksBuilder.addDescribables( Iterables.filter(new Specification<AccessPoint>()
+      {
+         public boolean satisfiedBy(AccessPoint item)
+         {
+            // AccessPoint needs to have forms in order to be valid
+            return ((SelectedForms.Data)item).selectedForms().count() > 0;
+         }
+      }, data.accessPoints()));
 
       return linksBuilder.newLinks();
    }

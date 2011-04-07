@@ -33,11 +33,7 @@ import se.streamsource.streamflow.domain.structure.Removable;
 import se.streamsource.streamflow.web.domain.entity.DomainEntity;
 import se.streamsource.streamflow.web.domain.entity.gtd.AssignmentsQueries;
 import se.streamsource.streamflow.web.domain.entity.gtd.InboxQueries;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Assignable;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
-import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
-import se.streamsource.streamflow.web.domain.interaction.gtd.IdGenerator;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
+import se.streamsource.streamflow.web.domain.interaction.gtd.*;
 import se.streamsource.streamflow.web.domain.interaction.security.CaseAccessDefaults;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseTypes;
 import se.streamsource.streamflow.web.domain.structure.casetype.SelectedCaseTypes;
@@ -58,50 +54,50 @@ import se.streamsource.streamflow.web.domain.structure.project.Project;
 @Mixins({ProjectEntity.ProjectIdGeneratorMixin.class})
 @Concerns(ProjectEntity.RemovableConcern.class)
 public interface ProjectEntity
-      extends DomainEntity,
+        extends DomainEntity,
 
-      // Interactions
-      IdGenerator,
+        // Interactions
+        IdGenerator,
 
-      // Structure
-      Members,
-      Project,
-      OwningOrganizationalUnit,
+        // Structure
+        Members,
+        Project,
+        OwningOrganizationalUnit,
 
-      // Data
-      CaseAccessDefaults.Data,
-      Members.Data,
-      Describable.Data,
-      OwningOrganizationalUnit.Data,
-      Ownable.Data,
-      Forms.Data,
-      Labels.Data,
-      SelectedLabels.Data,
-      CaseTypes.Data,
-      Removable.Data,
-      SelectedCaseTypes.Data,
+        // Data
+        CaseAccessDefaults.Data,
+        Members.Data,
+        Describable.Data,
+        OwningOrganizationalUnit.Data,
+        Ownable.Data,
+        Forms.Data,
+        Labels.Data,
+        SelectedLabels.Data,
+        CaseTypes.Data,
+        Removable.Data,
+        SelectedCaseTypes.Data,
 
-      // Queries
-      AssignmentsQueries,
-      InboxQueries,
-      ProjectLabelsQueries
+        // Queries
+        AssignmentsQueries,
+        InboxQueries,
+        ProjectLabelsQueries
 {
    class ProjectIdGeneratorMixin
-         implements IdGenerator
+           implements IdGenerator
    {
       @This
       OwningOrganizationalUnit.Data state;
 
-      public void assignId( CaseId aCase )
+      public void assignId(CaseId aCase)
       {
          Organization organization = ((OwningOrganization) state.organizationalUnit().get()).organization().get();
-         ((IdGenerator)organization).assignId( aCase );
+         ((IdGenerator) organization).assignId(aCase);
       }
    }
 
    abstract class RemoveMemberSideEffect
-      extends SideEffectOf<Members>
-      implements Members
+           extends SideEffectOf<Members>
+           implements Members
    {
       @This
       AssignmentsQueries assignments;
@@ -109,10 +105,10 @@ public interface ProjectEntity
       @Structure
       UnitOfWorkFactory uowf;
 
-      public void removeMember( Member member )
+      public void removeMember(Member member)
       {
          // Get all active cases in a project for a particular user and unassign.
-         for (Assignable caze : assignments.assignments( (Assignee) member, null ).newQuery( uowf.currentUnitOfWork() ))
+         for (Assignable caze : assignments.assignments((Assignee) member, null).newQuery(uowf.currentUnitOfWork()))
          {
             caze.unassign();
          }
@@ -120,8 +116,8 @@ public interface ProjectEntity
    }
 
    abstract class RemovableConcern
-         extends ConcernOf<Removable>
-         implements Removable
+           extends ConcernOf<Removable>
+           implements Removable
    {
       @Structure
       UnitOfWorkFactory uowf;
@@ -147,9 +143,9 @@ public interface ProjectEntity
       public boolean removeEntity()
       {
          if (inbox.inboxHasActiveCases()
-               || assignments.assignmentsHaveActiveCases())
+                 || assignments.assignmentsHaveActiveCases())
          {
-            throw new IllegalStateException( "Cannot remove project with OPEN cases." );
+            throw new IllegalStateException("Cannot remove project with OPEN cases.");
 
          } else
          {

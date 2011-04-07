@@ -31,36 +31,27 @@ import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.streamflow.client.ui.OptionsAction;
 import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
-import se.streamsource.streamflow.client.util.CommandTask;
-import se.streamsource.streamflow.client.util.LinkListCellRenderer;
-import se.streamsource.streamflow.client.util.RefreshWhenShowing;
-import se.streamsource.streamflow.client.util.Refreshable;
-import se.streamsource.streamflow.client.util.SelectionActionEnabler;
+import se.streamsource.streamflow.client.util.*;
 import se.streamsource.streamflow.client.util.dialog.DialogService;
 import se.streamsource.streamflow.client.util.dialog.NameDialog;
 import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
 import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
 import se.streamsource.streamflow.util.Strings;
 
-import javax.swing.ActionMap;
-import javax.swing.JButton;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import java.awt.BorderLayout;
+import java.awt.*;
 
-import static org.qi4j.api.specification.Specifications.*;
-import static se.streamsource.streamflow.client.util.i18n.*;
+import static org.qi4j.api.specification.Specifications.and;
+import static se.streamsource.streamflow.client.util.i18n.text;
 import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 
 /**
  * JAVADOC
  */
 public class ManagePerspectivesDialog
-      extends JPanel
-      implements TransactionListener, Refreshable
+        extends JPanel
+        implements TransactionListener, Refreshable
 {
    @Service
    DialogService dialogs;
@@ -73,40 +64,40 @@ public class ManagePerspectivesDialog
    private JList perspective;
    private JButton optionButton;
 
-   public ManagePerspectivesDialog( @Service ApplicationContext context, @Structure ObjectBuilderFactory obf, @Uses CommandQueryClient client )
+   public ManagePerspectivesDialog(@Service ApplicationContext context, @Structure ObjectBuilderFactory obf, @Uses CommandQueryClient client)
    {
-      super( new BorderLayout() );
-      setBorder( new EmptyBorder( 5, 5, 5, 5 ) );
+      super(new BorderLayout());
+      setBorder(new EmptyBorder(5, 5, 5, 5));
       ActionMap am;
-      setActionMap( am = context.getActionMap( this ) );
+      setActionMap(am = context.getActionMap(this));
 
-      this.model = obf.newObjectBuilder( PerspectivesModel.class ).use( client ).newInstance();
+      this.model = obf.newObjectBuilder(PerspectivesModel.class).use(client).newInstance();
 
       perspective = new JList();
-      perspective.setCellRenderer( new LinkListCellRenderer() );
-      perspective.setModel( new EventListModel<LinkValue>( model.getList() ) );
-      JScrollPane scroll = new JScrollPane( perspective );
+      perspective.setCellRenderer(new LinkListCellRenderer());
+      perspective.setModel(new EventListModel<LinkValue>(model.getList()));
+      JScrollPane scroll = new JScrollPane(perspective);
 
-      add( scroll, BorderLayout.CENTER );
+      add(scroll, BorderLayout.CENTER);
 
       JPopupMenu options = new JPopupMenu();
 
-      javax.swing.Action removeAction = am.get( "remove" );
-      javax.swing.Action renameAction = am.get( "rename" );
+      javax.swing.Action removeAction = am.get("remove");
+      javax.swing.Action renameAction = am.get("rename");
 
-      options.add( removeAction );
-      options.add( renameAction );
+      options.add(removeAction);
+      options.add(renameAction);
 
-      perspective.getSelectionModel().addListSelectionListener( new SelectionActionEnabler( removeAction, renameAction ) );
-      optionButton = new JButton( new OptionsAction( options ) );
+      perspective.getSelectionModel().addListSelectionListener(new SelectionActionEnabler(removeAction, renameAction));
+      optionButton = new JButton(new OptionsAction(options));
 
-      ButtonBarBuilder2 buttonBuilder = new ButtonBarBuilder2(  );
-      buttonBuilder.addButton( optionButton );
+      ButtonBarBuilder2 buttonBuilder = new ButtonBarBuilder2();
+      buttonBuilder.addButton(optionButton);
       buttonBuilder.addUnrelatedGap();
       buttonBuilder.addGlue();
       buttonBuilder.addButton(am.get("close"));
-      add( buttonBuilder.getPanel(), BorderLayout.SOUTH );
-      new RefreshWhenShowing( this, model );
+      add(buttonBuilder.getPanel(), BorderLayout.SOUTH);
+      new RefreshWhenShowing(this, model);
    }
 
    @Action
@@ -119,9 +110,9 @@ public class ManagePerspectivesDialog
          {
             @Override
             public void command()
-               throws Exception
+                    throws Exception
             {
-               model.remove( value );
+               model.remove(value);
             }
          };
       } else
@@ -131,36 +122,36 @@ public class ManagePerspectivesDialog
    @Action
    public void close()
    {
-      WindowUtils.findWindow( this ).dispose();
+      WindowUtils.findWindow(this).dispose();
    }
 
    @Action
    public Task rename()
    {
-      final LinkValue selected = (LinkValue)perspective.getSelectedValue();
+      final LinkValue selected = (LinkValue) perspective.getSelectedValue();
       final NameDialog dialog = nameDialogs.iterator().next();
-      dialogs.showOkCancelHelpDialog( this, dialog, text( WorkspaceResources.change_perspective_title ) );
+      dialogs.showOkCancelHelpDialog(this, dialog, text(WorkspaceResources.change_perspective_title));
 
-      if (!Strings.empty( dialog.name() ) )
+      if (!Strings.empty(dialog.name()))
       {
          return new CommandTask()
          {
             @Override
             public void command()
-               throws Exception
+                    throws Exception
             {
-               model.changeDescription( selected, dialog.name() );
+               model.changeDescription(selected, dialog.name());
             }
          };
       } else
          return null;
    }
 
-   public void notifyTransactions( Iterable<TransactionDomainEvents> transactions )
+   public void notifyTransactions(Iterable<TransactionDomainEvents> transactions)
    {
-      if (matches( and( onEntityTypes( "se.streamsource.streamflow.web.domain.entity.user.UserEntity",
-            "se.streamsource.streamflow.web.domain.entity.user.profile.PerspectiveEntity"),
-            withNames( "createdPerspective", "changedDescription", "removedPerspective" ) ), transactions ))
+      if (matches(and(onEntityTypes("se.streamsource.streamflow.web.domain.entity.user.UserEntity",
+              "se.streamsource.streamflow.web.domain.entity.user.profile.PerspectiveEntity"),
+              withNames("createdPerspective", "changedDescription", "removedPerspective")), transactions))
       {
          refresh();
       }

@@ -46,7 +46,7 @@ public interface AbstractFilterContext extends Context
    public LinksValue possibleLabels();
 
    abstract class Mixin
-         implements AbstractFilterContext
+           implements AbstractFilterContext
    {
       @Structure
       Module module;
@@ -56,46 +56,46 @@ public interface AbstractFilterContext extends Context
          // Fetch all labels from CaseType's ---> Organization
          HashSet<Object> labels = new HashSet<Object>();
 
-         LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() );
-         Project project = RoleMap.role( Project.class );
+         LinksBuilder builder = new LinksBuilder(module.valueBuilderFactory());
+         Project project = RoleMap.role(Project.class);
 
          // labels from project's selected case types
-         for (CaseType caseType : ((SelectedCaseTypes.Data) project).selectedCaseTypes() )
+         for (CaseType caseType : ((SelectedCaseTypes.Data) project).selectedCaseTypes())
          {
-            labels.addAll( ((SelectedLabels.Data)caseType).selectedLabels().toSet() );
+            labels.addAll(((SelectedLabels.Data) caseType).selectedLabels().toSet());
          }
 
          // project's selected labels
-         labels.addAll( ((SelectedLabels.Data)project).selectedLabels().toSet() );
+         labels.addAll(((SelectedLabels.Data) project).selectedLabels().toSet());
 
 
          // OU hirarchy labels from bottom up
-         Entity entity = (Entity)((Ownable.Data) project).owner().get();
+         Entity entity = (Entity) ((Ownable.Data) project).owner().get();
 
-         while( entity instanceof Ownable)
+         while (entity instanceof Ownable)
          {
-            labels.addAll( ((SelectedLabels.Data)entity).selectedLabels().toSet() );
-            entity = (Entity)((Ownable.Data)entity).owner().get();
+            labels.addAll(((SelectedLabels.Data) entity).selectedLabels().toSet());
+            entity = (Entity) ((Ownable.Data) entity).owner().get();
          }
          // Organization's selected labels
-         labels.addAll( ((SelectedLabels.Data)entity).selectedLabels().toSet() );
+         labels.addAll(((SelectedLabels.Data) entity).selectedLabels().toSet());
 
-         for( Object label : labels )
+         for (Object label : labels)
          {
-            builder.addDescribable( (Label)label );
+            builder.addDescribable((Label) label);
          }
          return builder.newLinks();
       }
 
       public LinksValue possibleCaseTypes()
       {
-         LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() );
-         Project project = RoleMap.role( Project.class );
+         LinksBuilder builder = new LinksBuilder(module.valueBuilderFactory());
+         Project project = RoleMap.role(Project.class);
          SelectedCaseTypes.Data selectedCaseTypes = (SelectedCaseTypes.Data) project;
 
          for (CaseType caseType : selectedCaseTypes.selectedCaseTypes())
          {
-            builder.addDescribable( caseType );
+            builder.addDescribable(caseType);
          }
          return builder.newLinks();
       }

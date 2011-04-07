@@ -17,6 +17,7 @@
 
 package se.streamsource.streamflow.web.context.administration.surface.proxyusers;
 
+import org.qi4j.api.constraint.Name;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilder;
@@ -38,11 +39,10 @@ public class ProxyUserContext
    @Structure
    Module module;
 
-   public void changeenabled()
+   public void changeenabled(@Name("enabled") boolean enabled)
    {
       UserAuthentication userAuth = role( UserAuthentication.class );
-      UserAuthentication.Data userAuthData = role( UserAuthentication.Data.class );
-      userAuth.changeEnabled( userAuthData.disabled().get() );
+      userAuth.changeEnabled( enabled );
    }
 
    public void resetpassword( StringValue newPassword )

@@ -31,42 +31,40 @@ import se.streamsource.streamflow.client.ui.menu.WorkspaceMenuBar;
 import se.streamsource.streamflow.client.util.JavaHelp;
 import se.streamsource.streamflow.client.util.i18n;
 
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import java.awt.CardLayout;
-import java.awt.Dimension;
+import java.awt.*;
 
 /**
  * Workspace window
  */
 public class WorkspaceWindow
-      extends FrameView
+        extends FrameView
 {
    public CardLayout cardLayout;
 
    private WorkspaceView currentWorkspace;
 
-   public WorkspaceWindow( @Service Application application,
-                           @Service JavaHelp javaHelp,
-                           @Uses WorkspaceMenuBar menu,
-                           @Uses AccountSelectionView view,
-                           @Uses final AccountSelector accountSelector,
-                           @Structure final ObjectBuilderFactory obf )
+   public WorkspaceWindow(@Service Application application,
+                          @Service JavaHelp javaHelp,
+                          @Uses WorkspaceMenuBar menu,
+                          @Uses AccountSelectionView view,
+                          @Uses final AccountSelector accountSelector,
+                          @Structure final ObjectBuilderFactory obf)
    {
-      super( application );
+      super(application);
 
-      final JXFrame frame = new JXFrame( i18n.text( WorkspaceResources.window_name ) );
-      frame.setLocationByPlatform( true );
+      final JXFrame frame = new JXFrame(i18n.text(WorkspaceResources.window_name));
+      frame.setLocationByPlatform(true);
 
       cardLayout = new CardLayout();
-      frame.getContentPane().setLayout( cardLayout );
-      frame.getContentPane().add( view, "selector" );
-      frame.getContentPane().add( new JPanel(), "workspace" );
-      frame.getRootPane().setOpaque( true );
-      setFrame( frame );
-      setMenuBar( menu );
+      frame.getContentPane().setLayout(cardLayout);
+      frame.getContentPane().add(view, "selector");
+      frame.getContentPane().add(new JPanel(), "workspace");
+      frame.getRootPane().setOpaque(true);
+      setFrame(frame);
+      setMenuBar(menu);
 
 
       frame.setPreferredSize( new Dimension( 1300, 800 ) );
@@ -77,13 +75,13 @@ public class WorkspaceWindow
 
       ListSelectionListener workspaceListener = new ListSelectionListener()
       {
-         public void valueChanged( ListSelectionEvent e )
+         public void valueChanged(ListSelectionEvent e)
          {
             if (!e.getValueIsAdjusting())
             {
                if (accountSelector.isSelectionEmpty())
                {
-                  cardLayout.show( frame.getContentPane(), "selector" );
+                  cardLayout.show(frame.getContentPane(), "selector");
                } else
                {
                   final AccountModel accountModel = accountSelector.getSelectedAccount();
@@ -92,13 +90,13 @@ public class WorkspaceWindow
                   {
                      public void run()
                      {
-                        if( currentWorkspace != null )
+                        if (currentWorkspace != null)
                         {
-                           currentWorkspace.killPopup();   
+                           currentWorkspace.killPopup();
                         }
-                        currentWorkspace = obf.newObjectBuilder( WorkspaceView.class ).use( accountModel.serverResource().getSubClient( "workspace" ) ).newInstance();
-                        frame.getContentPane().add( currentWorkspace, "workspace");
-                        cardLayout.show( frame.getContentPane(), "workspace" );
+                        currentWorkspace = obf.newObjectBuilder(WorkspaceView.class).use(accountModel.serverResource().getSubClient("workspace")).newInstance();
+                        frame.getContentPane().add(currentWorkspace, "workspace");
+                        cardLayout.show(frame.getContentPane(), "workspace");
                      }
                   });
                }
@@ -106,7 +104,7 @@ public class WorkspaceWindow
          }
       };
 
-      accountSelector.addListSelectionListener( workspaceListener );
+      accountSelector.addListSelectionListener(workspaceListener);
    }
 
    public WorkspaceView getCurrentWorkspace()

@@ -25,9 +25,9 @@ import se.streamsource.streamflow.resource.user.profile.PerspectiveValue;
 
 @Mixins(Perspective.Mixin.class)
 public interface Perspective
-      extends Describable
+        extends Describable
 {
-   
+
    interface Data
    {
       Property<PerspectiveValue> perspective();

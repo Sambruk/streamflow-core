@@ -27,7 +27,7 @@ import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.label.Label;
 import se.streamsource.streamflow.web.domain.structure.label.Labelable;
 import se.streamsource.streamflow.web.domain.structure.organization.AccessPointSettings;
-import se.streamsource.streamflow.web.domain.structure.user.AnonymousEndUser;
+import se.streamsource.streamflow.web.domain.structure.user.EndUser;
 
 /**
  * JAVADOC
@@ -35,7 +35,7 @@ import se.streamsource.streamflow.web.domain.structure.user.AnonymousEndUser;
 @Mixins(EndUserCases.Mixin.class)
 public interface EndUserCases
 {
-   CaseEntity createCaseWithForm( AnonymousEndUser endUser );
+   CaseEntity createCaseWithForm( EndUser endUser );
 
    CaseEntity createCase( Drafts endUser );
 
@@ -62,7 +62,7 @@ public interface EndUserCases
       @Structure
       UnitOfWorkFactory uowf;
 
-      public CaseEntity createCaseWithForm( AnonymousEndUser endUser )
+      public CaseEntity createCaseWithForm( EndUser endUser )
       {
          CaseEntity caseEntity = createCase( endUser );
          caseEntity.createFormDraft( selectedForms.selectedForms().get( 0 ) );

@@ -41,7 +41,8 @@ import se.streamsource.streamflow.web.domain.structure.caze.Case;
 import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
 import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
 
-import static org.qi4j.api.query.QueryExpressions.*;
+import static org.qi4j.api.query.QueryExpressions.eq;
+import static org.qi4j.api.query.QueryExpressions.templateFor;
 
 /**
  * JAVADOC
@@ -51,96 +52,97 @@ public class SearchContext
    @Structure
    Module module;
 
-   public Iterable<Case> cases( TableQuery tableQuery)
+   public Iterable<Case> cases(TableQuery tableQuery)
    {
-      SearchCaseQueries caseQueries = RoleMap.role( SearchCaseQueries.class );
-      Query<Case> caseQuery = caseQueries.search( tableQuery.where() );
+      SearchCaseQueries caseQueries = RoleMap.role(SearchCaseQueries.class);
+      Query<Case> caseQuery = caseQueries.search(tableQuery.where());
 
-      caseQuery = module.queryBuilderFactory().newQueryBuilder( Case.class ).newQuery(caseQuery);
-      
+      caseQuery = module.queryBuilderFactory().newQueryBuilder(Case.class).newQuery(caseQuery);
+
       // Paging
       if (tableQuery.offset() != null)
-         caseQuery.firstResult( Integer.parseInt( tableQuery.offset()) );
+         caseQuery.firstResult(Integer.parseInt(tableQuery.offset()));
       if (tableQuery.limit() != null)
-         caseQuery.maxResults( Integer.parseInt( tableQuery.limit()) );
+         caseQuery.maxResults(Integer.parseInt(tableQuery.limit()));
       if (tableQuery.orderBy() != null)
       {
          String[] orderByValue = tableQuery.orderBy().split(" ");
          Order order = orderByValue[1].equals("asc") ? Order.ASCENDING : Order.DESCENDING;
-         
+
          if (tableQuery.orderBy().equals("status"))
-         {            
-            caseQuery.orderBy( QueryExpressions.orderBy( QueryExpressions.templateFor(Status.Data.class).status(), order));
+         {
+            caseQuery.orderBy(QueryExpressions.orderBy(QueryExpressions.templateFor(Status.Data.class).status(), order));
          } else if (orderByValue[0].equals("description"))
-         {            
-            caseQuery.orderBy( QueryExpressions.orderBy( QueryExpressions.templateFor(Describable.Data.class).description(), order));
+         {
+            caseQuery.orderBy(QueryExpressions.orderBy(QueryExpressions.templateFor(Describable.Data.class).description(), order));
          } else if (orderByValue[0].equals("dueOn"))
-         {            
-            caseQuery.orderBy( QueryExpressions.orderBy( QueryExpressions.templateFor(DueOn.Data.class).dueOn(), order));
+         {
+            caseQuery.orderBy(QueryExpressions.orderBy(QueryExpressions.templateFor(DueOn.Data.class).dueOn(), order));
          } else if (orderByValue[0].equals("createdOn"))
-         {            
-            caseQuery.orderBy( QueryExpressions.orderBy( QueryExpressions.templateFor(CreatedOn.class).createdOn(), order));
-         } 
+         {
+            caseQuery.orderBy(QueryExpressions.orderBy(QueryExpressions.templateFor(CreatedOn.class).createdOn(), order));
+         }
       }
       return caseQuery;
    }
 
    public Query<LabelEntity> possibleLabels()
    {
-      QueryBuilder<LabelEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder( LabelEntity.class );
+      QueryBuilder<LabelEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(LabelEntity.class);
       queryBuilder = queryBuilder.where(
-            eq( templateFor( Removable.Data.class ).removed(), false ));
-      return queryBuilder.newQuery( module.unitOfWorkFactory().currentUnitOfWork() ).
-            orderBy( QueryExpressions.orderBy( templateFor( Describable.Data.class).description() ) );
+              eq(templateFor(Removable.Data.class).removed(), false));
+      return queryBuilder.newQuery(module.unitOfWorkFactory().currentUnitOfWork()).
+              orderBy(QueryExpressions.orderBy(templateFor(Describable.Data.class).description()));
    }
 
    public Query<CaseTypeEntity> possibleCaseTypes()
    {
-      QueryBuilder<CaseTypeEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder( CaseTypeEntity.class );
+      QueryBuilder<CaseTypeEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(CaseTypeEntity.class);
       queryBuilder = queryBuilder.where(
-            eq( templateFor( Removable.Data.class ).removed(), false ));
-      return queryBuilder.newQuery( module.unitOfWorkFactory().currentUnitOfWork() ).
-         orderBy( QueryExpressions.orderBy( templateFor( Describable.Data.class).description() ) );
+              eq(templateFor(Removable.Data.class).removed(), false));
+      return queryBuilder.newQuery(module.unitOfWorkFactory().currentUnitOfWork()).
+              orderBy(QueryExpressions.orderBy(templateFor(Describable.Data.class).description()));
    }
 
    public Query<UserEntity> possibleAssignees()
    {
-      QueryBuilder<UserEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder( UserEntity.class );
+      QueryBuilder<UserEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(UserEntity.class);
       queryBuilder = queryBuilder.where(
-                  eq( templateFor( UserAuthentication.Data.class ).disabled(), false ));
-      return queryBuilder.newQuery( module.unitOfWorkFactory().currentUnitOfWork() ).
-         orderBy( QueryExpressions.orderBy( templateFor( Describable.Data.class).description() ) );
+              eq(templateFor(UserAuthentication.Data.class).disabled(), false));
+      return queryBuilder.newQuery(module.unitOfWorkFactory().currentUnitOfWork()).
+              orderBy(QueryExpressions.orderBy(templateFor(Describable.Data.class).description()));
    }
 
    public LinksValue possibleProjects()
    {
-      QueryBuilder<ProjectEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder( ProjectEntity.class );
+      QueryBuilder<ProjectEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(ProjectEntity.class);
       queryBuilder = queryBuilder.where(
-                  eq( templateFor( Removable.Data.class ).removed(), false ));
-      Query<ProjectEntity> query = queryBuilder.newQuery( module.unitOfWorkFactory().currentUnitOfWork() ).
-            orderBy( QueryExpressions.orderBy( templateFor( Describable.Data.class).description() ) );
-      LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
+              eq(templateFor(Removable.Data.class).removed(), false));
+      Query<ProjectEntity> query = queryBuilder.newQuery(module.unitOfWorkFactory().currentUnitOfWork()).
+              orderBy(QueryExpressions.orderBy(templateFor(Describable.Data.class).description()));
+      LinksBuilder linksBuilder = new LinksBuilder(module.valueBuilderFactory());
 
-      for( ProjectEntity project : query )
+      for (ProjectEntity project : query)
       {
-         linksBuilder.addLink(project.getDescription(), project.identity().get(), "", "", "", ((Describable)((Ownable.Data)project).owner().get()).getDescription() );   
+         linksBuilder.addLink(project.getDescription(), project.identity().get(), "", "", "", ((Describable) ((Ownable.Data) project).owner().get()).getDescription());
       }
       return linksBuilder.newLinks();
    }
 
    public Query<UserEntity> possibleCreatedBy()
    {
-      QueryBuilder<UserEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder( UserEntity.class );
-      return queryBuilder.newQuery( module.unitOfWorkFactory().currentUnitOfWork() ).
-         orderBy( QueryExpressions.orderBy( templateFor( Describable.Data.class).description() ) );
+      QueryBuilder<UserEntity> queryBuilder = module.queryBuilderFactory().newQueryBuilder(UserEntity.class);
+      return queryBuilder.newQuery(module.unitOfWorkFactory().currentUnitOfWork()).
+              orderBy(QueryExpressions.orderBy(templateFor(Describable.Data.class).description()));
    }
 
    /**
     * Convenience method to be able to tell the gui that Status has to be rendered visible in the Perspective filter.
+    *
     * @return
     */
    public LinksValue possibleStatus()
    {
-      return new LinksBuilder( module.valueBuilderFactory() ).newLinks();
+      return new LinksBuilder(module.valueBuilderFactory()).newLinks();
    }
 }

@@ -24,46 +24,46 @@ import org.qi4j.api.util.Function;
  */
 public final class Links
 {
-   public static Specification<LinkValue> withId( final String id)
+   public static Specification<LinkValue> withId(final String id)
    {
       return new Specification<LinkValue>()
       {
-         public boolean satisfiedBy( LinkValue linkValue )
+         public boolean satisfiedBy(LinkValue linkValue)
          {
-            return linkValue.id().get().equals( id );
+            return linkValue.id().get().equals(id);
          }
       };
    }
 
-   public static Specification<LinkValue> withText( final String text)
+   public static Specification<LinkValue> withText(final String text)
    {
       return new Specification<LinkValue>()
       {
-         public boolean satisfiedBy( LinkValue linkValue )
+         public boolean satisfiedBy(LinkValue linkValue)
          {
-            return linkValue.text().get().equals( text );
+            return linkValue.text().get().equals(text);
          }
       };
    }
 
-   public static Specification<LinkValue> withRel( final String rel)
+   public static Specification<LinkValue> withRel(final String rel)
    {
       return new Specification<LinkValue>()
       {
-         public boolean satisfiedBy( LinkValue linkValue )
+         public boolean satisfiedBy(LinkValue linkValue)
          {
-            return linkValue.rel().get().equals( rel );
+            return linkValue.rel().get().equals(rel);
          }
       };
    }
 
-   public static Specification<LinkValue> withClass( final String clazz)
+   public static Specification<LinkValue> withClass(final String clazz)
    {
       return new Specification<LinkValue>()
       {
-         public boolean satisfiedBy( LinkValue linkValue )
+         public boolean satisfiedBy(LinkValue linkValue)
          {
-            return linkValue.classes().get().contains( clazz );
+            return linkValue.classes().get().contains(clazz);
          }
       };
    }
@@ -72,7 +72,7 @@ public final class Links
    {
       return new Function<LinkValue, String>()
       {
-         public String map( LinkValue linkValue )
+         public String map(LinkValue linkValue)
          {
             return linkValue.rel().get();
          }

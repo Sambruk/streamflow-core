@@ -16,27 +16,18 @@
 
 package se.streamsource.streamflow.web.resource.surface.accesspoints.endusers;
 
-import org.restlet.resource.ResourceException;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
-import se.streamsource.dci.restlet.server.api.SubResources;
-import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.EndUserContext;
-import se.streamsource.streamflow.web.domain.structure.caze.Case;
+import se.streamsource.dci.restlet.server.api.SubResource;
 
 /**
  * JAVADOC
  */
 public class EndUserResource
       extends CommandQueryResource
-      implements SubResources
 {
-   public EndUserResource()
+   @SubResource
+   public void drafts()
    {
-      super( EndUserContext.class );
-   }
-
-   public void resource( String segment ) throws ResourceException
-   {
-      setRole( Case.class, segment );
-      subResource( SurfaceCaseResource.class );
+      subResource(SurfaceDraftsResource.class);
    }
 }

@@ -37,21 +37,21 @@ import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
 
 import java.util.HashSet;
 
-import static se.streamsource.dci.api.RoleMap.*;
+import static se.streamsource.dci.api.RoleMap.role;
 
 /**
  * JAVADOC
  */
 public class LabelableContext
-      implements IndexContext<LinksValue>
+        implements IndexContext<LinksValue>
 {
    @Structure
    Module module;
 
-   @RequiresPermission( PermissionType.read )
+   @RequiresPermission(PermissionType.read)
    public LinksValue index()
    {
-      return new LinksBuilder( module.valueBuilderFactory() ).addDescribables( role( Labelable.Data.class ).labels() ).newLinks();
+      return new LinksBuilder(module.valueBuilderFactory()).addDescribables(role(Labelable.Data.class).labels()).newLinks();
    }
 
    @RequiresPermission(PermissionType.write)
@@ -60,52 +60,52 @@ public class LabelableContext
       // Fetch all labels from set CaseType ---> Organization
       HashSet<Object> labels = new HashSet<Object>();
 
-      LinksBuilder builder = new LinksBuilder( module.valueBuilderFactory() ).command( "addlabel" );
-      Owner project = RoleMap.role( Ownable.Data.class ).owner().get();
+      LinksBuilder builder = new LinksBuilder(module.valueBuilderFactory()).command("addlabel");
+      Owner project = RoleMap.role(Ownable.Data.class).owner().get();
 
       // label's for selected case type
-      SelectedLabels.Data from = (SelectedLabels.Data) RoleMap.role( TypedCase.Data.class ).caseType().get();
+      SelectedLabels.Data from = (SelectedLabels.Data) RoleMap.role(TypedCase.Data.class).caseType().get();
       if (from != null)
-         labels.addAll( from.selectedLabels().toSet() );
+         labels.addAll(from.selectedLabels().toSet());
 
 
       // project's selected labels
-      labels.addAll( ((SelectedLabels.Data) project).selectedLabels().toSet() );
+      labels.addAll(((SelectedLabels.Data) project).selectedLabels().toSet());
 
 
       // OU hirarchy labels from bottom up
       Entity entity = (Entity) ((Ownable.Data) project).owner().get();
 
-      while ( entity instanceof Ownable )
+      while (entity instanceof Ownable)
       {
-         labels.addAll( ((SelectedLabels.Data) entity).selectedLabels().toSet() );
+         labels.addAll(((SelectedLabels.Data) entity).selectedLabels().toSet());
          entity = (Entity) ((Ownable.Data) entity).owner().get();
       }
       // Organization's selected labels
-      labels.addAll( ((SelectedLabels.Data) entity).selectedLabels().toSet() );
+      labels.addAll(((SelectedLabels.Data) entity).selectedLabels().toSet());
 
       // omitt already set labels
-      Labelable.Data labelable = RoleMap.role( Labelable.Data.class );
+      Labelable.Data labelable = RoleMap.role(Labelable.Data.class);
 
       for (Object object : labels)
       {
-         Label label = (Label)object;
+         Label label = (Label) object;
 
-         if (!labelable.labels().contains( label ))
+         if (!labelable.labels().contains(label))
          {
-            builder.addDescribable( label );
+            builder.addDescribable(label);
          }
       }
       return builder.newLinks();
    }
 
-   @RequiresPermission( PermissionType.write )
-   public void addlabel( EntityValue reference )
+   @RequiresPermission(PermissionType.write)
+   public void addlabel(EntityValue reference)
    {
       UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
-      Labelable labelable = role( Labelable.class );
-      Label label = uow.get( Label.class, reference.entity().get() );
+      Labelable labelable = role(Labelable.class);
+      Label label = uow.get(Label.class, reference.entity().get());
 
-      labelable.addLabel( label );
+      labelable.addLabel(label);
    }
 }

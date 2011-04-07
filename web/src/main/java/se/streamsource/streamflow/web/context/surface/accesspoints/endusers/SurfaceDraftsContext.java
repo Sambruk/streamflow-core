@@ -33,53 +33,53 @@ import se.streamsource.streamflow.web.domain.structure.form.EndUserCases;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
 import se.streamsource.streamflow.web.domain.structure.form.FormDraft;
 import se.streamsource.streamflow.web.domain.structure.form.SelectedForms;
-import se.streamsource.streamflow.web.domain.structure.user.AnonymousEndUser;
+import se.streamsource.streamflow.web.domain.structure.user.EndUser;
 
 /**
  * JAVADOC
  */
-public class EndUserContext
-      implements IndexContext<LinksValue>
+public class SurfaceDraftsContext
+        implements IndexContext<LinksValue>
 {
    @Structure
    Module module;
 
    public LinksValue index()
    {
-      DraftsQueries draftsQueries = RoleMap.role( DraftsQueries.class );
-      LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
-      linksBuilder.addDescribables( draftsQueries.drafts( null ).newQuery( module.unitOfWorkFactory().currentUnitOfWork() ) );
+      DraftsQueries draftsQueries = RoleMap.role(DraftsQueries.class);
+      LinksBuilder linksBuilder = new LinksBuilder(module.valueBuilderFactory());
+      linksBuilder.addDescribables(draftsQueries.drafts(null).newQuery(module.unitOfWorkFactory().currentUnitOfWork()));
       return linksBuilder.newLinks();
    }
 
    public void createcase()
    {
-      AnonymousEndUser endUser = RoleMap.role( AnonymousEndUser.class );
-      EndUserCases endUserCases = RoleMap.role( EndUserCases.class );
-      endUserCases.createCase( endUser );
+      EndUser endUser = RoleMap.role(EndUser.class);
+      EndUserCases endUserCases = RoleMap.role(EndUserCases.class);
+      endUserCases.createCase(endUser);
    }
 
    public void createcasewithform()
    {
-      AnonymousEndUser endUser = RoleMap.role( AnonymousEndUser.class );
-      EndUserCases endUserCases = RoleMap.role( EndUserCases.class );
-      endUserCases.createCaseWithForm( endUser );
+      EndUser endUser = RoleMap.role(EndUser.class);
+      EndUserCases endUserCases = RoleMap.role(EndUserCases.class);
+      endUserCases.createCaseWithForm(endUser);
    }
 
    public CaseFormDTO findcasewithform()
    {
-      ValueBuilder<CaseFormDTO> builder = module.valueBuilderFactory().newValueBuilder( CaseFormDTO.class );
-      DraftsQueries queries = RoleMap.role( DraftsQueries.class );
-      Query<Case> query = queries.drafts( null ).newQuery( module.unitOfWorkFactory().currentUnitOfWork() );
+      ValueBuilder<CaseFormDTO> builder = module.valueBuilderFactory().newValueBuilder(CaseFormDTO.class);
+      DraftsQueries queries = RoleMap.role(DraftsQueries.class);
+      Query<Case> query = queries.drafts(null).newQuery(module.unitOfWorkFactory().currentUnitOfWork());
       for (Case aCase : query)
       {
-         SelectedForms.Data data = RoleMap.role( SelectedForms.Data.class );
-         Form form = data.selectedForms().get( 0 );
-         FormDraft formSubmission = aCase.getFormDraft( form );
+         SelectedForms.Data data = RoleMap.role(SelectedForms.Data.class);
+         Form form = data.selectedForms().get(0);
+         FormDraft formSubmission = aCase.getFormDraft(form);
          if (formSubmission != null)
          {
-            builder.prototype().caze().set( EntityReference.getEntityReference( aCase ) );
-            builder.prototype().form().set( EntityReference.getEntityReference( formSubmission ) );
+            builder.prototype().caze().set(EntityReference.getEntityReference(aCase));
+            builder.prototype().form().set(EntityReference.getEntityReference(formSubmission));
             return builder.newInstance();
          }
       }

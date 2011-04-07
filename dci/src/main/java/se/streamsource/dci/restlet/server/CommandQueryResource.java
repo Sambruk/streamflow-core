@@ -420,6 +420,11 @@ public class CommandQueryResource
       }
    }
 
+   protected Object[] getArguments()
+   {
+      return (Object[])Request.getCurrent().getAttributes().get(ARGUMENTS);
+   }
+
    protected Object invoke() throws Throwable
    {
       return invoke(Request.getCurrent().getResourceRef().getLastSegment());
@@ -813,7 +818,7 @@ public class CommandQueryResource
       return form;
    }
 
-   private Object convert(Object result)
+   private Object convert( Object result )
    {
       if (converter != null)
          result = converter.convert(result, Request.getCurrent(), (Object[]) Request.getCurrent().getAttributes().get(ARGUMENTS));

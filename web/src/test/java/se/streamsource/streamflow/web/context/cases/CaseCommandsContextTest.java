@@ -31,14 +31,7 @@ import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.table.TableQuery;
 import se.streamsource.streamflow.web.application.security.UserPrincipal;
 import se.streamsource.streamflow.web.context.ContextTest;
-import se.streamsource.streamflow.web.context.administration.CaseTypesContext;
-import se.streamsource.streamflow.web.context.administration.MembersContext;
-import se.streamsource.streamflow.web.context.administration.OrganizationalUnitsContext;
-import se.streamsource.streamflow.web.context.administration.OrganizationsContext;
-import se.streamsource.streamflow.web.context.administration.ProjectsContext;
-import se.streamsource.streamflow.web.context.administration.ResolutionsContext;
-import se.streamsource.streamflow.web.context.administration.SelectedCaseTypesContext;
-import se.streamsource.streamflow.web.context.administration.SelectedResolutionsContext;
+import se.streamsource.streamflow.web.context.administration.*;
 import se.streamsource.streamflow.web.context.administration.labels.LabelsContext;
 import se.streamsource.streamflow.web.context.administration.labels.SelectedLabelsContext;
 import se.streamsource.streamflow.web.context.organizations.OrganizationalUnitsContextTest;
@@ -61,16 +54,16 @@ import se.streamsource.streamflow.web.domain.structure.user.User;
 import java.lang.reflect.Method;
 import java.util.List;
 
-import static java.util.Arrays.*;
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
-import static org.qi4j.api.util.Iterables.*;
+import static java.util.Arrays.asList;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertThat;
+import static org.qi4j.api.util.Iterables.first;
 
 /**
  * Check lifecycle of a case
  */
 public class CaseCommandsContextTest
-      extends ContextTest
+        extends ContextTest
 {
    InteractionConstraints constraints;
 
@@ -78,11 +71,11 @@ public class CaseCommandsContextTest
    public static void before() throws UnitOfWorkCompletionException
    {
       {
-         OrganizationalUnitsContextTest.createOU( "OU1" );
+         OrganizationalUnitsContextTest.createOU("OU1");
       }
 
       {
-         ProjectsContextTest.createProject( "OU1", "Project1" );
+         ProjectsContextTest.createProject("OU1", "Project1");
       }
 
       Project project1;
@@ -90,18 +83,18 @@ public class CaseCommandsContextTest
       {
          UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
          RoleMap.newCurrentRoleMap();
-         playRole( Organizations.class, OrganizationsEntity.ORGANIZATIONS_ID);
-         org = playRole( Organization.class, findLink( context( OrganizationsContext.class).index(), "Organization" ));
-         playRole( findDescribable(context( OrganizationalUnitsContext.class).index(), "OU1"));
+         playRole(Organizations.class, OrganizationsEntity.ORGANIZATIONS_ID);
+         org = playRole(Organization.class, findLink(context(OrganizationsContext.class).index(), "Organization"));
+         playRole(findDescribable(context(OrganizationalUnitsContext.class).index(), "OU1"));
 
-         project1 = findDescribable( context( ProjectsContext.class ).index(), "Project1" );
-         playRole( project1 );
+         project1 = findDescribable(context(ProjectsContext.class).index(), "Project1");
+         playRole(project1);
 
-         CaseTypesContext caseTypes = context( CaseTypesContext.class );
-         caseTypes.createcasetype( stringValue( "CaseType1" ) );
+         CaseTypesContext caseTypes = context(CaseTypesContext.class);
+         caseTypes.createcasetype(stringValue("CaseType1"));
 
-         SelectedCaseTypesContext selectedCaseTypes = context( SelectedCaseTypesContext.class );
-         selectedCaseTypes.addcasetype( entityValue( findLink( selectedCaseTypes.possiblecasetypes(), "CaseType1" ) ) );
+         SelectedCaseTypesContext selectedCaseTypes = context(SelectedCaseTypesContext.class);
+         selectedCaseTypes.addcasetype(entityValue(findLink(selectedCaseTypes.possiblecasetypes(), "CaseType1")));
 
          playRole( findDescribable(caseTypes.index(), "CaseType1") );
          ResolutionsContext resolutionsContext = context( ResolutionsContext.class );
@@ -116,20 +109,20 @@ public class CaseCommandsContextTest
          UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
          RoleMap.newCurrentRoleMap();
          playRole(org);
-         playRole( project1 );
-         context( LabelsContext.class ).createlabel( stringValue( "Label1" ) );
-         SelectedLabelsContext context = context( SelectedLabelsContext.class );
-         context.addlabel( CaseCommandsContextTest.<Label>entity( findLink( context.possiblelabels(), "Label1" ) ) );
+         playRole(project1);
+         context(LabelsContext.class).createlabel(stringValue("Label1"));
+         SelectedLabelsContext context = context(SelectedLabelsContext.class);
+         context.addlabel(CaseCommandsContextTest.<Label>entity(findLink(context.possiblelabels(), "Label1")));
          uow.complete();
       }
 
-      UsersContextTest.createUser( "test" );
+      UsersContextTest.createUser("test");
 
       {
          UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
          RoleMap.newCurrentRoleMap();
-         playRole( project1 );
-         context( MembersContext.class ).addmember( entityValue( "test" ) );
+         playRole(project1);
+         context(MembersContext.class).addmember(entityValue("test"));
          uow.complete();
       }
 
@@ -139,7 +132,7 @@ public class CaseCommandsContextTest
    @Before
    public void services()
    {
-      constraints = serviceLocator.<InteractionConstraints>findService( InteractionConstraints.class ).get();
+      constraints = serviceLocator.<InteractionConstraints>findService(InteractionConstraints.class).get();
    }
 
    @Test
@@ -149,12 +142,12 @@ public class CaseCommandsContextTest
       {
          UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
          RoleMap.newCurrentRoleMap();
-         playRole( User.class, "test" );
-         RoleMap.current().set( new UserPrincipal("test") );
-         DraftsContext drafts = context( DraftsContext.class );
+         playRole(User.class, "test");
+         RoleMap.current().set(new UserPrincipal("test"));
+         DraftsContext drafts = context(DraftsContext.class);
          drafts.createcase();
          uow.complete();
-         eventsOccurred( "createdCase", "addedContact" );
+         eventsOccurred("createdCase", "addedContact");
       }
 
       // Check that draft exists
@@ -162,13 +155,13 @@ public class CaseCommandsContextTest
       {
          UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
          RoleMap.newCurrentRoleMap();
-         playRole( User.class, "test" );
-         RoleMap.current().set( new UserPrincipal("test") );
+         playRole(User.class, "test");
+         RoleMap.current().set(new UserPrincipal("test"));
 
-         DraftsContext drafts = context( DraftsContext.class );
-         Iterable<Case> caseList = drafts.cases( valueBuilderFactory.newValueFromJSON( TableQuery.class, "{tq:'select *'}" ) );
-         assertThat( Iterables.count( caseList ), equalTo( 1L ) );
-         caze = first( caseList );
+         DraftsContext drafts = context(DraftsContext.class);
+         Iterable<Case> caseList = drafts.cases(valueBuilderFactory.newValueFromJSON(TableQuery.class, "{tq:'select *'}"));
+         assertThat(Iterables.count(caseList), equalTo(1L));
+         caze = first(caseList);
          uow.discard();
       }
 
@@ -176,193 +169,193 @@ public class CaseCommandsContextTest
       {
          UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
          RoleMap.newCurrentRoleMap();
-         playRole( User.class, "test" );
-         RoleMap.current().set( new UserPrincipal("test") );
-         playRole( caze );
+         playRole(User.class, "test");
+         RoleMap.current().set(new UserPrincipal("test"));
+         playRole(caze);
 
-         context( CaseGeneralCommandsContext.class ).changedescription( stringValue( "Case1" ) );
+         context(CaseGeneralCommandsContext.class).changedescription(stringValue("Case1"));
          uow.complete();
-         eventsOccurred( "changedDescription" );
+         eventsOccurred("changedDescription");
       }
 
       // Check actions for new draft
       {
-         checkActions( caze, "delete","sendto", "createSubCase" );
+         checkActions(caze, "delete", "sendto", "createSubCase");
       }
 
       // Send to project
       {
          UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
          RoleMap.newCurrentRoleMap();
-         playRole( User.class, "test" );
-         RoleMap.current().set( new UserPrincipal("test") );
-         playRole( caze );
+         playRole(User.class, "test");
+         RoleMap.current().set(new UserPrincipal("test"));
+         playRole(caze);
 
-         CaseCommandsContext context = context( CaseCommandsContext.class );
-         context.sendto( entityValue( findLink( context.possiblesendto(), "Project1" ) ) );
+         CaseCommandsContext context = context(CaseCommandsContext.class);
+         context.sendto(entityValue(findLink(context.possiblesendto(), "Project1")));
          uow.complete();
-         eventsOccurred( "changedOwner", "changedDate", "setCounter", "assignedCaseId" );
+         eventsOccurred("changedOwner", "changedDate", "setCounter", "assignedCaseId");
       }
 
       // Check actions for draft sent to project
       {
-         checkActions( caze, "delete", "open", "sendto", "createSubCase" );
+         checkActions(caze, "delete", "open", "sendto", "createSubCase");
       }
 
       // Select casetype
       {
          UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
          RoleMap.newCurrentRoleMap();
-         playRole( User.class, "test" );
-         RoleMap.current().set( new UserPrincipal("test") );
-         playRole( caze );
+         playRole(User.class, "test");
+         RoleMap.current().set(new UserPrincipal("test"));
+         playRole(caze);
 
-         CaseGeneralCommandsContext context = context( CaseGeneralCommandsContext.class );
-         context.casetype( entityValue( findLink( context.possiblecasetypes(), "CaseType1" ) ) );
+         CaseGeneralCommandsContext context = context(CaseGeneralCommandsContext.class);
+         context.casetype(entityValue(findLink(context.possiblecasetypes(), "CaseType1")));
 
          uow.complete();
-         eventsOccurred( "changedCaseType" );
+         eventsOccurred("changedCaseType");
       }
 
       // Add label
       {
          UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
          RoleMap.newCurrentRoleMap();
-         playRole( User.class, "test" );
-         RoleMap.current().set( new UserPrincipal("test") );
-         playRole( caze );
+         playRole(User.class, "test");
+         RoleMap.current().set(new UserPrincipal("test"));
+         playRole(caze);
 
-         LabelableContext context = context( LabelableContext.class );
-         context.addlabel( entityValue( findLink( context.possiblelabels(), "Label1" ) ) );
+         LabelableContext context = context(LabelableContext.class);
+         context.addlabel(entityValue(findLink(context.possiblelabels(), "Label1")));
 
          uow.complete();
-         eventsOccurred( "addedLabel" );
+         eventsOccurred("addedLabel");
       }
 
       // Open case
       {
          UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
          RoleMap.newCurrentRoleMap();
-         playRole( User.class, "test" );
-         RoleMap.current().set( new UserPrincipal("test") );
-         playRole( caze );
+         playRole(User.class, "test");
+         RoleMap.current().set(new UserPrincipal("test"));
+         playRole(caze);
 
-         context( CaseCommandsContext.class ).open();
+         context(CaseCommandsContext.class).open();
 
          uow.complete();
-         eventsOccurred( "changedStatus" );
+         eventsOccurred("changedStatus");
       }
 
       // Check open actions
       {
-         checkActions( caze, "delete", "resolve", "sendto", "createSubCase", "assign" );
+         checkActions(caze, "delete", "resolve", "sendto", "createSubCase", "assign");
       }
 
       // Assign case
       {
          UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
          RoleMap.newCurrentRoleMap();
-         playRole( User.class, "test" );
-         RoleMap.current().set( new UserPrincipal("test") );
+         playRole(User.class, "test");
+         RoleMap.current().set(new UserPrincipal("test"));
 
-         playRole( Project.class, findLink( context( WorkspaceProjectsContext.class ).index(), "Project1" ) );
+         playRole(Project.class, findLink(context(WorkspaceProjectsContext.class).index(), "Project1"));
 // TODO This is random!         playRole( first( context( InboxContext.class ).index() ) );
-         playRole( caze );
+         playRole(caze);
 
-         context( CaseCommandsContext.class ).assign();
+         context(CaseCommandsContext.class).assign();
 
          uow.complete();
-         eventsOccurred( "assignedTo" );
+         eventsOccurred("assignedTo");
       }
 
       // Check assigned actions
       {
-         checkActions( caze, "delete", "resolve", "sendto", "createSubCase", "unassign", "onhold");
+         checkActions(caze, "delete", "resolve", "sendto", "createSubCase", "unassign", "onhold");
       }
 
       // Resolve case
       {
          UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
          RoleMap.newCurrentRoleMap();
-         playRole( User.class, "test" );
-         RoleMap.current().set( new UserPrincipal("test") );
+         playRole(User.class, "test");
+         RoleMap.current().set(new UserPrincipal("test"));
 
-         playRole( Project.class, findLink( context( WorkspaceProjectsContext.class ).index(), "Project1" ) );
+         playRole(Project.class, findLink(context(WorkspaceProjectsContext.class).index(), "Project1"));
 //         playRole( first( context( AssignmentsContext.class ).index() ) );
-         playRole( caze );
+         playRole(caze);
 
 //         uow.metaInfo().set( new UserPrincipal("test") );
 
-         CaseCommandsContext context = context( CaseCommandsContext.class );
-         context.resolve( entityValue( findLink( context.possibleresolutions(), "Resolution1" ).id().get() ) );
+         CaseCommandsContext context = context(CaseCommandsContext.class);
+         context.resolve(entityValue(findLink(context.possibleresolutions(), "Resolution1").id().get()));
 
          uow.complete();
-         eventsOccurred( "resolved", "changedStatus" );
+         eventsOccurred("resolved", "changedStatus");
       }
 
       // Check resolved actions
       {
-         checkActions( caze, "reopen" );
+         checkActions(caze, "reopen");
       }
 
       // Reopen case
       {
          UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
          RoleMap.newCurrentRoleMap();
-         playRole( User.class, "test" );
-         RoleMap.current().set( new UserPrincipal("test") );
-         playRole( caze );
+         playRole(User.class, "test");
+         RoleMap.current().set(new UserPrincipal("test"));
+         playRole(caze);
 
-         context( CaseCommandsContext.class ).reopen();
+         context(CaseCommandsContext.class).reopen();
 
          uow.complete();
-         eventsOccurred( "changedStatus", "unresolved" );
+         eventsOccurred("changedStatus", "unresolved");
       }
 
       // Check reopened actions
       {
-         checkActions( caze, "delete", "resolve", "sendto", "createSubCase", "unassign", "onhold" );
+         checkActions(caze, "delete", "resolve", "sendto", "createSubCase", "unassign", "onhold");
       }
 
       // Close
       {
          UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
          RoleMap.newCurrentRoleMap();
-         playRole( User.class, "test" );
-         RoleMap.current().set( new UserPrincipal("test") );
-         playRole( caze );
+         playRole(User.class, "test");
+         RoleMap.current().set(new UserPrincipal("test"));
+         playRole(caze);
 
-         context( CaseCommandsContext.class ).close();
+         context(CaseCommandsContext.class).close();
 
          uow.complete();
-         eventsOccurred( "changedStatus" );
+         eventsOccurred("changedStatus");
       }
 
       // Check closed actions
       {
-         checkActions( caze, "reopen" );
+         checkActions(caze, "reopen");
       }
    }
 
-   private void checkActions( Case caze, String... allowedActions )
+   private void checkActions(Case caze, String... allowedActions)
    {
       UnitOfWork uow = unitOfWorkFactory.newUnitOfWork();
       RoleMap.newCurrentRoleMap();
-      RoleMap.current().set( new UserPrincipal( "test" ) );
-      playRole( caze );
-      playRole( User.class, "test" );
-      RoleMap.current().set( new UserPrincipal("test") );
+      RoleMap.current().set(new UserPrincipal("test"));
+      playRole(caze);
+      playRole(User.class, "test");
+      RoleMap.current().set(new UserPrincipal("test"));
 
-      List<String> actions = new ArrayStack(  );
-      Iterables.addAll( actions, Iterables.map( new Function<Method, String>()
+      List<String> actions = new ArrayStack();
+      Iterables.addAll(actions, Iterables.map(new Function<Method, String>()
       {
-         public String map( Method method )
+         public String map(Method method)
          {
             return method.getName();
          }
-      },Contexts.commands( CaseCommandsContext.class, constraints,  RoleMap.current(), moduleInstance) ));
+      }, Contexts.commands(CaseCommandsContext.class, constraints, RoleMap.current(), moduleInstance)));
 
-      assertThat( actions, equalTo( asList( allowedActions ) ) );
+      assertThat(actions, equalTo(asList(allowedActions)));
       uow.discard();
    }
 }

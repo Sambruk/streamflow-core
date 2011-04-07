@@ -43,8 +43,6 @@ import se.streamsource.streamflow.web.application.security.UserPrincipal;
 import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity;
 import se.streamsource.streamflow.web.domain.entity.casetype.ResolutionEntity;
 import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
-import se.streamsource.streamflow.web.domain.entity.conversation.ConversationEntity;
-import se.streamsource.streamflow.web.domain.entity.conversation.MessageEntity;
 import se.streamsource.streamflow.web.domain.entity.label.LabelEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.*;
 import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
@@ -101,8 +99,6 @@ public class CaseStatisticsServiceTest
               RoleEntity.class,
               UserEntity.class,
               ResolutionEntity.class,
-              ConversationEntity.class,
-              MessageEntity.class,
               CaseEntity.class,
               CaseTypeEntity.class);
       module.values(ContactValue.class, ParticipantRolesValue.class);

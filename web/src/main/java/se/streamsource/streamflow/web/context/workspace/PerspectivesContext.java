@@ -30,20 +30,20 @@ import se.streamsource.streamflow.web.domain.structure.user.Perspectives;
  * JAVADOC
  */
 public class PerspectivesContext
-      implements IndexContext<Iterable<Perspective>>, CreateContext<PerspectiveValue>
+        implements IndexContext<Iterable<Perspective>>, CreateContext<PerspectiveValue>
 {
    @Structure
    Module module;
 
    public Iterable<Perspective> index()
    {
-      Perspectives.Data searches = RoleMap.role( Perspectives.Data.class );
+      Perspectives.Data searches = RoleMap.role(Perspectives.Data.class);
       return searches.perspectives();
    }
 
-   public void create( PerspectiveValue perspective )
+   public void create(PerspectiveValue perspective)
    {
-      Perspectives perspectives = RoleMap.role( Perspectives.class );
-      perspectives.createPerspective( perspective );
+      Perspectives perspectives = RoleMap.role(Perspectives.class);
+      perspectives.createPerspective(perspective);
    }
 }

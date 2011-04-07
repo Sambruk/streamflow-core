@@ -16,11 +16,16 @@
 
 package se.streamsource.streamflow.web.resource;
 
+import se.streamsource.dci.api.RequiresRoles;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResource;
 import se.streamsource.streamflow.web.context.RequiresPermission;
 import se.streamsource.streamflow.web.domain.entity.user.UsersEntity;
+import se.streamsource.streamflow.web.domain.interaction.security.Authentication;
 import se.streamsource.streamflow.web.domain.interaction.security.PermissionType;
+import se.streamsource.streamflow.web.domain.structure.organization.OrganizationParticipations;
+import se.streamsource.streamflow.web.domain.structure.user.EndUsers;
+import se.streamsource.streamflow.web.domain.structure.user.ProxyUser;
 import se.streamsource.streamflow.web.resource.account.AccountResource;
 import se.streamsource.streamflow.web.resource.administration.AdministrationResource;
 import se.streamsource.streamflow.web.resource.crystal.CrystalResource;
@@ -34,24 +39,28 @@ import se.streamsource.streamflow.web.resource.workspace.WorkspaceResource;
 public class RootResource
       extends CommandQueryResource
 {
+   @RequiresRoles(OrganizationParticipations.class)
    @SubResource
    public void account()
    {
       subResource( AccountResource.class );
    }
 
+   @RequiresRoles(OrganizationParticipations.class)
    @SubResource
    public void workspace()
    {
       subResource( WorkspaceResource.class );
    }
 
+   @RequiresRoles(OrganizationParticipations.class)
    @SubResource
    public void overview()
    {
       subResource( OverviewResource.class );
    }
 
+   @RequiresRoles(OrganizationParticipations.class)
    @SubResource
    public void administration()
    {
@@ -59,6 +68,7 @@ public class RootResource
       subResource( AdministrationResource.class );
    }
 
+   @RequiresRoles(ProxyUser.class)
    @SubResource
    public void surface()
    {

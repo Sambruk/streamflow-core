@@ -104,385 +104,385 @@ import static se.streamsource.streamflow.client.util.UIAssemblers.*;
  */
 public class UIAssembler
 {
-   public void assemble( LayerAssembly layer ) throws AssemblyException
+   public void assemble(LayerAssembly layer) throws AssemblyException
    {
-      search( layer.module( "Search" ) );
-      administration( layer.module( "Administration" ) );
-      workspace( layer.module( "Workspace" ) );
-      cases( layer.module( "Case" ) );
-      menu( layer.module( "Menu" ) );
-      overview( layer.module( "Overview" ) );
-      streamflow( layer.module( "Streamflow" ) );
-      restlet( layer.module( "Restlet client" ) );
+      search(layer.module("Search"));
+      administration(layer.module("Administration"));
+      workspace(layer.module("Workspace"));
+      cases(layer.module("Case"));
+      menu(layer.module("Menu"));
+      overview(layer.module("Overview"));
+      streamflow(layer.module("Streamflow"));
+      restlet(layer.module("Restlet client"));
 
       // More specific administration modules
-      labels( layer.module( "Labels" ) );
-      userAdministration( layer.module( "Users" ) );
-      organizationAdministration( layer.module( "Organizations" ) );
-      groupAdministration( layer.module( "Groups" ) );
-      projectAdministration( layer.module( "Projects" ) );
-      caseTypeAdministration( layer.module( "Case types" ) );
-      resolutions( layer.module( "Resolutions" ) );
-      roleAdministration( layer.module( "Roles" ) );
-      forms( layer.module( "Forms" ) );
-      administratorAdministrator( layer.module( "Administrators" ) );
-      surfaceAdministration( layer.module( "Surface" ) );
-      caseAccesDefaults(layer.module( "Case access defaults" ));
+      labels(layer.module("Labels"));
+      userAdministration(layer.module("Users"));
+      organizationAdministration(layer.module("Organizations"));
+      groupAdministration(layer.module("Groups"));
+      projectAdministration(layer.module("Projects"));
+      caseTypeAdministration(layer.module("Case types"));
+      resolutions(layer.module("Resolutions"));
+      roleAdministration(layer.module("Roles"));
+      forms(layer.module("Forms"));
+      administratorAdministrator(layer.module("Administrators"));
+      surfaceAdministration(layer.module("Surface"));
+      caseAccesDefaults(layer.module("Case access defaults"));
    }
 
-   private void caseAccesDefaults( ModuleAssembly moduleAssembly ) throws AssemblyException
+   private void caseAccesDefaults(ModuleAssembly module) throws AssemblyException
    {
-      addMV( moduleAssembly, CaseAccessDefaultsModel.class, CaseAccessDefaultsView.class );
+      addMV(module, CaseAccessDefaultsModel.class, CaseAccessDefaultsView.class);
    }
 
-   private void surfaceAdministration( ModuleAssembly module ) throws AssemblyException
+   private void surfaceAdministration(ModuleAssembly module) throws AssemblyException
    {
-      addMV( module,
-            AccessPointsModel.class,
-            AccessPointsView.class );
+      addMV(module,
+              AccessPointsModel.class,
+              AccessPointsView.class);
 
-      addMV( module,
-            AccessPointModel.class,
-            AccessPointView.class );
+      addMV(module,
+              AccessPointModel.class,
+              AccessPointView.class);
 
-      addMV( module,
-            EmailAccessPointsModel.class,
-            EmailAccessPointsView.class );
+      addMV(module,
+              EmailAccessPointsModel.class,
+              EmailAccessPointsView.class);
 
       addMV(module, EmailAccessPointModel.class, EmailAccessPointView.class);
 
-      addMV( module,
-            ProxyUsersModel.class,
-            ProxyUsersView.class );
+      addMV(module,
+              ProxyUsersModel.class,
+              ProxyUsersView.class);
    }
 
-   private void administratorAdministrator( ModuleAssembly module ) throws AssemblyException
+   private void administratorAdministrator(ModuleAssembly module) throws AssemblyException
    {
-      addMV( module, AdministratorsModel.class,
-            AdministratorsView.class );
+      addMV(module, AdministratorsModel.class,
+              AdministratorsView.class);
    }
 
-   private void forms( ModuleAssembly module ) throws AssemblyException
+   private void forms(ModuleAssembly module) throws AssemblyException
    {
-      addMV( module, SelectedFormsModel.class, SelectedFormsView.class );
+      addMV(module, SelectedFormsModel.class, SelectedFormsView.class);
    }
 
-   private void roleAdministration( ModuleAssembly module ) throws AssemblyException
+   private void roleAdministration(ModuleAssembly module) throws AssemblyException
    {
-      addMV( module, RolesModel.class,
-            RolesView.class );
+      addMV(module, RolesModel.class,
+              RolesView.class);
    }
 
-   private void resolutions( ModuleAssembly module ) throws AssemblyException
+   private void resolutions(ModuleAssembly module) throws AssemblyException
    {
-      addMV( module, ResolutionsModel.class, ResolutionsView.class );
-      addMV( module, SelectedResolutionsModel.class, SelectedResolutionsView.class );
+      addMV(module, ResolutionsModel.class, ResolutionsView.class);
+      addMV(module, SelectedResolutionsModel.class, SelectedResolutionsView.class);
    }
 
-   private void caseTypeAdministration( ModuleAssembly module ) throws AssemblyException
+   private void caseTypeAdministration(ModuleAssembly module) throws AssemblyException
    {
-      addMV( module, SelectedCaseTypesModel.class, SelectedCaseTypesView.class );
+      addMV(module, SelectedCaseTypesModel.class, SelectedCaseTypesView.class);
 
-      addMV( module, FormsModel.class, FormsView.class );
+      addMV(module, FormsModel.class, FormsView.class);
 
-      addMV( module, FormModel.class, FormView.class );
+      addMV(module, FormModel.class, FormView.class);
 
-      addMV( module, CaseTypesModel.class,
-            CaseTypesView.class );
+      addMV(module, CaseTypesModel.class,
+              CaseTypesView.class);
 
    }
 
-   private void projectAdministration( ModuleAssembly module ) throws AssemblyException
+   private void projectAdministration(ModuleAssembly module) throws AssemblyException
    {
-      addMV( module, ProjectsModel.class,
-            ProjectsView.class );
+      addMV(module, ProjectsModel.class,
+              ProjectsView.class);
 
-      addViews( module, FormEditView.class );
+      addViews(module, FormEditView.class);
 
-      addMV( module, MembersModel.class,
-            MembersView.class );
+      addMV(module, MembersModel.class,
+              MembersView.class);
 
-      addMV( module,
-            FormElementsModel.class, FormElementsView.class );
+      addMV(module,
+              FormElementsModel.class, FormElementsView.class);
 
-      addMV( module, FormSignaturesModel.class, FormSignaturesView.class );
+      addMV(module, FormSignaturesModel.class, FormSignaturesView.class);
 
-      addMV( module, FormSignatureModel.class, FormSignatureView.class );
+      addMV(module, FormSignatureModel.class, FormSignatureView.class);
 
-      addMV( module,
-            SelectionElementsModel.class, SelectionElementsView.class );
+      addMV(module,
+              SelectionElementsModel.class, SelectionElementsView.class);
 
-      addMV( module,
-            PageEditModel.class, PageEditView.class );
+      addMV(module,
+              PageEditModel.class, PageEditView.class);
 
-      addMV( module,
-            FieldValueEditModel.class, FieldEditView.class );
+      addMV(module,
+              FieldValueEditModel.class, FieldEditView.class);
 
-      addViews( module,
-            FieldEditorAttachmentFieldValueView.class,
-            FieldEditorCheckboxesFieldValueView.class,
-            FieldEditorComboBoxFieldValueView.class,
-            FieldEditorCommentFieldValueView.class,
-            FieldEditorDateFieldValueView.class,
-            FieldEditorListBoxFieldValueView.class,
-            FieldEditorNumberFieldValueView.class,
-            FieldEditorOptionButtonsFieldValueView.class,
-            FieldEditorOpenSelectionFieldValueView.class,
-            FieldEditorTextAreaFieldValueView.class,
-            FieldEditorTextFieldValueView.class );
+      addViews(module,
+              FieldEditorAttachmentFieldValueView.class,
+              FieldEditorCheckboxesFieldValueView.class,
+              FieldEditorComboBoxFieldValueView.class,
+              FieldEditorCommentFieldValueView.class,
+              FieldEditorDateFieldValueView.class,
+              FieldEditorListBoxFieldValueView.class,
+              FieldEditorNumberFieldValueView.class,
+              FieldEditorOptionButtonsFieldValueView.class,
+              FieldEditorOpenSelectionFieldValueView.class,
+              FieldEditorTextAreaFieldValueView.class,
+              FieldEditorTextFieldValueView.class);
 
-      addDialogs( module, FieldCreationDialog.class );
+      addDialogs(module, FieldCreationDialog.class);
 
-      module.objects( FieldValueObserver.class );
+      module.objects(FieldValueObserver.class);
 
    }
 
-   private void groupAdministration( ModuleAssembly module ) throws AssemblyException
+   private void groupAdministration(ModuleAssembly module) throws AssemblyException
    {
-      addMV( module, GroupsModel.class,
-            GroupsView.class );
+      addMV(module, GroupsModel.class,
+              GroupsView.class);
 
-      addMV( module, ParticipantsModel.class,
-            ParticipantsView.class );
+      addMV(module, ParticipantsModel.class,
+              ParticipantsView.class);
 
    }
 
-   private void organizationAdministration( ModuleAssembly module ) throws AssemblyException
+   private void organizationAdministration(ModuleAssembly module) throws AssemblyException
    {
-      addMV( module, OrganizationsModel.class,
-            OrganizationsView.class );
-      addMV( module, OrganizationUsersModel.class,
-            OrganizationUsersView.class );
+      addMV(module, OrganizationsModel.class,
+              OrganizationsView.class);
+      addMV(module, OrganizationUsersModel.class,
+              OrganizationUsersView.class);
    }
 
-   private void userAdministration( ModuleAssembly module ) throws AssemblyException
+   private void userAdministration(ModuleAssembly module) throws AssemblyException
    {
-      addMV( module, UsersAdministrationModel.class,
-            UsersAdministrationView.class );
+      addMV(module, UsersAdministrationModel.class,
+              UsersAdministrationView.class);
    }
 
-   private void labels( ModuleAssembly module ) throws AssemblyException
+   private void labels(ModuleAssembly module) throws AssemblyException
    {
-      addMV( module, LabelsModel.class, LabelsView.class );
+      addMV(module, LabelsModel.class, LabelsView.class);
 
-      addMV( module, SelectedLabelsModel.class, SelectedLabelsView.class );
+      addMV(module, SelectedLabelsModel.class, SelectedLabelsView.class);
    }
 
-   private void restlet( ModuleAssembly module ) throws AssemblyException
+   private void restlet(ModuleAssembly module) throws AssemblyException
    {
-      module.importedServices( Restlet.class ).visibleIn( application );
+      module.importedServices(Restlet.class).visibleIn(application);
    }
 
-   private void streamflow( ModuleAssembly module ) throws AssemblyException
+   private void streamflow(ModuleAssembly module) throws AssemblyException
    {
       module.objects(
-            StreamflowApplication.class,
-            AccountSelector.class
+              StreamflowApplication.class,
+              AccountSelector.class
       );
 
       // SAF objects
-      module.importedServices( StreamflowApplication.class, ApplicationContext.class, AccountSelector.class ).visibleIn( layer );
+      module.importedServices(StreamflowApplication.class, ApplicationContext.class, AccountSelector.class).visibleIn(layer);
 
 
-      module.services( DummyDataService.class ).instantiateOnStartup();
-      module.services( ApplicationInitializationService.class ).instantiateOnStartup();
+      module.services(DummyDataService.class).instantiateOnStartup();
+      module.services(ApplicationInitializationService.class).instantiateOnStartup();
 
-      addDialogs( module, NameDialog.class,
-            SelectUsersAndGroupsDialog.class,
-            CreateUserDialog.class,
-            CreateProxyUserDialog.class,
-            ConfirmationDialog.class,
-            ResetPasswordDialog.class );
+      addDialogs(module, NameDialog.class,
+              SelectUsersAndGroupsDialog.class,
+              CreateUserDialog.class,
+              CreateProxyUserDialog.class,
+              ConfirmationDialog.class,
+              ResetPasswordDialog.class);
 
       addModels( module, UsersAndGroupsModel.class );
 
-      module.objects( DebugWindow.class );
+      module.objects(DebugWindow.class);
 
       module.objects(
-            DialogService.class,
-            UncaughtExceptionHandler.class,
-            JavaHelp.class
-      ).visibleIn( layer );
+              DialogService.class,
+              UncaughtExceptionHandler.class,
+              JavaHelp.class
+      ).visibleIn(layer);
 
-      module.importedServices( UncaughtExceptionHandler.class,
-            JavaHelp.class ).importedBy( NewObjectImporter.class ).visibleIn( application );
+      module.importedServices(UncaughtExceptionHandler.class,
+              JavaHelp.class).importedBy(NewObjectImporter.class).visibleIn(application);
       module.services(
-            ExceptionHandlerService.class ).instantiateOnStartup();
-      module.importedServices( DialogService.class ).importedBy( NewObjectImporter.class ).visibleIn( application );
+              ExceptionHandlerService.class).instantiateOnStartup();
+      module.importedServices(DialogService.class).importedBy(NewObjectImporter.class).visibleIn(application);
 
-      module.objects( ActionBinder.class, ValueBinder.class, StateBinder.class ).visibleIn( layer );
+      module.objects(ActionBinder.class, ValueBinder.class, StateBinder.class).visibleIn(layer);
    }
 
-   private void overview( ModuleAssembly module ) throws AssemblyException
+   private void overview(ModuleAssembly module) throws AssemblyException
    {
-      module.objects( OverviewWindow.class ).visibleIn( layer );
+      module.objects(OverviewWindow.class).visibleIn(layer);
 
-      addMV( module,
-            OverviewModel.class,
-            OverviewView.class );
+      addMV(module,
+              OverviewModel.class,
+              OverviewView.class);
 
-      addMV( module,
-            OverviewSummaryModel.class,
-            OverviewSummaryView.class );
+      addMV(module,
+              OverviewSummaryModel.class,
+              OverviewSummaryView.class);
    }
 
-   private void cases( ModuleAssembly module ) throws AssemblyException
+   private void cases(ModuleAssembly module) throws AssemblyException
    {
-      addViews( module, CasesView.class, CasesDetailView.class, ContactsAdminView.class,
-            FormsAdminView.class, SubmittedFormsAdminView.class, CheckboxesPanel.class,
-            ComboBoxPanel.class, OptionButtonsPanel.class, OpenSelectionPanel.class, ListBoxPanel.class, DatePanel.class,
-            NumberPanel.class, TextAreaFieldPanel.class, TextFieldPanel.class, AttachmentFieldPanel.class, 
-            HistoryView.class, MessagesHistoryView.class, PerspectiveView.class
+      addViews(module, CasesView.class, CasesDetailView.class, ContactsAdminView.class,
+              FormsAdminView.class, SubmittedFormsAdminView.class, CheckboxesPanel.class,
+              ComboBoxPanel.class, OptionButtonsPanel.class, OpenSelectionPanel.class, ListBoxPanel.class, DatePanel.class,
+              NumberPanel.class, TextAreaFieldPanel.class, TextFieldPanel.class, AttachmentFieldPanel.class,
+              HistoryView.class, MessagesHistoryView.class, PerspectiveView.class
       );
 
-      addDialogs( module, ContactLookupResultDialog.class );
+      addDialogs(module, ContactLookupResultDialog.class);
 
-      addMV( module, CasesTableModel.class, CasesTableView.class );
+      addMV(module, CasesTableModel.class, CasesTableView.class);
 
-      addMV( module, CaseModel.class, CaseInfoView.class );
+      addMV(module, CaseModel.class, CaseInfoView.class);
 
-      addMV( module, PerspectivePeriodModel.class, PerspectivePeriodView.class );
-      
-      addViews( module,
-            CaseDetailView.class );
+      addMV(module, PerspectivePeriodModel.class, PerspectivePeriodView.class);
 
-      addViews( module, SubCasesView.class );
+      addViews(module,
+              CaseDetailView.class);
 
-      addMV( module,
-            ContactsModel.class,
-            ContactsView.class );
+      addViews(module, SubCasesView.class);
 
-      addMV( module,
-            ContactModel.class,
-            ContactView.class );
+      addMV(module,
+              ContactsModel.class,
+              ContactsView.class);
 
-      addMV( module,
-            CaseGeneralModel.class,
-            CaseGeneralView.class );
+      addMV(module,
+              ContactModel.class,
+              ContactView.class);
 
-      addMV( module,
-            CaseLabelsModel.class,
-            CaseLabelsView.class );
+      addMV(module,
+              CaseGeneralModel.class,
+              CaseGeneralView.class);
 
-      addMV( module,
-            CaseEffectiveFieldsValueModel.class,
-            CaseEffectiveFieldsValueView.class );
+      addMV(module,
+              CaseLabelsModel.class,
+              CaseLabelsView.class);
 
-      addMV( module,
-            CaseSubmittedFormsModel.class,
-            CaseSubmittedFormsView.class );
+      addMV(module,
+              CaseEffectiveFieldsValueModel.class,
+              CaseEffectiveFieldsValueView.class);
 
-      addMV( module,
-            CaseSubmittedFormModel.class,
-            CaseSubmittedFormView.class );
+      addMV(module,
+              CaseSubmittedFormsModel.class,
+              CaseSubmittedFormsView.class);
 
-      addMV( module,
-            FormSubmissionWizardPageModel.class,
-            FormSubmissionWizardPageView.class );
+      addMV(module,
+              CaseSubmittedFormModel.class,
+              CaseSubmittedFormView.class);
+
+      addMV(module,
+              FormSubmissionWizardPageModel.class,
+              FormSubmissionWizardPageView.class);
 
       addMV( module,
             PossibleFormsModel.class,
             PossibleFormsView.class );
 
-      UIAssemblers.addViews(module,
+      addViews(module,
               CaseActionsView.class);
 
       // conversations
-      addMV( module,
-            MessagesModel.class,
-            MessagesConversationView.class );
+      addMV(module,
+              MessagesModel.class,
+              MessagesConversationView.class);
 
-      addViews( module,
-            ConversationView.class );
+      addViews(module,
+              ConversationView.class);
 
-      addMV( module,
-            ConversationsModel.class,
-            ConversationsView.class );
+      addMV(module,
+              ConversationsModel.class,
+              ConversationsView.class);
 
-      addMV( module,
-            ConversationParticipantsModel.class,
-            ConversationParticipantsView.class );
+      addMV(module,
+              ConversationParticipantsModel.class,
+              ConversationParticipantsView.class);
 
       // Attachments
-      addMV( module,
-            AttachmentsModel.class,
-            AttachmentsView.class );
+      addMV(module,
+              AttachmentsModel.class,
+              AttachmentsView.class);
    }
 
-   private void workspace( ModuleAssembly module ) throws AssemblyException
+   private void workspace(ModuleAssembly module) throws AssemblyException
    {
-      addViews( module, AccountSelectionView.class );
-      module.objects( WorkspaceWindow.class ).visibleIn( layer );
+      addViews(module, AccountSelectionView.class);
+      module.objects(WorkspaceWindow.class).visibleIn(layer);
 
-      addViews( module,
-            WorkspaceView.class );
+      addViews(module,
+              WorkspaceView.class);
 
-      addMV( module,
-            WorkspaceContextModel.class,
-            WorkspaceContextView.class );
+      addMV(module,
+              WorkspaceContextModel.class,
+              WorkspaceContextView.class);
 
-      addMV( module, PerspectivesModel.class, SearchView.class );
+      addMV(module, PerspectivesModel.class, SearchView.class);
 
-      addDialogs( module, SelectLinkDialog.class,
-            SaveSearchDialog.class,
-            ManagePerspectivesDialog.class );
+      addDialogs(module, SelectLinkDialog.class,
+              SaveSearchDialog.class,
+              ManagePerspectivesDialog.class);
 
-      module.values( CaseTableValue.class ).visibleIn( Visibility.application );
+      module.values(CaseTableValue.class).visibleIn(Visibility.application);
    }
 
-   private void menu( ModuleAssembly module ) throws AssemblyException
+   private void menu(ModuleAssembly module) throws AssemblyException
    {
-      addViews( module,
-            WorkspaceMenuBar.class,
-            OverviewMenuBar.class,
-            AdministrationMenuBar.class );
-      addViews( module,
-            FileMenu.class,
-            EditMenu.class,
-            ViewMenu.class,
-            AccountMenu.class,
-            WindowMenu.class,
-            HelpMenu.class,
-            PerspectiveMenu.class
+      addViews(module,
+              WorkspaceMenuBar.class,
+              OverviewMenuBar.class,
+              AdministrationMenuBar.class);
+      addViews(module,
+              FileMenu.class,
+              EditMenu.class,
+              ViewMenu.class,
+              AccountMenu.class,
+              WindowMenu.class,
+              HelpMenu.class,
+              PerspectiveMenu.class
       );
 
-      addDialogs( module, CreateAccountDialog.class, AccountsDialog.class );
+      addDialogs(module, CreateAccountDialog.class, AccountsDialog.class);
 
-      addModels( module, AccountsModel.class );
+      addModels(module, AccountsModel.class);
    }
 
-   private void administration( ModuleAssembly module ) throws AssemblyException
+   private void administration(ModuleAssembly module) throws AssemblyException
    {
-      module.objects( AdministrationWindow.class ).visibleIn( layer );
+      module.objects(AdministrationWindow.class).visibleIn(layer);
 
-      addViews( module,
-            AdministrationView.class, TabbedResourceView.class );
+      addViews(module,
+              AdministrationView.class, TabbedResourceView.class);
 
-      addMV( module,
-            AdministrationModel.class,
-            AdministrationTreeView.class );
+      addMV(module,
+              AdministrationModel.class,
+              AdministrationTreeView.class);
 
-      addMV( module, ProfileModel.class, ProfileView.class );
+      addMV(module, ProfileModel.class, ProfileView.class);
 
-      addMV( module,
-            AccountModel.class,
-            AccountView.class );
+      addMV(module,
+              AccountModel.class,
+              AccountView.class);
 
-      addDialogs( module,
-            ChangePasswordDialog.class,
-            SelectLinksDialog.class );
-      addTasks( module, TestConnectionTask.class );
+      addDialogs(module,
+              ChangePasswordDialog.class,
+              SelectLinksDialog.class);
+      addTasks(module, TestConnectionTask.class);
 
-      addViews( module, TemplatesView.class );
+      addViews(module, TemplatesView.class);
 
-      addMV( module,
-            SelectedTemplatesModel.class,
-            SelectedTemplatesView.class );
+      addMV(module,
+              SelectedTemplatesModel.class,
+              SelectedTemplatesView.class);
 
    }
 
-   private void search( ModuleAssembly module ) throws AssemblyException
+   private void search(ModuleAssembly module) throws AssemblyException
    {
-      module.objects( SearchResultTableModel.class ).visibleIn( layer );
+      module.objects(SearchResultTableModel.class).visibleIn(layer);
    }
 }

@@ -37,6 +37,28 @@ public class TableBuilder<T extends TableBuilder>
       tableBuilder = vbf.newValueBuilder( TableValue.class );
    }
 
+   public T selectedColumns(String selectClause, String[][] columnDescriptions)
+   {
+      if (selectClause.equals("*"))
+      {
+         for (String[] column : columnDescriptions)
+         {
+            column(column[0], column[1], column[2]);
+         }
+      } else
+      {
+         for (String columnName : selectClause.split("[, ]"))
+         {
+            for (String[] column : columnDescriptions)
+            {
+               if (column[0].equals(columnName))
+                  column(column[0], column[1], column[2]);
+            }
+         }
+      }
+      return (T) this;
+   }
+
    public T column(String id, String label, String type)
    {
       ValueBuilder<ColumnValue> builder = vbf.newValueBuilder( ColumnValue.class );
