@@ -148,6 +148,8 @@ public class ContextAssembler
 
       module.objects(StreamflowResultConverter.class);
 
+      new StreamflowSurfaceAPIAssembler().assemble(module);
+
       module.importedServices(StreamflowCaseResultWriter.class).importedBy(ImportedServiceDeclaration.NEW_OBJECT);
       module.objects(StreamflowCaseResultWriter.class);
 
