@@ -34,11 +34,13 @@ import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
 import se.streamsource.streamflow.web.domain.entity.conversation.ConversationEntity;
 import se.streamsource.streamflow.web.domain.entity.organization.AccessPointEntity;
+import se.streamsource.streamflow.web.domain.entity.organization.EmailAccessPointEntity;
 import se.streamsource.streamflow.web.domain.structure.conversation.Conversation;
 import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipant;
 import se.streamsource.streamflow.web.domain.structure.conversation.Message;
 import se.streamsource.streamflow.web.domain.structure.conversation.Messages;
 import se.streamsource.streamflow.web.domain.structure.organization.AccessPoint;
+import se.streamsource.streamflow.web.domain.structure.organization.EmailAccessPoint;
 
 /**
  * JAVADOC
@@ -50,7 +52,7 @@ public interface History
 
    Conversation getHistory();
 
-   AccessPoint getOriginalAccessPoint();
+   EmailAccessPoint getOriginalEmailAccessPoint();
 
    interface Data
    {
@@ -110,7 +112,7 @@ public interface History
          return history;
       }
 
-      public AccessPoint getOriginalAccessPoint()
+      public EmailAccessPoint getOriginalEmailAccessPoint()
       {
          Messages.Data messages = ((Messages.Data) data.history().get());
          for (Message message : messages.messages())
@@ -122,7 +124,7 @@ public interface History
                String accessPointName = body.substring(body.indexOf(",")+1, body.length()-1);
 
                // Now find it
-               AccessPointEntity ap = qbf.newQueryBuilder(AccessPointEntity.class).where(QueryExpressions.eq(QueryExpressions.templateFor(Describable.Data.class).description(), accessPointName)).newQuery(uowf.currentUnitOfWork()).find();
+               EmailAccessPointEntity ap = qbf.newQueryBuilder(EmailAccessPointEntity.class).where(QueryExpressions.eq(QueryExpressions.templateFor(Describable.Data.class).description(), accessPointName)).newQuery(uowf.currentUnitOfWork()).find();
                return ap;
             }
          }

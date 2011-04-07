@@ -55,7 +55,7 @@ public class DefinitionListModel
    {
       try
       {
-         ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
+         ValueBuilder<StringValue> builder = module.valueBuilderFactory().newValueBuilder( StringValue.class );
          builder.prototype().string().set( newName );
 
          client.getSubClient( link.id().get() ).putCommand( changeDescription, builder.newInstance() );
@@ -67,7 +67,7 @@ public class DefinitionListModel
 
    public void create( String name )
    {
-      ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
+      ValueBuilder<StringValue> builder = module.valueBuilderFactory().newValueBuilder( StringValue.class );
       builder.prototype().string().set( name );
       try
       {

@@ -73,7 +73,7 @@ public class AccessPointModel extends Observable
       return list;
    }
 
-   public void setProject( LinkValue link )
+   public void changeProject(LinkValue link)
    {
       client.postLink( link );
    }
@@ -89,7 +89,7 @@ public class AccessPointModel extends Observable
       return list;
    }
 
-   public void setCaseType( LinkValue link )
+   public void changeCaseType(LinkValue link)
    {
       client.postLink( link );
    }
@@ -112,7 +112,7 @@ public class AccessPointModel extends Observable
       }
    }
 
-   public void setForm( LinkValue link )
+   public void changeForm(LinkValue link)
    {
       client.postLink( link );
    }

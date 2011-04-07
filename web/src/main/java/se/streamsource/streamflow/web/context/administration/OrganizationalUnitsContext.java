@@ -18,6 +18,7 @@
 package se.streamsource.streamflow.web.context.administration;
 
 import org.qi4j.api.constraint.Constraints;
+import org.qi4j.api.constraint.Name;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
 import org.qi4j.api.structure.Module;
@@ -38,7 +39,7 @@ import se.streamsource.streamflow.web.domain.structure.organization.Organization
 public interface OrganizationalUnitsContext
       extends IndexContext<Iterable<OrganizationalUnit>>, Context
 {
-   public void createorganizationalunit( @MaxLength(50) StringValue value );
+   public void createorganizationalunit( @MaxLength(50) @Name("string") String value );
 
    abstract class Mixin
          implements OrganizationalUnitsContext
@@ -52,11 +53,11 @@ public interface OrganizationalUnitsContext
          return ous.organizationalUnits();
       }
 
-      public void createorganizationalunit( StringValue value )
+      public void createorganizationalunit( String name )
       {
          OrganizationalUnits ous = RoleMap.role( OrganizationalUnits.class );
 
-         ous.createOrganizationalUnit( value.string().get() );
+         ous.createOrganizationalUnit( name );
       }
    }
 }

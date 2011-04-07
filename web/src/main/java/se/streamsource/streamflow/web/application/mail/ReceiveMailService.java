@@ -189,6 +189,8 @@ public interface ReceiveMailService
 
       public void run()
       {
+         Thread.currentThread().setContextClassLoader( getClass().getClassLoader() );
+
          if (!circuitBreaker.isOn())
             return; // Don't try - circuit breaker is off
 
@@ -280,6 +282,7 @@ public interface ReceiveMailService
                   {
                      // Unknown content type - abort
                      uow.discard();
+                     logger.error("Could not parse emails: unknown content type "+content.getClass().getName());
                      continue;
                   }
 

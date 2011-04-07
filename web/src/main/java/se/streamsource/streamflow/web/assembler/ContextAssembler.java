@@ -45,6 +45,7 @@ import se.streamsource.streamflow.web.context.administration.labels.LabelContext
 import se.streamsource.streamflow.web.context.administration.labels.LabelsContext;
 import se.streamsource.streamflow.web.context.administration.labels.SelectedLabelContext;
 import se.streamsource.streamflow.web.context.administration.labels.SelectedLabelsContext;
+import se.streamsource.streamflow.web.context.administration.surface.OrganizationAttachmentsContext;
 import se.streamsource.streamflow.web.context.administration.surface.SelectedTemplatesContext;
 import se.streamsource.streamflow.web.context.administration.surface.accesspoints.AccessPointAdministrationContext;
 import se.streamsource.streamflow.web.context.administration.surface.accesspoints.AccessPointLabelableContext;
@@ -85,6 +86,8 @@ import se.streamsource.streamflow.web.context.workspace.cases.general.*;
 import se.streamsource.streamflow.web.resource.RootResource;
 import se.streamsource.streamflow.web.resource.account.AccountResource;
 import se.streamsource.streamflow.web.resource.administration.*;
+import se.streamsource.streamflow.web.resource.administration.surface.OrganizationAttachmentsResource;
+import se.streamsource.streamflow.web.resource.administration.surface.ProxyUsersResource;
 import se.streamsource.streamflow.web.resource.crystal.CrystalResource;
 import se.streamsource.streamflow.web.resource.organizations.*;
 import se.streamsource.streamflow.web.resource.organizations.forms.*;
@@ -102,6 +105,7 @@ import se.streamsource.streamflow.web.resource.surface.accesspoints.endusers.sub
 import se.streamsource.streamflow.web.resource.surface.administration.organizations.accesspoints.AccessPointAdministrationResource;
 import se.streamsource.streamflow.web.resource.surface.administration.organizations.accesspoints.AccessPointLabelableResource;
 import se.streamsource.streamflow.web.resource.surface.administration.organizations.accesspoints.AccessPointsAdministrationResource;
+import se.streamsource.streamflow.web.resource.surface.administration.organizations.emailaccesspoints.EmailAccessPointAdministrationResource;
 import se.streamsource.streamflow.web.resource.surface.administration.organizations.emailaccesspoints.EmailAccessPointsAdministrationResource;
 import se.streamsource.streamflow.web.resource.workspace.*;
 import se.streamsource.streamflow.web.resource.workspace.cases.*;
@@ -313,8 +317,6 @@ public class ContextAssembler
               FormAttachmentsContext.class,
               FormAttachmentsResource.class,
               FormAttachmentContext.class,
-              SelectedTemplatesResource.class,
-              SelectedTemplatesContext.class,
 
               // Surface
               SurfaceResource.class,
@@ -345,10 +347,15 @@ public class ContextAssembler
               AccessPointsAdministrationResource.class,
               EmailAccessPointAdministrationContext.class,
               EmailAccessPointsAdministrationContext.class,
+              EmailAccessPointAdministrationResource.class,
               EmailAccessPointsAdministrationResource.class,
               ProxyUserContext.class,
               ProxyUsersContext.class,
               ProxyUsersResource.class,
+              SelectedTemplatesResource.class,
+              SelectedTemplatesContext.class,
+              OrganizationAttachmentsResource.class,
+              OrganizationAttachmentsContext.class,
 
               // Crystal
               CrystalContext.class,

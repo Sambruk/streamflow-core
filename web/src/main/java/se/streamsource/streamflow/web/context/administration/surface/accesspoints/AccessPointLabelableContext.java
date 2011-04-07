@@ -16,6 +16,7 @@
 
 package se.streamsource.streamflow.web.context.administration.surface.accesspoints;
 
+import org.qi4j.api.constraint.Name;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.structure.Module;
 import org.qi4j.api.unitofwork.UnitOfWork;
@@ -83,12 +84,9 @@ public class AccessPointLabelableContext
       return linksBuilder.newLinks();
    }
 
-   public void addlabel( EntityValue reference )
+   public void addlabel( @Name("entity") Label label)
    {
-      UnitOfWork uow = module.unitOfWorkFactory().currentUnitOfWork();
       Labelable labelable = role( Labelable.class );
-      Label label = uow.get( Label.class, reference.entity().get() );
-
       labelable.addLabel( label );
    }
 }

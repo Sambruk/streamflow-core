@@ -1,4 +1,5 @@
-/*
+/**
+ *
  * Copyright 2009-2010 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,27 +15,24 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.resource.surface.administration.organizations.accesspoints;
+package se.streamsource.streamflow.web.resource.surface.administration.organizations.emailaccesspoints;
 
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResource;
 import se.streamsource.streamflow.domain.structure.Describable;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.web.context.administration.surface.accesspoints.AccessPointAdministrationContext;
-import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
-import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
-
-import java.util.List;
+import se.streamsource.streamflow.web.context.administration.surface.emailaccesspoints.EmailAccessPointAdministrationContext;
+import se.streamsource.streamflow.web.resource.surface.administration.organizations.accesspoints.AccessPointLabelableResource;
 
 /**
- * JAVADOC
+ * TODO
  */
-public class AccessPointAdministrationResource
-      extends CommandQueryResource
+public class EmailAccessPointAdministrationResource
+   extends CommandQueryResource
 {
-   public AccessPointAdministrationResource()
+   public EmailAccessPointAdministrationResource()
    {
-      super( AccessPointAdministrationContext.class );
+      super(EmailAccessPointAdministrationContext.class);
    }
 
    public void possibleprojects() throws Throwable
@@ -51,28 +49,6 @@ public class AccessPointAdministrationResource
             command( "changecasetype" ).
             addDescribables( (Iterable<? extends Describable>) invoke() ).
             newLinks());
-   }
-
-   public void possibleforms() throws Throwable
-   {
-      result(new LinksBuilder(module.valueBuilderFactory()).
-            command( "setform" ).
-            addDescribables( (Iterable<? extends Describable>) invoke() ).
-            newLinks());
-   }
-
-   public void possibleformtemplates() throws Throwable
-   {
-      LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() ).command( "setformtemplate" );
-
-      List<Attachment> attachments = (List<Attachment>) invoke();
-
-      for (Attachment attachment : attachments)
-      {
-         linksBuilder.addLink(((AttachedFile.Data) attachment).name().get(), attachment.toString() );
-      }
-
-      result( linksBuilder.newLinks() );
    }
 
    @SubResource

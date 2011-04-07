@@ -16,6 +16,8 @@
 
 package se.streamsource.streamflow.client.ui.account;
 
+import org.qi4j.api.common.Optional;
+import org.qi4j.api.constraint.Name;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.value.ValueBuilder;

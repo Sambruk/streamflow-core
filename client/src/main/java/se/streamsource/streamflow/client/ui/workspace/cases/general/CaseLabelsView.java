@@ -56,14 +56,14 @@ public class CaseLabelsView
    private CaseLabelsModel model;
    private JButton actionButton;
 
-   public CaseLabelsView(@Service ApplicationContext context, @Uses CommandQueryClient client, @Structure ObjectBuilderFactory obf )
+   public CaseLabelsView(@Service ApplicationContext context, @Uses CaseLabelsModel model, @Structure ObjectBuilderFactory obf )
    {
       this.actionButton = actionButton;
       setActionMap( context.getActionMap(this ));
       MacOsUIWrapper.convertAccelerators( context.getActionMap(
             CaseLabelsView.class, this ) );
       
-      model = obf.newObjectBuilder( CaseLabelsModel.class ).use( client ).newInstance();
+      this.model = model;
       model.getLabels().addListEventListener( this );
 
       setLayout( new FlowLayout( FlowLayout.LEFT ) );

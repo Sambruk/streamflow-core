@@ -89,17 +89,17 @@ public class AccessPointView
    @Uses
    protected ObjectBuilder<SelectLinkDialog> labelSelectionDialog;
 
-   public CaseLabelsView labels;
-   public JLabel selectedCaseType = new JLabel();
-   public JButton caseTypeButton;
-   public JButton labelButton;
-   public JButton projectButton;
-   public JLabel selectedProject = new JLabel();
-   public JButton formButton;
-   public JLabel selectedForm = new JLabel();
+   private CaseLabelsView labels;
+   private JLabel selectedCaseType = new JLabel();
+   private JButton caseTypeButton;
+   private JButton labelButton;
+   private JButton projectButton;
+   private JLabel selectedProject = new JLabel();
+   private JButton formButton;
+   private JLabel selectedForm = new JLabel();
 
-   JButton templateButton;
-   RemovableLabel selectedTemplate = new RemovableLabel();
+   private JButton templateButton;
+   private RemovableLabel selectedTemplate = new RemovableLabel();
 
    private AccessPointModel model;
 
@@ -259,7 +259,7 @@ public class AccessPointView
          {
             if (dialog.getSelectedLink() != null)
             {
-               model.setProject( dialog.getSelectedLink() );
+               model.changeProject(dialog.getSelectedLink());
             }
          }
       };
@@ -281,7 +281,7 @@ public class AccessPointView
          {
             if (dialog.getSelectedLink() != null)
             {
-               model.setCaseType( dialog.getSelectedLink() );
+               model.changeCaseType(dialog.getSelectedLink());
             }
          }
       };
@@ -304,7 +304,7 @@ public class AccessPointView
          {
             if (dialog.getSelectedLink() != null)
             {
-               model.setForm( dialog.getSelectedLink() );
+               model.changeForm(dialog.getSelectedLink());
             }
          }
       };

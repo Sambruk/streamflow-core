@@ -29,6 +29,7 @@ import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.dci.value.StringValueMaxLength;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
+import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
 import se.streamsource.streamflow.web.domain.structure.casetype.CaseTypes;
 
 /**
@@ -37,7 +38,7 @@ import se.streamsource.streamflow.web.domain.structure.casetype.CaseTypes;
 @Mixins(CaseTypesContext.Mixin.class)
 @Constraints(StringValueMaxLength.class)
 public interface CaseTypesContext
-      extends IndexContext<LinksValue>, Context
+      extends IndexContext<Iterable<CaseType>>, Context
 {
    public void createcasetype( @MaxLength(50) StringValue name );
 
@@ -47,10 +48,10 @@ public interface CaseTypesContext
       @Structure
       Module module;
 
-      public LinksValue index()
+      public Iterable<CaseType> index()
       {
          CaseTypes.Data caseTypes = RoleMap.role( CaseTypes.Data.class );
-         return new LinksBuilder( module.valueBuilderFactory() ).rel( "casetype" ).addDescribables( caseTypes.caseTypes() ).newLinks();
+         return caseTypes.caseTypes();
       }
 
       public void createcasetype( StringValue name )

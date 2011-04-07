@@ -46,21 +46,6 @@ public class AccessPointsModel
    @Uses
    CommandQueryClient client;
 
-/*
-   WeakModelMap<String, AccessPointModel> accessPointModels = new WeakModelMap<String, AccessPointModel>()
-   {
-      protected AccessPointModel newModel( String key )
-      {
-         CaseLabelsModel labelsModel = obf.newObjectBuilder( CaseLabelsModel.class )
-               .use( client.getSubClient( key ).getSubClient( "labels" ) ).newInstance();
-         return obf.newObjectBuilder( AccessPointModel.class ).use(
-               client.getSubClient( key ),
-               labelsModel ).newInstance();
-      }
-   };
-
-*/
-
    public void createAccessPoint( String accessPointName )
    {
       try

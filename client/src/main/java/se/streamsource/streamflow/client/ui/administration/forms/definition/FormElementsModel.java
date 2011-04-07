@@ -39,7 +39,7 @@ public class FormElementsModel
 
    public void addField( LinkValue pageItem, String name, FieldTypes fieldType )
    {
-      ValueBuilder<CreateFieldDTO> builder = vbf.newValueBuilder( CreateFieldDTO.class );
+      ValueBuilder<CreateFieldDTO> builder = module.valueBuilderFactory().newValueBuilder( CreateFieldDTO.class );
       builder.prototype().name().set( name );
       builder.prototype().fieldType().set( fieldType );
 
@@ -48,7 +48,7 @@ public class FormElementsModel
 
    public void addPage( String pageName )
    {
-      ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
+      ValueBuilder<StringValue> builder = module.valueBuilderFactory().newValueBuilder( StringValue.class );
       builder.prototype().string().set( pageName );
 
       client.postCommand( "create", builder.newInstance() );
@@ -56,7 +56,7 @@ public class FormElementsModel
 
    public void move( LinkValue item, String direction )
    {
-      ValueBuilder<StringValue> builder = vbf.newValueBuilder( StringValue.class );
+      ValueBuilder<StringValue> builder = module.valueBuilderFactory().newValueBuilder( StringValue.class );
       builder.prototype().string().set( direction );
 
       client.getClient( item ).putCommand( "move",  builder.newInstance() );

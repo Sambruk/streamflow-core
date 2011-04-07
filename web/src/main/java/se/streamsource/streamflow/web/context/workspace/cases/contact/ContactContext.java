@@ -18,6 +18,7 @@
 package se.streamsource.streamflow.web.context.workspace.cases.contact;
 
 import org.qi4j.api.common.Optional;
+import org.qi4j.api.constraint.Name;
 import org.qi4j.api.injection.scope.Service;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.service.ServiceImporterException;
@@ -27,10 +28,7 @@ import org.qi4j.api.value.ValueBuilderFactory;
 import se.streamsource.dci.api.DeleteContext;
 import se.streamsource.dci.api.RoleMap;
 import se.streamsource.dci.value.StringValue;
-import se.streamsource.streamflow.domain.contact.ContactAddressValue;
-import se.streamsource.streamflow.domain.contact.ContactEmailValue;
-import se.streamsource.streamflow.domain.contact.ContactPhoneValue;
-import se.streamsource.streamflow.domain.contact.ContactValue;
+import se.streamsource.streamflow.domain.contact.*;
 import se.streamsource.streamflow.resource.caze.ContactsDTO;
 import se.streamsource.streamflow.server.plugin.contact.ContactList;
 import se.streamsource.streamflow.server.plugin.contact.ContactLookup;
@@ -61,15 +59,27 @@ public class ContactContext
       contacts.deleteContact( index );
    }
 
-   public void changename( StringValue name )
+   public void update(@Optional @Name("name") String name, @Optional @Name("email") String email, @Optional @Name("phone") String phone)
    {
       Contacts contacts = RoleMap.role( Contacts.class );
       Integer index = RoleMap.role( Integer.class );
       ContactValue contact = RoleMap.role( ContactValue.class );
 
-      ValueBuilder<ContactValue> builder = contact.buildWith();
-      builder.prototype().name().set( name.string().get() );
+      ContactBuilder builder = new ContactBuilder(contact, vbf);
+
+      if (name != null)
+         builder.name(name );
+      if (email != null)
+         builder.email( email );
+      if (phone != null)
+         builder.phoneNumber(phone);
+
       contacts.updateContact( index, builder.newInstance() );
+   }
+
+   public void changename( StringValue name )
+   {
+      update(name.string().get(), null, null);
    }
 
    public void changenote( StringValue note )

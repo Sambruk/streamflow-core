@@ -22,14 +22,17 @@ import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.TransactionList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.object.ObjectBuilderFactory;
 import org.qi4j.api.value.ValueBuilder;
 import org.qi4j.api.value.ValueBuilderFactory;
+import org.restlet.data.CharacterSet;
 import org.restlet.data.Form;
 import se.streamsource.dci.restlet.client.CommandQueryClient;
 import se.streamsource.dci.value.link.LinkValue;
 import se.streamsource.dci.value.link.LinksValue;
 import se.streamsource.dci.value.table.RowValue;
 import se.streamsource.dci.value.table.TableValue;
+import se.streamsource.streamflow.client.ui.workspace.cases.general.CaseLabelsModel;
 import se.streamsource.streamflow.client.util.EventListSynch;
 import se.streamsource.streamflow.client.util.Refreshable;
 import se.streamsource.streamflow.domain.organization.EmailAccessPointValue;
@@ -46,6 +49,9 @@ import static se.streamsource.streamflow.infrastructure.event.domain.source.help
 public class EmailAccessPointModel
         implements Refreshable
 {
+   @Structure
+   ObjectBuilderFactory obf;
+
    @Uses
    protected CommandQueryClient client;
 
@@ -61,8 +67,55 @@ public class EmailAccessPointModel
       return value.prototype();
    }
 
-   public void update()
+   public Object getPossibleProjects()
    {
-      client.putCommand("update", value.newInstance());
+      BasicEventList<LinkValue> list = new BasicEventList<LinkValue>();
+
+      LinksValue listValue = client.query( "possibleprojects",
+            LinksValue.class );
+      list.addAll( listValue.links().get() );
+
+      return list;
+   }
+
+   public void changeProject(LinkValue link)
+   {
+      client.postLink( link );
+   }
+
+   public EventList<LinkValue> getPossibleCaseTypes()
+   {
+      BasicEventList<LinkValue> list = new BasicEventList<LinkValue>();
+
+      LinksValue listValue = client.query( "possiblecasetypes",
+            LinksValue.class );
+      list.addAll( listValue.links().get() );
+
+      return list;
+   }
+
+   public void changeCaseType(LinkValue link)
+   {
+      client.postLink(link);
+   }
+
+   public void changeSubject(String text)
+   {
+      Form form = new Form();
+      form.set("subject", text);
+      client.postCommand("changesubject", form.getWebRepresentation());
+   }
+
+   public void updateTemplate(String key, String template)
+   {
+      Form form = new Form();
+      form.set("key", key);
+      form.set("template", template);
+      client.postCommand("changetemplate", form.getWebRepresentation());
+   }
+
+   public CaseLabelsModel createLabelsModel()
+   {
+      return obf.newObjectBuilder(CaseLabelsModel.class).use(client.getSubClient("labels")).newInstance();
    }
 }

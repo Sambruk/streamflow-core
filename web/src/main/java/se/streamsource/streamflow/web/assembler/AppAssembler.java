@@ -37,6 +37,7 @@ import se.streamsource.streamflow.web.application.console.ConsoleResultValue;
 import se.streamsource.streamflow.web.application.console.ConsoleScriptValue;
 import se.streamsource.streamflow.web.application.console.ConsoleService;
 import se.streamsource.streamflow.web.application.contact.StreamflowContactLookupService;
+import se.streamsource.streamflow.web.application.conversation.EmailTemplatesUpdateService;
 import se.streamsource.streamflow.web.application.mail.*;
 import se.streamsource.streamflow.web.application.migration.StartupMigrationConfiguration;
 import se.streamsource.streamflow.web.application.migration.StartupMigrationService;
@@ -122,7 +123,9 @@ public class AppAssembler
 
    private void mail( ModuleAssembly module ) throws AssemblyException
    {
-      module.values( EmailValue.class ).visibleIn( Visibility.application );
+      module.services(EmailTemplatesUpdateService.class).instantiateOnStartup();
+
+      module.values( EmailValue.class ).visibleIn(Visibility.application);
       
       module.services( ReceiveMailService.class ).
             identifiedBy( "receivemail" ).

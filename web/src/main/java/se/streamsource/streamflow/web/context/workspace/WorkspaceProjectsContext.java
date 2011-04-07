@@ -38,6 +38,6 @@ public class WorkspaceProjectsContext
    {
       LinksBuilder linksBuilder = new LinksBuilder( module.valueBuilderFactory() );
       ProjectQueries projectQueries = RoleMap.role( ProjectQueries.class );
-      return linksBuilder.addDescribables( projectQueries.allProjects() ).newLinks();
+      return linksBuilder.rel("project").addDescribables( projectQueries.allProjects() ).newLinks();
    }
 }

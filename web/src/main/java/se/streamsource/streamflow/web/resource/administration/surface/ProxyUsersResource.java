@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package se.streamsource.streamflow.web.resource.administration;
+package se.streamsource.streamflow.web.resource.administration.surface;
 
 import org.restlet.resource.ResourceException;
 import se.streamsource.dci.api.RoleMap;

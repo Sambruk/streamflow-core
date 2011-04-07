@@ -487,41 +487,4 @@ public class CasePdfGenerator implements CaseOutput
 
       return generatedDoc;
    }
-
-   private String extractBody(String html) throws IOException
-   {
-      final StringBuffer buff = new StringBuffer();
-
-      ParserDelegator parserDelegator = new ParserDelegator();
-      HTMLEditorKit.ParserCallback parserCallback = new HTMLEditorKit.ParserCallback()
-      {
-         public void handleText(final char[] data, final int pos)
-         {
-            buff.append(new String(data));
-         }
-
-         public void handleStartTag(HTML.Tag tag, MutableAttributeSet attribute, int pos)
-         {
-         }
-
-         public void handleEndTag(HTML.Tag t, final int pos)
-         {
-         }
-
-         public void handleSimpleTag(HTML.Tag t, MutableAttributeSet a, final int pos)
-         {
-         }
-
-         public void handleComment(final char[] data, final int pos)
-         {
-         }
-
-         public void handleError(final java.lang.String errMsg, final int pos)
-         {
-         }
-      };
-      parserDelegator.parse(new StringReader(html), parserCallback, true);
-
-      return buff.toString();
-   }
 }

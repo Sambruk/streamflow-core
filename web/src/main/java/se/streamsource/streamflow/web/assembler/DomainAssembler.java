@@ -123,7 +123,7 @@ public class DomainAssembler
    private void organizations( ModuleAssembly module ) throws AssemblyException
    {
       module.entities(OrganizationsEntity.class, OrganizationEntity.class,
-              OrganizationalUnitEntity.class, AccessPointEntity.class).visibleIn( application );
+              OrganizationalUnitEntity.class, AccessPointEntity.class, EmailAccessPointEntity.class).visibleIn( application );
       module.values(ParticipantRolesValue.class).visibleIn( Visibility.application );
    }
 

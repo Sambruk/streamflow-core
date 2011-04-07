@@ -103,7 +103,7 @@ public class CaseCommandsContextTest
          SelectedCaseTypesContext selectedCaseTypes = context( SelectedCaseTypesContext.class );
          selectedCaseTypes.addcasetype( entityValue( findLink( selectedCaseTypes.possiblecasetypes(), "CaseType1" ) ) );
 
-         playRole( CaseType.class, findLink(caseTypes.index(), "CaseType1") );
+         playRole( findDescribable(caseTypes.index(), "CaseType1") );
          ResolutionsContext resolutionsContext = context( ResolutionsContext.class );
          resolutionsContext.createresolution( stringValue( "Resolution1" ) );
          SelectedResolutionsContext selectedResolutionsContext = context( SelectedResolutionsContext.class );

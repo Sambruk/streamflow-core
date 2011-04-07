@@ -17,6 +17,7 @@
 package se.streamsource.streamflow.web.context.administration.surface.accesspoints;
 
 import org.qi4j.api.constraint.Constraints;
+import org.qi4j.api.constraint.Name;
 import org.qi4j.api.entity.EntityReference;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.mixin.Mixins;
@@ -71,11 +72,11 @@ public interface AccessPointAdministrationContext
 
    List<Project> possibleprojects();
 
-   void setproject( EntityValue id );
+   void changeproject( @Name("entity") Project project);
 
    List<CaseType> possiblecasetypes();
 
-   void setcasetype( EntityValue id );
+   void changecasetype( @Name("entity") CaseType caseType);
 
    List<Form> possibleforms();
 
@@ -178,13 +179,11 @@ public interface AccessPointAdministrationContext
          return possibleProjects;
       }
 
-      public void setproject( EntityValue id )
+      public void changeproject( @Name("entity") Project project)
       {
          AccessPoint accessPoint = RoleMap.role( AccessPoint.class );
 
-         Project project = module.unitOfWorkFactory().currentUnitOfWork().get( Project.class, id.entity().get() );
-
-         accessPoint.setProject( project );
+         accessPoint.changedProject(project);
       }
 
       public List<CaseType> possiblecasetypes()
@@ -204,13 +203,11 @@ public interface AccessPointAdministrationContext
          return possibleCaseTypes;
       }
 
-      public void setcasetype( EntityValue id )
+      public void changecasetype( @Name("entity") CaseType caseType)
       {
          AccessPoint accessPoint = RoleMap.role( AccessPoint.class );
 
-         CaseType caseType = module.unitOfWorkFactory().currentUnitOfWork().get( CaseType.class, id.entity().get() );
-
-         accessPoint.setCaseType( caseType );
+         accessPoint.changedCaseType(caseType);
       }
 
       public List<Form> possibleforms()

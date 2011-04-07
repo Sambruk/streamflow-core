@@ -24,6 +24,7 @@ import ca.odell.glazedlists.TransactionList;
 import org.qi4j.api.injection.scope.Structure;
 import org.qi4j.api.injection.scope.Uses;
 import org.qi4j.api.specification.Specifications;
+import org.qi4j.api.structure.Module;
 import org.qi4j.api.value.ValueBuilderFactory;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
@@ -50,7 +51,7 @@ public class LinkValueListModel
    protected CommandQueryClient client;
 
    @Structure
-   protected ValueBuilderFactory vbf;
+   protected Module module;
 
    protected EventList<LinkValue> linkValues = new TransactionList<LinkValue>(new BasicEventList<LinkValue>());
    protected EventList<LinkValue> sortedValues = new SortedList<LinkValue>(linkValues, new LinkComparator());

@@ -294,8 +294,7 @@ public class UIAssembler
             ConfirmationDialog.class,
             ResetPasswordDialog.class );
 
-      addModels( module, LinksListModel.class,
-            UsersAndGroupsModel.class );
+      addModels( module, UsersAndGroupsModel.class );
 
       module.objects( DebugWindow.class );
 

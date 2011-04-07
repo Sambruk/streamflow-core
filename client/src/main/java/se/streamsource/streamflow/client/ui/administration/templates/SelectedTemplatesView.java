@@ -123,7 +123,7 @@ public class SelectedTemplatesView extends JPanel
             Font.BOLD ) );
       caseTemplate.setPreferredSize( new Dimension( 150, 25) );
 
-      FormLayout layout = new FormLayout( "60dlu, 5dlu, 150:grow", "pref, 2dlu, pref, 2dlu, pref, 2dlu, pref:grow" );
+      FormLayout layout = new FormLayout( "80dlu, 5dlu, 150:grow", "pref, 2dlu, pref, 2dlu, pref, 2dlu, pref:grow" );
 
       JPanel panel = new JPanel( layout );
       DefaultFormBuilder builder = new DefaultFormBuilder( layout,

@@ -58,6 +58,7 @@ import se.streamsource.streamflow.web.domain.structure.conversation.Conversation
 import se.streamsource.streamflow.web.domain.structure.created.Creator;
 import se.streamsource.streamflow.web.domain.structure.organization.AccessPoint;
 import se.streamsource.streamflow.web.domain.structure.organization.AccessPoints;
+import se.streamsource.streamflow.web.domain.structure.organization.EmailAccessPoint;
 import se.streamsource.streamflow.web.domain.structure.organization.Organization;
 import se.streamsource.streamflow.web.domain.structure.user.Users;
 import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
@@ -132,10 +133,10 @@ public interface CreateCaseFromEmailService
                {
                   OrganizationsQueries organizations = uow.get(OrganizationsQueries.class, OrganizationsEntity.ORGANIZATIONS_ID);
                   Organization organization = organizations.organizations().newQuery(uow).find();
-                  AccessPoint ap = null;
+                  EmailAccessPoint ap = null;
                   try
                   {
-                     ap = organization.getAccessPoint(email.to().get());
+                     ap = organization.getEmailAccessPoint(email.to().get());
                   } catch (IllegalArgumentException e)
                   {
                      // No AP for this email address - ok!

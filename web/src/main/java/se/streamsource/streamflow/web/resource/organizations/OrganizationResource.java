@@ -16,13 +16,16 @@
 
 package se.streamsource.streamflow.web.resource.organizations;
 
+import se.streamsource.dci.api.ServiceAvailable;
 import se.streamsource.dci.restlet.server.CommandQueryResource;
 import se.streamsource.dci.restlet.server.api.SubResource;
+import se.streamsource.streamflow.web.application.mail.CreateCaseFromEmailService;
 import se.streamsource.streamflow.web.context.RequiresPermission;
 import se.streamsource.streamflow.web.context.administration.OrganizationalUnitsContext;
 import se.streamsource.streamflow.web.context.structure.DescribableContext;
 import se.streamsource.streamflow.web.domain.interaction.security.PermissionType;
-import se.streamsource.streamflow.web.resource.administration.ProxyUsersResource;
+import se.streamsource.streamflow.web.resource.administration.surface.OrganizationAttachmentsResource;
+import se.streamsource.streamflow.web.resource.administration.surface.ProxyUsersResource;
 import se.streamsource.streamflow.web.resource.organizations.forms.FormsResource;
 import se.streamsource.streamflow.web.resource.surface.administration.organizations.accesspoints.AccessPointsAdministrationResource;
 import se.streamsource.streamflow.web.resource.surface.administration.organizations.emailaccesspoints.EmailAccessPointsAdministrationResource;
@@ -83,13 +86,13 @@ public class OrganizationResource
       subResource( CaseTypesResource.class );
    }
 
-   @SubResource
+   @SubResource 
    public void accesspoints()
    {
       subResource( AccessPointsAdministrationResource.class );
    }
 
-   @SubResource
+   @SubResource @ServiceAvailable(CreateCaseFromEmailService.class)
    public void emailaccesspoints()
    {
       subResource(EmailAccessPointsAdministrationResource.class);
@@ -104,7 +107,7 @@ public class OrganizationResource
    @SubResource
    public void attachments()
    {
-      subResource( AttachmentsResource.class );
+      subResource( OrganizationAttachmentsResource.class );
    }
    
    @SubResource
