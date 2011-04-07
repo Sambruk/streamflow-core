@@ -37,6 +37,8 @@ public interface Messages
 {
    Message createMessage(String body, ConversationParticipant participant);
 
+   Message getLastMessage();
+
    interface Data
    {
       ManyAssociation<Message> messages();
@@ -85,6 +87,14 @@ public interface Messages
          messages().add( message );
 
          return message;
+      }
+
+      public Message getLastMessage()
+      {
+         if (messages().count() > 0)
+            return messages().get(messages().count()-1);
+         else
+            return null;
       }
    }
 }

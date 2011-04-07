@@ -35,12 +35,19 @@ import se.streamsource.streamflow.web.domain.entity.gtd.DraftsQueries;
 import se.streamsource.streamflow.web.domain.entity.gtd.InboxQueries;
 import se.streamsource.streamflow.web.domain.interaction.security.PermissionType;
 import se.streamsource.streamflow.web.domain.structure.caze.Case;
+import se.streamsource.streamflow.web.domain.structure.conversation.Message;
+import se.streamsource.streamflow.web.domain.structure.conversation.Messages;
 import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
 import se.streamsource.streamflow.web.domain.structure.form.EndUserCases;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
 import se.streamsource.streamflow.web.domain.structure.form.FormDraft;
 import se.streamsource.streamflow.web.domain.structure.form.SelectedForms;
 import se.streamsource.streamflow.web.domain.structure.user.EndUser;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 
 import static org.qi4j.api.query.QueryExpressions.orderBy;
 import static org.qi4j.api.query.QueryExpressions.templateFor;
@@ -53,7 +60,7 @@ public class OpenCasesContext
    @Structure
    Module module;
 
-   public Query<Case> cases(TableQuery tableQuery)
+   public Iterable<Case> cases(TableQuery tableQuery)
    {
       EndUser endUser = RoleMap.role(EndUser.class);
 
@@ -70,6 +77,23 @@ public class OpenCasesContext
       if (tableQuery.limit() != null)
          query.maxResults(Integer.parseInt(tableQuery.limit()));
 
-      return query;
+      ArrayList<Case> list = (ArrayList<Case>) Iterables.addAll(new ArrayList<Case>(), query);
+
+      // Sort by last history message date
+      Collections.sort(list, new Comparator<Case>()
+      {
+         public int compare(Case aCase, Case aCase1)
+         {
+            Message lastMessage = aCase.getHistory().getLastMessage();
+            Message lastMessage1 = aCase1.getHistory().getLastMessage();
+
+            Date caseDate = lastMessage == null ? aCase.createdOn().get() : ((Message.Data)lastMessage).createdOn().get();
+            Date caseDate1 = lastMessage1 == null ? aCase1.createdOn().get() : ((Message.Data)lastMessage1).createdOn().get();
+
+            return caseDate1.compareTo(caseDate);
+         }
+      });
+
+      return list;
    }
 }

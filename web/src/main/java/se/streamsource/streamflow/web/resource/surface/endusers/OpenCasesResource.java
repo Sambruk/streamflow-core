@@ -43,7 +43,7 @@ public class OpenCasesResource
 
    public void cases() throws Throwable
    {
-      Query<CaseEntity> openCases = (Query<CaseEntity>) invoke();
+      Iterable<CaseEntity> openCases = (Iterable<CaseEntity>) invoke();
 
       TableQuery query = (TableQuery) getArguments()[0];
 
