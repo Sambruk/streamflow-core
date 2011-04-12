@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,15 +17,14 @@
 
 package se.streamsource.dci.api;
 
-import org.qi4j.api.composite.TransientComposite;
-import org.qi4j.api.specification.Specification;
-import org.qi4j.spi.structure.ModuleSPI;
+import org.qi4j.api.composite.*;
+import org.qi4j.api.specification.*;
+import org.qi4j.spi.structure.*;
 
-import java.lang.reflect.Method;
-import java.util.Collections;
+import java.lang.reflect.*;
+import java.util.*;
 
-import static org.qi4j.api.util.Iterables.filter;
-import static org.qi4j.api.util.Iterables.iterable;
+import static org.qi4j.api.util.Iterables.*;
 
 /**
  * Helper methods for working with contexts

@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,20 +17,17 @@
 
 package se.streamsource.streamflow.client.ui.administration.surface;
 
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
-import org.restlet.data.Status;
-import org.restlet.resource.ResourceException;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.dci.value.link.LinkValue;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.object.*;
+import org.qi4j.api.value.*;
+import org.restlet.data.*;
+import org.restlet.resource.*;
+import se.streamsource.dci.restlet.client.*;
 import se.streamsource.dci.value.StringValue;
-import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.util.Refreshable;
-import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
-import se.streamsource.streamflow.client.util.LinkValueListModel;
+import se.streamsource.dci.value.link.*;
+import se.streamsource.streamflow.client.*;
+import se.streamsource.streamflow.client.ui.administration.*;
+import se.streamsource.streamflow.client.util.*;
 
 
 public class AccessPointsModel

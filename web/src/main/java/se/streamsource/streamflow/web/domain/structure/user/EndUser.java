@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,12 @@
 
 package se.streamsource.streamflow.web.domain.structure.user;
 
-import se.streamsource.streamflow.domain.contact.Contactable;
-import se.streamsource.streamflow.domain.structure.Describable;
-import se.streamsource.streamflow.domain.structure.Removable;
-import se.streamsource.streamflow.web.domain.entity.gtd.Drafts;
-import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipant;
-import se.streamsource.streamflow.web.domain.structure.created.Creator;
-import se.streamsource.streamflow.web.domain.structure.form.Submitter;
+import se.streamsource.streamflow.domain.contact.*;
+import se.streamsource.streamflow.domain.structure.*;
+import se.streamsource.streamflow.web.domain.entity.gtd.*;
+import se.streamsource.streamflow.web.domain.structure.conversation.*;
+import se.streamsource.streamflow.web.domain.structure.created.*;
+import se.streamsource.streamflow.web.domain.structure.form.*;
 
 /**
  */

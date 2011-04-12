@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,20 +19,16 @@ package se.streamsource.streamflow.client.ui.workspace.search;
 
 
 import org.jdesktop.application.Action;
-import org.jdesktop.application.ApplicationContext;
-import org.jdesktop.swingx.util.WindowUtils;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import org.qi4j.api.structure.Module;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
-import se.streamsource.streamflow.client.ui.workspace.table.PerspectiveView;
-import se.streamsource.streamflow.client.util.RefreshWhenShowing;
-import se.streamsource.streamflow.client.util.Refreshable;
-import se.streamsource.streamflow.client.util.dialog.DialogService;
-import se.streamsource.streamflow.client.util.i18n;
+import org.jdesktop.application.*;
+import org.jdesktop.swingx.util.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.object.*;
+import org.qi4j.api.structure.*;
+import se.streamsource.dci.restlet.client.*;
+import se.streamsource.streamflow.client.ui.workspace.*;
+import se.streamsource.streamflow.client.ui.workspace.table.*;
+import se.streamsource.streamflow.client.util.*;
+import se.streamsource.streamflow.client.util.dialog.*;
 
 import javax.swing.*;
 import java.awt.*;

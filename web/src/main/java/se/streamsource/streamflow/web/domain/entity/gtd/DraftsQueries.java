@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package se.streamsource.streamflow.web.domain.entity.gtd;
 
-import org.qi4j.api.common.Optional;
-import org.qi4j.api.entity.association.Association;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.This;
-import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.query.QueryBuilder;
-import org.qi4j.api.query.QueryBuilderFactory;
-import org.qi4j.api.query.QueryExpressions;
-import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
-import se.streamsource.streamflow.util.Strings;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
-import se.streamsource.streamflow.web.domain.structure.caze.Case;
-import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
-import se.streamsource.streamflow.web.domain.structure.created.Creator;
+import org.qi4j.api.common.*;
+import org.qi4j.api.entity.association.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.mixin.*;
+import org.qi4j.api.query.*;
+import se.streamsource.streamflow.domain.interaction.gtd.*;
+import se.streamsource.streamflow.util.*;
+import se.streamsource.streamflow.web.domain.interaction.gtd.*;
+import se.streamsource.streamflow.web.domain.structure.caze.*;
+import se.streamsource.streamflow.web.domain.structure.created.*;
 
 import static org.qi4j.api.query.QueryExpressions.*;
 

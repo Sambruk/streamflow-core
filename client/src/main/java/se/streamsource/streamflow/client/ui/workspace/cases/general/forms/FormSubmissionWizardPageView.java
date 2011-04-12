@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,59 +17,42 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.general.forms;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.validation.ValidationResult;
-import com.jgoodies.validation.ValidationResultModel;
-import com.jgoodies.validation.util.DefaultValidationResultModel;
-import com.jgoodies.validation.util.ValidationUtils;
-import com.jgoodies.validation.view.ValidationResultViewFactory;
-import org.jdesktop.swingx.JXPanel;
-import org.jdesktop.swingx.ScrollableSizeHint;
-import org.netbeans.spi.wizard.Wizard;
-import org.netbeans.spi.wizard.WizardPage;
-import org.netbeans.spi.wizard.WizardPanelNavResult;
-import org.qi4j.api.entity.EntityReference;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import org.qi4j.api.property.Property;
-import org.qi4j.api.util.DateFunctions;
-import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
-import org.restlet.resource.ResourceException;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
-import se.streamsource.streamflow.client.ui.workspace.cases.CaseResources;
-import se.streamsource.streamflow.client.util.BindingFormBuilder;
-import se.streamsource.streamflow.client.util.CommandTask;
-import se.streamsource.streamflow.client.util.StateBinder;
-import se.streamsource.streamflow.client.util.i18n;
+import com.jgoodies.forms.builder.*;
+import com.jgoodies.forms.layout.*;
+import com.jgoodies.validation.*;
+import com.jgoodies.validation.util.*;
+import com.jgoodies.validation.view.*;
+import org.jdesktop.swingx.*;
+import org.netbeans.spi.wizard.*;
+import org.qi4j.api.entity.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.object.*;
+import org.qi4j.api.property.*;
+import org.qi4j.api.util.*;
+import org.qi4j.api.value.*;
+import org.restlet.resource.*;
+import se.streamsource.dci.restlet.client.*;
+import se.streamsource.streamflow.client.*;
+import se.streamsource.streamflow.client.ui.workspace.*;
+import se.streamsource.streamflow.client.ui.workspace.cases.*;
+import se.streamsource.streamflow.client.util.*;
 import se.streamsource.streamflow.domain.form.*;
-import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
-import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
-import se.streamsource.streamflow.infrastructure.event.domain.source.helper.EventParameters;
-import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
+import se.streamsource.streamflow.infrastructure.event.domain.*;
+import se.streamsource.streamflow.infrastructure.event.domain.source.*;
+import se.streamsource.streamflow.infrastructure.event.domain.source.helper.*;
 
 import javax.swing.*;
-import javax.swing.event.HyperlinkEvent;
-import javax.swing.event.HyperlinkListener;
-import javax.swing.text.html.HTMLDocument;
+import javax.swing.event.*;
+import javax.swing.text.html.*;
 import java.awt.*;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.net.URISyntaxException;
+import java.awt.event.*;
+import java.io.*;
+import java.net.*;
 import java.util.*;
+import java.util.Map;
 
-import static org.qi4j.api.util.Iterables.filter;
-import static org.qi4j.api.util.Iterables.first;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.events;
+import static org.qi4j.api.util.Iterables.*;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 
 /**
  * JAVADOC

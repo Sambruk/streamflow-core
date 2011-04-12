@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,18 +17,16 @@
 
 package se.streamsource.streamflow.client.util.dialog;
 
-import com.jgoodies.forms.builder.ButtonBarBuilder2;
-import org.jdesktop.application.ApplicationContext;
-import org.jdesktop.swingx.JXDialog;
-import org.jdesktop.swingx.util.WindowUtils;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import com.jgoodies.forms.builder.*;
+import org.jdesktop.application.*;
+import org.jdesktop.swingx.*;
+import org.jdesktop.swingx.util.*;
+import org.qi4j.api.injection.scope.*;
 
+import javax.swing.Action;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 
 /**
  * JAVADOC

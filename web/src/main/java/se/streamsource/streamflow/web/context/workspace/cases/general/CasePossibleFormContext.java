@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +17,15 @@
 
 package se.streamsource.streamflow.web.context.workspace.cases.general;
 
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.structure.Module;
-import org.qi4j.api.value.ValueBuilder;
-import org.restlet.data.Status;
-import org.restlet.resource.ResourceException;
-import se.streamsource.dci.api.RoleMap;
-import se.streamsource.dci.value.link.LinkValue;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.structure.*;
+import org.qi4j.api.value.*;
+import org.restlet.data.*;
+import org.restlet.resource.*;
+import se.streamsource.dci.api.*;
+import se.streamsource.dci.value.link.*;
 import se.streamsource.streamflow.web.domain.structure.form.Form;
-import se.streamsource.streamflow.web.domain.structure.form.FormDraft;
-import se.streamsource.streamflow.web.domain.structure.form.FormDrafts;
+import se.streamsource.streamflow.web.domain.structure.form.*;
 
 /**
  * JAVADOC

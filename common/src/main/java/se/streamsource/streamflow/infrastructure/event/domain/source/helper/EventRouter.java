@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,11 @@
 
 package se.streamsource.streamflow.infrastructure.event.domain.source.helper;
 
-import org.qi4j.api.specification.Specification;
-import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.domain.source.EventVisitor;
+import org.qi4j.api.specification.*;
+import se.streamsource.streamflow.infrastructure.event.domain.*;
+import se.streamsource.streamflow.infrastructure.event.domain.source.*;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Event handling router. Add specification->visitor routes. When an event comes in

@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,23 +17,16 @@
 
 package se.streamsource.streamflow.client.ui.workspace;
 
-import org.jdesktop.application.Application;
-import org.jdesktop.application.FrameView;
-import org.jdesktop.swingx.JXFrame;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import se.streamsource.streamflow.client.ui.account.AccountModel;
-import se.streamsource.streamflow.client.ui.account.AccountSelectionView;
-import se.streamsource.streamflow.client.ui.account.AccountSelector;
-import se.streamsource.streamflow.client.ui.menu.WorkspaceMenuBar;
-import se.streamsource.streamflow.client.util.JavaHelp;
-import se.streamsource.streamflow.client.util.i18n;
+import org.jdesktop.application.*;
+import org.jdesktop.swingx.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.object.*;
+import se.streamsource.streamflow.client.ui.account.*;
+import se.streamsource.streamflow.client.ui.menu.*;
+import se.streamsource.streamflow.client.util.*;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
+import javax.swing.event.*;
 import java.awt.*;
 
 /**

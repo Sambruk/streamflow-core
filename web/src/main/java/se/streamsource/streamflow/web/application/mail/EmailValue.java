@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +17,12 @@
 
 package se.streamsource.streamflow.web.application.mail;
 
-import org.qi4j.api.common.Optional;
-import org.qi4j.api.common.UseDefaults;
-import org.qi4j.api.entity.EntityReference;
-import org.qi4j.api.property.Property;
-import org.qi4j.api.value.ValueComposite;
-import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
-import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFileValue;
+import org.qi4j.api.common.*;
+import org.qi4j.api.property.*;
+import org.qi4j.api.value.*;
+import se.streamsource.streamflow.web.domain.structure.attachment.*;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Represents an email

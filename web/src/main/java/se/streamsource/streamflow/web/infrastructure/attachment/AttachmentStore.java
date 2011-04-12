@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,10 @@
 
 package se.streamsource.streamflow.web.infrastructure.attachment;
 
-import org.qi4j.api.io.Input;
-import org.qi4j.api.io.Output;
+import org.qi4j.api.io.*;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.ByteBuffer;
+import java.io.*;
+import java.nio.*;
 
 /**
  * Store for the binary part of an attachment

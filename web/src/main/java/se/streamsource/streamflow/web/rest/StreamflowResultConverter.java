@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,41 +17,34 @@
 
 package se.streamsource.streamflow.web.rest;
 
-import org.qi4j.api.entity.Identity;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.query.Query;
-import org.qi4j.api.structure.Module;
-import org.qi4j.api.util.DateFunctions;
-import org.qi4j.api.value.ValueBuilder;
-import org.restlet.Request;
-import org.restlet.data.Form;
-import org.restlet.resource.ResourceException;
-import org.slf4j.LoggerFactory;
-import se.streamsource.dci.restlet.server.ResultConverter;
+import org.qi4j.api.entity.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.query.*;
+import org.qi4j.api.structure.*;
+import org.qi4j.api.util.*;
+import org.qi4j.api.value.*;
+import org.restlet.*;
+import org.restlet.data.*;
+import org.restlet.resource.*;
+import org.slf4j.*;
+import se.streamsource.dci.restlet.server.*;
 import se.streamsource.dci.value.StringValue;
-import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.dci.value.link.LinksValue;
-import se.streamsource.dci.value.table.TableBuilder;
-import se.streamsource.dci.value.table.TableQuery;
-import se.streamsource.dci.value.table.TableValue;
-import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
-import se.streamsource.streamflow.domain.structure.Describable;
+import se.streamsource.dci.value.link.*;
+import se.streamsource.dci.value.table.*;
+import se.streamsource.streamflow.domain.interaction.gtd.*;
+import se.streamsource.streamflow.domain.structure.*;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.resource.caze.CaseDTO;
-import se.streamsource.streamflow.util.Strings;
-import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Assignee;
-import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
+import se.streamsource.streamflow.resource.caze.*;
+import se.streamsource.streamflow.util.*;
+import se.streamsource.streamflow.web.domain.entity.caze.*;
+import se.streamsource.streamflow.web.domain.interaction.gtd.*;
 import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
-import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
-import se.streamsource.streamflow.web.domain.structure.casetype.Resolution;
-import se.streamsource.streamflow.web.domain.structure.caze.Case;
-import se.streamsource.streamflow.web.domain.structure.created.Creator;
-import se.streamsource.streamflow.web.domain.structure.label.Label;
+import se.streamsource.streamflow.web.domain.structure.casetype.*;
+import se.streamsource.streamflow.web.domain.structure.caze.*;
+import se.streamsource.streamflow.web.domain.structure.created.*;
+import se.streamsource.streamflow.web.domain.structure.label.*;
 
-import java.util.Collections;
-import java.util.Date;
+import java.util.*;
 
 /**
  * JAVADOC

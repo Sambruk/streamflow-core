@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,21 +17,15 @@
 
 package se.streamsource.streamflow.web.domain.structure.organization;
 
-import org.qi4j.api.common.Optional;
-import org.qi4j.api.concern.ConcernOf;
-import org.qi4j.api.concern.Concerns;
-import org.qi4j.api.entity.association.ManyAssociation;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.This;
-import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
-import se.streamsource.streamflow.web.domain.structure.group.Group;
-import se.streamsource.streamflow.web.domain.structure.group.Groups;
-import se.streamsource.streamflow.web.domain.structure.group.Participant;
-import se.streamsource.streamflow.web.domain.structure.project.Member;
-import se.streamsource.streamflow.web.domain.structure.project.Project;
-import se.streamsource.streamflow.web.domain.structure.project.Projects;
+import org.qi4j.api.common.*;
+import org.qi4j.api.concern.*;
+import org.qi4j.api.entity.association.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.mixin.*;
+import org.qi4j.api.unitofwork.*;
+import se.streamsource.streamflow.infrastructure.event.domain.*;
+import se.streamsource.streamflow.web.domain.structure.group.*;
+import se.streamsource.streamflow.web.domain.structure.project.*;
 
 /**
  * List of organizations a participant is a member of.

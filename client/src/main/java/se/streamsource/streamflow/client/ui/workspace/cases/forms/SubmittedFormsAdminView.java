@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,21 +17,15 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.forms;
 
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.streamflow.client.ui.workspace.cases.forms.CaseSubmittedFormView;
-import se.streamsource.streamflow.client.ui.workspace.cases.forms.CaseSubmittedFormsView;
-import se.streamsource.streamflow.resource.roles.IntegerDTO;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.object.*;
+import org.qi4j.api.value.*;
+import se.streamsource.dci.restlet.client.*;
+import se.streamsource.streamflow.resource.caze.*;
 
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JSplitPane;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
+import javax.swing.*;
+import javax.swing.event.*;
+import javax.swing.tree.*;
 
 
 /**
@@ -41,27 +36,27 @@ public class SubmittedFormsAdminView
 {
    public SubmittedFormsAdminView( @Uses final CommandQueryClient client, @Structure final ObjectBuilderFactory obf, @Structure final ValueBuilderFactory vbf)
    {
-      CaseSubmittedFormsView submittedFormsView = obf.newObjectBuilder( CaseSubmittedFormsView.class ).use( client ).newInstance();
+      final CaseSubmittedFormsView submittedFormsView = obf.newObjectBuilder( CaseSubmittedFormsView.class ).use( client ).newInstance();
       setLeftComponent( submittedFormsView );
       setRightComponent( new JPanel() );
 
-      final JList submittedForms = submittedFormsView.getSubmittedFormsList();
-      submittedForms.addListSelectionListener( new ListSelectionListener()
+      final JTree submittedForms = submittedFormsView.getSubmittedFormsTree();
+      submittedForms.addTreeSelectionListener( new TreeSelectionListener()
       {
-         public void valueChanged( ListSelectionEvent e )
+         public void valueChanged( TreeSelectionEvent e )
          {
-            if (!e.getValueIsAdjusting())
+             
+            SubmittedFormListDTO form = (SubmittedFormListDTO) ((DefaultMutableTreeNode)e.getPath().getLastPathComponent()).getUserObject();
+            int idx = submittedFormsView.getModel().getSubmittedForms().indexOf( form );
+            if (idx != -1)
             {
-               int idx = submittedForms.getSelectedIndex();
-               if (idx != -1 && idx < submittedForms.getModel().getSize())
-               {
 
-                  CaseSubmittedFormView submittedFormView = obf.newObjectBuilder( CaseSubmittedFormView.class ).use( client, idx ).newInstance();
-                  setRightComponent( submittedFormView );
-               } else
-               {
-                  setRightComponent( new JPanel() );
-               }
+               CaseSubmittedFormView submittedFormView = obf.newObjectBuilder( CaseSubmittedFormView.class ).
+                     use( client, idx ).newInstance();
+               setRightComponent( submittedFormView );
+            } else
+            {
+               setRightComponent( new JPanel() );
             }
          }
       } );

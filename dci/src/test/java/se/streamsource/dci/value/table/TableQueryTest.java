@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,15 +17,11 @@
 
 package se.streamsource.dci.value.table;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.bootstrap.AssemblyException;
-import org.qi4j.bootstrap.ModuleAssembly;
-import org.qi4j.bootstrap.SingletonAssembler;
+import org.junit.*;
+import org.qi4j.api.value.*;
+import org.qi4j.bootstrap.*;
 
-import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.*;
 
 /**
  * TODO

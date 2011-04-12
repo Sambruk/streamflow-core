@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +17,10 @@
 
 package se.streamsource.infrastructure.circuitbreaker.service;
 
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.mixin.Initializable;
-import org.qi4j.api.mixin.InitializationException;
-import org.qi4j.spi.service.ServiceDescriptor;
-import se.streamsource.infrastructure.circuitbreaker.CircuitBreaker;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.mixin.*;
+import org.qi4j.spi.service.*;
+import se.streamsource.infrastructure.circuitbreaker.*;
 
 /**
  * Helper implementation of ServiceCircuitBreaker. Fetches the CircuitBreaker from meta-info

@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,36 +17,24 @@
 
 package se.streamsource.streamflow.web.context.workspace.cases.form;
 
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.io.Outputs;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.value.ValueBuilderFactory;
-import org.restlet.data.Disposition;
-import org.restlet.data.Form;
-import org.restlet.data.MediaType;
-import org.restlet.representation.InputRepresentation;
-import org.restlet.representation.OutputRepresentation;
-import org.restlet.representation.Representation;
-import se.streamsource.dci.api.IndexContext;
-import se.streamsource.dci.api.RoleMap;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.io.*;
+import org.qi4j.api.unitofwork.*;
+import org.qi4j.api.value.*;
+import org.restlet.data.*;
+import org.restlet.representation.*;
+import se.streamsource.dci.api.*;
 import se.streamsource.dci.value.StringValue;
-import se.streamsource.streamflow.domain.form.AttachmentFieldSubmission;
-import se.streamsource.streamflow.domain.form.AttachmentFieldValue;
-import se.streamsource.streamflow.resource.caze.EffectiveFieldsDTO;
-import se.streamsource.streamflow.resource.caze.FieldDTO;
-import se.streamsource.streamflow.resource.caze.SubmittedFormDTO;
-import se.streamsource.streamflow.resource.caze.SubmittedFormsListDTO;
-import se.streamsource.streamflow.resource.roles.IntegerDTO;
-import se.streamsource.streamflow.util.Strings;
-import se.streamsource.streamflow.web.domain.entity.form.SubmittedFormsQueries;
-import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
-import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
+import se.streamsource.streamflow.domain.form.*;
+import se.streamsource.streamflow.resource.caze.*;
+import se.streamsource.streamflow.resource.roles.*;
+import se.streamsource.streamflow.util.*;
+import se.streamsource.streamflow.web.domain.entity.form.*;
+import se.streamsource.streamflow.web.domain.structure.attachment.*;
+import se.streamsource.streamflow.web.infrastructure.attachment.*;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.io.*;
+import java.net.*;
 
 /**
  * JAVADOC
@@ -111,20 +100,23 @@ public class CaseSubmittedFormsContext
 
    }
 
-   // find the attachment in all fields every submitted on this case
-   private AttachmentFieldSubmission getAttachmentFieldValue( String id )
+   // find the attachment in all fields every submitted form on this case
+   private AttachmentFieldSubmission getAttachmentFieldValue(String id)
    {
-      SubmittedFormsQueries forms = RoleMap.role( SubmittedFormsQueries.class );
-      for ( int i=0; i<forms.getSubmittedForms().forms().get().size(); i++ )
+      SubmittedFormsQueries forms = RoleMap.role(SubmittedFormsQueries.class);
+      for (int i = 0; i < forms.getSubmittedForms().forms().get().size(); i++)
       {
-         for (FieldDTO fieldDTO : forms.getSubmittedForm( i ).values().get())
+         for (SubmittedPageDTO submittedPageDTO : forms.getSubmittedForm(i).pages().get())
          {
-            if ( fieldDTO.fieldType().get().equals( AttachmentFieldValue.class.getName() ) )
+            for (FieldDTO fieldDTO : submittedPageDTO.fields().get())
             {
-               if ( !Strings.empty( fieldDTO.value().get() ) )
+               if (fieldDTO.fieldType().get().equals(AttachmentFieldValue.class.getName()))
                {
-                  AttachmentFieldSubmission submission = vbf.newValueFromJSON( AttachmentFieldSubmission.class, fieldDTO.value().get() );
-                  if ( submission.attachment().get().identity().equals( id )) return submission;
+                  if (!Strings.empty(fieldDTO.value().get()))
+                  {
+                     AttachmentFieldSubmission submission = vbf.newValueFromJSON(AttachmentFieldSubmission.class, fieldDTO.value().get());
+                     if (submission.attachment().get().identity().equals(id)) return submission;
+                  }
                }
             }
          }

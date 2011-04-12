@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,17 +17,16 @@
 
 package se.streamsource.streamflow.client.util;
 
-import ca.odell.glazedlists.swing.EventListModel;
-import com.jgoodies.forms.factories.Borders;
-import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.streamflow.client.ui.OptionsAction;
-import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
-import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
-import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
+import ca.odell.glazedlists.swing.*;
+import com.jgoodies.forms.factories.*;
+import se.streamsource.dci.value.link.*;
+import se.streamsource.streamflow.client.ui.*;
+import se.streamsource.streamflow.infrastructure.event.domain.*;
+import se.streamsource.streamflow.infrastructure.event.domain.source.*;
+import se.streamsource.streamflow.infrastructure.event.domain.source.helper.*;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
+import javax.swing.event.*;
 import java.awt.*;
 
 /**

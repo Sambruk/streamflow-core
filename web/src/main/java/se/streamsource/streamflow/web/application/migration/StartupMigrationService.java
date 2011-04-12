@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,23 +17,18 @@
 
 package se.streamsource.streamflow.web.application.migration;
 
-import org.qi4j.api.configuration.Configuration;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.This;
-import org.qi4j.api.io.Outputs;
-import org.qi4j.api.io.Transforms;
-import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.service.Activatable;
-import org.qi4j.api.service.ServiceComposite;
-import org.qi4j.api.structure.Application;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.util.Function;
-import org.qi4j.spi.entity.EntityState;
-import org.qi4j.spi.entitystore.EntityStore;
-import org.qi4j.spi.structure.ModuleSPI;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.qi4j.api.configuration.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.io.*;
+import org.qi4j.api.mixin.*;
+import org.qi4j.api.service.*;
+import org.qi4j.api.structure.*;
+import org.qi4j.api.unitofwork.*;
+import org.qi4j.api.util.*;
+import org.qi4j.spi.entity.*;
+import org.qi4j.spi.entitystore.*;
+import org.qi4j.spi.structure.*;
+import org.slf4j.*;
 
 /**
  * Perform migration of all data in the EntityStore

@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +17,10 @@
 
 package se.streamsource.streamflow.web.resource.workspace;
 
-import se.streamsource.dci.restlet.server.CommandQueryResource;
-import se.streamsource.dci.restlet.server.api.SubResource;
-import se.streamsource.streamflow.web.context.workspace.DraftsContext;
-import se.streamsource.streamflow.web.context.workspace.SearchContext;
-import se.streamsource.streamflow.web.context.workspace.WorkspaceContext;
-import se.streamsource.streamflow.web.resource.workspace.cases.WorkspaceCasesResource;
+import se.streamsource.dci.restlet.server.*;
+import se.streamsource.dci.restlet.server.api.*;
+import se.streamsource.streamflow.web.context.workspace.*;
+import se.streamsource.streamflow.web.resource.workspace.cases.*;
 
 /**
  * JAVADOC

@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,25 +17,19 @@
 
 package se.streamsource.streamflow.web.infrastructure.database;
 
-import liquibase.Liquibase;
-import liquibase.database.DatabaseConnection;
-import liquibase.database.jvm.JdbcConnection;
-import liquibase.resource.ClassLoaderResourceAccessor;
-import org.qi4j.api.configuration.Configuration;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.This;
-import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.service.Activatable;
-import org.qi4j.api.service.ServiceComposite;
-import org.qi4j.api.service.ServiceImporterException;
-import org.qi4j.api.service.ServiceReference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import liquibase.*;
+import liquibase.database.*;
+import liquibase.database.jvm.*;
+import liquibase.resource.*;
+import org.qi4j.api.configuration.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.mixin.*;
+import org.qi4j.api.service.*;
+import org.slf4j.*;
 
-import javax.sql.DataSource;
-import java.net.ConnectException;
-import java.sql.Connection;
-import java.sql.SQLException;
+import javax.sql.*;
+import java.net.*;
+import java.sql.*;
 
 /**
  * Wrapper service for LiquiBase

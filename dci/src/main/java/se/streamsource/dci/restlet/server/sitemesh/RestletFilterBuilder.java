@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,9 @@
 
 package se.streamsource.dci.restlet.server.sitemesh;
 
-import org.restlet.Context;
-import org.restlet.Restlet;
-import org.restlet.routing.Filter;
-import org.sitemesh.builder.BaseSiteMeshBuilder;
+import org.restlet.*;
+import org.restlet.routing.*;
+import org.sitemesh.builder.*;
 
 /**
  * JAVADOC

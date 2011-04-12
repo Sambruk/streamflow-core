@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,9 @@
 
 package se.streamsource.dci.test;
 
-import org.restlet.Request;
-import org.restlet.Response;
-import org.restlet.Uniform;
-import se.streamsource.dci.restlet.server.CommandQueryRestlet2;
-import se.streamsource.dci.test.interactions.RootResource;
+import org.restlet.*;
+import se.streamsource.dci.restlet.server.*;
+import se.streamsource.dci.test.interactions.*;
 
 /**
  * JAVADOC

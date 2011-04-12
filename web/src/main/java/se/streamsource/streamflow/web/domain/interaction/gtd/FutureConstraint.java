@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,9 @@
 
 package se.streamsource.streamflow.web.domain.interaction.gtd;
 
-import org.qi4j.api.constraint.Constraint;
+import org.qi4j.api.constraint.*;
 
-import java.util.Date;
+import java.util.*;
 
 /**
  * Check if long-value of time is in the future, compared

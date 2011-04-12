@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,16 +17,13 @@
 
 package se.streamsource.streamflow.server.plugin.restlet;
 
-import org.qi4j.bootstrap.Assembler;
-import org.restlet.Application;
-import org.restlet.Context;
-import org.restlet.ext.servlet.ServletAdapter;
+import org.qi4j.bootstrap.*;
+import org.restlet.*;
+import org.restlet.ext.servlet.*;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+import javax.servlet.*;
+import javax.servlet.http.*;
+import java.io.*;
 
 /**
  * Servlet that starts Streamflow plugins and delegates requests to them

@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,22 +17,17 @@
 
 package se.streamsource.dci.restlet.client;
 
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.util.Iterables;
-import org.qi4j.api.value.ValueComposite;
-import org.restlet.Request;
-import org.restlet.Response;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.util.*;
+import org.qi4j.api.value.*;
+import org.restlet.*;
 import org.restlet.data.*;
-import org.restlet.representation.EmptyRepresentation;
-import org.restlet.representation.ObjectRepresentation;
-import org.restlet.representation.Representation;
-import org.restlet.representation.StringRepresentation;
-import org.restlet.resource.ResourceException;
-import se.streamsource.dci.value.ResourceValue;
-import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.dci.value.link.Links;
+import org.restlet.representation.*;
+import org.restlet.resource.*;
+import se.streamsource.dci.value.*;
+import se.streamsource.dci.value.link.*;
 
-import java.io.IOException;
+import java.io.*;
 
 /**
  * Base class for client-side Command/Query resources

@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,16 +17,14 @@
 
 package se.streamsource.streamflow.client;
 
-import ca.odell.glazedlists.BasicEventList;
-import ca.odell.glazedlists.TransactionList;
-import org.qi4j.api.injection.scope.Uses;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.dci.value.ResourceValue;
-import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.streamflow.client.util.EventListSynch;
-import se.streamsource.streamflow.client.util.Refreshable;
+import ca.odell.glazedlists.*;
+import org.qi4j.api.injection.scope.*;
+import se.streamsource.dci.restlet.client.*;
+import se.streamsource.dci.value.*;
+import se.streamsource.dci.value.link.*;
+import se.streamsource.streamflow.client.util.*;
 
-import java.util.Observable;
+import java.util.*;
 
 /**
  * A model that represents a resource. Handles refreshing and basic observability. Exposes list of commands and queries

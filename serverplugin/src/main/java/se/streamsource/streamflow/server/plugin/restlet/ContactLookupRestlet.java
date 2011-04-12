@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,35 +17,19 @@
 
 package se.streamsource.streamflow.server.plugin.restlet;
 
-import org.json.JSONException;
-import org.qi4j.api.common.Optional;
-import org.qi4j.api.common.QualifiedName;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.property.Property;
-import org.qi4j.api.property.StateHolder;
-import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
-import org.qi4j.api.value.ValueComposite;
-import org.qi4j.spi.Qi4jSPI;
-import org.qi4j.spi.property.PropertyType;
-import org.qi4j.spi.structure.ModuleSPI;
-import org.qi4j.spi.value.ValueDescriptor;
-import org.restlet.Request;
-import org.restlet.Response;
-import org.restlet.Restlet;
-import org.restlet.data.CharacterSet;
-import org.restlet.data.Form;
-import org.restlet.data.Language;
-import org.restlet.data.MediaType;
-import org.restlet.data.Method;
-import org.restlet.data.Parameter;
-import org.restlet.data.Status;
-import org.restlet.representation.InputRepresentation;
-import org.restlet.representation.StringRepresentation;
-import se.streamsource.streamflow.server.plugin.contact.ContactList;
-import se.streamsource.streamflow.server.plugin.contact.ContactLookup;
-import se.streamsource.streamflow.server.plugin.contact.ContactValue;
+import org.json.*;
+import org.qi4j.api.common.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.property.*;
+import org.qi4j.api.value.*;
+import org.qi4j.spi.*;
+import org.qi4j.spi.property.*;
+import org.qi4j.spi.structure.*;
+import org.qi4j.spi.value.*;
+import org.restlet.*;
+import org.restlet.data.*;
+import org.restlet.representation.*;
+import se.streamsource.streamflow.server.plugin.contact.*;
 
 /**
  * Delegate Restlet calls to the ContactLookup service.

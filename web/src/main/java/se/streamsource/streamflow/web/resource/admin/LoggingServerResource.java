@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,22 +17,15 @@
 
 package se.streamsource.streamflow.web.resource.admin;
 
-import org.apache.log4j.AppenderSkeleton;
-import org.apache.log4j.Level;
+import org.apache.log4j.*;
 import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
-import org.apache.log4j.spi.LoggingEvent;
-import org.restlet.data.Form;
-import org.restlet.data.MediaType;
-import org.restlet.data.Parameter;
-import org.restlet.representation.Representation;
-import org.restlet.representation.WriterRepresentation;
-import org.restlet.resource.ResourceException;
-import org.restlet.resource.ServerResource;
+import org.apache.log4j.spi.*;
+import org.restlet.data.*;
+import org.restlet.representation.*;
+import org.restlet.resource.*;
 import org.slf4j.MDC;
 
-import java.io.IOException;
-import java.io.Writer;
+import java.io.*;
 
 /**
  * This resource allows the user to follow log messages in realtime. Various filtering can be applied.

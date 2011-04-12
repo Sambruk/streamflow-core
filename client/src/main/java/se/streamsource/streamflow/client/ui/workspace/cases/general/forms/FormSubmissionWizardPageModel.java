@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,39 +17,26 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.general.forms;
 
-import eu.medsea.mimeutil.MimeType;
-import eu.medsea.mimeutil.MimeUtil;
-import org.qi4j.api.entity.EntityReference;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.util.DateFunctions;
-import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
-import org.restlet.data.Disposition;
-import org.restlet.data.Form;
-import org.restlet.representation.InputRepresentation;
-import org.restlet.representation.Representation;
-import org.restlet.resource.ResourceException;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.streamflow.domain.attachment.UpdateAttachmentValue;
-import se.streamsource.streamflow.domain.form.AttachmentFieldDTO;
-import se.streamsource.streamflow.domain.form.FieldValueDTO;
-import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
-import se.streamsource.streamflow.infrastructure.event.domain.source.EventStream;
-import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
-import se.streamsource.streamflow.infrastructure.event.domain.source.helper.EventParameters;
-import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
+import eu.medsea.mimeutil.*;
+import org.qi4j.api.entity.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.util.*;
+import org.qi4j.api.value.*;
+import org.restlet.data.*;
+import org.restlet.representation.*;
+import org.restlet.resource.*;
+import se.streamsource.dci.restlet.client.*;
+import se.streamsource.streamflow.domain.attachment.*;
+import se.streamsource.streamflow.domain.form.*;
+import se.streamsource.streamflow.infrastructure.event.domain.*;
+import se.streamsource.streamflow.infrastructure.event.domain.source.*;
+import se.streamsource.streamflow.infrastructure.event.domain.source.helper.*;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Date;
+import java.io.*;
+import java.util.*;
 
-import static org.qi4j.api.util.Iterables.filter;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withNames;
+import static org.qi4j.api.util.Iterables.*;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 
 public class FormSubmissionWizardPageModel
 {

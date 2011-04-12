@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,10 @@
 
 package se.streamsource.streamflow.web.application.security;
 
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.restlet.data.ClientInfo;
-import org.restlet.security.Enroler;
-import org.restlet.security.User;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.unitofwork.*;
+import org.restlet.data.*;
+import org.restlet.security.*;
 
 /**
  * Accept login if user with the given username has the given password

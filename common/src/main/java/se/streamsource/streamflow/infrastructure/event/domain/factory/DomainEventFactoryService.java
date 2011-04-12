@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,27 +17,20 @@
 
 package se.streamsource.streamflow.infrastructure.event.domain.factory;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.json.JSONStringer;
-import org.json.JSONWriter;
-import org.qi4j.api.concern.Concerns;
-import org.qi4j.api.entity.EntityComposite;
-import org.qi4j.api.entity.IdentityGenerator;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.service.ServiceComposite;
-import org.qi4j.api.structure.Application;
-import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.dci.api.RoleMap;
-import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
-import se.streamsource.streamflow.infrastructure.time.Time;
+import org.json.*;
+import org.qi4j.api.concern.*;
+import org.qi4j.api.entity.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.mixin.*;
+import org.qi4j.api.service.*;
+import org.qi4j.api.structure.*;
+import org.qi4j.api.unitofwork.*;
+import org.qi4j.api.value.*;
+import se.streamsource.dci.api.*;
+import se.streamsource.streamflow.infrastructure.event.domain.*;
+import se.streamsource.streamflow.infrastructure.time.*;
 
-import java.security.Principal;
+import java.security.*;
 
 /**
  * DomainEvent factory

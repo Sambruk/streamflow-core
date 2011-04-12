@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,25 +17,17 @@
 
 package se.streamsource.streamflow.infrastructure.attachment;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.qi4j.api.injection.scope.Service;
+import org.junit.*;
+import org.qi4j.api.injection.scope.*;
 import org.qi4j.api.io.*;
-import org.qi4j.api.util.Iterables;
-import org.qi4j.bootstrap.AssemblyException;
-import org.qi4j.bootstrap.ModuleAssembly;
-import org.qi4j.test.AbstractQi4jTest;
-import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
-import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
-import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStoreService;
+import org.qi4j.api.util.*;
+import org.qi4j.bootstrap.*;
+import org.qi4j.test.*;
+import se.streamsource.streamflow.infrastructure.configuration.*;
+import se.streamsource.streamflow.web.infrastructure.attachment.*;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.ByteBuffer;
+import java.io.*;
+import java.nio.*;
 
 /**
  * JAVADOC

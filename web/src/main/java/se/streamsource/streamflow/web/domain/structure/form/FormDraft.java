@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,38 +17,19 @@
 
 package se.streamsource.streamflow.web.domain.structure.form;
 
-import org.qi4j.api.common.Optional;
-import org.qi4j.api.entity.EntityReference;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.property.Property;
-import org.qi4j.api.util.DateFunctions;
-import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.domain.form.AttachmentFieldDTO;
-import se.streamsource.streamflow.domain.form.AttachmentFieldSubmission;
-import se.streamsource.streamflow.domain.form.CheckboxesFieldValue;
-import se.streamsource.streamflow.domain.form.ComboBoxFieldValue;
-import se.streamsource.streamflow.domain.form.CommentFieldValue;
-import se.streamsource.streamflow.domain.form.DateFieldValue;
-import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
-import se.streamsource.streamflow.domain.form.FieldValue;
-import se.streamsource.streamflow.domain.form.FormDraftValue;
-import se.streamsource.streamflow.domain.form.FormSignatureValue;
-import se.streamsource.streamflow.domain.form.ListBoxFieldValue;
-import se.streamsource.streamflow.domain.form.NumberFieldValue;
-import se.streamsource.streamflow.domain.form.OpenSelectionFieldValue;
-import se.streamsource.streamflow.domain.form.OptionButtonsFieldValue;
-import se.streamsource.streamflow.domain.form.PageSubmissionValue;
-import se.streamsource.streamflow.domain.form.TextAreaFieldValue;
-import se.streamsource.streamflow.domain.form.TextFieldValue;
-import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
-import se.streamsource.streamflow.util.Strings;
+import org.qi4j.api.common.*;
+import org.qi4j.api.entity.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.mixin.*;
+import org.qi4j.api.property.*;
+import org.qi4j.api.util.*;
+import org.qi4j.api.value.*;
+import se.streamsource.streamflow.domain.form.*;
+import se.streamsource.streamflow.infrastructure.event.domain.*;
+import se.streamsource.streamflow.util.*;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.*;
+import java.util.regex.*;
 
 /**
  * JAVADOC

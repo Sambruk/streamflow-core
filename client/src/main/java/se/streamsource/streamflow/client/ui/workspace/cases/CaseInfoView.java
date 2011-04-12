@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,20 +17,17 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases;
 
-import org.jdesktop.application.ApplicationContext;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
-import se.streamsource.streamflow.client.ui.workspace.table.CaseStatusLabel;
-import se.streamsource.streamflow.client.util.i18n;
-import se.streamsource.streamflow.resource.caze.CaseDTO;
+import org.jdesktop.application.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.object.*;
+import se.streamsource.streamflow.client.ui.workspace.*;
+import se.streamsource.streamflow.client.ui.workspace.table.*;
+import se.streamsource.streamflow.client.util.*;
+import se.streamsource.streamflow.resource.caze.*;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Observable;
-import java.util.Observer;
+import java.util.*;
 
 /**
  * JAVADOC

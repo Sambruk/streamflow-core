@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,17 +17,11 @@
 
 package se.streamsource.streamflow.web.context;
 
-import se.streamsource.dci.api.InteractionConstraint;
-import se.streamsource.dci.api.InteractionConstraintDeclaration;
-import se.streamsource.dci.api.RoleMap;
-import se.streamsource.streamflow.web.domain.interaction.security.Authorization;
-import se.streamsource.streamflow.web.domain.interaction.security.PermissionType;
+import se.streamsource.dci.api.*;
+import se.streamsource.streamflow.web.domain.interaction.security.*;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import java.security.Principal;
+import java.lang.annotation.*;
+import java.security.*;
 
 /**
  * Check if current principal has a given permission

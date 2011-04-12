@@ -1,11 +1,12 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,20 +17,15 @@
 
 package se.streamsource.streamflow.web.domain.structure.caze;
 
-import org.qi4j.api.common.Optional;
-import org.qi4j.api.entity.EntityBuilder;
-import org.qi4j.api.entity.Identity;
-import org.qi4j.api.entity.IdentityGenerator;
-import org.qi4j.api.entity.association.ManyAssociation;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.This;
-import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
-import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
-import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
-import se.streamsource.streamflow.web.domain.structure.created.Creator;
+import org.qi4j.api.common.*;
+import org.qi4j.api.entity.*;
+import org.qi4j.api.entity.association.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.mixin.*;
+import org.qi4j.api.unitofwork.*;
+import se.streamsource.streamflow.infrastructure.event.domain.*;
+import se.streamsource.streamflow.web.domain.entity.caze.*;
+import se.streamsource.streamflow.web.domain.structure.created.*;
 
 /**
  * JAVADOC

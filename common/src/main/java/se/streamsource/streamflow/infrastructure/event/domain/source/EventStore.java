@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +17,9 @@
 
 package se.streamsource.streamflow.infrastructure.event.domain.source;
 
-import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import se.streamsource.streamflow.infrastructure.event.domain.*;
 
-import java.io.IOException;
+import java.io.*;
 
 /**
  * Store of domain-events. Internally it stores TransactionDomainEvents, which is a timestamped

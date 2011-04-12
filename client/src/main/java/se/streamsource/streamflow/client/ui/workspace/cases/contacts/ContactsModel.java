@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,20 +17,16 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.contacts;
 
-import ca.odell.glazedlists.BasicEventList;
-import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.TransactionList;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.dci.value.ResourceValue;
-import se.streamsource.streamflow.client.util.EventListSynch;
-import se.streamsource.streamflow.client.util.Refreshable;
-import se.streamsource.streamflow.domain.contact.ContactValue;
-import se.streamsource.streamflow.resource.caze.ContactsDTO;
+import ca.odell.glazedlists.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.value.*;
+import se.streamsource.dci.restlet.client.*;
+import se.streamsource.dci.value.*;
+import se.streamsource.streamflow.client.util.*;
+import se.streamsource.streamflow.domain.contact.*;
+import se.streamsource.streamflow.resource.caze.*;
 
-import java.util.Observable;
+import java.util.*;
 
 /**
  * List of contacts for a case

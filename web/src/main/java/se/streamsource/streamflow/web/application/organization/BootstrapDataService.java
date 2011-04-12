@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,40 +17,29 @@
 
 package se.streamsource.streamflow.web.application.organization;
 
-import org.qi4j.api.entity.association.ManyAssociation;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.query.Query;
-import org.qi4j.api.service.Activatable;
-import org.qi4j.api.service.ServiceComposite;
-import org.qi4j.api.specification.Specifications;
-import org.qi4j.api.unitofwork.NoSuchEntityException;
-import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import se.streamsource.dci.api.RoleMap;
-import se.streamsource.streamflow.domain.contact.ContactValue;
-import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity;
-import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
-import se.streamsource.streamflow.web.domain.entity.organization.OrganizationVisitor;
-import se.streamsource.streamflow.web.domain.entity.organization.OrganizationalUnitEntity;
-import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
-import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
-import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
-import se.streamsource.streamflow.web.domain.entity.user.UsersEntity;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
-import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
-import se.streamsource.streamflow.web.domain.structure.organization.Organization;
-import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
-import se.streamsource.streamflow.web.domain.structure.project.Project;
-import se.streamsource.streamflow.web.domain.structure.role.PermissionsEnum;
+import org.qi4j.api.entity.association.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.mixin.*;
+import org.qi4j.api.query.*;
+import org.qi4j.api.service.*;
+import org.qi4j.api.specification.*;
+import org.qi4j.api.unitofwork.*;
+import org.qi4j.api.value.*;
+import org.slf4j.*;
+import se.streamsource.dci.api.*;
+import se.streamsource.streamflow.domain.contact.*;
+import se.streamsource.streamflow.web.domain.entity.casetype.*;
+import se.streamsource.streamflow.web.domain.entity.organization.*;
+import se.streamsource.streamflow.web.domain.entity.project.*;
+import se.streamsource.streamflow.web.domain.entity.user.*;
+import se.streamsource.streamflow.web.domain.interaction.gtd.*;
+import se.streamsource.streamflow.web.domain.structure.casetype.*;
+import se.streamsource.streamflow.web.domain.structure.organization.*;
+import se.streamsource.streamflow.web.domain.structure.project.*;
+import se.streamsource.streamflow.web.domain.structure.role.*;
 import se.streamsource.streamflow.web.domain.structure.role.Role;
 
-import static org.qi4j.api.usecase.UsecaseBuilder.newUsecase;
+import static org.qi4j.api.usecase.UsecaseBuilder.*;
 
 /**
  * Ensure that the most basic entities are always created. This includes:

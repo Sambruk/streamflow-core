@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,9 @@
 
 package se.streamsource.streamflow.client.ui;
 
-import org.jdesktop.swingx.decorator.AbstractHighlighter;
-import org.jdesktop.swingx.decorator.ComponentAdapter;
-import org.jdesktop.swingx.decorator.HighlightPredicate;
+import org.jdesktop.swingx.decorator.*;
 
-import java.awt.Component;
-import java.awt.Font;
+import java.awt.*;
 
 /**
  * JAVADOC

@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,47 +17,33 @@
 
 package se.streamsource.streamflow.web.application.conversation;
 
-import org.qi4j.api.concern.Concerns;
-import org.qi4j.api.configuration.Configuration;
-import org.qi4j.api.entity.association.ManyAssociation;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.This;
-import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.query.Query;
-import org.qi4j.api.service.Activatable;
-import org.qi4j.api.service.ServiceComposite;
-import org.qi4j.api.structure.Module;
-import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.usecase.UsecaseBuilder;
-import org.qi4j.api.value.ValueBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import se.streamsource.streamflow.domain.contact.ContactEmailValue;
-import se.streamsource.streamflow.domain.contact.Contactable;
-import se.streamsource.streamflow.infrastructure.event.application.factory.ApplicationEventCreationConcern;
-import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.domain.replay.DomainEventPlayer;
-import se.streamsource.streamflow.infrastructure.event.domain.source.EventSource;
-import se.streamsource.streamflow.infrastructure.event.domain.source.EventStream;
-import se.streamsource.streamflow.infrastructure.event.domain.source.helper.EventRouter;
-import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
-import se.streamsource.streamflow.infrastructure.event.domain.source.helper.TransactionTracker;
-import se.streamsource.streamflow.web.application.mail.EmailValue;
-import se.streamsource.streamflow.web.application.mail.MailSender;
-import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
-import se.streamsource.streamflow.web.domain.interaction.profile.MessageRecipient;
-import se.streamsource.streamflow.web.domain.structure.caze.History;
+import org.qi4j.api.concern.*;
+import org.qi4j.api.configuration.*;
+import org.qi4j.api.entity.association.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.mixin.*;
+import org.qi4j.api.service.*;
+import org.qi4j.api.structure.*;
+import org.qi4j.api.unitofwork.*;
+import org.qi4j.api.usecase.*;
+import org.qi4j.api.value.*;
+import org.slf4j.*;
+import se.streamsource.streamflow.domain.contact.*;
+import se.streamsource.streamflow.infrastructure.event.application.factory.*;
+import se.streamsource.streamflow.infrastructure.event.domain.*;
+import se.streamsource.streamflow.infrastructure.event.domain.replay.*;
+import se.streamsource.streamflow.infrastructure.event.domain.source.*;
+import se.streamsource.streamflow.infrastructure.event.domain.source.helper.*;
+import se.streamsource.streamflow.web.application.mail.*;
+import se.streamsource.streamflow.web.domain.interaction.gtd.*;
+import se.streamsource.streamflow.web.domain.interaction.profile.*;
+import se.streamsource.streamflow.web.domain.structure.caze.*;
 import se.streamsource.streamflow.web.domain.structure.conversation.*;
-import se.streamsource.streamflow.web.domain.structure.organization.EmailAccessPoint;
-import se.streamsource.streamflow.web.domain.structure.organization.EmailAccessPoints;
-import se.streamsource.streamflow.web.domain.structure.organization.EmailTemplates;
+import se.streamsource.streamflow.web.domain.structure.organization.*;
 
-import java.net.URLEncoder;
-import java.text.MessageFormat;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.net.*;
+import java.text.*;
+import java.util.*;
 
 /**
  * Send and receive notifications. This service

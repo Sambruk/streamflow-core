@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,18 +17,17 @@
 
 package se.streamsource.streamflow.web.context.administration.surface.accesspoints;
 
-import org.qi4j.api.constraint.Constraints;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.structure.Module;
-import org.qi4j.library.constraints.annotation.MaxLength;
-import se.streamsource.dci.api.Context;
-import se.streamsource.dci.api.IndexContext;
-import se.streamsource.dci.value.link.LinksValue;
+import org.qi4j.api.constraint.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.mixin.*;
+import org.qi4j.api.structure.*;
+import org.qi4j.library.constraints.annotation.*;
+import se.streamsource.dci.api.*;
 import se.streamsource.dci.value.StringValue;
-import se.streamsource.dci.value.StringValueMaxLength;
+import se.streamsource.dci.value.*;
+import se.streamsource.dci.value.link.*;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.web.domain.structure.organization.AccessPoints;
+import se.streamsource.streamflow.web.domain.structure.organization.*;
 
 import static se.streamsource.dci.api.RoleMap.*;
 

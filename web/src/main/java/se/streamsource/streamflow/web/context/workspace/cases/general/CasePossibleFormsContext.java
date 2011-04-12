@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +17,15 @@
 
 package se.streamsource.streamflow.web.context.workspace.cases.general;
 
-import se.streamsource.dci.api.IndexContext;
-import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
-import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
-import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
-import se.streamsource.streamflow.web.domain.structure.form.Form;
-import se.streamsource.streamflow.web.domain.structure.form.SelectedForms;
+import se.streamsource.dci.api.*;
+import se.streamsource.streamflow.domain.interaction.gtd.*;
+import se.streamsource.streamflow.web.domain.interaction.gtd.*;
+import se.streamsource.streamflow.web.domain.structure.casetype.*;
+import se.streamsource.streamflow.web.domain.structure.form.*;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
-import static se.streamsource.dci.api.RoleMap.role;
+import static se.streamsource.dci.api.RoleMap.*;
 
 /**
  * JAVADOC

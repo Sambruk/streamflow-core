@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,35 +17,19 @@
 
 package se.streamsource.streamflow.web.domain.structure.form;
 
-import org.qi4j.api.common.ConstructionException;
-import org.qi4j.api.common.Optional;
-import org.qi4j.api.common.UseDefaults;
-import org.qi4j.api.entity.EntityReference;
-import org.qi4j.api.entity.Queryable;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.This;
-import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.property.Property;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.domain.form.AttachmentFieldSubmission;
-import se.streamsource.streamflow.domain.form.AttachmentFieldValue;
-import se.streamsource.streamflow.domain.form.CommentFieldValue;
-import se.streamsource.streamflow.domain.form.EffectiveFieldValue;
-import se.streamsource.streamflow.domain.form.EffectiveFormFieldsValue;
-import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
-import se.streamsource.streamflow.domain.form.FormDraftValue;
-import se.streamsource.streamflow.domain.form.PageSubmissionValue;
-import se.streamsource.streamflow.domain.form.SubmittedFieldValue;
-import se.streamsource.streamflow.domain.form.SubmittedFormValue;
-import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
-import se.streamsource.streamflow.web.domain.entity.attachment.AttachmentEntity;
-import se.streamsource.streamflow.web.domain.structure.attachment.FormAttachments;
+import org.qi4j.api.common.*;
+import org.qi4j.api.entity.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.mixin.*;
+import org.qi4j.api.property.*;
+import org.qi4j.api.unitofwork.*;
+import org.qi4j.api.value.*;
+import se.streamsource.streamflow.domain.form.*;
+import se.streamsource.streamflow.infrastructure.event.domain.*;
+import se.streamsource.streamflow.web.domain.entity.attachment.*;
+import se.streamsource.streamflow.web.domain.structure.attachment.*;
 
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
 
 /**
  * JAVADOC
@@ -116,6 +100,9 @@ public interface SubmittedForms
          ValueBuilder<SubmittedFieldValue> fieldBuilder = vbf.newValueBuilder( SubmittedFieldValue.class );
          for (PageSubmissionValue pageValue : value.pages().get())
          {
+            ValueBuilder<SubmittedPageValue> pageBuilder = vbf.newValueBuilder(SubmittedPageValue.class);
+            pageBuilder.prototype().page().set(pageValue.page().get());
+
             for (FieldSubmissionValue field : pageValue.fields().get())
             {
                // ignore comment fields when submitting
@@ -148,15 +135,18 @@ public interface SubmittedForms
                   EffectiveFieldValue effectiveFieldValue = effectiveValues.get( field.field().get().field().get() );
                   if (effectiveFieldValue == null || !effectiveFieldValue.value().get().equals( fieldBuilder.prototype().value().get() ))
                   {
+                     eFieldBuilder.prototype().page().set( pageValue.page().get() );
                      eFieldBuilder.prototype().field().set( field.field().get().field().get() );
                      eFieldBuilder.prototype().value().set( fieldBuilder.prototype().value().get() );
                      effectiveValues.put( field.field().get().field().get(), eFieldBuilder.newInstance() );
                      effectiveFieldsChanged = true;
                   }
 
-                  formBuilder.prototype().values().get().add( fieldBuilder.newInstance() );
+                  pageBuilder.prototype().fields().get().add( fieldBuilder.newInstance() );
                }
             }
+
+            formBuilder.prototype().pages().get().add(pageBuilder.newInstance());
          }
 
          // update the effective fields and submitted forms

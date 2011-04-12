@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,44 +17,28 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.contacts;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.factories.Borders;
-import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.builder.*;
+import com.jgoodies.forms.factories.*;
+import com.jgoodies.forms.layout.*;
 import org.jdesktop.application.Action;
-import org.jdesktop.application.ApplicationContext;
-import org.jdesktop.swingx.util.WindowUtils;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilder;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import org.qi4j.api.property.Property;
-import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
-import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.client.util.dialog.DialogService;
-import se.streamsource.streamflow.client.util.StateBinder;
-import se.streamsource.streamflow.client.util.i18n;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
-import se.streamsource.streamflow.client.ui.workspace.cases.CaseResources;
-import se.streamsource.streamflow.client.util.CommandTask;
-import se.streamsource.streamflow.domain.contact.ContactAddressValue;
-import se.streamsource.streamflow.domain.contact.ContactEmailValue;
-import se.streamsource.streamflow.domain.contact.ContactPhoneValue;
-import se.streamsource.streamflow.domain.contact.ContactValue;
-import se.streamsource.streamflow.resource.caze.ContactsDTO;
+import org.jdesktop.application.*;
+import org.jdesktop.swingx.util.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.object.*;
+import org.qi4j.api.property.*;
+import org.qi4j.api.value.*;
+import org.restlet.resource.*;
+import se.streamsource.streamflow.client.ui.workspace.*;
+import se.streamsource.streamflow.client.ui.workspace.cases.*;
+import se.streamsource.streamflow.client.util.*;
+import se.streamsource.streamflow.client.util.dialog.*;
+import se.streamsource.streamflow.domain.contact.*;
+import se.streamsource.streamflow.resource.caze.*;
 
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import java.awt.CardLayout;
-import java.awt.FlowLayout;
+import javax.swing.*;
+import java.awt.*;
 import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
+import java.util.*;
 
 import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.*;
 

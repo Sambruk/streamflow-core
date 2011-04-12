@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,25 +17,19 @@
 
 package se.streamsource.dci.restlet.server.resultwriter;
 
-import org.apache.velocity.Template;
-import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.VelocityEngine;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.spi.property.PropertyDescriptor;
-import org.qi4j.spi.value.ValueDescriptor;
-import org.restlet.Response;
-import org.restlet.data.MediaType;
-import org.restlet.representation.Representation;
-import org.restlet.representation.StringRepresentation;
-import org.restlet.representation.WriterRepresentation;
-import org.restlet.resource.ResourceException;
+import org.apache.velocity.*;
+import org.apache.velocity.app.*;
+import org.json.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.spi.property.*;
+import org.qi4j.spi.value.*;
+import org.restlet.*;
+import org.restlet.data.*;
+import org.restlet.representation.*;
+import org.restlet.resource.*;
 
-import java.io.IOException;
-import java.io.Writer;
-import java.util.Arrays;
-import java.util.List;
+import java.io.*;
+import java.util.*;
 
 /**
  * JAVADOC

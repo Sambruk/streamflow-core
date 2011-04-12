@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,9 @@
 
 package se.streamsource.streamflow.client.util;
 
-import javax.swing.text.DefaultFormatter;
-import java.text.ParseException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
+import javax.swing.text.*;
+import java.text.*;
+import java.util.regex.*;
 
 /**
  * A regular expression based implementation of AbstractFormatter.

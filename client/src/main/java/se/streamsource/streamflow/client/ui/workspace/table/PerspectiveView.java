@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,58 +17,24 @@
 
 package se.streamsource.streamflow.client.ui.workspace.table;
 
-import ca.odell.glazedlists.SortedList;
+import ca.odell.glazedlists.*;
 import org.jdesktop.application.Action;
-import org.jdesktop.application.ApplicationAction;
-import org.jdesktop.application.ApplicationContext;
-import org.qi4j.api.common.Optional;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import org.qi4j.api.util.Iterables;
-import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.dci.value.link.Links;
-import se.streamsource.streamflow.client.Icons;
-import se.streamsource.streamflow.client.util.BottomBorder;
-import se.streamsource.streamflow.client.util.dialog.DialogService;
-import se.streamsource.streamflow.client.util.dialog.NameDialog;
+import org.jdesktop.application.*;
+import org.qi4j.api.common.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.object.*;
+import org.qi4j.api.util.*;
+import se.streamsource.dci.value.link.*;
+import se.streamsource.streamflow.client.*;
+import se.streamsource.streamflow.client.util.*;
+import se.streamsource.streamflow.client.util.dialog.*;
 
-import javax.swing.BorderFactory;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.JToggleButton;
-import javax.swing.KeyStroke;
-import javax.swing.SwingUtilities;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Point;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.HierarchyEvent;
-import java.awt.event.HierarchyListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.awt.event.KeyEvent;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
+import javax.swing.*;
+import javax.swing.event.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.*;
 import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
 
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
 import static se.streamsource.streamflow.client.util.i18n.*;

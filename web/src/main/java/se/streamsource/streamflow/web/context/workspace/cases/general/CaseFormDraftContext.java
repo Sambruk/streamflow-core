@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +17,12 @@
 
 package se.streamsource.streamflow.web.context.workspace.cases.general;
 
-import org.restlet.resource.ResourceException;
-import se.streamsource.dci.api.DeleteContext;
-import se.streamsource.dci.api.IndexContext;
-import se.streamsource.streamflow.domain.form.AttachmentFieldDTO;
-import se.streamsource.streamflow.domain.form.FieldValueDTO;
-import se.streamsource.streamflow.domain.form.FormDraftValue;
-import se.streamsource.streamflow.web.domain.structure.form.FormDraft;
-import se.streamsource.streamflow.web.domain.structure.form.FormDrafts;
-import se.streamsource.streamflow.web.domain.structure.form.SubmittedForms;
-import se.streamsource.streamflow.web.domain.structure.form.Submitter;
+import org.restlet.resource.*;
+import se.streamsource.dci.api.*;
+import se.streamsource.streamflow.domain.form.*;
+import se.streamsource.streamflow.web.domain.structure.form.*;
 
-import java.io.IOException;
+import java.io.*;
 
 import static se.streamsource.dci.api.RoleMap.*;
 

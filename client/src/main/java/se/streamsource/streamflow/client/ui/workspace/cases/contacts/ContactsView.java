@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,39 +17,25 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.contacts;
 
-import ca.odell.glazedlists.swing.EventListModel;
-import com.jgoodies.forms.factories.Borders;
-import org.jdesktop.application.ApplicationContext;
-import org.jdesktop.application.Task;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import org.restlet.resource.ResourceException;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.streamflow.client.StreamflowResources;
+import ca.odell.glazedlists.swing.*;
+import com.jgoodies.forms.factories.*;
+import org.jdesktop.application.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.object.*;
+import org.restlet.resource.*;
+import se.streamsource.dci.restlet.client.*;
+import se.streamsource.streamflow.client.*;
+import se.streamsource.streamflow.client.ui.workspace.*;
 import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
-import se.streamsource.streamflow.client.util.dialog.DialogService;
-import se.streamsource.streamflow.client.util.RefreshWhenShowing;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
-import se.streamsource.streamflow.domain.contact.ContactValue;
-import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
-import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
-import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
+import se.streamsource.streamflow.client.util.dialog.*;
+import se.streamsource.streamflow.domain.contact.*;
+import se.streamsource.streamflow.infrastructure.event.domain.*;
+import se.streamsource.streamflow.infrastructure.event.domain.source.*;
+import se.streamsource.streamflow.infrastructure.event.domain.source.helper.*;
 
-import javax.swing.ActionMap;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.JButton;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.ListSelectionModel;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.io.IOException;
+import javax.swing.*;
+import java.awt.*;
+import java.io.*;
 
 import static org.jdesktop.application.Task.BlockingScope.*;
 

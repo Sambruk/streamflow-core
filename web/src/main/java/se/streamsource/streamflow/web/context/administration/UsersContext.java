@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,36 +17,25 @@
 
 package se.streamsource.streamflow.web.context.administration;
 
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.qi4j.api.constraint.ConstraintViolationException;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.structure.Module;
-import org.qi4j.api.unitofwork.NoSuchEntityException;
-import org.qi4j.api.unitofwork.UnitOfWork;
-import org.restlet.data.MediaType;
-import org.restlet.data.Status;
-import org.restlet.representation.Representation;
-import org.restlet.resource.ResourceException;
-import se.streamsource.dci.api.IndexContext;
-import se.streamsource.dci.api.RoleMap;
-import se.streamsource.dci.value.link.LinksValue;
-import se.streamsource.streamflow.resource.user.NewUserCommand;
-import se.streamsource.streamflow.util.Strings;
-import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
-import se.streamsource.streamflow.web.domain.entity.user.UsersQueries;
-import se.streamsource.streamflow.web.domain.structure.user.User;
-import se.streamsource.streamflow.web.domain.structure.user.Users;
+import org.apache.poi.hssf.usermodel.*;
+import org.apache.poi.ss.usermodel.*;
+import org.qi4j.api.constraint.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.structure.*;
+import org.qi4j.api.unitofwork.*;
+import org.restlet.data.*;
+import org.restlet.representation.*;
+import org.restlet.resource.*;
+import se.streamsource.dci.api.*;
+import se.streamsource.dci.value.link.*;
+import se.streamsource.streamflow.resource.user.*;
+import se.streamsource.streamflow.util.*;
+import se.streamsource.streamflow.web.domain.entity.user.*;
+import se.streamsource.streamflow.web.domain.structure.user.*;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.ResourceBundle;
-import java.util.regex.Pattern;
+import java.io.*;
+import java.util.*;
+import java.util.regex.*;
 
 /**
  * JAVADOC

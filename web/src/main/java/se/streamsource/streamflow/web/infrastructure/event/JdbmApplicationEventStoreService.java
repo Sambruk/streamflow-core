@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,31 +17,21 @@
 
 package se.streamsource.streamflow.web.infrastructure.event;
 
-import jdbm.RecordManager;
-import jdbm.RecordManagerFactory;
-import jdbm.RecordManagerOptions;
-import jdbm.btree.BTree;
+import jdbm.*;
+import jdbm.btree.*;
 import jdbm.helper.*;
-import jdbm.recman.CacheRecordManager;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.json.JSONTokener;
-import org.qi4j.api.injection.scope.Service;
+import jdbm.recman.*;
+import org.json.*;
+import org.qi4j.api.injection.scope.*;
 import org.qi4j.api.io.*;
-import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.service.Activatable;
-import org.qi4j.api.service.ServiceComposite;
-import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
-import se.streamsource.streamflow.infrastructure.event.application.TransactionApplicationEvents;
-import se.streamsource.streamflow.infrastructure.event.application.source.AbstractApplicationEventStoreMixin;
-import se.streamsource.streamflow.infrastructure.event.application.source.ApplicationEventSource;
-import se.streamsource.streamflow.infrastructure.event.application.source.ApplicationEventStore;
-import se.streamsource.streamflow.infrastructure.event.application.source.ApplicationEventStream;
+import org.qi4j.api.mixin.*;
+import org.qi4j.api.service.*;
+import se.streamsource.streamflow.infrastructure.configuration.*;
+import se.streamsource.streamflow.infrastructure.event.application.*;
+import se.streamsource.streamflow.infrastructure.event.application.source.*;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Date;
-import java.util.Properties;
+import java.io.*;
+import java.util.*;
 
 /**
  * JAVADOC

@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,22 +17,17 @@
 
 package se.streamsource.streamflow.infrastructure.configuration;
 
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.This;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.property.Property;
-import org.qi4j.api.service.Activatable;
-import org.qi4j.api.service.ServiceComposite;
-import org.qi4j.api.structure.Application;
-import org.qi4j.spi.service.ServiceDescriptor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.mixin.*;
+import org.qi4j.api.property.*;
+import org.qi4j.api.service.*;
+import org.qi4j.api.structure.*;
+import org.qi4j.spi.service.*;
+import org.slf4j.*;
 
-import java.io.File;
-import java.text.MessageFormat;
-import java.util.Locale;
-import java.util.ResourceBundle;
+import java.io.*;
+import java.text.*;
+import java.util.*;
 
 /**
  * Service for accessing application-specific directories. These will default to

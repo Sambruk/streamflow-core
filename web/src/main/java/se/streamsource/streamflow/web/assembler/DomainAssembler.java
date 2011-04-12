@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,39 +17,28 @@
 
 package se.streamsource.streamflow.web.assembler;
 
-import org.qi4j.api.common.Visibility;
-import org.qi4j.api.service.qualifier.ServiceQualifier;
-import org.qi4j.bootstrap.AssemblyException;
-import org.qi4j.bootstrap.LayerAssembly;
-import org.qi4j.bootstrap.ModuleAssembly;
-import org.qi4j.spi.query.NamedEntityFinder;
-import org.qi4j.spi.query.NamedQueries;
-import org.qi4j.spi.query.NamedQueryDescriptor;
-import org.qi4j.spi.service.importer.ServiceSelectorImporter;
-import se.streamsource.streamflow.domain.CommonDomainAssembler;
-import se.streamsource.streamflow.resource.CommonResourceAssembler;
-import se.streamsource.streamflow.web.domain.entity.attachment.AttachmentEntity;
-import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity;
-import se.streamsource.streamflow.web.domain.entity.casetype.ResolutionEntity;
-import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
-import se.streamsource.streamflow.web.domain.entity.conversation.ConversationEntity;
-import se.streamsource.streamflow.web.domain.entity.conversation.MessageEntity;
-import se.streamsource.streamflow.web.domain.entity.form.FieldEntity;
-import se.streamsource.streamflow.web.domain.entity.form.FormDraftEntity;
-import se.streamsource.streamflow.web.domain.entity.form.FormEntity;
-import se.streamsource.streamflow.web.domain.entity.form.PageEntity;
-import se.streamsource.streamflow.web.domain.entity.label.LabelEntity;
+import org.qi4j.api.common.*;
+import org.qi4j.api.service.qualifier.*;
+import org.qi4j.bootstrap.*;
+import org.qi4j.spi.query.*;
+import org.qi4j.spi.service.importer.*;
+import se.streamsource.streamflow.domain.*;
+import se.streamsource.streamflow.resource.*;
+import se.streamsource.streamflow.web.domain.entity.attachment.*;
+import se.streamsource.streamflow.web.domain.entity.casetype.*;
+import se.streamsource.streamflow.web.domain.entity.caze.*;
+import se.streamsource.streamflow.web.domain.entity.conversation.*;
+import se.streamsource.streamflow.web.domain.entity.form.*;
+import se.streamsource.streamflow.web.domain.entity.label.*;
 import se.streamsource.streamflow.web.domain.entity.organization.*;
-import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
-import se.streamsource.streamflow.web.domain.entity.project.ProjectRoleEntity;
+import se.streamsource.streamflow.web.domain.entity.project.*;
 import se.streamsource.streamflow.web.domain.entity.user.*;
-import se.streamsource.streamflow.web.domain.entity.user.PerspectiveEntity;
-import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFileValue;
-import se.streamsource.streamflow.web.domain.structure.organization.ParticipantRolesValue;
-import se.streamsource.streamflow.web.domain.structure.project.PermissionValue;
-import se.streamsource.streamflow.web.infrastructure.index.NamedSolrDescriptor;
+import se.streamsource.streamflow.web.domain.structure.attachment.*;
+import se.streamsource.streamflow.web.domain.structure.organization.*;
+import se.streamsource.streamflow.web.domain.structure.project.*;
+import se.streamsource.streamflow.web.infrastructure.index.*;
 
-import static org.qi4j.api.common.Visibility.application;
+import static org.qi4j.api.common.Visibility.*;
 
 /**
  * JAVADOC

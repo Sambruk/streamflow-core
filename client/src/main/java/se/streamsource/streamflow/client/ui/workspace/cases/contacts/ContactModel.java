@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,21 +17,16 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.contacts;
 
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.util.Iterables;
-import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
-import org.restlet.resource.ResourceException;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.dci.value.link.Links;
-import se.streamsource.dci.value.ResourceValue;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.util.*;
+import org.qi4j.api.value.*;
+import org.restlet.resource.*;
+import se.streamsource.dci.restlet.client.*;
+import se.streamsource.dci.value.*;
 import se.streamsource.dci.value.StringValue;
-import se.streamsource.streamflow.domain.contact.ContactAddressValue;
-import se.streamsource.streamflow.domain.contact.ContactEmailValue;
-import se.streamsource.streamflow.domain.contact.ContactPhoneValue;
-import se.streamsource.streamflow.domain.contact.ContactValue;
-import se.streamsource.streamflow.resource.caze.ContactsDTO;
+import se.streamsource.dci.value.link.*;
+import se.streamsource.streamflow.domain.contact.*;
+import se.streamsource.streamflow.resource.caze.*;
 
 /**
  * Model for a contact of a case

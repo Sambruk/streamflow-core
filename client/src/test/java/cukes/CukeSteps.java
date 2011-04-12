@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,29 +17,20 @@
 
 package cukes;
 
-import cuke4duke.annotation.After;
-import cuke4duke.annotation.Before;
-import cuke4duke.annotation.I18n.EN.Given;
-import cuke4duke.annotation.I18n.EN.Then;
-import cuke4duke.annotation.I18n.EN.When;
-import org.fest.swing.core.BasicRobot;
-import org.fest.swing.core.GenericTypeMatcher;
-import org.fest.swing.core.Robot;
-import org.fest.swing.core.matcher.FrameMatcher;
-import org.fest.swing.core.matcher.JButtonMatcher;
-import org.fest.swing.finder.WindowFinder;
-import org.fest.swing.fixture.FrameFixture;
-import org.fest.swing.fixture.JListFixture;
-import org.fest.swing.fixture.JTableFixture;
-import org.fest.swing.timing.Pause;
-import org.fest.swing.timing.Timeout;
-import se.streamsource.streamflow.client.MainClient;
+import cuke4duke.annotation.*;
+import cuke4duke.annotation.I18n.EN.*;
+import org.fest.swing.core.*;
+import org.fest.swing.core.matcher.*;
+import org.fest.swing.finder.*;
+import org.fest.swing.fixture.*;
+import org.fest.swing.timing.*;
+import se.streamsource.streamflow.client.*;
 
 import javax.swing.*;
 
-import static org.fest.swing.data.TableCell.row;
-import static org.fest.swing.launcher.ApplicationLauncher.application;
-import static org.junit.Assert.assertTrue;
+import static org.fest.swing.data.TableCell.*;
+import static org.fest.swing.launcher.ApplicationLauncher.*;
+import static org.junit.Assert.*;
 
 
 public class CukeSteps

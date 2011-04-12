@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +17,12 @@
 
 package se.streamsource.dci.restlet.server.resultwriter;
 
-import org.restlet.Request;
-import org.restlet.data.CharacterSet;
-import org.restlet.data.Language;
-import org.restlet.data.MediaType;
-import org.restlet.representation.Variant;
-import se.streamsource.dci.restlet.server.ResultWriter;
+import org.restlet.*;
+import org.restlet.data.*;
+import org.restlet.representation.*;
+import se.streamsource.dci.restlet.server.*;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * Helper methods for ResultWriters

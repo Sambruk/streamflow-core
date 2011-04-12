@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,14 +17,12 @@
 
 package se.streamsource.streamflow.web.domain.entity.organization;
 
-import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
-import se.streamsource.streamflow.web.domain.structure.casetype.Resolution;
-import se.streamsource.streamflow.web.domain.structure.form.Form;
-import se.streamsource.streamflow.web.domain.structure.group.Group;
-import se.streamsource.streamflow.web.domain.structure.label.Label;
-import se.streamsource.streamflow.web.domain.structure.organization.Organization;
-import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
-import se.streamsource.streamflow.web.domain.structure.project.Project;
+import se.streamsource.streamflow.web.domain.structure.casetype.*;
+import se.streamsource.streamflow.web.domain.structure.form.*;
+import se.streamsource.streamflow.web.domain.structure.group.*;
+import se.streamsource.streamflow.web.domain.structure.label.*;
+import se.streamsource.streamflow.web.domain.structure.organization.*;
+import se.streamsource.streamflow.web.domain.structure.project.*;
 
 /**
  * Visitor for the organizational structure

@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +17,10 @@
 
 package se.streamsource.streamflow.infrastructure.event.application.source;
 
-import org.qi4j.api.io.Input;
-import se.streamsource.streamflow.infrastructure.event.application.TransactionApplicationEvents;
+import org.qi4j.api.io.*;
+import se.streamsource.streamflow.infrastructure.event.application.*;
 
-import java.io.IOException;
+import java.io.*;
 
 /**
  * An ApplicationEventSource is a source of application events that can be pulled in chunks. Events are grouped in the transactions in which they were created.

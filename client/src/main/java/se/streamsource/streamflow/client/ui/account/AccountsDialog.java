@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,42 +17,27 @@
 
 package se.streamsource.streamflow.client.ui.account;
 
-import static se.streamsource.streamflow.client.util.i18n.text;
-
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import java.awt.Dimension;
-
-import javax.swing.JButton;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-
+import ca.odell.glazedlists.event.*;
+import ca.odell.glazedlists.swing.*;
 import org.jdesktop.application.Action;
-import org.jdesktop.application.ApplicationContext;
-import org.jdesktop.swingx.util.WindowUtils;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.value.ValueBuilderFactory;
-import org.restlet.resource.ResourceException;
+import org.jdesktop.application.*;
+import org.jdesktop.swingx.util.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.object.*;
+import org.qi4j.api.unitofwork.*;
+import org.qi4j.api.value.*;
+import org.restlet.resource.*;
+import se.streamsource.streamflow.client.*;
+import se.streamsource.streamflow.client.domain.individual.*;
+import se.streamsource.streamflow.client.util.*;
+import se.streamsource.streamflow.client.util.dialog.*;
+import se.streamsource.streamflow.infrastructure.application.*;
 
-import se.streamsource.streamflow.client.StreamflowResources;
-import se.streamsource.streamflow.client.domain.individual.IndividualRepository;
-import se.streamsource.streamflow.client.util.ListItemListCellRenderer;
-import se.streamsource.streamflow.client.util.SelectionActionEnabler;
-import se.streamsource.streamflow.client.util.i18n;
-import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
-import se.streamsource.streamflow.client.util.dialog.DialogService;
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
-import ca.odell.glazedlists.event.ListEvent;
-import ca.odell.glazedlists.event.ListEventListener;
-import ca.odell.glazedlists.swing.EventListModel;
+import javax.swing.*;
+import javax.swing.event.*;
+import java.awt.*;
+
+import static se.streamsource.streamflow.client.util.i18n.*;
 
 /**
  * JAVADOC

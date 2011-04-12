@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,35 +17,29 @@
 
 package se.streamsource.streamflow.client.ui.overview;
 
-import ca.odell.glazedlists.gui.TableFormat;
-import ca.odell.glazedlists.swing.EventJXTableModel;
-import org.jdesktop.application.ApplicationContext;
-import org.jdesktop.swingx.JXTable;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.io.Inputs;
-import org.qi4j.api.io.Outputs;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import org.qi4j.api.value.ValueBuilderFactory;
-import org.restlet.representation.Representation;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.streamflow.client.StreamflowApplication;
-import se.streamsource.streamflow.client.StreamflowResources;
-import se.streamsource.streamflow.client.util.FileNameExtensionFilter;
-import se.streamsource.streamflow.client.util.RefreshWhenShowing;
-import se.streamsource.streamflow.client.util.dialog.DialogService;
-import se.streamsource.streamflow.client.util.i18n;
-import se.streamsource.streamflow.resource.overview.ProjectSummaryValue;
+import ca.odell.glazedlists.gui.*;
+import ca.odell.glazedlists.swing.*;
+import org.jdesktop.application.*;
+import org.jdesktop.swingx.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.io.*;
+import org.qi4j.api.object.*;
+import org.qi4j.api.value.*;
+import org.restlet.representation.*;
+import se.streamsource.dci.restlet.client.*;
+import se.streamsource.streamflow.client.*;
+import se.streamsource.streamflow.client.util.*;
+import se.streamsource.streamflow.client.util.dialog.*;
+import se.streamsource.streamflow.resource.overview.*;
 
+import javax.swing.Action;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-import java.io.File;
+import java.awt.event.*;
+import java.io.*;
 
 import static se.streamsource.streamflow.client.ui.overview.OverviewResources.*;
-import static se.streamsource.streamflow.client.util.i18n.text;
+import static se.streamsource.streamflow.client.util.i18n.*;
 
 public class OverviewSummaryView extends JPanel
 {

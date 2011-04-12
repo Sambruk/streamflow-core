@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,28 +17,21 @@
 
 package se.streamsource.streamflow.client.ui;
 
-import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.*;
 import org.jdesktop.application.Action;
-import org.jdesktop.application.ApplicationContext;
-import org.jdesktop.swingx.JXDialog;
-import org.jdesktop.swingx.util.WindowUtils;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.dci.value.link.TitledLinkValue;
-import se.streamsource.streamflow.client.util.GroupedFilteredList;
-import se.streamsource.streamflow.client.util.i18n;
-import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
-import se.streamsource.streamflow.client.ui.administration.UsersAndGroupsModel;
+import org.jdesktop.application.*;
+import org.jdesktop.swingx.*;
+import org.jdesktop.swingx.util.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.object.*;
+import org.qi4j.api.value.*;
+import se.streamsource.dci.value.link.*;
+import se.streamsource.streamflow.client.ui.administration.*;
+import se.streamsource.streamflow.client.util.*;
 
-import javax.swing.BorderFactory;
-import javax.swing.JPanel;
-import java.awt.GridLayout;
-import java.util.HashSet;
-import java.util.Set;
+import javax.swing.*;
+import java.awt.*;
+import java.util.*;
 
 /**
  * JAVADOC

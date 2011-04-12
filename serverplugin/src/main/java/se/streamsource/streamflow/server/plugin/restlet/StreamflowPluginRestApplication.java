@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,17 +17,12 @@
 
 package se.streamsource.streamflow.server.plugin.restlet;
 
-import org.qi4j.bootstrap.Assembler;
-import org.qi4j.bootstrap.Energy4Java;
-import org.qi4j.spi.structure.ApplicationSPI;
-import org.restlet.Application;
-import org.restlet.Context;
-import org.restlet.Restlet;
-import org.restlet.data.MediaType;
-import org.restlet.routing.Router;
-import org.restlet.routing.Template;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.qi4j.bootstrap.*;
+import org.qi4j.spi.structure.*;
+import org.restlet.*;
+import org.restlet.data.*;
+import org.restlet.routing.*;
+import org.slf4j.*;
 
 /**
  * Application for Streamflow SPI Plugin implementations.

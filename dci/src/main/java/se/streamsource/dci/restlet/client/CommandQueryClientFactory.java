@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,23 +17,18 @@
 
 package se.streamsource.dci.restlet.client;
 
-import org.qi4j.api.common.Optional;
-import org.qi4j.api.common.QualifiedName;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.property.StateHolder;
-import org.qi4j.api.structure.Module;
-import org.qi4j.api.value.ValueComposite;
-import org.qi4j.spi.Qi4jSPI;
-import org.qi4j.spi.property.PropertyTypeDescriptor;
-import org.qi4j.spi.value.ValueDescriptor;
-import org.restlet.Request;
-import org.restlet.Response;
-import org.restlet.Uniform;
+import org.qi4j.api.common.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.property.*;
+import org.qi4j.api.structure.*;
+import org.qi4j.api.value.*;
+import org.qi4j.spi.*;
+import org.qi4j.spi.property.*;
+import org.qi4j.spi.value.*;
+import org.restlet.*;
 import org.restlet.data.*;
 
-import java.util.Collections;
-import java.util.Locale;
+import java.util.*;
 
 /**
  * Builder for CommandQueryClient

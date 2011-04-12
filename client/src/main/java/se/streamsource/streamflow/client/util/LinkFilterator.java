@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,10 @@
 
 package se.streamsource.streamflow.client.util;
 
-import ca.odell.glazedlists.TextFilterator;
-import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.dci.value.link.TitledLinkValue;
+import ca.odell.glazedlists.*;
+import se.streamsource.dci.value.link.*;
 
-import java.util.List;
+import java.util.*;
 
 /**
  * Filter for LinkValue. Will filter on texts, and titles if available

@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,18 +17,12 @@
 
 package se.streamsource.streamflow.web.context.workspace.cases;
 
-import se.streamsource.dci.api.InteractionConstraint;
-import se.streamsource.dci.api.InteractionConstraintDeclaration;
-import se.streamsource.dci.api.RoleMap;
-import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
-import se.streamsource.streamflow.web.domain.structure.casetype.TypedCase;
+import se.streamsource.dci.api.*;
+import se.streamsource.streamflow.web.domain.structure.casetype.*;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
-import static org.qi4j.api.util.Iterables.first;
+import static org.qi4j.api.util.Iterables.*;
 
 /**
  * Check if current case has any possible resolutions

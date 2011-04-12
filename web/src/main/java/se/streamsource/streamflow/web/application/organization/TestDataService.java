@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,55 +17,32 @@
 
 package se.streamsource.streamflow.web.application.organization;
 
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.service.Activatable;
-import org.qi4j.api.service.ServiceComposite;
-import org.qi4j.api.structure.Application;
-import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.dci.api.RoleMap;
-import se.streamsource.streamflow.domain.contact.ContactEmailValue;
-import se.streamsource.streamflow.domain.contact.ContactValue;
-import se.streamsource.streamflow.domain.contact.Contactable;
-import se.streamsource.streamflow.domain.form.DateFieldValue;
-import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
-import se.streamsource.streamflow.domain.form.FormDraftValue;
-import se.streamsource.streamflow.domain.form.NumberFieldValue;
-import se.streamsource.streamflow.domain.form.OptionButtonsFieldValue;
-import se.streamsource.streamflow.domain.form.PageSubmissionValue;
-import se.streamsource.streamflow.domain.form.TextFieldValue;
-import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
-import se.streamsource.streamflow.web.application.security.UserPrincipal;
-import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
-import se.streamsource.streamflow.web.domain.entity.conversation.ConversationEntity;
-import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
-import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
-import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
-import se.streamsource.streamflow.web.domain.entity.user.UsersEntity;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
-import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
-import se.streamsource.streamflow.web.domain.structure.casetype.Resolution;
-import se.streamsource.streamflow.web.domain.structure.caze.Case;
-import se.streamsource.streamflow.web.domain.structure.conversation.Conversation;
-import se.streamsource.streamflow.web.domain.structure.form.Form;
-import se.streamsource.streamflow.web.domain.structure.form.FormDraft;
-import se.streamsource.streamflow.web.domain.structure.form.Page;
-import se.streamsource.streamflow.web.domain.structure.form.Submitter;
-import se.streamsource.streamflow.web.domain.structure.group.Group;
-import se.streamsource.streamflow.web.domain.structure.label.Label;
-import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
-import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
-import se.streamsource.streamflow.web.domain.structure.project.Member;
-import se.streamsource.streamflow.web.domain.structure.project.Project;
-import se.streamsource.streamflow.web.domain.structure.project.ProjectRole;
-import se.streamsource.streamflow.web.domain.structure.user.User;
-import se.streamsource.streamflow.web.domain.structure.user.Users;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.mixin.*;
+import org.qi4j.api.service.*;
+import org.qi4j.api.structure.*;
+import org.qi4j.api.unitofwork.*;
+import org.qi4j.api.value.*;
+import se.streamsource.dci.api.*;
+import se.streamsource.streamflow.domain.contact.*;
+import se.streamsource.streamflow.domain.form.*;
+import se.streamsource.streamflow.web.application.security.*;
+import se.streamsource.streamflow.web.domain.entity.caze.*;
+import se.streamsource.streamflow.web.domain.entity.conversation.*;
+import se.streamsource.streamflow.web.domain.entity.organization.*;
+import se.streamsource.streamflow.web.domain.entity.user.*;
+import se.streamsource.streamflow.web.domain.interaction.gtd.*;
+import se.streamsource.streamflow.web.domain.structure.casetype.*;
+import se.streamsource.streamflow.web.domain.structure.caze.*;
+import se.streamsource.streamflow.web.domain.structure.conversation.*;
+import se.streamsource.streamflow.web.domain.structure.form.*;
+import se.streamsource.streamflow.web.domain.structure.group.*;
+import se.streamsource.streamflow.web.domain.structure.label.*;
+import se.streamsource.streamflow.web.domain.structure.organization.*;
+import se.streamsource.streamflow.web.domain.structure.project.*;
+import se.streamsource.streamflow.web.domain.structure.user.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import static org.qi4j.api.usecase.UsecaseBuilder.*;
 

@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,21 +17,18 @@
 
 package se.streamsource.streamflow.client.ui.workspace.table;
 
-import ca.odell.glazedlists.SeparatorList;
-import ca.odell.glazedlists.gui.AdvancedTableFormat;
-import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.streamflow.client.Icons;
-import se.streamsource.streamflow.client.ui.workspace.cases.CaseTableValue;
-import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
-import se.streamsource.streamflow.util.Strings;
+import ca.odell.glazedlists.*;
+import ca.odell.glazedlists.gui.*;
+import se.streamsource.dci.value.link.*;
+import se.streamsource.streamflow.client.*;
+import se.streamsource.streamflow.client.ui.workspace.cases.*;
+import se.streamsource.streamflow.domain.interaction.gtd.*;
+import se.streamsource.streamflow.util.*;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
-import static se.streamsource.streamflow.client.util.i18n.text;
+import static se.streamsource.streamflow.client.util.i18n.*;
 
 /**
  * JAVADOC

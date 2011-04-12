@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,18 +17,17 @@
 
 package se.streamsource.dci.test;
 
-import org.qi4j.api.common.Visibility;
+import org.qi4j.api.common.*;
 import org.qi4j.bootstrap.*;
-import org.qi4j.spi.service.importer.NewObjectImporter;
-import se.streamsource.dci.api.InteractionConstraintsService;
+import org.qi4j.spi.service.importer.*;
+import se.streamsource.dci.api.*;
 import se.streamsource.dci.restlet.server.*;
-import se.streamsource.dci.test.interactions.RootResource;
-import se.streamsource.dci.test.interactions.file.FileContext;
-import se.streamsource.dci.test.interactions.file.FileResource;
+import se.streamsource.dci.test.interactions.*;
+import se.streamsource.dci.test.interactions.file.*;
 import se.streamsource.dci.test.interactions.jmx.*;
-import se.streamsource.dci.value.ValueAssembler;
+import se.streamsource.dci.value.*;
 
-import static org.qi4j.bootstrap.ImportedServiceDeclaration.NEW_OBJECT;
+import static org.qi4j.bootstrap.ImportedServiceDeclaration.*;
 
 /**
  * JAVADOC

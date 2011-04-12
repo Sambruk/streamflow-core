@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,33 +17,27 @@
 
 package se.streamsource.streamflow.web.context.workspace;
 
-import org.qi4j.api.concern.Concerns;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.query.Query;
+import org.qi4j.api.concern.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.mixin.*;
+import org.qi4j.api.query.*;
 import org.qi4j.api.query.QueryBuilder;
-import org.qi4j.api.query.QueryExpressions;
-import org.qi4j.api.query.grammar.OrderBy;
-import org.qi4j.api.structure.Module;
-import se.streamsource.dci.api.Context;
-import se.streamsource.dci.value.link.LinksBuilder;
-import se.streamsource.dci.value.link.LinksValue;
-import se.streamsource.dci.value.table.TableQuery;
-import se.streamsource.streamflow.domain.structure.Describable;
-import se.streamsource.streamflow.domain.structure.Removable;
-import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity;
-import se.streamsource.streamflow.web.domain.entity.gtd.Drafts;
-import se.streamsource.streamflow.web.domain.entity.gtd.DraftsQueries;
-import se.streamsource.streamflow.web.domain.entity.label.LabelEntity;
-import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
-import se.streamsource.streamflow.web.domain.interaction.gtd.DueOn;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Ownable;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
-import se.streamsource.streamflow.web.domain.structure.caze.Case;
-import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
+import org.qi4j.api.query.grammar.*;
+import org.qi4j.api.structure.*;
+import se.streamsource.dci.api.*;
+import se.streamsource.dci.value.link.*;
+import se.streamsource.dci.value.table.*;
+import se.streamsource.streamflow.domain.structure.*;
+import se.streamsource.streamflow.web.domain.entity.casetype.*;
+import se.streamsource.streamflow.web.domain.entity.gtd.*;
+import se.streamsource.streamflow.web.domain.entity.label.*;
+import se.streamsource.streamflow.web.domain.entity.project.*;
+import se.streamsource.streamflow.web.domain.interaction.gtd.*;
+import se.streamsource.streamflow.web.domain.structure.caze.*;
+import se.streamsource.streamflow.web.domain.structure.created.*;
 
 import static org.qi4j.api.query.QueryExpressions.*;
-import static se.streamsource.dci.api.RoleMap.role;
+import static se.streamsource.dci.api.RoleMap.*;
 
 /**
  * JAVADOC

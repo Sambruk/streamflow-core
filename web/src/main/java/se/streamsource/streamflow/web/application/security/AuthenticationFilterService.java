@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,50 +17,35 @@
 
 package se.streamsource.streamflow.web.application.security;
 
-import net.sf.ehcache.Element;
-import org.qi4j.api.configuration.Configuration;
-import org.qi4j.api.entity.EntityReference;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.This;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.service.Activatable;
-import org.qi4j.api.service.ServiceComposite;
+import net.sf.ehcache.*;
+import org.qi4j.api.configuration.*;
+import org.qi4j.api.entity.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.mixin.*;
+import org.qi4j.api.service.*;
 import org.qi4j.api.unitofwork.*;
-import org.qi4j.api.usecase.Usecase;
-import org.qi4j.api.usecase.UsecaseBuilder;
-import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
-import org.qi4j.spi.service.ServiceDescriptor;
-import org.restlet.Context;
-import org.restlet.Request;
-import org.restlet.Response;
+import org.qi4j.api.usecase.*;
+import org.qi4j.api.value.*;
+import org.qi4j.spi.service.*;
+import org.restlet.*;
 import org.restlet.data.*;
-import org.restlet.representation.Representation;
-import org.restlet.resource.ClientResource;
-import org.restlet.resource.ResourceException;
-import org.restlet.routing.Filter;
-import org.restlet.security.User;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import se.streamsource.infrastructure.circuitbreaker.CircuitBreaker;
-import se.streamsource.infrastructure.circuitbreaker.service.ServiceCircuitBreaker;
-import se.streamsource.streamflow.domain.contact.ContactEmailValue;
-import se.streamsource.streamflow.domain.contact.ContactPhoneValue;
-import se.streamsource.streamflow.domain.contact.ContactValue;
-import se.streamsource.streamflow.domain.contact.Contactable;
+import org.restlet.data.Status;
+import org.restlet.representation.*;
+import org.restlet.resource.*;
+import org.restlet.routing.*;
+import org.restlet.security.*;
+import org.slf4j.*;
+import se.streamsource.infrastructure.circuitbreaker.*;
+import se.streamsource.infrastructure.circuitbreaker.service.*;
+import se.streamsource.streamflow.domain.contact.*;
 import se.streamsource.streamflow.server.plugin.authentication.Authenticator;
-import se.streamsource.streamflow.server.plugin.authentication.UserDetailsValue;
-import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
-import se.streamsource.streamflow.web.domain.entity.user.UsersEntity;
-import se.streamsource.streamflow.web.domain.interaction.security.Authentication;
-import se.streamsource.streamflow.web.infrastructure.caching.Caches;
-import se.streamsource.streamflow.web.infrastructure.caching.Caching;
-import se.streamsource.streamflow.web.infrastructure.caching.CachingService;
-import se.streamsource.streamflow.web.infrastructure.plugin.PluginConfiguration;
+import se.streamsource.streamflow.server.plugin.authentication.*;
+import se.streamsource.streamflow.web.domain.entity.user.*;
+import se.streamsource.streamflow.web.domain.interaction.security.*;
+import se.streamsource.streamflow.web.infrastructure.caching.*;
+import se.streamsource.streamflow.web.infrastructure.plugin.*;
 
-import java.io.IOException;
+import java.io.*;
 
 @Mixins(AuthenticationFilterService.Mixin.class)
 public interface AuthenticationFilterService extends ServiceComposite, Configuration, Activatable, ServiceCircuitBreaker

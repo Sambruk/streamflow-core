@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,9 @@
 
 package se.streamsource.streamflow.resource.user;
 
-import org.qi4j.api.property.Property;
-import org.qi4j.api.value.ValueComposite;
-import se.streamsource.streamflow.domain.user.Password;
-import se.streamsource.streamflow.domain.user.Username;
+import org.qi4j.api.property.*;
+import org.qi4j.api.value.*;
+import se.streamsource.streamflow.domain.user.*;
 
 /**
  * Command for creating a user

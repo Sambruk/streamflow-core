@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,19 +17,15 @@
 
 package se.streamsource.streamflow.client.util;
 
-import org.jdesktop.application.Application;
-import org.jdesktop.application.Task;
-import org.qi4j.api.util.Iterables;
-import se.streamsource.streamflow.application.error.ErrorResources;
-import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.StreamflowApplication;
-import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
-import se.streamsource.streamflow.infrastructure.event.domain.source.EventStream;
-import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
+import org.jdesktop.application.*;
+import org.qi4j.api.util.*;
+import se.streamsource.streamflow.application.error.*;
+import se.streamsource.streamflow.client.*;
+import se.streamsource.streamflow.infrastructure.event.domain.*;
+import se.streamsource.streamflow.infrastructure.event.domain.source.*;
 
 import javax.swing.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * All Swing actions that want to trigger commands in the domain model

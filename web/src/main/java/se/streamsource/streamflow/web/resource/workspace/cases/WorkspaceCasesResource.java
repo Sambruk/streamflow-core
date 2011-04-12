@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +17,10 @@
 
 package se.streamsource.streamflow.web.resource.workspace.cases;
 
-import se.streamsource.dci.api.ContextNotFoundException;
-import se.streamsource.dci.restlet.server.CommandQueryResource;
-import se.streamsource.dci.restlet.server.api.SubResources;
-import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
+import se.streamsource.dci.api.*;
+import se.streamsource.dci.restlet.server.*;
+import se.streamsource.dci.restlet.server.api.*;
+import se.streamsource.streamflow.web.domain.entity.caze.*;
 
 /**
  * JAVADOC

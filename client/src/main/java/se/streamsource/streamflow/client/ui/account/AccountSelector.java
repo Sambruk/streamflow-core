@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,34 +17,23 @@
 
 package se.streamsource.streamflow.client.ui.account;
 
-import ca.odell.glazedlists.event.ListEvent;
-import ca.odell.glazedlists.event.ListEventListener;
-import ca.odell.glazedlists.swing.EventListModel;
-import info.aduna.io.IOUtil;
-import org.jdesktop.application.Application;
-import org.jdesktop.application.ApplicationContext;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Uses;
-import org.restlet.data.Status;
-import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.application.error.ErrorResources;
-import se.streamsource.streamflow.client.StreamflowApplication;
-import se.streamsource.streamflow.client.util.ListItemListCellRenderer;
-import se.streamsource.streamflow.client.util.dialog.DialogService;
-import se.streamsource.streamflow.client.util.i18n;
+import ca.odell.glazedlists.event.*;
+import ca.odell.glazedlists.swing.*;
+import info.aduna.io.*;
+import org.jdesktop.application.*;
+import org.qi4j.api.injection.scope.*;
+import org.restlet.data.*;
+import org.restlet.resource.*;
+import se.streamsource.streamflow.application.error.*;
+import se.streamsource.streamflow.client.*;
+import se.streamsource.streamflow.client.util.*;
+import se.streamsource.streamflow.client.util.dialog.*;
 
-import javax.swing.JList;
-import javax.swing.SwingUtilities;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyVetoException;
-import java.beans.VetoableChangeListener;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringReader;
-import java.text.MessageFormat;
-import java.util.Locale;
-import java.util.Properties;
+import javax.swing.*;
+import java.beans.*;
+import java.io.*;
+import java.text.*;
+import java.util.*;
 
 /**
  * Selection of active account

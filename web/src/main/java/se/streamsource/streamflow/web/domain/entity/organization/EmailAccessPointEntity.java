@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,23 +17,17 @@
 
 package se.streamsource.streamflow.web.domain.entity.organization;
 
-import org.qi4j.api.concern.ConcernOf;
-import org.qi4j.api.concern.Concerns;
-import org.qi4j.api.injection.scope.This;
-import se.streamsource.streamflow.domain.structure.Describable;
-import se.streamsource.streamflow.domain.structure.Removable;
-import se.streamsource.streamflow.web.domain.entity.DomainEntity;
-import se.streamsource.streamflow.web.domain.interaction.gtd.IdGenerator;
-import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
-import se.streamsource.streamflow.web.domain.structure.form.SelectedForms;
-import se.streamsource.streamflow.web.domain.structure.label.Label;
-import se.streamsource.streamflow.web.domain.structure.label.Labelable;
-import se.streamsource.streamflow.web.domain.structure.organization.AccessPoint;
-import se.streamsource.streamflow.web.domain.structure.organization.AccessPointSettings;
-import se.streamsource.streamflow.web.domain.structure.organization.EmailAccessPoint;
-import se.streamsource.streamflow.web.domain.structure.project.Project;
+import org.qi4j.api.concern.*;
+import org.qi4j.api.injection.scope.*;
+import se.streamsource.streamflow.domain.structure.*;
+import se.streamsource.streamflow.web.domain.entity.*;
+import se.streamsource.streamflow.web.domain.interaction.gtd.*;
+import se.streamsource.streamflow.web.domain.structure.casetype.*;
+import se.streamsource.streamflow.web.domain.structure.label.*;
+import se.streamsource.streamflow.web.domain.structure.organization.*;
+import se.streamsource.streamflow.web.domain.structure.project.*;
 
-import java.util.List;
+import java.util.*;
 
 /**
  * An Email Access Point

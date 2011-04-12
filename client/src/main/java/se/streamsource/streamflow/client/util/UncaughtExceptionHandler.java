@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,26 +17,24 @@
 
 package se.streamsource.streamflow.client.util;
 
-import org.jdesktop.swingx.JXDialog;
-import org.jdesktop.swingx.JXErrorPane;
-import org.jdesktop.swingx.error.ErrorInfo;
-import org.qi4j.api.common.ConstructionException;
-import org.qi4j.api.injection.scope.Service;
-import org.restlet.data.Status;
-import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.application.error.ErrorResources;
-import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.StreamflowApplication;
-import se.streamsource.streamflow.client.StreamflowResources;
-import se.streamsource.streamflow.client.util.dialog.DialogService;
+import org.jdesktop.swingx.*;
+import org.jdesktop.swingx.error.*;
+import org.qi4j.api.common.*;
+import org.qi4j.api.injection.scope.*;
+import org.restlet.data.*;
+import org.restlet.resource.*;
+import se.streamsource.streamflow.application.error.*;
+import se.streamsource.streamflow.client.*;
+import se.streamsource.streamflow.client.util.dialog.*;
 
 import javax.swing.*;
 import java.awt.*;
-import java.lang.reflect.InvocationTargetException;
-import java.util.Collections;
-import java.util.logging.Level;
+import java.awt.Dimension;
+import java.lang.reflect.*;
+import java.util.*;
+import java.util.logging.*;
 
-import static se.streamsource.streamflow.client.util.i18n.text;
+import static se.streamsource.streamflow.client.util.i18n.*;
 
 /**
  * JAVADOC

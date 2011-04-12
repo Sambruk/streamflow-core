@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +17,14 @@
 
 package se.streamsource.streamflow.web.resource.surface.administration.organizations.accesspoints;
 
-import se.streamsource.dci.restlet.server.CommandQueryResource;
-import se.streamsource.dci.restlet.server.api.SubResource;
-import se.streamsource.streamflow.domain.structure.Describable;
-import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.web.context.administration.surface.accesspoints.AccessPointAdministrationContext;
-import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
-import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
+import se.streamsource.dci.restlet.server.*;
+import se.streamsource.dci.restlet.server.api.*;
+import se.streamsource.streamflow.domain.structure.*;
+import se.streamsource.streamflow.infrastructure.application.*;
+import se.streamsource.streamflow.web.context.administration.surface.accesspoints.*;
+import se.streamsource.streamflow.web.domain.structure.attachment.*;
 
-import java.util.List;
+import java.util.*;
 
 /**
  * JAVADOC

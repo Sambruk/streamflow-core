@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,25 +17,17 @@
 
 package se.streamsource.streamflow.web.domain.generic;
 
-import org.qi4j.api.common.AppliesTo;
-import org.qi4j.api.common.AppliesToFilter;
-import org.qi4j.api.entity.EntityComposite;
-import org.qi4j.api.entity.Identity;
-import org.qi4j.api.entity.IdentityGenerator;
-import org.qi4j.api.entity.association.Association;
-import org.qi4j.api.entity.association.EntityStateHolder;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.State;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.This;
-import org.qi4j.api.property.Property;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
+import org.qi4j.api.common.*;
+import org.qi4j.api.entity.*;
+import org.qi4j.api.entity.association.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.property.*;
+import org.qi4j.api.unitofwork.*;
+import se.streamsource.streamflow.infrastructure.event.domain.*;
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.lang.reflect.*;
+import java.util.*;
+import java.util.concurrent.*;
 
 /**
  * Generic mixin for simple command methods that create an entity and add it to a collection. They have to follow this pattern:

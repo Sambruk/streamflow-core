@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,34 +17,22 @@
 
 package se.streamsource.dci.restlet.server;
 
-import org.qi4j.api.cache.CacheOptions;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.structure.Module;
-import org.qi4j.api.unitofwork.ConcurrentEntityModificationException;
-import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.usecase.Usecase;
-import org.qi4j.api.usecase.UsecaseBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
-import org.qi4j.spi.Qi4jSPI;
-import org.restlet.Request;
-import org.restlet.Response;
-import org.restlet.Restlet;
-import org.restlet.Uniform;
+import org.qi4j.api.cache.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.structure.*;
+import org.qi4j.api.unitofwork.*;
+import org.qi4j.api.usecase.*;
+import org.qi4j.api.value.*;
+import org.qi4j.spi.*;
+import org.restlet.*;
 import org.restlet.data.*;
-import org.restlet.representation.Representation;
-import org.restlet.representation.StringRepresentation;
-import org.restlet.resource.ResourceException;
-import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
-import se.streamsource.dci.api.RoleMap;
-import se.streamsource.dci.restlet.server.api.ResourceValidity;
+import org.restlet.representation.*;
+import org.restlet.resource.*;
+import org.slf4j.*;
+import se.streamsource.dci.api.*;
+import se.streamsource.dci.restlet.server.api.*;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * JAVADOC

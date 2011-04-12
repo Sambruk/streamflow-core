@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,43 +17,33 @@
 
 package se.streamsource.streamflow.web.context.workspace.cases.attachment;
 
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileItemFactory;
-import org.apache.commons.fileupload.FileUploadException;
-import org.qi4j.api.entity.Identity;
+import org.apache.commons.fileupload.*;
+import org.qi4j.api.entity.*;
 import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.io.Inputs;
-import org.qi4j.api.structure.Module;
-import org.qi4j.api.value.ValueBuilder;
-import org.restlet.Request;
-import org.restlet.Response;
-import org.restlet.data.MediaType;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.io.*;
+import org.qi4j.api.structure.*;
+import org.qi4j.api.value.*;
+import org.restlet.*;
+import org.restlet.data.*;
 import org.restlet.data.Status;
-import org.restlet.ext.fileupload.RestletFileUpload;
-import org.restlet.representation.Representation;
-import org.restlet.resource.ResourceException;
-import org.restlet.service.MetadataService;
-import se.streamsource.dci.api.IndexContext;
-import se.streamsource.dci.api.RoleMap;
-import se.streamsource.dci.value.link.LinksValue;
-import se.streamsource.streamflow.domain.attachment.AttachmentValue;
+import org.restlet.ext.fileupload.*;
+import org.restlet.representation.*;
+import org.restlet.resource.*;
+import org.restlet.service.*;
+import se.streamsource.dci.api.*;
+import se.streamsource.dci.value.link.*;
+import se.streamsource.streamflow.domain.attachment.*;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresStatus;
-import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
-import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
-import se.streamsource.streamflow.web.domain.structure.attachment.Attachments;
-import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
+import se.streamsource.streamflow.web.domain.interaction.gtd.*;
+import se.streamsource.streamflow.web.domain.structure.attachment.*;
+import se.streamsource.streamflow.web.infrastructure.attachment.*;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URISyntaxException;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
+import java.io.*;
+import java.net.*;
+import java.util.*;
 
-import static se.streamsource.streamflow.domain.interaction.gtd.CaseStates.DRAFT;
-import static se.streamsource.streamflow.domain.interaction.gtd.CaseStates.OPEN;
+import static se.streamsource.streamflow.domain.interaction.gtd.CaseStates.*;
 
 /**
  * JAVADOC

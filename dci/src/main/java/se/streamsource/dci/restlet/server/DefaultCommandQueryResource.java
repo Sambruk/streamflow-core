@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +17,7 @@
 
 package se.streamsource.dci.restlet.server;
 
-import org.qi4j.api.injection.scope.Uses;
+import org.qi4j.api.injection.scope.*;
 
 /**
  * This is a hack to get around Qi4j's picky object lookup algo.

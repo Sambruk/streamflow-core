@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,19 +17,15 @@
 
 package se.streamsource.dci.restlet.client.responsereader;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.util.DateFunctions;
-import org.qi4j.api.value.ValueBuilderFactory;
-import org.restlet.Response;
-import org.restlet.data.MediaType;
-import org.restlet.data.Status;
-import org.restlet.resource.ResourceException;
-import se.streamsource.dci.restlet.client.ResponseReader;
-import se.streamsource.dci.value.table.TableBuilder;
-import se.streamsource.dci.value.table.TableValue;
+import org.json.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.util.*;
+import org.qi4j.api.value.*;
+import org.restlet.*;
+import org.restlet.data.*;
+import org.restlet.resource.*;
+import se.streamsource.dci.restlet.client.*;
+import se.streamsource.dci.value.table.*;
 
 /**
  * JAVADOC

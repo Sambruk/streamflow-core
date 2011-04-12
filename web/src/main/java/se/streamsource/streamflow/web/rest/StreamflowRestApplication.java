@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,21 +17,18 @@
 
 package se.streamsource.streamflow.web.rest;
 
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import org.qi4j.bootstrap.Energy4Java;
-import org.qi4j.spi.structure.ApplicationSPI;
-import org.restlet.Application;
-import org.restlet.Context;
-import org.restlet.Restlet;
-import org.restlet.data.MediaType;
-import org.restlet.routing.Router;
-import org.restlet.security.Enroler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import se.streamsource.streamflow.web.application.security.DefaultEnroler;
-import se.streamsource.streamflow.web.assembler.StreamflowWebAssembler;
-import se.streamsource.streamflow.web.resource.APIRouter;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.object.*;
+import org.qi4j.bootstrap.*;
+import org.qi4j.spi.structure.*;
+import org.restlet.*;
+import org.restlet.data.*;
+import org.restlet.routing.*;
+import org.restlet.security.*;
+import org.slf4j.*;
+import se.streamsource.streamflow.web.application.security.*;
+import se.streamsource.streamflow.web.assembler.*;
+import se.streamsource.streamflow.web.resource.*;
 
 /**
  * JAVADOC

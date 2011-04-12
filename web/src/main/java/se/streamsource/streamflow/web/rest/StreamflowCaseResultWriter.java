@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,15 +17,14 @@
 
 package se.streamsource.streamflow.web.rest;
 
-import org.qi4j.api.value.Value;
-import org.restlet.Response;
-import org.restlet.data.MediaType;
-import org.restlet.representation.StringRepresentation;
-import org.restlet.resource.ResourceException;
-import se.streamsource.dci.restlet.server.resultwriter.AbstractResultWriter;
+import org.qi4j.api.value.*;
+import org.restlet.*;
+import org.restlet.data.*;
+import org.restlet.representation.*;
+import org.restlet.resource.*;
+import se.streamsource.dci.restlet.server.resultwriter.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * TODO

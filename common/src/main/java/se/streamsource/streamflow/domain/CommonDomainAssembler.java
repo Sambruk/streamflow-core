@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,12 @@
 
 package se.streamsource.streamflow.domain;
 
-import org.qi4j.api.common.Visibility;
-import org.qi4j.bootstrap.AssemblyException;
-import org.qi4j.bootstrap.LayerAssembly;
-import se.streamsource.streamflow.domain.attachment.AttachmentAssembler;
-import se.streamsource.streamflow.domain.contact.ContactAssembler;
-import se.streamsource.streamflow.domain.form.FormAssembler;
-import se.streamsource.streamflow.domain.organization.EmailAccessPointValue;
+import org.qi4j.api.common.*;
+import org.qi4j.bootstrap.*;
+import se.streamsource.streamflow.domain.attachment.*;
+import se.streamsource.streamflow.domain.contact.*;
+import se.streamsource.streamflow.domain.form.*;
+import se.streamsource.streamflow.domain.organization.*;
 
 /**
  * JAVADOC

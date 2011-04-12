@@ -1,11 +1,12 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,18 +17,15 @@
 
 package se.streamsource.dci.restlet.server.api;
 
-import org.qi4j.api.entity.EntityComposite;
-import org.qi4j.api.unitofwork.NoSuchEntityException;
-import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.spi.Qi4jSPI;
-import org.qi4j.spi.entity.EntityState;
-import org.restlet.Request;
-import org.restlet.Response;
-import org.restlet.data.Status;
-import org.restlet.data.Tag;
-import org.restlet.resource.ResourceException;
+import org.qi4j.api.entity.*;
+import org.qi4j.api.unitofwork.*;
+import org.qi4j.spi.*;
+import org.qi4j.spi.entity.*;
+import org.restlet.*;
+import org.restlet.data.*;
+import org.restlet.resource.*;
 
-import java.util.Date;
+import java.util.*;
 
 /**
  * JAVADOC

@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -132,7 +132,10 @@ public enum AdministrationResources
    choose_default_access_type,
    caseaccessdefaults_tab,
    choose_move_casetype_to,
+   choose_accesspoint_title,
    emailaccesspoints_tab,
+   accesspoint,
+   email,
    subject, emailTemplates,
    add_email_accesspoint,
    formsignatures_tab

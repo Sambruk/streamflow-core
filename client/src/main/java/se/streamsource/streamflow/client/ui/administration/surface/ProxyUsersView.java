@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,40 +17,27 @@
 
 package se.streamsource.streamflow.client.ui.administration.surface;
 
-import ca.odell.glazedlists.gui.AdvancedTableFormat;
-import ca.odell.glazedlists.gui.TableFormat;
-import ca.odell.glazedlists.gui.WritableTableFormat;
-import ca.odell.glazedlists.swing.EventJXTableModel;
+import ca.odell.glazedlists.gui.*;
+import ca.odell.glazedlists.swing.*;
 import org.jdesktop.application.Action;
-import org.jdesktop.application.ApplicationActionMap;
-import org.jdesktop.application.ApplicationContext;
-import org.jdesktop.application.Task;
-import org.jdesktop.swingx.JXTable;
-import org.jdesktop.swingx.renderer.CheckBoxProvider;
-import org.jdesktop.swingx.renderer.DefaultTableRenderer;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.streamflow.client.util.RefreshWhenShowing;
-import se.streamsource.streamflow.client.util.dialog.DialogService;
-import se.streamsource.streamflow.client.util.SelectionActionEnabler;
-import se.streamsource.streamflow.client.util.CommandTask;
-import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
-import se.streamsource.streamflow.client.ui.OptionsAction;
-import se.streamsource.streamflow.client.ui.administration.users.ResetPasswordDialog;
-import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
-import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
-import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
-import se.streamsource.streamflow.resource.user.ProxyUserDTO;
+import org.jdesktop.application.*;
+import org.jdesktop.swingx.*;
+import org.jdesktop.swingx.renderer.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.object.*;
+import se.streamsource.dci.restlet.client.*;
+import se.streamsource.streamflow.client.ui.*;
+import se.streamsource.streamflow.client.ui.administration.*;
+import se.streamsource.streamflow.client.ui.administration.users.*;
+import se.streamsource.streamflow.client.util.*;
+import se.streamsource.streamflow.client.util.dialog.*;
+import se.streamsource.streamflow.infrastructure.event.domain.*;
+import se.streamsource.streamflow.infrastructure.event.domain.source.*;
+import se.streamsource.streamflow.resource.user.*;
 
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-import java.awt.BorderLayout;
-import java.util.Comparator;
+import javax.swing.*;
+import java.awt.*;
+import java.util.*;
 
 import static se.streamsource.streamflow.client.util.i18n.*;
 import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;

@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,11 @@
 
 package se.streamsource.streamflow.web.context.administration.surface;
 
-import org.restlet.Response;
-import se.streamsource.streamflow.web.context.workspace.cases.attachment.AttachmentsContext;
+import org.restlet.*;
+import se.streamsource.streamflow.web.context.workspace.cases.attachment.*;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
+import java.io.*;
+import java.net.*;
 
 /**
  * Attachments on the organization. These have differing permission requirements compared to the one on cases

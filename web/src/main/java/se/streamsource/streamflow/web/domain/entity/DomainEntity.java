@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,17 +17,13 @@
 
 package se.streamsource.streamflow.web.domain.entity;
 
-import org.qi4j.api.concern.Concerns;
-import org.qi4j.api.entity.EntityComposite;
-import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.sideeffect.SideEffects;
-import se.streamsource.streamflow.infrastructure.event.domain.factory.EventCreationConcern;
-import se.streamsource.streamflow.web.domain.generic.CommandPropertyChangeMixin;
-import se.streamsource.streamflow.web.domain.generic.EventEntityAddedMixin;
-import se.streamsource.streamflow.web.domain.generic.EventEntityCreatedMixin;
-import se.streamsource.streamflow.web.domain.generic.EventEntityRemovedMixin;
-import se.streamsource.streamflow.web.domain.generic.EventPropertyChangedMixin;
-import se.streamsource.streamflow.web.domain.interaction.gtd.ChangeOwnerSideEffect;
+import org.qi4j.api.concern.*;
+import org.qi4j.api.entity.*;
+import org.qi4j.api.mixin.*;
+import org.qi4j.api.sideeffect.*;
+import se.streamsource.streamflow.infrastructure.event.domain.factory.*;
+import se.streamsource.streamflow.web.domain.generic.*;
+import se.streamsource.streamflow.web.domain.interaction.gtd.*;
 
 /**
  * Base Composite for all domain entities

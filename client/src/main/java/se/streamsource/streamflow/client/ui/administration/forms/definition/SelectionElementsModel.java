@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,26 +17,19 @@
 
 package se.streamsource.streamflow.client.ui.administration.forms.definition;
 
-import ca.odell.glazedlists.BasicEventList;
-import ca.odell.glazedlists.EventList;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
-import org.restlet.resource.ResourceException;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
+import ca.odell.glazedlists.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.value.*;
+import org.restlet.resource.*;
+import se.streamsource.dci.restlet.client.*;
 import se.streamsource.dci.value.StringValue;
-import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.util.EventListSynch;
-import se.streamsource.streamflow.client.util.Refreshable;
-import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
-import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
-import se.streamsource.streamflow.domain.form.FieldValue;
-import se.streamsource.streamflow.domain.form.SelectionFieldValue;
-import se.streamsource.streamflow.resource.roles.IntegerDTO;
-import se.streamsource.streamflow.resource.roles.NamedIndexDTO;
+import se.streamsource.streamflow.client.*;
+import se.streamsource.streamflow.client.ui.administration.*;
+import se.streamsource.streamflow.client.util.*;
+import se.streamsource.streamflow.domain.form.*;
+import se.streamsource.streamflow.resource.roles.*;
 
-import java.util.List;
+import java.util.*;
 
 /**
  * JAVADOC

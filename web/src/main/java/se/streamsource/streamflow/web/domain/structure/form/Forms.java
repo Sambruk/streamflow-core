@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,23 +17,16 @@
 
 package se.streamsource.streamflow.web.domain.structure.form;
 
-import org.qi4j.api.common.Optional;
-import org.qi4j.api.entity.Aggregated;
-import org.qi4j.api.entity.EntityBuilder;
-import org.qi4j.api.entity.Identity;
-import org.qi4j.api.entity.IdentityGenerator;
-import org.qi4j.api.entity.association.ManyAssociation;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.This;
-import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.query.Query;
-import org.qi4j.api.query.QueryBuilderFactory;
-import org.qi4j.api.query.QueryExpressions;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
-import se.streamsource.streamflow.web.domain.entity.form.FormEntity;
-import se.streamsource.streamflow.web.domain.interaction.gtd.ChangesOwner;
+import org.qi4j.api.common.*;
+import org.qi4j.api.entity.*;
+import org.qi4j.api.entity.association.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.mixin.*;
+import org.qi4j.api.query.*;
+import org.qi4j.api.unitofwork.*;
+import se.streamsource.streamflow.infrastructure.event.domain.*;
+import se.streamsource.streamflow.web.domain.entity.form.*;
+import se.streamsource.streamflow.web.domain.interaction.gtd.*;
 
 /**
  * JAVADOC

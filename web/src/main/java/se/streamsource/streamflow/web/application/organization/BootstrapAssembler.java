@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,11 @@
 
 package se.streamsource.streamflow.web.application.organization;
 
-import org.qi4j.api.service.qualifier.ServiceQualifier;
-import org.qi4j.api.structure.Application;
-import org.qi4j.bootstrap.Assembler;
-import org.qi4j.bootstrap.AssemblyException;
-import org.qi4j.bootstrap.ModuleAssembly;
-import org.qi4j.spi.query.NamedEntityFinder;
-import org.qi4j.spi.service.importer.ServiceSelectorImporter;
+import org.qi4j.api.service.qualifier.*;
+import org.qi4j.api.structure.*;
+import org.qi4j.bootstrap.*;
+import org.qi4j.spi.query.*;
+import org.qi4j.spi.service.importer.*;
 
 /**
  * Bootstrap and testdata assembler.

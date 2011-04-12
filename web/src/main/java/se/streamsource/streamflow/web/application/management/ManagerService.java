@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,39 +17,22 @@
 
 package se.streamsource.streamflow.web.application.management;
 
-import org.qi4j.api.common.QualifiedName;
-import org.qi4j.api.composite.TransientBuilder;
-import org.qi4j.api.configuration.Configuration;
-import org.qi4j.api.entity.Entity;
-import org.qi4j.api.entity.EntityComposite;
-import org.qi4j.api.entity.association.EntityStateHolder;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.object.ObjectBuilder;
-import org.qi4j.api.property.Property;
-import org.qi4j.api.service.Activatable;
-import org.qi4j.api.service.ServiceComposite;
-import org.qi4j.api.service.ServiceReference;
-import org.qi4j.api.structure.Application;
-import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.spi.Qi4jSPI;
+import org.qi4j.api.common.*;
+import org.qi4j.api.composite.*;
+import org.qi4j.api.configuration.*;
+import org.qi4j.api.entity.*;
+import org.qi4j.api.entity.association.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.mixin.*;
+import org.qi4j.api.object.*;
+import org.qi4j.api.property.*;
+import org.qi4j.api.service.*;
+import org.qi4j.api.structure.*;
+import org.qi4j.api.unitofwork.*;
+import org.qi4j.spi.*;
 
-import javax.management.Attribute;
-import javax.management.AttributeList;
-import javax.management.AttributeNotFoundException;
-import javax.management.DynamicMBean;
-import javax.management.InvalidAttributeValueException;
-import javax.management.MBeanException;
-import javax.management.MBeanInfo;
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
-import javax.management.ReflectionException;
-import java.util.Map;
-import java.util.Properties;
-import java.util.ResourceBundle;
+import javax.management.*;
+import java.util.*;
 
 /**
  * JMX Management for Streamflow. Exposes all configurable services as MBeans,

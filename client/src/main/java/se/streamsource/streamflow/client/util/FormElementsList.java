@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,14 +17,13 @@
 
 package se.streamsource.streamflow.client.util;
 
-import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.swing.EventListModel;
-import org.jdesktop.swingx.JXList;
-import se.streamsource.streamflow.client.ui.administration.forms.FormElementItem;
+import ca.odell.glazedlists.*;
+import ca.odell.glazedlists.swing.*;
+import org.jdesktop.swingx.*;
+import se.streamsource.streamflow.client.ui.administration.forms.*;
 
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import java.awt.BorderLayout;
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * JAVADOC

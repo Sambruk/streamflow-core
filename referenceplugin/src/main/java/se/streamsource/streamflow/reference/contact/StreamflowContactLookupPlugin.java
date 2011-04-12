@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,31 +17,20 @@
 
 package se.streamsource.streamflow.reference.contact;
 
-import org.qi4j.api.common.QualifiedName;
-import org.qi4j.api.composite.Composite;
-import org.qi4j.api.configuration.Configuration;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.This;
-import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.property.Property;
-import org.qi4j.api.property.StateHolder;
-import org.qi4j.api.service.Activatable;
-import org.qi4j.api.service.ServiceComposite;
-import org.qi4j.api.value.ValueBuilderFactory;
-import org.qi4j.api.value.ValueComposite;
-import org.qi4j.spi.Qi4jSPI;
-import org.qi4j.spi.property.PropertyTypeDescriptor;
-import org.qi4j.spi.value.ValueDescriptor;
-import org.restlet.data.ChallengeScheme;
-import org.restlet.data.MediaType;
-import org.restlet.data.Reference;
-import org.restlet.representation.Representation;
-import org.restlet.resource.ClientResource;
-
-import se.streamsource.streamflow.server.plugin.authentication.Authenticator;
-import se.streamsource.streamflow.server.plugin.contact.ContactList;
-import se.streamsource.streamflow.server.plugin.contact.ContactLookup;
-import se.streamsource.streamflow.server.plugin.contact.ContactValue;
+import org.qi4j.api.common.*;
+import org.qi4j.api.configuration.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.mixin.*;
+import org.qi4j.api.property.*;
+import org.qi4j.api.service.*;
+import org.qi4j.api.value.*;
+import org.qi4j.spi.*;
+import org.qi4j.spi.property.*;
+import org.qi4j.spi.value.*;
+import org.restlet.data.*;
+import org.restlet.representation.*;
+import org.restlet.resource.*;
+import se.streamsource.streamflow.server.plugin.contact.*;
 
 
 @Mixins(StreamflowContactLookupPlugin.Mixin.class)

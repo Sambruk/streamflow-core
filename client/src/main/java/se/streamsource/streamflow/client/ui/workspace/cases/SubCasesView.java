@@ -1,11 +1,12 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,24 +17,20 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases;
 
-import ca.odell.glazedlists.swing.EventListModel;
-import org.jdesktop.application.ApplicationContext;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.streamflow.client.util.LinkListCellRenderer;
-import se.streamsource.streamflow.client.util.i18n;
-import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
-import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
-import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
-import se.streamsource.streamflow.resource.caze.CaseDTO;
+import ca.odell.glazedlists.swing.*;
+import org.jdesktop.application.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.object.*;
+import se.streamsource.dci.value.link.*;
+import se.streamsource.streamflow.client.util.*;
+import se.streamsource.streamflow.infrastructure.event.domain.*;
+import se.streamsource.streamflow.infrastructure.event.domain.source.*;
+import se.streamsource.streamflow.infrastructure.event.domain.source.helper.*;
+import se.streamsource.streamflow.resource.caze.*;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Observable;
-import java.util.Observer;
+import java.util.*;
 
 
 /**

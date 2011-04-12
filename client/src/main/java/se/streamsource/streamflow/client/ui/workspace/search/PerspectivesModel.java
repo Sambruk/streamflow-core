@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,17 +17,14 @@
 
 package se.streamsource.streamflow.client.ui.workspace.search;
 
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.value.*;
 import se.streamsource.dci.value.StringValue;
-import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.dci.value.link.LinksValue;
-import se.streamsource.streamflow.client.util.EventListSynch;
-import se.streamsource.streamflow.client.util.LinkValueListModel;
-import se.streamsource.streamflow.resource.user.profile.PerspectiveValue;
+import se.streamsource.dci.value.link.*;
+import se.streamsource.streamflow.client.util.*;
+import se.streamsource.streamflow.resource.user.profile.*;
 
-import java.util.List;
+import java.util.*;
 
 /**
  * JAVADOC

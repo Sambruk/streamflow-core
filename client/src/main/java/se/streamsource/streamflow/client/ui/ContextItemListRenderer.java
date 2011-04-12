@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +17,10 @@
 
 package se.streamsource.streamflow.client.ui;
 
-import org.jdesktop.swingx.renderer.DefaultListRenderer;
-import org.jdesktop.swingx.renderer.IconValue;
+import org.jdesktop.swingx.renderer.*;
 import org.jdesktop.swingx.renderer.StringValue;
-import org.jdesktop.swingx.renderer.WrappingProvider;
-import se.streamsource.streamflow.client.Icons;
-import se.streamsource.streamflow.client.util.i18n;
+import se.streamsource.streamflow.client.*;
+import se.streamsource.streamflow.client.util.*;
 
 import javax.swing.*;
 import java.awt.*;

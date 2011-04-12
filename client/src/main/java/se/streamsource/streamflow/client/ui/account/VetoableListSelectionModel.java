@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,8 @@
 
 package se.streamsource.streamflow.client.ui.account;
 
-import javax.swing.DefaultListSelectionModel;
-import java.beans.PropertyVetoException;
-import java.beans.VetoableChangeListener;
-import java.beans.VetoableChangeSupport;
+import javax.swing.*;
+import java.beans.*;
 
 /**
  * Quick impl of a list selection model which respects a veto before

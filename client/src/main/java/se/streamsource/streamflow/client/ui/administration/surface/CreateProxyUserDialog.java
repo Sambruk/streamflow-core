@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,28 +17,22 @@
 
 package se.streamsource.streamflow.client.ui.administration.surface;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.builder.*;
+import com.jgoodies.forms.layout.*;
 import org.jdesktop.application.Action;
-import org.jdesktop.application.ApplicationContext;
-import org.jdesktop.swingx.util.WindowUtils;
-import org.qi4j.api.constraint.ConstraintViolationException;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.application.error.ErrorResources;
-import se.streamsource.streamflow.client.util.dialog.DialogService;
-import se.streamsource.streamflow.client.util.i18n;
-import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
-import se.streamsource.streamflow.resource.user.NewProxyUserCommand;
+import org.jdesktop.application.*;
+import org.jdesktop.swingx.util.*;
+import org.qi4j.api.constraint.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.value.*;
+import se.streamsource.streamflow.application.error.*;
+import se.streamsource.streamflow.client.ui.administration.*;
+import se.streamsource.streamflow.client.util.dialog.*;
+import se.streamsource.streamflow.client.util.*;
+import se.streamsource.streamflow.resource.user.*;
 
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.JTextField;
-import java.awt.BorderLayout;
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * Select a name for something.

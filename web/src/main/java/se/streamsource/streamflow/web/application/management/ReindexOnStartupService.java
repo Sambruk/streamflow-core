@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,11 @@
 
 package se.streamsource.streamflow.web.application.management;
 
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.service.Activatable;
-import org.qi4j.api.service.ServiceComposite;
-import org.qi4j.index.reindexer.Reindexer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.mixin.*;
+import org.qi4j.api.service.*;
+import org.qi4j.index.reindexer.*;
+import org.slf4j.*;
 
 /**
  * Reindexer. If the system property "reindex" is set, then

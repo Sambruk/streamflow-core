@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,23 +17,16 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases;
 
-import ca.odell.glazedlists.BasicEventList;
-import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.TransactionList;
-import org.qi4j.api.io.Inputs;
-import org.qi4j.api.io.Outputs;
-import org.restlet.representation.Representation;
-import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.dci.value.link.LinksValue;
-import se.streamsource.dci.value.link.TitledLinkValue;
-import se.streamsource.streamflow.client.ResourceModel;
-import se.streamsource.streamflow.client.util.EventListSynch;
-import se.streamsource.streamflow.resource.caze.CaseDTO;
-import se.streamsource.streamflow.resource.caze.CaseOutputConfigValue;
+import ca.odell.glazedlists.*;
+import org.qi4j.api.io.*;
+import org.restlet.representation.*;
+import se.streamsource.dci.value.link.*;
+import se.streamsource.streamflow.client.*;
+import se.streamsource.streamflow.client.util.*;
+import se.streamsource.streamflow.resource.caze.*;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Collection;
+import java.io.*;
+import java.util.*;
 
 /**
  * Model for the info and actions on a case.

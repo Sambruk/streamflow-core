@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,26 +17,16 @@
 
 package se.streamsource.streamflow.web.infrastructure.attachment;
 
-import org.apache.commons.io.IOUtils;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.io.Input;
-import org.qi4j.api.io.Inputs;
-import org.qi4j.api.io.Outputs;
-import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.service.ServiceComposite;
-import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.io.*;
+import org.qi4j.api.mixin.*;
+import org.qi4j.api.service.*;
+import se.streamsource.streamflow.infrastructure.configuration.*;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.ByteBuffer;
-import java.text.DecimalFormat;
-import java.util.Random;
+import java.io.*;
+import java.nio.*;
+import java.text.*;
+import java.util.*;
 
 /**
  * JAVADOC

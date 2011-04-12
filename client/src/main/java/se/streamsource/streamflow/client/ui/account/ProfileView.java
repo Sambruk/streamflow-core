@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,39 +17,25 @@
 
 package se.streamsource.streamflow.client.ui.account;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.builder.*;
+import com.jgoodies.forms.layout.*;
 import org.jdesktop.application.Action;
-import org.jdesktop.application.ApplicationActionMap;
-import org.jdesktop.application.ApplicationContext;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import org.qi4j.api.property.Property;
-import org.restlet.resource.ResourceException;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.util.RefreshWhenShowing;
-import se.streamsource.streamflow.client.util.Refreshable;
-import se.streamsource.streamflow.client.util.StateBinder;
-import se.streamsource.streamflow.client.util.i18n;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
-import se.streamsource.streamflow.client.ui.workspace.cases.CaseResources;
-import se.streamsource.streamflow.domain.contact.ContactEmailValue;
-import se.streamsource.streamflow.domain.contact.ContactPhoneValue;
-import se.streamsource.streamflow.domain.contact.ContactValue;
+import org.jdesktop.application.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.object.*;
+import org.qi4j.api.property.*;
+import org.restlet.resource.*;
+import se.streamsource.dci.restlet.client.*;
+import se.streamsource.streamflow.client.*;
+import se.streamsource.streamflow.client.ui.workspace.*;
+import se.streamsource.streamflow.client.ui.workspace.cases.*;
+import se.streamsource.streamflow.client.util.*;
+import se.streamsource.streamflow.domain.contact.*;
 
-import javax.swing.ButtonGroup;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
-import javax.swing.border.EmptyBorder;
-import java.awt.BorderLayout;
-import java.awt.Insets;
-import java.util.Observable;
-import java.util.Observer;
+import javax.swing.*;
+import javax.swing.border.*;
+import java.awt.*;
+import java.util.*;
 
 import static se.streamsource.streamflow.client.util.BindingFormBuilder.Fields.*;
 

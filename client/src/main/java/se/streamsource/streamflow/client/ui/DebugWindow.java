@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,21 +18,16 @@
 package se.streamsource.streamflow.client.ui;
 
 import org.jdesktop.application.Action;
-import org.jdesktop.application.Application;
-import org.jdesktop.application.FrameView;
-import org.jdesktop.swingx.JXFrame;
-import org.jdesktop.swingx.JXTable;
-import org.qi4j.api.injection.scope.Service;
-import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
-import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
-import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
+import org.jdesktop.application.*;
+import org.jdesktop.swingx.*;
+import org.qi4j.api.injection.scope.*;
+import se.streamsource.streamflow.infrastructure.event.domain.*;
+import se.streamsource.streamflow.infrastructure.event.domain.source.*;
+import se.streamsource.streamflow.infrastructure.event.domain.source.helper.*;
 
-import javax.swing.ActionMap;
-import javax.swing.JScrollPane;
-import javax.swing.JToolBar;
-import javax.swing.table.DefaultTableModel;
-import java.awt.Dimension;
+import javax.swing.*;
+import javax.swing.table.*;
+import java.awt.*;
 
 /**
  * JAVADOC

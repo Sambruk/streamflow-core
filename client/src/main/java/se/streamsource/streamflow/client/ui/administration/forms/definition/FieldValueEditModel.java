@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,17 +17,14 @@
 
 package se.streamsource.streamflow.client.ui.administration.forms.definition;
 
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
-import org.restlet.resource.ResourceException;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.value.*;
+import org.restlet.resource.*;
+import se.streamsource.dci.restlet.client.*;
 import se.streamsource.dci.value.StringValue;
-import se.streamsource.streamflow.client.util.Refreshable;
-import se.streamsource.streamflow.domain.form.FieldDefinitionValue;
-import se.streamsource.streamflow.resource.roles.BooleanDTO;
-import se.streamsource.streamflow.resource.roles.IntegerDTO;
+import se.streamsource.streamflow.client.util.*;
+import se.streamsource.streamflow.domain.form.*;
+import se.streamsource.streamflow.resource.roles.*;
 
 /**
  * JAVADOC

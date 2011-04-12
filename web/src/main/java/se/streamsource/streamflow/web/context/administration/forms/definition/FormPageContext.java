@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,35 +17,16 @@
 
 package se.streamsource.streamflow.web.context.administration.forms.definition;
 
-import org.qi4j.api.constraint.ConstraintViolationException;
-import org.qi4j.api.entity.EntityReference;
-import org.qi4j.api.entity.Identity;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.structure.Module;
-import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.dci.api.IndexContext;
-import se.streamsource.dci.api.RoleMap;
+import org.qi4j.api.constraint.*;
+import org.qi4j.api.entity.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.structure.*;
+import org.qi4j.api.value.*;
+import se.streamsource.dci.api.*;
 import se.streamsource.dci.value.StringValue;
-import se.streamsource.streamflow.domain.form.AttachmentFieldValue;
-import se.streamsource.streamflow.domain.form.CheckboxesFieldValue;
-import se.streamsource.streamflow.domain.form.ComboBoxFieldValue;
-import se.streamsource.streamflow.domain.form.CommentFieldValue;
-import se.streamsource.streamflow.domain.form.CreateFieldDTO;
-import se.streamsource.streamflow.domain.form.DateFieldValue;
-import se.streamsource.streamflow.domain.form.FieldTypes;
-import se.streamsource.streamflow.domain.form.FieldValue;
-import se.streamsource.streamflow.domain.form.ListBoxFieldValue;
-import se.streamsource.streamflow.domain.form.NumberFieldValue;
-import se.streamsource.streamflow.domain.form.OpenSelectionFieldValue;
-import se.streamsource.streamflow.domain.form.OptionButtonsFieldValue;
-import se.streamsource.streamflow.domain.form.PageDefinitionValue;
-import se.streamsource.streamflow.domain.form.TextAreaFieldValue;
-import se.streamsource.streamflow.domain.form.TextFieldValue;
-import se.streamsource.streamflow.domain.structure.Describable;
-import se.streamsource.streamflow.web.domain.structure.form.Fields;
-import se.streamsource.streamflow.web.domain.structure.form.Page;
-import se.streamsource.streamflow.web.domain.structure.form.Pages;
+import se.streamsource.streamflow.domain.form.*;
+import se.streamsource.streamflow.domain.structure.*;
+import se.streamsource.streamflow.web.domain.structure.form.*;
 
 /**
  * JAVADOC

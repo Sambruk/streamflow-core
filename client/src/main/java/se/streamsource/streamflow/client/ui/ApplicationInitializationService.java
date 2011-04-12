@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,14 +17,12 @@
 
 package se.streamsource.streamflow.client.ui;
 
-import org.jdesktop.application.SingleFrameApplication;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import org.qi4j.api.service.Activatable;
-import org.qi4j.api.service.ServiceComposite;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
+import org.jdesktop.application.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.mixin.*;
+import org.qi4j.api.object.*;
+import org.qi4j.api.service.*;
+import org.qi4j.api.unitofwork.*;
 
 /**
  * JAVADOC

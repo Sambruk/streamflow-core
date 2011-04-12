@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,9 @@
 
 package se.streamsource.streamflow.web.application.console.commands;
 
-import bsh.CallStack;
-import bsh.Interpreter;
+import bsh.*;
 
-import java.lang.reflect.Method;
+import java.lang.reflect.*;
 
 /**
  * JAVADOC

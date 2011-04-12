@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,21 +17,16 @@
 
 package se.streamsource.streamflow.web.application.conversation;
 
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.query.Query;
-import org.qi4j.api.service.Activatable;
-import org.qi4j.api.service.ServiceComposite;
-import org.qi4j.api.structure.Module;
-import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.usecase.UsecaseBuilder;
-import se.streamsource.streamflow.web.domain.structure.organization.EmailAccessPoint;
-import se.streamsource.streamflow.web.domain.structure.organization.EmailAccessPoints;
-import se.streamsource.streamflow.web.domain.structure.organization.EmailTemplates;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.mixin.*;
+import org.qi4j.api.query.*;
+import org.qi4j.api.service.*;
+import org.qi4j.api.structure.*;
+import org.qi4j.api.unitofwork.*;
+import org.qi4j.api.usecase.*;
+import se.streamsource.streamflow.web.domain.structure.organization.*;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
 
 /**
  * When the list of possible templates for emails has been updated this service

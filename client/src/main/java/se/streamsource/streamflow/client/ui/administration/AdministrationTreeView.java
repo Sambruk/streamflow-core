@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,52 +17,34 @@
 
 package se.streamsource.streamflow.client.ui.administration;
 
-import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.*;
 import org.jdesktop.application.Action;
-import org.jdesktop.application.ApplicationContext;
-import org.jdesktop.application.Task;
-import org.jdesktop.swingx.JXTree;
-import org.jdesktop.swingx.renderer.DefaultTreeRenderer;
-import org.jdesktop.swingx.renderer.IconValue;
+import org.jdesktop.application.*;
+import org.jdesktop.swingx.*;
+import org.jdesktop.swingx.renderer.*;
 import org.jdesktop.swingx.renderer.StringValue;
-import org.jdesktop.swingx.renderer.WrappingProvider;
-import org.jdesktop.swingx.util.WindowUtils;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.streamflow.client.Icons;
-import se.streamsource.streamflow.client.StreamflowResources;
-import se.streamsource.streamflow.client.ui.ContextItem;
-import se.streamsource.streamflow.client.ui.OptionsAction;
-import se.streamsource.streamflow.client.util.CommandTask;
-import se.streamsource.streamflow.client.util.RefreshWhenShowing;
-import se.streamsource.streamflow.client.util.ResourceActionEnabler;
-import se.streamsource.streamflow.client.util.TabbedResourceView;
-import se.streamsource.streamflow.client.util.dialog.ConfirmationDialog;
-import se.streamsource.streamflow.client.util.dialog.DialogService;
-import se.streamsource.streamflow.client.util.dialog.NameDialog;
-import se.streamsource.streamflow.client.util.dialog.SelectLinkDialog;
-import se.streamsource.streamflow.client.util.i18n;
-import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
-import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
-import se.streamsource.streamflow.util.Strings;
+import org.jdesktop.swingx.util.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.object.*;
+import org.qi4j.api.value.*;
+import se.streamsource.dci.restlet.client.*;
+import se.streamsource.dci.value.link.*;
+import se.streamsource.streamflow.client.*;
+import se.streamsource.streamflow.client.ui.*;
+import se.streamsource.streamflow.client.util.*;
+import se.streamsource.streamflow.client.util.dialog.*;
+import se.streamsource.streamflow.infrastructure.event.domain.*;
+import se.streamsource.streamflow.infrastructure.event.domain.source.*;
+import se.streamsource.streamflow.util.*;
 
 import javax.swing.*;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.MutableTreeNode;
-import javax.swing.tree.TreePath;
+import javax.swing.event.*;
+import javax.swing.tree.*;
 import java.awt.*;
-import java.util.ArrayList;
+import java.util.*;
 
-import static org.qi4j.api.specification.Specifications.and;
-import static se.streamsource.streamflow.client.util.i18n.text;
+import static org.qi4j.api.specification.Specifications.*;
+import static se.streamsource.streamflow.client.util.i18n.*;
 import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 
 /**

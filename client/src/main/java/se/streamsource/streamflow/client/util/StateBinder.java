@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,74 +17,32 @@
 
 package se.streamsource.streamflow.client.util;
 
-import org.jdesktop.application.ResourceMap;
-import org.jdesktop.swingx.JXDatePicker;
-import org.jdesktop.swingx.JXDialog;
-import org.jdesktop.swingx.util.WindowUtils;
-import org.qi4j.api.constraint.ConstraintViolationException;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.property.GenericPropertyInfo;
-import org.qi4j.api.property.Property;
-import org.qi4j.api.util.DateFunctions;
-import org.qi4j.library.constraints.annotation.MaxLength;
-import org.qi4j.runtime.composite.ConstraintsCheck;
-import org.qi4j.runtime.property.PropertyInstance;
-import se.streamsource.streamflow.client.StreamflowResources;
-import se.streamsource.streamflow.client.ui.administration.AdministrationResources;
-import se.streamsource.streamflow.client.ui.workspace.cases.general.RemovableLabel;
-import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.AbstractFieldPanel;
-import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.AttachmentFieldPanel;
-import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.CheckboxesPanel;
-import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.ComboBoxPanel;
-import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.DatePanel;
-import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.ListBoxPanel;
-import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.NumberPanel;
-import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.OpenSelectionPanel;
-import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.OptionButtonsPanel;
-import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.TextAreaFieldPanel;
-import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.TextFieldPanel;
-import se.streamsource.streamflow.client.util.dialog.DialogService;
+import org.jdesktop.application.*;
+import org.jdesktop.swingx.*;
+import org.jdesktop.swingx.util.*;
+import org.qi4j.api.constraint.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.property.*;
+import org.qi4j.api.util.*;
+import org.qi4j.library.constraints.annotation.*;
+import org.qi4j.runtime.composite.*;
+import org.qi4j.runtime.property.*;
+import se.streamsource.streamflow.client.*;
+import se.streamsource.streamflow.client.ui.administration.*;
+import se.streamsource.streamflow.client.ui.workspace.cases.general.*;
+import se.streamsource.streamflow.client.ui.workspace.cases.general.forms.*;
+import se.streamsource.streamflow.client.util.dialog.*;
 
-import javax.swing.InputVerifier;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPasswordField;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.JTextComponent;
-import java.awt.Component;
-import java.awt.Dialog;
-import java.awt.Frame;
-import java.awt.KeyboardFocusManager;
-import java.awt.Window;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
+import javax.swing.*;
+import javax.swing.event.*;
+import javax.swing.text.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.beans.*;
+import java.lang.reflect.*;
+import java.text.*;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-import java.util.Observable;
-import java.util.ResourceBundle;
-import java.util.Set;
 
 /**
  * Use ActionBinder+ValueBinder instead

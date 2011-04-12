@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,32 +17,24 @@
 
 package se.streamsource.streamflow.web.application.mail;
 
-import org.qi4j.api.configuration.Configuration;
-import org.qi4j.api.injection.scope.This;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.service.Activatable;
-import org.qi4j.api.service.ServiceComposite;
-import org.qi4j.spi.service.ServiceDescriptor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import se.streamsource.infrastructure.circuitbreaker.CircuitBreaker;
-import se.streamsource.infrastructure.circuitbreaker.service.ServiceCircuitBreaker;
-import se.streamsource.streamflow.infrastructure.event.application.ApplicationEvent;
-import se.streamsource.streamflow.infrastructure.event.application.replay.ApplicationEventPlayer;
-import se.streamsource.streamflow.infrastructure.event.application.replay.ApplicationEventReplayException;
-import se.streamsource.streamflow.infrastructure.event.application.source.ApplicationEventSource;
-import se.streamsource.streamflow.infrastructure.event.application.source.ApplicationEventStream;
-import se.streamsource.streamflow.infrastructure.event.application.source.helper.ApplicationEvents;
-import se.streamsource.streamflow.infrastructure.event.application.source.helper.ApplicationTransactionTracker;
+import org.qi4j.api.configuration.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.mixin.*;
+import org.qi4j.api.service.*;
+import org.qi4j.spi.service.*;
+import org.slf4j.*;
+import se.streamsource.infrastructure.circuitbreaker.*;
+import se.streamsource.infrastructure.circuitbreaker.service.*;
+import se.streamsource.streamflow.infrastructure.event.application.*;
+import se.streamsource.streamflow.infrastructure.event.application.replay.*;
+import se.streamsource.streamflow.infrastructure.event.application.source.*;
+import se.streamsource.streamflow.infrastructure.event.application.source.helper.*;
 
 import javax.mail.*;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-import java.util.Map;
-import java.util.Properties;
+import javax.mail.internet.*;
+import java.util.*;
 
-import static se.streamsource.infrastructure.circuitbreaker.CircuitBreakers.withBreaker;
+import static se.streamsource.infrastructure.circuitbreaker.CircuitBreakers.*;
 
 /**
  * Send emails. This service

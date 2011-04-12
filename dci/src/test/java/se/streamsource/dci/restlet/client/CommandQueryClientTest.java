@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,57 +17,41 @@
 
 package se.streamsource.dci.restlet.client;
 
-import org.hamcrest.CoreMatchers;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.qi4j.api.common.UseDefaults;
-import org.qi4j.api.common.Visibility;
-import org.qi4j.api.composite.TransientComposite;
-import org.qi4j.api.constraint.Name;
-import org.qi4j.api.entity.EntityComposite;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.This;
-import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.property.Property;
-import org.qi4j.api.unitofwork.ConcurrentEntityModificationException;
-import org.qi4j.api.unitofwork.UnitOfWorkCallback;
-import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.util.Iterables;
-import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
-import org.qi4j.api.value.ValueComposite;
+import org.hamcrest.*;
+import org.junit.*;
+import org.qi4j.api.common.*;
+import org.qi4j.api.composite.*;
+import org.qi4j.api.constraint.*;
+import org.qi4j.api.entity.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.mixin.*;
+import org.qi4j.api.property.*;
+import org.qi4j.api.unitofwork.*;
+import org.qi4j.api.util.*;
+import org.qi4j.api.value.*;
 import org.qi4j.bootstrap.*;
-import org.qi4j.spi.service.importer.NewObjectImporter;
-import org.qi4j.spi.structure.ApplicationModelSPI;
-import org.qi4j.test.AbstractQi4jTest;
+import org.qi4j.spi.service.importer.*;
+import org.qi4j.spi.structure.*;
+import org.qi4j.test.*;
 import org.restlet.*;
-import org.restlet.data.Form;
-import org.restlet.data.Protocol;
-import org.restlet.data.Reference;
-import org.restlet.representation.StringRepresentation;
-import org.restlet.resource.ResourceException;
-import org.restlet.service.MetadataService;
+import org.restlet.data.*;
+import org.restlet.representation.*;
+import org.restlet.resource.*;
+import org.restlet.service.*;
 import se.streamsource.dci.api.*;
-import se.streamsource.dci.qi4j.RoleInjectionProviderFactory;
+import se.streamsource.dci.qi4j.*;
 import se.streamsource.dci.restlet.server.*;
-import se.streamsource.dci.restlet.server.api.SubResource;
-import se.streamsource.dci.restlet.server.api.SubResources;
-import se.streamsource.dci.value.ResourceValue;
+import se.streamsource.dci.restlet.server.api.*;
+import se.streamsource.dci.value.*;
 import se.streamsource.dci.value.StringValue;
-import se.streamsource.dci.value.ValueAssembler;
-import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.dci.value.link.Links;
+import se.streamsource.dci.value.link.*;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Collections;
+import java.io.*;
+import java.util.*;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.assertThat;
-import static org.qi4j.bootstrap.ImportedServiceDeclaration.NEW_OBJECT;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+import static org.qi4j.bootstrap.ImportedServiceDeclaration.*;
 
 /**
  * Test for CommandQueryClient

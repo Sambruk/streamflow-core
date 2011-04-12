@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,47 +17,44 @@
 
 package se.streamsource.streamflow.client;
 
-import org.apache.log4j.Logger;
+import org.apache.log4j.*;
 
 import javax.swing.*;
-import java.util.Arrays;
-import java.util.Locale;
+import java.util.*;
 
 /**
  * Main class for client.
  */
 public class MainClient
 {
-   public static void main(String[] args) throws Exception
+   public static void main( String[] args ) throws Exception
    {
-      new MainClient().start(args);
+      new MainClient().start( args );
    }
 
-   public void start(String... args) throws IllegalAccessException, UnsupportedLookAndFeelException, InstantiationException, ClassNotFoundException
+   public void start( String... args ) throws IllegalAccessException, UnsupportedLookAndFeelException, InstantiationException, ClassNotFoundException
    {
-      System.out.println("Args:" + Arrays.asList(args));
-
       // Set system properties
 //      UIManager.setLookAndFeel("com.jgoodies.looks.windows.WindowsLookAndFeel");
-      System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Streamflow");
-      System.setProperty("apple.laf.useScreenMenuBar", "true");
-      System.setProperty("dock:name", "Streamflow");
+      System.setProperty( "com.apple.mrj.application.apple.menu.about.name", "Streamflow" );
+      System.setProperty( "apple.laf.useScreenMenuBar", "true" );
+      System.setProperty( "dock:name", "Streamflow" );
 
       Locale locale = Locale.getDefault();
 
       if (locale.getLanguage().equals("sv"))
-         Locale.setDefault(new Locale("sv", "SE", "gov"));
+         Locale.setDefault( new Locale( "sv", "SE", "gov" ) );
       else
          Locale.setDefault(Locale.ENGLISH);
 
-      org.jdesktop.application.Application.launch(StreamflowApplication.class, args);
+      org.jdesktop.application.Application.launch( StreamflowApplication.class, args );
 
-      Logger.getLogger("status").setAdditivity(false);
-      Logger.getLogger("progress").setAdditivity(false);
+      Logger.getLogger( "status" ).setAdditivity( false );
+      Logger.getLogger( "progress" ).setAdditivity( false );
    }
 
    public void stop()
    {
-      org.jdesktop.application.Application.getInstance(StreamflowApplication.class).exit();
+      org.jdesktop.application.Application.getInstance( StreamflowApplication.class ).exit();
    }
 }

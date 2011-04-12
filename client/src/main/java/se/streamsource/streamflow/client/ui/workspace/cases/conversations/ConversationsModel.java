@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,24 +17,19 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.conversations;
 
-import ca.odell.glazedlists.BasicEventList;
-import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.TransactionList;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.dci.value.link.LinksValue;
+import ca.odell.glazedlists.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.value.*;
+import se.streamsource.dci.restlet.client.*;
 import se.streamsource.dci.value.StringValue;
-import se.streamsource.streamflow.client.util.EventListSynch;
-import se.streamsource.streamflow.client.util.Refreshable;
-import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
-import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
-import se.streamsource.streamflow.resource.conversation.ConversationDTO;
+import se.streamsource.dci.value.link.*;
+import se.streamsource.streamflow.client.util.*;
+import se.streamsource.streamflow.infrastructure.event.domain.*;
+import se.streamsource.streamflow.infrastructure.event.domain.source.*;
+import se.streamsource.streamflow.resource.conversation.*;
 
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 import static org.qi4j.api.specification.Specifications.*;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 
 public class ConversationsModel
    implements Refreshable, TransactionListener

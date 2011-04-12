@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,10 @@
 
 package se.streamsource.streamflow.client.util;
 
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
+import se.streamsource.streamflow.infrastructure.application.*;
 
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.JList;
-import java.awt.Component;
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * List renderer for lists that use ListItemValue as items.

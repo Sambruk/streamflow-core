@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,15 +17,13 @@
 
 package se.streamsource.streamflow.web.application.management;
 
-import org.qi4j.api.common.Optional;
-import org.qi4j.api.constraint.Name;
-import org.qi4j.api.property.Computed;
-import org.qi4j.api.property.Immutable;
-import org.qi4j.api.property.Property;
-import se.streamsource.streamflow.web.application.statistics.StatisticsStoreException;
+import org.qi4j.api.common.*;
+import org.qi4j.api.constraint.*;
+import org.qi4j.api.property.*;
+import se.streamsource.streamflow.web.application.statistics.*;
 
-import java.io.IOException;
-import java.text.ParseException;
+import java.io.*;
+import java.text.*;
 
 /**
  * Management methods for Streamflow. These operations are available

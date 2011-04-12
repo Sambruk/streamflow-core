@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +17,13 @@
 
 package se.streamsource.streamflow.web.resource.organizations.forms;
 
-import se.streamsource.dci.restlet.server.CommandQueryResource;
-import se.streamsource.dci.restlet.server.api.SubResource;
-import se.streamsource.streamflow.domain.structure.Describable;
-import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.web.context.administration.forms.FormContext;
-import se.streamsource.streamflow.web.context.administration.forms.definition.FormInfoContext;
-import se.streamsource.streamflow.web.context.structure.DescribableContext;
-import se.streamsource.streamflow.web.context.structure.NotableContext;
+import se.streamsource.dci.restlet.server.*;
+import se.streamsource.dci.restlet.server.api.*;
+import se.streamsource.streamflow.domain.structure.*;
+import se.streamsource.streamflow.infrastructure.application.*;
+import se.streamsource.streamflow.web.context.administration.forms.*;
+import se.streamsource.streamflow.web.context.administration.forms.definition.*;
+import se.streamsource.streamflow.web.context.structure.*;
 
 /**
  * JAVADOC

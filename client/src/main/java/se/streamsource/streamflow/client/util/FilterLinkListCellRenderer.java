@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,16 +17,13 @@
 
 package se.streamsource.streamflow.client.util;
 
-import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.dci.value.link.TitledLinkValue;
+import se.streamsource.dci.value.link.*;
 
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.JList;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.text.BadLocationException;
-import java.awt.Component;
-import java.util.StringTokenizer;
+import javax.swing.*;
+import javax.swing.event.*;
+import javax.swing.text.*;
+import java.awt.*;
+import java.util.*;
 
 /**
  * List renderer for lists that use LinkValue as items.

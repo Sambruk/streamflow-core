@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,12 @@
 
 package se.streamsource.dci.value.link;
 
-import org.qi4j.api.common.Optional;
-import org.qi4j.api.entity.EntityReference;
-import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
+import org.qi4j.api.common.*;
+import org.qi4j.api.entity.*;
+import org.qi4j.api.value.*;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
+import java.io.*;
+import java.net.*;
 
 /**
  * Builder for making it easier to create LinksValue/LinkValue

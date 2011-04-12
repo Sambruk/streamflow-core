@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,18 +17,16 @@
 
 package se.streamsource.streamflow.client.ui.overview;
 
-import ca.odell.glazedlists.BasicEventList;
-import ca.odell.glazedlists.EventList;
-import org.qi4j.api.injection.scope.Uses;
-import org.restlet.representation.Representation;
-import org.restlet.resource.ResourceException;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.dci.value.link.LinksValue;
-import se.streamsource.streamflow.client.util.EventListSynch;
-import se.streamsource.streamflow.client.util.Refreshable;
-import se.streamsource.streamflow.resource.overview.ProjectSummaryValue;
+import ca.odell.glazedlists.*;
+import org.qi4j.api.injection.scope.*;
+import org.restlet.representation.*;
+import org.restlet.resource.*;
+import se.streamsource.dci.restlet.client.*;
+import se.streamsource.dci.value.link.*;
+import se.streamsource.streamflow.client.util.*;
+import se.streamsource.streamflow.resource.overview.*;
 
-import java.io.IOException;
+import java.io.*;
 
 public class OverviewSummaryModel
       implements Refreshable

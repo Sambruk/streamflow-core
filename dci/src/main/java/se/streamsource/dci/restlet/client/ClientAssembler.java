@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,9 @@
 
 package se.streamsource.dci.restlet.client;
 
-import org.qi4j.api.common.Visibility;
-import org.qi4j.bootstrap.Assembler;
-import org.qi4j.bootstrap.AssemblyException;
-import org.qi4j.bootstrap.ModuleAssembly;
-import se.streamsource.dci.restlet.client.responsereader.JSONResponseReader;
-import se.streamsource.dci.restlet.client.responsereader.TableResponseReader;
+import org.qi4j.api.common.*;
+import org.qi4j.bootstrap.*;
+import se.streamsource.dci.restlet.client.responsereader.*;
 
 /**
  * JAVADOC

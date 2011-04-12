@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,17 +17,12 @@
 
 package se.streamsource.dci.test.interactions.jmx;
 
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.structure.Module;
-import se.streamsource.dci.api.IndexContext;
-import se.streamsource.dci.api.RoleMap;
-import se.streamsource.dci.value.link.LinksBuilder;
-import se.streamsource.dci.value.link.LinksValue;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.structure.*;
+import se.streamsource.dci.api.*;
+import se.streamsource.dci.value.link.*;
 
-import javax.management.MBeanAttributeInfo;
-import javax.management.MBeanInfo;
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
+import javax.management.*;
 
 /**
  * JAVADOC

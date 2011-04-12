@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,55 +17,43 @@
 
 package se.streamsource.streamflow.web.application.statistics;
 
-import org.apache.log4j.AppenderSkeleton;
-import org.apache.log4j.Logger;
-import org.apache.log4j.spi.LoggingEvent;
-import org.hamcrest.BaseMatcher;
-import org.hamcrest.Description;
-import org.junit.Test;
-import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
-import org.qi4j.bootstrap.AssemblyException;
-import org.qi4j.bootstrap.ImportedServiceDeclaration;
-import org.qi4j.bootstrap.ModuleAssembly;
-import org.qi4j.entitystore.memory.MemoryEntityStoreService;
-import org.qi4j.index.rdf.assembly.RdfMemoryStoreAssembler;
-import org.qi4j.spi.uuid.UuidIdentityGeneratorService;
-import org.qi4j.test.AbstractQi4jTest;
-import se.streamsource.dci.api.RoleMap;
-import se.streamsource.streamflow.domain.contact.ContactValue;
-import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
-import se.streamsource.streamflow.infrastructure.event.domain.factory.DomainEventFactoryService;
-import se.streamsource.streamflow.infrastructure.event.domain.source.helper.TransactionTrackerConfiguration;
-import se.streamsource.streamflow.infrastructure.time.TimeService;
-import se.streamsource.streamflow.web.application.security.UserPrincipal;
-import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity;
-import se.streamsource.streamflow.web.domain.entity.casetype.ResolutionEntity;
-import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
-import se.streamsource.streamflow.web.domain.entity.label.LabelEntity;
+import org.apache.log4j.*;
+import org.apache.log4j.spi.*;
+import org.hamcrest.*;
+import org.junit.*;
+import org.qi4j.api.unitofwork.*;
+import org.qi4j.bootstrap.*;
+import org.qi4j.entitystore.memory.*;
+import org.qi4j.index.rdf.assembly.*;
+import org.qi4j.spi.uuid.*;
+import org.qi4j.test.*;
+import se.streamsource.dci.api.*;
+import se.streamsource.streamflow.domain.contact.*;
+import se.streamsource.streamflow.infrastructure.event.domain.*;
+import se.streamsource.streamflow.infrastructure.event.domain.factory.*;
+import se.streamsource.streamflow.infrastructure.event.domain.source.helper.*;
+import se.streamsource.streamflow.infrastructure.time.*;
+import se.streamsource.streamflow.web.application.security.*;
+import se.streamsource.streamflow.web.domain.entity.casetype.*;
+import se.streamsource.streamflow.web.domain.entity.caze.*;
+import se.streamsource.streamflow.web.domain.entity.label.*;
 import se.streamsource.streamflow.web.domain.entity.organization.*;
-import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
-import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
-import se.streamsource.streamflow.web.domain.entity.user.UsersEntity;
-import se.streamsource.streamflow.web.domain.structure.casetype.Resolution;
-import se.streamsource.streamflow.web.domain.structure.group.Group;
-import se.streamsource.streamflow.web.domain.structure.label.Label;
-import se.streamsource.streamflow.web.domain.structure.organization.Organization;
-import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
-import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
-import se.streamsource.streamflow.web.domain.structure.organization.ParticipantRolesValue;
-import se.streamsource.streamflow.web.domain.structure.project.Project;
-import se.streamsource.streamflow.web.domain.structure.user.Users;
-import se.streamsource.streamflow.web.infrastructure.event.MemoryEventStoreService;
+import se.streamsource.streamflow.web.domain.entity.project.*;
+import se.streamsource.streamflow.web.domain.entity.user.*;
+import se.streamsource.streamflow.web.domain.structure.casetype.*;
+import se.streamsource.streamflow.web.domain.structure.group.*;
+import se.streamsource.streamflow.web.domain.structure.label.*;
+import se.streamsource.streamflow.web.domain.structure.organization.*;
+import se.streamsource.streamflow.web.domain.structure.project.*;
+import se.streamsource.streamflow.web.domain.structure.user.*;
+import se.streamsource.streamflow.web.infrastructure.event.*;
 
-import java.security.PrivilegedActionException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Pattern;
+import java.security.*;
+import java.util.*;
+import java.util.regex.*;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
 /**
  * JAVADOC

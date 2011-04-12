@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,18 +17,12 @@
 
 package se.streamsource.dci.restlet.server;
 
-import org.restlet.Context;
-import org.restlet.Request;
-import org.restlet.Response;
-import org.restlet.Restlet;
-import org.restlet.data.MediaType;
-import org.restlet.data.Metadata;
-import org.restlet.data.Preference;
-import org.restlet.routing.Filter;
-import org.restlet.service.MetadataService;
+import org.restlet.*;
+import org.restlet.data.*;
+import org.restlet.routing.*;
+import org.restlet.service.*;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * JAVADOC

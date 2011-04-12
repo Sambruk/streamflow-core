@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,9 @@
 
 package se.streamsource.streamflow.web.infrastructure.caching;
 
-import net.sf.ehcache.CacheManager;
-import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.service.Activatable;
-import org.qi4j.api.service.ServiceComposite;
+import net.sf.ehcache.*;
+import org.qi4j.api.mixin.*;
+import org.qi4j.api.service.*;
 
 /**
  * Service wrapper for Ehcache. Manages a CacheManager instance.

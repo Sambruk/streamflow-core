@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,9 @@
 
 package se.streamsource.streamflow.infrastructure.event.domain.source.helper;
 
-import org.qi4j.api.common.UseDefaults;
-import org.qi4j.api.configuration.ConfigurationComposite;
-import org.qi4j.api.configuration.Enabled;
-import org.qi4j.api.property.Property;
+import org.qi4j.api.common.*;
+import org.qi4j.api.configuration.*;
+import org.qi4j.api.property.*;
 
 /**
  * Configuration that a service doing event tracking must have. Let the configuration

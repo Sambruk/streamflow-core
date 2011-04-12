@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,26 +17,17 @@
 
 package se.streamsource.streamflow.web.context.surface.accesspoints.endusers.formdrafts;
 
-import org.qi4j.api.entity.EntityReference;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
-
-import se.streamsource.dci.api.IndexContext;
-import se.streamsource.dci.api.RoleMap;
-import se.streamsource.streamflow.domain.form.AttachmentFieldDTO;
-import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
-import se.streamsource.streamflow.domain.form.FieldValueDTO;
-import se.streamsource.streamflow.domain.form.FormDraftValue;
-import se.streamsource.streamflow.domain.form.FormSignatureValue;
-import se.streamsource.streamflow.resource.caze.FieldDTO;
-import se.streamsource.streamflow.web.domain.structure.caze.Case;
-import se.streamsource.streamflow.web.domain.structure.form.EndUserCases;
-import se.streamsource.streamflow.web.domain.structure.form.FormDraft;
-import se.streamsource.streamflow.web.domain.structure.form.FormDrafts;
-
+import org.qi4j.api.entity.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.value.*;
+import se.streamsource.dci.api.*;
 import se.streamsource.dci.value.StringValue;
-import static se.streamsource.dci.api.RoleMap.role;
+import se.streamsource.streamflow.domain.form.*;
+import se.streamsource.streamflow.resource.caze.*;
+import se.streamsource.streamflow.web.domain.structure.caze.*;
+import se.streamsource.streamflow.web.domain.structure.form.*;
+
+import static se.streamsource.dci.api.RoleMap.*;
 
 /**
  * JAVADOC

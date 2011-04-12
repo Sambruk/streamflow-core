@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +17,13 @@
 
 package se.streamsource.streamflow.web.servlet;
 
-import org.restlet.ext.servlet.ServletAdapter;
-import se.streamsource.streamflow.web.MainWeb;
-import se.streamsource.streamflow.web.rest.LoggerFilter;
+import org.restlet.ext.servlet.*;
+import se.streamsource.streamflow.web.*;
+import se.streamsource.streamflow.web.rest.*;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+import javax.servlet.*;
+import javax.servlet.http.*;
+import java.io.*;
 
 /**
  * Servlet that starts Streamflow and delegates requests to it

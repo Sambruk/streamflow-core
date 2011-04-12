@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,23 +17,15 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.general.forms;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.builder.*;
+import com.jgoodies.forms.layout.*;
 import org.jdesktop.application.Action;
-import org.jdesktop.application.ApplicationActionMap;
-import org.jdesktop.application.ApplicationContext;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Uses;
-import se.streamsource.streamflow.client.util.SelectionActionEnabler;
-import se.streamsource.streamflow.client.util.StateBinder;
-import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
-import se.streamsource.streamflow.domain.form.ListBoxFieldValue;
+import org.jdesktop.application.*;
+import org.qi4j.api.injection.scope.*;
+import se.streamsource.streamflow.client.util.*;
+import se.streamsource.streamflow.domain.form.*;
 
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
-import javax.swing.JList;
-import javax.swing.JScrollPane;
-import javax.swing.ListModel;
+import javax.swing.*;
 
 import static javax.swing.ListSelectionModel.*;
 

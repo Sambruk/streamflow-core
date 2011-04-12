@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,18 +17,12 @@
 
 package se.streamsource.streamflow.client.ui.menu;
 
-import org.jdesktop.application.ApplicationContext;
-import org.jdesktop.application.ResourceMap;
-import org.qi4j.api.injection.scope.Service;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.jdesktop.application.*;
+import org.qi4j.api.injection.scope.*;
+import org.slf4j.*;
 
 import javax.swing.Action;
-import javax.swing.ActionMap;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JSeparator;
+import javax.swing.*;
 
 /**
  * Base class for menus

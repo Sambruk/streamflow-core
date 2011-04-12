@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,17 +17,13 @@
 
 package se.streamsource.streamflow.web.resource;
 
-import org.restlet.Context;
-import org.restlet.Request;
-import org.restlet.Response;
-import org.restlet.Restlet;
-import org.restlet.data.Method;
-import org.restlet.routing.Filter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.restlet.*;
+import org.restlet.data.*;
+import org.restlet.routing.*;
+import org.slf4j.*;
 
-import java.text.DateFormat;
-import java.util.Date;
+import java.text.*;
+import java.util.*;
 
 /**
 * Log command and query performance

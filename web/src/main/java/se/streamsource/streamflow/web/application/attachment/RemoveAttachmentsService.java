@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,34 +17,26 @@
 
 package se.streamsource.streamflow.web.application.attachment;
 
-import org.qi4j.api.common.Optional;
-import org.qi4j.api.configuration.Configuration;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.This;
-import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.service.Activatable;
-import org.qi4j.api.service.ServiceComposite;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.usecase.UsecaseBuilder;
-import org.qi4j.api.specification.Specifications;
-import org.qi4j.api.value.ValueBuilderFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import se.streamsource.streamflow.domain.structure.Removable;
-import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.domain.replay.DomainEventPlayer;
-import se.streamsource.streamflow.infrastructure.event.domain.replay.EventReplayException;
-import se.streamsource.streamflow.infrastructure.event.domain.source.EventSource;
-import se.streamsource.streamflow.infrastructure.event.domain.source.EventStream;
-import se.streamsource.streamflow.infrastructure.event.domain.source.helper.EventRouter;
-import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
-import se.streamsource.streamflow.infrastructure.event.domain.source.helper.TransactionTracker;
-import se.streamsource.streamflow.web.domain.entity.attachment.AttachmentEntity;
-import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
-import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
+import org.qi4j.api.common.*;
+import org.qi4j.api.configuration.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.mixin.*;
+import org.qi4j.api.service.*;
+import org.qi4j.api.specification.*;
+import org.qi4j.api.unitofwork.*;
+import org.qi4j.api.usecase.*;
+import org.qi4j.api.value.*;
+import org.slf4j.*;
+import se.streamsource.streamflow.domain.structure.*;
+import se.streamsource.streamflow.infrastructure.event.domain.*;
+import se.streamsource.streamflow.infrastructure.event.domain.replay.*;
+import se.streamsource.streamflow.infrastructure.event.domain.source.*;
+import se.streamsource.streamflow.infrastructure.event.domain.source.helper.*;
+import se.streamsource.streamflow.web.domain.entity.attachment.*;
+import se.streamsource.streamflow.web.domain.structure.attachment.*;
+import se.streamsource.streamflow.web.infrastructure.attachment.*;
 
-import java.io.IOException;
+import java.io.*;
 
 /**
  * Takes care of Attachement and AttachedFile removal.

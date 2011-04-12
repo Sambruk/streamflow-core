@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,12 @@
 
 package se.streamsource.streamflow.client.ui;
 
-import se.streamsource.streamflow.client.Icons;
-import se.streamsource.streamflow.client.util.i18n;
+import se.streamsource.streamflow.client.*;
+import se.streamsource.streamflow.client.util.*;
 
-import javax.swing.AbstractAction;
-import javax.swing.JPopupMenu;
-import java.awt.Component;
-import java.awt.event.ActionEvent;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
 
 /**
  * Generic trigger for opening up an options menu as a popup.

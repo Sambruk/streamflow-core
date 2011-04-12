@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,10 @@
 
 package se.streamsource.streamflow.domain.user;
 
-import org.qi4j.api.constraint.ConstraintDeclaration;
-import org.qi4j.library.constraints.annotation.Matches;
+import org.qi4j.api.constraint.*;
+import org.qi4j.library.constraints.annotation.*;
 
-import java.lang.annotation.Retention;
+import java.lang.annotation.*;
 
 import static java.lang.annotation.RetentionPolicy.*;
 

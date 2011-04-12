@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,33 +17,29 @@
 
 package se.streamsource.streamflow.client.ui.workspace.search;
 
-import ca.odell.glazedlists.swing.EventListModel;
-import com.jgoodies.forms.builder.ButtonBarBuilder2;
+import ca.odell.glazedlists.swing.*;
+import com.jgoodies.forms.builder.*;
 import org.jdesktop.application.Action;
-import org.jdesktop.application.ApplicationContext;
-import org.jdesktop.application.Task;
-import org.jdesktop.swingx.util.WindowUtils;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.streamflow.client.ui.OptionsAction;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
+import org.jdesktop.application.*;
+import org.jdesktop.swingx.util.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.object.*;
+import se.streamsource.dci.restlet.client.*;
+import se.streamsource.dci.value.link.*;
+import se.streamsource.streamflow.client.ui.*;
+import se.streamsource.streamflow.client.ui.workspace.*;
 import se.streamsource.streamflow.client.util.*;
-import se.streamsource.streamflow.client.util.dialog.DialogService;
-import se.streamsource.streamflow.client.util.dialog.NameDialog;
-import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
-import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
-import se.streamsource.streamflow.util.Strings;
+import se.streamsource.streamflow.client.util.dialog.*;
+import se.streamsource.streamflow.infrastructure.event.domain.*;
+import se.streamsource.streamflow.infrastructure.event.domain.source.*;
+import se.streamsource.streamflow.util.*;
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
+import javax.swing.border.*;
 import java.awt.*;
 
-import static org.qi4j.api.specification.Specifications.and;
-import static se.streamsource.streamflow.client.util.i18n.text;
+import static org.qi4j.api.specification.Specifications.*;
+import static se.streamsource.streamflow.client.util.i18n.*;
 import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 
 /**

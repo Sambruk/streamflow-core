@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,15 +17,15 @@
 
 package se.streamsource.streamflow.client.ui.overview;
 
-import se.streamsource.streamflow.client.ui.workspace.cases.CaseTableValue;
-import se.streamsource.streamflow.client.ui.workspace.table.CasesTableFormatter;
-import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
+import se.streamsource.streamflow.client.ui.workspace.cases.*;
+import se.streamsource.streamflow.client.ui.workspace.table.*;
+import se.streamsource.streamflow.domain.interaction.gtd.*;
 
-import java.util.Date;
+import java.util.*;
 
-import static se.streamsource.streamflow.client.ui.overview.OverviewResources.assigned_to_column_header;
+import static se.streamsource.streamflow.client.ui.overview.OverviewResources.*;
 import static se.streamsource.streamflow.client.ui.workspace.WorkspaceResources.*;
-import static se.streamsource.streamflow.client.util.i18n.text;
+import static se.streamsource.streamflow.client.util.i18n.*;
 
 /**
  * JAVADOC

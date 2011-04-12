@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,11 @@
 
 package se.streamsource.streamflow.client.domain.individual;
 
-import org.restlet.Uniform;
-import org.restlet.resource.ResourceException;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
+import org.restlet.*;
+import org.restlet.resource.*;
+import se.streamsource.dci.restlet.client.*;
 
-import java.io.IOException;
+import java.io.*;
 
 /**
  * JAVADOC

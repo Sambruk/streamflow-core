@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +17,11 @@
 
 package se.streamsource.infrastructure.circuitbreaker.jmx;
 
-import se.streamsource.infrastructure.circuitbreaker.CircuitBreaker;
+import se.streamsource.infrastructure.circuitbreaker.*;
 
-import java.beans.PropertyVetoException;
-import java.text.DateFormat;
-import java.util.Date;
+import java.beans.*;
+import java.text.*;
+import java.util.*;
 
 /**
 * MBean for circuit breakers

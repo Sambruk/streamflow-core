@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,24 +17,17 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.forms;
 
-import ca.odell.glazedlists.BasicEventList;
-import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.TransactionList;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
-import org.restlet.representation.Representation;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.dci.value.*;
-import se.streamsource.streamflow.client.util.EventListSynch;
-import se.streamsource.streamflow.client.util.Refreshable;
-import se.streamsource.streamflow.resource.caze.FieldDTO;
-import se.streamsource.streamflow.resource.caze.SubmittedFormDTO;
-import se.streamsource.streamflow.resource.roles.IntegerDTO;
+import ca.odell.glazedlists.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.value.*;
+import org.restlet.representation.*;
+import se.streamsource.dci.restlet.client.*;
+import se.streamsource.dci.value.StringValue;
+import se.streamsource.streamflow.client.util.*;
+import se.streamsource.streamflow.resource.caze.*;
+import se.streamsource.streamflow.resource.roles.*;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 
 public class CaseSubmittedFormModel
    implements Refreshable, FormAttachmentDownload
@@ -44,18 +38,24 @@ public class CaseSubmittedFormModel
 
    @Structure
    ValueBuilderFactory vbf;
+   SubmittedFormDTO form;
 
-   private EventList<FieldDTO> eventList = new TransactionList<FieldDTO>( new BasicEventList<FieldDTO>() );
+   private EventList<SubmittedPageDTO> eventList = new TransactionList<SubmittedPageDTO>( new BasicEventList<SubmittedPageDTO>() );
 
    public void refresh()
    {
-      SubmittedFormDTO form = client.query( "submittedform", index, SubmittedFormDTO.class );
-      EventListSynch.synchronize( form.values().get(), eventList );
+      form = client.query( "submittedform", index, SubmittedFormDTO.class );
+      EventListSynch.synchronize( form.pages().get(), eventList );
    }
 
-   public EventList<FieldDTO> getEventList()
+   public EventList<SubmittedPageDTO> getEventList()
    {
       return eventList;
+   }
+
+   public SubmittedFormDTO getForm()
+   {
+      return form;
    }
 
    public Representation download( String attachmentId ) throws IOException

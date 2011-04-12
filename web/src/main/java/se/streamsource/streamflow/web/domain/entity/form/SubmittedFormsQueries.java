@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,26 +17,14 @@
 
 package se.streamsource.streamflow.web.domain.entity.form;
 
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.This;
-import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.domain.form.EffectiveFieldValue;
-import se.streamsource.streamflow.domain.form.EffectiveFormFieldsValue;
-import se.streamsource.streamflow.domain.form.SubmittedFieldValue;
-import se.streamsource.streamflow.domain.form.SubmittedFormValue;
-import se.streamsource.streamflow.domain.structure.Describable;
-import se.streamsource.streamflow.resource.caze.EffectiveFieldDTO;
-import se.streamsource.streamflow.resource.caze.EffectiveFieldsDTO;
-import se.streamsource.streamflow.resource.caze.FieldDTO;
-import se.streamsource.streamflow.resource.caze.SubmittedFormDTO;
-import se.streamsource.streamflow.resource.caze.SubmittedFormListDTO;
-import se.streamsource.streamflow.resource.caze.SubmittedFormsListDTO;
-import se.streamsource.streamflow.web.domain.structure.form.FieldValueDefinition;
-import se.streamsource.streamflow.web.domain.structure.form.SubmittedForms;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.mixin.*;
+import org.qi4j.api.unitofwork.*;
+import org.qi4j.api.value.*;
+import se.streamsource.streamflow.domain.form.*;
+import se.streamsource.streamflow.domain.structure.*;
+import se.streamsource.streamflow.resource.caze.*;
+import se.streamsource.streamflow.web.domain.structure.form.*;
 
 /**
  * JAVADOC
@@ -105,14 +93,25 @@ public interface SubmittedFormsQueries
          ValueBuilder<FieldDTO> fieldBuilder = vbf.newValueBuilder( FieldDTO.class );
          FieldDTO fieldDTO = fieldBuilder.prototype();
 
-         for (SubmittedFieldValue fieldValue : form.values().get())
+         for (SubmittedPageValue submittedPageValue : form.pages().get())
          {
-            Describable.Data field = uow.get( Describable.Data.class, fieldValue.field().get().identity() );
-            fieldDTO.field().set( field.description().get() );
-            fieldDTO.value().set( fieldValue.value().get() );
-            FieldValueDefinition.Data fieldDefinition = uow.get( FieldValueDefinition.Data.class, fieldValue.field().get().identity() );
-            fieldDTO.fieldType().set( fieldDefinition.fieldValue().get().type().getName() );
-            formDTO.values().get().add( fieldBuilder.newInstance() );
+            ValueBuilder<SubmittedPageDTO> pageBuilder = vbf.newValueBuilder( SubmittedPageDTO.class );
+            SubmittedPageDTO pageDTO = pageBuilder.prototype();
+
+            Describable.Data page = uow.get(Describable.Data.class, submittedPageValue.page().get().identity());
+            pageDTO.name().set(page.description().get());
+
+            for (SubmittedFieldValue fieldValue : submittedPageValue.fields().get())
+            {
+               Describable.Data field = uow.get( Describable.Data.class, fieldValue.field().get().identity() );
+               fieldDTO.field().set( field.description().get() );
+               fieldDTO.value().set( fieldValue.value().get() );
+               FieldValueDefinition.Data fieldDefinition = uow.get( FieldValueDefinition.Data.class, fieldValue.field().get().identity() );
+               fieldDTO.fieldType().set( fieldDefinition.fieldValue().get().type().getName() );
+               pageDTO.fields().get().add( fieldBuilder.newInstance() );
+            }
+
+            formDTO.pages().get().add(pageBuilder.newInstance());
          }
 
          return formBuilder.newInstance();
@@ -141,8 +140,10 @@ public interface SubmittedFormsQueries
 
                   fieldDTO.fieldValue().set( fieldValue.value().get() );
                   Describable.Data fieldName = uow.get( Describable.Data.class, fieldValue.field().get().identity() );
+                  Describable.Data pageName = uow.get( Describable.Data.class, fieldValue.page().get().identity() );
                   Describable.Data formName = uow.get( Describable.Data.class, fieldValue.form().get().identity() );
                   fieldDTO.formName().set( formName.description().get() );
+                  fieldDTO.pageName().set( pageName.description().get() );
                   fieldDTO.fieldName().set( fieldName.description().get() );
                   FieldValueDefinition.Data fieldDefinition = uow.get( FieldValueDefinition.Data.class, fieldValue.field().get().identity() );
                   fieldDTO.fieldType().set( fieldDefinition.fieldValue().get().type().getName() );

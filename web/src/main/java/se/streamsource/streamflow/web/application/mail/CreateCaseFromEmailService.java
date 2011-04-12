@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,58 +17,41 @@
 
 package se.streamsource.streamflow.web.application.mail;
 
-import info.ineighborhood.cardme.engine.VCardEngine;
-import info.ineighborhood.cardme.vcard.VCard;
-import info.ineighborhood.cardme.vcard.features.AddressFeature;
-import org.qi4j.api.configuration.Configuration;
+import info.ineighborhood.cardme.engine.*;
+import info.ineighborhood.cardme.vcard.*;
+import info.ineighborhood.cardme.vcard.features.*;
+import org.qi4j.api.configuration.*;
 import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.This;
-import org.qi4j.api.io.Input;
-import org.qi4j.api.io.Inputs;
-import org.qi4j.api.io.Output;
-import org.qi4j.api.io.Outputs;
-import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.query.Query;
-import org.qi4j.api.service.Activatable;
-import org.qi4j.api.service.ServiceComposite;
-import org.qi4j.api.structure.Module;
-import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.usecase.UsecaseBuilder;
-import se.streamsource.dci.api.RoleMap;
-import se.streamsource.streamflow.domain.contact.ContactBuilder;
-import se.streamsource.streamflow.domain.contact.Contactable;
-import se.streamsource.streamflow.infrastructure.event.application.ApplicationEvent;
-import se.streamsource.streamflow.infrastructure.event.application.TransactionApplicationEvents;
-import se.streamsource.streamflow.infrastructure.event.application.replay.ApplicationEventPlayer;
-import se.streamsource.streamflow.infrastructure.event.application.replay.ApplicationEventReplayException;
-import se.streamsource.streamflow.infrastructure.event.application.source.ApplicationEventSource;
-import se.streamsource.streamflow.infrastructure.event.application.source.ApplicationEventStream;
-import se.streamsource.streamflow.infrastructure.event.application.source.helper.ApplicationEvents;
-import se.streamsource.streamflow.infrastructure.event.application.source.helper.ApplicationTransactionTracker;
-import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
-import se.streamsource.streamflow.web.domain.entity.gtd.Drafts;
-import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
-import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsQueries;
-import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
-import se.streamsource.streamflow.web.domain.entity.user.UsersEntity;
-import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFileValue;
-import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
-import se.streamsource.streamflow.web.domain.structure.conversation.Conversation;
-import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipant;
-import se.streamsource.streamflow.web.domain.structure.created.Creator;
-import se.streamsource.streamflow.web.domain.structure.organization.AccessPoint;
-import se.streamsource.streamflow.web.domain.structure.organization.AccessPoints;
-import se.streamsource.streamflow.web.domain.structure.organization.EmailAccessPoint;
-import se.streamsource.streamflow.web.domain.structure.organization.Organization;
-import se.streamsource.streamflow.web.domain.structure.user.Users;
-import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.io.*;
+import org.qi4j.api.mixin.*;
+import org.qi4j.api.query.*;
+import org.qi4j.api.service.*;
+import org.qi4j.api.structure.*;
+import org.qi4j.api.unitofwork.*;
+import org.qi4j.api.usecase.*;
+import se.streamsource.dci.api.*;
+import se.streamsource.streamflow.domain.contact.*;
+import se.streamsource.streamflow.infrastructure.event.application.*;
+import se.streamsource.streamflow.infrastructure.event.application.replay.*;
+import se.streamsource.streamflow.infrastructure.event.application.source.*;
+import se.streamsource.streamflow.infrastructure.event.application.source.helper.*;
+import se.streamsource.streamflow.web.domain.entity.caze.*;
+import se.streamsource.streamflow.web.domain.entity.gtd.*;
+import se.streamsource.streamflow.web.domain.entity.organization.*;
+import se.streamsource.streamflow.web.domain.entity.user.*;
+import se.streamsource.streamflow.web.domain.structure.attachment.*;
+import se.streamsource.streamflow.web.domain.structure.conversation.*;
+import se.streamsource.streamflow.web.domain.structure.created.*;
+import se.streamsource.streamflow.web.domain.structure.organization.*;
+import se.streamsource.streamflow.web.domain.structure.user.*;
+import se.streamsource.streamflow.web.infrastructure.attachment.*;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeUtility;
+import javax.mail.*;
+import javax.mail.internet.*;
 import java.io.*;
-import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
+import java.nio.*;
+import java.nio.charset.*;
 
 /**
  * Receive emails and create cases through Access Points

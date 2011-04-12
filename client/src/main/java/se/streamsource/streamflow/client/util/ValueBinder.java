@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,23 +17,20 @@
 
 package se.streamsource.streamflow.client.util;
 
-import org.jdesktop.swingx.JXDatePicker;
-import org.jdesktop.swingx.JXLabel;
-import org.qi4j.api.common.QualifiedName;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.property.StateHolder;
-import org.qi4j.api.util.DateFunctions;
-import org.qi4j.api.value.ValueComposite;
-import org.qi4j.spi.Qi4jSPI;
-import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.streamflow.client.ui.workspace.cases.general.RemovableLabel;
+import org.jdesktop.swingx.*;
+import org.qi4j.api.common.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.property.*;
+import org.qi4j.api.util.*;
+import org.qi4j.api.value.*;
+import org.qi4j.spi.*;
+import se.streamsource.dci.value.link.*;
+import se.streamsource.streamflow.client.ui.workspace.cases.general.*;
 
 import javax.swing.*;
-import javax.swing.text.JTextComponent;
+import javax.swing.text.*;
 import java.awt.*;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Bind components to value names to allow them to be updated from a given source

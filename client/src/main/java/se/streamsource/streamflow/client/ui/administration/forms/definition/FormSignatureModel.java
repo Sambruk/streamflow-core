@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,15 +17,15 @@
 
 package se.streamsource.streamflow.client.ui.administration.forms.definition;
 
-import org.qi4j.api.injection.scope.Uses;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.util.Refreshable;
-import se.streamsource.streamflow.domain.form.RequiredSignatureValue;
-import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
-import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
+import org.qi4j.api.injection.scope.*;
+import se.streamsource.dci.restlet.client.*;
+import se.streamsource.streamflow.client.*;
+import se.streamsource.streamflow.client.util.*;
+import se.streamsource.streamflow.domain.form.*;
+import se.streamsource.streamflow.infrastructure.event.domain.*;
+import se.streamsource.streamflow.infrastructure.event.domain.source.*;
 
-import java.util.Observable;
+import java.util.*;
 
 import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 

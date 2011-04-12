@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,19 +17,14 @@
 
 package se.streamsource.infrastructure.circuitbreaker;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.service.ServiceComposite;
-import org.qi4j.api.service.ServiceReference;
-import org.qi4j.bootstrap.AssemblyException;
-import org.qi4j.bootstrap.ModuleAssembly;
-import org.qi4j.test.AbstractQi4jTest;
-import se.streamsource.infrastructure.circuitbreaker.service.AbstractBreakOnThrowable;
-import se.streamsource.infrastructure.circuitbreaker.service.BreaksCircuitOnThrowable;
-import se.streamsource.infrastructure.circuitbreaker.service.ServiceCircuitBreaker;
+import org.junit.*;
+import org.qi4j.api.mixin.*;
+import org.qi4j.api.service.*;
+import org.qi4j.bootstrap.*;
+import org.qi4j.test.*;
+import se.streamsource.infrastructure.circuitbreaker.service.*;
 
-import java.beans.PropertyVetoException;
+import java.beans.*;
 
 /**
  * Test @BreaksCircuitOnThrowable annotation

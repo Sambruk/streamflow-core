@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,47 +17,35 @@
 
 package se.streamsource.streamflow.web.context.cases;
 
-import org.apache.commons.collections.ArrayStack;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
-import org.qi4j.api.util.Function;
-import org.qi4j.api.util.Iterables;
-import se.streamsource.dci.api.Contexts;
-import se.streamsource.dci.api.InteractionConstraints;
-import se.streamsource.dci.api.RoleMap;
-import se.streamsource.dci.value.table.TableQuery;
-import se.streamsource.streamflow.web.application.security.UserPrincipal;
-import se.streamsource.streamflow.web.context.ContextTest;
+import org.apache.commons.collections.*;
+import org.junit.*;
+import org.qi4j.api.unitofwork.*;
+import org.qi4j.api.util.*;
+import se.streamsource.dci.api.*;
+import se.streamsource.dci.value.table.*;
+import se.streamsource.streamflow.web.application.security.*;
+import se.streamsource.streamflow.web.context.*;
 import se.streamsource.streamflow.web.context.administration.*;
-import se.streamsource.streamflow.web.context.administration.labels.LabelsContext;
-import se.streamsource.streamflow.web.context.administration.labels.SelectedLabelsContext;
-import se.streamsource.streamflow.web.context.organizations.OrganizationalUnitsContextTest;
-import se.streamsource.streamflow.web.context.organizations.ProjectsContextTest;
-import se.streamsource.streamflow.web.context.users.UsersContextTest;
-import se.streamsource.streamflow.web.context.workspace.DraftsContext;
-import se.streamsource.streamflow.web.context.workspace.WorkspaceProjectsContext;
-import se.streamsource.streamflow.web.context.workspace.cases.CaseCommandsContext;
-import se.streamsource.streamflow.web.context.workspace.cases.general.CaseGeneralCommandsContext;
-import se.streamsource.streamflow.web.context.workspace.cases.general.LabelableContext;
-import se.streamsource.streamflow.web.domain.entity.organization.OrganizationsEntity;
-import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
-import se.streamsource.streamflow.web.domain.structure.caze.Case;
-import se.streamsource.streamflow.web.domain.structure.label.Label;
-import se.streamsource.streamflow.web.domain.structure.organization.Organization;
-import se.streamsource.streamflow.web.domain.structure.organization.Organizations;
-import se.streamsource.streamflow.web.domain.structure.project.Project;
-import se.streamsource.streamflow.web.domain.structure.user.User;
+import se.streamsource.streamflow.web.context.administration.labels.*;
+import se.streamsource.streamflow.web.context.organizations.*;
+import se.streamsource.streamflow.web.context.users.*;
+import se.streamsource.streamflow.web.context.workspace.*;
+import se.streamsource.streamflow.web.context.workspace.cases.*;
+import se.streamsource.streamflow.web.context.workspace.cases.general.*;
+import se.streamsource.streamflow.web.domain.entity.organization.*;
+import se.streamsource.streamflow.web.domain.structure.caze.*;
+import se.streamsource.streamflow.web.domain.structure.label.*;
+import se.streamsource.streamflow.web.domain.structure.organization.*;
+import se.streamsource.streamflow.web.domain.structure.project.*;
+import se.streamsource.streamflow.web.domain.structure.user.*;
 
-import java.lang.reflect.Method;
-import java.util.List;
+import java.lang.reflect.*;
+import java.util.*;
 
-import static java.util.Arrays.asList;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.assertThat;
-import static org.qi4j.api.util.Iterables.first;
+import static java.util.Arrays.*;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+import static org.qi4j.api.util.Iterables.*;
 
 /**
  * Check lifecycle of a case

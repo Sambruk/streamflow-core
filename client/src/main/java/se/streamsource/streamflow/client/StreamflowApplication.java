@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,62 +19,43 @@ package se.streamsource.streamflow.client;
 
 import org.jdesktop.application.Action;
 import org.jdesktop.application.*;
-import org.jdesktop.swingx.JXErrorPane;
-import org.jdesktop.swingx.error.ErrorInfo;
-import org.jdesktop.swingx.util.WindowUtils;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.io.Inputs;
-import org.qi4j.api.io.Outputs;
-import org.qi4j.api.io.Receiver;
-import org.qi4j.api.object.ObjectBuilder;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import org.qi4j.bootstrap.Energy4Java;
-import org.qi4j.spi.property.ValueType;
-import org.qi4j.spi.structure.ApplicationSPI;
-import org.qi4j.spi.structure.ModuleSPI;
-import org.restlet.Client;
-import org.restlet.Request;
-import org.restlet.Response;
-import org.restlet.Restlet;
-import org.restlet.data.Protocol;
-import org.restlet.routing.Filter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import se.streamsource.streamflow.client.assembler.StreamflowClientAssembler;
-import se.streamsource.streamflow.client.ui.DebugWindow;
+import org.jdesktop.swingx.*;
+import org.jdesktop.swingx.error.*;
+import org.jdesktop.swingx.util.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.io.*;
+import org.qi4j.api.object.*;
+import org.qi4j.bootstrap.*;
+import org.qi4j.spi.property.*;
+import org.qi4j.spi.structure.*;
+import org.restlet.*;
+import org.restlet.data.*;
+import org.restlet.routing.*;
+import org.slf4j.*;
+import se.streamsource.streamflow.client.assembler.*;
+import se.streamsource.streamflow.client.ui.*;
 import se.streamsource.streamflow.client.ui.account.*;
-import se.streamsource.streamflow.client.ui.administration.AdministrationWindow;
-import se.streamsource.streamflow.client.ui.overview.OverviewWindow;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceWindow;
-import se.streamsource.streamflow.client.util.JavaHelp;
-import se.streamsource.streamflow.client.util.dialog.DialogService;
-import se.streamsource.streamflow.client.util.i18n;
-import se.streamsource.streamflow.infrastructure.application.ListItemValue;
-import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
-import se.streamsource.streamflow.infrastructure.event.domain.source.EventStream;
-import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
-import se.streamsource.streamflow.resource.caze.CaseDTO;
+import se.streamsource.streamflow.client.ui.administration.*;
+import se.streamsource.streamflow.client.ui.overview.*;
+import se.streamsource.streamflow.client.ui.workspace.*;
+import se.streamsource.streamflow.client.util.*;
+import se.streamsource.streamflow.client.util.dialog.*;
+import se.streamsource.streamflow.infrastructure.application.*;
+import se.streamsource.streamflow.infrastructure.event.domain.*;
+import se.streamsource.streamflow.infrastructure.event.domain.source.*;
+import se.streamsource.streamflow.resource.caze.*;
 
-import javax.jnlp.ServiceManager;
-import javax.jnlp.SingleInstanceListener;
-import javax.jnlp.SingleInstanceService;
-import javax.jnlp.UnavailableServiceException;
+import javax.jnlp.*;
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
+import javax.swing.event.*;
+import java.awt.Component;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.EventObject;
-import java.util.concurrent.Executors;
+import java.awt.event.*;
+import java.io.*;
+import java.util.*;
+import java.util.concurrent.*;
 
-import static se.streamsource.streamflow.client.util.i18n.text;
+import static se.streamsource.streamflow.client.util.i18n.*;
 
 /**
  * Controller for the application

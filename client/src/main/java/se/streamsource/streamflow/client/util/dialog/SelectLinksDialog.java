@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,25 +17,19 @@
 
 package se.streamsource.streamflow.client.util.dialog;
 
-import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.swing.EventListModel;
-import org.jdesktop.application.ApplicationContext;
-import org.jdesktop.swingx.JXDialog;
-import org.jdesktop.swingx.util.WindowUtils;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.dci.value.link.LinksValue;
-import se.streamsource.streamflow.client.util.LinkListCellRenderer;
+import ca.odell.glazedlists.*;
+import ca.odell.glazedlists.swing.*;
+import org.jdesktop.application.*;
+import org.jdesktop.swingx.*;
+import org.jdesktop.swingx.util.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.value.*;
+import se.streamsource.dci.value.link.*;
+import se.streamsource.streamflow.client.util.*;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
 
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
+import javax.swing.*;
+import java.awt.*;
 
 public class SelectLinksDialog
       extends JPanel

@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,61 +17,39 @@
 
 package se.streamsource.streamflow.web.application.management;
 
-import org.openrdf.repository.Repository;
-import org.qi4j.api.Qi4j;
-import org.qi4j.api.composite.Composite;
-import org.qi4j.api.composite.TransientComposite;
-import org.qi4j.api.constraint.Name;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.io.Input;
-import org.qi4j.api.io.Inputs;
-import org.qi4j.api.io.Outputs;
-import org.qi4j.api.io.Transforms;
-import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.property.ComputedPropertyInstance;
-import org.qi4j.api.property.GenericPropertyInfo;
-import org.qi4j.api.property.Property;
-import org.qi4j.api.service.Activatable;
-import org.qi4j.api.service.ServiceReference;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.util.Function;
-import org.qi4j.api.util.Iterables;
-import org.qi4j.index.reindexer.Reindexer;
-import org.qi4j.spi.entity.EntityState;
-import org.qi4j.spi.entitystore.BackupRestore;
-import org.qi4j.spi.entitystore.EntityStore;
-import org.qi4j.spi.query.EntityFinder;
-import org.qi4j.spi.structure.ModuleSPI;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
-import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
-import se.streamsource.streamflow.infrastructure.event.domain.factory.DomainEventFactory;
-import se.streamsource.streamflow.infrastructure.event.domain.replay.DomainEventPlayer;
-import se.streamsource.streamflow.infrastructure.event.domain.replay.EventReplayException;
-import se.streamsource.streamflow.infrastructure.event.domain.source.EventSource;
-import se.streamsource.streamflow.infrastructure.event.domain.source.EventStream;
-import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
-import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionVisitor;
-import se.streamsource.streamflow.web.application.statistics.CaseStatistics;
-import se.streamsource.streamflow.web.application.statistics.StatisticsStoreException;
-import se.streamsource.streamflow.web.infrastructure.event.EventManagement;
-import se.streamsource.streamflow.web.infrastructure.index.EmbeddedSolrService;
-import se.streamsource.streamflow.web.infrastructure.index.SolrQueryService;
+import org.openrdf.repository.*;
+import org.qi4j.api.*;
+import org.qi4j.api.composite.*;
+import org.qi4j.api.constraint.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.io.*;
+import org.qi4j.api.mixin.*;
+import org.qi4j.api.property.*;
+import org.qi4j.api.service.*;
+import org.qi4j.api.unitofwork.*;
+import org.qi4j.api.util.*;
+import org.qi4j.index.reindexer.*;
+import org.qi4j.spi.entity.*;
+import org.qi4j.spi.entitystore.*;
+import org.qi4j.spi.query.*;
+import org.qi4j.spi.structure.*;
+import org.slf4j.*;
+import se.streamsource.streamflow.infrastructure.configuration.*;
+import se.streamsource.streamflow.infrastructure.event.domain.*;
+import se.streamsource.streamflow.infrastructure.event.domain.factory.*;
+import se.streamsource.streamflow.infrastructure.event.domain.replay.*;
+import se.streamsource.streamflow.infrastructure.event.domain.source.*;
+import se.streamsource.streamflow.web.application.statistics.*;
+import se.streamsource.streamflow.web.infrastructure.event.*;
+import se.streamsource.streamflow.web.infrastructure.index.*;
 
 import java.io.*;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.zip.GZIPOutputStream;
+import java.text.*;
+import java.util.*;
+import java.util.zip.*;
 
-import static org.qi4j.api.util.Iterables.count;
-import static org.qi4j.api.util.Iterables.filter;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.events;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withNames;
+import static org.qi4j.api.util.Iterables.*;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 
 /**
  * Implementation of Manager interface. All general JMX management methods

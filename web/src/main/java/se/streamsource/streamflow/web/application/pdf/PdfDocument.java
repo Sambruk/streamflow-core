@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,14 +17,13 @@
 
 package se.streamsource.streamflow.web.application.pdf;
 
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.common.PDRectangle;
-import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.*;
+import org.apache.pdfbox.pdmodel.common.*;
+import org.apache.pdfbox.pdmodel.edit.*;
 
-import java.awt.Color;
-import java.io.IOException;
-import java.util.ArrayList;
+import java.awt.*;
+import java.io.*;
+import java.util.*;
 import java.util.List;
 
 public class PdfDocument

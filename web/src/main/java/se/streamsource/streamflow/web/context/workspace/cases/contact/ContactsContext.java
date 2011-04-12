@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,20 +17,18 @@
 
 package se.streamsource.streamflow.web.context.workspace.cases.contact;
 
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.structure.Module;
-import org.qi4j.api.value.ValueBuilder;
-import se.streamsource.dci.api.IndexContext;
-import se.streamsource.dci.api.RoleMap;
-import se.streamsource.streamflow.domain.contact.ContactValue;
-import se.streamsource.streamflow.resource.caze.ContactsDTO;
-import se.streamsource.streamflow.web.domain.interaction.gtd.RequiresStatus;
-import se.streamsource.streamflow.web.domain.structure.caze.Contacts;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.structure.*;
+import org.qi4j.api.value.*;
+import se.streamsource.dci.api.*;
+import se.streamsource.streamflow.domain.contact.*;
+import se.streamsource.streamflow.resource.caze.*;
+import se.streamsource.streamflow.web.domain.interaction.gtd.*;
+import se.streamsource.streamflow.web.domain.structure.caze.*;
 
-import java.util.List;
+import java.util.*;
 
-import static se.streamsource.streamflow.domain.interaction.gtd.CaseStates.DRAFT;
-import static se.streamsource.streamflow.domain.interaction.gtd.CaseStates.OPEN;
+import static se.streamsource.streamflow.domain.interaction.gtd.CaseStates.*;
 
 /**
  * JAVADOC

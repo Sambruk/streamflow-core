@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,9 @@
 
 package se.streamsource.streamflow.web.domain.interaction.gtd;
 
-import org.qi4j.api.constraint.ConstraintDeclaration;
-import org.qi4j.api.constraint.Constraints;
+import org.qi4j.api.constraint.*;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.*;
 
 /**
  * Check that an owner is specified

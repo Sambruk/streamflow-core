@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,31 +17,22 @@
 
 package se.streamsource.streamflow.client.domain.individual;
 
-import org.qi4j.api.entity.EntityComposite;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.This;
-import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import org.qi4j.api.property.Property;
-import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.value.ValueBuilderFactory;
-import org.restlet.Request;
-import org.restlet.Response;
-import org.restlet.Uniform;
-import org.restlet.data.ChallengeResponse;
-import org.restlet.data.ChallengeScheme;
-import org.restlet.data.Reference;
-import org.restlet.representation.Representation;
-import org.restlet.resource.ResourceException;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.dci.restlet.client.CommandQueryClientFactory;
-import se.streamsource.dci.restlet.client.ResponseHandler;
-import se.streamsource.streamflow.domain.structure.Describable;
-import se.streamsource.streamflow.resource.user.ChangePasswordCommand;
+import org.qi4j.api.entity.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.mixin.*;
+import org.qi4j.api.object.*;
+import org.qi4j.api.property.*;
+import org.qi4j.api.unitofwork.*;
+import org.qi4j.api.value.*;
+import org.restlet.*;
+import org.restlet.data.*;
+import org.restlet.representation.*;
+import org.restlet.resource.*;
+import se.streamsource.dci.restlet.client.*;
+import se.streamsource.streamflow.domain.structure.*;
+import se.streamsource.streamflow.resource.user.*;
 
-import java.io.IOException;
+import java.io.*;
 
 /**
  * Entity representing a client-side account

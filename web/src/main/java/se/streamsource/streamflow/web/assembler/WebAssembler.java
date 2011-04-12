@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,24 +17,16 @@
 
 package se.streamsource.streamflow.web.assembler;
 
-import org.qi4j.bootstrap.AssemblyException;
-import org.qi4j.bootstrap.LayerAssembly;
-import org.qi4j.bootstrap.ModuleAssembly;
-import org.qi4j.library.rdf.entity.EntityStateSerializer;
-import org.qi4j.library.rdf.entity.EntityTypeSerializer;
-import org.qi4j.library.rest.EntitiesResource;
-import org.qi4j.library.rest.EntityResource;
-import org.qi4j.library.rest.IndexResource;
-import org.qi4j.library.rest.SPARQLResource;
-import org.restlet.security.ChallengeAuthenticator;
-import se.streamsource.dci.restlet.server.ResourceFinder;
-import se.streamsource.streamflow.web.application.security.AuthenticationFilter;
-import se.streamsource.streamflow.web.resource.APIRouter;
-import se.streamsource.streamflow.web.resource.admin.ConsoleServerResource;
-import se.streamsource.streamflow.web.resource.admin.SolrSearchServerResource;
-import se.streamsource.streamflow.web.resource.events.ApplicationEventsServerResource;
-import se.streamsource.streamflow.web.resource.events.DomainEventsServerResource;
-import se.streamsource.streamflow.web.rest.StreamflowRestApplication;
+import org.qi4j.bootstrap.*;
+import org.qi4j.library.rdf.entity.*;
+import org.qi4j.library.rest.*;
+import org.restlet.security.*;
+import se.streamsource.dci.restlet.server.*;
+import se.streamsource.streamflow.web.application.security.*;
+import se.streamsource.streamflow.web.resource.*;
+import se.streamsource.streamflow.web.resource.admin.*;
+import se.streamsource.streamflow.web.resource.events.*;
+import se.streamsource.streamflow.web.rest.*;
 
 /**
  * JAVADOC

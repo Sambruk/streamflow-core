@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,27 +17,19 @@
 
 package se.streamsource.streamflow.web.context.administration;
 
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.query.Query;
-import org.qi4j.api.structure.Module;
-import org.qi4j.api.unitofwork.UnitOfWork;
-import se.streamsource.dci.api.IndexContext;
-import se.streamsource.dci.api.RoleMap;
-import se.streamsource.dci.value.EntityValue;
-import se.streamsource.dci.value.link.LinksValue;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.query.*;
+import org.qi4j.api.structure.*;
+import org.qi4j.api.unitofwork.*;
+import se.streamsource.dci.api.*;
+import se.streamsource.dci.value.*;
+import se.streamsource.dci.value.link.*;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.web.domain.entity.organization.GroupEntity;
-import se.streamsource.streamflow.web.domain.entity.organization.OrganizationEntity;
-import se.streamsource.streamflow.web.domain.entity.organization.OrganizationQueries;
-import se.streamsource.streamflow.web.domain.entity.organization.OrganizationVisitor;
-import se.streamsource.streamflow.web.domain.entity.user.UserEntity;
-import se.streamsource.streamflow.web.domain.structure.group.Group;
-import se.streamsource.streamflow.web.domain.structure.group.Groups;
-import se.streamsource.streamflow.web.domain.structure.group.Participant;
-import se.streamsource.streamflow.web.domain.structure.group.Participants;
-import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnits;
-import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganization;
-import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
+import se.streamsource.streamflow.web.domain.entity.organization.*;
+import se.streamsource.streamflow.web.domain.entity.user.*;
+import se.streamsource.streamflow.web.domain.structure.group.*;
+import se.streamsource.streamflow.web.domain.structure.organization.*;
+import se.streamsource.streamflow.web.domain.structure.user.*;
 
 import static org.qi4j.api.query.QueryExpressions.*;
 

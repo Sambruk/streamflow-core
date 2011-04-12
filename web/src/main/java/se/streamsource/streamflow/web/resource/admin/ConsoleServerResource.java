@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,29 +17,17 @@
 
 package se.streamsource.streamflow.web.resource.admin;
 
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
-import org.restlet.data.CharacterSet;
-import org.restlet.data.Form;
-import org.restlet.data.MediaType;
-import org.restlet.representation.InputRepresentation;
-import org.restlet.representation.Representation;
-import org.restlet.representation.StringRepresentation;
-import org.restlet.representation.Variant;
-import org.restlet.resource.ResourceException;
-import org.restlet.resource.ServerResource;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.value.*;
+import org.restlet.data.*;
+import org.restlet.representation.*;
+import org.restlet.resource.*;
 import se.streamsource.streamflow.web.application.console.Console;
-import se.streamsource.streamflow.web.application.console.ConsoleResultValue;
-import se.streamsource.streamflow.web.application.console.ConsoleScriptValue;
+import se.streamsource.streamflow.web.application.console.*;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.Arrays;
-import java.util.logging.LogRecord;
-import java.util.logging.SimpleFormatter;
+import java.io.*;
+import java.util.*;
+import java.util.logging.*;
 
 /**
  * JAVADOC

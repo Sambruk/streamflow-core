@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,26 +17,20 @@
 
 package se.streamsource.streamflow.web.context.administration.surface.accesspoints;
 
-import org.qi4j.api.constraint.Name;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.structure.Module;
-import org.qi4j.api.unitofwork.UnitOfWork;
-import se.streamsource.dci.api.IndexContext;
-import se.streamsource.dci.api.RoleMap;
-import se.streamsource.dci.value.EntityValue;
-import se.streamsource.dci.value.link.LinksValue;
-import se.streamsource.streamflow.domain.structure.Describable;
+import org.qi4j.api.constraint.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.structure.*;
+import se.streamsource.dci.api.*;
+import se.streamsource.dci.value.link.*;
+import se.streamsource.streamflow.domain.structure.*;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.web.domain.entity.project.ProjectLabelsQueries;
-import se.streamsource.streamflow.web.domain.structure.casetype.CaseType;
-import se.streamsource.streamflow.web.domain.structure.label.Label;
-import se.streamsource.streamflow.web.domain.structure.label.Labelable;
-import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
-import se.streamsource.streamflow.web.domain.structure.organization.AccessPointSettings;
-import se.streamsource.streamflow.web.domain.structure.project.Project;
+import se.streamsource.streamflow.web.domain.entity.project.*;
+import se.streamsource.streamflow.web.domain.structure.casetype.*;
+import se.streamsource.streamflow.web.domain.structure.label.*;
+import se.streamsource.streamflow.web.domain.structure.organization.*;
+import se.streamsource.streamflow.web.domain.structure.project.*;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static se.streamsource.dci.api.RoleMap.*;
 

@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,31 +18,21 @@
 package se.streamsource.streamflow.client.ui.overview;
 
 import ca.odell.glazedlists.*;
-import ca.odell.glazedlists.gui.TableFormat;
-import ca.odell.glazedlists.swing.EventListModel;
-import ca.odell.glazedlists.swing.TextComponentMatcherEditor;
-import org.jdesktop.application.ApplicationContext;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.streamflow.client.ui.ContextItem;
-import se.streamsource.streamflow.client.ui.ContextItemGroupComparator;
-import se.streamsource.streamflow.client.ui.ContextItemListRenderer;
-import se.streamsource.streamflow.client.ui.workspace.table.CasesTableFormatter;
-import se.streamsource.streamflow.client.ui.workspace.table.CasesTableView;
-import se.streamsource.streamflow.client.ui.workspace.table.CasesView;
-import se.streamsource.streamflow.client.util.RefreshWhenShowing;
-import se.streamsource.streamflow.client.util.SeparatorContextItemListCellRenderer;
+import ca.odell.glazedlists.gui.*;
+import ca.odell.glazedlists.swing.*;
+import org.jdesktop.application.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.object.*;
+import se.streamsource.dci.restlet.client.*;
+import se.streamsource.streamflow.client.ui.*;
+import se.streamsource.streamflow.client.ui.workspace.table.*;
+import se.streamsource.streamflow.client.util.*;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
+import javax.swing.event.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import java.util.Comparator;
+import java.awt.event.*;
+import java.util.*;
 import java.util.List;
 
 /**

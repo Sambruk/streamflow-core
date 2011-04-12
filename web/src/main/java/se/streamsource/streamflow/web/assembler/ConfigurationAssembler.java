@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,24 +17,20 @@
 
 package se.streamsource.streamflow.web.assembler;
 
-import org.qi4j.api.common.Visibility;
-import org.qi4j.api.structure.Application;
-import org.qi4j.bootstrap.AssemblyException;
-import org.qi4j.bootstrap.LayerAssembly;
-import org.qi4j.bootstrap.ModuleAssembly;
-import org.qi4j.entitystore.memory.MemoryEntityStoreService;
-import org.qi4j.entitystore.prefs.PreferencesEntityStoreInfo;
-import org.qi4j.entitystore.prefs.PreferencesEntityStoreService;
-import org.qi4j.index.reindexer.ReindexerConfiguration;
-import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
-import se.streamsource.streamflow.web.application.attachment.RemoveAttachmentsConfiguration;
-import se.streamsource.streamflow.web.application.conversation.ConversationResponseConfiguration;
-import se.streamsource.streamflow.web.application.conversation.NotificationConfiguration;
-import se.streamsource.streamflow.web.configuration.ServiceConfiguration;
-import se.streamsource.streamflow.web.infrastructure.database.DataSourceConfiguration;
-import se.streamsource.streamflow.web.infrastructure.plugin.PluginConfiguration;
+import org.qi4j.api.common.*;
+import org.qi4j.api.structure.*;
+import org.qi4j.bootstrap.*;
+import org.qi4j.entitystore.memory.*;
+import org.qi4j.entitystore.prefs.*;
+import org.qi4j.index.reindexer.*;
+import se.streamsource.streamflow.infrastructure.configuration.*;
+import se.streamsource.streamflow.web.application.attachment.*;
+import se.streamsource.streamflow.web.application.conversation.*;
+import se.streamsource.streamflow.web.configuration.*;
+import se.streamsource.streamflow.web.infrastructure.database.*;
+import se.streamsource.streamflow.web.infrastructure.plugin.*;
 
-import java.util.prefs.Preferences;
+import java.util.prefs.*;
 
 /**
  * JAVADOC

@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,10 @@
 
 package se.streamsource.dci.test;
 
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.PatternLayout;
-import org.restlet.Component;
-import org.restlet.data.Protocol;
-import org.slf4j.bridge.SLF4JBridgeHandler;
+import org.apache.log4j.*;
+import org.restlet.*;
+import org.restlet.data.*;
+import org.slf4j.bridge.*;
 
 /**
  * JAVADOC

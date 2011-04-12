@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,20 +17,16 @@
 
 package se.streamsource.streamflow.client.assembler;
 
-import org.qi4j.api.common.Visibility;
-import org.qi4j.api.structure.Application;
-import org.qi4j.bootstrap.AssemblyException;
-import org.qi4j.bootstrap.LayerAssembly;
-import org.qi4j.bootstrap.ModuleAssembly;
-import org.qi4j.entitystore.jdbm.JdbmConfiguration;
-import org.qi4j.entitystore.jdbm.JdbmEntityStoreService;
-import org.qi4j.entitystore.memory.MemoryEntityStoreService;
-import org.qi4j.spi.uuid.UuidIdentityGeneratorService;
-import se.streamsource.streamflow.client.infrastructure.configuration.ServiceConfiguration;
-import se.streamsource.streamflow.client.infrastructure.events.ClientEventSourceService;
-import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
-import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import org.qi4j.api.common.*;
+import org.qi4j.api.structure.*;
+import org.qi4j.bootstrap.*;
+import org.qi4j.entitystore.jdbm.*;
+import org.qi4j.entitystore.memory.*;
+import org.qi4j.spi.uuid.*;
+import se.streamsource.streamflow.client.infrastructure.configuration.*;
+import se.streamsource.streamflow.client.infrastructure.events.*;
+import se.streamsource.streamflow.infrastructure.configuration.*;
+import se.streamsource.streamflow.infrastructure.event.domain.*;
 
 /**
  * JAVADOC

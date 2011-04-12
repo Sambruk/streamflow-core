@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,26 +17,17 @@
 
 package se.streamsource.streamflow.client.ui.administration.forms;
 
-import com.jgoodies.forms.factories.Borders;
-import org.jdesktop.application.ApplicationContext;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.streamflow.client.util.RefreshWhenShowing;
-import se.streamsource.streamflow.client.ui.administration.AdministrationView;
-import se.streamsource.streamflow.client.util.TabbedResourceView;
+import com.jgoodies.forms.factories.*;
+import org.jdesktop.application.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.object.*;
+import se.streamsource.dci.restlet.client.*;
+import se.streamsource.streamflow.client.ui.administration.*;
+import se.streamsource.streamflow.client.util.*;
 
-import javax.swing.ActionMap;
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.SwingUtilities;
-import java.awt.BorderLayout;
-import java.util.Observable;
-import java.util.Observer;
+import javax.swing.*;
+import java.awt.*;
+import java.util.*;
 
 /**
  * JAVADOC

@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,17 +17,14 @@
 
 package se.streamsource.dci.restlet.server;
 
-import org.apache.velocity.app.VelocityEngine;
-import org.qi4j.bootstrap.Assembler;
-import org.qi4j.bootstrap.AssemblyException;
-import org.qi4j.bootstrap.ModuleAssembly;
-import org.restlet.service.MetadataService;
+import org.apache.velocity.app.*;
+import org.qi4j.bootstrap.*;
+import org.restlet.service.*;
 import se.streamsource.dci.restlet.server.resultwriter.*;
 
-import java.util.Properties;
+import java.util.*;
 
-import static org.qi4j.bootstrap.ImportedServiceDeclaration.INSTANCE;
-import static org.qi4j.bootstrap.ImportedServiceDeclaration.NEW_OBJECT;
+import static org.qi4j.bootstrap.ImportedServiceDeclaration.*;
 
 /**
  * JAVADOC

@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,13 +18,11 @@
 package se.streamsource.streamflow.client.util;
 
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.slf4j.*;
 
-import javax.help.HelpBroker;
-import javax.help.HelpSet;
-import java.awt.Component;
-import java.net.URL;
+import javax.help.*;
+import java.awt.*;
+import java.net.*;
 
 
 public class JavaHelp

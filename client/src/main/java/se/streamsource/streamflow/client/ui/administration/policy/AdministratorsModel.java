@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,8 @@
 
 package se.streamsource.streamflow.client.ui.administration.policy;
 
-import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.streamflow.client.util.LinkValueListModel;
+import se.streamsource.dci.value.link.*;
+import se.streamsource.streamflow.client.util.*;
 
 /**
  * JAVADOC

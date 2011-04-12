@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,32 +17,24 @@
 
 package se.streamsource.streamflow.web.application.management.jmxconnector;
 
-import org.qi4j.api.configuration.Configuration;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.This;
-import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.service.Activatable;
-import org.qi4j.api.service.ServiceComposite;
-import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.usecase.UsecaseBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import se.streamsource.streamflow.web.domain.interaction.security.Authentication;
-import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
+import org.qi4j.api.configuration.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.mixin.*;
+import org.qi4j.api.service.*;
+import org.qi4j.api.unitofwork.*;
+import org.qi4j.api.usecase.*;
+import org.slf4j.*;
+import se.streamsource.streamflow.web.domain.interaction.security.*;
+import se.streamsource.streamflow.web.domain.structure.user.*;
 
-import javax.management.MBeanServer;
+import javax.management.*;
 import javax.management.remote.*;
-import javax.security.auth.Subject;
-import java.net.InetAddress;
-import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
-import java.rmi.server.UnicastRemoteObject;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import javax.security.auth.*;
+import java.net.*;
+import java.rmi.*;
+import java.rmi.registry.*;
+import java.rmi.server.*;
+import java.util.*;
 
 /**
  * This service starts a JMX RMI connector. It also creates an RMI-registry

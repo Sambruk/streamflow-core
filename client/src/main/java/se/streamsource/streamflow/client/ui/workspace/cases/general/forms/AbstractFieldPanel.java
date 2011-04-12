@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +17,13 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.general.forms;
 
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import se.streamsource.streamflow.client.util.BindingFormBuilder;
-import se.streamsource.streamflow.client.util.StateBinder;
-import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.object.*;
+import se.streamsource.streamflow.client.util.*;
+import se.streamsource.streamflow.domain.form.*;
 
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import java.awt.Component;
-import java.awt.Container;
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * Abstract class that each field type must extend

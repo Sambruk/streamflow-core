@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,47 +17,29 @@
 
 package se.streamsource.streamflow.web.application.mail;
 
-import org.qi4j.api.configuration.Configuration;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.This;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.io.Inputs;
-import org.qi4j.api.io.Outputs;
-import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.service.Activatable;
-import org.qi4j.api.service.ServiceComposite;
-import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.usecase.Usecase;
-import org.qi4j.api.usecase.UsecaseBuilder;
-import org.qi4j.api.util.Iterables;
-import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
-import org.qi4j.spi.service.ServiceDescriptor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import se.streamsource.infrastructure.NamedThreadFactory;
-import se.streamsource.infrastructure.circuitbreaker.service.AbstractEnabledCircuitBreakerAvailability;
-import se.streamsource.infrastructure.circuitbreaker.CircuitBreaker;
-import se.streamsource.infrastructure.circuitbreaker.service.ServiceCircuitBreaker;
-import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFileValue;
-import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
+import org.qi4j.api.configuration.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.io.*;
+import org.qi4j.api.mixin.*;
+import org.qi4j.api.service.*;
+import org.qi4j.api.unitofwork.*;
+import org.qi4j.api.usecase.*;
+import org.qi4j.api.util.*;
+import org.qi4j.api.value.*;
+import org.qi4j.spi.service.*;
+import org.slf4j.*;
+import se.streamsource.infrastructure.*;
+import se.streamsource.infrastructure.circuitbreaker.*;
+import se.streamsource.infrastructure.circuitbreaker.service.*;
+import se.streamsource.streamflow.web.domain.structure.attachment.*;
+import se.streamsource.streamflow.web.infrastructure.attachment.*;
 
 import javax.mail.*;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeUtility;
-import javax.mail.util.SharedByteArrayInputStream;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyVetoException;
-import java.beans.VetoableChangeListener;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.util.Enumeration;
-import java.util.Properties;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import javax.mail.internet.*;
+import java.beans.*;
+import java.io.*;
+import java.util.*;
+import java.util.concurrent.*;
 
 /**
  * Receive mail. This service
@@ -243,7 +225,7 @@ public interface ReceiveMailService
                         String disposition = part.getDisposition();
 
                         if ((disposition != null) &&
-                                ((disposition.equals(Part.ATTACHMENT) ||
+                                ((disposition.equals( Part.ATTACHMENT) ||
                                         (disposition.equals(Part.INLINE)))))
                         {
                            // Create attachment

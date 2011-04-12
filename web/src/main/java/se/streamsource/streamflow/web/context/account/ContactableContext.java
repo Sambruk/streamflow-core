@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,22 +17,18 @@
 
 package se.streamsource.streamflow.web.context.account;
 
-import org.qi4j.api.common.Optional;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.dci.api.IndexContext;
-import se.streamsource.dci.api.RoleMap;
+import org.qi4j.api.common.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.value.*;
+import se.streamsource.dci.api.*;
 import se.streamsource.dci.value.StringValue;
 import se.streamsource.streamflow.domain.contact.ContactAddressValue;
 import se.streamsource.streamflow.domain.contact.ContactEmailValue;
 import se.streamsource.streamflow.domain.contact.ContactPhoneValue;
 import se.streamsource.streamflow.domain.contact.ContactValue;
-import se.streamsource.streamflow.domain.contact.Contactable;
-import se.streamsource.streamflow.server.plugin.contact.ContactList;
-import se.streamsource.streamflow.web.application.contact.StreamflowContactLookupService;
-import se.streamsource.dci.api.ServiceAvailable;
+import se.streamsource.streamflow.domain.contact.*;
+import se.streamsource.streamflow.server.plugin.contact.*;
+import se.streamsource.streamflow.web.application.contact.*;
 
 /**
  * JAVADOC

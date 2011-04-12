@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,19 +17,16 @@
 
 package se.streamsource.streamflow.client.ui.workspace.search;
 
-import org.jdesktop.application.Application;
-import org.jdesktop.application.Task;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.dci.value.table.TableQuery;
-import se.streamsource.dci.value.table.TableValue;
-import se.streamsource.streamflow.client.ui.workspace.cases.CaseTableValue;
-import se.streamsource.streamflow.client.ui.workspace.table.CasesTableModel;
-import se.streamsource.streamflow.client.util.EventListSynch;
+import org.jdesktop.application.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.object.*;
+import org.qi4j.api.value.*;
+import se.streamsource.dci.value.table.*;
+import se.streamsource.streamflow.client.ui.workspace.cases.*;
+import se.streamsource.streamflow.client.ui.workspace.table.*;
+import se.streamsource.streamflow.client.util.*;
 
-import java.util.Collections;
+import java.util.*;
 
 /**
  * Model for search results

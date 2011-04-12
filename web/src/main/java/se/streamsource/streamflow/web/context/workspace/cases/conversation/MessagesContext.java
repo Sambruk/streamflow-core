@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,29 +17,22 @@
 
 package se.streamsource.streamflow.web.context.workspace.cases.conversation;
 
-import org.qi4j.api.entity.EntityReference;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.structure.Module;
-import org.qi4j.api.value.ValueBuilder;
-import org.restlet.data.Status;
-import org.restlet.resource.ResourceException;
-import se.streamsource.dci.api.IndexContext;
-import se.streamsource.dci.api.RoleMap;
+import org.qi4j.api.entity.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.structure.*;
+import org.qi4j.api.value.*;
+import org.restlet.data.*;
+import org.restlet.resource.*;
+import se.streamsource.dci.api.*;
 import se.streamsource.dci.value.StringValue;
-import se.streamsource.dci.value.link.LinksValue;
-import se.streamsource.streamflow.domain.contact.Contactable;
+import se.streamsource.dci.value.link.*;
+import se.streamsource.streamflow.domain.contact.*;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.resource.conversation.MessageDTO;
-import se.streamsource.streamflow.web.domain.entity.conversation.ConversationEntity;
-import se.streamsource.streamflow.web.domain.entity.conversation.MessageEntity;
-import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipant;
-import se.streamsource.streamflow.web.domain.structure.conversation.Message;
-import se.streamsource.streamflow.web.domain.structure.conversation.Messages;
+import se.streamsource.streamflow.resource.conversation.*;
+import se.streamsource.streamflow.web.domain.entity.conversation.*;
+import se.streamsource.streamflow.web.domain.structure.conversation.*;
 
-import java.text.MessageFormat;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * JAVADOC

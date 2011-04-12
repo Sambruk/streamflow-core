@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,37 +17,27 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.general.forms;
 
-import ca.odell.glazedlists.EventList;
-import org.jdesktop.swingx.util.WindowUtils;
-import org.netbeans.api.wizard.WizardDisplayer;
-import org.netbeans.spi.wizard.Wizard;
-import org.netbeans.spi.wizard.WizardException;
-import org.netbeans.spi.wizard.WizardPage;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.streamflow.client.StreamflowApplication;
-import se.streamsource.streamflow.client.util.CommandTask;
-import se.streamsource.streamflow.client.util.LinkValueListModel;
-import se.streamsource.streamflow.client.util.RefreshWhenShowing;
-import se.streamsource.streamflow.client.util.Refreshable;
-import se.streamsource.streamflow.domain.form.FormDraftValue;
-import se.streamsource.streamflow.domain.form.PageSubmissionValue;
-import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
-import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
+import ca.odell.glazedlists.*;
+import org.jdesktop.swingx.util.*;
+import org.netbeans.api.wizard.*;
+import org.netbeans.spi.wizard.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.object.*;
+import org.qi4j.api.value.*;
+import se.streamsource.dci.restlet.client.*;
+import se.streamsource.dci.value.link.*;
+import se.streamsource.streamflow.client.*;
+import se.streamsource.streamflow.client.util.*;
+import se.streamsource.streamflow.domain.form.*;
+import se.streamsource.streamflow.infrastructure.event.domain.*;
+import se.streamsource.streamflow.infrastructure.event.domain.source.*;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.Map;
+import java.awt.event.*;
+import java.util.*;
 
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.matches;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withNames;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 
 public class PossibleFormsView extends JPanel
       implements ActionListener, Refreshable, TransactionListener

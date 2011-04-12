@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +17,11 @@
 
 package se.streamsource.streamflow.client.util;
 
-import ca.odell.glazedlists.SeparatorList;
-import se.streamsource.streamflow.client.ui.ContextItem;
+import ca.odell.glazedlists.*;
+import se.streamsource.streamflow.client.ui.*;
 
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.JList;
-import javax.swing.ListCellRenderer;
-import java.awt.Component;
-import java.awt.Font;
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * JAVADOC

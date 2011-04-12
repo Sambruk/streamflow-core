@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,9 @@
 
 package se.streamsource.streamflow.client.util;
 
-import javax.swing.text.MutableAttributeSet;
-import javax.swing.text.html.HTML;
-import javax.swing.text.html.HTMLEditorKit;
-import java.io.IOException;
-import java.io.StringReader;
+import javax.swing.text.*;
+import javax.swing.text.html.*;
+import java.io.*;
 
 /**
  * This class is able to extract the first h3 heading from a html body tag.

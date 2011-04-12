@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,16 +17,13 @@
 
 package se.streamsource.streamflow.web.context.surface.accesspoints.endusers;
 
-import org.qi4j.api.common.Optional;
-import org.qi4j.api.concern.ConcernOf;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import se.streamsource.dci.api.RoleMap;
-import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
-import se.streamsource.streamflow.web.infrastructure.caching.Caches;
-import se.streamsource.streamflow.web.infrastructure.caching.Caching;
-import se.streamsource.streamflow.web.infrastructure.caching.CachingService;
+import org.qi4j.api.common.*;
+import org.qi4j.api.concern.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.unitofwork.*;
+import se.streamsource.dci.api.*;
+import se.streamsource.streamflow.web.domain.entity.caze.*;
+import se.streamsource.streamflow.web.infrastructure.caching.*;
 
 /**
  * Update case counts when submitted from Surface

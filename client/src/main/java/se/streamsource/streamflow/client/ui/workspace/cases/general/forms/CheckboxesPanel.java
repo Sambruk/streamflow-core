@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,20 +17,16 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.general.forms;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
-import org.qi4j.api.injection.scope.Uses;
-import se.streamsource.streamflow.client.util.StateBinder;
-import se.streamsource.streamflow.domain.form.CheckboxesFieldValue;
-import se.streamsource.streamflow.domain.form.FieldSubmissionValue;
+import com.jgoodies.forms.builder.*;
+import com.jgoodies.forms.layout.*;
+import org.qi4j.api.injection.scope.*;
+import se.streamsource.streamflow.client.util.*;
+import se.streamsource.streamflow.domain.form.*;
 
-import javax.swing.JCheckBox;
-import javax.swing.JPanel;
-import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.HashMap;
-import java.util.Map;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.*;
 
 public class CheckboxesPanel
       extends AbstractFieldPanel

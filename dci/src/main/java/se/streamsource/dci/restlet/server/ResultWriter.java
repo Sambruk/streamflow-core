@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +17,8 @@
 
 package se.streamsource.dci.restlet.server;
 
-import org.restlet.Response;
-import org.restlet.resource.ResourceException;
+import org.restlet.*;
+import org.restlet.resource.*;
 
 /**
  * Writes a result object to a response.

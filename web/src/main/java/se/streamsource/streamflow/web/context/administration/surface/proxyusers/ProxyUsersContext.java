@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,19 +17,15 @@
 
 package se.streamsource.streamflow.web.context.administration.surface.proxyusers;
 
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.structure.Module;
-import org.qi4j.api.value.ValueBuilder;
-import se.streamsource.dci.api.IndexContext;
-import se.streamsource.streamflow.resource.user.NewProxyUserCommand;
-import se.streamsource.streamflow.resource.user.ProxyUserDTO;
-import se.streamsource.streamflow.resource.user.ProxyUserListDTO;
-import se.streamsource.streamflow.web.domain.structure.organization.Organization;
-import se.streamsource.streamflow.web.domain.structure.user.ProxyUser;
-import se.streamsource.streamflow.web.domain.structure.user.ProxyUsers;
-import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.structure.*;
+import org.qi4j.api.value.*;
+import se.streamsource.dci.api.*;
+import se.streamsource.streamflow.resource.user.*;
+import se.streamsource.streamflow.web.domain.structure.organization.*;
+import se.streamsource.streamflow.web.domain.structure.user.*;
 
-import java.util.List;
+import java.util.*;
 
 import static se.streamsource.dci.api.RoleMap.*;
 

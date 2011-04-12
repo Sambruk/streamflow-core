@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,18 +17,16 @@
 
 package se.streamsource.streamflow.web.context.overview;
 
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.restlet.data.MediaType;
-import org.restlet.representation.OutputRepresentation;
-import se.streamsource.dci.api.IndexContext;
-import se.streamsource.dci.api.RoleMap;
-import se.streamsource.dci.value.link.LinksValue;
-import se.streamsource.streamflow.web.domain.entity.user.OverviewQueries;
+import org.apache.poi.hssf.usermodel.*;
+import org.apache.poi.ss.usermodel.*;
+import org.restlet.data.*;
+import org.restlet.representation.*;
+import se.streamsource.dci.api.*;
+import se.streamsource.dci.value.link.*;
+import se.streamsource.streamflow.web.domain.entity.user.*;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.Locale;
+import java.io.*;
+import java.util.*;
 
 /**
  * JAVADOC

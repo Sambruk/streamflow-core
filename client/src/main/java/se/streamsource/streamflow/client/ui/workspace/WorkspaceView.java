@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,43 +17,29 @@
 
 package se.streamsource.streamflow.client.ui.workspace;
 
-import ca.odell.glazedlists.SeparatorList;
-import ca.odell.glazedlists.event.ListEvent;
-import ca.odell.glazedlists.event.ListEventListener;
-import ca.odell.glazedlists.gui.TableFormat;
-import com.jgoodies.forms.factories.Borders;
+import ca.odell.glazedlists.*;
+import ca.odell.glazedlists.event.*;
+import ca.odell.glazedlists.gui.*;
+import com.jgoodies.forms.factories.*;
 import org.jdesktop.application.Action;
-import org.jdesktop.application.ApplicationAction;
-import org.jdesktop.application.ApplicationContext;
-import org.jdesktop.application.Task;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.streamflow.client.MacOsUIWrapper;
-import se.streamsource.streamflow.client.ui.ContextItem;
-import se.streamsource.streamflow.client.ui.workspace.context.WorkspaceContextView;
-import se.streamsource.streamflow.client.ui.workspace.search.ManagePerspectivesDialog;
-import se.streamsource.streamflow.client.ui.workspace.search.PerspectivesModel;
-import se.streamsource.streamflow.client.ui.workspace.search.SearchResultTableModel;
-import se.streamsource.streamflow.client.ui.workspace.search.SearchView;
-import se.streamsource.streamflow.client.ui.workspace.table.CasesTableFormatter;
-import se.streamsource.streamflow.client.ui.workspace.table.CasesTableView;
-import se.streamsource.streamflow.client.ui.workspace.table.CasesView;
-import se.streamsource.streamflow.client.util.CommandTask;
-import se.streamsource.streamflow.client.util.RoundedBorder;
-import se.streamsource.streamflow.client.util.dialog.DialogService;
-import se.streamsource.streamflow.client.util.dialog.NameDialog;
-import se.streamsource.streamflow.client.util.i18n;
-import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
-import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
-import se.streamsource.streamflow.resource.user.profile.PerspectiveValue;
-import se.streamsource.streamflow.util.Strings;
+import org.jdesktop.application.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.object.*;
+import se.streamsource.dci.restlet.client.*;
+import se.streamsource.streamflow.client.*;
+import se.streamsource.streamflow.client.ui.*;
+import se.streamsource.streamflow.client.ui.workspace.context.*;
+import se.streamsource.streamflow.client.ui.workspace.search.*;
+import se.streamsource.streamflow.client.ui.workspace.table.*;
+import se.streamsource.streamflow.client.util.*;
+import se.streamsource.streamflow.client.util.dialog.*;
+import se.streamsource.streamflow.infrastructure.event.domain.*;
+import se.streamsource.streamflow.infrastructure.event.domain.source.*;
+import se.streamsource.streamflow.resource.user.profile.*;
+import se.streamsource.streamflow.util.*;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
+import javax.swing.event.*;
 import java.awt.*;
 import java.awt.event.*;
 
@@ -379,6 +365,7 @@ public class WorkspaceView
          public void command()
                throws Exception
          {
+            casesTable.getModel().clearFilter();
             casesTable.getModel().createCase();
          }
       };

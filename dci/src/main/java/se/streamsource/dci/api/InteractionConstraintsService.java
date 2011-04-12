@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,24 +17,17 @@
 
 package se.streamsource.dci.api;
 
-import org.qi4j.api.composite.TransientComposite;
-import org.qi4j.api.constraint.Constraint;
-import org.qi4j.api.constraint.ConstraintDeclaration;
-import org.qi4j.api.constraint.Constraints;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.object.NoSuchObjectException;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import org.qi4j.spi.structure.ModuleSPI;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.qi4j.api.composite.*;
+import org.qi4j.api.constraint.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.object.*;
+import org.qi4j.spi.structure.*;
+import org.slf4j.*;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.lang.annotation.*;
+import java.lang.reflect.*;
+import java.util.*;
+import java.util.concurrent.*;
 
 /**
  * JAVADOC

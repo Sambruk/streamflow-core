@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,40 +17,25 @@
 
 package se.streamsource.streamflow.web.application.pdf;
 
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.font.PDType1Font;
-import org.qi4j.api.common.ConstructionException;
-import org.qi4j.api.common.Optional;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.io.Outputs;
-import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.service.ServiceComposite;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.domain.form.AttachmentFieldSubmission;
-import se.streamsource.streamflow.domain.form.AttachmentFieldValue;
-import se.streamsource.streamflow.domain.form.DateFieldValue;
-import se.streamsource.streamflow.domain.form.SubmittedFieldValue;
-import se.streamsource.streamflow.domain.form.SubmittedFormValue;
-import se.streamsource.streamflow.web.domain.entity.form.FieldEntity;
-import se.streamsource.streamflow.web.domain.interaction.gtd.CaseId;
-import se.streamsource.streamflow.web.domain.structure.form.Form;
-import se.streamsource.streamflow.web.infrastructure.attachment.AttachmentStore;
+import org.apache.pdfbox.pdmodel.*;
+import org.apache.pdfbox.pdmodel.font.*;
+import org.qi4j.api.common.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.io.*;
+import org.qi4j.api.mixin.*;
+import org.qi4j.api.service.*;
+import org.qi4j.api.unitofwork.*;
+import org.qi4j.api.value.*;
+import se.streamsource.streamflow.domain.form.*;
+import se.streamsource.streamflow.web.domain.entity.form.*;
+import se.streamsource.streamflow.web.domain.interaction.gtd.*;
+import se.streamsource.streamflow.web.domain.structure.form.*;
+import se.streamsource.streamflow.web.infrastructure.attachment.*;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
-import java.util.ResourceBundle;
+import java.io.*;
+import java.net.*;
+import java.text.*;
+import java.util.*;
 
 
 @Mixins(SubmittedFormPdfGenerator.Mixin.class)
@@ -84,6 +69,7 @@ public interface SubmittedFormPdfGenerator extends ServiceComposite
          PdfFont h2Font = new PdfFont( PDType1Font.HELVETICA_BOLD, 14 );
          PdfFont valueFont = new PdfFont( PDType1Font.HELVETICA, 12 );
          PdfFont descFont = new PdfFont( PDType1Font.HELVETICA_OBLIQUE, 10 );
+         PdfFont pageFont = new PdfFont( PDType1Font.HELVETICA_BOLD_OBLIQUE, 14 );
 
          Form form = uowFactory.currentUnitOfWork().get( Form.class, value.form().get().identity() );
 
@@ -94,39 +80,47 @@ public interface SubmittedFormPdfGenerator extends ServiceComposite
          document.line();
 
 
-         for (SubmittedFieldValue submittedFieldValue : value.values().get())
+         for (SubmittedPageValue submittedPageValue : value.pages().get())
          {
-            FieldEntity field = uowFactory.currentUnitOfWork().get( FieldEntity.class, submittedFieldValue.field().get().identity() );
+            Page page = uowFactory.currentUnitOfWork().get( Page.class, submittedPageValue.page().get().identity() );
+            document.println( page.getDescription(), pageFont );
 
-            document.print( field.getDescription() + ":", h2Font );
-            if (field.fieldValue().get() instanceof DateFieldValue)
+            // TODO Page breaks
+            for (SubmittedFieldValue submittedFieldValue : submittedPageValue.fields().get())
             {
-               try
-               {
+               FieldEntity field = uowFactory.currentUnitOfWork().get(FieldEntity.class, submittedFieldValue.field().get().identity());
 
-                  Date date = (new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'" )).parse( submittedFieldValue.value().get() );
-                  document.println( DateFormat.getDateInstance( DateFormat.MEDIUM, locale ).format( date ), valueFont );
-               } catch (ParseException e)
+               document.print(field.getDescription() + ":", h2Font);
+               if (field.fieldValue().get() instanceof DateFieldValue)
                {
-                  document.println( "N/A", valueFont );
+                  try
+                  {
+
+                     Date date = (new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")).parse(submittedFieldValue.value().get());
+                     document.println(DateFormat.getDateInstance(DateFormat.MEDIUM, locale).format(date), valueFont);
+                  } catch (ParseException e)
+                  {
+                     document.println("N/A", valueFont);
+                  }
+
+               } else if (field.fieldValue().get() instanceof AttachmentFieldValue)
+               {
+                  try
+                  {
+                     AttachmentFieldSubmission attachment = vbf.newValueFromJSON(AttachmentFieldSubmission.class, submittedFieldValue.value().get());
+                     document.println(attachment.name().get(), valueFont);
+                  } catch (ConstructionException e)
+                  {
+                     //ignore
+                  }
+
+               } else
+               {
+                  document.println(submittedFieldValue.value().get(), valueFont);
                }
-
-            } else if( field.fieldValue().get() instanceof AttachmentFieldValue )
-            {
-               try
-               {
-                  AttachmentFieldSubmission attachment = vbf.newValueFromJSON( AttachmentFieldSubmission.class, submittedFieldValue.value().get() );
-                  document.println( attachment.name().get(), valueFont );
-               } catch ( ConstructionException e )
-               {
-                  //ignore
-               }
-
-            } else
-            {
-               document.println( submittedFieldValue.value().get(), valueFont );
+               document.println("", valueFont);
             }
-            document.println( "", valueFont );
+
          }
 
          PDDocument submittedFormPdf = document.closeAndReturn();

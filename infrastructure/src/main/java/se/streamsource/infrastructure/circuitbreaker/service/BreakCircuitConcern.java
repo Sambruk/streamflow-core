@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +17,12 @@
 
 package se.streamsource.infrastructure.circuitbreaker.service;
 
-import org.qi4j.api.common.AppliesTo;
-import org.qi4j.api.concern.GenericConcern;
-import org.qi4j.api.injection.scope.This;
-import se.streamsource.infrastructure.circuitbreaker.CircuitBreaker;
+import org.qi4j.api.common.*;
+import org.qi4j.api.concern.*;
+import org.qi4j.api.injection.scope.*;
+import se.streamsource.infrastructure.circuitbreaker.*;
 
-import java.lang.reflect.Method;
+import java.lang.reflect.*;
 
 /**
  * This concern will update the circuit breaker on method invocation success

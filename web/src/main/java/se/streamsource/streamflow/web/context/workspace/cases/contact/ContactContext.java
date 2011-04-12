@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,26 +17,24 @@
 
 package se.streamsource.streamflow.web.context.workspace.cases.contact;
 
-import org.qi4j.api.common.Optional;
-import org.qi4j.api.constraint.Name;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.service.ServiceImporterException;
-import org.qi4j.api.service.ServiceReference;
-import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.dci.api.DeleteContext;
-import se.streamsource.dci.api.RoleMap;
+import org.qi4j.api.common.*;
+import org.qi4j.api.constraint.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.service.*;
+import org.qi4j.api.value.*;
+import se.streamsource.dci.api.*;
 import se.streamsource.dci.value.StringValue;
+import se.streamsource.streamflow.domain.contact.ContactAddressValue;
 import se.streamsource.streamflow.domain.contact.*;
-import se.streamsource.streamflow.resource.caze.ContactsDTO;
-import se.streamsource.streamflow.server.plugin.contact.ContactList;
-import se.streamsource.streamflow.server.plugin.contact.ContactLookup;
-import se.streamsource.dci.api.ServiceAvailable;
-import se.streamsource.streamflow.web.domain.structure.caze.Contacts;
-import se.streamsource.streamflow.web.infrastructure.plugin.contact.ContactLookupService;
+import se.streamsource.streamflow.domain.contact.ContactEmailValue;
+import se.streamsource.streamflow.domain.contact.ContactPhoneValue;
+import se.streamsource.streamflow.domain.contact.ContactValue;
+import se.streamsource.streamflow.resource.caze.*;
+import se.streamsource.streamflow.server.plugin.contact.*;
+import se.streamsource.streamflow.web.domain.structure.caze.*;
+import se.streamsource.streamflow.web.infrastructure.plugin.contact.*;
 
-import java.util.List;
+import java.util.*;
 
 /**
  * JAVADOC

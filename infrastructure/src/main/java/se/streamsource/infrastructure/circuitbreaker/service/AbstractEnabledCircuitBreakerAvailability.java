@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +17,11 @@
 
 package se.streamsource.infrastructure.circuitbreaker.service;
 
-import org.qi4j.api.configuration.Configuration;
-import org.qi4j.api.configuration.Enabled;
-import org.qi4j.api.injection.scope.This;
-import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.service.Availability;
-import se.streamsource.infrastructure.circuitbreaker.CircuitBreaker;
+import org.qi4j.api.configuration.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.mixin.*;
+import org.qi4j.api.service.*;
+import se.streamsource.infrastructure.circuitbreaker.*;
 
 /**
  * Abstract composite that determines Availability by

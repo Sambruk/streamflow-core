@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +17,12 @@
 
 package se.streamsource.streamflow.infrastructure.event.application.source.helper;
 
-import org.qi4j.api.configuration.Configuration;
-import org.qi4j.api.io.Output;
-import org.qi4j.api.io.Receiver;
-import org.qi4j.api.io.Sender;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import se.streamsource.streamflow.infrastructure.event.application.TransactionApplicationEvents;
-import se.streamsource.streamflow.infrastructure.event.application.source.ApplicationEventSource;
-import se.streamsource.streamflow.infrastructure.event.application.source.ApplicationEventStream;
-import se.streamsource.streamflow.infrastructure.event.domain.source.helper.TransactionTrackerConfiguration;
+import org.qi4j.api.configuration.*;
+import org.qi4j.api.io.*;
+import org.slf4j.*;
+import se.streamsource.streamflow.infrastructure.event.application.*;
+import se.streamsource.streamflow.infrastructure.event.application.source.*;
+import se.streamsource.streamflow.infrastructure.event.domain.source.helper.*;
 
 /**
  * Helper that enables a service to easily track transactions. Upon startup

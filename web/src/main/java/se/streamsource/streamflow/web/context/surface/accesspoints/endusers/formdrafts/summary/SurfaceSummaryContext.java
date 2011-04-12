@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,22 +17,16 @@
 
 package se.streamsource.streamflow.web.context.surface.accesspoints.endusers.formdrafts.summary;
 
-import org.qi4j.api.concern.Concerns;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.structure.Module;
-import org.qi4j.api.value.ValueBuilder;
-import se.streamsource.dci.api.Context;
-import se.streamsource.dci.api.IndexContext;
-import se.streamsource.dci.api.RoleMap;
-import se.streamsource.streamflow.domain.form.FormDraftValue;
-import se.streamsource.streamflow.domain.form.RequiredSignatureValue;
-import se.streamsource.streamflow.domain.form.RequiredSignaturesValue;
-import se.streamsource.streamflow.web.domain.structure.caze.Case;
-import se.streamsource.streamflow.web.domain.structure.form.EndUserCases;
-import se.streamsource.streamflow.web.domain.structure.form.FormDraft;
-import se.streamsource.streamflow.web.domain.structure.form.RequiredSignatures;
-import se.streamsource.streamflow.web.domain.structure.user.EndUser;
+import org.qi4j.api.concern.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.mixin.*;
+import org.qi4j.api.structure.*;
+import org.qi4j.api.value.*;
+import se.streamsource.dci.api.*;
+import se.streamsource.streamflow.domain.form.*;
+import se.streamsource.streamflow.web.domain.structure.caze.*;
+import se.streamsource.streamflow.web.domain.structure.form.*;
+import se.streamsource.streamflow.web.domain.structure.user.*;
 
 /**
  * JAVADOC

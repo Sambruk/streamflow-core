@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +17,15 @@
 
 package se.streamsource.streamflow.web.resource.surface.accesspoints.endusers;
 
-import org.qi4j.api.unitofwork.NoSuchEntityException;
-import org.restlet.data.Status;
-import org.restlet.resource.ResourceException;
-import se.streamsource.dci.api.RoleMap;
-import se.streamsource.dci.restlet.server.CommandQueryResource;
-import se.streamsource.dci.restlet.server.api.SubResources;
-import se.streamsource.streamflow.web.application.security.UserPrincipal;
-import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.EndUsersContext;
-import se.streamsource.streamflow.web.domain.structure.user.EndUser;
-import se.streamsource.streamflow.web.domain.structure.user.ProxyUser;
+import org.qi4j.api.unitofwork.*;
+import org.restlet.data.*;
+import org.restlet.resource.*;
+import se.streamsource.dci.api.*;
+import se.streamsource.dci.restlet.server.*;
+import se.streamsource.dci.restlet.server.api.*;
+import se.streamsource.streamflow.web.application.security.*;
+import se.streamsource.streamflow.web.context.surface.accesspoints.endusers.*;
+import se.streamsource.streamflow.web.domain.structure.user.*;
 
 /**
  * JAVADOC

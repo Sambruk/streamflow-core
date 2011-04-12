@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,17 +17,15 @@
 
 package se.streamsource.streamflow.web.resource.surface.endusers;
 
-import org.qi4j.api.query.Query;
-import org.qi4j.api.util.DateFunctions;
-import org.restlet.resource.ResourceException;
-import se.streamsource.dci.restlet.server.CommandQueryResource;
-import se.streamsource.dci.restlet.server.api.SubResources;
-import se.streamsource.dci.value.table.TableBuilder;
-import se.streamsource.dci.value.table.TableQuery;
-import se.streamsource.streamflow.domain.structure.Describable;
-import se.streamsource.streamflow.web.context.surface.endusers.OpenCasesContext;
-import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Owner;
+import org.qi4j.api.util.*;
+import org.restlet.resource.*;
+import se.streamsource.dci.restlet.server.*;
+import se.streamsource.dci.restlet.server.api.*;
+import se.streamsource.dci.value.table.*;
+import se.streamsource.streamflow.domain.structure.*;
+import se.streamsource.streamflow.web.context.surface.endusers.*;
+import se.streamsource.streamflow.web.domain.entity.caze.*;
+import se.streamsource.streamflow.web.domain.interaction.gtd.*;
 
 /**
  * TODO

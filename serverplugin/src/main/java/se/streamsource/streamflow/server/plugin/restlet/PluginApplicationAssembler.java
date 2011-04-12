@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,16 +17,14 @@
 
 package se.streamsource.streamflow.server.plugin.restlet;
 
-import org.qi4j.api.common.Visibility;
+import org.qi4j.api.common.*;
 import org.qi4j.bootstrap.*;
-import org.qi4j.entitystore.prefs.PreferencesEntityStoreInfo;
-import org.qi4j.entitystore.prefs.PreferencesEntityStoreService;
-import org.qi4j.library.jmx.JMXAssembler;
-import se.streamsource.streamflow.server.plugin.authentication.UserDetailsValue;
-import se.streamsource.streamflow.server.plugin.authentication.UserIdentityValue;
+import org.qi4j.entitystore.prefs.*;
+import org.qi4j.library.jmx.*;
+import se.streamsource.streamflow.server.plugin.authentication.*;
 import se.streamsource.streamflow.server.plugin.contact.*;
 
-import java.util.prefs.Preferences;
+import java.util.prefs.*;
 
 /**
  * Assembler for the plugin application

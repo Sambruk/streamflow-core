@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,31 +17,25 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.general;
 
-import ca.odell.glazedlists.BasicEventList;
-import ca.odell.glazedlists.EventList;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
-import org.restlet.resource.ResourceException;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.dci.value.EntityValue;
-import se.streamsource.dci.value.ResourceValue;
+import ca.odell.glazedlists.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.value.*;
+import org.restlet.resource.*;
+import se.streamsource.dci.restlet.client.*;
+import se.streamsource.dci.value.*;
 import se.streamsource.dci.value.StringValue;
-import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.dci.value.link.LinksValue;
-import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
-import se.streamsource.streamflow.client.util.Refreshable;
-import se.streamsource.streamflow.domain.interaction.gtd.CaseStates;
-import se.streamsource.streamflow.resource.caze.CaseGeneralDTO;
-import se.streamsource.streamflow.resource.roles.DateDTO;
+import se.streamsource.dci.value.link.*;
+import se.streamsource.streamflow.client.*;
+import se.streamsource.streamflow.client.ui.workspace.*;
+import se.streamsource.streamflow.client.util.*;
+import se.streamsource.streamflow.domain.interaction.gtd.*;
+import se.streamsource.streamflow.resource.caze.*;
+import se.streamsource.streamflow.resource.roles.*;
 
-import java.util.Date;
-import java.util.Observable;
+import java.util.*;
 
-import static org.qi4j.api.util.Iterables.matchesAny;
-import static se.streamsource.dci.value.link.Links.withRel;
+import static org.qi4j.api.util.Iterables.*;
+import static se.streamsource.dci.value.link.Links.*;
 
 /**
  * Model for the general info about a case.
@@ -76,11 +71,12 @@ public class CaseGeneralModel
       if (newDescription.equals(general.description().get()))
          return; // No change
 
+      general.description().set( newDescription );
       ValueBuilder<StringValue> builder = vbf
             .newValueBuilder( StringValue.class );
       builder.prototype().string().set( newDescription );
       client.postCommand( "changedescription", builder.newInstance() );
-      general.description().set( newDescription );
+
    }
 
    public void changeNote( String newNote )

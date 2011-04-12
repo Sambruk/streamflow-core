@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,32 +17,20 @@
 
 package se.streamsource.streamflow.web.infrastructure.database;
 
-import com.mchange.v2.c3p0.ComboPooledDataSource;
-import com.mchange.v2.c3p0.DataSources;
-import org.qi4j.api.composite.PropertyMapper;
-import org.qi4j.api.entity.EntityBuilder;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.service.Activatable;
-import org.qi4j.api.service.ImportedServiceDescriptor;
-import org.qi4j.api.service.ServiceComposite;
-import org.qi4j.api.service.ServiceImporter;
-import org.qi4j.api.service.ServiceImporterException;
-import org.qi4j.api.structure.Module;
-import org.qi4j.api.unitofwork.NoSuchEntityException;
-import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.usecase.UsecaseBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.mchange.v2.c3p0.*;
+import org.qi4j.api.composite.*;
+import org.qi4j.api.entity.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.mixin.*;
+import org.qi4j.api.service.*;
+import org.qi4j.api.structure.*;
+import org.qi4j.api.unitofwork.*;
+import org.qi4j.api.usecase.*;
+import org.slf4j.*;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.io.*;
+import java.sql.*;
+import java.util.*;
 
 /**
  * DataSource service implemented as a ServiceImporter. Sets up and exposes DataSources that can be used in the application.

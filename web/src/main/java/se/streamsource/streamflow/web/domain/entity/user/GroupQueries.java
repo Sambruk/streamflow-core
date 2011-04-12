@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,10 @@
 
 package se.streamsource.streamflow.web.domain.entity.user;
 
-import org.qi4j.api.injection.scope.This;
-import se.streamsource.streamflow.web.domain.structure.group.Group;
-import se.streamsource.streamflow.web.domain.structure.group.Participants;
-import se.streamsource.streamflow.web.domain.structure.group.Participation;
+import org.qi4j.api.injection.scope.*;
+import se.streamsource.streamflow.web.domain.structure.group.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * JAVADOC

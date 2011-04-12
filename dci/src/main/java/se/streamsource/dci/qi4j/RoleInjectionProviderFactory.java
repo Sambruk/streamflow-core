@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,14 +17,11 @@
 
 package se.streamsource.dci.qi4j;
 
-import org.qi4j.bootstrap.InvalidInjectionException;
-import org.qi4j.runtime.injection.DependencyModel;
-import org.qi4j.runtime.injection.InjectionContext;
-import org.qi4j.runtime.injection.InjectionProvider;
-import org.qi4j.runtime.injection.InjectionProviderFactory;
-import org.qi4j.runtime.injection.provider.InjectionProviderException;
-import org.qi4j.runtime.model.Resolution;
-import se.streamsource.dci.api.RoleMap;
+import org.qi4j.bootstrap.*;
+import org.qi4j.runtime.injection.*;
+import org.qi4j.runtime.injection.provider.*;
+import org.qi4j.runtime.model.*;
+import se.streamsource.dci.api.*;
 
 /**
  * Injection factory for @Role annotation. Looks up role in current RoleMap.

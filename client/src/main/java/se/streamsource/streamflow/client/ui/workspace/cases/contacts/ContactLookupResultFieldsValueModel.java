@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +17,12 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.contacts;
 
-import se.streamsource.streamflow.client.util.i18n;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
-import se.streamsource.streamflow.domain.contact.ContactValue;
+import se.streamsource.streamflow.client.ui.workspace.*;
+import se.streamsource.streamflow.client.util.*;
+import se.streamsource.streamflow.domain.contact.*;
 
-import javax.swing.table.AbstractTableModel;
-import java.util.Collections;
-import java.util.List;
+import javax.swing.table.*;
+import java.util.*;
 
 /**
  * Created by IntelliJ IDEA.

@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,35 +17,71 @@
 
 package se.streamsource.streamflow.client.ui.administration.surface;
 
-import org.qi4j.api.value.ValueBuilder;
-import org.restlet.resource.ResourceException;
-import se.streamsource.dci.value.*;
-import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.streamflow.client.util.LinkValueListModel;
-import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
+import ca.odell.glazedlists.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.value.*;
+import org.restlet.data.*;
+import se.streamsource.dci.restlet.client.*;
+import se.streamsource.dci.value.link.*;
+import se.streamsource.dci.value.table.*;
+import se.streamsource.streamflow.client.util.*;
+import se.streamsource.streamflow.infrastructure.event.domain.*;
+import se.streamsource.streamflow.infrastructure.event.domain.source.*;
+
+import static org.qi4j.api.specification.Specifications.*;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 
 /**
  * TODO
  */
 public class EmailAccessPointsModel
-   extends LinkValueListModel
-        implements TransactionListener
+        implements Refreshable, TransactionListener
 {
-   public EmailAccessPointModel createEmailAccessPointModel(LinkValue detailLink)
+   @Uses
+   protected CommandQueryClient client;
+
+   @Structure
+   protected ValueBuilderFactory vbf;
+
+   protected EventList<RowValue> rowValues = new TransactionList<RowValue>(new BasicEventList<RowValue>());
+
+   public EmailAccessPointsModel()
    {
-      return module.objectBuilderFactory().newObjectBuilder(EmailAccessPointModel.class).use(client.getClient( detailLink )).newInstance();
    }
 
-   public void create( String name )
+   public void refresh()
    {
-      ValueBuilder<StringValue> builder = module.valueBuilderFactory().newValueBuilder( StringValue.class );
-      builder.prototype().string().set( name );
-      try
-      {
-         client.postCommand( "create", builder.newInstance() );
-      } catch (ResourceException e)
-      {
-         handleException( e );
-      }
+      EventListSynch.synchronize(client.query("index", TableValue.class).rows().get(), rowValues);
+   }
+
+   public EventList<RowValue> getRows()
+   {
+      return rowValues;
+   }
+
+   public void remove(int index)
+   {
+      client.getClient(index + "/").delete();
+   }
+
+   public void notifyTransactions(Iterable<TransactionDomainEvents> transactions)
+   {
+      // Refresh if either the owner of the list has changed, or if any of the entities in the list has changed
+      if (matches(or(onEntities(client.getReference().getParentRef().getLastSegment()), onEntities(client.getReference().getLastSegment())), transactions))
+         refresh();
+   }
+
+   public EventList<LinkValue> possibleAccessPoints()
+   {
+      EventList<LinkValue> eventList = new BasicEventList<LinkValue>();
+      EventListSynch.synchronize(client.query("possibleaccesspoints", LinksValue.class).links().get(), eventList);
+      return eventList;
+   }
+
+   public void create(String email, LinkValue createEmailAccessPoint)
+   {
+      Form form = new Form();
+      form.set("email", email);
+      client.getClient(createEmailAccessPoint).postCommand("", form.getWebRepresentation());
    }
 }

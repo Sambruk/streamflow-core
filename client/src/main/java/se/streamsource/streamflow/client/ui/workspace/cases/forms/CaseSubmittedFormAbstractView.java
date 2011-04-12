@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,47 +17,30 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.forms;
 
-import ca.odell.glazedlists.EventList;
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
-import org.jdesktop.application.Application;
-import org.jdesktop.application.ApplicationContext;
-import org.jdesktop.application.Task;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.io.Inputs;
-import org.qi4j.api.io.Outputs;
-import org.qi4j.api.util.DateFunctions;
-import org.qi4j.api.value.ValueBuilderFactory;
-import org.restlet.representation.Representation;
-import se.streamsource.streamflow.client.ui.workspace.WorkspaceResources;
-import se.streamsource.streamflow.client.util.dialog.DialogService;
-import se.streamsource.streamflow.client.util.i18n;
-import se.streamsource.streamflow.domain.form.AttachmentFieldSubmission;
-import se.streamsource.streamflow.domain.form.AttachmentFieldValue;
-import se.streamsource.streamflow.domain.form.DateFieldValue;
-import se.streamsource.streamflow.domain.form.TextAreaFieldValue;
-import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
-import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
-import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
+import ca.odell.glazedlists.*;
+import com.jgoodies.forms.builder.*;
+import com.jgoodies.forms.layout.*;
+import org.jdesktop.application.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.io.*;
+import org.qi4j.api.util.*;
+import org.qi4j.api.value.*;
+import org.restlet.representation.*;
+import se.streamsource.streamflow.client.ui.workspace.*;
+import se.streamsource.streamflow.client.util.dialog.*;
+import se.streamsource.streamflow.client.util.*;
+import se.streamsource.streamflow.domain.form.*;
+import se.streamsource.streamflow.infrastructure.event.domain.*;
+import se.streamsource.streamflow.infrastructure.event.domain.source.*;
+import se.streamsource.streamflow.infrastructure.event.domain.source.helper.*;
+import se.streamsource.streamflow.util.*;
 
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import java.awt.Color;
-import java.awt.Desktop;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.io.File;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.HashMap;
-import java.util.Map;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.*;
+import java.text.*;
+import java.util.*;
 
 /**
  * JAVADOC
@@ -98,7 +82,7 @@ public abstract class CaseSubmittedFormAbstractView
       JComponent component;
       if ( fieldType.equals( DateFieldValue.class.getName() ))
       {
-         component = new JLabel( formatter.format( DateFunctions.fromString( fieldValue ) ) );
+         component = new JLabel( Strings.empty( fieldValue ) ? " " : formatter.format( DateFunctions.fromString( fieldValue ) ) );
       } else if ( fieldType.equals( TextAreaFieldValue.class.getName() ))
       {
          component = new JLabel( "<html>"+fieldValue.replace( "\n", "<br/>" )+"</html>" );

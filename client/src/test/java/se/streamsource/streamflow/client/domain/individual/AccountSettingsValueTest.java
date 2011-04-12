@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,11 @@
 
 package se.streamsource.streamflow.client.domain.individual;
 
-import org.junit.Test;
-import org.qi4j.api.constraint.ConstraintViolationException;
-import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.bootstrap.AssemblyException;
-import org.qi4j.bootstrap.ModuleAssembly;
-import org.qi4j.test.AbstractQi4jTest;
+import org.junit.*;
+import org.qi4j.api.constraint.*;
+import org.qi4j.api.value.*;
+import org.qi4j.bootstrap.*;
+import org.qi4j.test.*;
 
 /**
  * Test of AccountSettingsValue

@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,10 @@
 
 package se.streamsource.streamflow.web.infrastructure.database;
 
-import se.streamsource.streamflow.util.Visitor;
+import se.streamsource.streamflow.util.*;
 
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import javax.sql.*;
+import java.sql.*;
 
 /**
  * Utility methods for performing SQL calls

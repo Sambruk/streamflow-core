@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,9 @@
 
 package se.streamsource.streamflow.web.context.administration;
 
-import org.qi4j.api.mixin.Mixins;
-import se.streamsource.dci.api.Context;
-import se.streamsource.dci.api.DeleteContext;
-import se.streamsource.dci.api.RoleMap;
-import se.streamsource.streamflow.web.domain.structure.project.Member;
-import se.streamsource.streamflow.web.domain.structure.project.Members;
+import org.qi4j.api.mixin.*;
+import se.streamsource.dci.api.*;
+import se.streamsource.streamflow.web.domain.structure.project.*;
 
 /**
  * JAVADOC

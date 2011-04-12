@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,51 +17,24 @@
 
 package se.streamsource.streamflow.web.application.management;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import org.qi4j.api.common.*;
+import org.qi4j.api.entity.*;
+import org.qi4j.api.entity.association.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.mixin.*;
+import org.qi4j.api.property.*;
+import org.qi4j.api.service.*;
+import org.qi4j.api.structure.*;
+import org.qi4j.api.unitofwork.*;
+import org.qi4j.spi.*;
+import org.qi4j.spi.entity.*;
+import org.qi4j.spi.property.*;
+import org.qi4j.spi.structure.*;
+import se.streamsource.streamflow.web.infrastructure.database.*;
 
-import javax.management.Attribute;
-import javax.management.AttributeList;
-import javax.management.AttributeNotFoundException;
-import javax.management.DynamicMBean;
-import javax.management.InstanceAlreadyExistsException;
-import javax.management.InvalidAttributeValueException;
-import javax.management.MBeanAttributeInfo;
-import javax.management.MBeanException;
-import javax.management.MBeanInfo;
-import javax.management.MBeanOperationInfo;
-import javax.management.MBeanParameterInfo;
-import javax.management.MBeanRegistrationException;
-import javax.management.MBeanServer;
-import javax.management.MalformedObjectNameException;
-import javax.management.NotCompliantMBeanException;
-import javax.management.ObjectName;
-import javax.management.ReflectionException;
-import javax.sql.DataSource;
-
-import org.qi4j.api.common.QualifiedName;
-import org.qi4j.api.entity.Entity;
-import org.qi4j.api.entity.EntityComposite;
-import org.qi4j.api.entity.association.EntityStateHolder;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.property.Property;
-import org.qi4j.api.service.Activatable;
-import org.qi4j.api.service.ServiceComposite;
-import org.qi4j.api.service.ServiceReference;
-import org.qi4j.api.structure.Application;
-import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.spi.Qi4jSPI;
-import org.qi4j.spi.entity.EntityDescriptor;
-import org.qi4j.spi.property.PropertyType;
-import org.qi4j.spi.structure.ModuleSPI;
-
-import se.streamsource.streamflow.web.infrastructure.database.DataSourceConfiguration;
-import se.streamsource.streamflow.web.infrastructure.database.DataSourceService;
+import javax.management.*;
+import javax.sql.*;
+import java.util.*;
 
 /**
  * Expose DatasourceConfiguration through JMX. Allow configurations to be edited, and the services to be restarted.

@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,35 +17,24 @@
 
 package se.streamsource.streamflow.web.domain.entity.project;
 
-import org.qi4j.api.concern.ConcernOf;
-import org.qi4j.api.concern.Concerns;
-import org.qi4j.api.entity.Identity;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.This;
-import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.query.QueryBuilderFactory;
-import org.qi4j.api.sideeffect.SideEffectOf;
-import org.qi4j.api.sideeffect.SideEffects;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.value.ValueBuilderFactory;
-import se.streamsource.streamflow.domain.structure.Describable;
-import se.streamsource.streamflow.domain.structure.Removable;
-import se.streamsource.streamflow.web.domain.entity.DomainEntity;
-import se.streamsource.streamflow.web.domain.entity.gtd.AssignmentsQueries;
-import se.streamsource.streamflow.web.domain.entity.gtd.InboxQueries;
+import org.qi4j.api.concern.*;
+import org.qi4j.api.entity.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.mixin.*;
+import org.qi4j.api.query.*;
+import org.qi4j.api.sideeffect.*;
+import org.qi4j.api.unitofwork.*;
+import org.qi4j.api.value.*;
+import se.streamsource.streamflow.domain.structure.*;
+import se.streamsource.streamflow.web.domain.entity.*;
+import se.streamsource.streamflow.web.domain.entity.gtd.*;
 import se.streamsource.streamflow.web.domain.interaction.gtd.*;
-import se.streamsource.streamflow.web.domain.interaction.security.CaseAccessDefaults;
-import se.streamsource.streamflow.web.domain.structure.casetype.CaseTypes;
-import se.streamsource.streamflow.web.domain.structure.casetype.SelectedCaseTypes;
-import se.streamsource.streamflow.web.domain.structure.form.Forms;
-import se.streamsource.streamflow.web.domain.structure.label.Labels;
-import se.streamsource.streamflow.web.domain.structure.label.SelectedLabels;
-import se.streamsource.streamflow.web.domain.structure.organization.Organization;
-import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganization;
-import se.streamsource.streamflow.web.domain.structure.organization.OwningOrganizationalUnit;
-import se.streamsource.streamflow.web.domain.structure.project.Member;
-import se.streamsource.streamflow.web.domain.structure.project.Members;
-import se.streamsource.streamflow.web.domain.structure.project.Project;
+import se.streamsource.streamflow.web.domain.interaction.security.*;
+import se.streamsource.streamflow.web.domain.structure.casetype.*;
+import se.streamsource.streamflow.web.domain.structure.form.*;
+import se.streamsource.streamflow.web.domain.structure.label.*;
+import se.streamsource.streamflow.web.domain.structure.organization.*;
+import se.streamsource.streamflow.web.domain.structure.project.*;
 
 /**
  * JAVADOC

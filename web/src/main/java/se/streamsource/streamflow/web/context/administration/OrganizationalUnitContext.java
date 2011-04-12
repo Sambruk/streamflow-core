@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,30 +17,22 @@
 
 package se.streamsource.streamflow.web.context.administration;
 
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.value.ValueBuilderFactory;
-import org.restlet.data.Status;
-import org.restlet.resource.ResourceException;
-import se.streamsource.dci.api.DeleteContext;
-import se.streamsource.dci.api.InteractionValidation;
-import se.streamsource.dci.api.RequiresValid;
-import se.streamsource.dci.api.RoleMap;
-import se.streamsource.dci.value.EntityValue;
-import se.streamsource.dci.value.link.LinksValue;
-import se.streamsource.streamflow.domain.organization.MergeOrganizationalUnitException;
-import se.streamsource.streamflow.domain.organization.MoveOrganizationalUnitException;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.unitofwork.*;
+import org.qi4j.api.value.*;
+import org.restlet.data.*;
+import org.restlet.resource.*;
+import se.streamsource.dci.api.*;
+import se.streamsource.dci.value.*;
+import se.streamsource.dci.value.link.*;
+import se.streamsource.streamflow.domain.organization.*;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.web.domain.entity.organization.OrganizationQueries;
-import se.streamsource.streamflow.web.domain.entity.organization.OrganizationVisitor;
-import se.streamsource.streamflow.web.domain.structure.form.Forms;
-import se.streamsource.streamflow.web.domain.structure.group.Groups;
-import se.streamsource.streamflow.web.domain.structure.label.Labels;
-import se.streamsource.streamflow.web.domain.structure.organization.Organization;
-import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnit;
-import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnitRefactoring;
-import se.streamsource.streamflow.web.domain.structure.organization.OrganizationalUnits;
-import se.streamsource.streamflow.web.domain.structure.project.Projects;
+import se.streamsource.streamflow.web.domain.entity.organization.*;
+import se.streamsource.streamflow.web.domain.structure.form.*;
+import se.streamsource.streamflow.web.domain.structure.group.*;
+import se.streamsource.streamflow.web.domain.structure.label.*;
+import se.streamsource.streamflow.web.domain.structure.organization.*;
+import se.streamsource.streamflow.web.domain.structure.project.*;
 
 /**
  * JAVADOC

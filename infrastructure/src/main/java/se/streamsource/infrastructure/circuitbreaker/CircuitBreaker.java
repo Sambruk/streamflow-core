@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,12 @@
 
 package se.streamsource.infrastructure.circuitbreaker;
 
-import org.qi4j.api.specification.Specification;
-import org.qi4j.api.specification.Specifications;
+import org.qi4j.api.specification.*;
 
 import java.beans.*;
-import java.util.Date;
+import java.util.*;
 
-import static org.qi4j.api.specification.Specifications.not;
+import static org.qi4j.api.specification.Specifications.*;
 
 /**
  * Implementation of CircuitBreaker pattern

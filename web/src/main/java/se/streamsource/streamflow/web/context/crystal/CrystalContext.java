@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,36 +17,23 @@
 
 package se.streamsource.streamflow.web.context.crystal;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.service.ServiceReference;
-import org.qi4j.api.structure.Module;
-import org.qi4j.api.util.DateFunctions;
-import org.restlet.data.MediaType;
-import org.restlet.representation.Representation;
-import org.restlet.representation.WriterRepresentation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import se.streamsource.dci.value.table.TableBuilder;
-import se.streamsource.dci.value.table.TableQuery;
-import se.streamsource.dci.value.table.TableValue;
-import se.streamsource.streamflow.web.infrastructure.database.Databases;
+import org.json.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.service.*;
+import org.qi4j.api.structure.*;
+import org.qi4j.api.util.*;
+import org.restlet.data.*;
+import org.restlet.representation.*;
+import org.slf4j.*;
+import se.streamsource.dci.value.table.*;
+import se.streamsource.streamflow.web.infrastructure.database.*;
 
-import javax.sql.DataSource;
-import java.io.IOException;
-import java.io.Writer;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.text.MessageFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import javax.sql.*;
+import java.io.*;
+import java.sql.*;
+import java.text.*;
+import java.util.*;
 import java.util.Date;
-import java.util.ResourceBundle;
 
 /**
  * JAVADOC

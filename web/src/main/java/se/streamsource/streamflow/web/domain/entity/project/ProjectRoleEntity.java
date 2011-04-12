@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,15 +17,13 @@
 
 package se.streamsource.streamflow.web.domain.entity.project;
 
-import org.qi4j.api.common.UseDefaults;
-import org.qi4j.api.property.Property;
-import se.streamsource.streamflow.domain.structure.Describable;
-import se.streamsource.streamflow.domain.structure.Removable;
-import se.streamsource.streamflow.web.domain.entity.DomainEntity;
-import se.streamsource.streamflow.web.domain.structure.project.PermissionValue;
-import se.streamsource.streamflow.web.domain.structure.project.ProjectRole;
+import org.qi4j.api.common.*;
+import org.qi4j.api.property.*;
+import se.streamsource.streamflow.domain.structure.*;
+import se.streamsource.streamflow.web.domain.entity.*;
+import se.streamsource.streamflow.web.domain.structure.project.*;
 
-import java.util.Set;
+import java.util.*;
 
 /**
  * JAVADOC

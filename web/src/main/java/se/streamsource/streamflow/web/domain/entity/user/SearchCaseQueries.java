@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,31 +17,24 @@
 
 package se.streamsource.streamflow.web.domain.entity.user;
 
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.This;
-import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.query.Query;
-import org.qi4j.api.specification.Specification;
-import org.qi4j.api.structure.Module;
-import org.qi4j.api.unitofwork.NoSuchEntityException;
-import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.util.DateFunctions;
-import org.qi4j.api.util.Iterables;
-import se.streamsource.streamflow.resource.organization.search.DateSearchKeyword;
-import se.streamsource.streamflow.resource.organization.search.UserSearchKeyword;
-import se.streamsource.streamflow.web.domain.entity.casetype.CaseTypeEntity;
-import se.streamsource.streamflow.web.domain.entity.label.LabelEntity;
-import se.streamsource.streamflow.web.domain.entity.project.ProjectEntity;
-import se.streamsource.streamflow.web.domain.interaction.security.PermissionType;
-import se.streamsource.streamflow.web.domain.structure.caze.Case;
-import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.mixin.*;
+import org.qi4j.api.query.*;
+import org.qi4j.api.specification.*;
+import org.qi4j.api.structure.*;
+import org.qi4j.api.unitofwork.*;
+import org.qi4j.api.util.*;
+import se.streamsource.streamflow.resource.organization.search.*;
+import se.streamsource.streamflow.web.domain.entity.casetype.*;
+import se.streamsource.streamflow.web.domain.entity.label.*;
+import se.streamsource.streamflow.web.domain.entity.project.*;
+import se.streamsource.streamflow.web.domain.interaction.security.*;
+import se.streamsource.streamflow.web.domain.structure.caze.*;
+import se.streamsource.streamflow.web.domain.structure.user.*;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.text.*;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
+import java.util.regex.*;
 
 /**
  * JAVADOC

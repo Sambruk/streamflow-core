@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,25 +17,22 @@
 
 package se.streamsource.streamflow.web.context.overview;
 
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.query.Query;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.mixin.*;
+import org.qi4j.api.query.*;
 import org.qi4j.api.query.QueryBuilder;
-import org.qi4j.api.query.QueryExpressions;
-import org.qi4j.api.query.grammar.OrderBy;
-import org.qi4j.api.structure.Module;
-import se.streamsource.dci.api.RoleMap;
-import se.streamsource.dci.value.table.TableQuery;
-import se.streamsource.streamflow.domain.structure.Describable;
-import se.streamsource.streamflow.web.context.workspace.AbstractFilterContext;
-import se.streamsource.streamflow.web.domain.entity.gtd.AssignmentsQueries;
-import se.streamsource.streamflow.web.domain.interaction.gtd.DueOn;
-import se.streamsource.streamflow.web.domain.interaction.gtd.Status;
-import se.streamsource.streamflow.web.domain.structure.caze.Case;
-import se.streamsource.streamflow.web.domain.structure.created.CreatedOn;
+import org.qi4j.api.query.grammar.*;
+import org.qi4j.api.structure.*;
+import se.streamsource.dci.api.*;
+import se.streamsource.dci.value.table.*;
+import se.streamsource.streamflow.domain.structure.*;
+import se.streamsource.streamflow.web.context.workspace.*;
+import se.streamsource.streamflow.web.domain.entity.gtd.*;
+import se.streamsource.streamflow.web.domain.interaction.gtd.*;
+import se.streamsource.streamflow.web.domain.structure.caze.*;
+import se.streamsource.streamflow.web.domain.structure.created.*;
 
-import static org.qi4j.api.query.QueryExpressions.orderBy;
-import static org.qi4j.api.query.QueryExpressions.templateFor;
+import static org.qi4j.api.query.QueryExpressions.*;
 
 /**
  * JAVADOC

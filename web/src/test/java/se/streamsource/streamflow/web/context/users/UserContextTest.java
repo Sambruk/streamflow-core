@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,20 +17,14 @@
 
 package se.streamsource.streamflow.web.context.users;
 
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.unitofwork.UnitOfWorkCompletionException;
-import se.streamsource.dci.api.RoleMap;
-import se.streamsource.streamflow.resource.user.ChangePasswordCommand;
-import se.streamsource.streamflow.web.context.ContextTest;
-import se.streamsource.streamflow.web.context.account.AccountContext;
-import se.streamsource.streamflow.web.context.account.ProfileContext;
-import se.streamsource.streamflow.web.context.administration.UserContext;
-import se.streamsource.streamflow.web.domain.structure.user.User;
-import se.streamsource.streamflow.web.domain.structure.user.WrongPasswordException;
+import org.junit.*;
+import org.qi4j.api.unitofwork.*;
+import se.streamsource.dci.api.*;
+import se.streamsource.streamflow.resource.user.*;
+import se.streamsource.streamflow.web.context.*;
+import se.streamsource.streamflow.web.context.account.*;
+import se.streamsource.streamflow.web.context.administration.*;
+import se.streamsource.streamflow.web.domain.structure.user.*;
 
 /**
  * JAVADOC

@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,23 +17,16 @@
 
 package se.streamsource.streamflow.infrastructure.event.application.source.helper;
 
-import org.qi4j.api.io.Output;
-import org.qi4j.api.io.Receiver;
-import org.qi4j.api.io.Sender;
-import org.qi4j.api.specification.Specification;
-import org.qi4j.api.util.Function;
-import org.qi4j.api.util.Iterables;
-import se.streamsource.streamflow.infrastructure.event.application.ApplicationEvent;
-import se.streamsource.streamflow.infrastructure.event.application.TransactionApplicationEvents;
-import se.streamsource.streamflow.infrastructure.event.application.replay.ApplicationEventPlayer;
-import se.streamsource.streamflow.infrastructure.event.application.replay.ApplicationEventReplayException;
+import org.qi4j.api.io.*;
+import org.qi4j.api.specification.*;
+import org.qi4j.api.util.*;
+import se.streamsource.streamflow.infrastructure.event.application.*;
+import se.streamsource.streamflow.infrastructure.event.application.replay.*;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.lang.reflect.*;
+import java.util.*;
 
-import static org.qi4j.api.util.Classes.methodsOf;
+import static org.qi4j.api.util.Classes.*;
 
 /**
  * Helper methods for working with Iterables of DomainEvents and TransactionDomainEvents.

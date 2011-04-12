@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,16 +17,14 @@
 
 package se.streamsource.streamflow.web.configuration;
 
-import org.hamcrest.CoreMatchers;
-import org.junit.Assert;
-import org.junit.Test;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.bootstrap.AssemblyException;
-import org.qi4j.bootstrap.ModuleAssembly;
-import org.qi4j.test.AbstractQi4jTest;
-import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
+import org.hamcrest.*;
+import org.junit.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.bootstrap.*;
+import org.qi4j.test.*;
+import se.streamsource.streamflow.infrastructure.configuration.*;
 
-import java.io.File;
+import java.io.*;
 
 /**
  * Test of FileConfiguration service

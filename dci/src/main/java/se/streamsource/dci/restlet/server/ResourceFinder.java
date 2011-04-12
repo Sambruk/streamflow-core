@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,10 @@
 
 package se.streamsource.dci.restlet.server;
 
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.object.ObjectBuilderFactory;
-import org.restlet.Request;
-import org.restlet.Response;
-import org.restlet.resource.Finder;
-import org.restlet.resource.ServerResource;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.object.*;
+import org.restlet.*;
+import org.restlet.resource.*;
 
 /**
  * Finder that instantiates ServerResources using Qi4j.

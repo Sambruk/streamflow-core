@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,21 +17,18 @@
 
 package se.streamsource.streamflow.web.application.contact;
 
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.query.Query;
-import org.qi4j.api.query.QueryBuilderFactory;
-import org.qi4j.api.service.ServiceComposite;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.mixin.*;
+import org.qi4j.api.query.*;
+import org.qi4j.api.service.*;
+import org.qi4j.api.unitofwork.*;
+import org.qi4j.api.value.*;
 import se.streamsource.streamflow.domain.contact.ContactAddressValue;
 import se.streamsource.streamflow.server.plugin.contact.ContactEmailValue;
-import se.streamsource.streamflow.server.plugin.contact.ContactList;
-import se.streamsource.streamflow.server.plugin.contact.ContactLookup;
+import se.streamsource.streamflow.server.plugin.contact.*;
 import se.streamsource.streamflow.server.plugin.contact.ContactPhoneValue;
 import se.streamsource.streamflow.server.plugin.contact.ContactValue;
-import se.streamsource.streamflow.web.domain.structure.caze.Contacts;
+import se.streamsource.streamflow.web.domain.structure.caze.*;
 
 /**
  * JAVADOC

@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,44 +17,28 @@
 
 package se.streamsource.streamflow.client.ui.workspace.cases.attachments;
 
-import ca.odell.glazedlists.BasicEventList;
-import ca.odell.glazedlists.EventList;
-import eu.medsea.mimeutil.MimeType;
-import eu.medsea.mimeutil.MimeUtil;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.util.DateFunctions;
-import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
-import org.restlet.data.Disposition;
-import org.restlet.data.Form;
-import org.restlet.representation.InputRepresentation;
-import org.restlet.representation.Representation;
-import se.streamsource.dci.restlet.client.CommandQueryClient;
-import se.streamsource.dci.value.ResourceValue;
-import se.streamsource.dci.value.link.LinksValue;
-import se.streamsource.streamflow.client.OperationException;
-import se.streamsource.streamflow.client.util.EventListSynch;
-import se.streamsource.streamflow.client.util.Refreshable;
-import se.streamsource.streamflow.domain.attachment.AttachmentValue;
-import se.streamsource.streamflow.domain.attachment.UpdateAttachmentValue;
-import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
-import se.streamsource.streamflow.infrastructure.event.domain.source.EventStream;
-import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionListener;
-import se.streamsource.streamflow.infrastructure.event.domain.source.helper.EventParameters;
-import se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events;
+import ca.odell.glazedlists.*;
+import eu.medsea.mimeutil.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.util.*;
+import org.qi4j.api.value.*;
+import org.restlet.data.*;
+import org.restlet.representation.*;
+import se.streamsource.dci.restlet.client.*;
+import se.streamsource.dci.value.*;
+import se.streamsource.dci.value.link.*;
+import se.streamsource.streamflow.client.*;
+import se.streamsource.streamflow.client.util.*;
+import se.streamsource.streamflow.domain.attachment.*;
+import se.streamsource.streamflow.infrastructure.event.domain.*;
+import se.streamsource.streamflow.infrastructure.event.domain.source.*;
+import se.streamsource.streamflow.infrastructure.event.domain.source.helper.*;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Date;
-import java.util.Observable;
+import java.io.*;
+import java.util.*;
 
-import static org.qi4j.api.util.Iterables.filter;
-import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.withNames;
+import static org.qi4j.api.util.Iterables.*;
+import static se.streamsource.streamflow.infrastructure.event.domain.source.helper.Events.*;
 
 /**
  * JAVADOC

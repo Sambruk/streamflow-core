@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,22 +17,18 @@
 
 package se.streamsource.streamflow.web.context.surface.accesspoints;
 
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.specification.Specification;
-import org.qi4j.api.structure.Module;
-import org.qi4j.api.util.Iterables;
-import org.qi4j.api.value.ValueBuilder;
-import se.streamsource.dci.api.IndexContext;
-import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.dci.value.link.LinksValue;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.specification.*;
+import org.qi4j.api.structure.*;
+import org.qi4j.api.util.*;
+import org.qi4j.api.value.*;
+import se.streamsource.dci.api.*;
+import se.streamsource.dci.value.link.*;
 import se.streamsource.streamflow.infrastructure.application.LinksBuilder;
-import se.streamsource.streamflow.infrastructure.application.TitledLinksBuilder;
-import se.streamsource.streamflow.web.domain.structure.form.SelectedForms;
-import se.streamsource.streamflow.web.domain.structure.organization.AccessPoint;
-import se.streamsource.streamflow.web.domain.structure.organization.AccessPoints;
-import se.streamsource.streamflow.web.domain.structure.organization.Organization;
-import se.streamsource.streamflow.web.domain.structure.user.ProxyUser;
-import se.streamsource.streamflow.web.domain.structure.user.UserAuthentication;
+import se.streamsource.streamflow.infrastructure.application.*;
+import se.streamsource.streamflow.web.domain.structure.form.*;
+import se.streamsource.streamflow.web.domain.structure.organization.*;
+import se.streamsource.streamflow.web.domain.structure.user.*;
 
 import static se.streamsource.dci.api.RoleMap.*;
 

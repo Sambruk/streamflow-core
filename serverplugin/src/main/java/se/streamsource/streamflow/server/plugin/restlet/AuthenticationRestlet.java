@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,26 +17,14 @@
 
 package se.streamsource.streamflow.server.plugin.restlet;
 
-import org.qi4j.api.common.Optional;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.value.ValueBuilder;
-import org.qi4j.api.value.ValueBuilderFactory;
-import org.restlet.Request;
-import org.restlet.Response;
-import org.restlet.Restlet;
-import org.restlet.data.ChallengeRequest;
-import org.restlet.data.ChallengeScheme;
-import org.restlet.data.CharacterSet;
-import org.restlet.data.Language;
-import org.restlet.data.MediaType;
-import org.restlet.data.Method;
-import org.restlet.data.Status;
-import org.restlet.representation.StringRepresentation;
-import org.restlet.resource.ResourceException;
-import se.streamsource.streamflow.server.plugin.authentication.Authenticator;
-import se.streamsource.streamflow.server.plugin.authentication.UserDetailsValue;
-import se.streamsource.streamflow.server.plugin.authentication.UserIdentityValue;
+import org.qi4j.api.common.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.value.*;
+import org.restlet.*;
+import org.restlet.data.*;
+import org.restlet.representation.*;
+import org.restlet.resource.*;
+import se.streamsource.streamflow.server.plugin.authentication.*;
 
 /**
  * Empty restlet...

@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,29 +17,15 @@
 
 package se.streamsource.dci.test.interactions.jmx;
 
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.structure.Module;
-import org.qi4j.api.value.Value;
-import org.qi4j.api.value.ValueBuilder;
-import se.streamsource.dci.api.IndexContext;
-import se.streamsource.dci.api.RoleMap;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.structure.*;
+import org.qi4j.api.value.*;
+import se.streamsource.dci.api.*;
 import se.streamsource.dci.value.StringValue;
 
-import javax.management.Attribute;
-import javax.management.AttributeNotFoundException;
-import javax.management.InstanceNotFoundException;
-import javax.management.InvalidAttributeValueException;
-import javax.management.MBeanAttributeInfo;
-import javax.management.MBeanException;
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
-import javax.management.ReflectionException;
-import javax.management.openmbean.CompositeDataSupport;
-import javax.management.openmbean.TabularDataSupport;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import javax.management.*;
+import javax.management.openmbean.*;
+import java.util.*;
 
 /**
  * JAVADOC

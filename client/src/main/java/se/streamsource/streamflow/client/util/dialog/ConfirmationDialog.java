@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,17 +17,16 @@
 
 package se.streamsource.streamflow.client.util.dialog;
 
-import org.jdesktop.application.ApplicationContext;
-import org.jdesktop.swingx.JXDialog;
-import org.jdesktop.swingx.util.WindowUtils;
-import org.qi4j.api.injection.scope.Service;
-import se.streamsource.streamflow.client.StreamflowResources;
-import se.streamsource.streamflow.client.util.i18n;
+import org.jdesktop.application.*;
+import org.jdesktop.swingx.*;
+import org.jdesktop.swingx.util.*;
+import org.qi4j.api.injection.scope.*;
+import se.streamsource.streamflow.client.*;
+import se.streamsource.streamflow.client.util.*;
 
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import java.awt.BorderLayout;
-import java.text.MessageFormat;
+import javax.swing.*;
+import java.awt.*;
+import java.text.*;
 
 /**
  * A general confirmation dialog

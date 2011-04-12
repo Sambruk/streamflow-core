@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,23 +17,17 @@
 
 package se.streamsource.streamflow.web.context.administration.surface;
 
-import org.qi4j.api.entity.EntityReference;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.structure.Module;
-import org.qi4j.api.value.ValueBuilder;
-import se.streamsource.dci.value.EntityValue;
-import se.streamsource.dci.value.link.LinkValue;
+import org.qi4j.api.entity.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.structure.*;
+import org.qi4j.api.value.*;
+import se.streamsource.dci.value.*;
 import se.streamsource.dci.value.StringValue;
-import se.streamsource.streamflow.resource.organization.SelectedTemplatesValue;
-import se.streamsource.streamflow.web.domain.structure.attachment.AttachedFile;
-import se.streamsource.streamflow.web.domain.structure.attachment.Attachment;
-import se.streamsource.streamflow.web.domain.structure.attachment.Attachments;
-import se.streamsource.streamflow.web.domain.structure.attachment.CasePdfTemplate;
-import se.streamsource.streamflow.web.domain.structure.attachment.DefaultPdfTemplate;
-import se.streamsource.streamflow.web.domain.structure.attachment.FormPdfTemplate;
+import se.streamsource.dci.value.link.*;
+import se.streamsource.streamflow.resource.organization.*;
+import se.streamsource.streamflow.web.domain.structure.attachment.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import static se.streamsource.dci.api.RoleMap.*;
 

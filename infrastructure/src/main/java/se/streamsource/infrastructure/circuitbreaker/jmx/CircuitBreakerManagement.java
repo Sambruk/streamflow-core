@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,23 +17,18 @@
 
 package se.streamsource.infrastructure.circuitbreaker.jmx;
 
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.service.Activatable;
-import org.qi4j.api.service.ServiceComposite;
-import org.qi4j.api.service.ServiceReference;
-import org.qi4j.api.structure.Application;
-import org.qi4j.library.jmx.Qi4jMBeans;
-import org.slf4j.LoggerFactory;
-import se.streamsource.infrastructure.circuitbreaker.CircuitBreaker;
-import se.streamsource.infrastructure.circuitbreaker.service.ServiceCircuitBreaker;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.mixin.*;
+import org.qi4j.api.service.*;
+import org.qi4j.api.structure.*;
+import org.qi4j.library.jmx.*;
+import org.slf4j.*;
+import se.streamsource.infrastructure.circuitbreaker.*;
+import se.streamsource.infrastructure.circuitbreaker.service.*;
 
 import javax.management.*;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.util.HashMap;
-import java.util.Map;
+import java.beans.*;
+import java.util.*;
 
 /**
  * JMX service that exposes ServiceCircuitBreakers as MBeans.

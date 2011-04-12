@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +17,11 @@
 
 package se.streamsource.streamflow.web.application.mail;
 
-import org.qi4j.api.common.Optional;
-import org.qi4j.api.concern.Concerns;
-import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.mixin.NoopMixin;
-import se.streamsource.streamflow.infrastructure.event.application.ApplicationEvent;
-import se.streamsource.streamflow.infrastructure.event.application.factory.ApplicationEventCreationConcern;
-import se.streamsource.streamflow.infrastructure.event.application.factory.ApplicationEventCreator;
+import org.qi4j.api.common.*;
+import org.qi4j.api.concern.*;
+import org.qi4j.api.mixin.*;
+import se.streamsource.streamflow.infrastructure.event.application.*;
+import se.streamsource.streamflow.infrastructure.event.application.factory.*;
 
 /**
  * Factory for sending emails. Inject with @This MailSender and then invoke sentEmail.

@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,22 +17,15 @@
 
 package se.streamsource.streamflow.client.util;
 
-import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.FilterList;
-import ca.odell.glazedlists.SeparatorList;
-import ca.odell.glazedlists.SortedList;
-import ca.odell.glazedlists.matchers.MatcherEditor;
-import ca.odell.glazedlists.swing.EventListModel;
-import ca.odell.glazedlists.swing.TextComponentMatcherEditor;
-import se.streamsource.dci.value.link.LinkValue;
-import se.streamsource.dci.value.link.TitledLinkValue;
+import ca.odell.glazedlists.*;
+import ca.odell.glazedlists.matchers.*;
+import ca.odell.glazedlists.swing.*;
+import se.streamsource.dci.value.link.*;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
+import javax.swing.event.*;
 import java.awt.*;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
+import java.beans.*;
 
 /**
  * JAVADOC

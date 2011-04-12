@@ -1,5 +1,6 @@
-/*
- * Copyright 2009-2010 Streamsource AB
+/**
+ *
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,45 +17,28 @@
 
 package se.streamsource.streamflow.web.application.conversation;
 
-import org.qi4j.api.configuration.Configuration;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.injection.scope.This;
-import org.qi4j.api.io.Output;
-import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.service.Activatable;
-import org.qi4j.api.service.ServiceComposite;
-import org.qi4j.api.specification.Specification;
-import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.usecase.UsecaseBuilder;
-import org.qi4j.api.util.Iterables;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import se.streamsource.streamflow.infrastructure.event.application.ApplicationEvent;
-import se.streamsource.streamflow.infrastructure.event.application.TransactionApplicationEvents;
-import se.streamsource.streamflow.infrastructure.event.application.replay.ApplicationEventPlayer;
-import se.streamsource.streamflow.infrastructure.event.application.replay.ApplicationEventReplayException;
-import se.streamsource.streamflow.infrastructure.event.application.source.ApplicationEventSource;
-import se.streamsource.streamflow.infrastructure.event.application.source.ApplicationEventStream;
-import se.streamsource.streamflow.infrastructure.event.application.source.helper.ApplicationEvents;
-import se.streamsource.streamflow.infrastructure.event.application.source.helper.ApplicationTransactionTracker;
-import se.streamsource.streamflow.web.application.mail.EmailValue;
-import se.streamsource.streamflow.web.application.mail.MailReceiver;
-import se.streamsource.streamflow.web.domain.entity.caze.CaseEntity;
-import se.streamsource.streamflow.web.domain.structure.caze.Case;
-import se.streamsource.streamflow.web.domain.structure.conversation.Conversation;
-import se.streamsource.streamflow.web.domain.structure.conversation.ConversationParticipant;
-import se.streamsource.streamflow.web.domain.structure.conversation.Conversations;
-import se.streamsource.streamflow.web.domain.structure.created.Creator;
+import org.qi4j.api.configuration.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.io.*;
+import org.qi4j.api.mixin.*;
+import org.qi4j.api.service.*;
+import org.qi4j.api.specification.*;
+import org.qi4j.api.unitofwork.*;
+import org.qi4j.api.usecase.*;
+import org.qi4j.api.util.*;
+import org.slf4j.*;
+import se.streamsource.streamflow.infrastructure.event.application.*;
+import se.streamsource.streamflow.infrastructure.event.application.replay.*;
+import se.streamsource.streamflow.infrastructure.event.application.source.*;
+import se.streamsource.streamflow.infrastructure.event.application.source.helper.*;
+import se.streamsource.streamflow.web.application.mail.*;
+import se.streamsource.streamflow.web.domain.entity.caze.*;
+import se.streamsource.streamflow.web.domain.structure.conversation.*;
+import se.streamsource.streamflow.web.domain.structure.created.*;
 
-import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.net.*;
+import java.util.*;
+import java.util.regex.*;
 
 /**
  * Receive emails and create responses in conversations

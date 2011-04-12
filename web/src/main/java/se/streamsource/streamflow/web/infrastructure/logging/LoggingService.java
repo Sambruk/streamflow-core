@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,16 +17,13 @@
 
 package se.streamsource.streamflow.web.infrastructure.logging;
 
-import org.apache.log4j.DailyRollingFileAppender;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.service.Activatable;
-import org.qi4j.api.service.ServiceComposite;
-import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
+import org.apache.log4j.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.mixin.*;
+import org.qi4j.api.service.*;
+import se.streamsource.streamflow.infrastructure.configuration.*;
 
-import java.io.File;
+import java.io.*;
 
 /**
  * JAVADOC

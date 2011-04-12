@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,32 +18,17 @@
 package se.streamsource.streamflow.web.resource.events;
 
 import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.service.qualifier.Tagged;
-import org.qi4j.api.util.DateFunctions;
-import org.restlet.data.CharacterSet;
-import org.restlet.data.MediaType;
-import org.restlet.data.Status;
-import org.restlet.ext.atom.Content;
-import org.restlet.ext.atom.Entry;
-import org.restlet.ext.atom.Feed;
-import org.restlet.ext.atom.Text;
-import org.restlet.representation.Representation;
-import org.restlet.representation.StringRepresentation;
-import org.restlet.representation.Variant;
-import org.restlet.representation.WriterRepresentation;
-import org.restlet.resource.ResourceException;
-import org.restlet.resource.ServerResource;
-import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
-import se.streamsource.streamflow.infrastructure.event.domain.source.EventSource;
-import se.streamsource.streamflow.infrastructure.event.domain.source.TransactionVisitor;
+import org.qi4j.api.service.qualifier.*;
+import org.qi4j.api.util.*;
+import org.restlet.data.*;
+import org.restlet.ext.atom.*;
+import org.restlet.representation.*;
+import org.restlet.resource.*;
+import se.streamsource.streamflow.infrastructure.event.domain.*;
+import se.streamsource.streamflow.infrastructure.event.domain.source.*;
 
-import java.io.IOException;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.io.*;
+import java.util.*;
 
 /**
  * Get events before or after a given date in various formats

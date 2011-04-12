@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,40 +17,22 @@
 
 package se.streamsource.streamflow.web.infrastructure.index;
 
-import org.apache.solr.client.solrj.SolrServer;
-import org.apache.solr.client.solrj.SolrServerException;
-import org.apache.solr.common.SolrInputDocument;
-import org.apache.solr.core.SolrCore;
-import org.apache.solr.schema.SchemaField;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.openrdf.model.BNode;
-import org.openrdf.model.Graph;
-import org.openrdf.model.Literal;
-import org.openrdf.model.Resource;
-import org.openrdf.model.Statement;
-import org.openrdf.model.URI;
-import org.openrdf.model.ValueFactory;
-import org.openrdf.model.impl.GraphImpl;
-import org.openrdf.model.impl.URIImpl;
-import org.openrdf.model.impl.ValueFactoryImpl;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Uses;
-import org.qi4j.api.service.Activatable;
-import org.qi4j.library.rdf.entity.EntityStateSerializer;
-import org.qi4j.spi.entity.EntityState;
-import org.qi4j.spi.entity.EntityStatus;
-import org.qi4j.spi.entitystore.StateChangeListener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.solr.client.solrj.*;
+import org.apache.solr.common.*;
+import org.apache.solr.core.*;
+import org.apache.solr.schema.*;
+import org.json.*;
+import org.openrdf.model.*;
+import org.openrdf.model.impl.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.service.*;
+import org.qi4j.library.rdf.entity.*;
+import org.qi4j.spi.entity.*;
+import org.qi4j.spi.entitystore.*;
+import org.slf4j.*;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.io.*;
+import java.util.*;
 
 /**
  * JAVADOC Add JavaDoc

@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,21 +17,17 @@
 
 package se.streamsource.streamflow.web.configuration;
 
-import org.qi4j.api.entity.EntityBuilder;
-import org.qi4j.api.injection.scope.Service;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.service.Activatable;
-import org.qi4j.api.service.ServiceComposite;
-import org.qi4j.api.unitofwork.NoSuchEntityException;
-import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.usecase.UsecaseBuilder;
-import org.qi4j.entitystore.jdbm.JdbmConfiguration;
-import org.qi4j.library.rdf.repository.NativeConfiguration;
-import se.streamsource.streamflow.infrastructure.configuration.FileConfiguration;
+import org.qi4j.api.entity.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.mixin.*;
+import org.qi4j.api.service.*;
+import org.qi4j.api.unitofwork.*;
+import org.qi4j.api.usecase.*;
+import org.qi4j.entitystore.jdbm.*;
+import org.qi4j.library.rdf.repository.*;
+import se.streamsource.streamflow.infrastructure.configuration.*;
 
-import java.io.File;
+import java.io.*;
 
 /**
  * Initial configurations for all services

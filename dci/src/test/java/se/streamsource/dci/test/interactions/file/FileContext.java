@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,26 +17,18 @@
 
 package se.streamsource.dci.test.interactions.file;
 
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.structure.Module;
-import org.qi4j.api.value.ValueBuilder;
-import org.restlet.data.MediaType;
-import org.restlet.representation.InputRepresentation;
-import org.restlet.representation.Representation;
-import org.restlet.resource.ResourceException;
-import org.restlet.service.MetadataService;
-import se.streamsource.dci.api.CreateContext;
-import se.streamsource.dci.api.DeleteContext;
-import se.streamsource.dci.api.IndexContext;
-import se.streamsource.dci.api.RoleMap;
-import se.streamsource.dci.value.link.LinksBuilder;
-import se.streamsource.dci.value.link.LinksValue;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.structure.*;
+import org.qi4j.api.value.*;
+import org.restlet.data.*;
+import org.restlet.representation.*;
+import org.restlet.resource.*;
+import org.restlet.service.*;
+import se.streamsource.dci.api.*;
 import se.streamsource.dci.value.StringValue;
+import se.streamsource.dci.value.link.*;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 
 /**
  * JAVADOC

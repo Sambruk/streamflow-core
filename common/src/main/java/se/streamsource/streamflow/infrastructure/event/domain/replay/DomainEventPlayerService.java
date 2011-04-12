@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2009-2010 Streamsource AB
+ * Copyright 2009-2011 Streamsource AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,28 +17,23 @@
 
 package se.streamsource.streamflow.infrastructure.event.domain.replay;
 
-import org.json.JSONObject;
-import org.json.JSONTokener;
-import org.qi4j.api.entity.EntityComposite;
-import org.qi4j.api.injection.scope.Structure;
-import org.qi4j.api.mixin.Mixins;
-import org.qi4j.api.service.ServiceComposite;
-import org.qi4j.api.structure.Module;
-import org.qi4j.api.unitofwork.UnitOfWork;
-import org.qi4j.api.unitofwork.UnitOfWorkFactory;
-import org.qi4j.api.usecase.UsecaseBuilder;
-import org.qi4j.api.value.ValueComposite;
-import org.qi4j.spi.Qi4jSPI;
-import org.qi4j.spi.entity.EntityState;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import se.streamsource.streamflow.infrastructure.event.domain.DomainEvent;
-import se.streamsource.streamflow.infrastructure.event.domain.TransactionDomainEvents;
+import org.json.*;
+import org.qi4j.api.entity.*;
+import org.qi4j.api.injection.scope.*;
+import org.qi4j.api.mixin.*;
+import org.qi4j.api.service.*;
+import org.qi4j.api.structure.*;
+import org.qi4j.api.unitofwork.*;
+import org.qi4j.api.usecase.*;
+import org.qi4j.api.value.*;
+import org.qi4j.spi.*;
+import org.qi4j.spi.entity.*;
+import org.slf4j.*;
+import se.streamsource.streamflow.infrastructure.event.domain.*;
 
-import java.lang.reflect.Method;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.lang.reflect.*;
+import java.text.*;
+import java.util.*;
 
 /**
  * DomainEvent player
