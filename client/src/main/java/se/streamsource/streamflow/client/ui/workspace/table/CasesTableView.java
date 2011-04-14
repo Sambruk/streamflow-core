@@ -311,7 +311,10 @@ public class CasesTableView
          }
       });
 
+      AbstractHighlighter separatorHighlighter = (AbstractHighlighter) HighlighterFactory.createSimpleStriping(HighlighterFactory.QUICKSILVER);
+      separatorHighlighter.setHighlightPredicate(new HighlightPredicate.TypeHighlightPredicate(SeparatorList.Separator.class));
       caseTable.addHighlighter(HighlighterFactory.createAlternateStriping());
+      caseTable.addHighlighter(separatorHighlighter);
 
       addFocusListener(new FocusAdapter()
       {
